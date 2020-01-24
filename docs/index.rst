@@ -100,8 +100,36 @@ Getting Started
 
 Installation
 ------------
-For the application of the Spreadsheet Energy System Model Generator Python (version >= 3.5) 
-is required. This can be downloaded `here <https://www.python.org/downloads/>`_ free of charge and installed on your PC (Windows, Linux, Mac).
+
+1. For the application of the Spreadsheet Energy System Model Generator Python (version >= 3.5) 
+is required. This can be downloaded `here <https://www.python.org/downloads/>`_ free of charge 
+and installed on your PC (Windows, Linux, Mac).
+
+2. Download the program files from `GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>`_ 
+as .zip folder
+
+3. Extract the .zip folder in any directory on your computer
+
+Using the Spreadsheets
+----------------------
+
+timesystem sheet
+^^^^^^^^^^^^^^^^
++-----------+---------+-----------+
+| column    |  explanation      |  example        |
++-----------+---------+-----------+
+| start date|     rr    |  rr         |
++-----------+---------+-----------+
+| end date	|       rr  |   rr        |
++-----------+---------+-----------+
+| temporal resolution	|  rr       |   rr        |
++-----------+---------+-----------+
+| time zone	|       rr  |    rr       |
++-----------+---------+-----------+
+| periods	|     rr    |   rr        |
++-----------+---------+-----------+
+
+
 
 
 General Information
