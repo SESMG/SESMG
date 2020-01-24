@@ -12,6 +12,9 @@ Welcome to Spreadsheet Energy System Model Generator's documentation!
 
 About the Model Generator
 =========================
+The Spreadsheet Energy System Model Generator allows the modeling and optimization of energy systems without the need for programming skills. 
+The components defined in this spreadsheet are defined with the included Python program and the open source Python library "oemof", assembled 
+to an energy system and optimized with the open source solver "cbc".
 
 Test
 
@@ -21,6 +24,14 @@ Getting Started
 Installation
 ------------
 
+Open Energy Model Framework (oemof)
+-----------------------------------
+The "Open Energy Modeling Framework" (oemof) is an energy system modelling framework for the analysis of energy supply systems. It is carried out 
+as open source python library and contains several sub-libraries, which are structured into four layers.
+
+... image:: images/oemof_structure.png
+  :width: 400
+  :alt: Test
 
 
 General Information
