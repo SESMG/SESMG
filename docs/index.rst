@@ -29,7 +29,7 @@ Open Energy Model Framework (oemof)
 The "Open Energy Modeling Framework" (oemof) is an energy system modelling framework for the analysis of energy supply systems. It is carried out 
 as open source python library and contains several sub-libraries, which are structured into four layers.
 
-... image:: images/oemof_structure.png
+.. image:: images/oemof_structure.png
   :width: 400
   :alt: Test
 
