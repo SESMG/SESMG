@@ -10,7 +10,7 @@ Welcome to Spreadsheet Energy System Model Generator's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-$project
+project
 ========
 
 Test
