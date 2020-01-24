@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Functions for the creation of an oemof energy system.
+Functions for creating an oemof energy system.
 
 ---
 
-@ Christian Klemm - christian.klemm@fh-muenster.de, 14.01.2020
+@ Christian Klemm - christian.klemm@fh-muenster.de, 21.01.2020
 """
 
 def import_scenario(filepath):
-    """Imports data from a spreadsheet scenario file. The excel sheet has to contain
-    the following sheets:
+    """Imports data from a spreadsheet scenario file. The excel sheet has to 
+    contain the following sheets:
         - timesystem
         - buses
         - transformers
@@ -53,7 +53,7 @@ def import_scenario(filepath):
                       'transformers': xls.parse('transformers'),
                       'demand': xls.parse('sinks'),
                       'storages': xls.parse('storages'),
-                      'powerlines': xls.parse('powerlines'),
+                      'links': xls.parse('links'),
                       'timeseries': xls.parse('time_series'),               
                       'timesystem': xls.parse('timesystem'),
                       'sources': xls.parse('sources')}
@@ -78,8 +78,14 @@ def import_scenario(filepath):
     
     
     
-def define_energy_system(filepath,sheet, nodes_data):
-    """Creates 
+def define_energy_system(filepath, nodes_data):
+    """Creates an energy system with the parameters defined in the given .xlsx-
+    file. The file has to contain a sheet called "timesystem", which must have 
+    the following structure:
+        
+    |start_date         |end_date           |holidays|temporal resolution|
+    |-------------------|-------------------|--------|-------------------|
+    |YYYY-MM-DD hh:mm:ss|YYYY-MM-DD hh:mm:ss|        |h                  |
 
     ----    
         
@@ -99,7 +105,7 @@ def define_energy_system(filepath,sheet, nodes_data):
 
     ----
     
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 14.01.2020
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 21.01.2020
 
     """
     
@@ -110,20 +116,15 @@ def define_energy_system(filepath,sheet, nodes_data):
     from oemof import solph
     import pandas as pd
     
-    def read_excel_cell(file, sheet, column):
-        """
-        Reads the first value of a specific column from a given excel sheet
-        @Christian Klemm
-        """
-        df = pd.read_excel(file, sheet_name = sheet, usecols = column)
-        value=df.at[df.index[0],df.columns[0]]
-        return value
+    nd=nodes_data
     
-    #read start and end date from excel sheet //code should be optimated
-    start_date = read_excel_cell(filepath, sheet = sheet, column = [0])
-    end_date = read_excel_cell(filepath, sheet = sheet, column = [1])
-    temp_resolution = read_excel_cell(filepath, sheet = sheet, column = [3])
+    #read start and end date from excel sheet 
+    for j, ts in nd['timesystem'].iterrows():
+        start_date = ts['start date']
+        end_date = ts['end date']
+        temp_resolution = ts['temporal resolution']
     
+    # create time index
     datetime_index = pd.date_range(start_date, end_date, freq=temp_resolution)
     
     # initialisation of the energy system
@@ -132,10 +133,13 @@ def define_energy_system(filepath,sheet, nodes_data):
     # set datetime index
     nodes_data['timeseries'].set_index('timestamp', inplace=True)
     nodes_data['timeseries'].index = pd.to_datetime(nodes_data['timeseries'].index)
- #   print('Data from Excel file {} imported.'.format(filename))
+ #   logging.info('Data from Excel file {} imported.'.format(filename))
 
-    logging.info('Date time index successfully defined:\n start:        '+str(start_date)+
-                                                     ',\n end:          '+str(end_date)+
-                                                     ',\n resolution:   '+str(temp_resolution))
+    logging.info('Date time index successfully defined:\n start date:         '
+                 +str(start_date)
+                 +',\n end date:           '
+                 +str(end_date)
+                 +',\n temporal resolution:'
+                 +str(temp_resolution))
     
     return esys

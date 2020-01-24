@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Spreadsheat-Energy-System-Model-Generator Version 0.0.2 (Developing Version)
+Spreadsheat-Energy-System-Model-Generator (development version)
 
 creates an energy system from a given spreadsheet data file, solves it for the
 purpose of least cost optimization, and plots results.
 
-The scenario xlsx-file must contain the following elements:
+The scenario.xlsx-file must contain the following elements:
     
 sheet        | columns
 -------------------------------------------------------------------------------
-timesystem   | start_date, end_date, holidays, temporal resolution
+timesystem   | start_date, end_date, holidays, temporal resolution, timezone
 
 buses        | label, active, excess, shortage, shortage costs [CU/kWh], 
                excess costs [CU/kWh]
@@ -25,7 +25,7 @@ sources      | label, active, output, technology, variable costs [CU/kWh],
                technology database (PV ONLY), inverter database (PV ONLY),
                Modul Model (PV ONLY), Inverter Model (PV ONLY), 
                reference value [kW], Azimuth (PV ONL>), Surface Tilt (PV ONLY),
-               Albedo (PV ONLY), Altitude (PV ONLY), Latitude (PV ONL>), 
+               Albedo (PV ONLY), Altitude (PV ONLY), Latitude (PV ONLY), 
                Longitude (PV ONLY)
                
 transformers | label, active, transformer type, input, output, output2, 
@@ -48,108 +48,88 @@ powerlines   | label, active, bus_1, bus_2, (un)directed, efficiency,
                
 time_series  | timestamp, timeseries for components with fixed input or output
 
-weather_data | dates(untitled), dhi, dirhi, pressure, temp_air, v_wind, z0
+weather_data | dates(untitled), dhi, dirhi, pressure, temp_air, windspeed, z0
 -------------------------------------------------------------------------------
 
-@author: Christian Klemm - christian.klemm@fh-muenster.de, 10.01.2020
+@author: Christian Klemm - christian.klemm@fh-muenster.de, 21.01.2020
 """
 
 import logging
 from oemof.tools import logger
 import os
 
+# IMPORT CUSTOM MODULES
 from program_files import create_objects, create_results, create_energy_system
 from program_files import optimize_model
 
 
 
-# DEFINES THE PATH OF REQUIRED DATA FILES
-scenario_file = os.path.join(os.path.dirname(__file__)+'/data', 
-                             'scenario.xlsx')
-weather_file = os.path.join(os.path.dirname(__file__)+'/data', 
-                            'weather_data.csv')
-weather_richardson = os.path.join(os.path.dirname(__file__)+'/data', 
-                            'weather.csv')
-temperature_file = os.path.join(os.path.dirname(__file__)+'/data', 
-                                'temperature.csv')
-result_path = os.path.join(os.path.dirname(__file__)+'/results')
+# DEFINES PATH OF INPUT DATA
+scenario_file = os.path.join(os.path.dirname(__file__)+'/data','scenario.xlsx')
 
+# DEFINES PATH OF OUTPUR DATA
+result_path = os.path.join(os.path.dirname(__file__)+'/results')
 
 # DEFINES A LOGGING FILE
 log_path = os.path.join(os.path.dirname(__file__)+'/logs')
 logger.define_logging(logpath=log_path)
 
-
-#IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
+# IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
 nodes_data = create_energy_system.import_scenario(filepath = scenario_file)
-
 
 # CREATES AN ENERGYSYSTEM AS DEFINED IN THE SCENARIO FILE
 esys = create_energy_system.define_energy_system(filepath = scenario_file,
-                            sheet = 'timesystem', 
-                            nodes_data = nodes_data)
-
+                                                 nodes_data = nodes_data)
 
 # CREATES THE LIST OF COMPONENTS
 nodes = []
 
-
 # CREATES BUS OBJECTS, EXCESS SINKS, AND SHORTAGE SOURCES AS DEFINED IN THE 
 # SCENARIO FILE AND ADDS THEM TO THE lIST OF COMPONENTS
 busd = create_objects.buses(nodes_data = nodes_data,
-                          nodes = nodes)
-
+                            nodes = nodes)
 
 # CREATES SOURCE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
 # THE lIST OF COMPONENTS
 create_objects.sources(nodes_data = nodes_data,
-                      nodes = nodes,
-                      bus = busd, 
-                      weather_data = weather_file)
-
+                       nodes = nodes,
+                       bus = busd, 
+                       filepath = scenario_file)
 
 # CREATES SINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
 # THE lIST OF COMPONENTS
-create_objects.sinks(filename = scenario_file,
-                    nodes_data = nodes_data,
-                    bus = busd, 
-                    nodes = nodes, 
-                    temperature_data = temperature_file,
-                    weather_richardson = weather_richardson)
-
+create_objects.sinks(nodes_data = nodes_data,
+                     bus = busd, 
+                     nodes = nodes,
+                     filepath = scenario_file)
 
 # CREATES TRANSFORMER OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
 # THE lIST OF COMPONENTS
 create_objects.transformers(nodes_data = nodes_data,
-                           bus = busd,
-                           nodes = nodes)
-
+                            bus = busd,
+                            nodes = nodes)
 
 # CREATES STORAGE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
 # THE lIST OF COMPONENTS
 create_objects.storages(nodes_data = nodes_data,
-                       bus = busd,
-                       nodes = nodes)
-
+                        bus = busd,
+                        nodes = nodes)
 
 # CREATES LINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
 # THE lIST OF COMPONENTS
 create_objects.links(nodes_data = nodes_data,
-                    bus = busd,
-                    nodes = nodes)
-
+                     bus = busd,
+                     nodes = nodes)
 
 # ADDS THE COMPONENTS TO THE ENERGYSYSTEM
 my_nodes = nodes
 esys.add(*my_nodes)
 
-
 # OPTIMIZES THE ENERGYSYSTEM AND RETURNS THE OPTIMIZED ENERGY SYSTEM
 om = optimize_model.least_cost_model(nodes_data = nodes_data,
                                      energy_system = esys)
 
-
-# SHOWS AND SAVES RESULTS OF THE OPTIMIZED MODEL
+# SHOWS AND SAVES RESULTS OF THE OPTIMIZED MODEL / POST-PROCESSING
 create_results.xlsx(nodes_data = nodes_data, 
                     optimization_model = om, 
                     energy_system = esys,
@@ -159,6 +139,6 @@ create_results.costs(nodes_data = nodes_data,
                      optimization_model = om, 
                      energy_system = esys)
 
-logging.info("Done!")
+logging.info('   '+'Modelling and optimization successfully completed!')
 
 

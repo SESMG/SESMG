@@ -1,0 +1,225 @@
+******************************************************
+2020-01-17 10:04:48,229 - INFO - logger - Path for logging: C:/Users/klemm/Documents/Python Scripts/Spreadsheet_Energy_System_Model_Generator_0.0.2/logs\oemof.log
+2020-01-17 10:04:48,229 - INFO - logger - Used oemof version: 0.3.2
+2020-01-17 10:04:58,534 - INFO - create_energy_system - Date time index successfully defined:
+ start:        2012-01-01 00:00:00,
+ end:          2012-01-01 23:00:00,
+ resolution:   H
+2020-01-17 10:04:58,538 - INFO - create_objects - Bus created: district_electricity_bus
+2020-01-17 10:04:58,542 - INFO - create_objects - Bus created: sdb001_heat_bus
+2020-01-17 10:04:58,542 - INFO - create_objects - Bus created: sdb001_electricity_bus
+2020-01-17 10:04:58,542 - INFO - create_objects - Bus created: sdb001_gas_bus
+2020-01-17 10:04:58,546 - INFO - create_objects - Bus created: sdb002_heat_bus
+2020-01-17 10:04:58,546 - INFO - create_objects - Bus created: sdb002_electricity_bus
+2020-01-17 10:04:58,546 - INFO - create_objects - Bus created: sdb002_gas_bus
+2020-01-17 10:04:58,550 - INFO - create_objects - Bus created: sdb003_heat_bus
+2020-01-17 10:04:58,550 - INFO - create_objects - Bus created: sdb003_electricity_bus
+2020-01-17 10:04:58,550 - INFO - create_objects - Bus created: sdb003_gas_bus
+2020-01-17 10:04:58,554 - INFO - create_objects - Bus created: mfb001_heat_bus
+2020-01-17 10:04:58,554 - INFO - create_objects - Bus created: mfb001_electricity_bus
+2020-01-17 10:04:58,554 - INFO - create_objects - Bus created: mfb001_gas_bus
+2020-01-17 10:04:58,558 - INFO - create_objects - Bus created: mfb002_heat_bus
+2020-01-17 10:04:58,558 - INFO - create_objects - Bus created: mfb002_electricity_bus
+2020-01-17 10:04:58,562 - INFO - create_objects - Bus created: mfb002_gas_bus
+2020-01-17 10:04:58,562 - INFO - create_objects - Bus created: cb001_heat_bus
+2020-01-17 10:04:58,562 - INFO - create_objects - Bus created: cb001_electricity_bus
+2020-01-17 10:04:58,566 - INFO - create_objects - Bus created: cb001_pv_bus
+2020-01-17 10:04:58,566 - INFO - create_objects - Bus created: cb001_gas_bus
+2020-01-17 10:04:58,566 - INFO - create_objects - Bus created: stl_electricity_bus
+2020-01-17 10:04:58,570 - INFO - create_objects - Bus created: stadtwerke_districtheat_bus
+2020-01-17 10:04:58,570 - INFO - create_objects - Bus created: input_districtheat_bus
+2020-01-17 10:04:58,570 - INFO - create_objects - Bus created: output_districtheat_bus
+2020-01-17 10:04:58,574 - INFO - create_objects - Bus created: sdb001_pv_bus
+2020-01-17 10:04:58,574 - INFO - create_objects - Bus created: sdb002_pv_bus
+2020-01-17 10:04:58,578 - INFO - create_objects - Bus created: sdb003_pv_bus
+2020-01-17 10:04:58,578 - INFO - create_objects - Bus created: mfb001_pv_bus
+2020-01-17 10:04:58,578 - INFO - create_objects - Bus created: mfb002_pv_bus
+2020-01-17 10:04:58,582 - INFO - create_objects - Bus created: g001_pv_bus
+2020-01-17 10:04:58,582 - INFO - create_objects - Bus created: g002_pv_bus
+******************************************************
+2020-01-17 10:15:13,379 - INFO - logger - Path for logging: C:/Users/klemm/Documents/Python Scripts/Spreadsheet_Energy_System_Model_Generator_0.0.2/logs\oemof.log
+2020-01-17 10:15:13,379 - INFO - logger - Used oemof version: 0.3.2
+2020-01-17 10:15:21,948 - INFO - create_energy_system - Date time index successfully defined:
+ start:        2012-01-01 00:00:00,
+ end:          2012-01-01 23:00:00,
+ resolution:   H
+2020-01-17 10:15:21,948 - INFO - create_objects - Bus created: district_electricity_bus
+2020-01-17 10:15:21,952 - INFO - create_objects - Bus created: sdb001_heat_bus
+2020-01-17 10:15:21,952 - INFO - create_objects - Bus created: sdb001_electricity_bus
+2020-01-17 10:15:21,956 - INFO - create_objects - Bus created: sdb001_gas_bus
+2020-01-17 10:15:21,956 - INFO - create_objects - Bus created: sdb002_heat_bus
+2020-01-17 10:15:21,956 - INFO - create_objects - Bus created: sdb002_electricity_bus
+2020-01-17 10:15:21,956 - INFO - create_objects - Bus created: sdb002_gas_bus
+2020-01-17 10:15:21,960 - INFO - create_objects - Bus created: sdb003_heat_bus
+2020-01-17 10:15:21,960 - INFO - create_objects - Bus created: sdb003_electricity_bus
+2020-01-17 10:15:21,960 - INFO - create_objects - Bus created: sdb003_gas_bus
+2020-01-17 10:15:21,964 - INFO - create_objects - Bus created: mfb001_heat_bus
+2020-01-17 10:15:21,964 - INFO - create_objects - Bus created: mfb001_electricity_bus
+2020-01-17 10:15:21,968 - INFO - create_objects - Bus created: mfb001_gas_bus
+2020-01-17 10:15:21,968 - INFO - create_objects - Bus created: mfb002_heat_bus
+2020-01-17 10:15:21,968 - INFO - create_objects - Bus created: mfb002_electricity_bus
+2020-01-17 10:15:21,972 - INFO - create_objects - Bus created: mfb002_gas_bus
+2020-01-17 10:15:21,972 - INFO - create_objects - Bus created: cb001_heat_bus
+2020-01-17 10:15:21,972 - INFO - create_objects - Bus created: cb001_electricity_bus
+2020-01-17 10:15:21,976 - INFO - create_objects - Bus created: cb001_pv_bus
+2020-01-17 10:15:21,976 - INFO - create_objects - Bus created: cb001_gas_bus
+2020-01-17 10:15:21,980 - INFO - create_objects - Bus created: stl_electricity_bus
+2020-01-17 10:15:21,980 - INFO - create_objects - Bus created: stadtwerke_districtheat_bus
+2020-01-17 10:15:21,980 - INFO - create_objects - Bus created: input_districtheat_bus
+2020-01-17 10:15:21,980 - INFO - create_objects - Bus created: output_districtheat_bus
+2020-01-17 10:15:21,984 - INFO - create_objects - Bus created: sdb001_pv_bus
+2020-01-17 10:15:21,984 - INFO - create_objects - Bus created: sdb002_pv_bus
+2020-01-17 10:15:21,984 - INFO - create_objects - Bus created: sdb003_pv_bus
+2020-01-17 10:15:21,988 - INFO - create_objects - Bus created: mfb001_pv_bus
+2020-01-17 10:15:21,988 - INFO - create_objects - Bus created: mfb002_pv_bus
+2020-01-17 10:15:21,992 - INFO - create_objects - Bus created: g001_pv_bus
+2020-01-17 10:15:21,992 - INFO - create_objects - Bus created: g002_pv_bus
+******************************************************
+2020-01-17 11:24:02,713 - INFO - logger - Path for logging: C:/Users/klemm/Documents/Python Scripts/Spreadsheet_Energy_System_Model_Generator_0.0.2/logs\oemof.log
+2020-01-17 11:24:02,713 - INFO - logger - Used oemof version: 0.3.2
+2020-01-17 11:24:10,393 - INFO - create_energy_system - Date time index successfully defined:
+ start:        2012-01-01 00:00:00,
+ end:          2012-01-01 23:00:00,
+ resolution:   H
+2020-01-17 11:24:10,393 - INFO - create_objects - Bus created: district_electricity_bus
+2020-01-17 11:24:10,393 - INFO - create_objects - Bus created: sdb001_heat_bus
+2020-01-17 11:24:10,397 - INFO - create_objects - Bus created: sdb001_electricity_bus
+2020-01-17 11:24:10,397 - INFO - create_objects - Bus created: sdb001_gas_bus
+2020-01-17 11:24:10,397 - INFO - create_objects - Bus created: sdb002_heat_bus
+2020-01-17 11:24:10,401 - INFO - create_objects - Bus created: sdb002_electricity_bus
+2020-01-17 11:24:10,401 - INFO - create_objects - Bus created: sdb002_gas_bus
+2020-01-17 11:24:10,401 - INFO - create_objects - Bus created: sdb003_heat_bus
+2020-01-17 11:24:10,405 - INFO - create_objects - Bus created: sdb003_electricity_bus
+2020-01-17 11:24:10,405 - INFO - create_objects - Bus created: sdb003_gas_bus
+2020-01-17 11:24:10,405 - INFO - create_objects - Bus created: mfb001_heat_bus
+2020-01-17 11:24:10,409 - INFO - create_objects - Bus created: mfb001_electricity_bus
+2020-01-17 11:24:10,409 - INFO - create_objects - Bus created: mfb001_gas_bus
+2020-01-17 11:24:10,413 - INFO - create_objects - Bus created: mfb002_heat_bus
+2020-01-17 11:24:10,413 - INFO - create_objects - Bus created: mfb002_electricity_bus
+2020-01-17 11:24:10,413 - INFO - create_objects - Bus created: mfb002_gas_bus
+2020-01-17 11:24:10,417 - INFO - create_objects - Bus created: cb001_heat_bus
+2020-01-17 11:24:10,417 - INFO - create_objects - Bus created: cb001_electricity_bus
+2020-01-17 11:24:10,417 - INFO - create_objects - Bus created: cb001_pv_bus
+2020-01-17 11:24:10,421 - INFO - create_objects - Bus created: cb001_gas_bus
+2020-01-17 11:24:10,421 - INFO - create_objects - Bus created: stl_electricity_bus
+2020-01-17 11:24:10,421 - INFO - create_objects - Bus created: stadtwerke_districtheat_bus
+2020-01-17 11:24:10,425 - INFO - create_objects - Bus created: input_districtheat_bus
+2020-01-17 11:24:10,425 - INFO - create_objects - Bus created: output_districtheat_bus
+2020-01-17 11:24:10,425 - INFO - create_objects - Bus created: sdb001_pv_bus
+2020-01-17 11:24:10,429 - INFO - create_objects - Bus created: sdb002_pv_bus
+2020-01-17 11:24:10,429 - INFO - create_objects - Bus created: sdb003_pv_bus
+2020-01-17 11:24:10,429 - INFO - create_objects - Bus created: mfb001_pv_bus
+2020-01-17 11:24:10,433 - INFO - create_objects - Bus created: mfb002_pv_bus
+2020-01-17 11:24:10,433 - INFO - create_objects - Bus created: g001_pv_bus
+2020-01-17 11:24:10,433 - INFO - create_objects - Bus created: g002_pv_bus
+2020-01-17 11:24:11,519 - INFO - create_objects - Source created: cb001_pv001_source
+2020-01-17 11:24:12,534 - INFO - create_objects - Source created: cb001_pv002_source
+2020-01-17 11:24:13,532 - INFO - create_objects - Source created: sdb001_pv001_source
+2020-01-17 11:24:14,511 - INFO - create_objects - Source created: sdb001_pv002_source
+2020-01-17 11:24:15,489 - INFO - create_objects - Source created: sdb002_pv001_source
+2020-01-17 11:24:16,620 - INFO - create_objects - Source created: sdb002_pv002_source
+2020-01-17 11:24:17,634 - INFO - create_objects - Source created: sdb003_pv001_source
+2020-01-17 11:24:18,637 - INFO - create_objects - Source created: mfb001_pv001_source
+2020-01-17 11:24:19,744 - INFO - create_objects - Source created: mfb002_pv001_source
+2020-01-17 11:24:21,002 - INFO - create_objects - Source created: g001_pv001_source
+2020-01-17 11:24:22,025 - INFO - create_objects - Source created: g002_pv001_source
+2020-01-17 11:24:24,504 - INFO - create_objects - Sink created: sdb001_electricity_demand
+2020-01-17 11:24:24,594 - INFO - create_objects - Sink created: sdb001_heat_demand
+2020-01-17 11:24:26,895 - INFO - create_objects - Sink created: sdb002_electricity_demand
+2020-01-17 11:24:26,962 - INFO - create_objects - Sink created: sdb002_heat_demand
+2020-01-17 11:24:29,266 - INFO - create_objects - Sink created: sdb003_electricity_demand
+2020-01-17 11:24:29,350 - INFO - create_objects - Sink created: sdb003_heat_demand
+2020-01-17 11:24:31,607 - INFO - create_objects - Sink created: mfb001_electricity_demand
+2020-01-17 11:24:31,675 - INFO - create_objects - Sink created: mfb001_heat_demand
+2020-01-17 11:24:33,999 - INFO - create_objects - Sink created: mfb002_electricity_demand
+2020-01-17 11:24:34,074 - INFO - create_objects - Sink created: mfb002_heat_demand
+2020-01-17 11:24:36,351 - INFO - create_objects - Sink created: cb001_electricity_demand
+2020-01-17 11:24:36,419 - INFO - create_objects - Sink created: cb001_heat_demand
+2020-01-17 11:24:36,423 - INFO - create_objects - Sink created: TL_electricity_demand
+2020-01-17 11:24:36,423 - INFO - create_objects - Sink created: SL_electricity_demand
+2020-01-17 11:24:36,427 - INFO - create_objects - Transformer created: sdb001_gasheating_transformer
+2020-01-17 11:24:36,427 - INFO - create_objects - Transformer created: sdb002_gasheating_transformer
+2020-01-17 11:24:36,427 - INFO - create_objects - Transformer created: sdb003_gasheating_transformer
+2020-01-17 11:24:36,431 - INFO - create_objects - Transformer created: mfb001_gasheating_transformer
+2020-01-17 11:24:36,431 - INFO - create_objects - Transformer created: mfb002_gasheating_transformer
+2020-01-17 11:24:36,431 - INFO - create_objects - Transformer created: cb001_gasheating_transformer
+2020-01-17 11:24:36,435 - INFO - create_objects - Transformer created: sdb001_heatexchanger_transformer
+2020-01-17 11:24:36,435 - INFO - create_objects - Transformer created: sdb002_heatexchanger_transformer
+2020-01-17 11:24:36,439 - INFO - create_objects - Transformer created: sdb003_heatexchanger_transformer
+2020-01-17 11:24:36,439 - INFO - create_objects - Transformer created: mfb001_heatexchanger_transformer
+2020-01-17 11:24:36,439 - INFO - create_objects - Transformer created: mfb002_heatexchanger_transformer
+2020-01-17 11:24:36,443 - INFO - create_objects - Transformer created: cb001_heatexchanger_transformer
+2020-01-17 11:24:36,443 - INFO - create_objects - Storage created: sdb001_battery_storage
+2020-01-17 11:24:36,443 - INFO - create_objects - Storage created: sdb002_battery_storage
+2020-01-17 11:24:36,447 - INFO - create_objects - Storage created: sdb003_battery_storage
+2020-01-17 11:24:36,447 - INFO - create_objects - Storage created: mfb001_battery_storage
+2020-01-17 11:24:36,451 - INFO - create_objects - Storage created: mfb002_battery_storage
+2020-01-17 11:24:36,451 - INFO - create_objects - Storage created: cb001_battery_storage
+2020-01-17 11:24:36,451 - INFO - create_objects - Powerline created: sdb001_district_electricity_powerline
+2020-01-17 11:24:36,455 - INFO - create_objects - Powerline created: sdb002_district_electricity_powerline
+2020-01-17 11:24:36,455 - INFO - create_objects - Powerline created: sdb003_district_electricity_powerline
+2020-01-17 11:24:36,455 - INFO - create_objects - Powerline created: mfb001_district_electricity_powerline
+2020-01-17 11:24:36,459 - INFO - create_objects - Powerline created: mfb002_district_electricity_powerline
+2020-01-17 11:24:36,459 - INFO - create_objects - Powerline created: cb001_district_electricity_powerline
+2020-01-17 11:24:36,459 - INFO - create_objects - Powerline created: cb001pv_cb001_electricity_powerline
+2020-01-17 11:24:36,463 - INFO - create_objects - Powerline created: cb001pv_district_electricity_powerline
+2020-01-17 11:24:36,463 - INFO - create_objects - Powerline created: sw_district_districtheat_powerline
+2020-01-17 11:24:36,467 - INFO - create_objects - Powerline created: input_output_districtheat_powerline
+2020-01-17 11:24:36,467 - INFO - create_objects - Powerline created: sdb001pv_sdb001_electricity_powerline
+2020-01-17 11:24:36,467 - INFO - create_objects - Powerline created: sdb001pv_district_electricity_powerline
+2020-01-17 11:24:36,471 - INFO - create_objects - Powerline created: sdb002pv_sdb002_electricity_powerline
+2020-01-17 11:24:36,471 - INFO - create_objects - Powerline created: sdb002pv_district_electricity_powerline
+2020-01-17 11:24:36,471 - INFO - create_objects - Powerline created: sdb003pv_sdb003_electricity_powerline
+2020-01-17 11:24:36,475 - INFO - create_objects - Powerline created: sdb003pv_district_electricity_powerline
+2020-01-17 11:24:36,475 - INFO - create_objects - Powerline created: mfb001pv_mfb001_electricity_powerline
+2020-01-17 11:24:36,475 - INFO - create_objects - Powerline created: mfb001pv_district_electricity_powerline
+2020-01-17 11:24:36,479 - INFO - create_objects - Powerline created: mfb002pv_sdb002_electricity_powerline
+2020-01-17 11:24:36,479 - INFO - create_objects - Powerline created: mfb002pv_district_electricity_powerline
+2020-01-17 11:24:36,479 - INFO - create_objects - Powerline created: g001pv_district_electricity_powerline
+2020-01-17 11:24:36,483 - INFO - create_objects - Powerline created: g002pv_district_electricity_powerline
+2020-01-17 11:24:36,483 - INFO - optimize_model - Starting Optimization...
+2020-01-17 11:24:37,558 - WARNING - block - Reassigning the non-component attribute dual
+on block (model).Model with a new Component
+with type <class 'pyomo.core.base.suffix.Suffix'>.
+This is usually indicative of a modelling error.
+To avoid this warning, explicitly delete the attribute:
+    del Model.dual
+2020-01-17 11:24:37,562 - WARNING - block - Reassigning the non-component attribute rc
+on block (model).Model with a new Component
+with type <class 'pyomo.core.base.suffix.Suffix'>.
+This is usually indicative of a modelling error.
+To avoid this warning, explicitly delete the attribute:
+    del Model.rc
+2020-01-17 11:24:38,147 - INFO - models - Optimization successful...
+2020-01-17 11:24:39,104 - INFO - create_results - Results saved as xlsx for district_electricity_bus
+2020-01-17 11:24:39,150 - INFO - create_results - Results saved as xlsx for sdb001_heat_bus
+2020-01-17 11:24:39,194 - INFO - create_results - Results saved as xlsx for sdb001_electricity_bus
+2020-01-17 11:24:39,234 - INFO - create_results - Results saved as xlsx for sdb001_gas_bus
+2020-01-17 11:24:39,278 - INFO - create_results - Results saved as xlsx for sdb002_heat_bus
+2020-01-17 11:24:39,319 - INFO - create_results - Results saved as xlsx for sdb002_electricity_bus
+2020-01-17 11:24:39,363 - INFO - create_results - Results saved as xlsx for sdb002_gas_bus
+2020-01-17 11:24:39,407 - INFO - create_results - Results saved as xlsx for sdb003_heat_bus
+2020-01-17 11:24:39,447 - INFO - create_results - Results saved as xlsx for sdb003_electricity_bus
+2020-01-17 11:24:39,495 - INFO - create_results - Results saved as xlsx for sdb003_gas_bus
+2020-01-17 11:24:39,543 - INFO - create_results - Results saved as xlsx for mfb001_heat_bus
+2020-01-17 11:24:39,595 - INFO - create_results - Results saved as xlsx for mfb001_electricity_bus
+2020-01-17 11:24:39,639 - INFO - create_results - Results saved as xlsx for mfb001_gas_bus
+2020-01-17 11:24:39,691 - INFO - create_results - Results saved as xlsx for mfb002_heat_bus
+2020-01-17 11:24:39,743 - INFO - create_results - Results saved as xlsx for mfb002_electricity_bus
+2020-01-17 11:24:39,794 - INFO - create_results - Results saved as xlsx for mfb002_gas_bus
+2020-01-17 11:24:39,846 - INFO - create_results - Results saved as xlsx for cb001_heat_bus
+2020-01-17 11:24:39,902 - INFO - create_results - Results saved as xlsx for cb001_electricity_bus
+2020-01-17 11:24:39,958 - INFO - create_results - Results saved as xlsx for cb001_pv_bus
+2020-01-17 11:24:40,006 - INFO - create_results - Results saved as xlsx for cb001_gas_bus
+2020-01-17 11:24:40,046 - INFO - create_results - Results saved as xlsx for stl_electricity_bus
+2020-01-17 11:24:40,090 - INFO - create_results - Results saved as xlsx for stadtwerke_districtheat_bus
+2020-01-17 11:24:40,130 - INFO - create_results - Results saved as xlsx for input_districtheat_bus
+2020-01-17 11:24:40,174 - INFO - create_results - Results saved as xlsx for output_districtheat_bus
+2020-01-17 11:24:40,222 - INFO - create_results - Results saved as xlsx for sdb001_pv_bus
+2020-01-17 11:24:40,278 - INFO - create_results - Results saved as xlsx for sdb002_pv_bus
+2020-01-17 11:24:40,326 - INFO - create_results - Results saved as xlsx for sdb003_pv_bus
+2020-01-17 11:24:40,378 - INFO - create_results - Results saved as xlsx for mfb001_pv_bus
+2020-01-17 11:24:40,430 - INFO - create_results - Results saved as xlsx for mfb002_pv_bus
+2020-01-17 11:24:40,478 - INFO - create_results - Results saved as xlsx for g001_pv_bus
+2020-01-17 11:24:40,519 - INFO - create_results - Results saved as xlsx for g002_pv_bus
+2020-01-17 11:24:41,626 - INFO - Spreadsheet_Energy_System_Model_Generator - Done!
