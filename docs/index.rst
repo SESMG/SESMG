@@ -36,7 +36,7 @@ of the energy flow indicates which amount of energy is transported between the i
 Busses furthermore form connection points of an energy system. The graph of a simple energy system consisting of each one source, one transformer, one sink, as well as 
 two buses, could look like the example displayed in the following figure.
 
-.. image:: images/oemof_structure
+.. image:: images/simple_energy_system.png
   :width: 600
   
 An oemof energy system must be in equilibrium at all times. Therefore sources must always provide exactly as much energy as the sinks and transformer losses consume. 
