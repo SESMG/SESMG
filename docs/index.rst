@@ -10,40 +10,35 @@ Welcome to Spreadsheet Energy System Model Generator's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-project
-========
+About the Model Generator
+=========================
 
 Test
 
-Features
---------
-
-Test
+Getting Started
+===============
 
 Installation
 ------------
 
-Install $project by running:
 
-Test
 
-Contribute
-----------
-
-Testt
-
-Support
--------
-
-Test
+General Information
+===================
 
 License
 -------
 
-Test
+Contact
+-------
+Christian Klemm
+Münster University of Applied Sciences
+christian.klemm@fh-muenster.de
 
 
-
+Acknowledgements
+================
+The authors thank the German Federal Ministry of Education (BMBF) for funding the R2Q project within grant 033W102A-K.
 
 Indices and tables
 ==================
