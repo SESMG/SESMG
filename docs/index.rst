@@ -101,7 +101,7 @@ Getting Started
 Installation
 ------------
 For the application of the Spreadsheet Energy System Model Generator Python (version >= 3.5) 
-is required. This can be downloaded here [here](#https://www.python.org/downloads/) free of charge and installed on your PC (Windows, Linux, Mac).
+is required. This can be downloaded `here <https://www.python.org/downloads/>`_ free of charge and installed on your PC (Windows, Linux, Mac).
 
 
 General Information
