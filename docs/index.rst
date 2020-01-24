@@ -32,12 +32,15 @@ License
 Contact
 -------
 Christian Klemm
+
 Münster University of Applied Sciences
+
 christian.klemm@fh-muenster.de
 
 
 Acknowledgements
-================
+----------------
+
 The authors thank the German Federal Ministry of Education (BMBF) for funding the R2Q project within grant 033W102A-K.
 
 Indices and tables
