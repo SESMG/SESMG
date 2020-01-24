@@ -93,7 +93,7 @@ time horizon. If the time horizon is one year, the periodical costs correspond t
 
 Richardson Tool
 ^^^^^^^^^^^^^^^
-
+.
 
 Getting Started
 ===============
