@@ -72,38 +72,62 @@ on German standard load profiles (SLP). The following electric SLPs are availabl
 | Profil | Consumer Group                                    |
 +========+===================================================+
 |   H0   | households                                        |
++--------+---------------------------------------------------+
 |   G0   | commercial general                                |
++--------+---------------------------------------------------+
 |   G1   | commercial on weeks 8-18 h                        |
++--------+---------------------------------------------------+
 |   G2   | commercial with strong consumption in the evening |
++--------+---------------------------------------------------+
 |   G3   | commercial continuous                             |
++--------+---------------------------------------------------+
 |   G4   | shop/hairdresser                                  |
++--------+---------------------------------------------------+
 |   G5   | bakery                                            |
++--------+---------------------------------------------------+
 |   G6   | weekend operation                                 |
++--------+---------------------------------------------------+
 |   L0   | agriculture general                               |
++--------+---------------------------------------------------+
 |   L1   | agriculture with dairy industry/animal breeding   |
++--------+---------------------------------------------------+
 |   L2   | other agriculture                                 |
 +--------+---------------------------------------------------+
 
 The following heat SLPs are available:
 
 .. table:: heat standard load profiles
-
-| Profile | House Type                                                   |
-| :-----: | ------------------------------------------------------------ |
-| EFH     | single family house                                          |
-| MFH     | multi family house                                           |
-| GMK     | metal and automotive                                         |
-| GHA     | retail and wholesale                                         |
++---------+----------------------------------------------------------------+
+| Profile | House Type                                                     |
++=========+================================================================+
+| EFH     | single family house                                            |
++---------+----------------------------------------------------------------+
+| MFH     | multi family house                                             |
++---------+----------------------------------------------------------------+
+| GMK     | metal and automotive                                           |
++---------+----------------------------------------------------------------+
+| GHA     | retail and wholesale                                           |
++---------+----------------------------------------------------------------+
 | GKO     | Local authorities, credit institutions and insurance companies |
-| GBD     | other operational services                                   |
-| GGA     | restaurants                                                  |
-| GBH     | accommodation                                                |
-| GWA     | laundries, dry cleaning                                      |
-| GGB     | horticulture                                                 |
-| GBA     | bakery                                                       |
-| GPD     | paper and printing                                           |
-| GMF     | household-like business enterprises                          |
-| GHD     | Total load profile Business/Commerce/Services                |
++---------+----------------------------------------------------------------+
+| GBD     | other operational services                                     |
++---------+----------------------------------------------------------------+
+| GGA     | restaurants                                                    |
++---------+----------------------------------------------------------------+
+| GBH     | accommodation                                                  |
++---------+----------------------------------------------------------------+
+| GWA     | laundries, dry cleaning                                        |
++---------+----------------------------------------------------------------+
+| GGB     | horticulture                                                   |
++---------+----------------------------------------------------------------+
+| GBA     | bakery                                                         |
++---------+----------------------------------------------------------------+
+| GPD     | paper and printing                                             |
++---------+----------------------------------------------------------------+
+| GMF     | household-like business enterprises                            |
++---------+----------------------------------------------------------------+
+| GHD     | Total load profile Business/Commerce/Services                  |
++---------+----------------------------------------------------------------+
 
 
 
