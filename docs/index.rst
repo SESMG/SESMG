@@ -148,14 +148,12 @@ Buses
 	Beispiel-Bild
 	
 .. figure:: images/BSP_Graph_Bus.png
-   :scale: 60 %
+   :width: 60 %
    :alt: test
+   :align: center
 
    This is the caption of the figure (a simple paragraph).
 
-   The legend consists of all elements after the caption.  In this
-   case, the legend consists of this paragraph and the following
-   table:
 	
 ffff
 
