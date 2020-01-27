@@ -134,6 +134,9 @@ Buses
 
 .. image:: images/BSP_buses.PNG
   :width: 700
+  
+.. image:: images/BSP_Graph_Bus.png
+  :width: 500
 
 Sinks
 ^^^^^
@@ -151,6 +154,8 @@ Sinks
 .. image:: images/BSP_sinks.png
   :width: 700
 
+.. image:: images/BSP_Graph_sink.png
+  :width: 500
 
 Sources
 ^^^^^^^
@@ -180,6 +185,9 @@ Sources
 .. image:: images/BSP_source.png
   :width: 700
   
+  .. image:: images/BSP_Graph_source.png
+  :width: 500
+  
 
 Transformers
 ^^^^^^^^^^^^
@@ -203,6 +211,9 @@ Transformers
 
 .. image:: images/BSP_transformers.png
   :width: 700
+  
+.. image:: images/BSP_Graph_transformer.png
+  :width: 500  
 
 Storages
 ^^^^^^^^
@@ -227,6 +238,9 @@ Storages
 
 .. image:: images/BSP_storage.png
   :width: 700
+  
+.. image:: images/BSP_Graph_Storage.png
+  :width: 500
 
 Links
 ^^^^^
@@ -240,6 +254,9 @@ Links
 
 .. image:: images/BSP_link.png
   :width: 700
+  
+.. image:: images/BSP_Graph_link.png
+  :width: 500
 
 Time Series
 ^^^^^^^^^^^
