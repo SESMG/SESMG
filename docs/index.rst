@@ -133,29 +133,24 @@ Buses
 - **excess costs [CU/kWh]**: Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "x" is used. Example: "x"; "0.10"
 
   
+	
 .. figure:: images/BSP_buses.PNG
-    :align: center
-    :width: 100%
-	
-	Bildunterschrift Test
+   :width: 100 %
+   :alt: Bus-Example
+   :align: center
+
+   Exemplary input for the creation of buses
   
-.. figure:: images/BSP_Graph_Bus.png
-    :name: fig-beispiel-bild
-    :alt:  fig-beispiel-bild
-    :align: center
-    :width: 60%
-	
-	Beispiel-Bild
+
 	
 .. figure:: images/BSP_Graph_Bus.png
    :width: 60 %
-   :alt: test
+   :alt: Bus_Graph
    :align: center
 
-   This is the caption of the figure (a simple paragraph).
+   Graph of the energy system, which is created by entering the example components
 
-	
-ffff
+
 
 Sinks
 ^^^^^
@@ -169,12 +164,22 @@ Sinks
 - **building class [HEAT SLP ONLY]**:
 - **wind class [HEAT SLP ONLY]**:
 - **fixed**: Indicates whether it is a fixed sink. 0 = not fixed; 1 = fixed.
+ 
+.. figure:: images/BSP_sinks.png
+   :width: 100 %
+   :alt: Sink-Example
+   :align: center
 
-.. image:: images/BSP_sinks.png
-  :width: 700
+   Exemplary input for the creation of sinks
+  
 
-.. image:: images/BSP_Graph_sink.png
-  :width: 500
+	
+.. figure:: images/BSP_Graph_sink.png
+   :width: 60 %
+   :alt: Sink_Graph
+   :align: center
+
+   Graph of the energy system, which is created by entering the example components
 
 Sources
 ^^^^^^^
@@ -201,12 +206,21 @@ Sources
 - **Longitude (PV ONLY)**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies. Example: "10.00"
 - **fixed**: 
 
-.. image:: images/BSP_source.png
-  :width: 700
+.. figure:: images/BSP_source.png
+   :width: 100 %
+   :alt: Source-Example
+   :align: center
+
+   Exemplary input for the creation of sources
   
-  .. image:: images/BSP_Graph_source.png
-  :width: 500
-  
+
+	
+.. figure:: images/BSP_Graph_source.png
+   :width: 60 %
+   :alt: Source_Graph
+   :align: center
+
+   Graph of the energy system, which is created by entering the example components  
 
 Transformers
 ^^^^^^^^^^^^
@@ -228,11 +242,22 @@ Transformers
 - **minimal therm. condenser load to cooling water [GenericCHP]**:
 - **power loss index [GenericCHP]**:
 
-.. image:: images/BSP_transformers.png
-  :width: 700
+
+.. figure:: images/BSP_transformers.png
+   :width: 100 %
+   :alt: Transformer-Example
+   :align: center
+
+   Exemplary input for the creation of transformers
   
-.. image:: images/BSP_Graph_transformer.png
-  :width: 500  
+
+	
+.. figure:: images/BSP_Graph_transformer.png
+   :width: 60 %
+   :alt: Transformer_Graph
+   :align: center
+
+   Graph of the energy system, which is created by entering the example components  
 
 Storages
 ^^^^^^^^
@@ -255,11 +280,21 @@ Storages
 - **max. investment capacity [kW]**: 
 - **min. investment capacity [kW]**: 
 
-.. image:: images/BSP_storage.png
-  :width: 700
+.. figure:: images/BSP_storage.png
+   :width: 100 %
+   :alt: Storage-Example
+   :align: center
+
+   Exemplary input for the creation of storages
   
-.. image:: images/BSP_Graph_Storage.png
-  :width: 500
+
+	
+.. figure:: images/BSP_Graph_Storage.png
+   :width: 60 %
+   :alt: Transformer_Graph
+   :align: center
+
+   Graph of the energy system, which is created by entering the example components
 
 Links
 ^^^^^
@@ -271,19 +306,35 @@ Links
 - **efficiency**: 
 - **capacity [kW]**:
 
-.. image:: images/BSP_link.png
-  :width: 700
+
+.. figure:: images/BSP_link.png
+   :width: 100 %
+   :alt: Storage-Example
+   :align: center
+
+   Exemplary input for the creation of storages
   
-.. image:: images/BSP_Graph_link.png
-  :width: 500
+
+	
+.. figure:: images/BSP_Graph_link.png
+   :width: 60 %
+   :alt: Transformer_Graph
+   :align: center
+
+   Graph of the energy system, which is created by entering the example components
 
 Time Series
 ^^^^^^^^^^^
 - **timestamp**:
 - **timeseries**:
 
-.. image:: images/timeseries.png
-  :width: 700
+ 
+.. figure:: images/timeseries.png
+   :width: 100 %
+   :alt: Storage-Example
+   :align: center
+
+   Exemplary input for time series
 
 Weather Data
 ^^^^^^^^^^^^^^^^ 
@@ -294,11 +345,16 @@ Weather Data
 - **windspeed**:
 - **z0**:
 
+.. figure:: images/weatherdata.png
+   :width: 100 %
+   :alt: Storage-Example
+   :align: center
+
+   Exemplary input for weather data
+
 Using the results
 -----------------
 
-.. image:: images/weatherdata.png
-  :width: 700
 
 Example
 -------
