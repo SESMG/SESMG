@@ -33,6 +33,13 @@ two buses, could look like the example displayed in the following figure.
 .. image:: images/simple_energy_system.png
   :width: 600
   
+.. figure:: images/simple_energy_system.png
+   :width: 100 %
+   :alt: Bus-Example
+   :align: center
+
+   Graph of a simple energy system, consisting of one source, two buses, one transformer, and one a sink.
+  
 An oemof energy system must be in equilibrium at all times. Therefore sources must always provide exactly as much energy as the sinks and transformer losses consume. 
 In turn, the sink must be able to consume the entire amount of energy supplied. If there is no balance, oemof is not able to solve the energy system.
 
@@ -119,18 +126,24 @@ Timesystem
 - **time zone**:
 - **periods**:
 
-.. image:: images/BSP_timesystem.PNG
-  :width: 700
+
+  
+.. figure:: images/BSP_timesystem.PNG
+   :width: 100 %
+   :alt: Bus-Example
+   :align: center
+
+   Exemplary input for the time system
 
 Buses
 ^^^^^
 
-- **label**: Unique designation of the bus. The following format is recommended: "ID_energy sector_bus". Example: "bus001_electricity_bus"; "bus002_electricity_bus"
-- **active**: Specifies whether the bus shall be included to the model. 0 = inactive, 1 = active. Example: "1"; "1"
-- **excess**: Specifies whether an sink is to be generated, which can decrease excess energy. 0 = no excess sink will be generated; 1 = excess sink will be generated. Example: "0"; "1"
-- **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits. 0 = no shortage source will be generated; 1 = shortage source will be generated. Example: "1"; "0"
-- **shortage costs [CU/kWh]**: Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "x" is used. Example: "0.30"; "x"
-- **excess costs [CU/kWh]**: Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "x" is used. Example: "x"; "0.10"
+- **label**: Unique designation of the bus. The following format is recommended: "ID_energy sector_bus".
+- **active**: Specifies whether the bus shall be included to the model. 0 = inactive, 1 = active. 
+- **excess**: Specifies whether an sink is to be generated, which can decrease excess energy. 0 = no excess sink will be generated; 1 = excess sink will be generated. 
+- **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits. 0 = no shortage source will be generated; 1 = shortage source will be generated.
+- **shortage costs [CU/kWh]**: Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "x" is used. 
+- **excess costs [CU/kWh]**: Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "x" is used. 
 
   
 	
@@ -155,15 +168,15 @@ Buses
 Sinks
 ^^^^^
 
-- **label**: Unique designation of the sink. The following format is recommended: "ID_energy sector_sinks". Example: "building001_electricity_sink"
-- **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active. Example: "1"
-- **input**: Specifies which bus the sink is connected with. Example: "bus001_electricity_bus" 
-- **standard load profile**: Specifies the basis on which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles its short designation is used (electricity SLP's: h0, g0, ...; heat SLP's: efh, mfh, its, ...). If a time series is used, "timeseries" must be entered. If the source is not fixed, the fill character "x" has to be used. Example: "richardson" 
-- **annual demand [kWh/a]**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "x" is used. Example: ""
+- **label**: Unique designation of the sink. The following format is recommended: "ID_energy sector_sinks".
+- **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
+- **input**: Specifies which bus the sink is connected with.
+- **load profile**: Specifies the basis on which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles its short designation is used (electricity SLP's: h0, g0, ...; heat SLP's: efh, mfh, its, ...). If a time series is used, "timeseries" must be entered. If the source is not fixed, the fill character "x" has to be used.
+- **annual demand [kWh/a]**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "x" is used. 
 - **occupants [RICHARDSON]**: Number of occupants living in the considered house. Only required when using the Richardson tool, use fill character "x" for other load profiles.
 - **building class [HEAT SLP ONLY]**:
 - **wind class [HEAT SLP ONLY]**:
-- **fixed**: Indicates whether it is a fixed sink. 0 = not fixed; 1 = fixed.
+- **fixed**: Indicates whether it is a fixed sink or not. 0 = not fixed; 1 = fixed.
  
 .. figure:: images/BSP_sinks.png
    :width: 100 %
@@ -184,27 +197,26 @@ Sinks
 Sources
 ^^^^^^^
 
-- **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source". Example: "pv001_electricity_source"
-- **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active. Example: "1"
-- **output**: Specifies which bus the source is connected to. Example: "bus001_electricity_bus"
-- **variable costs [CU/kWh]**: Defines the variable costs incurred for a kWh of energy drawn from the source. Example: "0.00"
-- **existing capacity [kW]**: Existing capacity of the source before possible investments. Example: "10.00"
-- **min. investment capacity [kW]**: Minimum capacity to be installed in the case of an investment. Example: "0.00"
-- **max. investment capacity [kW]**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here. Example: "10.00"
-- **periodical costs [CU/(kW a)]**: Periodic costs incurred for investments per kWh added. Example: "10.00"
-- **technology**: Technology type of source. Input options: "photovoltaic", "wind", "other". Time series are automatically generated for photovoltaic systems and wind turbines. If "other" is selected, a time series must be stored in the "time_series" sheet. Example: "photovoltaic"
-- **technology database**: Example: ""
-- **inverter database**: Example: ""
-- **Modul Model (PV ONLY)**: Example: "Yingli\_YL210\_\_2008\_\_E\_\_" 
-- **Inverter Model (PV ONLY)**: Example: "ABB\_\_MICRO\_0\_25\_I\_OUTD\_US\_208\_208V\_\_CEC\_2014\_"
-- **reference value [kW] (PV ONLY)**: Example: "434.88"
-- **Azimuth (PV ONLY)**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic sources, use fill character "x" for other technologies. Example: "153.00"
-- **Surface Tilt (PV ONLY)**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic sources, use fill character "x" for other technologies. Example: "32.00"
-- **Albedo (PV ONLY)**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "x" for other technologies. Example: "0.2"
-- **Altitude (PV ONLY)**: Height (above normal zero) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies. Example: "60"
-- **Latitude (PV ONLY)**: Geographic latitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies. Example: "50.00"
-- **Longitude (PV ONLY)**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies. Example: "10.00"
-- **fixed**: 
+- **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
+- **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
+- **output**: Specifies which bus the source is connected to.
+- **technology**: Technology type of source. Input options: "photovoltaic", "wind", "other". Time series are automatically generated for photovoltaic systems and wind turbines. If "other" is selected, a time series must be stored in the "time_series" sheet.
+- **variable costs [CU/kWh]**: Defines the variable costs incurred for a kWh of energy drawn from the source.
+- **existing capacity [kW]**: Existing capacity of the source before possible investments.
+- **min. investment capacity [kW]**: Minimum capacity to be installed in the case of an investment.
+- **max. investment capacity [kW]**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
+- **periodical costs [CU/(kW a)]**: Periodic costs incurred for investments per kW and timeperiod added.
+- **technology database (PV ONLY)**: Database, from where module parameters are to be obtained. Recommended Database: "SandiaMod".
+- **inverter database (PV ONLY)**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter".
+- **Modul Model (PV ONLY)**: Module name, according to the database used.
+- **Inverter Model (PV ONLY)**: Inverter name, according to the database used.
+- **Azimuth (PV ONLY)**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Surface Tilt (PV ONLY)**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Albedo (PV ONLY)**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Altitude (PV ONLY)**: Height (above normal zero) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Latitude (PV ONLY)**: Geographic latitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Longitude (PV ONLY)**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 
 .. figure:: images/BSP_source.png
    :width: 100 %
@@ -225,18 +237,19 @@ Sources
 Transformers
 ^^^^^^^^^^^^
 
-- **label**: Unique designation of the transformer. The following format is recommended: "ID_energy sector_transformer". Example: "tr001_electricity_transformer"
-- **active**: Specifies whether the transformer shall be included to the model. 0 = inactive, 1 = active. Example: "1" 
-- **transformer type**:
-- **input**:
-- **output**:
-- **output2**:
-- **efficiency**:
-- **efficiency2**:
-- **variable input costs**:
-- **existing capacity [kW]**:
-- **max investment capacity [kW]**:
-- **min investment capacity [kW]**:
+- **label**: Unique designation of the transformer. The following format is recommended: "ID_energy sector_transformer".
+- **active**: Specifies whether the transformer shall be included to the model. 0 = inactive, 1 = active.
+- **transformer type**: Indicates what kind of transformer it is. Possible entries: "GenericTransformer" for linear transformers with constant efficiencies; "GenericCHP" for transformers with varying efficiencies.
+- **input**: Specifies from which bus the input to the transformer comes.
+- **output**: Specifies to which bus the output of the transformer is forwarded.
+- **output2**: Specifies to which bus the output of the transformer is forwarded, if there are several outputs. If there is no second output, the fill character "x" must be entered here.
+- **efficiency**: Specifies the efficiency of the first output. Values must be between 0 and 1.
+- **efficiency2**: Specifies the efficiency of the second output, if there is one. Values must be between 0 and 1. If there is no second output, the fill character "x" must be entered here.
+- **variable input costs**: Variable costs incurred per kWh of input energy supplied.
+- **existing capacity [kW]**: Already installed capacity of the transformer.
+- **max investment capacity [kW]**: Maximum in addition to existing capacity, installable transformer capacity.
+- **min investment capacity [kW]**: Minimum transformer capacity to be installed.
+- **periodical costs [CU/a]**: Periodical costs incurred for investments per kW and timeperiod added.
 - **el. eff. at max fuel flow w/o distr. heating [GenericCHP]**:
 - **el. eff. at min. fuel flow w/o distr. heating [GenericCHP]**:
 - **minimal therm. condenser load to cooling water [GenericCHP]**:
@@ -262,23 +275,23 @@ Transformers
 Storages
 ^^^^^^^^
 
-- **label**: Unique designation of the storage. The following format is recommended: "ID_energy sector_storage". Example: "battery001_electricity_storage" 
-- **active**: Specifies whether the storage shall be included to the model. 0 = inactive, 1 = active. Example: "1" 
-- **bus**:
-- **capacity inflow**:
-- **capacity outflow**:
-- **capacity loss**: 
-- **efficiency inflow**: 
-- **efficiency outflow**:
-- **initial capacity**: 
-- **capacity min**: 
-- **capacity max**: 
-- **variable input costs**:
-- **variable output costs**:
-- **existing capacity [kW]**:
-- **periodical costs [CU/a]**: 
-- **max. investment capacity [kW]**: 
-- **min. investment capacity [kW]**: 
+- **label**: Unique designation of the storage. The following format is recommended: "ID_energy sector_storage".
+- **active**: Specifies whether the storage shall be included to the model. 0 = inactive, 1 = active.
+- **bus**: Specifies which bus the storage is connected to.
+- **capacity inflow**: Indicates the performance with which the memory can be charged.
+- **capacity outflow**: Indicates the performance with which the memory can be discharged.
+- **capacity loss**: Indicates the storage losses per time unit.
+- **efficiency inflow**: Specifies the charging efficiency.
+- **efficiency outflow**: Specifies the discharging efficiency.
+- **initial capacity**: Specifies how far the memory is loaded at time 0 of the simulation. Value must be between 0 and 1.
+- **capacity min**: Specifies the minimum amount of memory that must be loaded at any given time. Value must be between 0 and 1.
+- **capacity max**: Specifies the maximum amount of memory that can be loaded at any given time. Value must be between 0 and 1.
+- **variable input costs**: Indicates how many costs arise for the charging of one kWh.
+- **variable output costs**: Indicates how many costs arise for the discharging of a kWh.
+- **existing capacity [kW]**: Already installed capacity of the storage.
+- **periodical costs [CU/a]**: Periodical costs incurred for investments per kW capacity and timeperiod added.
+- **max. investment capacity [kW]**: Maximum in addition to existing capacity, installable storage capacity.
+- **min. investment capacity [kW]**: Minimum storage capacity to be installed.
 
 .. figure:: images/BSP_storage.png
    :width: 100 %
@@ -298,13 +311,18 @@ Storages
 
 Links
 ^^^^^
-- **label**: Unique designation of the link. The following format is recommended: "ID_energy sector_transformer". Example: "pl001_electricity_link" 
-- **active**: Specifies whether the link shall be included to the model. 0 = inactive, 1 = active. Example: "1" 
-- **bus_1**:
-- **bus_2**: 
-- **(un)directed**: 
-- **efficiency**: 
-- **capacity [kW]**:
+- **label**: Unique designation of the link. The following format is recommended: "ID_energy sector_transformer"
+- **active**: Specifies whether the link shall be included to the model. 0 = inactive, 1 = active. 
+- **bus_1**: First bus to which the link is connected. If it is a directed link, this is the input bus.
+- **bus_2**: Second bus to which the link is connected. If it is a directed link, this is the output bus.
+- **(un)directed**: Specifies whether it is a directed or an undirected link. Input options: "directed", "undirected".
+- **efficiency**: Specifies the efficiency of the link.
+- **existing capacity [kW]**: Already installed capacity of the link.
+- **min. investment capacity [kW]**: Maximum in addition to existing capacity, installable capacity.
+- **max. investment capacity [kW]**: inimum capacity to be installed.
+- **variable costs [CU/kWh]**: Indicates how many costs arise for the transport of one kWh.
+- **periodical costs [CU/(kW a)]**: Periodical costs incurred for investments per kW capacity and timeperiod added.
+
 
 
 .. figure:: images/BSP_link.png
@@ -325,29 +343,33 @@ Links
 
 Time Series
 ^^^^^^^^^^^
-- **timestamp**:
-- **timeseries**:
+- **timestamp**: Points in time to which the stored time series are related. Should be within the time horizon defined in the sheet "timeseries".
+- **timeseries**: Time series of a sink which has been assigned the property "timeseries" under the attribute "load profile" or source which has been assigned the property "other" under the attribute "technology". Time series contain a value between 0 and 1 for each point in time, which indicates the proportion of installed capacity accounted for by the capacity produced at that point in time. In der Kopfzeile muss der Name in dem Format "componentID.actual_value" eingetragen werden.
 
+ 
  
 .. figure:: images/timeseries.png
    :width: 100 %
-   :alt: Storage-Example
+   :alt: Timeseries-Example
    :align: center
 
    Exemplary input for time series
 
+
+
+
 Weather Data
 ^^^^^^^^^^^^^^^^ 
-- **timestamp**:
-- **dhi**:
-- **dirhi**:
-- **pressure**:
-- **windspeed**:
-- **z0**:
+- **timestamp**: Points in time to which the stored weather data are related. Should be within the time horizon defined in the sheet "timeseries".
+- **dhi**: diffuse horizontal irradiance in W/m^2
+- **dirhi**: direct horizontal irradiance in W/m^2
+- **pressure**: air pressure in Pa
+- **windspeed**: Wind speed, measured at 10 m height, in the unit m/s
+- **z0**: roughness length of the environment
 
 .. figure:: images/weatherdata.png
    :width: 100 %
-   :alt: Storage-Example
+   :alt: WeatherData-Example
    :align: center
 
    Exemplary input for weather data
@@ -374,8 +396,8 @@ Münster University of Applied Sciences
 
 christian.klemm@fh-muenster.de
 
-.. image:: images/oemof_structure
- :width: 100
+.. image:: images/FH_logo.jpg
+   :width: 20 %
 
 
 Acknowledgements
