@@ -4,7 +4,7 @@ Functions for creating an oemof energy system.
 
 ---
 
-@ Christian Klemm - christian.klemm@fh-muenster.de, 21.01.2020
+@ Christian Klemm - christian.klemm@fh-muenster.de, 27.01.2020
 """
 
 def import_scenario(filepath):
@@ -105,7 +105,7 @@ def define_energy_system(filepath, nodes_data):
 
     ----
     
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 21.01.2020
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 27.01.2020
 
     """
     
@@ -139,7 +139,7 @@ def define_energy_system(filepath, nodes_data):
                  +str(start_date)
                  +',\n end date:           '
                  +str(end_date)
-                 +',\n temporal resolution:'
+                 +',\n temporal resolution: '
                  +str(temp_resolution))
     
     return esys

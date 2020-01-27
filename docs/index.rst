@@ -63,18 +63,7 @@ Sinks represent either energy demands within the energy system or energy exports
 Sinks with variable demands adjust their consumption to the amount of energy available. This could for example stand for the sale of surplus electricity. However, actual 
 consumers usually have fixed energy demands, which do not respond to amount of energy available in the system. As with sources, the exact demands of sinks can be passed to 
 the model with the help of time series. Oemof's sub-library `demandlib <https://demandlib.readthedocs.io/en/latest/>`_ can be used for the estimation of heat and electricity demands of different consumer groups, as based 
-on German standard load profiles (SLP). The following electric SLPs are available:
-
-.. center::
-	*available electrical standard load profiles, according to the association of the electricity industry (VDEW)*
-
-
-.. table::
-   :alt: Bus-Example
-   :widths: auto
-   :align: center
-   
-   available electrical standard load profiles, according to the association of the electricity industry (VDEW)
+on German standard load profiles (SLP). The following electrical standard load profiles of the Association of the Electricity Industry (VDEW) can be used:
 
 +--------+---------------------------------------------------+
 | Profil | Consumer Group                                    |
@@ -102,9 +91,8 @@ on German standard load profiles (SLP). The following electric SLPs are availabl
 |   L2   | other agriculture                                 |
 +--------+---------------------------------------------------+
 
-The following heat SLPs are available:
+The following thermal standard load profiles of the Association of Energy and Water Management (BDEW) can be used:
 
-.. table:: heat standard load profiles
 +---------+----------------------------------------------------------------+
 | Profile | House Type                                                     |
 +=========+================================================================+
@@ -137,11 +125,8 @@ The following heat SLPs are available:
 | GHD     | Total load profile Business/Commerce/Services                  |
 +---------+----------------------------------------------------------------+
 
-
-
 In order to ensure a balance in the energy system at all times, it may be appropriate to add an “excess” sink to the energy system, 
 which consumes energy in the event of energy surplus. In reality, this could be the sale of electricity or the give-away of heat to the atmosphere.
-
 
 
 Transformers
@@ -188,7 +173,18 @@ and installed on your PC (Windows, Linux, Mac).
 2. Download the program files from `GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>`_ 
 as .zip folder.
 
-3. Extract the .zip folder in any directory on your computer
+3. Extract the .zip folder in any directory on your computer.
+
+Application of the Model Generator
+----------------------------------
+
+1. Fill in the spreadsheet document according to the instructions in the following chapter and save it under the name "scenario.xlsx" in the "data" folder.
+
+2. Execute the program "Spreadsheet_Energy_System_Model_Generator.py" in the main folder of the program. This can be done either by double-clicking, or by opening the file in any Python interpreter. The latter variant allows a more detailed access to error messages etc. Running the program may take some time depending on the model size.
+
+3. After running the program completely, the results can be viewed in the "results" folder. These consist of the "log.file" with details of the optimisation, as well as an .xlsx file for each bus, in which the energy flows of the optimised energy system are stored. 
+
+
 
 Using the Spreadsheets
 ----------------------

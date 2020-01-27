@@ -3,7 +3,7 @@
 Functions for the creation of oemof energy system objects from a given set 
 of object parameters.
 
-@ Christian Klemm - christian.klemm@fh-muenster.de, 24.01.2020
+@ Christian Klemm - christian.klemm@fh-muenster.de, 27.01.2020
 """
 
 from oemof import solph
@@ -99,7 +99,7 @@ def sources(nodes_data, nodes, bus, filepath):
            min. investment capacity [kW], max. investment capacity [kW], 
            periodical costs [CU/(kW a)], technology database (PV ONLY), 
            inverter database (PV ONLY), Modul Model (PV ONLY), 
-           Inverter Model (PV ONLY), reference value [kW], Azimuth (PV ONLY), 
+           Inverter Model (PV ONLY), Azimuth (PV ONLY), 
            Surface Tilt (PV ONLY), Albedo (PV ONLY), Altitude (PV ONLY), 
            Latitude (PV ONLY), Longitude (PV ONLY)
            
@@ -631,7 +631,7 @@ def transformers(nodes_data, nodes, bus):
 
     ----
     
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 14.01.2020
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 27.01.2020
 
     """
 
@@ -652,7 +652,9 @@ def transformers(nodes_data, nodes, bus):
 #                        inflow_args[col.split('.')[1]] = nd['timeseries'][col]
    
                 # create 
-                if t['output2'] == 'None':
+                one_output = ['None', 'none', 'x']
+                
+                if t['output2'] in one_output:
                     
                     nodes.append(    
                         solph.Transformer(    

@@ -51,7 +51,7 @@ time_series  | timestamp, timeseries for components with fixed input or output
 weather_data | dates(untitled), dhi, dirhi, pressure, temp_air, windspeed, z0
 -------------------------------------------------------------------------------
 
-@author: Christian Klemm - christian.klemm@fh-muenster.de, 21.01.2020
+@author: Christian Klemm - christian.klemm@fh-muenster.de, 27.01.2020
 """
 
 import logging
@@ -65,13 +65,13 @@ from program_files import optimize_model
 
 
 # DEFINES PATH OF INPUT DATA
-scenario_file = os.path.join(os.path.dirname(__file__)+'/data','scenario.xlsx')
+scenario_file = os.path.join(os.path.dirname(__file__)+'/data','scenario_Testxxx.xlsx')
 
 # DEFINES PATH OF OUTPUR DATA
 result_path = os.path.join(os.path.dirname(__file__)+'/results')
 
 # DEFINES A LOGGING FILE
-log_path = os.path.join(os.path.dirname(__file__)+'/logs')
+log_path = os.path.join(os.path.dirname(__file__)+'/results')
 logger.define_logging(logpath=log_path)
 
 # IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
