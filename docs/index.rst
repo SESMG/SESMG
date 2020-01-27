@@ -30,8 +30,7 @@ of the energy flow indicates which amount of energy is transported between the i
 Buses furthermore form connection points of an energy system. The graph of a simple energy system consisting of each one source, one transformer, one sink, as well as 
 two buses, could look like the example displayed in the following figure.
 
-.. image:: images/simple_energy_system.png
-  :width: 600
+
   
 .. figure:: images/simple_energy_system.png
    :width: 100 %
@@ -66,7 +65,7 @@ consumers usually have fixed energy demands, which do not respond to amount of e
 the model with the help of time series. Oemof's sub-library `demandlib <https://demandlib.readthedocs.io/en/latest/>`_ can be used for the estimation of heat and electricity demands of different consumer groups, as based 
 on German standard load profiles (SLP). The following electric SLPs are available:
 
-.. class:: center
+.. center::
 	*available electrical standard load profiles, according to the association of the electricity industry (VDEW)*
 
 This paragraph will be centered.
