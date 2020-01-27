@@ -134,6 +134,7 @@ Buses
 
 .. image:: images/BSP_buses.PNG
   :width: 700
+  :align: center
   
 .. image:: images/BSP_Graph_Bus.png
   :width: 500
