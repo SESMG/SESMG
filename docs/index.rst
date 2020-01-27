@@ -18,13 +18,7 @@ to an energy system and optimized with the open source solver "cbc".
 
 Open Energy Model Framework (oemof)
 -----------------------------------
-The "Open Energy Modeling Framework" (oemof) is an energy system modelling framework for the analysis of energy supply systems. It is carried out 
-as open source python library and contains several sub-libraries, which are structured into four layers.
-
-.. image:: images/oemof_structure.png
-  :width: 600
-
-By using the sub-library "solph", energy systems can be represented by utilizing the mathematical graph theory. Thus, energy systems are exemplified as "graphs" 
+By using `oemof <https://oemof.readthedocs.io/en/stable/index.html>`_, energy systems can be represented by utilizing the mathematical graph theory. Thus, energy systems are exemplified as "graphs" 
 consisting of sets of "vertices" and "edges". In more specific terms, vertices stand for components and buses while directed edges connect them. The status variable 
 of the energy flow indicates which amount of energy is transported between the individual nodes at what time. Possible components of an oemof energy system are 
 
@@ -33,7 +27,7 @@ of the energy flow indicates which amount of energy is transported between the i
 - transformers, and
 - storages. 
 
-Busses furthermore form connection points of an energy system. The graph of a simple energy system consisting of each one source, one transformer, one sink, as well as 
+Buses furthermore form connection points of an energy system. The graph of a simple energy system consisting of each one source, one transformer, one sink, as well as 
 two buses, could look like the example displayed in the following figure.
 
 .. image:: images/simple_energy_system.png
@@ -94,7 +88,7 @@ maximum installable capacity needs to be known. Further, the periodic costs need
 time horizon. If the time horizon is one year, the periodical costs correspond to the annualized capital costs of an investment.
 
 Richardson Tool
-^^^^^^^^^^^^^^^
+---------------
 .
 
 Getting Started
@@ -108,14 +102,14 @@ is required. This can be downloaded `here <https://www.python.org/downloads/>`_ 
 and installed on your PC (Windows, Linux, Mac).
 
 2. Download the program files from `GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>`_ 
-as .zip folder
+as .zip folder.
 
 3. Extract the .zip folder in any directory on your computer
 
 Using the Spreadsheets
 ----------------------
 
-timesystem sheet
+Timesystem
 ^^^^^^^^^^^^^^^^
 
 
@@ -125,8 +119,10 @@ timesystem sheet
 - **time zone**:
 - **periods**:
 
+.. image:: images/BSP_timesystem.png
+  :width: 700
 
-buses
+Buses
 ^^^^^
 
 - **label**: Unique designation of the bus. The following format is recommended: "ID_energy sector_bus". Example: "bus001_electricity_bus"; "bus002_electricity_bus"
@@ -136,7 +132,7 @@ buses
 - **shortage costs [CU/kWh]**: Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "x" is used. Example: "0.30"; "x"
 - **excess costs [CU/kWh]**: Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "x" is used. Example: "x"; "0.10"
 
-sources
+Sources
 ^^^^^^^
 
 - **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source". Example: "pv001_electricity_source"
@@ -161,7 +157,7 @@ sources
 - **Longitude (PV ONLY)**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies. Example: "10.00"
 - **fixed**: 
 
-sinks
+Sinks
 ^^^^^
 
 - **label**: Unique designation of the sink. The following format is recommended: "ID_energy sector_sinks". Example: "building001_electricity_sink"
@@ -174,7 +170,7 @@ sinks
 - **wind class [HEAT SLP ONLY]**:
 - **fixed**: Indicates whether it is a fixed sink. 0 = not fixed; 1 = fixed.
 
-transformers
+Transformers
 ^^^^^^^^^^^^
 
 - **label**: Unique designation of the transformer. The following format is recommended: "ID_energy sector_transformer". Example: "tr001_electricity_transformer"
@@ -194,7 +190,7 @@ transformers
 - **minimal therm. condenser load to cooling water [GenericCHP]**:
 - **power loss index [GenericCHP]**:
 
-storages
+Storages
 ^^^^^^^^
 
 - **label**: Unique designation of the storage. The following format is recommended: "ID_energy sector_storage". Example: "battery001_electricity_storage" 
@@ -225,12 +221,12 @@ Links
 - **efficiency**: 
 - **capacity [kW]**:
 
-time series
+Time Series
 ^^^^^^^^^^^
 - **timestamp**:
 - **timeseries**:
 
-weather database
+Weather Data
 ^^^^^^^^^^^^^^^^ 
 - **timestamp**:
 - **dhi**:
