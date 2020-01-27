@@ -68,9 +68,9 @@ on German standard load profiles (SLP). The following electric SLPs are availabl
 .. center::
 	*available electrical standard load profiles, according to the association of the electricity industry (VDEW)*
 
-This paragraph will be centered.
 
-.. table:: electrical-SLPS
+.. table::
+   :alt: Bus-Example
    :widths: auto
    :align: center
    
