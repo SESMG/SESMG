@@ -135,9 +135,9 @@ def define_energy_system(filepath, nodes_data):
     nodes_data['timeseries'].index = pd.to_datetime(nodes_data['timeseries'].index)
  #   logging.info('Data from Excel file {} imported.'.format(filename))
 
-    logging.info('Date time index successfully defined:\n start date:         '
+    logging.info('Date time index successfully defined:\n start date:          '
                  +str(start_date)
-                 +',\n end date:           '
+                 +',\n end date:            '
                  +str(end_date)
                  +',\n temporal resolution: '
                  +str(temp_resolution))

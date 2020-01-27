@@ -65,7 +65,7 @@ from program_files import optimize_model
 
 
 # DEFINES PATH OF INPUT DATA
-scenario_file = os.path.join(os.path.dirname(__file__)+'/data','scenario_Testxxx.xlsx')
+scenario_file = os.path.join(os.path.dirname(__file__)+'/data','scenario.xlsx')
 
 # DEFINES PATH OF OUTPUR DATA
 result_path = os.path.join(os.path.dirname(__file__)+'/results')

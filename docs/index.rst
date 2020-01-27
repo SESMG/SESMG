@@ -175,6 +175,7 @@ as .zip folder.
 
 3. Extract the .zip folder in any directory on your computer.
 
+
 Application of the Model Generator
 ----------------------------------
 
@@ -185,13 +186,28 @@ Application of the Model Generator
 3. After running the program completely, the results can be viewed in the "results" folder. These consist of the "log.file" with details of the optimisation, as well as an .xlsx file for each bus, in which the energy flows of the optimised energy system are stored. 
 
 
-
 Using the Spreadsheets
 ----------------------
+For the modeling and optimization of an energy system, parameters for all system components must be given in the model generator using the enclosed .xlsx file 
+(editable with Excel, LibreOffice, ...). The .xlsx file is divided into nine input sheets. In the "timesystem" sheet general parameters are defined for the 
+time horizon to be examined, in the sheets "buses", "sinks", "sources", "transformers", "storages" and "links" corresponding components are defined. In the sheet 
+"time series" the performance of individual components can be stored. In the "weather data" sheet, the required weather data is stored.
+
+The following uniform units are used throughout the file for input:
+- capacity/performance in kW,
+- energy in kWh,
+- costs in cost units (CU), and
+- angles in degrees.
+
+When filling out the input file, it is recommended to enter the energy step by step and to perform test runs in between, so that input errors are detected early 
+and can be localized more easily. In addition to the explanation of the individual input sheets, an example energy system is built up step by step in the following subchapters.
+The input file filled out for this example is stored in the program folder "examples" and `can be viewed here on GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>`_. 
+
+
+
 
 Timesystem
 ^^^^^^^^^^^^^^^^
-
 
 - **start date**: start of the modelling time horizont. Format: "YYYY-MM-DD hh:mm:ss"
 - **end date**: end date of the modelling time horizont. Format: "YYYY-MM-DD hh:mm:ss"

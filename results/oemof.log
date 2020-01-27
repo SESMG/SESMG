@@ -5717,3 +5717,88 @@
 2020-01-27 14:35:00,872 - INFO - create_results -    *********************************************************
 
 2020-01-27 14:35:00,873 - INFO - Spreadsheet_Energy_System_Model_Generator -    Modelling and optimization successfully completed!
+******************************************************
+2020-01-27 15:24:09,244 - INFO - logger - Path for logging: C:/Users/klemm/Documents/Python Scripts/Spreadsheet_Energy_System_Model_Generator_0.0.2/results\oemof.log
+2020-01-27 15:24:09,245 - INFO - logger - Used oemof version: 0.3.2
+2020-01-27 15:24:11,699 - INFO - create_energy_system - Date time index successfully defined:
+ start date:         2012-01-01 00:00:00,
+ end date:           2012-01-01 23:00:00,
+ temporal resolution: h
+2020-01-27 15:24:11,700 - INFO - create_objects -    Bus created: bus001_electricity_bus
+2020-01-27 15:24:11,701 - INFO - create_objects -    Bus created: bus002_electricity_bus
+2020-01-27 15:24:16,794 - INFO - create_objects -    Sink created: demand001_electricity_sink
+2020-01-27 15:24:16,796 - INFO - create_objects -    Transformer created: tr001_electricity_transformer
+2020-01-27 15:24:16,798 - INFO - create_objects -    Storage created: battery001_electricity_storage
+2020-01-27 15:24:16,799 - INFO - create_objects -    Link created: pl001_electrcity_link
+2020-01-27 15:24:16,800 - INFO - optimize_model -    *********************************************************
+2020-01-27 15:24:16,801 - INFO - optimize_model -    Starting Optimization...
+2020-01-27 15:24:16,886 - INFO - models - Optimization successful...
+2020-01-27 15:24:17,025 - INFO - create_results -    Results saved as xlsx for bus001_electricity_bus
+2020-01-27 15:24:17,069 - INFO - create_results -    Results saved as xlsx for bus002_electricity_bus
+2020-01-27 15:24:17,141 - INFO - create_results -    *********************************************************
+2020-01-27 15:24:17,143 - INFO - create_results -    ***SINKS*************************************************
+2020-01-27 15:24:17,146 - INFO - create_results -    *********************************************************
+2020-01-27 15:24:17,147 - INFO - create_results -    --------------------------------------------------------
+2020-01-27 15:24:17,148 - INFO - create_results -    demand001_electricity_sink
+2020-01-27 15:24:17,150 - INFO - create_results -    Total Energy Demand: 13.41 kWh
+2020-01-27 15:24:17,151 - INFO - create_results -    --------------------------------------------------------
+2020-01-27 15:24:17,152 - INFO - create_results -    bus002_electricity_bus_excess
+2020-01-27 15:24:17,154 - INFO - create_results -    Total Energy Input: 0.0 kWh
+2020-01-27 15:24:17,156 - INFO - create_results -    Max. Capacity: 0.0 kW
+2020-01-27 15:24:17,157 - INFO - create_results -    Variable Costs: 0.0 cost units
+2020-01-27 15:24:17,157 - INFO - create_results -    --------------------------------------------------------
+2020-01-27 15:24:17,158 - INFO - create_results -    *********************************************************
+2020-01-27 15:24:17,159 - INFO - create_results -    ***SOURCES***********************************************
+2020-01-27 15:24:17,160 - INFO - create_results -    *********************************************************
+2020-01-27 15:24:17,161 - INFO - create_results -    --------------------------------------------------------CAPACITY ÜBERPRÜFEN, INSB. BEI PV MUSS PEAK POWER BERÜCKSICTIGT WERDEN.
+2020-01-27 15:24:17,163 - INFO - create_results -    bus001_electricity_bus_shortage
+2020-01-27 15:24:17,165 - INFO - create_results -    Total Energy Input: 13.41 kWh
+2020-01-27 15:24:17,166 - INFO - create_results -    Max. Capacity: 1.03 kW
+2020-01-27 15:24:17,167 - INFO - create_results -    Variable Costs: 0.13 cost units
+2020-01-27 15:24:17,168 - INFO - create_results -    --------------------------------------------------------
+2020-01-27 15:24:17,169 - INFO - create_results -    *********************************************************
+2020-01-27 15:24:17,170 - INFO - create_results -    ***TRANSFORMERS******************************************
+2020-01-27 15:24:17,171 - INFO - create_results -    *********************************************************
+2020-01-27 15:24:17,172 - INFO - create_results -    --------------------------------------------------------CAPACITY BEI MEHREREN AUSGÄNGEN PRÜFEN
+2020-01-27 15:24:17,173 - INFO - create_results -    tr001_electricity_transformer
+2020-01-27 15:24:17,176 - INFO - create_results -    Total Energy Output to bus001_electricity_bus: 0.0 kWh
+2020-01-27 15:24:17,178 - INFO - create_results -    Max. Capacity: 0.0 kW
+2020-01-27 15:24:17,179 - INFO - create_results -    Variable Costs: 0.0 cost units
+2020-01-27 15:24:17,180 - INFO - create_results -    Investment Capacity: 69.0 kW
+2020-01-27 15:24:17,181 - INFO - create_results -    Periodical costs (p.a.): 588.57 cost units p.a.
+2020-01-27 15:24:17,182 - INFO - create_results -    --------------------------------------------------------
+2020-01-27 15:24:17,182 - INFO - create_results -    *********************************************************
+2020-01-27 15:24:17,183 - INFO - create_results -    ***STORAGES**********************************************
+2020-01-27 15:24:17,185 - INFO - create_results -    *********************************************************
+2020-01-27 15:24:17,185 - INFO - create_results -    --------------------------------------------------------
+2020-01-27 15:24:17,187 - INFO - create_results -    battery001_electricity_storage
+2020-01-27 15:24:17,192 - INFO - create_results -    Energy Output from battery001_electricity_storage: 0.0 kWh
+2020-01-27 15:24:17,193 - INFO - create_results -    Energy Input to battery001_electricity_storage: 0.0 kWh
+2020-01-27 15:24:17,197 - INFO - create_results -    Max. Capacity: 0.0 kW
+2020-01-27 15:24:17,200 - INFO - create_results -    Total variable costs for: 0.0 cost units
+2020-01-27 15:24:17,201 - INFO - create_results -    Investment Capacity: 0.0 kW
+2020-01-27 15:24:17,202 - INFO - create_results -    Periodical costs (p.a.): 0 cost units p.a.
+2020-01-27 15:24:17,202 - INFO - create_results -    --------------------------------------------------------
+2020-01-27 15:24:17,203 - INFO - create_results -    *********************************************************
+2020-01-27 15:24:17,205 - INFO - create_results -    ***LINKS********************************************
+2020-01-27 15:24:17,205 - INFO - create_results -    *********************************************************
+2020-01-27 15:24:17,206 - INFO - create_results -    --------------------------------------------------------CAPACITY BEI MEHREREN AUSGÄNGEN PRÜFEN
+2020-01-27 15:24:17,208 - INFO - create_results -    pl001_electrcity_link
+2020-01-27 15:24:17,209 - INFO - create_results -    Total Energy Output to bus002_electricity_bus: 0 kWh
+2020-01-27 15:24:17,211 - INFO - create_results -    --------------------------------------------------------
+2020-01-27 15:24:17,212 - INFO - create_results -    *********************************************************
+2020-01-27 15:24:17,212 - INFO - create_results -    ***SUMMARY***********************************************
+2020-01-27 15:24:17,213 - INFO - create_results -    *********************************************************
+2020-01-27 15:24:17,214 - INFO - create_results -    --------------------------------------------------------
+2020-01-27 15:24:17,216 - INFO - create_results -    Total System Costs:             588.7 cost units
+2020-01-27 15:24:17,217 - INFO - create_results -    Total Variable Costs:           0.0 cost units
+2020-01-27 15:24:17,218 - INFO - create_results -    Total Periodical Costs (p.a.):  589.0 cost units p.a.
+2020-01-27 15:24:17,219 - INFO - create_results -    Total Energy Demand:            13.0 kWh
+2020-01-27 15:24:17,219 - INFO - create_results -    Total Energy Usage:             13.0 kWh
+2020-01-27 15:24:17,220 - INFO - create_results -    --------------------------------------------------------
+2020-01-27 15:24:17,221 - INFO - create_results -    Investments to be made:
+2020-01-27 15:24:17,222 - INFO - create_results -    tr001_electricity_transformer: 69.0 kW; 588.57 cost units (p.a.)
+2020-01-27 15:24:17,224 - INFO - create_results -    --------------------------------------------------------
+2020-01-27 15:24:17,225 - INFO - create_results -    *********************************************************
+
+2020-01-27 15:24:17,226 - INFO - Spreadsheet_Energy_System_Model_Generator -    Modelling and optimization successfully completed!
