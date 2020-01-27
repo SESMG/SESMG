@@ -132,6 +132,26 @@ Buses
 - **shortage costs [CU/kWh]**: Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "x" is used. Example: "0.30"; "x"
 - **excess costs [CU/kWh]**: Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "x" is used. Example: "x"; "0.10"
 
+.. image:: images/BSP_buses.PNG
+  :width: 700
+
+Sinks
+^^^^^
+
+- **label**: Unique designation of the sink. The following format is recommended: "ID_energy sector_sinks". Example: "building001_electricity_sink"
+- **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active. Example: "1"
+- **input**: Specifies which bus the sink is connected with. Example: "bus001_electricity_bus" 
+- **standard load profile**: Specifies the basis on which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles its short designation is used (electricity SLP's: h0, g0, ...; heat SLP's: efh, mfh, its, ...). If a time series is used, "timeseries" must be entered. If the source is not fixed, the fill character "x" has to be used. Example: "richardson" 
+- **annual demand [kWh/a]**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "x" is used. Example: ""
+- **occupants [RICHARDSON]**: Number of occupants living in the considered house. Only required when using the Richardson tool, use fill character "x" for other load profiles.
+- **building class [HEAT SLP ONLY]**:
+- **wind class [HEAT SLP ONLY]**:
+- **fixed**: Indicates whether it is a fixed sink. 0 = not fixed; 1 = fixed.
+
+.. image:: images/BSP_sinks.png
+  :width: 700
+
+
 Sources
 ^^^^^^^
 
@@ -157,18 +177,9 @@ Sources
 - **Longitude (PV ONLY)**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies. Example: "10.00"
 - **fixed**: 
 
-Sinks
-^^^^^
-
-- **label**: Unique designation of the sink. The following format is recommended: "ID_energy sector_sinks". Example: "building001_electricity_sink"
-- **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active. Example: "1"
-- **input**: Specifies which bus the sink is connected with. Example: "bus001_electricity_bus" 
-- **standard load profile**: Specifies the basis on which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles its short designation is used (electricity SLP's: h0, g0, ...; heat SLP's: efh, mfh, its, ...). If a time series is used, "timeseries" must be entered. If the source is not fixed, the fill character "x" has to be used. Example: "richardson" 
-- **annual demand [kWh/a]**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "x" is used. Example: ""
-- **occupants [RICHARDSON]**: Number of occupants living in the considered house. Only required when using the Richardson tool, use fill character "x" for other load profiles.
-- **building class [HEAT SLP ONLY]**:
-- **wind class [HEAT SLP ONLY]**:
-- **fixed**: Indicates whether it is a fixed sink. 0 = not fixed; 1 = fixed.
+.. image:: images/BSP_source.png
+  :width: 700
+  
 
 Transformers
 ^^^^^^^^^^^^
@@ -189,6 +200,9 @@ Transformers
 - **el. eff. at min. fuel flow w/o distr. heating [GenericCHP]**:
 - **minimal therm. condenser load to cooling water [GenericCHP]**:
 - **power loss index [GenericCHP]**:
+
+.. image:: images/BSP_transformers.png
+  :width: 700
 
 Storages
 ^^^^^^^^
@@ -211,6 +225,9 @@ Storages
 - **max. investment capacity [kW]**: 
 - **min. investment capacity [kW]**: 
 
+.. image:: images/BSP_storage.png
+  :width: 700
+
 Links
 ^^^^^
 - **label**: Unique designation of the link. The following format is recommended: "ID_energy sector_transformer". Example: "pl001_electricity_link" 
@@ -221,10 +238,16 @@ Links
 - **efficiency**: 
 - **capacity [kW]**:
 
+.. image:: images/BSP_link.png
+  :width: 700
+
 Time Series
 ^^^^^^^^^^^
 - **timestamp**:
 - **timeseries**:
+
+.. image:: images/timeseries.png
+  :width: 700
 
 Weather Data
 ^^^^^^^^^^^^^^^^ 
@@ -237,6 +260,9 @@ Weather Data
 
 Using the results
 -----------------
+
+.. image:: images/weatherdata.png
+  :width: 700
 
 Example
 -------
