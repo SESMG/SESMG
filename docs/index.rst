@@ -166,12 +166,11 @@ Getting Started
 Installation
 ------------
 
-1. For the application of the Spreadsheet Energy System Model Generator Python (version >= 3.5) 
-is required. This can be downloaded `here <https://www.python.org/downloads/>`_ free of charge 
-and installed on your PC (Windows, Linux, Mac).
+1. For the application of the Spreadsheet Energy System Model Generator Python (version >= 3.5) is required. This can be downloaded `here <https://www.python.org/downloads/>`_ free of charge and installed on your PC (Windows, Linux, Mac).
 
-2. Download the program files from `GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>`_ 
-as .zip folder.
+
+2. Download the program files from `GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>`_ as .zip folder.
+
 
 3. Extract the .zip folder in any directory on your computer.
 
@@ -181,29 +180,32 @@ Application of the Model Generator
 
 1. Fill in the spreadsheet document according to the instructions in the following chapter and save it under the name "scenario.xlsx" in the "data" folder.
 
+
 2. Execute the program "Spreadsheet_Energy_System_Model_Generator.py" in the main folder of the program. This can be done either by double-clicking, or by opening the file in any Python interpreter. The latter variant allows a more detailed access to error messages etc. Running the program may take some time depending on the model size.
+
 
 3. After running the program completely, the results can be viewed in the "results" folder. These consist of the "log.file" with details of the optimisation, as well as an .xlsx file for each bus, in which the energy flows of the optimised energy system are stored. 
 
 
-Using the Spreadsheets
+Using the Scenario File
 ----------------------
 For the modeling and optimization of an energy system, parameters for all system components must be given in the model generator using the enclosed .xlsx file 
 (editable with Excel, LibreOffice, ...). The .xlsx file is divided into nine input sheets. In the "timesystem" sheet general parameters are defined for the 
 time horizon to be examined, in the sheets "buses", "sinks", "sources", "transformers", "storages" and "links" corresponding components are defined. In the sheet 
-"time series" the performance of individual components can be stored. In the "weather data" sheet, the required weather data is stored.
+"time series" the performance of individual components can be stored. In the "weather data" sheet, the required weather data is stored. When filling out the input 
+file, it is recommended to enter the energy step by step and to perform test runs in between, so that input errors are detected early 
+and can be localized more easily. In addition to the explanation of the individual input sheets, an example energy system is built up step by step in the following subchapters.
+The input file filled out for this example is stored in the program folder "examples" and `can be viewed here on 
+GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator/tree/master/examples>`_. 
 
 The following uniform units are used throughout the file for input:
+
 - capacity/performance in kW,
 - energy in kWh,
-- costs in cost units (CU), and
-- angles in degrees.
+- angles in degrees, and
+- costs in cost units (CU).
 
-When filling out the input file, it is recommended to enter the energy step by step and to perform test runs in between, so that input errors are detected early 
-and can be localized more easily. In addition to the explanation of the individual input sheets, an example energy system is built up step by step in the following subchapters.
-The input file filled out for this example is stored in the program folder "examples" and `can be viewed here on GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>`_. 
-
-
+Cost units can be any scalable quantity used to optimize the energy system, such as euros or grams of carbon dioxide emissions.
 
 
 Timesystem
@@ -443,7 +445,7 @@ Time Series
 
  
  
-.. figure:: images/timeseries.PNG
+.. figure:: images/BSP_timeseries.PNG
    :width: 100 %
    :alt: Timeseries-Example
    :align: center
@@ -462,7 +464,7 @@ Weather Data
 - **windspeed**: Wind speed, measured at 10 m height, in the unit m/s
 - **z0**: roughness length of the environment
 
-.. figure:: images/weatherdata.PNG
+.. figure:: images/BSP_weatherdata.PNG
    :width: 100 %
    :alt: WeatherData-Example
    :align: center
