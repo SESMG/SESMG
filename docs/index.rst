@@ -63,9 +63,52 @@ Sinks
 Sinks represent either energy demands within the energy system or energy exports to adjacent systems. Like sources, sinks can either have variable or fixed energy demands. 
 Sinks with variable demands adjust their consumption to the amount of energy available. This could for example stand for the sale of surplus electricity. However, actual 
 consumers usually have fixed energy demands, which do not respond to amount of energy available in the system. As with sources, the exact demands of sinks can be passed to 
-the model with the help of time series. Oemof's sub-library "demandlib" can be used for the estimation of heat and electricity demands of different consumer groups, as based 
-on German standard load profiles (SLP). In order to ensure a balance in the energy system at all times, it may be appropriate to add an “excess” sink to the energy system, 
+the model with the help of time series. Oemof's sub-library `demandlib <https://demandlib.readthedocs.io/en/latest/>`_ can be used for the estimation of heat and electricity demands of different consumer groups, as based 
+on German standard load profiles (SLP). The following electric SLPs are available:
+
+.. table:: electrical standardload profiles
+
+| Profil | Consumer Group                                    |
+| :----: | ------------------------------------------------- |
+|   H0   | households                                        |
+|   G0   | commercial general                                |
+|   G1   | commercial on weeks 8-18 h                        |
+|   G2   | commercial with strong consumption in the evening |
+|   G3   | commercial continuous                             |
+|   G4   | shop/hairdresser                                  |
+|   G5   | bakery                                            |
+|   G6   | weekend operation                                 |
+|   L0   | agriculture general                               |
+|   L1   | agriculture with dairy industry/animal breeding   |
+|   L2   | other agriculture                                 |
+
+The following heat SLPs are available:
+
+.. table:: heat standard load profiles
+
+| Profile | House Type                                                   |
+| :-----: | ------------------------------------------------------------ |
+| EFH     | single family house                                          |
+| MFH     | multi family house                                           |
+| GMK     | metal and automotive                                         |
+| GHA     | retail and wholesale                                         |
+| GKO     | Local authorities, credit institutions and insurance companies |
+| GBD     | other operational services                                   |
+| GGA     | restaurants                                                  |
+| GBH     | accommodation                                                |
+| GWA     | laundries, dry cleaning                                      |
+| GGB     | horticulture                                                 |
+| GBA     | bakery                                                       |
+| GPD     | paper and printing                                           |
+| GMF     | household-like business enterprises                          |
+| GHD     | Total load profile Business/Commerce/Services                |
+
+
+
+In order to ensure a balance in the energy system at all times, it may be appropriate to add an “excess” sink to the energy system, 
 which consumes energy in the event of energy surplus. In reality, this could be the sale of electricity or the give-away of heat to the atmosphere.
+
+
 
 Transformers
 ^^^^^^^^^^^^
@@ -139,6 +182,7 @@ Buses
 ^^^^^
 
 - **label**: Unique designation of the bus. The following format is recommended: "ID_energy sector_bus".
+- **comment**: Space for an individual comment, e.g. to which measure this component belongs.
 - **active**: Specifies whether the bus shall be included to the model. 0 = inactive, 1 = active. 
 - **excess**: Specifies whether an sink is to be generated, which can decrease excess energy. 0 = no excess sink will be generated; 1 = excess sink will be generated. 
 - **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits. 0 = no shortage source will be generated; 1 = shortage source will be generated.
@@ -169,11 +213,17 @@ Sinks
 ^^^^^
 
 - **label**: Unique designation of the sink. The following format is recommended: "ID_energy sector_sinks".
+- **comment**: Space for an individual comment, e.g. to which measure this component belongs.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **input**: Specifies which bus the sink is connected with.
-- **load profile**: Specifies the basis on which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles its short designation is used (electricity SLP's: h0, g0, ...; heat SLP's: efh, mfh, its, ...). If a time series is used, "timeseries" must be entered. If the source is not fixed, the fill character "x" has to be used.
-- **annual demand [kWh/a]**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "x" is used. 
-- **occupants [RICHARDSON]**: Number of occupants living in the considered house. Only required when using the Richardson tool, use fill character "x" for other load profiles.
+- **load profile**: Specifies the basis on which the load profile of the sink is to be created. If the Richardson 
+tool is to be used, "richardson" has to be inserted. For standard load profiles its short designation is used 
+(electricity SLP's: h0, g0, ...; heat SLP's: efh, mfh, its, ...). If a time series is used, "timeseries" must be entered. 
+If the source is not fixed, the fill character "x" has to be used.
+- **annual demand [kWh/a]**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. 
+When using time series, the fill character "x" is used. 
+- **occupants [RICHARDSON]**: Number of occupants living in the considered house. Only required when using the Richardson tool, 
+use fill character "x" for other load profiles.
 - **building class [HEAT SLP ONLY]**:
 - **wind class [HEAT SLP ONLY]**:
 - **fixed**: Indicates whether it is a fixed sink or not. 0 = not fixed; 1 = fixed.
@@ -198,9 +248,11 @@ Sources
 ^^^^^^^
 
 - **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
+- **comment**: Space for an individual comment, e.g. to which measure this component belongs.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. Input options: "photovoltaic", "wind", "other". Time series are automatically generated for photovoltaic systems and wind turbines. If "other" is selected, a time series must be stored in the "time_series" sheet.
+- **technology**: Technology type of source. Input options: "photovoltaic", "wind", "other". Time series are 
+automatically generated for photovoltaic systems and wind turbines. If "other" is selected, a time series must be stored in the "time_series" sheet.
 - **variable costs [CU/kWh]**: Defines the variable costs incurred for a kWh of energy drawn from the source.
 - **existing capacity [kW]**: Existing capacity of the source before possible investments.
 - **min. investment capacity [kW]**: Minimum capacity to be installed in the case of an investment.
@@ -210,7 +262,8 @@ Sources
 - **inverter database (PV ONLY)**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter".
 - **Modul Model (PV ONLY)**: Module name, according to the database used.
 - **Inverter Model (PV ONLY)**: Inverter name, according to the database used.
-- **Azimuth (PV ONLY)**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Azimuth (PV ONLY)**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible 
+(0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Surface Tilt (PV ONLY)**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Albedo (PV ONLY)**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Altitude (PV ONLY)**: Height (above normal zero) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
@@ -238,13 +291,17 @@ Transformers
 ^^^^^^^^^^^^
 
 - **label**: Unique designation of the transformer. The following format is recommended: "ID_energy sector_transformer".
+- **comment**: Space for an individual comment, e.g. to which measure this component belongs.
 - **active**: Specifies whether the transformer shall be included to the model. 0 = inactive, 1 = active.
-- **transformer type**: Indicates what kind of transformer it is. Possible entries: "GenericTransformer" for linear transformers with constant efficiencies; "GenericCHP" for transformers with varying efficiencies.
+- **transformer type**: Indicates what kind of transformer it is. Possible entries: "GenericTransformer" 
+for linear transformers with constant efficiencies; "GenericCHP" for transformers with varying efficiencies.
 - **input**: Specifies from which bus the input to the transformer comes.
 - **output**: Specifies to which bus the output of the transformer is forwarded.
-- **output2**: Specifies to which bus the output of the transformer is forwarded, if there are several outputs. If there is no second output, the fill character "x" must be entered here.
+- **output2**: Specifies to which bus the output of the transformer is forwarded, if there are several outputs. 
+If there is no second output, the fill character "x" must be entered here.
 - **efficiency**: Specifies the efficiency of the first output. Values must be between 0 and 1.
-- **efficiency2**: Specifies the efficiency of the second output, if there is one. Values must be between 0 and 1. If there is no second output, the fill character "x" must be entered here.
+- **efficiency2**: Specifies the efficiency of the second output, if there is one. Values must be between 0 and 1. 
+If there is no second output, the fill character "x" must be entered here.
 - **variable input costs**: Variable costs incurred per kWh of input energy supplied.
 - **existing capacity [kW]**: Already installed capacity of the transformer.
 - **max investment capacity [kW]**: Maximum in addition to existing capacity, installable transformer capacity.
@@ -276,6 +333,7 @@ Storages
 ^^^^^^^^
 
 - **label**: Unique designation of the storage. The following format is recommended: "ID_energy sector_storage".
+- **comment**: Space for an individual comment, e.g. to which measure this component belongs.
 - **active**: Specifies whether the storage shall be included to the model. 0 = inactive, 1 = active.
 - **bus**: Specifies which bus the storage is connected to.
 - **capacity inflow**: Indicates the performance with which the memory can be charged.
@@ -312,6 +370,7 @@ Storages
 Links
 ^^^^^
 - **label**: Unique designation of the link. The following format is recommended: "ID_energy sector_transformer"
+- **comment**: Space for an individual comment, e.g. to which measure this component belongs.
 - **active**: Specifies whether the link shall be included to the model. 0 = inactive, 1 = active. 
 - **bus_1**: First bus to which the link is connected. If it is a directed link, this is the input bus.
 - **bus_2**: Second bus to which the link is connected. If it is a directed link, this is the output bus.
@@ -343,12 +402,18 @@ Links
 
 Time Series
 ^^^^^^^^^^^
-- **timestamp**: Points in time to which the stored time series are related. Should be within the time horizon defined in the sheet "timeseries".
-- **timeseries**: Time series of a sink which has been assigned the property "timeseries" under the attribute "load profile" or source which has been assigned the property "other" under the attribute "technology". Time series contain a value between 0 and 1 for each point in time, which indicates the proportion of installed capacity accounted for by the capacity produced at that point in time. In der Kopfzeile muss der Name in dem Format "componentID.actual_value" eingetragen werden.
+- **timestamp**: Points in time to which the stored time series are related. 
+Should be within the time horizon defined in the sheet "timeseries".
+- **timeseries**: Time series of a sink which has been assigned the property 
+"timeseries" under the attribute "load profile" or source which has been assigned 
+the property "other" under the attribute "technology". Time series contain a value 
+between 0 and 1 for each point in time, which indicates the proportion of installed 
+capacity accounted for by the capacity produced at that point in time. In the header 
+line, the name must be entered in the format "componentID.actual_value".
 
  
  
-.. figure:: images/timeseries.png
+.. figure:: images/timeseries.PNG
    :width: 100 %
    :alt: Timeseries-Example
    :align: center
@@ -367,7 +432,7 @@ Weather Data
 - **windspeed**: Wind speed, measured at 10 m height, in the unit m/s
 - **z0**: roughness length of the environment
 
-.. figure:: images/weatherdata.png
+.. figure:: images/weatherdata.PNG
    :width: 100 %
    :alt: WeatherData-Example
    :align: center
