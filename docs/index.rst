@@ -119,7 +119,7 @@ Timesystem
 - **time zone**:
 - **periods**:
 
-.. image:: images/BSP_timesystem.png
+.. image:: images/BSP_timesystem.PNG
   :width: 700
 
 Buses
