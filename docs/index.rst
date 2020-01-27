@@ -132,19 +132,20 @@ Buses
 - **shortage costs [CU/kWh]**: Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "x" is used. Example: "0.30"; "x"
 - **excess costs [CU/kWh]**: Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "x" is used. Example: "x"; "0.10"
 
-.. image:: images/BSP_buses.PNG
-  :width: 700
-  :align: center
   
-.. image:: images/BSP_Graph_Bus.png
-  :width: 400
-  :align: center
+.. figure:: images/BSP_buses.PNG
+    :align: center
+    :width: 100%
+	
+	Bildunterschrift Test
   
 .. figure:: images/BSP_Graph_Bus.png
     :name: fig-beispiel-bild
     :alt:  fig-beispiel-bild
     :align: center
-    :width: 50%
+    :width: 60%
+	
+	Beispiel-Bild
 
 Sinks
 ^^^^^
