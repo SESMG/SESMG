@@ -66,7 +66,11 @@ consumers usually have fixed energy demands, which do not respond to amount of e
 the model with the help of time series. Oemof's sub-library `demandlib <https://demandlib.readthedocs.io/en/latest/>`_ can be used for the estimation of heat and electricity demands of different consumer groups, as based 
 on German standard load profiles (SLP). The following electric SLPs are available:
 
-.. table:: electrical standardload profiles
+.. table:: electrical-SLPS
+   :widths: auto
+   :align: center
+   
+   available electrical standard load profiles, according to the association of the electricity industry (VDEW)
 
 +--------+---------------------------------------------------+
 | Profil | Consumer Group                                    |
@@ -242,14 +246,9 @@ Sinks
 - **comment**: Space for an individual comment, e.g. to which measure this component belongs.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **input**: Specifies which bus the sink is connected with.
-- **load profile**: Specifies the basis on which the load profile of the sink is to be created. If the Richardson 
-tool is to be used, "richardson" has to be inserted. For standard load profiles its short designation is used 
-(electricity SLP's: h0, g0, ...; heat SLP's: efh, mfh, its, ...). If a time series is used, "timeseries" must be entered. 
-If the source is not fixed, the fill character "x" has to be used.
-- **annual demand [kWh/a]**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. 
-When using time series, the fill character "x" is used. 
-- **occupants [RICHARDSON]**: Number of occupants living in the considered house. Only required when using the Richardson tool, 
-use fill character "x" for other load profiles.
+- **load profile**: Specifies the basis on which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles its short designation is used (electricity SLP's: h0, g0, ...; heat SLP's: efh, mfh, its, ...). If a time series is used, "timeseries" must be entered. If the source is not fixed, the fill character "x" has to be used.
+- **annual demand [kWh/a]**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "x" is used. 
+- **occupants [RICHARDSON]**: Number of occupants living in the considered house. Only required when using the Richardson tool, use fill character "x" for other load profiles.
 - **building class [HEAT SLP ONLY]**:
 - **wind class [HEAT SLP ONLY]**:
 - **fixed**: Indicates whether it is a fixed sink or not. 0 = not fixed; 1 = fixed.
@@ -277,8 +276,7 @@ Sources
 - **comment**: Space for an individual comment, e.g. to which measure this component belongs.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. Input options: "photovoltaic", "wind", "other". Time series are 
-automatically generated for photovoltaic systems and wind turbines. If "other" is selected, a time series must be stored in the "time_series" sheet.
+- **technology**: Technology type of source. Input options: "photovoltaic", "wind", "other". Time series are automatically generated for photovoltaic systems and wind turbines. If "other" is selected, a time series must be stored in the "time_series" sheet.
 - **variable costs [CU/kWh]**: Defines the variable costs incurred for a kWh of energy drawn from the source.
 - **existing capacity [kW]**: Existing capacity of the source before possible investments.
 - **min. investment capacity [kW]**: Minimum capacity to be installed in the case of an investment.
@@ -288,8 +286,7 @@ automatically generated for photovoltaic systems and wind turbines. If "other" i
 - **inverter database (PV ONLY)**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter".
 - **Modul Model (PV ONLY)**: Module name, according to the database used.
 - **Inverter Model (PV ONLY)**: Inverter name, according to the database used.
-- **Azimuth (PV ONLY)**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible 
-(0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Azimuth (PV ONLY)**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Surface Tilt (PV ONLY)**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Albedo (PV ONLY)**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Altitude (PV ONLY)**: Height (above normal zero) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
@@ -319,15 +316,12 @@ Transformers
 - **label**: Unique designation of the transformer. The following format is recommended: "ID_energy sector_transformer".
 - **comment**: Space for an individual comment, e.g. to which measure this component belongs.
 - **active**: Specifies whether the transformer shall be included to the model. 0 = inactive, 1 = active.
-- **transformer type**: Indicates what kind of transformer it is. Possible entries: "GenericTransformer" 
-for linear transformers with constant efficiencies; "GenericCHP" for transformers with varying efficiencies.
+- **transformer type**: Indicates what kind of transformer it is. Possible entries: "GenericTransformer" for linear transformers with constant efficiencies; "GenericCHP" for transformers with varying efficiencies.
 - **input**: Specifies from which bus the input to the transformer comes.
 - **output**: Specifies to which bus the output of the transformer is forwarded.
-- **output2**: Specifies to which bus the output of the transformer is forwarded, if there are several outputs. 
-If there is no second output, the fill character "x" must be entered here.
+- **output2**: Specifies to which bus the output of the transformer is forwarded, if there are several outputs. If there is no second output, the fill character "x" must be entered here.
 - **efficiency**: Specifies the efficiency of the first output. Values must be between 0 and 1.
-- **efficiency2**: Specifies the efficiency of the second output, if there is one. Values must be between 0 and 1. 
-If there is no second output, the fill character "x" must be entered here.
+- **efficiency2**: Specifies the efficiency of the second output, if there is one. Values must be between 0 and 1. If there is no second output, the fill character "x" must be entered here.
 - **variable input costs**: Variable costs incurred per kWh of input energy supplied.
 - **existing capacity [kW]**: Already installed capacity of the transformer.
 - **max investment capacity [kW]**: Maximum in addition to existing capacity, installable transformer capacity.
@@ -428,14 +422,8 @@ Links
 
 Time Series
 ^^^^^^^^^^^
-- **timestamp**: Points in time to which the stored time series are related. 
-Should be within the time horizon defined in the sheet "timeseries".
-- **timeseries**: Time series of a sink which has been assigned the property 
-"timeseries" under the attribute "load profile" or source which has been assigned 
-the property "other" under the attribute "technology". Time series contain a value 
-between 0 and 1 for each point in time, which indicates the proportion of installed 
-capacity accounted for by the capacity produced at that point in time. In the header 
-line, the name must be entered in the format "componentID.actual_value".
+- **timestamp**: Points in time to which the stored time series are related. Should be within the time horizon defined in the sheet "timeseries".
+- **timeseries**: Time series of a sink which has been assigned the property "timeseries" under the attribute "load profile" or source which has been assigned the property "other" under the attribute "technology". Time series contain a value between 0 and 1 for each point in time, which indicates the proportion of installed capacity accounted for by the capacity produced at that point in time. In the header line, the name must be entered in the format "componentID.actual_value".
 
  
  
