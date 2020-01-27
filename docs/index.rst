@@ -137,7 +137,14 @@ Buses
   :align: center
   
 .. image:: images/BSP_Graph_Bus.png
-  :width: 500
+  :width: 400
+  :align: center
+  
+.. figure:: images/BSP_Graph_Bus.png
+    :name: fig-beispiel-bild
+    :alt:  fig-beispiel-bild
+    :align: center
+    :width: 50%
 
 Sinks
 ^^^^^
