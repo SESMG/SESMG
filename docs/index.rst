@@ -68,8 +68,9 @@ on German standard load profiles (SLP). The following electric SLPs are availabl
 
 .. table:: electrical standardload profiles
 
++--------+---------------------------------------------------+
 | Profil | Consumer Group                                    |
-| :----: | ------------------------------------------------- |
++========+===================================================+
 |   H0   | households                                        |
 |   G0   | commercial general                                |
 |   G1   | commercial on weeks 8-18 h                        |
@@ -81,6 +82,7 @@ on German standard load profiles (SLP). The following electric SLPs are availabl
 |   L0   | agriculture general                               |
 |   L1   | agriculture with dairy industry/animal breeding   |
 |   L2   | other agriculture                                 |
++--------+---------------------------------------------------+
 
 The following heat SLPs are available:
 
