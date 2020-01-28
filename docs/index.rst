@@ -446,7 +446,7 @@ Time Series
  
  
 .. figure:: images/BSP_timeseries.PNG
-   :width: 100 %
+   :width: 50 %
    :alt: Timeseries-Example
    :align: center
 
@@ -471,12 +471,43 @@ Weather Data
 
    Exemplary input for weather data
 
-Using the results
------------------
+Troubleshooting
+===============
+During execution of the model generator, error messages and associated program aborts may occur. In the following, known errors are 
+listed and it is explained how they can be corrected.
 
+.. code-block:: python
 
-Example
--------
+	" flowsum = source['sequences'].sum()
+	KeyError: 'sequences' "
+
+- **Error Cause**: At least one system component was entered incorrectly in the input file. 
+- **Debugging**: For all components, make sure that 1) each column is filled correctly, and 2) the first component of a sheet is entered in the row directly below the header row, and that there are no blank rows between the individual components of a sheet
+
+.. code-block:: python
+
+	Memory Error
+	
+- **Error Cause**: The available memory is not sufficient to solve the model.
+- **Debugging**: Take the following measures gradually until the error no longer occurs:
+	- Restart the used Python interpreter
+	- Close unnecessary programs on your computer
+	- Make sure that you are using a python 64 bit version (Python 32 bit can only access 2 GB of memory).
+	- Start the program on a more powerful computer.
+
+.. code-block:: python
+
+	AttributeError: module 'time' has no attribute 'clock'
+
+- **Error Cause**: You are using a Python version not compatible with oemof.
+- **Debugging**: Use Pyhton 3.7
+
+.. code-block:: python
+
+	ValueError: operands could not be broadcast together with shapes (8784,) (8760,) 
+
+- **Error Cause**: The weather datasatu contains the wrong number of data points for using feedinlib.
+- **Debugging**: Make sure that the number of weather data points corresponds to the time steps of the model (At hourly resolution, one year has 8760 time steps). When simulating a leap year, it is recommended limiting the time horizon to 8760 hours.
 
 
 General Information
@@ -494,7 +525,7 @@ Münster University of Applied Sciences
 christian.klemm@fh-muenster.de
 
 .. image:: images/FH_logo.jpg
-   :width: 20 %
+   :width: 30 %
 
 
 Acknowledgements
@@ -502,11 +533,4 @@ Acknowledgements
 
 The authors thank the German Federal Ministry of Education (BMBF) for funding the R2Q project within grant 033W102A-K.
 
-- Projektlogos einfügen
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
