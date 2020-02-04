@@ -184,7 +184,7 @@ Application of the Model Generator
 2. Execute the program "Spreadsheet_Energy_System_Model_Generator.py" in the main folder of the program. This can be done either by double-clicking, or by opening the file in any Python interpreter. The latter variant allows a more detailed access to error messages etc. Running the program may take some time depending on the model size.
 
 
-3. After running the program completely, the results can be viewed in the "results" folder. These consist of the "log.file" with details of the optimisation, as well as an .xlsx file for each bus, in which the energy flows of the optimised energy system are stored. 
+3. After running the program completely, the results can be viewed in the "results" folder. These consist of the "log.file" with details of the optimization, as well as an .xlsx file for each bus, in which the energy flows of the optimized energy system are stored. 
 
 
 Using the Scenario File
@@ -213,7 +213,7 @@ Timesystem
 
 - **start date**: start of the modelling time horizont. Format: "YYYY-MM-DD hh:mm:ss"
 - **end date**: end date of the modelling time horizont. Format: "YYYY-MM-DD hh:mm:ss"
-- **temporal resolution**: for the modelling considered temporal resolution. Possible inputs: "a" (years), "d" (days), "h (hours) "min" (minutes), "s" (seconds), "ms" (mili seconds).
+- **temporal resolution**: for the modelling considered temporal resolution. Possible inputs: "a" (years), "d" (days), "h" (hours) "min" (minutes), "s" (seconds), "ms" (mili seconds).
 - **time zone**:
 - **periods**:
 
@@ -253,7 +253,7 @@ Buses
    :alt: Bus_Graph
    :align: center
 
-   Graph of the energy system, which is created by entering the example components
+   Graph of the energy system, which is created by entering the example components. By the input in the buses-sheet two buses were created, as well as a shortage source and an excess sink.
 
 
 
@@ -285,7 +285,7 @@ Sinks
    :alt: Sink_Graph
    :align: center
 
-   Graph of the energy system, which is created by entering the example components
+   Graph of the energy system, which is created by entering the example components. By the input in the sinks-sheet, a photovoltaik source has been created.
 
 Sources
 ^^^^^^^
@@ -326,7 +326,7 @@ Sources
    :alt: Source_Graph
    :align: center
 
-   Graph of the energy system, which is created by entering the example components  
+   Graph of the energy system, which is created by entering the example components. By the input in the sources-sheet one sink has been created.
 
 Transformers
 ^^^^^^^^^^^^
@@ -403,7 +403,7 @@ Storages
    :alt: Transformer_Graph
    :align: center
 
-   Graph of the energy system, which is created by entering the example components
+   Graph of the energy system, which is created by entering the example components. By the input of the storage-sheet one storage has been created.
 
 Links
 ^^^^^
@@ -436,7 +436,7 @@ Links
    :alt: Transformer_Graph
    :align: center
 
-   Graph of the energy system, which is created by entering the example components
+   Graph of the energy system, which is created by entering the example components. By the input in the links-sheet one link has been created.
 
 Time Series
 ^^^^^^^^^^^
@@ -480,6 +480,12 @@ listed and it is explained how they can be corrected.
 
 	" flowsum = source['sequences'].sum()
 	KeyError: 'sequences' "
+	
+or
+
+.. code-block:: python
+
+	ApplicationError: Solver (cbc) did not exit normally
 
 - **Error Cause**: At least one system component was entered incorrectly in the input file. 
 - **Debugging**: For all components, make sure that 1) each column is filled correctly, and 2) the first component of a sheet is entered in the row directly below the header row, and that there are no blank rows between the individual components of a sheet
@@ -490,6 +496,7 @@ listed and it is explained how they can be corrected.
 	
 - **Error Cause**: The available memory is not sufficient to solve the model.
 - **Debugging**: Take the following measures gradually until the error no longer occurs:
+
 	- Restart the used Python interpreter
 	- Close unnecessary programs on your computer
 	- Make sure that you are using a python 64 bit version (Python 32 bit can only access 2 GB of memory).
@@ -523,10 +530,6 @@ Christian Klemm
 Münster University of Applied Sciences
 
 christian.klemm@fh-muenster.de
-
-.. image:: images/FH_logo.jpg
-   :width: 30 %
-
 
 Acknowledgements
 ----------------

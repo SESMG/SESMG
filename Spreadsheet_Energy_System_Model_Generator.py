@@ -50,8 +50,13 @@ time_series  | timestamp, timeseries for components with fixed input or output
 
 weather_data | dates(untitled), dhi, dirhi, pressure, temp_air, windspeed, z0
 -------------------------------------------------------------------------------
+Docs:
+https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
+GIT:
+https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator
+-------------------------------------------------------------------------------
 
-@author: Christian Klemm - christian.klemm@fh-muenster.de, 27.01.2020
+@ Christian Klemm - christian.klemm@fh-muenster.de, 30.01.2020
 """
 
 import logging
@@ -65,7 +70,7 @@ from program_files import optimize_model
 
 
 # DEFINES PATH OF INPUT DATA
-scenario_file = os.path.join(os.path.dirname(__file__)+'/data','scenario.xlsx')
+scenario_file = os.path.join(os.path.dirname(__file__),'scenario_Optimization_Monetary.xlsx')
 
 # DEFINES PATH OF OUTPUR DATA
 result_path = os.path.join(os.path.dirname(__file__)+'/results')

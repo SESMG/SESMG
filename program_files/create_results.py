@@ -298,7 +298,7 @@ def costs(nodes_data, optimization_model, energy_system):
                 flowmax = shortage['sequences'].max()
                 logging.info('   '+'Max. Capacity: ' + str(round(flowmax[[0][0]], 2)) + ' kW')             
                 # Variable Costs
-                variable_costs = b['shortage costs [CU/kWh]'] * flowsum[0]
+                variable_costs = b['shortage costs [CU/kWh]'] * flowsum[[0][0]]
                 total_costs = total_costs + variable_costs
                 logging.info('   '+'Variable Costs: ' + str(round(variable_costs, 2)) + ' cost units')    
                 logging.info('   '+'--------------------------------------------------------')        
@@ -313,10 +313,8 @@ def costs(nodes_data, optimization_model, energy_system):
                         
             transformer = outputlib.views.node(results, t['label'])
             flowsum = transformer['sequences'].sum()
-            #transformer_test = flowsum
-            #transformer = outputlib.views.node(results, t['label'])
             flowmax = transformer['sequences'].max()
-                    
+            
             if t['transformer type'] == 'GenericTransformer':            
                 if t['output2'] == 'None':
                     logging.info('   '+'Total Energy Output to ' +  t['output'] + ': ' + str(round(flowsum[[1][0]], 2)) + ' kWh')
@@ -342,12 +340,11 @@ def costs(nodes_data, optimization_model, energy_system):
             if t['output2'] != 'None': 
                 logging.info('   '+'WARNING: Capacity to bus2 will be added later')
                 
-            #transformer = outputlib.views.node(results, t['label'])
-            #flowsum = transformer['sequences'].sum()
-            variable_costs = (t['variable input costs [CU/kWh]']+t['variable output costs [CU/kWh]']) * flowsum[[0][0]]
+
+            variable_costs = t['variable input costs [CU/kWh]'] * flowsum[[0][0]] + t['variable output costs [CU/kWh]']* flowsum[[1][0]]
             total_costs = total_costs + variable_costs
             logging.info('   '+'Variable Costs: ' + str(round(variable_costs, 2)) + ' cost units')
-            total_costs = total_costs + variable_costs
+
             
             # Investment Capacity
             if t['max. investment capacity [kW]'] > 0:
@@ -419,7 +416,7 @@ def costs(nodes_data, optimization_model, energy_system):
     logging.info('   '+"*********************************************************") 
     logging.info('   '+"***LINKS********************************************") 
     logging.info('   '+"*********************************************************")
-    logging.info('   '+'--------------------------------------------------------CAPACITY BEI MEHREREN AUSGÄNGEN PRÜFEN')  
+    logging.info('   '+'--------------------------------------------------------')  
     for i, p in nd['links'].iterrows():    
         if p['active']:
             logging.info('   '+p['label'])   
@@ -437,18 +434,26 @@ def costs(nodes_data, optimization_model, energy_system):
                 if p['(un)directed'] == 'directed':
                     logging.info('   '+'Total Energy Output to ' +  p['bus_2'] + ': ' + str(round(flowsum[[1][0]], 2)) + ' kWh')
                     max_link_flow = flowmax[1]                
-                else:    
-                    logging.info('   '+'Total Energy Output to ' +  p['bus_2'] + ': ' + str(round(flowsum[[0][0]], 2)) + ' kWh')
-                    logging.info('   '+'Total Energy Output to ' +  p['bus_1'] + ': ' + str(round(flowsum[[1][0]], 2)) + ' kWh')
+                else:
+                    link2 = outputlib.views.node(results, p['label']+'_direction_2')
+                    flowsum2 = link2['sequences'].sum()
+                    flowmax2 = link2['sequences'].max()
+                    
+                    logging.info('   '+'Total Energy Output to ' +  p['bus_2'] + ': ' + str(round(flowsum[[1][0]], 2)) + ' kWh')
+                    logging.info('   '+'Total Energy Output to ' +  p['bus_1'] + ': ' + str(round(flowsum2[[1][0]], 2)) + ' kWh')
+                    
+                if p['(un)directed'] == 'directed':
                     max_link_flow = flowmax[1]
-        
-                logging.info('   '+'Max. Capacity: ' + str(round(max_link_flow, 2)) + ' kW') ### Wert auf beide Busse anwenden!
-                if p['undirected'] != 'None': 
-                    logging.info('   '+'WARNING: Capacity to bus2 will be added later')
+                    logging.info('   '+'Max. Capacity to '+  p['bus_2'] + ': ' + str(round(max_link_flow, 2)) + ' kW') ### Wert auf beide Busse anwenden!
+                else:
+                    max_link_flow = flowmax[1]
+                    logging.info('   '+'Max. Capacity to '+  p['bus_2'] + ': ' + str(round(max_link_flow, 2)) + ' kW')
+                    max_link_flow = flowmax2[1]
+                    logging.info('   '+'Max. Capacity to '+  p['bus_1'] + ': ' + str(round(max_link_flow, 2)) + ' kW')
                     
                 #transformer = outputlib.views.node(results, t['label'])
                 #flowsum = transformer['sequences'].sum()
-                variable_costs = p['variable input costs'] * flowsum[[0][0]]
+                variable_costs = p['variable costs [CU/kWh]'] * flowsum[[0][0]]
                 total_costs = total_costs + variable_costs
                 logging.info('   '+'Variable Costs: ' + str(round(variable_costs, 2)) + ' cost units')
                 total_costs = total_costs + variable_costs
@@ -456,7 +461,7 @@ def costs(nodes_data, optimization_model, energy_system):
                 # Investment Capacity
                 if p['max. investment capacity [kW]'] > 0:
                     link_node = esys.groups[p['label']]
-                    bus_node = esys.groups[p['output']]
+                    bus_node = esys.groups[p['bus_2']]
                     link_investment = results[link_node, bus_node]['scalars']['invest']
                     logging.info('   '+'Investment Capacity: ' + str(round(link_investment, 2)) + ' kW')
         
