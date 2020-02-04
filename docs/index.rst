@@ -166,13 +166,17 @@ Getting Started
 Installation
 ------------
 
-1. For the application of the Spreadsheet Energy System Model Generator Python (version >= 3.5) is required. This can be downloaded `here <https://www.python.org/downloads/>`_ free of charge and installed on your PC (Windows, Linux, Mac).
+1. Python version 3.5 or higher is required for the application of the Spreadsheet Energy System Model Generator Python. It can be freely `downloaded <https://www.python.org/downloads/>`_ and installed on any PC (Windows, Linux, Mac). 
+
+
 
 
 2. Download the program files from `GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>`_ as .zip folder.
 
 
-3. Extract the .zip folder in any directory on your computer.
+
+
+3. Extract the .zip folder into any directory on the computer.
 
 
 Application of the Model Generator
@@ -181,7 +185,10 @@ Application of the Model Generator
 1. Fill in the spreadsheet document according to the instructions in the following chapter and save it under the name "scenario.xlsx" in the "data" folder.
 
 
+
 2. Execute the program "Spreadsheet_Energy_System_Model_Generator.py" in the main folder of the program. This can be done either by double-clicking, or by opening the file in any Python interpreter. The latter variant allows a more detailed access to error messages etc. Running the program may take some time depending on the model size.
+
+
 
 
 3. After running the program completely, the results can be viewed in the "results" folder. These consist of the "log.file" with details of the optimization, as well as an .xlsx file for each bus, in which the energy flows of the optimized energy system are stored. 
@@ -189,33 +196,35 @@ Application of the Model Generator
 
 Using the Scenario File
 ----------------------
-For the modeling and optimization of an energy system, parameters for all system components must be given in the model generator using the enclosed .xlsx file 
-(editable with Excel, LibreOffice, ...). The .xlsx file is divided into nine input sheets. In the "timesystem" sheet general parameters are defined for the 
-time horizon to be examined, in the sheets "buses", "sinks", "sources", "transformers", "storages" and "links" corresponding components are defined. In the sheet 
-"time series" the performance of individual components can be stored. In the "weather data" sheet, the required weather data is stored. When filling out the input 
-file, it is recommended to enter the energy step by step and to perform test runs in between, so that input errors are detected early 
-and can be localized more easily. In addition to the explanation of the individual input sheets, an example energy system is built up step by step in the following subchapters.
-The input file filled out for this example is stored in the program folder "examples" and `can be viewed here on 
-GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator/tree/master/examples>`_. 
 
-The following uniform units are used throughout the file for input:
+For the modeling and optimization of an energy system, parameters for all system components must be given in the model 
+generator using the enclosed .xlsx file (editable with Excel, LibreOffice, …). The .xlsx file is divided into nine 
+input sheets. In the “timesystem” sheet, general parameters are defined for the time horizon to be examined, in the 
+sheets “buses”, “sinks”, “sources”, “transformers”, “storages” and “links” corresponding components are defined. In 
+the sheet “time series”, the performance of individual components can be stored. In the “weather data” sheet, the 
+required weather data is stored. When completing the input file, it is recommended to enter the energy system step by 
+step and to perform test runs in between, so that potential input errors are detected early and can be localized more 
+easily. In addition to the explanation of the individual input sheets, an example energy system is built step by step 
+in the following subchapters. The input file for this example is stored in the program folder “examples” and viewed on 
+`GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator/tree/master/examples>`_. The following units are used throughout:
 
 - capacity/performance in kW,
 - energy in kWh,
 - angles in degrees, and
 - costs in cost units (CU).
 
-Cost units can be any scalable quantity used to optimize the energy system, such as euros or grams of carbon dioxide emissions.
+Cost units are any scalable quantity used to optimize the energy system, such as euros or grams of carbon dioxide emissions.
 
 
 Timesystem
-^^^^^^^^^^^^^^^^
+^^^^^^^^^^^
 
-- **start date**: start of the modelling time horizont. Format: "YYYY-MM-DD hh:mm:ss"
-- **end date**: end date of the modelling time horizont. Format: "YYYY-MM-DD hh:mm:ss"
+Within this sheet, the time horizon and the temporal resolution of the model is defined. The following parameters have to be entered:
+
+- **start date**: start of the modelling time horizon. Format: "YYYY-MM-DD hh:mm:ss";
+- **end date**: end date of the modelling time horizon. Format: "YYYY-MM-DD hh:mm:ss"; and
 - **temporal resolution**: for the modelling considered temporal resolution. Possible inputs: "a" (years), "d" (days), "h" (hours) "min" (minutes), "s" (seconds), "ms" (mili seconds).
-- **time zone**:
-- **periods**:
+- **periods**: Number of periods within the time horizon (one year with hourly resolution equals 8760 periods).
 
 
   
@@ -229,22 +238,22 @@ Timesystem
 Buses
 ^^^^^
 
+Within this sheet, the buses of the energy system are defined. The following parameters need to be entered:
+
 - **label**: Unique designation of the bus. The following format is recommended: "ID_energy sector_bus".
-- **comment**: Space for an individual comment, e.g. to which measure this component belongs.
+- **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the bus shall be included to the model. 0 = inactive, 1 = active. 
-- **excess**: Specifies whether an sink is to be generated, which can decrease excess energy. 0 = no excess sink will be generated; 1 = excess sink will be generated. 
-- **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits. 0 = no shortage source will be generated; 1 = shortage source will be generated.
+- **excess**: Specifies whether a sink is to be generated, which consumes excess energy. 0 = no excess sink will be generated; 1 = excess sink will be generated.
+- **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits or not. 0 = no shortage source will be generated; 1 = shortage source will be generated.
 - **shortage costs [CU/kWh]**: Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "x" is used. 
 - **excess costs [CU/kWh]**: Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "x" is used. 
-
-  
 	
 .. figure:: images/BSP_buses.PNG
    :width: 100 %
    :alt: Bus-Example
    :align: center
 
-   Exemplary input for the creation of buses
+   Exemplary input for the buses sheet
   
 
 	
@@ -253,22 +262,23 @@ Buses
    :alt: Bus_Graph
    :align: center
 
-   Graph of the energy system, which is created by entering the example components. By the input in the buses-sheet two buses were created, as well as a shortage source and an excess sink.
-
+   Graph of the energy system, which is created by entering the example components. Two buses, a shortage source, and an excess sink were created by the input.
 
 
 Sinks
 ^^^^^
 
+Within this sheet, the sinks of the energy system are defined. The following parameters need to be entered:
+
 - **label**: Unique designation of the sink. The following format is recommended: "ID_energy sector_sinks".
-- **comment**: Space for an individual comment, e.g. to which measure this component belongs.
+- **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
-- **input**: Specifies which bus the sink is connected with.
-- **load profile**: Specifies the basis on which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles its short designation is used (electricity SLP's: h0, g0, ...; heat SLP's: efh, mfh, its, ...). If a time series is used, "timeseries" must be entered. If the source is not fixed, the fill character "x" has to be used.
+- **input**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
+- **load profile**: Specifies the basis onto which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles, its acronym is used (see [@tbl:standardloadprofiles; @tbl:heatprofiles]). If a time series is used, "timeseries" must be entered. If the source is not fixed, the fill character "x" has to be used.
 - **annual demand [kWh/a]**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "x" is used. 
-- **occupants [RICHARDSON]**: Number of occupants living in the considered house. Only required when using the Richardson tool, use fill character "x" for other load profiles.
-- **building class [HEAT SLP ONLY]**:
-- **wind class [HEAT SLP ONLY]**:
+- **occupants [RICHARDSON]**: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character “x” for other load profiles.
+- **building class [HEAT SLP ONLY]**: BDEW-building class (see [@tbl:BuildingClasses]).
+- **wind class [HEAT SLP ONLY]**: wind classification for building location (0=not windy, 1=windy)
 - **fixed**: Indicates whether it is a fixed sink or not. 0 = not fixed; 1 = fixed.
  
 .. figure:: images/BSP_sinks.png
@@ -276,7 +286,7 @@ Sinks
    :alt: Sink-Example
    :align: center
 
-   Exemplary input for the creation of sinks
+   Exemplary input for the sinks sheet
   
 
 	
@@ -285,21 +295,24 @@ Sinks
    :alt: Sink_Graph
    :align: center
 
-   Graph of the energy system, which is created by entering the example components. By the input in the sinks-sheet, a photovoltaik source has been created.
+   Graph of the energy system, which is created by entering the example components. By the input in the sinks sheet, a photovoltaic source has been created.
 
 Sources
 ^^^^^^^
 
+Within this sheet, the sources of the energy system are defined. Properties with the addition “PV ONLY” have only to be 
+defined if the parameter “technology” is set on “photovoltaic”. The following parameters have to be entered:
+
 - **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
-- **comment**: Space for an individual comment, e.g. to which measure this component belongs.
+- **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. Input options: "photovoltaic", "wind", "other". Time series are automatically generated for photovoltaic systems and wind turbines. If "other" is selected, a time series must be stored in the "time_series" sheet.
+- **technology**: Technology type of source. Input options: “photovoltaic”, “wind”, “other”. Time series are automatically generated for photovoltaic systems and wind turbines. If “other” is selected, a time series must be provided in the “time_series” sheet.
 - **variable costs [CU/kWh]**: Defines the variable costs incurred for a kWh of energy drawn from the source.
 - **existing capacity [kW]**: Existing capacity of the source before possible investments.
-- **min. investment capacity [kW]**: Minimum capacity to be installed in the case of an investment.
+- **min. investment capacity [kW]**: Minimum capacity to be installed in case of an investment.
 - **max. investment capacity [kW]**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
-- **periodical costs [CU/(kW a)]**: Periodic costs incurred for investments per kW and timeperiod added.
+- **periodical costs [CU/(kW a)]**: Costs incurred per kW for investments within the time horizon
 - **technology database (PV ONLY)**: Database, from where module parameters are to be obtained. Recommended Database: "SandiaMod".
 - **inverter database (PV ONLY)**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter".
 - **Modul Model (PV ONLY)**: Module name, according to the database used.
@@ -307,7 +320,7 @@ Sources
 - **Azimuth (PV ONLY)**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Surface Tilt (PV ONLY)**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Albedo (PV ONLY)**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "x" for other technologies.
-- **Altitude (PV ONLY)**: Height (above normal zero) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Altitude (PV ONLY)**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Latitude (PV ONLY)**: Geographic latitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Longitude (PV ONLY)**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
@@ -317,7 +330,7 @@ Sources
    :alt: Source-Example
    :align: center
 
-   Exemplary input for the creation of sources
+   Exemplary input for the sources sheet
   
 
 	
@@ -327,28 +340,28 @@ Sources
    :align: center
 
    Graph of the energy system, which is created by entering the example components. By the input in the sources-sheet one sink has been created.
-
+   
 Transformers
 ^^^^^^^^^^^^
 
+Within this sheet, the transformers of the energy system are defined. The following parameters have to be entered:
+
+
+
 - **label**: Unique designation of the transformer. The following format is recommended: "ID_energy sector_transformer".
-- **comment**: Space for an individual comment, e.g. to which measure this component belongs.
+- **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the transformer shall be included to the model. 0 = inactive, 1 = active.
 - **transformer type**: Indicates what kind of transformer it is. Possible entries: "GenericTransformer" for linear transformers with constant efficiencies; "GenericCHP" for transformers with varying efficiencies.
-- **input**: Specifies from which bus the input to the transformer comes.
-- **output**: Specifies to which bus the output of the transformer is forwarded.
-- **output2**: Specifies to which bus the output of the transformer is forwarded, if there are several outputs. If there is no second output, the fill character "x" must be entered here.
-- **efficiency**: Specifies the efficiency of the first output. Values must be between 0 and 1.
-- **efficiency2**: Specifies the efficiency of the second output, if there is one. Values must be between 0 and 1. If there is no second output, the fill character "x" must be entered here.
+- **input**: Specifies the bus from which the input to the transformer comes from.
+- **output**: Specifies bus to which the output of the transformer is forwarded to.
+- **output2**: Specifies the bus to which the output of the transformer is forwarded to, if there are several outputs. If there is no second output, the fill character “x” must be entered here.
+- **efficiency**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
+- **efficiency2**: Specifies the efficiency of the second output, if there is one. Values  between 0 and 1 are entered. If there is no second output, the fill character “x” must be entered here.
 - **variable input costs**: Variable costs incurred per kWh of input energy supplied.
 - **existing capacity [kW]**: Already installed capacity of the transformer.
-- **max investment capacity [kW]**: Maximum in addition to existing capacity, installable transformer capacity.
+- **max investment capacity [kW]**: Maximum  installable transformer capacity in addition to the previously existing one.
 - **min investment capacity [kW]**: Minimum transformer capacity to be installed.
-- **periodical costs [CU/a]**: Periodical costs incurred for investments per kW and timeperiod added.
-- **el. eff. at max fuel flow w/o distr. heating [GenericCHP]**:
-- **el. eff. at min. fuel flow w/o distr. heating [GenericCHP]**:
-- **minimal therm. condenser load to cooling water [GenericCHP]**:
-- **power loss index [GenericCHP]**:
+- **periodical costs [CU/a]**: Costs incurred per kW for investments within the time horizon.
 
 
 .. figure:: images/BSP_transformers.png
@@ -356,7 +369,7 @@ Transformers
    :alt: Transformer-Example
    :align: center
 
-   Exemplary input for the creation of transformers
+   Exemplary input for the transformers sheet
   
 
 	
@@ -365,27 +378,29 @@ Transformers
    :alt: Transformer_Graph
    :align: center
 
-   Graph of the energy system, which is created by entering the example components  
+   Graph of the energy system, which is created by entering the example components. One transformer has been created by including the transformers sheet 
 
 Storages
 ^^^^^^^^
 
+Within this sheet, the sinks of the energy system are defined. The following parameters have to be entered:
+
 - **label**: Unique designation of the storage. The following format is recommended: "ID_energy sector_storage".
-- **comment**: Space for an individual comment, e.g. to which measure this component belongs.
+- **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the storage shall be included to the model. 0 = inactive, 1 = active.
 - **bus**: Specifies which bus the storage is connected to.
 - **capacity inflow**: Indicates the performance with which the memory can be charged.
 - **capacity outflow**: Indicates the performance with which the memory can be discharged.
-- **capacity loss**: Indicates the storage losses per time unit.
+- **capacity loss**: Indicates the storage loss per time unit.
 - **efficiency inflow**: Specifies the charging efficiency.
 - **efficiency outflow**: Specifies the discharging efficiency.
 - **initial capacity**: Specifies how far the memory is loaded at time 0 of the simulation. Value must be between 0 and 1.
 - **capacity min**: Specifies the minimum amount of memory that must be loaded at any given time. Value must be between 0 and 1.
 - **capacity max**: Specifies the maximum amount of memory that can be loaded at any given time. Value must be between 0 and 1.
-- **variable input costs**: Indicates how many costs arise for the charging of one kWh.
-- **variable output costs**: Indicates how many costs arise for the discharging of a kWh.
-- **existing capacity [kW]**: Already installed capacity of the storage.
-- **periodical costs [CU/a]**: Periodical costs incurred for investments per kW capacity and timeperiod added.
+- **variable input costs**: Indicates how many costs arise for charging with one kWh.
+- **variable output costs**: Indicates how many costs arise for charging with one kWh.
+- **existing capacity [kW]**: Previously installed capacity of the storage.
+- **periodical costs [CU/a]**: Costs incurred per kW for investments within the time horizon.
 - **max. investment capacity [kW]**: Maximum in addition to existing capacity, installable storage capacity.
 - **min. investment capacity [kW]**: Minimum storage capacity to be installed.
 
@@ -394,7 +409,7 @@ Storages
    :alt: Storage-Example
    :align: center
 
-   Exemplary input for the creation of storages
+   Exemplary input for the storages sheet
   
 
 	
@@ -403,22 +418,26 @@ Storages
    :alt: Transformer_Graph
    :align: center
 
-   Graph of the energy system, which is created by entering the example components. By the input of the storage-sheet one storage has been created.
-
+   Graph of the energy system, which is created after entering the example components. One storage has been created by the storage sheet.
+   
 Links
 ^^^^^
+
+Within this sheet, the links of the energy system are defined. The following parameters have 
+to be entered:
+
 - **label**: Unique designation of the link. The following format is recommended: "ID_energy sector_transformer"
-- **comment**: Space for an individual comment, e.g. to which measure this component belongs.
+- **comment**: Space for an individual comment, e.g. an indication of  which measure this component belongs to.
 - **active**: Specifies whether the link shall be included to the model. 0 = inactive, 1 = active. 
 - **bus_1**: First bus to which the link is connected. If it is a directed link, this is the input bus.
 - **bus_2**: Second bus to which the link is connected. If it is a directed link, this is the output bus.
 - **(un)directed**: Specifies whether it is a directed or an undirected link. Input options: "directed", "undirected".
-- **efficiency**: Specifies the efficiency of the link.
+- **efficiency**: Specifies the efficiency of the link. Values between 0 and 1 are allowed entries.
 - **existing capacity [kW]**: Already installed capacity of the link.
-- **min. investment capacity [kW]**: Maximum in addition to existing capacity, installable capacity.
-- **max. investment capacity [kW]**: inimum capacity to be installed.
-- **variable costs [CU/kWh]**: Indicates how many costs arise for the transport of one kWh.
-- **periodical costs [CU/(kW a)]**: Periodical costs incurred for investments per kW capacity and timeperiod added.
+- **min. investment capacity [kW]**: Minimum, in addition to existing capacity, installable capacity.
+- **max. investment capacity [kW]**: Maximum capacity to be installed.
+- **variable costs [CU/kWh]**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
+- **periodical costs [CU/(kW a)]**: Costs incurred per kW for investments within the time horizon.
 
 
 
@@ -427,7 +446,7 @@ Links
    :alt: Storage-Example
    :align: center
 
-   Exemplary input for the creation of storages
+  Exemplary input for the input in the storages sheet
   
 
 	
@@ -436,10 +455,16 @@ Links
    :alt: Transformer_Graph
    :align: center
 
-   Graph of the energy system, which is created by entering the example components. By the input in the links-sheet one link has been created.
-
+   Graph of the energy system, which is created by entering the example components. One link has been created by the addition of the links sheet
+   
 Time Series
 ^^^^^^^^^^^
+
+Within this sheet, time series of components of which no automatically created time series exist, are stored. More 
+specifically, these are sinks to which the property “load profile” have been assigned as “timeseries” and sources 
+with the “technology” property “others”. The following 
+parameters have to be entered:
+
 - **timestamp**: Points in time to which the stored time series are related. Should be within the time horizon defined in the sheet "timeseries".
 - **timeseries**: Time series of a sink which has been assigned the property "timeseries" under the attribute "load profile" or source which has been assigned the property "other" under the attribute "technology". Time series contain a value between 0 and 1 for each point in time, which indicates the proportion of installed capacity accounted for by the capacity produced at that point in time. In the header line, the name must be entered in the format "componentID.actual_value".
 
@@ -450,13 +475,18 @@ Time Series
    :alt: Timeseries-Example
    :align: center
 
-   Exemplary input for time series
+   Exemplary input for time series sheet
 
 
 
 
 Weather Data
 ^^^^^^^^^^^^^^^^ 
+
+If electrical load profiles are simulated with the Richardson tool, heating load profiles with the demandlib or 
+photovoltaic systems with the feedinlib, weather data must be stored here. The weather 
+data time system should be in conformity with the model’s time system, defined in the sheet “timesystem”.
+
 - **timestamp**: Points in time to which the stored weather data are related. Should be within the time horizon defined in the sheet "timeseries".
 - **dhi**: diffuse horizontal irradiance in W/m^2
 - **dirhi**: direct horizontal irradiance in W/m^2
@@ -498,8 +528,8 @@ or
 - **Debugging**: Take the following measures gradually until the error no longer occurs:
 
 	- Restart the used Python interpreter
-	- Close unnecessary programs on your computer
-	- Make sure that you are using a python 64 bit version (Python 32 bit can only access 2 GB of memory).
+	- Close unnecessary programs on the computer
+	- Make sure that  python 64 bit version is used (Python 32 bit can manage only 2 GB of memory).
 	- Start the program on a more powerful computer.
 
 .. code-block:: python
