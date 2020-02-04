@@ -169,11 +169,7 @@ Installation
 1. Python version 3.5 or higher is required for the application of the Spreadsheet Energy System Model Generator Python. It can be freely `downloaded <https://www.python.org/downloads/>`_ and installed on any PC (Windows, Linux, Mac). 
 
 
-
-
 2. Download the program files from `GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>`_ as .zip folder.
-
-
 
 
 3. Extract the .zip folder into any directory on the computer.
@@ -185,10 +181,7 @@ Application of the Model Generator
 1. Fill in the spreadsheet document according to the instructions in the following chapter and save it under the name "scenario.xlsx" in the "data" folder.
 
 
-
 2. Execute the program "Spreadsheet_Energy_System_Model_Generator.py" in the main folder of the program. This can be done either by double-clicking, or by opening the file in any Python interpreter. The latter variant allows a more detailed access to error messages etc. Running the program may take some time depending on the model size.
-
-
 
 
 3. After running the program completely, the results can be viewed in the "results" folder. These consist of the "log.file" with details of the optimization, as well as an .xlsx file for each bus, in which the energy flows of the optimized energy system are stored. 
@@ -274,10 +267,10 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **input**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
-- **load profile**: Specifies the basis onto which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles, its acronym is used (see [@tbl:standardloadprofiles; @tbl:heatprofiles]). If a time series is used, "timeseries" must be entered. If the source is not fixed, the fill character "x" has to be used.
+- **load profile**: Specifies the basis onto which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles, its acronym is used. If a time series is used, "timeseries" must be entered. If the source is not fixed, the fill character "x" has to be used.
 - **annual demand [kWh/a]**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "x" is used. 
 - **occupants [RICHARDSON]**: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character “x” for other load profiles.
-- **building class [HEAT SLP ONLY]**: BDEW-building class (see [@tbl:BuildingClasses]).
+- **building class [HEAT SLP ONLY]**: BDEW-building class.
 - **wind class [HEAT SLP ONLY]**: wind classification for building location (0=not windy, 1=windy)
 - **fixed**: Indicates whether it is a fixed sink or not. 0 = not fixed; 1 = fixed.
  
