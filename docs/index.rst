@@ -440,7 +440,6 @@ to be entered:
 - **periodical costs [CU/(kW a)]**: Costs incurred per kW for investments within the time horizon.
 
 
-
 .. figure:: images/BSP_link.png
    :width: 100 %
    :alt: BSP-link
@@ -462,8 +461,7 @@ Time Series
 
 Within this sheet, time series of components of which no automatically created time series exist, are stored. More 
 specifically, these are sinks to which the property “load profile” have been assigned as “timeseries” and sources 
-with the “technology” property “others”. The following 
-parameters have to be entered:
+with the “technology” property “others”. The following parameters have to be entered:
 
 - **timestamp**: Points in time to which the stored time series are related. Should be within the time horizon defined in the sheet "timeseries".
 - **timeseries**: Time series of a sink which has been assigned the property "timeseries" under the attribute "load profile" or source which has been assigned the property "other" under the attribute "technology". Time series contain a value between 0 and 1 for each point in time, which indicates the proportion of installed capacity accounted for by the capacity produced at that point in time. In the header line, the name must be entered in the format "componentID.actual_value".
@@ -472,7 +470,7 @@ parameters have to be entered:
  
 .. figure:: images/BSP_timeseries.PNG
    :width: 50 %
-   :alt: Timeseries-Example
+   :alt: timeseries-sxample
    :align: center
 
    Exemplary input for time series sheet
@@ -481,22 +479,22 @@ parameters have to be entered:
 
 
 Weather Data
-^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^
 
 If electrical load profiles are simulated with the Richardson tool, heating load profiles with the demandlib or 
 photovoltaic systems with the feedinlib, weather data must be stored here. The weather 
 data time system should be in conformity with the model’s time system, defined in the sheet “timesystem”.
 
-- **timestamp**: Points in time to which the stored weather data are related. Should be within the time horizon defined in the sheet "timeseries".
-- **dhi**: diffuse horizontal irradiance in W/m^2
-- **dirhi**: direct horizontal irradiance in W/m^2
+- **timestamp**: Points in time to which the stored weather data are related. 
+- **dhi**: diffuse horizontal irradiance in W/m$^2$
+- **dirhi**: direct horizontal irradiance in W/m$^2$
 - **pressure**: air pressure in Pa
-- **windspeed**: Wind speed, measured at 10 m height, in the unit m/s
-- **z0**: roughness length of the environment
+- **windspeed**: Wind speed, measured at 10 m height, in unit m/s
+- **z0**: roughness length of the environment in units m
 
 .. figure:: images/BSP_weatherdata.PNG
    :width: 100 %
-   :alt: WeatherData-Example
+   :alt: weatherdata-Example
    :align: center
 
    Exemplary input for weather data
