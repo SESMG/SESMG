@@ -340,7 +340,6 @@ Transformers
 Within this sheet, the transformers of the energy system are defined. The following parameters have to be entered:
 
 
-
 - **label**: Unique designation of the transformer. The following format is recommended: "ID_energy sector_transformer".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the transformer shall be included to the model. 0 = inactive, 1 = active.
@@ -435,10 +434,10 @@ to be entered:
 
 .. figure:: images/BSP_link.png
    :width: 100 %
-   :alt: BSP-link
+   :alt: bsp_link_input
    :align: center
 
-  Exemplary input for the input in the storages sheet
+   Exemplary input for the input in the storages sheet
   
 
 	
