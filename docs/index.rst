@@ -443,7 +443,7 @@ to be entered:
 
 .. figure:: images/BSP_link.png
    :width: 100 %
-   :alt: Storage-Example
+   :alt: BSP-link
    :align: center
 
   Exemplary input for the input in the storages sheet
@@ -452,7 +452,7 @@ to be entered:
 	
 .. figure:: images/BSP_Graph_link.png
    :width: 60 %
-   :alt: Transformer_Graph
+   :alt: bsp-graph-link
    :align: center
 
    Graph of the energy system, which is created by entering the example components. One link has been created by the addition of the links sheet
