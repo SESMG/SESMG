@@ -56,7 +56,7 @@ GIT:
 https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator
 -------------------------------------------------------------------------------
 
-@ Christian Klemm - christian.klemm@fh-muenster.de, 30.01.2020
+@ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 """
 
 import logging
@@ -140,7 +140,7 @@ create_results.xlsx(nodes_data = nodes_data,
                     energy_system = esys,
                     filepath=result_path)
 
-create_results.costs(nodes_data = nodes_data, 
+create_results.statistics(nodes_data = nodes_data, 
                      optimization_model = om, 
                      energy_system = esys)
 

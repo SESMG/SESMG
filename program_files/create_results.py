@@ -3,7 +3,7 @@ Functions for returning optimization results in several forms.
  
 ----
 
-@ Christian Klemm - christian.klemm@fh-muenster.de, 21.01.2020
+@ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 
 """
 
@@ -151,7 +151,7 @@ def charts(nodes_data, optimization_model, energy_system):
 
 
     
-def costs(nodes_data, optimization_model, energy_system):
+def statistics(nodes_data, optimization_model, energy_system):
     """
     Returns a list of all defined components with the following information:
         
@@ -185,7 +185,7 @@ def costs(nodes_data, optimization_model, energy_system):
            
     ----
     
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 21.01.2020
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 
     """
     

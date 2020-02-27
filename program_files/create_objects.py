@@ -3,7 +3,7 @@
 Functions for the creation of oemof energy system objects from a given set 
 of object parameters.
 
-@ Christian Klemm - christian.klemm@fh-muenster.de, 03.02.2020
+@ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 """
 
 from oemof import solph
@@ -38,7 +38,7 @@ def buses(nodes_data, nodes):
            
     ----
     
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 15.01.2020
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 
     """
     
@@ -126,7 +126,7 @@ def sources(nodes_data, nodes, bus, filepath):
 
     ----
     
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 22.01.2020
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 
     """
     
@@ -147,7 +147,7 @@ def sources(nodes_data, nodes, bus, filepath):
     nd = nodes_data   
     busd = bus
     
-    def create_commodity_source_object():
+    def commodity_source():
        nodes.append(
                solph.Source(label=so['label'],
                      outputs={busd[so['output']]: solph.Flow(
@@ -160,7 +160,7 @@ def sources(nodes_data, nodes, bus, filepath):
        logging.info('   '+'Commodity Source created: ' + so['label'])        
 
     
-    def create_pv_source_object():
+    def pv_source():
         
         # reades pv system parameters from parameter dictionary nodes_data
         parameter_set = {
@@ -243,11 +243,11 @@ def sources(nodes_data, nodes, bus, filepath):
            
            ### Create Commodity Sources ###
            if so['technology'] == 'other':
-               create_commodity_source_object()
+               commodity_source()
                       
            ### Create Photovoltaic Sources ###  
            elif so['technology'] == 'photovoltaic':
-               create_pv_source_object()
+               pv_source()
           
             ### Create Windpower Sources ###
            elif so['technology'] == 'windpower': 
@@ -293,7 +293,7 @@ def sinks(nodes_data, bus, nodes, filepath):
 
     ----
     
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 21.01.2020
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 
     """
     import demandlib.bdew as bdew    
@@ -306,7 +306,7 @@ def sinks(nodes_data, bus, nodes, filepath):
     import richardsonpy.classes.electric_load as eload
     import numpy as np
     
-    def create_unfixed_sink_objects():
+    def unfixed_sink():
         """
         Creates a sink object with an unfixed energy input.
         """            
@@ -322,14 +322,14 @@ def sinks(nodes_data, bus, nodes, filepath):
         logging.info('   '+'Sink created: ' + de['label'])        
 
 
-    def create_timeseries_sink_objects():
+    def timeseries_sink():
         """
         Creates a sink object with a fixed input. The input must be given
         as a time series in 'nodes_data'.
         
         ----
     
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 15.01.2020
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 
         """
         # set static inflow values    
@@ -349,7 +349,7 @@ def sinks(nodes_data, bus, nodes, filepath):
         logging.info('   '+'Sink created: ' + de['label'])
 
 
-    def create_residentialheatslp_sink_objects():
+    def residentialheatslp_sink():
         """
         Creates a sink with inputs according to VDEW standard load profiles, 
         using oemofs demandlib and adds it to the list of components 'nodes'. 
@@ -357,7 +357,7 @@ def sinks(nodes_data, bus, nodes, filepath):
         
         ----
     
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 30.01.2020
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 
         """
         # Import weather Data
@@ -399,7 +399,7 @@ def sinks(nodes_data, bus, nodes, filepath):
                                                            fixed = True)}))                
         logging.info('   '+'Sink created: ' + de['label'])
 
-    def create_commercialheatslp_sink_objects():
+    def commercialheatslp_sink():
         """
         Creates a sink with inputs according to VDEW standard load profiles, 
         using oemofs demandlib and adds it to the list of components 'nodes'.
@@ -407,7 +407,7 @@ def sinks(nodes_data, bus, nodes, filepath):
         
         ----
     
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 21.01.2020
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 
         """
         # Import weather Data
@@ -448,7 +448,7 @@ def sinks(nodes_data, bus, nodes, filepath):
                                                            fixed = True)}))                
         logging.info('   '+'Sink created: ' + de['label']) 
 
-    def create_richardson_sink_objects():
+    def richardson_sink():
         """
         Creates a sink with stochastical input, using richardson.py and adds it 
         to the list of components 'nodes'. Used for the modelling of 
@@ -456,7 +456,7 @@ def sinks(nodes_data, bus, nodes, filepath):
         
         ----
     
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 21.01.2020
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 
         """       
         # Import Weather Data
@@ -531,7 +531,7 @@ def sinks(nodes_data, bus, nodes, filepath):
         logging.info('   '+'Sink created: ' + de['label'])        
 
 
-    def create_electricslp_sink_objects(): 
+    def electricslp_sink(): 
         # read timesystem data from scenario file
         for j, ts in nd['timesystem'].iterrows():
             temp_resolution = ts['temporal resolution']
@@ -585,26 +585,26 @@ def sinks(nodes_data, bus, nodes, filepath):
 
             ### Create Sinks un-fixed time-series ###        
             if de['load profile'] == 'x':
-                create_unfixed_sink_objects()           
+                unfixed_sink()           
             
             ### Create Sinks with Timeseries ###        
             elif de['load profile'] == 'timeseries':
-                create_timeseries_sink_objects()                
+                timeseries_sink()                
             
             ### Create Sinks with Heat SLP's ###                    
             elif de['load profile'] in heat_slps:
-                create_residentialheatslp_sink_objects()
+                residentialheatslp_sink()
 
             elif de['load profile'] in heat_slps_commercial:
-                create_commercialheatslp_sink_objects()
+                commercialheatslp_sink()
                 
             ## Richardson                
             elif de['load profile'] in richardson:
-                create_richardson_sink_objects()
+                richardson_sink()
                 
             ### Create Sinks with Electricity SLP's ###            
             elif de['load profile'] in electricity_slps:
-                create_electricslp_sink_objects()
+                electricslp_sink()
 
 
 
@@ -641,19 +641,19 @@ def transformers(nodes_data, nodes, bus):
 
     ----
     
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 03.02.2020
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 
     """
 
     
-    def create_generic_transformer_object():
+    def generic_transformer():
                 """
                 Creates a generic transformer with the paramters given in 'nodes_data'
                 and adds it to the list of components 'nodes'.
                         
                 ----
             
-                @ Christian Klemm - christian.klemm@fh-muenster.de, 15.01.2020
+                @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
         
                 """    
         # get time series for inflow of transformer    
@@ -716,14 +716,14 @@ def transformers(nodes_data, nodes, bus):
 
 
 
-    def create_genericchp_transformer_object():
+    def genericchp_transformer():
         """
         Creates a generic chp transformer with the paramters given in 'nodes_data'
         and adds it to the list of components 'nodes'.
                 
         ----
     
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 15.01.2020
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 
         """ 
         periods=len(datetime_index)                                     
@@ -754,7 +754,7 @@ def transformers(nodes_data, nodes, bus):
             
             ### Create Generic Transformers ###               
             if t['transformer type'] == 'GenericTransformer':
-                create_generic_transformer_object()
+                generic_transformer()
                 
             ### Create Extraction Turbine CHPs ###           
             elif t['transformer type'] == 'ExtractionTurbineCHP':
@@ -762,7 +762,7 @@ def transformers(nodes_data, nodes, bus):
             
             ### Create Generic CHPs ###           
             elif t['transformer type'] == 'GenericCHP':         ###Investment hinzufügen!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                create_genericchp_transformer_object()          #### Variable kosten hinzufügen!!!
+                genericchp_transformer()          #### Variable kosten hinzufügen!!!
                 
             ### Create Offset Transformers ###            
             elif t['transformer type'] == 'OffsetTransformer':
@@ -812,7 +812,7 @@ def storages(nodes_data, nodes, bus):
 
     ----
     
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 14.01.2020
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 
     """
  
@@ -883,7 +883,7 @@ def links(nodes_data, nodes, bus):
 
     ----
     
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 14.01.2020
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 
     """
     
@@ -894,14 +894,14 @@ def links(nodes_data, nodes, bus):
     busd = bus
     nd = nodes_data
     
-    def create_undirected_link():
+    def undirected_link():
         """
         Creates an undirected link between two buses and adds it to the list of 
         components 'nodes'.
                 
         ----
     
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 15.01.2020
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 
         """ 
         # First direction       
@@ -934,14 +934,14 @@ def links(nodes_data, nodes, bus):
         
         
         
-    def create_directed_link():
+    def directed_link():
         """
         Creates a directed link between two buses and adds it to the list of 
         components 'nodes'.
                 
         ----
     
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 24.01.2020
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
 
         """
         nodes.append(    
@@ -962,8 +962,8 @@ def links(nodes_data, nodes, bus):
         if p['active']:
             
             if p['(un)directed'] == 'undirected':
-                create_undirected_link()
+                undirected_link()
                 
             elif p['(un)directed'] == 'directed':
-                create_directed_link()
+                directed_link()
                 

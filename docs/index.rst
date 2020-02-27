@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Spreadsheet Energy System Model Generator's documentation!
-=====================================================================
+The Spreadsheet Energy System Model Generator
+=============================================
 
 .. toctree::
    :maxdepth: 2
