@@ -7,7 +7,7 @@ The Spreadsheet Energy System Model Generator
 =============================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
 About the Model Generator
