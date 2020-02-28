@@ -270,22 +270,6 @@ Application of the Model Generator
 Using the Scenario File
 ----------------------
 
-The following figure shows the folder structure in which the various program files of the model
-generator are organized. The main folder contains four sub-folders as well as the main
-program and the scenario input file. In the “docs” folder, the documentation of the
-program is deposited. The “examples” folder contains example
-scenarios, which, in addition to the documentation, should facilitate the entry into
-the program. Program data, consisting of self-written functions and the used Python
-libraries, are stored in the folder “program files”. The results created by the model
-generator (xlsx and log-files) will be stored during the modelling in the “results” folder.
-
-.. figure:: images/Folder_Structure_Icons.png
-   :width: 100 %
-   :alt: FolderStructure
-   :align: center
-
-   Folder Structure of the Spreadsheet Energy System Model Generator
-
 For the modeling and optimization of an energy system, parameters for all system components must be given in the model 
 generator using the enclosed .xlsx file (editable with Excel, LibreOffice, …). The .xlsx file is divided into nine 
 input sheets. In the “timesystem” sheet, general parameters are defined for the time horizon to be examined, in the 
@@ -587,7 +571,7 @@ data time system should be in conformity with the model’s time system, defined
 Results
 -------
 
-The results of the modeling are stored in the ``results´´ folder in two formats:
+The results of the modeling are stored in the "results" folder in two formats:
 - as summarizing log files, under
 - as detailed xlsx-files.
 
