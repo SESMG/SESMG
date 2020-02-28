@@ -11,7 +11,7 @@ import logging
 import os
 import pandas as pd
 import datetime
-from mip import Model, xsum, maximize, BINARY
+#from mip import Model, xsum, maximize, BINARY
 
 def buses(nodes_data, nodes):
     """
@@ -195,8 +195,7 @@ def sources(nodes_data, nodes, bus, filepath):
                       so['Longitude (PV ONLY)']), 
             scaling='peak_power')
         
-        # Prepare data set for compatibility with oemof
-        
+        # Prepare data set for compatibility with oemof      
         for i in range(len(feedin)):
             # Set negative values to zero (requirement for solving the model)
             if feedin[i]<0:
@@ -550,14 +549,6 @@ def sinks(nodes_data, bus, nodes, filepath):
                                                                  actual_value = elec_demand[de['load profile']],
                                                                  fixed = True)}))
         logging.info('   '+'Sink created: ' + de['label'])
-
-
-
-
-
-
-
-
 
     
     nd = nodes_data

@@ -63,9 +63,14 @@ import logging
 from oemof.tools import logger
 import os
 
+#import program_files.oemof.tools.logger as logger
+
+#from program_files.oemof.tools import logger
+
+
 # IMPORT CUSTOM MODULES
-from program_files import create_objects, create_results, create_energy_system
-from program_files import optimize_model
+from program_files import (create_objects, create_results, 
+                           create_energy_system, optimize_model)
 
 
 
