@@ -622,7 +622,7 @@ or
 
 	ValueError: operands could not be broadcast together with shapes (8784,) (8760,) 
 
-- **Error Cause**: The weather datasatu contains the wrong number of data points for using feedinlib.
+- **Error Cause**: The weather dataset contains the wrong number of data points for using feedinlib.
 - **Debugging**: Make sure that the number of weather data points corresponds to the time steps of the model (At hourly resolution, one year has 8760 time steps). When simulating a leap year, it is recommended limiting the time horizon to 8760 hours.
 
 
