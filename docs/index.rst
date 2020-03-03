@@ -263,7 +263,7 @@ Installation
 4. Download the CBC-solver from `here <http://ampl.com/dl/open/cbc/cbc-win64.zip>`_
 
 
-5. Extract the CBC solver into the Main Folder of the Spreadsheet Energy System Model Generator
+5. Extract the CBC solver into the folder of the Spreadsheet Energy System Model Generator
 
 
 6. Execute the "installation.cmd" file.
