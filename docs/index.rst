@@ -265,7 +265,7 @@ Installation
 - execute the installer on your computer
 	
 
-2. Download the Spreadsheet Energy System Model Generator from `GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>`_ as .zip folder.
+2. Download the Spreadsheet Energy System Model Generator from `GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator/-/archive/master/spreadsheet-energy-system-model-generator-master.zip>`_ as .zip folder.
 
 
 3. Extract the .zip folder into any directory on the computer.
@@ -694,8 +694,8 @@ SOFTWARE.
 
 Contact
 -------
-.. figure:: images/Contact.PNG
-   :width: 50 %
+.. figure:: images/contact.pdf
+   :width: 65 %
    :alt: contact_Klemm
    :align: left
 
