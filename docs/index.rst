@@ -252,6 +252,7 @@ Installation
 
 
 1. Install Python (version 3.5 or higher) 
+
 - go to the `Python download page <https://www.python.org/downloads/>`_
 - chose a Python version (e.g., "Python 3.7.6") and klick "download"
 - download an installer (e.g., "Windows x86-64 executable installer")
