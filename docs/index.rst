@@ -253,14 +253,16 @@ Installation
 
 1. Install Python (version 3.5 or higher) 
 
+
+.. note:: 
+
+	Make sure to select "Add pyton to PATH" at the beginning of the Python installation.
+
+
 - go to the `Python download page <https://www.python.org/downloads/>`_
 - chose a Python version (e.g., "Python 3.7.6") and klick "download"
 - download an installer (e.g., "Windows x86-64 executable installer")
 - execute the installer on your computer
-
-.. note:: 
-
-	Make sure to select "Add pyton 3.7 to PATH" at the beginning of the installation.
 	
 
 2. Download the Spreadsheet Energy System Model Generator from `GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>`_ as .zip folder.
@@ -279,7 +281,7 @@ Installation
 
 .. note:: 
 
-	If you receive a "Your computer has been protected by Windows" error message when you run the file, click "More Information," and then click "Run anyway".
+	If you receive a "Your computer has been protected by Windows" error message, click "More Information," and then click "Run anyway".
 
 
 7. The Spreadsheet Energy System Model Generator has been installed
@@ -667,24 +669,35 @@ General Information
 
 License
 -------
-MIT-License
+MIT License
 
-Copyright (c) 2019 oemof developer group
+Copyright (c) 2020 Christian Klemm
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 
 Contact
 -------
-Christian Klemm
-
-Münster University of Applied Sciences
-
-christian.klemm@fh-muenster.de
+.. figure:: images/Contact.PNG
+   :width: 50 %
+   :alt: contact_Klemm
+   :align: left
 
 Acknowledgements
 ----------------
