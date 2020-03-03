@@ -244,7 +244,7 @@ def statistics(nodes_data, optimization_model, energy_system):
     logging.info('   '+"*********************************************************") 
     logging.info('   '+"***SOURCES***********************************************") 
     logging.info('   '+"*********************************************************")
-    logging.info('   '+'--------------------------------------------------------CAPACITY ÜBERPRÜFEN, INSB. BEI PV MUSS PEAK POWER BERÜCKSICTIGT WERDEN.')    
+    logging.info('   '+'--------------------------------------------------------')    
     
     for i, so in nd['sources'].iterrows():    
         if so['active']:
@@ -306,7 +306,7 @@ def statistics(nodes_data, optimization_model, energy_system):
     logging.info('   '+"*********************************************************") 
     logging.info('   '+"***TRANSFORMERS******************************************") 
     logging.info('   '+"*********************************************************")
-    logging.info('   '+'--------------------------------------------------------CAPACITY BEI MEHREREN AUSGÄNGEN PRÜFEN')  
+    logging.info('   '+'--------------------------------------------------------')  
     for i, t in nd['transformers'].iterrows():    
         if t['active']:
             logging.info('   '+t['label'])   

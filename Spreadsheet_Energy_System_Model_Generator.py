@@ -56,16 +56,13 @@ GIT:
 https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator
 -------------------------------------------------------------------------------
 
-@ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
+@ Christian Klemm - christian.klemm@fh-muenster.de, 03.03.2020
 """
 
 import logging
+#import feedinlib
 from oemof.tools import logger
 import os
-
-#import program_files.oemof.tools.logger as logger
-
-#from program_files.oemof.tools import logger
 
 
 # IMPORT CUSTOM MODULES
