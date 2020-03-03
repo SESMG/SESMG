@@ -1,0 +1,85 @@
+******************************************************
+2020-03-03 11:31:49,713 - INFO - logger - Path for logging: C:\Users\klemm\Documents\Python Scripts\Spreadsheet_Energy_System_Model_Generator/results\oemof.log
+2020-03-03 11:31:49,716 - INFO - logger - Used oemof version: 0.3.2
+2020-03-03 11:31:53,355 - INFO - create_energy_system - Date time index successfully defined:
+ start date:          2012-01-01 00:00:00,
+ end date:            2012-12-30 23:00:00,
+ temporal resolution: h
+2020-03-03 11:31:53,361 - INFO - create_objects -    Bus created: hausbus
+2020-03-03 11:31:56,207 - INFO - utils - NumExpr defaulting to 4 threads.
+2020-03-03 11:31:57,359 - INFO - create_objects -    Source created: pv001_electricity_source
+2020-03-03 11:32:35,734 - INFO - create_objects -    Sink created: hausverbrauch
+2020-03-03 11:32:35,778 - INFO - optimize_model -    *********************************************************
+2020-03-03 11:32:35,780 - INFO - optimize_model -    Starting Optimization...
+2020-03-03 11:32:42,789 - ERROR - solvers - Solver (cbc) returned non-zero return code (3)
+******************************************************
+2020-03-03 11:35:21,027 - INFO - logger - Path for logging: C:\Users\klemm\Documents\Python Scripts\Spreadsheet_Energy_System_Model_Generator/results\oemof.log
+2020-03-03 11:35:21,059 - INFO - logger - Used oemof version: 0.3.2
+2020-03-03 11:35:22,834 - INFO - create_energy_system - Date time index successfully defined:
+ start date:          2012-01-01 00:00:00,
+ end date:            2012-12-30 23:00:00,
+ temporal resolution: h
+2020-03-03 11:35:22,838 - INFO - create_objects -    Bus created: hausbus
+2020-03-03 11:35:24,728 - INFO - utils - NumExpr defaulting to 4 threads.
+2020-03-03 11:35:25,569 - INFO - create_objects -    Source created: pv001_electricity_source
+2020-03-03 11:35:56,872 - INFO - create_objects -    Sink created: hausverbrauch
+2020-03-03 11:35:56,885 - INFO - optimize_model -    *********************************************************
+2020-03-03 11:35:56,887 - INFO - optimize_model -    Starting Optimization...
+2020-03-03 11:36:02,860 - INFO - models - Optimization successful...
+2020-03-03 11:36:05,115 - INFO - create_results -    Results saved as xlsx for hausbus
+2020-03-03 11:36:06,086 - INFO - create_results -    *********************************************************
+2020-03-03 11:36:06,129 - INFO - create_results -    ***SINKS*************************************************
+2020-03-03 11:36:06,131 - INFO - create_results -    *********************************************************
+2020-03-03 11:36:06,132 - INFO - create_results -    --------------------------------------------------------
+2020-03-03 11:36:06,134 - INFO - create_results -    hausverbrauch
+2020-03-03 11:36:06,140 - INFO - create_results -    Total Energy Demand: 4000.0 kWh
+2020-03-03 11:36:06,141 - INFO - create_results -    --------------------------------------------------------
+2020-03-03 11:36:06,143 - INFO - create_results -    hausbus_excess
+2020-03-03 11:36:06,146 - INFO - create_results -    Total Energy Input: 252.84 kWh
+2020-03-03 11:36:06,149 - INFO - create_results -    Max. Capacity: 0.39 kW
+2020-03-03 11:36:06,151 - INFO - create_results -    Variable Costs: 22.76 cost units
+2020-03-03 11:36:06,155 - INFO - create_results -    --------------------------------------------------------
+2020-03-03 11:36:06,159 - INFO - create_results -    *********************************************************
+2020-03-03 11:36:06,161 - INFO - create_results -    ***SOURCES***********************************************
+2020-03-03 11:36:06,162 - INFO - create_results -    *********************************************************
+2020-03-03 11:36:06,163 - INFO - create_results -    --------------------------------------------------------
+2020-03-03 11:36:06,167 - INFO - create_results -    pv001_electricity_source
+2020-03-03 11:36:06,173 - INFO - create_results -    Total Energy Input: 606.48 kWh
+2020-03-03 11:36:06,175 - INFO - create_results -    Max. Capacity: 0.41 kW
+2020-03-03 11:36:06,183 - INFO - create_results -    Investment Capacity: 0.4136928 kW
+2020-03-03 11:36:06,191 - INFO - create_results -    Variable costs: 0.0 cost units
+2020-03-03 11:36:06,195 - INFO - create_results -    Periodical costs: 37.23 cost units p.a.
+2020-03-03 11:36:06,199 - INFO - create_results -    --------------------------------------------------------
+2020-03-03 11:36:06,207 - INFO - create_results -    hausbus_shortage
+2020-03-03 11:36:06,213 - INFO - create_results -    Total Energy Input: 3646.36 kWh
+2020-03-03 11:36:06,219 - INFO - create_results -    Max. Capacity: 4.29 kW
+2020-03-03 11:36:06,225 - INFO - create_results -    Variable Costs: 1130.37 cost units
+2020-03-03 11:36:06,229 - INFO - create_results -    --------------------------------------------------------
+2020-03-03 11:36:06,233 - INFO - create_results -    *********************************************************
+2020-03-03 11:36:06,239 - INFO - create_results -    ***TRANSFORMERS******************************************
+2020-03-03 11:36:06,243 - INFO - create_results -    *********************************************************
+2020-03-03 11:36:06,247 - INFO - create_results -    --------------------------------------------------------
+2020-03-03 11:36:06,257 - INFO - create_results -    *********************************************************
+2020-03-03 11:36:06,264 - INFO - create_results -    ***STORAGES**********************************************
+2020-03-03 11:36:06,273 - INFO - create_results -    *********************************************************
+2020-03-03 11:36:06,277 - INFO - create_results -    --------------------------------------------------------
+2020-03-03 11:36:06,281 - INFO - create_results -    *********************************************************
+2020-03-03 11:36:06,290 - INFO - create_results -    ***LINKS********************************************
+2020-03-03 11:36:06,293 - INFO - create_results -    *********************************************************
+2020-03-03 11:36:06,297 - INFO - create_results -    --------------------------------------------------------
+2020-03-03 11:36:06,302 - INFO - create_results -    *********************************************************
+2020-03-03 11:36:06,307 - INFO - create_results -    ***SUMMARY***********************************************
+2020-03-03 11:36:06,313 - INFO - create_results -    *********************************************************
+2020-03-03 11:36:06,317 - INFO - create_results -    --------------------------------------------------------
+2020-03-03 11:36:06,381 - INFO - create_results -    Total System Costs:             1190.4 cost units
+2020-03-03 11:36:06,426 - INFO - create_results -    Total Variable Costs:           1153.0 cost units
+2020-03-03 11:36:06,431 - INFO - create_results -    Total Periodical Costs (p.a.):  37.0 cost units p.a.
+2020-03-03 11:36:06,435 - INFO - create_results -    Total Energy Demand:            4000.0 kWh
+2020-03-03 11:36:06,445 - INFO - create_results -    Total Energy Usage:             4506.0 kWh
+2020-03-03 11:36:06,448 - INFO - create_results -    --------------------------------------------------------
+2020-03-03 11:36:06,456 - INFO - create_results -    Investments to be made:
+2020-03-03 11:36:06,460 - INFO - create_results -    pv001_electricity_source: 0.4136928 kW; 37.23 cost units (p.a.)
+2020-03-03 11:36:06,464 - INFO - create_results -    --------------------------------------------------------
+2020-03-03 11:36:06,472 - INFO - create_results -    *********************************************************
+
+2020-03-03 11:36:06,476 - INFO - Spreadsheet_Energy_System_Model_Generator -    Modelling and optimization successfully completed!

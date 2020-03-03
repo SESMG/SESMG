@@ -248,13 +248,21 @@ Installation
 
 .. warning:: 
 
-	Warning! The installation has only been tested under Windows, using Python 3.7 64 bit! 
+	Warning! The installation has only been tested under Windows, using Python 3.7.6 (64 bit)! 
 
 
-1. Python version 3.5 or higher is required for the application of the Spreadsheet Energy System Model Generator Python. It can be freely `downloaded <https://www.python.org/downloads/>`_ and installed on any PC (Windows, Linux, Mac). 
+1. Install Python (version 3.5 or higher) 
+- go to the `Python download page <https://www.python.org/downloads/>`_
+- chose a Python version (e.g., "Python 3.7.6") and klick "download"
+- download an installer (e.g., "Windows x86-64 executable installer")
+- execute the installer on your computer
 
+.. note:: 
 
-2. Download the program files from `GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>`_ as .zip folder.
+	Make sure to select "Add pyton 3.7 to PATH" at the beginning of the installation.
+	
+
+2. Download the Spreadsheet Energy System Model Generator from `GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>`_ as .zip folder.
 
 
 3. Extract the .zip folder into any directory on the computer.
@@ -267,6 +275,13 @@ Installation
 
 
 6. Execute the "installation.cmd" file.
+
+.. note:: 
+
+	If you receive a "Your computer has been protected by Windows" error message when you run the file, click "More Information," and then click "Run anyway".
+
+
+7. The Spreadsheet Energy System Model Generator has been installed
 
 
 Application of the Model Generator
@@ -569,8 +584,8 @@ photovoltaic systems with the feedinlib, weather data must be stored here. The w
 data time system should be in conformity with the model’s time system, defined in the sheet “timesystem”.
 
 - **timestamp**: Points in time to which the stored weather data are related. 
-- **dhi**: diffuse horizontal irradiance in W/m$^2$
-- **dirhi**: direct horizontal irradiance in W/m$^2$
+- **dhi**: diffuse horizontal irradiance in W/m:sup:`2
+- **dirhi**: direct horizontal irradiance in W/m:sup:`2
 - **pressure**: air pressure in Pa
 - **windspeed**: Wind speed, measured at 10 m height, in unit m/s
 - **z0**: roughness length of the environment in units m
@@ -599,25 +614,25 @@ Troubleshooting
 During execution of the model generator, error messages and associated program aborts may occur. In the following, known errors are 
 listed and it is explained how they can be corrected.
 
-.. code-block:: python
+.. warning:: 
 
 	" flowsum = source['sequences'].sum()
 	KeyError: 'sequences' "
 	
 or
 
-.. code-block:: python
+.. warning:: 
 
 	ApplicationError: Solver (cbc) did not exit normally
 
-- **Error Cause**: At least one system component was entered incorrectly in the input file. 
+- **Possible Error Cause**: At least one system component was entered incorrectly in the input file. 
 - **Debugging**: For all components, make sure that 1) each column is filled correctly, and 2) the first component of a sheet is entered in the row directly below the header row, and that there are no blank rows between the individual components of a sheet
 
-.. code-block:: python
+.. warning:: 
 
 	Memory Error
 	
-- **Error Cause**: The available memory is not sufficient to solve the model.
+- **Possible Error Cause**: The available memory is not sufficient to solve the model.
 - **Debugging**: Take the following measures gradually until the error no longer occurs:
 
 	- Restart the used Python interpreter
@@ -625,20 +640,26 @@ or
 	- Make sure that  python 64 bit version is used (Python 32 bit can manage only 2 GB of memory).
 	- Start the program on a more powerful computer.
 
-.. code-block:: python
+.. warning:: 
 
 	AttributeError: module 'time' has no attribute 'clock'
 
-- **Error Cause**: You are using a Python version not compatible with oemof.
+- **Possible Error Cause**: You are using a Python version not compatible with oemof.
 - **Debugging**: Use Pyhton 3.7
 
-.. code-block:: python
+.. warning:: 
 
 	ValueError: operands could not be broadcast together with shapes (8784,) (8760,) 
 
-- **Error Cause**: The weather dataset contains the wrong number of data points for using feedinlib.
+- **Possible Error Cause**: The weather dataset contains the wrong number of data points for using feedinlib.
 - **Debugging**: Make sure that the number of weather data points corresponds to the time steps of the model (At hourly resolution, one year has 8760 time steps). When simulating a leap year, it is recommended limiting the time horizon to 8760 hours.
 
+.. warning:: 
+
+	ValueError: pyutilib.common._exceptions.ApplicationError: Solver (cbc) did not exit normally
+	
+- **Possible Error Cause**: A value for the use of the investment module (e.g., "min Investment Capacity") was not filled in.
+- **Debugging**: Check that all necessary cells of the spreadsheet have been filled in.
 
 General Information
 ===================
