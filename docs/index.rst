@@ -694,7 +694,7 @@ SOFTWARE.
 
 Contact
 -------
-.. figure:: images/contact.pdf
+.. figure:: images/contact.PNG
    :width: 65 %
    :alt: contact_Klemm
    :align: left
