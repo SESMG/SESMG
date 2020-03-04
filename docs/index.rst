@@ -228,25 +228,21 @@ in a ``windy'' or ``non-windy'' area are taken into account for the application
 of heat standard load profiles. The following location classes may be considered:
 
 
-+----------+---------------------------------------------------------------+
-| Category | Building Location                                             |
-+==========+===============================================================+
-| 11       | Germany, nationwide                                           |
-+----------+---------------------------------------------------------------+
-| 1        | Bremen                                                        |
-+----------+---------------------------------------------------------------+
-| 2        | Hamburg, Saarland                                             |
-+----------+---------------------------------------------------------------+
-| 3        | Berlin , Hessen, Lower Saxony, North Rhine-Westphalia         |
-+----------+---------------------------------------------------------------+
-| 4        | Baden-Württemberg, Rhineland-Paatinate,                       |
-+----------+---------------------------------------------------------------+
-|          | Schleswig-Holstein, Saxony                                    |
-+----------+---------------------------------------------------------------+
-| 5        | Brandenburg, Bavaria, Mecklenburg-Western Pomerania,          |
-+----------+---------------------------------------------------------------+
-|          | Saxony-Anhalt, Thuringia                                      |
-+----------+---------------------------------------------------------------+
++----------+--------------------------------------------------------------------------------+
+| Category | Building Location                                             					|
++==========+================================================================================+
+| 11       | Germany, nationwide                                           					|
++----------+--------------------------------------------------------------------------------+
+| 1        | Bremen                                                       					|
++----------+--------------------------------------------------------------------------------+
+| 2        | Hamburg, Saarland                                            					|
++----------+--------------------------------------------------------------------------------+
+| 3        | Berlin , Hessen, Lower Saxony, North Rhine-Westphalia         					|
++----------+--------------------------------------------------------------------------------+
+| 4        | Baden-Württemberg, Rhineland-Paatinate, Schleswig-Holstein, Saxony 			|
++----------+--------------------------------------------------------------------------------+
+| 5        | Brandenburg, Bavaria, Mecklenburg-Western Pomerania, Saxony-Anhalt, Thuringia 	|
++----------+--------------------------------------------------------------------------------+
 
 
 **Stochastic Load Profiles**
@@ -763,7 +759,20 @@ General Information
 Related websites and publications
 ---------------------------------
 
-- Oemof 
+
+`Open Energy Modelling Framework (oemof) documentation <https://oemof.readthedocs.io/en/stable/>`_
+
+`Open Energy Modelling Framework (oemof) on Github <https://github.com/oemof>`_
+
+`Feedinlib Documentation <https://feedinlib.readthedocs.io/en/latest/>`_
+
+`Demandlib Documentation <https://demandlib.readthedocs.io/en/latest/>`_
+
+`Richardsonpy on Github <https://github.com/RWTH-EBC/richardsonpy>`_
+
+
+`R2Q research project <https://www.fh-muenster.de/forschungskooperationen/r2q/index.php>`_
+
 
 License
 -------
