@@ -759,6 +759,7 @@ General Information
 Related websites and publications
 ---------------------------------
 
+`Spreadsheet Energy System Model Generator on GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>`_
 
 `Open Energy Modelling Framework (oemof) documentation <https://oemof.readthedocs.io/en/stable/>`_
 
