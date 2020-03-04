@@ -27,7 +27,7 @@ pip install openpyxl==3.0.0
 pip install oemof==0.3.2
 pip install demandlib==0.1.6
 pip install pvlib==0.7.1
-
+pip install feedinlib==0.0.12
 pip install richardsonpy==0.2.1
 
 @echo ######################

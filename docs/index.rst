@@ -86,6 +86,56 @@ source to the energy system, which supplies energy
 in the event of an energy deficit. In reality, such a 
 source could represent the purchase of energy at a fixed price.
 
+**Photovoltaic Systems**
+
+The following Figure sketches the fractions of radiation
+arriving at a PV-module as well as further relevant parameters. 
+
+.. figure:: images/PV_Aufbau.png
+   :width: 100 %
+   :alt: pv_systems
+   :align: center
+
+   Radiation on a photovoltaic module.
+
+
+
+The global radiation is
+composed of direct and diffuse radiation. The ``direct horizontal
+irradiance'' dirhi is the amount of sun radiation as directly
+received by a horizontal surface. The ``diffuse horizontal irradiance''
+dhi is the share of radiation, which arrives via scattering effects
+on the same surface. A part of the global radiation is reflected on the ground surface and
+can thus cause an additional radiation contribution on the photovoltaic
+module. The amount of
+the reflected part depends on the magnitude of the albedo of the ground material. Exemplary albedo values are
+listed in the following table.
+
++---------------------------+--------------------------------+
+| Material 					| Consumer Group                 |
++===========================+================================+
+|   herbage (july, august)	| 0.25                           |
++---------------------------+--------------------------------+
+|   pasture		   			| 0.18 - 0.23                    |
++---------------------------+--------------------------------+
+|   uncoppied fields	   	| 0.26            		         |
++---------------------------+--------------------------------+
+|   woods   				| 0.05 - 0.18 					 |
++---------------------------+--------------------------------+
+|   heath area 		  		| 0.10 - 0.25                    |
++---------------------------+--------------------------------+
+|   asphalt   				| 0.15                           |
++---------------------------+--------------------------------+
+|   concrete, clean   		| 0.30                           |
++---------------------------+--------------------------------+
+|   concrete, weathered		| 0.20                           |
++---------------------------+--------------------------------+
+|   snow cover, fresh   	| 0.80 - 0.90                    |
++---------------------------+--------------------------------+
+|   snow cover, old     	| 0.45 - 0.70                    |
++---------------------------+--------------------------------+
+
+
 Sinks
 ^^^^^
 
@@ -139,7 +189,7 @@ of the Electricity Industry (VDEW) can be used:
 |   L2   | other agriculture                                 |
 +--------+---------------------------------------------------+
 
-The following thermal standard load profiles of the Association of Energy and Water Management (BDEW) can be used:
+The following heat standard load profiles of the Association of Energy and Water Management (BDEW) can be used:
 
 +---------+----------------------------------------------------------------+
 | Profile | House Type                                                     |
@@ -173,6 +223,32 @@ The following thermal standard load profiles of the Association of Energy and Wa
 | GHD     | Total load profile Business/Commerce/Services                  |
 +---------+----------------------------------------------------------------+
 
+In addition, the location of the building and whether the building is located 
+in a ``windy'' or ``non-windy'' area are taken into account for the application 
+of heat standard load profiles. The following location classes may be considered:
+
+
++----------+---------------------------------------------------------------+
+| Category | Building Location                                             |
++==========+===============================================================+
+| 11       | Germany, nationwide                                           |
++----------+---------------------------------------------------------------+
+| 1        | Bremen                                                        |
++----------+---------------------------------------------------------------+
+| 2        | Hamburg, Saarland                                             |
++----------+---------------------------------------------------------------+
+| 3        | Berlin , Hessen, Lower Saxony, North Rhine-Westphalia         |
++----------+---------------------------------------------------------------+
+| 4        | Baden-Württemberg, Rhineland-Paatinate,                       |
++----------+---------------------------------------------------------------+
+|          | Schleswig-Holstein, Saxony                                    |
++----------+---------------------------------------------------------------+
+| 5        | Brandenburg, Bavaria, Mecklenburg-Western Pomerania,          |
++----------+---------------------------------------------------------------+
+|          | Saxony-Anhalt, Thuringia                                      |
++----------+---------------------------------------------------------------+
+
+
 **Stochastic Load Profiles**
 
 The use of standard load profiles has the disadvantage that they only represent 
@@ -196,20 +272,11 @@ losses. The transformers’ efficiencies can be defined for every
 time step (e.g., the efficiency of a thermal 
 powerplants in dependence of  the ambient temperature).
 
-**Generic Transformers** are simply transforming an energy flow 
-linearly into another one. A generic transformer’s efficiency 
-remains the same regardless of the load point. 
-transformers may have one or more different outputs, e.g., heat 
-and electricity. For the modeling the nominal performance of a 
-generic transformer with several outputs, the 
-respective output ratios and an efficiency for each output need 
-to be known.
+Currently only Generic Transformers can be used within the Spreadsheet Energy System Model Generator. 
+These may have one or more different outputs, e.g., heat and electricity. For the modelling,
+the nominal performance of a generic transformer with several outputs,
+the respective output ratios, and an efficiency for each output need to be known.
 
-The **GenericCHP**-transformer can be used to model different 
-types of CHP plants, such as combined cycle extraction turbines, 
-back pressure turbines, or motoric CHPs. For 
-the individual outputs (electricity and heat), different nominal 
-values and efficiencies can be defined. 
 
 Links
 ^^^^^
@@ -279,9 +346,10 @@ Installation
 
 6. Execute the "installation.cmd" file.
 
+
 .. note:: 
 
-	If you receive a "Your computer has been protected by Windows" error message, click "More Information," and then click "Run anyway".
+	If you receive a "Your computer has been protected by Windows" error message, click "More Information," and then click "Run Anyway".
 
 
 7. The Spreadsheet Energy System Model Generator has been installed
@@ -614,8 +682,22 @@ are.
 
 Troubleshooting
 ===============
-During execution of the model generator, error messages and associated program aborts may occur. In the following, known errors are 
-listed and it is explained how they can be corrected.
+During execution of the model generator, error messages and associated program aborts may occur. 
+
+**General debugging**:
+
+Pay attention to the correct spelling:
+
+- Pay attention to correct upper and lower case.
+- Do not use spaces in the entire spreadsheet (except for the "comment" columns).
+- Make sure that every column of the used lines is filled. Columns that are not used can be filled with an "x".
+
+Make sure that the displayed system can stay in balance. 
+- It must always be possible to take off all of the supplied energy and vice versa. 
+- The use of excess-sinks and shortage-sources can help to keep the system in balance.
+
+
+**Known error messages**
 
 .. warning:: 
 
@@ -628,7 +710,7 @@ or
 
 	ApplicationError: Solver (cbc) did not exit normally
 
-- **Possible Error Cause**: At least one system component was entered incorrectly in the input file. 
+- **Possible Error Cause**: A system component was entered incorrectly in the input file. 
 - **Debugging**: For all components, make sure that 1) each column is filled correctly, and 2) the first component of a sheet is entered in the row directly below the header row, and that there are no blank rows between the individual components of a sheet
 
 .. warning:: 
@@ -662,10 +744,25 @@ or
 	ValueError: pyutilib.common._exceptions.ApplicationError: Solver (cbc) did not exit normally
 	
 - **Possible Error Cause**: A value for the use of the investment module (e.g., "min Investment Capacity") was not filled in.
-- **Debugging**: Check that all necessary cells of the spreadsheet have been filled in.
+- **Debugging**: Make sure, that all necessary cells of the spreadsheet have been filled in.
+
+..warning::
+
+	KeyError: '*__any component name__*'
+	
+- **Possible Error Cause**: Incorrectly assigned bus name for the input or output of a component
+- **Debugging**: Check that all bus references are correct. Also check for typos.
+
+
+Your error message is not included? Do not hesitate to contact the developers.
 
 General Information
 ===================
+
+Related websites and publications
+---------------------------------
+
+- Oemof 
 
 License
 -------
@@ -694,8 +791,8 @@ SOFTWARE.
 
 Contact
 -------
-.. figure:: images/Contact.PNG
-   :width: 55 %
+.. figure:: images/contact.PNG
+   :width: 65 %
    :alt: contact_Klemm
    :align: left
 

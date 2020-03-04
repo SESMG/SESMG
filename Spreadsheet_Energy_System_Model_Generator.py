@@ -24,7 +24,7 @@ sources      | label, active, output, technology, variable costs [CU/kWh],
                max. investment capacity [kW], periodical costs [CU/(kW a)], 
                technology database (PV ONLY), inverter database (PV ONLY),
                Modul Model (PV ONLY), Inverter Model (PV ONLY), 
-               reference value [kW], Azimuth (PV ONL>), Surface Tilt (PV ONLY),
+               reference value [kW], Azimuth (PV ONLY), Surface Tilt (PV ONLY),
                Albedo (PV ONLY), Altitude (PV ONLY), Latitude (PV ONLY), 
                Longitude (PV ONLY)
                
@@ -56,7 +56,7 @@ GIT:
 https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator
 -------------------------------------------------------------------------------
 
-@ Christian Klemm - christian.klemm@fh-muenster.de, 03.03.2020
+@ Christian Klemm - christian.klemm@fh-muenster.de, 04.03.2020
 """
 
 import logging
