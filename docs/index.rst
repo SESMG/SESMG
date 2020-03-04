@@ -697,12 +697,13 @@ Make sure that the displayed system can stay in balance.
 - The use of excess-sinks and shortage-sources can help to keep the system in balance.
 
 
-**Known error messages**
+**Known error messages**:
 
 .. warning:: 
 
-	" flowsum = source['sequences'].sum()
-	KeyError: 'sequences' "
+	flowsum = source['sequences'].sum()
+	
+	KeyError: 'sequences'
 	
 or
 
@@ -746,7 +747,7 @@ or
 - **Possible Error Cause**: A value for the use of the investment module (e.g., "min Investment Capacity") was not filled in.
 - **Debugging**: Make sure, that all necessary cells of the spreadsheet have been filled in.
 
-..warning::
+.. warning::
 
 	KeyError: '*__any component name__*'
 	
@@ -791,8 +792,8 @@ SOFTWARE.
 
 Contact
 -------
-.. figure:: images/contact.PNG
-   :width: 65 %
+.. figure:: images/Contact.PNG
+   :width: 55 %
    :alt: contact_Klemm
    :align: left
 
