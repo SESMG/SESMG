@@ -10,8 +10,6 @@ The Spreadsheet Energy System Model Generator
    :maxdepth: 4
    :caption: Contents:
    
-version: 1
-
 About the Model Generator
 =========================
 
