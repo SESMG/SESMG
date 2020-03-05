@@ -354,7 +354,7 @@ Installation
 Application of the Model Generator
 ----------------------------------
 
-1. Fill in the spreadsheet document according to the instructions in the following chapter and save it under the name "scenario.xlsx" in the "data" folder.
+1. Fill in the spreadsheet document according to the instructions in the following chapter and save it as "scenario.xlsx" in the main folder of the Spreadsheet Energy System Model Generator.
 
 
 2. Execute the program "Spreadsheet_Energy_System_Model_Generator.py" in the main folder of the program. This can be done either by double-clicking, or by opening the file in any Python interpreter. The latter variant allows a more detailed access to error messages etc. Running the program may take some time depending on the model size.
@@ -756,7 +756,7 @@ Your error message is not included? Do not hesitate to contact the developers.
 General Information
 ===================
 
-Related websites and publications
+Related links
 ---------------------------------
 
 `Spreadsheet Energy System Model Generator on GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>`_
@@ -810,7 +810,7 @@ Contact
 Acknowledgements
 ----------------
 
-The authors thank the German Federal Ministry of Education (BMBF) for funding the R2Q project within grant 033W102A-K.
+The authors thank the German Federal Ministry of Education (BMBF) for funding the R2Q project within grant 033W102A.
 
 .. figure:: images/R2Q_Logos.png
    :width: 100 %

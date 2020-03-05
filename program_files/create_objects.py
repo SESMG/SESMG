@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
+"""Creates oemof energy system components.
+
 Functions for the creation of oemof energy system objects from a given set 
 of object parameters.
 
-@ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
+---
+@ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
 """
 
 from oemof import solph
@@ -14,7 +16,8 @@ import datetime
 #from mip import Model, xsum, maximize, BINARY
 
 def buses(nodes_data, nodes):
-    """
+    """Creates bus objects.
+    
     Creates bus objects with the parameters given in 'nodes_data' and adds 
     them to the list of components 'nodes'.
 
@@ -36,10 +39,8 @@ def buses(nodes_data, nodes):
        busd : obj:'dict'
            -- dictionary containing all buses created   
            
-    ----
-    
+    ----    
     @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
-
     """
     
     busd = {}
@@ -53,7 +54,7 @@ def buses(nodes_data, nodes):
             busd[b['label']] = bus
             logging.info('   '+'Bus created: ' + b['label'])
             
-            # Create an excess sink for every bus, which is marked with "excess"
+            # Create an sink for every bus, which is marked with "excess"
             if b['excess']:
                 nodes.append(
                     solph.Sink(label=b['label'] + '_excess',
@@ -62,26 +63,19 @@ def buses(nodes_data, nodes):
                                    #nominal_value=1
                                    )}))
             
-            # Create an shortage source for every bus, which is marked with "shortage"
+            # Create a source for every bus, which is marked with "shortage"
             if b['shortage']:
                 nodes.append(
                     solph.Source(label=b['label'] + '_shortage',
-                                 outputs={busd[b['label']]: solph.Flow(
-                                     variable_costs=b['shortage costs [CU/kWh]'])}))
+                            outputs={busd[b['label']]: solph.Flow(
+                            variable_costs=b['shortage costs [CU/kWh]'])}))
     return busd
-
-
-
-
-
-
-
-
 
 
 def sources(nodes_data, nodes, bus, filepath):
     
-    """
+    """Creates source objects.
+    
     Creates source objects with the parameters given in 'nodes_data' and adds 
     them to the list of components 'nodes'. If the parameter 'technology' in 
     nodes_data is labeled as 'commodity source', a source with defined 
@@ -123,14 +117,10 @@ def sources(nodes_data, nodes, bus, filepath):
                - "windspeed" in m/s
                - "z0" (roughness length) in m
                
-
-    ----
-    
+    ---- 
     @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
-
     """
-    
-    
+       
     #PV
 #    import pvlib
 #    from pvlib.pvsystem import PVSystem
@@ -174,13 +164,16 @@ def sources(nodes_data, nodes, bus, filepath):
         pv_module = feedinlib.powerplants.Photovoltaic(**parameter_set)
         
         # reades weather data from interim-.csv data set
-        my_weather_pandas_DataFrame = pd.read_csv(os.path.join(os.path.dirname(__file__))+'/interim_data/weather_data.csv', index_col=0,
-            date_parser=lambda idx: pd.to_datetime(idx, utc=True))
+        my_weather_pandas_DataFrame = pd.read_csv(os.path.join(
+                os.path.dirname(__file__))+'/interim_data/weather_data.csv', 
+                index_col=0,
+                date_parser=lambda idx: pd.to_datetime(idx, utc=True))
 
         
         # calculetes global horizontal irradiance from diffuse (dhi) and direct
         # irradiance and adds it to the wether data frame
-        my_weather_pandas_DataFrame['ghi'] = my_weather_pandas_DataFrame.dirhi + my_weather_pandas_DataFrame.dhi
+        my_weather_pandas_DataFrame['ghi'] = (my_weather_pandas_DataFrame.dirhi 
+                                             + my_weather_pandas_DataFrame.dhi)
         
         # changes names of data columns, so it fits the needs of the feedinlib
         name_dc = {
@@ -223,14 +216,13 @@ def sources(nodes_data, nodes, bus, filepath):
         logging.info('   '+'Source created: ' + so['label'])
         
     
-
-    
     # The feedinlib can only read .csv data sets, so the weather data from
     # the .xlsx scenario file have to be converted into a .csv data set and
     # saved
     read_file = pd.read_excel(filepath, sheet_name='weather data')
     read_file.to_csv(
-            os.path.join(os.path.dirname(__file__))+'/interim_data/weather_data.csv', 
+            os.path.join(os.path.dirname(__file__))
+                                         +'/interim_data/weather_data.csv', 
             index = None, 
             header=True)
 
@@ -250,19 +242,15 @@ def sources(nodes_data, nodes, bus, filepath):
           
             ### Create Windpower Sources ###
            elif so['technology'] == 'windpower': 
-               logging.info('   '+'WARNING: windpower plants can currently not be modelled. This feature will be added later.')
+               logging.info('   '+'WARNING: windpower plants can currently not'
+                           + ' be modelled. This feature will be added later.')
 
 
-
-
-
-
-
-
-              
+             
 def sinks(nodes_data, bus, nodes, filepath):
     
-    """
+    """Creates sink objects.
+    
     Creates sinks objects with the parameters given in 'nodes_data' and adds 
     them to the list of components 'nodes'.
 
@@ -290,11 +278,10 @@ def sinks(nodes_data, bus, nodes, filepath):
         nodes : obj:'list'
             -- list of components created before (can be empty)
 
-    ----
-    
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
-
+    ---- 
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
     """
+    
     import demandlib.bdew as bdew    
     
     #Richardson
@@ -306,9 +293,7 @@ def sinks(nodes_data, bus, nodes, filepath):
     import numpy as np
     
     def unfixed_sink():
-        """
-        Creates a sink object with an unfixed energy input.
-        """            
+        """Creates a sink object with an unfixed energy input."""            
         # set static inflow values    
         inflow_args = {'nominal_value': de['nominal value [kW]'],
                        'fixed': de['fixed']}   
@@ -327,10 +312,9 @@ def sinks(nodes_data, bus, nodes, filepath):
         as a time series in 'nodes_data'.
         
         ----
-    
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
-
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
         """
+        
         # set static inflow values    
         inflow_args = {'nominal_value': de['nominal value [kW]'],
                        'fixed': de['fixed']}   
@@ -349,16 +333,16 @@ def sinks(nodes_data, bus, nodes, filepath):
 
 
     def residentialheatslp_sink():
-        """
+        """Creates a sink with a residential SLP time series.
+        
         Creates a sink with inputs according to VDEW standard load profiles, 
         using oemofs demandlib and adds it to the list of components 'nodes'. 
         Used for the modelling of residential ectricity demands.
         
         ----
-    
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
-
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
         """
+        
         # Import weather Data
         data = pd.read_csv(os.path.join(
                 os.path.dirname(__file__))+'/interim_data/weather_data.csv')
@@ -393,22 +377,23 @@ def sinks(nodes_data, bus, nodes, filepath):
         nodes.append(
                 solph.Sink(label=de['label'],
                    inputs={
-                       busd[de['input']]: solph.Flow(nominal_value = de['annual demand [kWh/a]'],
-                                                           actual_value = demand[de['load profile']],
-                                                           fixed = True)}))                
+                       busd[de['input']]: solph.Flow(
+                               nominal_value = de['annual demand [kWh/a]'],
+                               actual_value = demand[de['load profile']],
+                               fixed = True)}))                
         logging.info('   '+'Sink created: ' + de['label'])
 
     def commercialheatslp_sink():
-        """
+        """Creates a sink with commercial SLP timeseries
+        
         Creates a sink with inputs according to VDEW standard load profiles, 
         using oemofs demandlib and adds it to the list of components 'nodes'.
         Used for the modelling of commercial electricity demands.
         
-        ----
-    
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
-
+        ----    
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
         """
+        
         # Import weather Data
         data = pd.read_csv(os.path.join(
                 os.path.dirname(__file__))+'/interim_data/weather_data.csv')
@@ -442,30 +427,33 @@ def sinks(nodes_data, bus, nodes, filepath):
         nodes.append(
                 solph.Sink(label=de['label'],
                    inputs={
-                       busd[de['input']]: solph.Flow(nominal_value = de['annual demand [kWh/a]'],
-                                                           actual_value = demand[de['load profile']],
-                                                           fixed = True)}))                
+                       busd[de['input']]: solph.Flow(
+                               nominal_value = de['annual demand [kWh/a]'],
+                               actual_value = demand[de['load profile']],
+                               fixed = True)}))                
         logging.info('   '+'Sink created: ' + de['label']) 
 
     def richardson_sink():
-        """
+        """Creates a sink with stochastical timeseries.
+        
         Creates a sink with stochastical input, using richardson.py and adds it 
         to the list of components 'nodes'. Used for the modelling of 
         residential electricity demands.
         
-        ----
-    
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
-
-        """       
+        ----   
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+        """   
+        
         # Import Weather Data
         dirhi_csv = pd.read_csv(
-                os.path.join(os.path.dirname(__file__))+'/interim_data/weather_data.csv', 
+                os.path.join(os.path.dirname(__file__))
+                             +'/interim_data/weather_data.csv', 
                 usecols=['dirhi'],
                 dtype=float)
         dirhi=dirhi_csv.values.flatten() 
         dhi_csv = pd.read_csv(
-        os.path.join(os.path.dirname(__file__))+'/interim_data/weather_data.csv', 
+        os.path.join(os.path.dirname(__file__))
+                     +'/interim_data/weather_data.csv', 
         usecols=['dhi'], 
         dtype=float) 
         dhi=dhi_csv.values.flatten()
@@ -496,7 +484,7 @@ def sinks(nodes_data, bus, nodes, filepath):
         else:
             logging.info('   '+'Invalid Temporal Resolution!')
             
-        #  Generate occupancy object (necessary as input for electric load gen.)
+        #  Generate occupancy object (necessary as input for electric load gen)
         occ_obj = occ.Occupancy(number_occupants=nb_occ)
         
         #  Get radiation (necessary for lighting usage calculation)
@@ -517,16 +505,18 @@ def sinks(nodes_data, bus, nodes, filepath):
         occ_profile_copy = copy.copy(occ_obj.occupancy)
         
         load_profile = el_load_obj.loadcurve#[0:len(datetime_index)]
-        richardson_demand = sum(el_load_obj.loadcurve) * timestep / (3600 * 1000)
+        richardson_demand = (sum(el_load_obj.loadcurve) 
+                             * timestep / (3600 * 1000))
         annual_demand = de['annual demand [kWh/a]']
         demand_ratio = annual_demand/richardson_demand
         
         #create
         nodes.append(
                   solph.Sink(label=de['label'],
-                             inputs={busd[de['input']]: solph.Flow(nominal_value = 0.001*demand_ratio, # diesen Wert anpassen
-                                                                 actual_value = load_profile,
-                                                                 fixed = True)}))
+                             inputs={busd[de['input']]: solph.Flow(
+                                     nominal_value = 0.001*demand_ratio, 
+                                     actual_value = load_profile,
+                                     fixed = True)}))
         logging.info('   '+'Sink created: ' + de['label'])        
 
 
@@ -534,7 +524,8 @@ def sinks(nodes_data, bus, nodes, filepath):
         # read timesystem data from scenario file
         for j, ts in nd['timesystem'].iterrows():
             temp_resolution = ts['temporal resolution']
-            year = datetime.datetime.strptime(str(ts['start date']), '%Y-%m-%d %H:%M:%S').year
+            year = datetime.datetime.strptime(str(ts['start date']), 
+                                              '%Y-%m-%d %H:%M:%S').year
         
         # Import SLP's
         e_slp = bdew.ElecSlp(year)
@@ -544,10 +535,11 @@ def sinks(nodes_data, bus, nodes, filepath):
         
         #create
         nodes.append(
-                  solph.Sink(label=de['label'],
-                             inputs={busd[de['input']]: solph.Flow(nominal_value = de['annual demand [kWh/a]'], # diesen Wert anpassen
-                                                                 actual_value = elec_demand[de['load profile']],
-                                                                 fixed = True)}))
+              solph.Sink(label=de['label'],
+                    inputs={busd[de['input']]: solph.Flow(
+                                nominal_value = de['annual demand [kWh/a]'],
+                                actual_value = elec_demand[de['load profile']],
+                                fixed = True)}))
         logging.info('   '+'Sink created: ' + de['label'])
 
     
@@ -559,7 +551,8 @@ def sinks(nodes_data, bus, nodes, filepath):
     # set and saved
     read_file = pd.read_excel(filepath, sheet_name='weather data')
     read_file.to_csv(
-            os.path.join(os.path.dirname(__file__))+'/interim_data/weather_data.csv', 
+            os.path.join(os.path.dirname(__file__))
+                         +'/interim_data/weather_data.csv', 
             index = None, 
             header=True)
     
@@ -608,7 +601,8 @@ def sinks(nodes_data, bus, nodes, filepath):
 
 def transformers(nodes_data, nodes, bus):
 
-    """
+    """Creates a transformer object.
+    
     Creates transformers objects as defined in 'nodes_data' and adds them to 
     the list of components 'nodes'.
 
@@ -633,20 +627,19 @@ def transformers(nodes_data, nodes, bus):
     ----
     
     @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
-
     """
 
     
     def generic_transformer():
-                """
-                Creates a generic transformer with the paramters given in 'nodes_data'
-                and adds it to the list of components 'nodes'.
+                """Creates a Generic Transformer object.
+                
+                Creates a generic transformer with the paramters given in 
+                'nodes_data' and adds it to the list of components 'nodes'.
                         
                 ----
-            
-                @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
-        
+                @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020    
                 """    
+                
         # get time series for inflow of transformer    
 #                for col in nd['timeseries'].columns.values:   
 #                    if col.split('.')[0] == t['label']:    
@@ -656,74 +649,77 @@ def transformers(nodes_data, nodes, bus):
                 one_output = ['None', 'none', 'x']
                 
                 if t['output2'] in one_output:
-                    #maximum = [add_var(var_type=BINARY)]
-                    nodes.append(    
-                        solph.Transformer(    
-                            label=t['label'],    
-                            #inputs={busd[t['input']]: solph.Flow(**inflow_args)},
-                            inputs={busd[t['input']]: solph.Flow(variable_costs=t['variable input costs [CU/kWh]'])},  
-                            outputs={busd[t['output']]: solph.Flow(variable_costs=t['variable output costs [CU/kWh]'],
-                                                                   #fixed_costs=10,
-                                                                   investment=solph.Investment(ep_costs=t['periodical costs [CU/(kW a)]'],
-                                                                                             minimum=t['min. investment capacity [kW]'],
-                                                                                             maximum=t['max. investment capacity [kW]'],
-                                                                                             existing=t['existing capacity [kW]']
-                                                                                             ))},   
-                            conversion_factors={busd[t['output']]: t['efficiency']}))
-                    logging.info('   '+'Transformer created: ' + t['label'])
+                  nodes.append(    
+                    solph.Transformer(    
+                      label=t['label'],
+                      inputs={busd[t['input']]: solph.Flow(
+                           variable_costs=t['variable input costs [CU/kWh]'])},  
+                      outputs={busd[t['output']]: solph.Flow(
+                           variable_costs=t['variable output costs [CU/kWh]'],
+                           investment=solph.Investment(
+                                    ep_costs=t['periodical costs [CU/(kW a)]'],
+                                    minimum=t['min. investment capacity [kW]'],
+                                    maximum=t['max. investment capacity [kW]'],
+                                    existing=t['existing capacity [kW]']
+                                    ))},   
+                           conversion_factors={busd[t['output']]: 
+                                                t['efficiency']}))
+                  logging.info('   '+'Transformer created: ' + t['label'])
                     
                 else: 
-                    existing_capacity2 = (t['existing capacity [kW]']/t['efficiency'])*t['efficiency']
-                    minimum_capacity2 = (t['min. investment capacity [kW]']/t['efficiency'])*t['efficiency']
-                    maximum_capacity2 = (t['max. investment capacity [kW]']/t['efficiency'])*t['efficiency']
+                    existing_capacity2 = ((t['existing capacity [kW]']/
+                                          t['efficiency'])*t['efficiency'])
+                    minimum_capacity2 = ((t['min. investment capacity [kW]']/
+                                          t['efficiency'])*t['efficiency'])
+                    maximum_capacity2 = ((t['max. investment capacity [kW]']/
+                                          t['efficiency'])*t['efficiency'])
                     
                     nodes.append(    
-                        solph.Transformer(    
-                            label=t['label'],    
-                            inputs={busd[t['input']]: solph.Flow(variable_costs=t['variable input costs [CU/kWh]'])},    
-                            outputs={busd[t['output']]: solph.Flow(
-                                        variable_costs=t['variable output costs [CU/kWh]'],
-                                        investment=solph.Investment(ep_costs=t['periodical costs [CU/(kW a)]'],
-                                                                    minimum=t['min. investment capacity [kW]'],
-                                                                    maximum=t['max. investment capacity [kW]'],
-                                                                    existing=t['existing capacity [kW]']
-                                                                                             )),
-                                     busd[t['output2']]: solph.Flow(
-                                         variable_costs=t['variable output costs 2 [CU/kWh]'],
-                                         investment=solph.Investment(ep_costs=t['periodical costs [CU/(kW a)]'],
-                                                                     existing=existing_capacity2,
-                                                                     minimum=minimum_capacity2,
-                                                                     maximum=maximum_capacity2)
-                                         )},   
-                            conversion_factors={busd[t['output']]: t['efficiency'], busd[t['output2']]: t['efficiency2']}))
+                      solph.Transformer(    
+                        label=t['label'],    
+                        inputs={busd[t['input']]: solph.Flow(
+                           variable_costs=t['variable input costs [CU/kWh]'])},    
+                           outputs={busd[t['output']]: solph.Flow(
+                           variable_costs=t['variable output costs [CU/kWh]'],
+                           investment=solph.Investment(
+                                    ep_costs=t['periodical costs [CU/(kW a)]'],
+                                    minimum=t['min. investment capacity [kW]'],
+                                    maximum=t['max. investment capacity [kW]'],
+                                    existing=t['existing capacity [kW]']
+                                    )),
+                           busd[t['output2']]: solph.Flow(
+                           variable_costs=t['variable output costs 2 [CU/kWh]'],
+                           investment=solph.Investment(
+                                    ep_costs=t['periodical costs [CU/(kW a)]'],
+                                    existing=existing_capacity2,
+                                    minimum=minimum_capacity2,
+                                    maximum=maximum_capacity2)
+                                    )},   
+                            conversion_factors={busd[t['output']]: 
+                                                        t['efficiency'], 
+                                                busd[t['output2']]: 
+                                                        t['efficiency2']}))
                     logging.info('   '+'Transformer created: ' + t['label'])        
 
 
-
-
-
-
-
-
-
-
     def genericchp_transformer():
-        """
-        Creates a generic chp transformer with the paramters given in 'nodes_data'
-        and adds it to the list of components 'nodes'.
+        """Creates a Generic CHP transformer object.
+        
+        Creates a generic chp transformer with the paramters given in 
+        'nodes_data' and adds it to the list of components 'nodes'.
                 
-        ----
-    
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
-
+        ----   
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
         """ 
+        
         periods=len(datetime_index)                                     
         
         nodes.append( 
             solph.components.GenericCHP(
                 label=t['label'],
                 fuel_input={busd[t['input']]: solph.Flow(
-                    H_L_FG_share_max=[t['share of flue gas loss at max heat extraction [GenericCHP]'] for p in range(0, periods)])},
+                    H_L_FG_share_max=[t['share of flue gas loss at max heat extraction [GenericCHP]'] 
+                        for p in range(0, periods)])},
                 electrical_output={busd[t['output']]: solph.Flow(
                     P_max_woDH=[t['max. electric power without district heating [GenericCHP]'] for p in range(0, periods)],
                     P_min_woDH=[t['min. electric power without district heating [GenericCHP]'] for p in range(0, periods)],
@@ -749,15 +745,19 @@ def transformers(nodes_data, nodes, bus):
                 
             ### Create Extraction Turbine CHPs ###           
             elif t['transformer type'] == 'ExtractionTurbineCHP':
-                logging.info('   '+'WARNING: ExtractionTurbineCHP are currently not a part of this model generator, but will be added later.')
+                logging.info('   '+'WARNING: ExtractionTurbineCHP are'
+                             + ' currently not a part of this model generator,'
+                             + ' but will be added later.')
             
             ### Create Generic CHPs ###           
-            elif t['transformer type'] == 'GenericCHP':         ###Investment hinzufügen!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                genericchp_transformer()          #### Variable kosten hinzufügen!!!
+            elif t['transformer type'] == 'GenericCHP':###Investment hinzufügen!
+                genericchp_transformer()     #### Variable kosten hinzufügen!!!
                 
             ### Create Offset Transformers ###            
             elif t['transformer type'] == 'OffsetTransformer':
-                logging.info('   '+'WARNING: OffsetTransformer are currently not a part of this model generator, but will be added later.')                
+                logging.info('   '+'WARNING: OffsetTransformer are currently'
+                             + ' not a part of this model generator, but will'
+                             + ' be added later.')                
             
             ### Error Message for invalid Transformers ###          
             else:
@@ -778,7 +778,8 @@ def transformers(nodes_data, nodes, bus):
             
 def storages(nodes_data, nodes, bus):
     
-    """
+    """Creates storage objects.
+    
     Creates storage objects as defined in 'nodes_data' and adds them to the 
     list of components 'nodes'.
 
@@ -801,10 +802,8 @@ def storages(nodes_data, nodes, bus):
         nodes : obj:'list'
             -- list of components
 
-    ----
-    
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
-
+    ----   
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
     """
  
     from oemof import solph
@@ -813,7 +812,7 @@ def storages(nodes_data, nodes, bus):
     busd = bus
     nd = nodes_data
     
-    for i, s in nd['storages'].iterrows():                                   ##### investment hinzufügen
+    for i, s in nd['storages'].iterrows():      ##### investment hinzufügen
         if s['active']:
             nodes.append(
                 solph.components.GenericStorage(
@@ -832,13 +831,12 @@ def storages(nodes_data, nodes, bus):
                     inflow_conversion_factor=s['efficiency inflow'],
                     outflow_conversion_factor=s['efficiency outflow'],
                     #nominal_storage_capacity=s['existing capacity [kW]'],
-                    investment = solph.Investment(ep_costs=s['periodical costs [CU/(kW a)]'],
-                                                  existing=s['existing capacity [kW]'],
-                                                  minimum=s['min. investment capacity [kW]'],
-                                                  maximum=s['max. investment capacity [kW]']
-                                                  )
-                #    investment = solph.Investment(s['ep_costs'])
-                    ))
+                    investment = solph.Investment(
+                            ep_costs=s['periodical costs [CU/(kW a)]'],
+                            existing=s['existing capacity [kW]'],
+                            minimum=s['min. investment capacity [kW]'],
+                            maximum=s['max. investment capacity [kW]']
+                            )))
             logging.info('   '+'Storage created: ' + s['label'])
             
             
@@ -851,7 +849,8 @@ def storages(nodes_data, nodes, bus):
             
             
 def links(nodes_data, nodes, bus):
-    """
+    """Creates link objects.
+    
     Creates links objects as defined in 'nodes_data' and adds them to the 
     list of components 'nodes'.
 
@@ -873,11 +872,8 @@ def links(nodes_data, nodes, bus):
             -- list of components
 
     ----
-    
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
-
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
     """
-    
  
     from oemof import solph
     import logging
@@ -886,25 +882,28 @@ def links(nodes_data, nodes, bus):
     nd = nodes_data
     
     def undirected_link():
-        """
+        """Creates an undirected link object.
+        
         Creates an undirected link between two buses and adds it to the list of 
         components 'nodes'.
                 
-        ----
-    
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
-
+        ----    
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
         """ 
+        
         # First direction       
         nodes.append(    
             solph.Transformer(    
                 label=p['label'],    
-                inputs={busd[p['bus_1']]: solph.Flow(variable_costs=p['variable costs [CU/kWh]'])},  
-                outputs={busd[p['bus_2']]: solph.Flow(investment=solph.Investment(ep_costs=p['periodical costs [CU/(kW a)]'],
-                                                                                 minimum=p['min. investment capacity [kW]'],
-                                                                                 maximum=p['max. investment capacity [kW]'],
-                                                                                 existing=p['existing capacity [kW]']
-                                                                                 ))},   
+                inputs={busd[p['bus_1']]: solph.Flow(
+                            variable_costs=p['variable costs [CU/kWh]'])},  
+                outputs={busd[p['bus_2']]: solph.Flow(
+                            investment=solph.Investment(
+                                    ep_costs=p['periodical costs [CU/(kW a)]'],
+                                    minimum=p['min. investment capacity [kW]'],
+                                    maximum=p['max. investment capacity [kW]'],
+                                    existing=p['existing capacity [kW]']
+                                    ))},   
                 conversion_factors={busd[p['bus_2']]: p['efficiency']}))
         
         # Second direction
@@ -912,12 +911,15 @@ def links(nodes_data, nodes, bus):
         nodes.append(    
             solph.Transformer(    
                 label=label2,    
-                inputs={busd[p['bus_2']]: solph.Flow(variable_costs=p['variable costs [CU/kWh]'])},  
-                outputs={busd[p['bus_1']]: solph.Flow(investment=solph.Investment(ep_costs=p['periodical costs [CU/(kW a)]'],
-                                                                                 minimum=p['min. investment capacity [kW]'],
-                                                                                 maximum=p['max. investment capacity [kW]'],
-                                                                                 existing=p['existing capacity [kW]']
-                                                                                 ))},   
+                inputs={busd[p['bus_2']]: solph.Flow(
+                        variable_costs=p['variable costs [CU/kWh]'])},  
+                outputs={busd[p['bus_1']]: solph.Flow(
+                            investment=solph.Investment(
+                                    ep_costs=p['periodical costs [CU/(kW a)]'],
+                                    minimum=p['min. investment capacity [kW]'],
+                                    maximum=p['max. investment capacity [kW]'],
+                                    existing=p['existing capacity [kW]']
+                                    ))},   
                 conversion_factors={busd[p['bus_2']]: p['efficiency']}))
         logging.info('   '+'Link created: ' + p['label'])         
         
@@ -926,24 +928,27 @@ def links(nodes_data, nodes, bus):
         
         
     def directed_link():
-        """
+        """Creates a directed link object.
+        
         Creates a directed link between two buses and adds it to the list of 
         components 'nodes'.
                 
-        ----
-    
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
-
+        ----   
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
         """
+        
         nodes.append(    
             solph.Transformer(    
                 label=p['label'],    
-                inputs={busd[p['bus_1']]: solph.Flow(variable_costs=p['variable costs [CU/kWh]'])},  
-                outputs={busd[p['bus_2']]: solph.Flow(investment=solph.Investment(ep_costs=p['periodical costs [CU/(kW a)]'],
-                                                                                 minimum=p['min. investment capacity [kW]'],
-                                                                                 maximum=p['max. investment capacity [kW]'],
-                                                                                 existing=p['existing capacity [kW]']
-                                                                                 ))},   
+                inputs={busd[p['bus_1']]: solph.Flow(
+                            variable_costs=p['variable costs [CU/kWh]'])},  
+                outputs={busd[p['bus_2']]: solph.Flows(
+                            investment=solph.Investment(
+                                    ep_costs=p['periodical costs [CU/(kW a)]'],
+                                    minimum=p['min. investment capacity [kW]'],
+                                    maximum=p['max. investment capacity [kW]'],
+                                    existing=p['existing capacity [kW]']
+                                    ))},   
                 conversion_factors={busd[p['bus_2']]: p['efficiency']}))
         logging.info('   '+'Link created: ' + p['label'])
 

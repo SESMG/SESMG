@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-"""
-Functions for creating an oemof energy system.
+"""Functions for creating an oemof energy system.
 
 ---
-
 @ Christian Klemm - christian.klemm@fh-muenster.de, 27.01.2020
 """
 
 def import_scenario(filepath):
-    """Imports data from a spreadsheet scenario file. The excel sheet has to 
-    contain the following sheets:
+    """Imports data from a spreadsheet scenario file. 
+    
+    The excel sheet has to contain the following sheets:
         - timesystem
         - buses
         - transformers
@@ -31,10 +30,8 @@ def import_scenario(filepath):
        nodes_data : obj:'dict'
            -- dictionary containing data from excel scenario file
 
-    ----
-    
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 14.01.2020
-
+    ----   
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
     """
 
     import os
@@ -45,7 +42,7 @@ def import_scenario(filepath):
     # read node data from Excel sheet
     filepath = filepath
     if not filepath or not os.path.isfile(filepath):
-        raise FileNotFoundError('Excel data file {} not found.'.format(filepath))
+      raise FileNotFoundError('Excel data file {} not found.'.format(filepath))
     
     # create nodes from excel sheet
     xls = pd.ExcelFile(filepath)
@@ -69,17 +66,11 @@ def import_scenario(filepath):
     logger.define_logging()
     logging.info('Spreadsheet scenario succesfully imported.')
  
-    
-    
-    
-    
-    
-    
-    
-    
-    
+   
 def define_energy_system(filepath, nodes_data):
-    """Creates an energy system with the parameters defined in the given .xlsx-
+    """Creates an energy system.
+    
+    Creates an energy system with the parameters defined in the given .xlsx-
     file. The file has to contain a sheet called "timesystem", which must have 
     the following structure:
         
@@ -104,14 +95,9 @@ def define_energy_system(filepath, nodes_data):
            -- oemof energy system
 
     ----
-    
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 27.01.2020
-
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
     """
-    
-    
-    
-    import os
+       
     import logging
     from oemof import solph
     import pandas as pd
@@ -132,7 +118,8 @@ def define_energy_system(filepath, nodes_data):
     
     # set datetime index
     nodes_data['timeseries'].set_index('timestamp', inplace=True)
-    nodes_data['timeseries'].index = pd.to_datetime(nodes_data['timeseries'].index)
+    nodes_data['timeseries'].index = pd.to_datetime(
+                                                nodes_data['timeseries'].index)
  #   logging.info('Data from Excel file {} imported.'.format(filename))
 
     logging.info('Date time index successfully defined:\n start date:          '

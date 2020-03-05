@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-"""
-Spreadsheat-Energy-System-Model-Generator (development version)
+"""Spreadsheat-Energy-System-Model-Generator.
 
 creates an energy system from a given spreadsheet data file, solves it for the
-purpose of least cost optimization, and plots results.
+purpose of least cost optimization, and returns the optimal scenario results.
 
 The scenario.xlsx-file must contain the following elements:
     
@@ -49,6 +48,7 @@ powerlines   | label, active, bus_1, bus_2, (un)directed, efficiency,
 time_series  | timestamp, timeseries for components with fixed input or output
 
 weather_data | dates(untitled), dhi, dirhi, pressure, temp_air, windspeed, z0
+
 -------------------------------------------------------------------------------
 Docs:
 https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
@@ -56,20 +56,17 @@ GIT:
 https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator
 -------------------------------------------------------------------------------
 
-@ Christian Klemm - christian.klemm@fh-muenster.de, 04.03.2020
+@ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
 """
 
 import logging
-#import feedinlib
 from oemof.tools import logger
 import os
 
-
-# IMPORT CUSTOM MODULES
-from program_files import (create_objects, create_results, 
-                           create_energy_system, optimize_model)
-
-
+from program_files import (create_objects,
+                           create_results, 
+                           create_energy_system,
+                           optimize_model)
 
 # DEFINES PATH OF INPUT DATA
 scenario_file = os.path.join(os.path.dirname(__file__),'scenario.xlsx')
