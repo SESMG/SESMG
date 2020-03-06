@@ -77,11 +77,11 @@ variable performances, depending on the temporary needs of
 the energy system, others have fixed performances, 
 which depend on external circumstances. In the latter case, 
 the exact performances must be entered to the model in 
-form of time series. With the help of oemofs “feedinlib” 
-and “windpowerlib”, electrical outputs of photovoltaik 
+form of time series. With the help of oemofs "feedinlib" 
+and "windpowerlib", electrical outputs of photovoltaik 
 (pv)-systems and wind power plants can be generated 
 automatically. In order to ensure a balance in the energy 
-system at all times, it may be useful to add a “shortage”
+system at all times, it may be useful to add a "shortage"
 source to the energy system, which supplies energy 
 in the event of an energy deficit. In reality, such a 
 source could represent the purchase of energy at a fixed price.
@@ -101,9 +101,9 @@ arriving at a PV-module as well as further relevant parameters.
 
 
 The global radiation is
-composed of direct and diffuse radiation. The ``direct horizontal
-irradiance'' dirhi is the amount of sun radiation as directly
-received by a horizontal surface. The ``diffuse horizontal irradiance''
+composed of direct and diffuse radiation. The "direct horizontal
+irradiance" dirhi is the amount of sun radiation as directly
+received by a horizontal surface. The "diffuse horizontal irradiance"
 dhi is the share of radiation, which arrives via scattering effects
 on the same surface. A part of the global radiation is reflected on the ground surface and
 can thus cause an additional radiation contribution on the photovoltaic
@@ -150,7 +150,7 @@ in the system. As with sources, the exact demands of sinks can be
 passed to the model with the help of time series. 
 
 In order to ensure a balance in the energy system at all times, 
-it may be appropriate to add an “excess” sink to the energy system, 
+it may be appropriate to add an "excess" sink to the energy system, 
 which consumes energy in the event of energy surplus. In reality, 
 this could be the sale of electricity or the give-away of heat to 
 the atmosphere.
@@ -224,7 +224,7 @@ The following heat standard load profiles of the Association of Energy and Water
 +---------+----------------------------------------------------------------+
 
 In addition, the location of the building and whether the building is located 
-in a ``windy'' or ``non-windy'' area are taken into account for the application 
+in a "windy" or "non-windy" area are taken into account for the application 
 of heat standard load profiles. The following location classes may be considered:
 
 
@@ -245,7 +245,7 @@ of heat standard load profiles. The following location classes may be considered
 +----------+--------------------------------------------------------------------------------+
 
 
-**Stochastic Load Profiles**
+**Stochastic Load Profiles (Richardson Tool)**
 
 The use of standard load profiles has the disadvantage that they only represent 
 the average of a larger number of households (> 200). Load peaks of individual 
@@ -368,13 +368,13 @@ Using the Scenario File
 
 For the modeling and optimization of an energy system, parameters for all system components must be given in the model 
 generator using the enclosed .xlsx file (editable with Excel, LibreOffice, …). The .xlsx file is divided into nine 
-input sheets. In the “timesystem” sheet, general parameters are defined for the time horizon to be examined, in the 
-sheets “buses”, “sinks”, “sources”, “transformers”, “storages” and “links” corresponding components are defined. In 
-the sheet “time series”, the performance of individual components can be stored. In the “weather data” sheet, the 
+input sheets. In the "timesystem" sheet, general parameters are defined for the time horizon to be examined, in the 
+sheets "buses", "sinks", "sources", "transformers", "storages" and "links" corresponding components are defined. In 
+the sheet "time series", the performance of individual components can be stored. In the "weather data" sheet, the 
 required weather data is stored. When completing the input file, it is recommended to enter the energy system step by 
 step and to perform test runs in between, so that potential input errors are detected early and can be localized more 
 easily. In addition to the explanation of the individual input sheets, an example energy system is built step by step 
-in the following subchapters. The input file for this example is stored in the program folder “examples” and viewed on 
+in the following subchapters. The input file for this example is stored in the program folder "examples" and viewed on 
 `GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator/tree/master/examples>`_. The following units are used throughout:
 
 - capacity/performance in kW,
@@ -441,11 +441,12 @@ Within this sheet, the sinks of the energy system are defined. The following par
 
 - **label**: Unique designation of the sink. The following format is recommended: "ID_energy sector_sinks".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
-- **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
+- **active**: Specifies whether the sink shall be included to the model. 0 = inactive, 1 = active.
 - **input**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **load profile**: Specifies the basis onto which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles, its acronym is used. If a time series is used, "timeseries" must be entered. If the source is not fixed, the fill character "x" has to be used.
+- **nominal value [kW]**: Nominal performance of the sink. Required when "time series" has been entered into the "load profile". When SLP or Richardson is used, use the fill character "x" here.
 - **annual demand [kWh/a]**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "x" is used. 
-- **occupants [RICHARDSON]**: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character “x” for other load profiles.
+- **occupants [RICHARDSON]**: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "x" for other load profiles.
 - **building class [HEAT SLP ONLY]**: BDEW-building class.
 - **wind class [HEAT SLP ONLY]**: wind classification for building location (0=not windy, 1=windy)
 - **fixed**: Indicates whether it is a fixed sink or not. 0 = not fixed; 1 = fixed.
@@ -469,14 +470,14 @@ Within this sheet, the sinks of the energy system are defined. The following par
 Sources
 ^^^^^^^
 
-Within this sheet, the sources of the energy system are defined. Properties with the addition “PV ONLY” have only to be 
-defined if the parameter “technology” is set on “photovoltaic”. The following parameters have to be entered:
+Within this sheet, the sources of the energy system are defined. Properties with the addition "PV ONLY" have only to be 
+defined if the parameter "technology" is set on "photovoltaic". The following parameters have to be entered:
 
 - **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. Input options: “photovoltaic”, “wind”, “other”. Time series are automatically generated for photovoltaic systems and wind turbines. If “other” is selected, a time series must be provided in the “time_series” sheet.
+- **technology**: Technology type of source. Input options: "photovoltaic", "wind", "other". Time series are automatically generated for photovoltaic systems and wind turbines. If "other" is selected, a time series must be provided in the "time_series" sheet.
 - **variable costs [CU/kWh]**: Defines the variable costs incurred for a kWh of energy drawn from the source.
 - **existing capacity [kW]**: Existing capacity of the source before possible investments.
 - **min. investment capacity [kW]**: Minimum capacity to be installed in case of an investment.
@@ -522,9 +523,9 @@ Within this sheet, the transformers of the energy system are defined. The follow
 - **transformer type**: Indicates what kind of transformer it is. Possible entries: "GenericTransformer" for linear transformers with constant efficiencies; "GenericCHP" for transformers with varying efficiencies.
 - **input**: Specifies the bus from which the input to the transformer comes from.
 - **output**: Specifies bus to which the output of the transformer is forwarded to.
-- **output2**: Specifies the bus to which the output of the transformer is forwarded to, if there are several outputs. If there is no second output, the fill character “x” must be entered here.
+- **output2**: Specifies the bus to which the output of the transformer is forwarded to, if there are several outputs. If there is no second output, the fill character "x" must be entered here.
 - **efficiency**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
-- **efficiency2**: Specifies the efficiency of the second output, if there is one. Values  between 0 and 1 are entered. If there is no second output, the fill character “x” must be entered here.
+- **efficiency2**: Specifies the efficiency of the second output, if there is one. Values  between 0 and 1 are entered. If there is no second output, the fill character "x" must be entered here.
 - **variable input costs**: Variable costs incurred per kWh of input energy supplied.
 - **existing capacity [kW]**: Already installed capacity of the transformer.
 - **max investment capacity [kW]**: Maximum  installable transformer capacity in addition to the previously existing one.
@@ -628,8 +629,8 @@ Time Series
 ^^^^^^^^^^^
 
 Within this sheet, time series of components of which no automatically created time series exist, are stored. More 
-specifically, these are sinks to which the property “load profile” have been assigned as “timeseries” and sources 
-with the “technology” property “others”. The following parameters have to be entered:
+specifically, these are sinks to which the property "load profile" have been assigned as "timeseries" and sources 
+with the "technology" property "others". The following parameters have to be entered:
 
 - **timestamp**: Points in time to which the stored time series are related. Should be within the time horizon defined in the sheet "timeseries".
 - **timeseries**: Time series of a sink which has been assigned the property "timeseries" under the attribute "load profile" or source which has been assigned the property "other" under the attribute "technology". Time series contain a value between 0 and 1 for each point in time, which indicates the proportion of installed capacity accounted for by the capacity produced at that point in time. In the header line, the name must be entered in the format "componentID.actual_value".
@@ -648,7 +649,7 @@ Weather Data
 
 If electrical load profiles are simulated with the Richardson tool, heating load profiles with the demandlib or 
 photovoltaic systems with the feedinlib, weather data must be stored here. The weather 
-data time system should be in conformity with the model’s time system, defined in the sheet “timesystem”.
+data time system should be in conformity with the model’s time system, defined in the sheet "timesystem".
 
 - **timestamp**: Points in time to which the stored weather data are related. 
 - **dhi**: diffuse horizontal irradiance in W/m:sup:`2
@@ -750,6 +751,14 @@ or
 - **Possible Error Cause**: Incorrectly assigned bus name for the input or output of a component
 - **Debugging**: Check that all bus references are correct. Also check for typos.
 
+.. warning::
+	
+	TypeError: ufunc 'true_divide' not supported for the input types, and the inputs could not be safely 
+	coerced to any supported types according to the casting rule ''safe''
+	
+- **Possible Error Cause**: The column "annual demand" was not filled in correctly for a sink. 
+- **Debugging**: Make sure to use the "annual demand" column for SLP and Richardson sinks and the "nominal value" column for time series sinks.
+
 
 Your error message is not included? Do not hesitate to contact the developers.
 
@@ -770,7 +779,6 @@ Related links
 `Demandlib Documentation <https://demandlib.readthedocs.io/en/latest/>`_
 
 `Richardsonpy on Github <https://github.com/RWTH-EBC/richardsonpy>`_
-
 
 `R2Q research project <https://www.fh-muenster.de/forschungskooperationen/r2q/index.php>`_
 
