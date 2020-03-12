@@ -140,9 +140,21 @@ create_results.xlsx(nodes_data = nodes_data,
                     filepath=result_path)
 
 create_results.statistics(nodes_data = nodes_data, 
-                     optimization_model = om, 
-                     energy_system = esys)
+                          optimization_model = om, 
+                          energy_system = esys)
 
+
+
+###### PREPARES RESULTS FOR PLOTLY
+create_results.prepare_plotly_results(nodes_data = nodes_data,  
+                                      optimization_model = om, 
+                                      energy_system = esys,
+                                      result_path = result_path)
+
+logging.info('   '+'--------------------------------------------------------') 
 logging.info('   '+'Modelling and optimization successfully completed!')
+logging.info('   '+'Launching interactive results')
+
+
 
 

@@ -350,7 +350,7 @@ def sinks(nodes_data, bus, nodes, filepath):
         # Importing timesystem parameters from the scenario file
         for j, ts in nd['timesystem'].iterrows():
             temp_resolution = ts['temporal resolution']
-            periods = ts['periods']
+            periods = 8760
             start_date = str(ts['start date'])
         
         # Converting start date into datetime format
@@ -942,7 +942,7 @@ def links(nodes_data, nodes, bus):
                 label=p['label'],    
                 inputs={busd[p['bus_1']]: solph.Flow(
                             variable_costs=p['variable costs [CU/kWh]'])},  
-                outputs={busd[p['bus_2']]: solph.Flows(
+                outputs={busd[p['bus_2']]: solph.Flow(
                             investment=solph.Investment(
                                     ep_costs=p['periodical costs [CU/(kW a)]'],
                                     minimum=p['min. investment capacity [kW]'],
