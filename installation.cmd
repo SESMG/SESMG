@@ -29,6 +29,7 @@ pip install demandlib==0.1.6
 pip install pvlib==0.7.1
 pip install feedinlib==0.0.12
 pip install richardsonpy==0.2.1
+pip install dash==1.7.0
 
 @echo ######################
 @echo Installation completed

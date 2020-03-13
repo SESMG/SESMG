@@ -17,7 +17,8 @@ The Spreadsheet Energy System Model Generator allows the modeling
 and optimization of energy systems without the need for programming skills. 
 The components defined in this spreadsheet are defined with the 
 included Python program and the open source Python library "oemof", assembled 
-to an energy system and optimized with the open source solver "cbc".
+to an energy system and optimized with the open source solver "cbc". The modeling 
+results can be viewed and analyzed using a browser-based results output.
 
 Structure of Energy Systems
 ---------------------------
@@ -356,11 +357,11 @@ Application of the Model Generator
 
 1. Fill in the spreadsheet document according to the instructions in the following chapter and save it as "scenario.xlsx" in the main folder of the Spreadsheet Energy System Model Generator.
 
+2. Execute the "exe.cmd" file in the main folder of the program. 
 
-2. Execute the program "Spreadsheet_Energy_System_Model_Generator.py" in the main folder of the program. This can be done either by double-clicking, or by opening the file in any Python interpreter. The latter variant allows a more detailed access to error messages etc. Running the program may take some time depending on the model size.
+3. Wait until the modelling is completed. The results are then automatically opened in your Internet browser. 
 
-
-3. After running the program completely, the results can be viewed in the "results" folder. These consist of the "log.file" with details of the optimization, as well as an .xlsx file for each bus, in which the energy flows of the optimized energy system are stored. 
+4. More detailed modelling results are stored within the "results" folder.
 
 
 Using the Scenario File
@@ -665,8 +666,37 @@ data time system should be in conformity with the model’s time system, defined
 
    Exemplary input for weather data
    
-Results
--------
+Analyzing the Results
+---------------------
+
+Interactive Results
+^^^^^^^^^^^^^^^^^^^
+
+If the Spreadsheet Energy System Model Generator was executed via the exe.cmd-file, 
+a browser window with interactive results will be opened automatically after successful 
+modeling. Alternatively, the results of the last modelling run can be accessed by executing the 
+Interactive_Results.py file.
+
+.. figure:: images/interactive_results.png
+   :width: 100 %
+   :alt: interactive_results
+   :align: center
+
+   Screenshots of the interactive results browser interface
+
+The interactive results report includes a table that summarizes the modeling results (1), a second 
+table that provides information about each component (2), and an interactive graph that displays time 
+series of the different components (4).
+
+- **Table with a summary of the modelling (1).**
+
+- **Table with information about every component (2):** The entries can be filtered and sorted according to their content.
+
+- **Graph, where time series of the different components can be shown (4).** With the help of a selection window (drop-down menu and search function) (3) time series to be shown can be selected. With the help of a number of tools (5) the graphs can be scaled, sections can be displayed and images can be saved.
+
+
+Results as Spreadsheets and Log-Files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The results of the modeling are stored in the "results" folder in two formats:
 - as summarizing log files, under

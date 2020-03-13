@@ -640,30 +640,41 @@ def statistics(nodes_data, optimization_model, energy_system):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def prepare_plotly_results(nodes_data, optimization_model, energy_system, result_path):
+def prepare_plotly_results(nodes_data, 
+                           optimization_model, 
+                           energy_system, 
+                           result_path):
+    
+    """Function which prepares the results for the creation of a HTML page.
+    
+    Creates three pandas data frames and saves them, which are required for 
+    creating an interactive HTML result page:
+       - df_list_of_components: Consists all components with several properties
+       - df_result_table: Consists timeseries of al components
+       - df_summary: Consists summarizing results of the modelling
+       
+    ----    
+        
+    Keyword arguments:
+        
+        nodes_data : obj:'dict'
+           -- dictionary containing data from excel scenario file
+        
+        optimization_model
+            -- optimized energy system
+            
+        energy_system : obj:
+            -- original (unoptimized) energy system
+            
+        result_path : obj:'str'
+            -- path, where the data frames shall be saved as csv-file
+        
+           
+    ----
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 13.03.2020
+        
     """
-    ...
-    """
+    
     logging.info('   '+'--------------------------------------------------------') 
     logging.info('   '+'Preparing the results for interactive results...')
     nd = nodes_data
@@ -691,28 +702,28 @@ def prepare_plotly_results(nodes_data, optimization_model, energy_system, result
                                                   'periodical costs [CU]',
                                                   'investment [kW]'])
     #Add dummy component
-    df_demand = pd.DataFrame([['---------------', 
-           '---------------', 
-           '---------------', 
-           '---------------', 
-           '---------------', 
-           '---------------',
-           '---------------',
-           '--------------------',
-           '--------------------',
-           '---------------'
-           ]], 
-           columns=['ID', 
-                      'type', 
-                      'input 1 [kWh]', 
-                      'input 2 [kWh]', 
-                      'output 1 [kWh]', 
-                      'output 2 [kWh]', 
-                      'capacity [kW]', 
-                      'variable costs [CU]', 
-                      'periodical costs [CU]',
-                      'investment [kW]']) 
-    df_list_of_components = df_list_of_components.append(df_demand) 
+#    df_demand = pd.DataFrame([['---------------', 
+#           '---------------', 
+#           '---------------', 
+#           '---------------', 
+#           '---------------', 
+#           '---------------',
+#           '---------------',
+#           '--------------------',
+#           '--------------------',
+#           '---------------'
+#           ]], 
+#           columns=['ID', 
+#                      'type', 
+#                      'input 1 [kWh]', 
+#                      'input 2 [kWh]', 
+#                      'output 1 [kWh]', 
+#                      'output 2 [kWh]', 
+#                      'capacity [kW]', 
+#                      'variable costs [CU]', 
+#                      'periodical costs [CU]',
+#                      'investment [kW]']) 
+#    df_list_of_components = df_list_of_components.append(df_demand) 
     
     df_component_flows = pd.DataFrame(columns=['component',
                                                'date',
@@ -1266,6 +1277,7 @@ def prepare_plotly_results(nodes_data, optimization_model, energy_system, result
         if p['active']:
                         
             link = outputlib.views.node(results, p['label'])
+            #print(link)
             
             if link:
                 
@@ -1327,13 +1339,28 @@ def prepare_plotly_results(nodes_data, optimization_model, energy_system, result
                     periodical_costs = 0
 
 
+            component_performance = link['sequences'].columns.values
+            df_link = link['sequences'][component_performance[0]]
+            df_result_table[p['label']+'_input1'] = df_link
+            df_link = link['sequences'][component_performance[1]]
+            df_result_table[p['label']+'_output1'] = df_link
+            
+            
+            component_performance2 = link2['sequences'].columns.values
+            df_link2 = link2['sequences'][component_performance2[0]]
+            df_result_table[p['label']+'_input2'] = df_link2
+            df_link2 = link2['sequences'][component_performance2[1]]
+            df_result_table[p['label']+'_output2'] = df_link2
+
+
+
             df_demand = pd.DataFrame([[p['label'], 
                'link', 
-               'nn', 
-               'nn', 
-               round(flowsum[[1][0]], 2), 
-               round(flowsum2[[1][0]], 2),
-               round(flowmax[[0][0]], 2),
+               round(link['sequences'][component_performance[0]].sum(), 2), 
+               round(link2['sequences'][component_performance2[0]].sum(), 2), 
+               round(link['sequences'][component_performance[1]].sum(), 2),
+               round(link2['sequences'][component_performance2[1]].sum(), 2),
+               round(max(link['sequences'][component_performance[1]].max(), link2['sequences'][component_performance2[1]].max()), 2),
                round(variable_costs, 2),
                round(periodical_costs, 2),
                round(link_investment, 2)
@@ -1351,12 +1378,17 @@ def prepare_plotly_results(nodes_data, optimization_model, energy_system, result
             df_list_of_components = df_list_of_components.append(df_demand)
             
 
+            
+    
+################
+### SUMMARY ####
+################
+            
+            
     meta_results = outputlib.processing.meta_results(om)
     meta_results_objective = meta_results['objective']
     
     investment_objects = list(investments_to_be_made.keys())
-    
-    #for i in range(len(investment_objects)):
 
 
     for j, ts in nd['timesystem'].iterrows():
@@ -1365,24 +1397,25 @@ def prepare_plotly_results(nodes_data, optimization_model, energy_system, result
         temp_resolution = ts['temporal resolution']
 
 
-    df_summary = pd.DataFrame([[round(meta_results_objective, 2),
+    df_summary = pd.DataFrame([[start_date,
+                                end_date,
+                                temp_resolution,
+                                round(meta_results_objective, 2),
                                 round(total_costs,2),
                                 round(total_periodical_costs, 2),
                                 round(total_demand, 2),
-                                round(total_usage, 2),
-                                start_date,
-                                end_date,
-                                temp_resolution
-                                
+                                round(total_usage, 2)
+                               
        ]], 
-       columns=['Total System Costs',
+       columns=['Start Date',
+                'End Date',
+                'Resolution',
+                'Total System Costs',
                 'Total Variable Costs',
                 'Total Periodical Costs',
                 'Total Energy Demand',
-                'Total Energy Usage',
-                'Start Date',
-                'End Date',
-                'Resolution'
+                'Total Energy Usage'
+
               ])    
 
 
