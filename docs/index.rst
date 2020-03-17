@@ -842,6 +842,7 @@ SOFTWARE.
 
 Contact
 -------
+Developed by
 .. figure:: images/Contact.PNG
    :width: 55 %
    :alt: contact_Klemm
