@@ -28,7 +28,7 @@ def buses(nodes_data, nodes):
         nodes_data : obj:'dict'
            -- dictionary containing parameters of the buses to be created. The 
            following parameters have to be provided: label, active, excess, 
-           shortage, shortage costs [CU/kWh], excess costs [CU/kWh]
+           shortage, shortage costs /(CU/kWh), excess costs /(CU/kWh)
         
         nodes : obj:'list'
             -- list of components created before (can be empty)
@@ -59,7 +59,7 @@ def buses(nodes_data, nodes):
                 nodes.append(
                     solph.Sink(label=b['label'] + '_excess',
                                inputs={busd[b['label']]: solph.Flow(
-                                   variable_costs=b['excess costs [CU/kWh]'],
+                                   variable_costs=b['excess costs /(CU/kWh)'],
                                    #nominal_value=1
                                    )}))
             
@@ -68,7 +68,7 @@ def buses(nodes_data, nodes):
                 nodes.append(
                     solph.Source(label=b['label'] + '_shortage',
                             outputs={busd[b['label']]: solph.Flow(
-                            variable_costs=b['shortage costs [CU/kWh]'])}))
+                            variable_costs=b['shortage costs /(CU/kWh)'])}))
     return busd
 
 
@@ -90,9 +90,9 @@ def sources(nodes_data, nodes, bus, filepath):
         nodes_data : obj:'dict'
            -- dictionary containing parameters of sources to be created. The 
            following data have to be provided: label, active, output, 
-           technology, variable costs [CU/kWh], existing capacity [kW], 
-           min. investment capacity [kW], max. investment capacity [kW], 
-           periodical costs [CU/(kW a)], technology database (PV ONLY), 
+           technology, variable costs /(CU/kWh), existing capacity /(kW), 
+           min. investment capacity /(kW), max. investment capacity /(kW), 
+           periodical costs /(CU/(kW a)), technology database (PV ONLY), 
            inverter database (PV ONLY), Modul Model (PV ONLY), 
            Inverter Model (PV ONLY), Azimuth (PV ONLY), 
            Surface Tilt (PV ONLY), Albedo (PV ONLY), Altitude (PV ONLY), 
@@ -142,11 +142,11 @@ def sources(nodes_data, nodes, bus, filepath):
                solph.Source(label=so['label'],
                      outputs={busd[so['output']]: solph.Flow(
                         investment=solph.Investment(
-                                ep_costs=so['periodical costs [CU/(kW a)]'],
-                                minimum=so['min. investment capacity [kW]'],
-                                maximum=so['max. investment capacity [kW]'],
-                                existing=so['existing capacity [kW]']),
-                         variable_costs=so['variable costs [CU/kWh]'])}))
+                                ep_costs=so['periodical costs /(CU/(kW a))'],
+                                minimum=so['min. investment capacity /(kW)'],
+                                maximum=so['max. investment capacity /(kW)'],
+                                existing=so['existing capacity /(kW)']),
+                         variable_costs=so['variable costs /(CU/kWh)'])}))
        logging.info('   '+'Commodity Source created: ' + so['label'])        
 
     
@@ -204,13 +204,13 @@ def sources(nodes_data, nodes, bus, filepath):
                solph.Source(label=so['label'],
                      outputs={busd[so['output']]: solph.Flow(
                         investment=solph.Investment(
-                                ep_costs=so['periodical costs [CU/(kW a)]'],
-                                minimum=so['min. investment capacity [kW]'],
-                                maximum=so['max. investment capacity [kW]'],
-                                existing=so['existing capacity [kW]']),
+                                ep_costs=so['periodical costs /(CU/(kW a))'],
+                                minimum=so['min. investment capacity /(kW)'],
+                                maximum=so['max. investment capacity /(kW)'],
+                                existing=so['existing capacity /(kW)']),
                         actual_value = feedin,
                         fixed=True,
-                        variable_costs=so['variable costs [CU/kWh]'])}))            
+                        variable_costs=so['variable costs /(CU/kWh)'])}))            
                       
         
         logging.info('   '+'Source created: ' + so['label'])
@@ -261,7 +261,7 @@ def sinks(nodes_data, bus, nodes, filepath):
         nodes_data : obj:'dict'
            -- dictionary containing parameters of sinks to be created. The 
            following data have to be provided: label, active, input, input2, 
-           load profile, nominal value [kW], annual demand [kWh/a], 
+           load profile, nominal value /(kW), annual demand /(kWh/a), 
            occupants [RICHARDSON], building class [HEAT SLP ONLY], 
            wind class [HEAT SLP ONLY], fixed
            
@@ -295,7 +295,7 @@ def sinks(nodes_data, bus, nodes, filepath):
     def unfixed_sink():
         """Creates a sink object with an unfixed energy input."""            
         # set static inflow values    
-        inflow_args = {'nominal_value': de['nominal value [kW]'],
+        inflow_args = {'nominal_value': de['nominal value /(kW)'],
                        'fixed': de['fixed']}   
    
         # create    
@@ -316,7 +316,7 @@ def sinks(nodes_data, bus, nodes, filepath):
         """
         
         # set static inflow values    
-        inflow_args = {'nominal_value': de['nominal value [kW]'],
+        inflow_args = {'nominal_value': de['nominal value /(kW)'],
                        'fixed': de['fixed']}   
                                                    
         # get time series for node and parameter    
@@ -378,7 +378,7 @@ def sinks(nodes_data, bus, nodes, filepath):
                 solph.Sink(label=de['label'],
                    inputs={
                        busd[de['input']]: solph.Flow(
-                               nominal_value = de['annual demand [kWh/a]'],
+                               nominal_value = de['annual demand /(kWh/a)'],
                                actual_value = demand[de['load profile']],
                                fixed = True)}))                
         logging.info('   '+'Sink created: ' + de['label'])
@@ -428,7 +428,7 @@ def sinks(nodes_data, bus, nodes, filepath):
                 solph.Sink(label=de['label'],
                    inputs={
                        busd[de['input']]: solph.Flow(
-                               nominal_value = de['annual demand [kWh/a]'],
+                               nominal_value = de['annual demand /(kWh/a)'],
                                actual_value = demand[de['load profile']],
                                fixed = True)}))                
         logging.info('   '+'Sink created: ' + de['label']) 
@@ -507,7 +507,7 @@ def sinks(nodes_data, bus, nodes, filepath):
         load_profile = el_load_obj.loadcurve#[0:len(datetime_index)]
         richardson_demand = (sum(el_load_obj.loadcurve) 
                              * timestep / (3600 * 1000))
-        annual_demand = de['annual demand [kWh/a]']
+        annual_demand = de['annual demand /(kWh/a)']
         demand_ratio = annual_demand/richardson_demand
         
         #create
@@ -537,7 +537,7 @@ def sinks(nodes_data, bus, nodes, filepath):
         nodes.append(
               solph.Sink(label=de['label'],
                     inputs={busd[de['input']]: solph.Flow(
-                                nominal_value = de['annual demand [kWh/a]'],
+                                nominal_value = de['annual demand /(kWh/a)'],
                                 actual_value = elec_demand[de['load profile']],
                                 fixed = True)}))
         logging.info('   '+'Sink created: ' + de['label'])
@@ -614,9 +614,9 @@ def transformers(nodes_data, nodes, bus):
            -- dictionary containing data from excel scenario file. The 
            following data have to be provided: label, active, transformer type, 
            input, output, output2, efficiency, efficency2, 
-           variable input costs [CU/kWh], variable output costs [CU/kWh], 
-           existing capacity [kW], max. investment capacity [kW], 
-           min. investment capacity [kW], periodical costs [CU/(kW a)]
+           variable input costs /(CU/kWh), variable output costs /(CU/kWh), 
+           existing capacity /(kW), max. investment capacity /(kW), 
+           min. investment capacity /(kW), periodical costs /(CU/(kW a))
            
         bus : obj:'dict'
            -- dictionary containing the busses of the energy system
@@ -653,44 +653,44 @@ def transformers(nodes_data, nodes, bus):
                     solph.Transformer(    
                       label=t['label'],
                       inputs={busd[t['input']]: solph.Flow(
-                           variable_costs=t['variable input costs [CU/kWh]'])},  
+                           variable_costs=t['variable input costs /(CU/kWh)'])},  
                       outputs={busd[t['output']]: solph.Flow(
-                           variable_costs=t['variable output costs [CU/kWh]'],
+                           variable_costs=t['variable output costs /(CU/kWh)'],
                            investment=solph.Investment(
-                                    ep_costs=t['periodical costs [CU/(kW a)]'],
-                                    minimum=t['min. investment capacity [kW]'],
-                                    maximum=t['max. investment capacity [kW]'],
-                                    existing=t['existing capacity [kW]']
+                                    ep_costs=t['periodical costs /(CU/(kW a))'],
+                                    minimum=t['min. investment capacity /(kW)'],
+                                    maximum=t['max. investment capacity /(kW)'],
+                                    existing=t['existing capacity /(kW)']
                                     ))},   
                            conversion_factors={busd[t['output']]: 
                                                 t['efficiency']}))
                   logging.info('   '+'Transformer created: ' + t['label'])
                     
                 else: 
-                    existing_capacity2 = ((t['existing capacity [kW]']/
+                    existing_capacity2 = ((t['existing capacity /(kW)']/
                                           t['efficiency'])*t['efficiency'])
-                    minimum_capacity2 = ((t['min. investment capacity [kW]']/
+                    minimum_capacity2 = ((t['min. investment capacity /(kW)']/
                                           t['efficiency'])*t['efficiency'])
-                    maximum_capacity2 = ((t['max. investment capacity [kW]']/
+                    maximum_capacity2 = ((t['max. investment capacity /(kW)']/
                                           t['efficiency'])*t['efficiency'])
                     
                     nodes.append(    
                       solph.Transformer(    
                         label=t['label'],    
                         inputs={busd[t['input']]: solph.Flow(
-                           variable_costs=t['variable input costs [CU/kWh]'])},    
+                           variable_costs=t['variable input costs /(CU/kWh)'])},    
                            outputs={busd[t['output']]: solph.Flow(
-                           variable_costs=t['variable output costs [CU/kWh]'],
+                           variable_costs=t['variable output costs /(CU/kWh)'],
                            investment=solph.Investment(
-                                    ep_costs=t['periodical costs [CU/(kW a)]'],
-                                    minimum=t['min. investment capacity [kW]'],
-                                    maximum=t['max. investment capacity [kW]'],
-                                    existing=t['existing capacity [kW]']
+                                    ep_costs=t['periodical costs /(CU/(kW a))'],
+                                    minimum=t['min. investment capacity /(kW)'],
+                                    maximum=t['max. investment capacity /(kW)'],
+                                    existing=t['existing capacity /(kW)']
                                     )),
                            busd[t['output2']]: solph.Flow(
-                           variable_costs=t['variable output costs 2 [CU/kWh]'],
+                           variable_costs=t['variable output costs 2 /(CU/kWh)'],
                            investment=solph.Investment(
-                                    ep_costs=t['periodical costs [CU/(kW a)]'],
+                                    ep_costs=t['periodical costs /(CU/(kW a))'],
                                     existing=existing_capacity2,
                                     minimum=minimum_capacity2,
                                     maximum=maximum_capacity2)
@@ -790,8 +790,8 @@ def storages(nodes_data, nodes, bus):
         nodes_data : obj:'dict'
            -- dictionary containing data from excel scenario file. The 
            following data have to be provided: label, active, bus, 
-           existing capacity [kW], min. investment capacity [kW], 
-           max. investment capacity [kW], periodical costs [CU/(kW a)], 
+           existing capacity /(kW), min. investment capacity /(kW), 
+           max. investment capacity /(kW), periodical costs /(CU/(kW a)), 
            capacity inflow, capacity outflow, capacity loss, efficiency inflow, 
            efficiency outflow, initial capacity, capacity min, capacity max,
            variable input costs, variable output costs
@@ -830,12 +830,12 @@ def storages(nodes_data, nodes, bus):
                     #min_storage_level=s['capacity min'],
                     inflow_conversion_factor=s['efficiency inflow'],
                     outflow_conversion_factor=s['efficiency outflow'],
-                    #nominal_storage_capacity=s['existing capacity [kW]'],
+                    #nominal_storage_capacity=s['existing capacity /(kW)'],
                     investment = solph.Investment(
-                            ep_costs=s['periodical costs [CU/(kW a)]'],
-                            existing=s['existing capacity [kW]'],
-                            minimum=s['min. investment capacity [kW]'],
-                            maximum=s['max. investment capacity [kW]']
+                            ep_costs=s['periodical costs /(CU/(kWh a))'],
+                            existing=s['existing capacity /(kWh)'],
+                            minimum=s['min. investment capacity /(kWh)'],
+                            maximum=s['max. investment capacity /(kWh)']
                             )))
             logging.info('   '+'Storage created: ' + s['label'])
             
@@ -861,9 +861,9 @@ def links(nodes_data, nodes, bus):
         nodes_data : obj:'dict'
            -- dictionary containing data from excel scenario file. The 
            following data have to be provided: label, active, bus_1, bus_2, 
-           (un)directed, efficiency, existing capacity [kW], 
-           min. investment capacity [kW], max. investment capacity [kW], 
-           variable costs [CU/kWh], periodical costs [CU/(kW a)]
+           (un)directed, efficiency, existing capacity /(kW), 
+           min. investment capacity /(kW), max. investment capacity /(kW), 
+           variable costs /(CU/kWh), periodical costs /(CU/(kW a))
         
         bus : obj:'dict'
            -- dictionary containing the busses of the energy system
@@ -896,13 +896,13 @@ def links(nodes_data, nodes, bus):
             solph.Transformer(    
                 label=p['label'],    
                 inputs={busd[p['bus_1']]: solph.Flow(
-                            variable_costs=p['variable costs [CU/kWh]'])},  
+                            variable_costs=p['variable costs /(CU/kWh)'])},  
                 outputs={busd[p['bus_2']]: solph.Flow(
                             investment=solph.Investment(
-                                    ep_costs=p['periodical costs [CU/(kW a)]'],
-                                    minimum=p['min. investment capacity [kW]'],
-                                    maximum=p['max. investment capacity [kW]'],
-                                    existing=p['existing capacity [kW]']
+                                    ep_costs=p['periodical costs /(CU/(kW a))'],
+                                    minimum=p['min. investment capacity /(kW)'],
+                                    maximum=p['max. investment capacity /(kW)'],
+                                    existing=p['existing capacity /(kW)']
                                     ))},   
                 conversion_factors={busd[p['bus_2']]: p['efficiency']}))
         
@@ -912,13 +912,13 @@ def links(nodes_data, nodes, bus):
             solph.Transformer(    
                 label=label2,    
                 inputs={busd[p['bus_2']]: solph.Flow(
-                        variable_costs=p['variable costs [CU/kWh]'])},  
+                        variable_costs=p['variable costs /(CU/kWh)'])},  
                 outputs={busd[p['bus_1']]: solph.Flow(
                             investment=solph.Investment(
-                                    ep_costs=p['periodical costs [CU/(kW a)]'],
-                                    minimum=p['min. investment capacity [kW]'],
-                                    maximum=p['max. investment capacity [kW]'],
-                                    existing=p['existing capacity [kW]']
+                                    ep_costs=p['periodical costs /(CU/(kW a))'],
+                                    minimum=p['min. investment capacity /(kW)'],
+                                    maximum=p['max. investment capacity /(kW)'],
+                                    existing=p['existing capacity /(kW)']
                                     ))},   
                 conversion_factors={busd[p['bus_2']]: p['efficiency']}))
         logging.info('   '+'Link created: ' + p['label'])         
@@ -941,13 +941,13 @@ def links(nodes_data, nodes, bus):
             solph.Transformer(    
                 label=p['label'],    
                 inputs={busd[p['bus_1']]: solph.Flow(
-                            variable_costs=p['variable costs [CU/kWh]'])},  
+                            variable_costs=p['variable costs /(CU/kWh)'])},  
                 outputs={busd[p['bus_2']]: solph.Flow(
                             investment=solph.Investment(
-                                    ep_costs=p['periodical costs [CU/(kW a)]'],
-                                    minimum=p['min. investment capacity [kW]'],
-                                    maximum=p['max. investment capacity [kW]'],
-                                    existing=p['existing capacity [kW]']
+                                    ep_costs=p['periodical costs /(CU/(kW a))'],
+                                    minimum=p['min. investment capacity /(kW)'],
+                                    maximum=p['max. investment capacity /(kW)'],
+                                    existing=p['existing capacity /(kW)']
                                     ))},   
                 conversion_factors={busd[p['bus_2']]: p['efficiency']}))
         logging.info('   '+'Link created: ' + p['label'])

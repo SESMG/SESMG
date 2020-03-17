@@ -346,7 +346,7 @@ Installation
 
 .. note:: 
 
-	If you receive a "Your computer has been protected by Windows" error message, click "More Information," and then click "Run Anyway".
+	If you receive a "Your computer has been protected by Windows" error message, click "More Information," and then "Run Anyway".
 
 
 7. The Spreadsheet Energy System Model Generator has been installed
@@ -361,7 +361,7 @@ Application of the Model Generator
 
 .. note:: 
 
-	If you receive a "Your computer has been protected by Windows" error message, click "More Information," and then click "Run Anyway".
+	If you receive a "Your computer has been protected by Windows" error message, click "More Information," and then "Run Anyway".
 
 3. Wait until the modelling is completed. The results are then automatically opened in your Internet browser. 
 
@@ -419,8 +419,8 @@ Within this sheet, the buses of the energy system are defined. The following par
 - **active**: Specifies whether the bus shall be included to the model. 0 = inactive, 1 = active. 
 - **excess**: Specifies whether a sink is to be generated, which consumes excess energy. 0 = no excess sink will be generated; 1 = excess sink will be generated.
 - **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits or not. 0 = no shortage source will be generated; 1 = shortage source will be generated.
-- **shortage costs [CU/kWh]**: Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "x" is used. 
-- **excess costs [CU/kWh]**: Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "x" is used. 
+- **shortage costs/(CU/kWh)**: Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "x" is used. 
+- **excess costs/(CU/kWh)**: Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "x" is used. 
 	
 .. figure:: images/BSP_buses.PNG
    :width: 100 %
@@ -449,8 +449,8 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **active**: Specifies whether the sink shall be included to the model. 0 = inactive, 1 = active.
 - **input**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **load profile**: Specifies the basis onto which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles, its acronym is used. If a time series is used, "timeseries" must be entered. If the source is not fixed, the fill character "x" has to be used.
-- **nominal value [kW]**: Nominal performance of the sink. Required when "time series" has been entered into the "load profile". When SLP or Richardson is used, use the fill character "x" here.
-- **annual demand [kWh/a]**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "x" is used. 
+- **nominal value/(kW)**: Nominal performance of the sink. Required when "time series" has been entered into the "load profile". When SLP or Richardson is used, use the fill character "x" here.
+- **annual demand/(kWh/a)**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "x" is used. 
 - **occupants [RICHARDSON]**: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "x" for other load profiles.
 - **building class [HEAT SLP ONLY]**: BDEW-building class.
 - **wind class [HEAT SLP ONLY]**: wind classification for building location (0=not windy, 1=windy)
@@ -483,11 +483,11 @@ defined if the parameter "technology" is set on "photovoltaic". The following pa
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **output**: Specifies which bus the source is connected to.
 - **technology**: Technology type of source. Input options: "photovoltaic", "wind", "other". Time series are automatically generated for photovoltaic systems and wind turbines. If "other" is selected, a time series must be provided in the "time_series" sheet.
-- **variable costs [CU/kWh]**: Defines the variable costs incurred for a kWh of energy drawn from the source.
-- **existing capacity [kW]**: Existing capacity of the source before possible investments.
-- **min. investment capacity [kW]**: Minimum capacity to be installed in case of an investment.
-- **max. investment capacity [kW]**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
-- **periodical costs [CU/(kW a)]**: Costs incurred per kW for investments within the time horizon
+- **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
+- **existing capacity/(kW)**: Existing capacity of the source before possible investments.
+- **min. investment capacity/(kW)**: Minimum capacity to be installed in case of an investment.
+- **max. investment capacity/(kW)**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
+- **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon
 - **technology database (PV ONLY)**: Database, from where module parameters are to be obtained. Recommended Database: "SandiaMod".
 - **inverter database (PV ONLY)**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter".
 - **Modul Model (PV ONLY)**: Module name, according to the database used.
@@ -532,10 +532,10 @@ Within this sheet, the transformers of the energy system are defined. The follow
 - **efficiency**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
 - **efficiency2**: Specifies the efficiency of the second output, if there is one. Values  between 0 and 1 are entered. If there is no second output, the fill character "x" must be entered here.
 - **variable input costs**: Variable costs incurred per kWh of input energy supplied.
-- **existing capacity [kW]**: Already installed capacity of the transformer.
-- **max investment capacity [kW]**: Maximum  installable transformer capacity in addition to the previously existing one.
-- **min investment capacity [kW]**: Minimum transformer capacity to be installed.
-- **periodical costs [CU/a]**: Costs incurred per kW for investments within the time horizon.
+- **existing capacity/(kW)**: Already installed capacity of the transformer.
+- **max investment capacity/(kW)**: Maximum  installable transformer capacity in addition to the previously existing one.
+- **min investment capacity/(kW)**: Minimum transformer capacity to be installed.
+- **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
 
 
 .. figure:: images/BSP_transformers.png
@@ -573,10 +573,10 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **capacity max**: Specifies the maximum amount of memory that can be loaded at any given time. Value must be between 0 and 1.
 - **variable input costs**: Indicates how many costs arise for charging with one kWh.
 - **variable output costs**: Indicates how many costs arise for charging with one kWh.
-- **existing capacity [kW]**: Previously installed capacity of the storage.
-- **periodical costs [CU/a]**: Costs incurred per kW for investments within the time horizon.
-- **max. investment capacity [kW]**: Maximum in addition to existing capacity, installable storage capacity.
-- **min. investment capacity [kW]**: Minimum storage capacity to be installed.
+- **existing capacity/(kW)**: Previously installed capacity of the storage.
+- **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
+- **max. investment capacity/(kW)**: Maximum in addition to existing capacity, installable storage capacity.
+- **min. investment capacity/(kW)**: Minimum storage capacity to be installed.
 
 .. figure:: images/BSP_storage.png
    :width: 100 %
@@ -607,11 +607,11 @@ to be entered:
 - **bus_2**: Second bus to which the link is connected. If it is a directed link, this is the output bus.
 - **(un)directed**: Specifies whether it is a directed or an undirected link. Input options: "directed", "undirected".
 - **efficiency**: Specifies the efficiency of the link. Values between 0 and 1 are allowed entries.
-- **existing capacity [kW]**: Already installed capacity of the link.
-- **min. investment capacity [kW]**: Minimum, in addition to existing capacity, installable capacity.
-- **max. investment capacity [kW]**: Maximum capacity to be installed.
-- **variable costs [CU/kWh]**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
-- **periodical costs [CU/(kW a)]**: Costs incurred per kW for investments within the time horizon.
+- **existing capacity/(kW)**: Already installed capacity of the link.
+- **min. investment capacity/(kW)**: Minimum, in addition to existing capacity, installable capacity.
+- **max. investment capacity/(kW)**: Maximum capacity to be installed.
+- **variable costs/(CU/kWh)**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
+- **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon.
 
 
 .. figure:: images/BSP_link.png
@@ -688,9 +688,7 @@ Interactive_Results.py file.
 
    Screenshots of the interactive results browser interface
 
-The interactive results report includes a table that summarizes the modeling results (1), a second 
-table that provides information about each component (2), and an interactive graph that displays time 
-series of the different components (4).
+The results interface has the following elements:
 
 - **Table with a summary of the modelling (1).**
 

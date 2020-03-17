@@ -222,7 +222,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                 logging.info('   '+'Max. Capacity: ' 
                              + str(round(flowmax[[0][0]], 2)) + ' kW')             
                 # Variable Costs
-                variable_costs = b['excess costs [CU/kWh]'] * flowsum[[0][0]]
+                variable_costs = b['excess costs /(CU/kWh)'] * flowsum[[0][0]]
                 total_costs = total_costs + variable_costs
                 logging.info('   '+'Variable Costs: ' 
                              + str(round(variable_costs, 2)) + ' cost units')
@@ -255,7 +255,7 @@ def statistics(nodes_data, optimization_model, energy_system):
             flowmax = source['sequences'].max()
             logging.info('   '+'Max. Capacity: ' 
                          + str(round(flowmax[[0][0]], 2)) + ' kW')
-            if so['max. investment capacity [kW]'] > 0:        
+            if so['max. investment capacity /(kW)'] > 0:        
             # Investment Capacity
                 source_node = esys.groups[so['label']]
                 bus_node = esys.groups[so['output']]
@@ -269,7 +269,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                 source_investment = 0
     
             # Variable Costs
-            variable_costs = so['variable costs [CU/kWh]'] * flowsum[[0][0]]
+            variable_costs = so['variable costs /(CU/kWh)'] * flowsum[[0][0]]
             total_costs = total_costs + variable_costs
             logging.info('   '+'Variable costs: ' 
                          + str(round(variable_costs, 2)) 
@@ -311,7 +311,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                 logging.info('   '+'Max. Capacity: ' 
                              + str(round(flowmax[[0][0]], 2)) + ' kW')             
                 # Variable Costs
-                variable_costs = b['shortage costs [CU/kWh]'] * flowsum[[0][0]]
+                variable_costs = b['shortage costs /(CU/kWh)'] * flowsum[[0][0]]
                 total_costs = total_costs + variable_costs
                 logging.info('   '+'Variable Costs: ' 
                              + str(round(variable_costs, 2)) + ' cost units')    
@@ -382,9 +382,9 @@ def statistics(nodes_data, optimization_model, energy_system):
                              +' later')
                 
 
-            variable_costs = (t['variable input costs [CU/kWh]'] 
+            variable_costs = (t['variable input costs /(CU/kWh)'] 
                               * flowsum[[0][0]] 
-                              + t['variable output costs [CU/kWh]']
+                              + t['variable output costs /(CU/kWh)']
                               * flowsum[[1][0]])
             total_costs = total_costs + variable_costs
             logging.info('   '+'Variable Costs: ' 
@@ -393,7 +393,7 @@ def statistics(nodes_data, optimization_model, energy_system):
 
             
             # Investment Capacity
-            if t['max. investment capacity [kW]'] > 0:
+            if t['max. investment capacity /(kW)'] > 0:
                 transformer_node = esys.groups[t['label']]
                 bus_node = esys.groups[t['output']]
                 transformer_investment = (results[transformer_node, bus_node]
@@ -465,7 +465,7 @@ def statistics(nodes_data, optimization_model, energy_system):
             total_costs = total_costs + variable_costs 
     
             # Investment Capacity
-            if s['max. investment capacity [kW]'] > 0:
+            if s['max. investment capacity /(kWh)'] > 0:
                 storage_node = esys.groups[s['label']]
                 bus_node = esys.groups[s['bus']]
                 storage_investment = results[storage_node, None]['scalars']['invest']
@@ -477,14 +477,14 @@ def statistics(nodes_data, optimization_model, energy_system):
                 storage_investment = 0
                 
             # Periodical Costs
-            if storage_investment > float(s['existing capacity [kW]']):
-                periodical_costs = (s['periodical costs [CU/(kW a)]']
+            if storage_investment > float(s['existing capacity /(kWh)']):
+                periodical_costs = (s['periodical costs [CU/(kWh a)]']
                                     *storage_investment)
                 total_periodical_costs = (total_periodical_costs 
                                         + periodical_costs)
                 investments_to_be_made[s['label']] = (str(round(
                                                         storage_investment, 2))
-                                                +' kW; '
+                                                +' kWh; '
                                                 +str(round(periodical_costs,2))
                                                 +' cost units (p.a.)')
             else:
@@ -558,7 +558,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                     
                 #transformer = outputlib.views.node(results, t['label'])
                 #flowsum = transformer['sequences'].sum()
-                variable_costs = p['variable costs [CU/kWh]'] * flowsum[[0][0]]
+                variable_costs = p['variable costs /(CU/kWh)'] * flowsum[[0][0]]
                 total_costs = total_costs + variable_costs
                 logging.info('   '+'Variable Costs: ' 
                              + str(round(variable_costs, 2)) 
@@ -566,7 +566,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                 total_costs = total_costs + variable_costs
                 
                 # Investment Capacity
-                if p['max. investment capacity [kW]'] > 0:
+                if p['max. investment capacity /(kW)'] > 0:
                     link_node = esys.groups[p['label']]
                     bus_node = esys.groups[p['bus_2']]
                     link_investment = (results[link_node, bus_node]
@@ -692,15 +692,15 @@ def prepare_plotly_results(nodes_data,
     investments_to_be_made = {}
     
     df_list_of_components = pd.DataFrame(columns=['ID', 
-                                                  'type', 
-                                                  'input 1 [kWh]', 
-                                                  'input 2 [kWh]', 
-                                                  'output 1 [kWh]', 
-                                                  'output 2 [kWh]', 
-                                                  'capacity [kW]', 
-                                                  'variable costs [CU]', 
-                                                  'periodical costs [CU]',
-                                                  'investment [kW]'])
+                                      'type', 
+                                      'input 1/kWh', 
+                                      'input 2/kWh', 
+                                      'output 1/kWh', 
+                                      'output 2/kWh', 
+                                      'capacity/kW', 
+                                      'variable costs/CU', 
+                                      'periodical costs/CU',
+                                      'investment/kW'])
     #Add dummy component
 #    df_demand = pd.DataFrame([['---------------', 
 #           '---------------', 
@@ -792,14 +792,14 @@ def prepare_plotly_results(nodes_data,
                            ]], 
                            columns=['ID', 
                                       'type', 
-                                      'input 1 [kWh]', 
-                                      'input 2 [kWh]', 
-                                      'output 1 [kWh]', 
-                                      'output 2 [kWh]', 
-                                      'capacity [kW]', 
-                                      'variable costs [CU]', 
-                                      'periodical costs [CU]',
-                                      'investment [kW]'])   
+                                      'input 1/kWh', 
+                                      'input 2/kWh', 
+                                      'output 1/kWh', 
+                                      'output 2/kWh', 
+                                      'capacity/kW', 
+                                      'variable costs/CU', 
+                                      'periodical costs/CU',
+                                      'investment/kW'])   
         df_list_of_components = df_list_of_components.append(df_demand)              
                 
 #            logging.info('   '+'----------------------------------------------'
@@ -827,7 +827,7 @@ def prepare_plotly_results(nodes_data,
                 # Capacity
           
                 # Variable Costs
-                variable_costs = b['excess costs [CU/kWh]'] * flowsum[[0][0]]
+                variable_costs = b['excess costs /(CU/kWh)'] * flowsum[[0][0]]
                 total_costs = total_costs + variable_costs
               
 
@@ -853,15 +853,15 @@ def prepare_plotly_results(nodes_data,
                                    '---'
                                    ]], 
                                    columns=['ID', 
-                                          'type', 
-                                          'input 1 [kWh]', 
-                                          'input 2 [kWh]', 
-                                          'output 1 [kWh]', 
-                                          'output 2 [kWh]', 
-                                          'capacity [kW]', 
-                                          'variable costs [CU]', 
-                                          'periodical costs [CU]',
-                                          'investment [kW]'])   
+                                      'type', 
+                                      'input 1/kWh', 
+                                      'input 2/kWh', 
+                                      'output 1/kWh', 
+                                      'output 2/kWh', 
+                                      'capacity/kW', 
+                                      'variable costs/CU', 
+                                      'periodical costs/CU',
+                                      'investment/kW'])   
                 df_list_of_components = df_list_of_components.append(df_demand)
                 
 
@@ -890,7 +890,7 @@ def prepare_plotly_results(nodes_data,
             # Capacity
             flowmax = source['sequences'].max()
 
-            if so['max. investment capacity [kW]'] > 0:        
+            if so['max. investment capacity /(kW)'] > 0:        
             # Investment Capacity
                 source_node = esys.groups[so['label']]
                 bus_node = esys.groups[so['output']]
@@ -903,7 +903,7 @@ def prepare_plotly_results(nodes_data,
                 source_investment = 0
     
             # Variable Costs
-            variable_costs = so['variable costs [CU/kWh]'] * flowsum[[0][0]]
+            variable_costs = so['variable costs /(CU/kWh)'] * flowsum[[0][0]]
             total_costs = total_costs + variable_costs
 
             # Periodical Costs
@@ -942,14 +942,14 @@ def prepare_plotly_results(nodes_data,
                            ]], 
                            columns=['ID', 
                                       'type', 
-                                      'input 1 [kWh]', 
-                                      'input 2 [kWh]', 
-                                      'output 1 [kWh]', 
-                                      'output 2 [kWh]', 
-                                      'capacity [kW]', 
-                                      'variable costs [CU]', 
-                                      'periodical costs [CU]',
-                                      'investment [kW]'])   
+                                      'input 1/kWh', 
+                                      'input 2/kWh', 
+                                      'output 1/kWh', 
+                                      'output 2/kWh', 
+                                      'capacity/kW', 
+                                      'variable costs/CU', 
+                                      'periodical costs/CU',
+                                      'investment/kW'])   
         df_list_of_components = df_list_of_components.append(df_demand) 
 
 
@@ -972,43 +972,43 @@ def prepare_plotly_results(nodes_data,
                                                 +'_shortage')
                 # Flows
                 flowsum = shortage['sequences'].sum()
-
+    
                 total_usage = total_usage + flowsum[[0][0]] 
                 # Capacity
                 flowmax = shortage['sequences'].max()
            
                 # Variable Costs
-                variable_costs = b['shortage costs [CU/kWh]'] * flowsum[[0][0]]
+                variable_costs = b['shortage costs /(CU/kWh)'] * flowsum[[0][0]]
                 total_costs = total_costs + variable_costs
-   
-                
-        df_demand = pd.DataFrame([[b['label']+'_shortage', 
-                           'source', 
-                           '---', 
-                           '---', 
-                           round(flowsum[[0][0]], 2), 
-                           '---',
-                           round(flowmax[[0][0]], 2),
-                           round(variable_costs, 2),
-                           round(periodical_costs, 2),
-                           '---'
-                           ]], 
-                           columns=['ID', 
+       
+                    
+                df_demand = pd.DataFrame([[b['label']+'_shortage', 
+                                   'source', 
+                                   '---', 
+                                   '---', 
+                                   round(flowsum[[0][0]], 2), 
+                                   '---',
+                                   round(flowmax[[0][0]], 2),
+                                   round(variable_costs, 2),
+                                   round(periodical_costs, 2),
+                                   '---'
+                                   ]], 
+                                   columns=['ID', 
                                       'type', 
-                                      'input 1 [kWh]', 
-                                      'input 2 [kWh]', 
-                                      'output 1 [kWh]', 
-                                      'output 2 [kWh]', 
-                                      'capacity [kW]', 
-                                      'variable costs [CU]', 
-                                      'periodical costs [CU]',
-                                      'investment [kW]'])   
-        df_list_of_components = df_list_of_components.append(df_demand) 
-        
-        component_performance = shortage['sequences'].columns.values
-        df_shortage = shortage['sequences'][component_performance[0]]
-        df_result_table[b['label']+'_shortage'] = df_shortage
-        
+                                      'input 1/kWh', 
+                                      'input 2/kWh', 
+                                      'output 1/kWh', 
+                                      'output 2/kWh', 
+                                      'capacity/kW', 
+                                      'variable costs/CU', 
+                                      'periodical costs/CU',
+                                      'investment/kW'])   
+                df_list_of_components = df_list_of_components.append(df_demand) 
+                
+                component_performance = shortage['sequences'].columns.values
+                df_shortage = shortage['sequences'][component_performance[0]]
+                df_result_table[b['label']+'_shortage'] = df_shortage
+            
         
 
 ######################
@@ -1034,15 +1034,15 @@ def prepare_plotly_results(nodes_data,
 
               
 
-            variable_costs = (t['variable input costs [CU/kWh]'] 
+            variable_costs = (t['variable input costs /(CU/kWh)'] 
                               * flowsum[[0][0]] 
-                              + t['variable output costs [CU/kWh]']
+                              + t['variable output costs /(CU/kWh)']
                               * flowsum[[1][0]])
             total_costs = total_costs + variable_costs
 
             
             # Investment Capacity
-            if t['max. investment capacity [kW]'] > 0:
+            if t['max. investment capacity /(kW)'] > 0:
                 transformer_node = esys.groups[t['label']]
                 bus_node = esys.groups[t['output']]
                 transformer_investment = (results[transformer_node, bus_node]
@@ -1088,15 +1088,15 @@ def prepare_plotly_results(nodes_data,
                        round(transformer_investment, 2)
                        ]], 
                        columns=['ID', 
-                                  'type', 
-                                  'input 1 [kWh]', 
-                                  'input 2 [kWh]', 
-                                  'output 1 [kWh]', 
-                                  'output 2 [kWh]', 
-                                  'capacity [kW]', 
-                                  'variable costs [CU]', 
-                                  'periodical costs [CU]',
-                                  'investment [kW]'])   
+                                      'type', 
+                                      'input 1/kWh', 
+                                      'input 2/kWh', 
+                                      'output 1/kWh', 
+                                      'output 2/kWh', 
+                                      'capacity/kW', 
+                                      'variable costs/CU', 
+                                      'periodical costs/CU',
+                                      'investment/kW'])   
                     df_list_of_components = df_list_of_components.append(df_demand) 
                     
                 else:    
@@ -1126,15 +1126,15 @@ def prepare_plotly_results(nodes_data,
                        round(transformer_investment, 2)
                        ]], 
                        columns=['ID', 
-                                  'type', 
-                                  'input 1 [kWh]', 
-                                  'input 2 [kWh]', 
-                                  'output 1 [kWh]', 
-                                  'output 2 [kWh]', 
-                                  'capacity [kW]', 
-                                  'variable costs [CU]', 
-                                  'periodical costs [CU]',
-                                  'investment [kW]'])   
+                                      'type', 
+                                      'input 1/kWh', 
+                                      'input 2/kWh', 
+                                      'output 1/kWh', 
+                                      'output 2/kWh', 
+                                      'capacity/kW', 
+                                      'variable costs/CU', 
+                                      'periodical costs/CU',
+                                      'investment/kW'])   
                     df_list_of_components = df_list_of_components.append(df_demand) 
                            
             
@@ -1155,15 +1155,15 @@ def prepare_plotly_results(nodes_data,
                    round(transformer_investment, 2)
                    ]], 
                    columns=['ID', 
-                              'type', 
-                              'input 1 [kWh]', 
-                              'input 2 [kWh]', 
-                              'output 1 [kWh]', 
-                              'output 2 [kWh]', 
-                              'capacity [kW]', 
-                              'variable costs [CU]', 
-                              'periodical costs [CU]',
-                              'investment [kW]'])   
+                                      'type', 
+                                      'input 1/kWh', 
+                                      'input 2/kWh', 
+                                      'output 1/kWh', 
+                                      'output 2/kWh', 
+                                      'capacity/kW', 
+                                      'variable costs/CU', 
+                                      'periodical costs/CU',
+                                      'investment/kW'])   
                 df_list_of_components = df_list_of_components.append(df_demand)    
 
             
@@ -1203,7 +1203,7 @@ def prepare_plotly_results(nodes_data,
             total_costs = total_costs + variable_costs 
     
             # Investment Capacity
-            if s['max. investment capacity [kW]'] > 0:
+            if s['max. investment capacity /(kWh)'] > 0:
                 storage_node = esys.groups[s['label']]
                 bus_node = esys.groups[s['bus']]
                 storage_investment = results[storage_node, None]['scalars']['invest']
@@ -1212,14 +1212,14 @@ def prepare_plotly_results(nodes_data,
                 storage_investment = 0
                 
             # Periodical Costs
-            if storage_investment > float(s['existing capacity [kW]']):
-                periodical_costs = (s['periodical costs [CU/(kW a)]']
+            if storage_investment > float(s['existing capacity /(kWh)']):
+                periodical_costs = (s['periodical costs [CU/(kWh a)]']
                                     *storage_investment)
                 total_periodical_costs = (total_periodical_costs 
                                         + periodical_costs)
                 investments_to_be_made[s['label']] = (str(round(
                                                         storage_investment, 2))
-                                                +' kW; '
+                                                +' kWh; '
                                                 +str(round(periodical_costs,2))
                                                 +' cost units (p.a.)')
             else:
@@ -1237,24 +1237,26 @@ def prepare_plotly_results(nodes_data,
                round(storage_investment, 2)
                ]], 
                columns=['ID', 
-                      'type', 
-                      'input 1 [kWh]', 
-                      'input 2 [kWh]', 
-                      'output 1 [kWh]', 
-                      'output 2 [kWh]', 
-                      'capacity [kW]', 
-                      'variable costs [CU]', 
-                      'periodical costs [CU]',
-                      'investment [kW]'])   
+                                      'type', 
+                                      'input 1/kWh', 
+                                      'input 2/kWh', 
+                                      'output 1/kWh', 
+                                      'output 2/kWh', 
+                                      'capacity/kW', 
+                                      'variable costs/CU', 
+                                      'periodical costs/CU',
+                                      'investment/kW'])   
             df_list_of_components = df_list_of_components.append(df_demand)
           
             component_performance = storage['sequences'].columns.values
+          
+            
             df_storage = storage['sequences'][component_performance[0]]
-            df_result_table[s['label']+'_input'] = df_storage
-            df_storage = storage['sequences'][component_performance[2]]
-            df_result_table[s['label']+'_output'] = df_storage
-            df_storage = storage['sequences'][component_performance[1]]
             df_result_table[s['label']+'_capacity'] = df_storage
+            df_storage = storage['sequences'][component_performance[2]]
+            df_result_table[s['label']+'_input'] = df_storage
+            df_storage = storage['sequences'][component_performance[1]]
+            df_result_table[s['label']+'_output'] = df_storage
             
             
 
@@ -1303,19 +1305,24 @@ def prepare_plotly_results(nodes_data,
                     
                 if p['(un)directed'] == 'directed':
                     max_link_flow = flowmax[1]
+                    
+
+                    
 
                 else:
                     max_link_flow = flowmax[1]
 
                     max_link_flow = flowmax2[1]
+                    
+
 
                     
-                variable_costs = p['variable costs [CU/kWh]'] * flowsum[[0][0]]
+                variable_costs = p['variable costs /(CU/kWh)'] * flowsum[[0][0]]
                 total_costs = total_costs + variable_costs
                 total_costs = total_costs + variable_costs
                 
                 # Investment Capacity
-                if p['max. investment capacity [kW]'] > 0:
+                if p['max. investment capacity /(kW)'] > 0:
                     link_node = esys.groups[p['label']]
                     bus_node = esys.groups[p['bus_2']]
                     link_investment = (results[link_node, bus_node]
@@ -1338,44 +1345,74 @@ def prepare_plotly_results(nodes_data,
                 else:
                     periodical_costs = 0
 
-
-            component_performance = link['sequences'].columns.values
-            df_link = link['sequences'][component_performance[0]]
-            df_result_table[p['label']+'_input1'] = df_link
-            df_link = link['sequences'][component_performance[1]]
-            df_result_table[p['label']+'_output1'] = df_link
-            
-            
-            component_performance2 = link2['sequences'].columns.values
-            df_link2 = link2['sequences'][component_performance2[0]]
-            df_result_table[p['label']+'_input2'] = df_link2
-            df_link2 = link2['sequences'][component_performance2[1]]
-            df_result_table[p['label']+'_output2'] = df_link2
-
-
-
-            df_demand = pd.DataFrame([[p['label'], 
-               'link', 
-               round(link['sequences'][component_performance[0]].sum(), 2), 
-               round(link2['sequences'][component_performance2[0]].sum(), 2), 
-               round(link['sequences'][component_performance[1]].sum(), 2),
-               round(link2['sequences'][component_performance2[1]].sum(), 2),
-               round(max(link['sequences'][component_performance[1]].max(), link2['sequences'][component_performance2[1]].max()), 2),
-               round(variable_costs, 2),
-               round(periodical_costs, 2),
-               round(link_investment, 2)
-               ]], 
-               columns=['ID', 
-                      'type', 
-                      'input 1 [kWh]', 
-                      'input 2 [kWh]', 
-                      'output 1 [kWh]', 
-                      'output 2 [kWh]', 
-                      'capacity [kW]', 
-                      'variable costs [CU]', 
-                      'periodical costs [CU]',
-                      'investment [kW]'])    
-            df_list_of_components = df_list_of_components.append(df_demand)
+            if p['(un)directed'] == 'directed':
+                component_performance = link['sequences'].columns.values
+                df_link = link['sequences'][component_performance[0]]
+                df_result_table[p['label']+'_input1'] = df_link
+                df_link = link['sequences'][component_performance[1]]
+                df_result_table[p['label']+'_output1'] = df_link
+              
+    
+                df_demand = pd.DataFrame([[p['label'], 
+                   'link', 
+                   round(link['sequences'][component_performance[0]].sum(), 2), 
+                   '--',#round(link2['sequences'][component_performance2[0]].sum(), 2), 
+                   round(link['sequences'][component_performance[1]].sum(), 2),
+                   '--',#round(link2['sequences'][component_performance2[1]].sum(), 2),
+                   round(link['sequences'][component_performance[1]].max(), 2),
+                   round(variable_costs, 2),
+                   round(periodical_costs, 2),
+                   round(link_investment, 2)
+                   ]], 
+                   columns=['ID', 
+                                      'type', 
+                                      'input 1/kWh', 
+                                      'input 2/kWh', 
+                                      'output 1/kWh', 
+                                      'output 2/kWh', 
+                                      'capacity/kW', 
+                                      'variable costs/CU', 
+                                      'periodical costs/CU',
+                                      'investment/kW'])    
+                df_list_of_components = df_list_of_components.append(df_demand)                
+            else:
+                component_performance = link['sequences'].columns.values
+                df_link = link['sequences'][component_performance[0]]
+                df_result_table[p['label']+'_input1'] = df_link
+                df_link = link['sequences'][component_performance[1]]
+                df_result_table[p['label']+'_output1'] = df_link
+                
+                
+                component_performance2 = link2['sequences'].columns.values
+                df_link2 = link2['sequences'][component_performance2[0]]
+                df_result_table[p['label']+'_input2'] = df_link2
+                df_link2 = link2['sequences'][component_performance2[1]]
+                df_result_table[p['label']+'_output2'] = df_link2
+    
+    
+    
+                df_demand = pd.DataFrame([[p['label'], 
+                   'link', 
+                   round(link['sequences'][component_performance[0]].sum(), 2), 
+                   round(link2['sequences'][component_performance2[0]].sum(), 2), 
+                   round(link['sequences'][component_performance[1]].sum(), 2),
+                   round(link2['sequences'][component_performance2[1]].sum(), 2),
+                   round(max(link['sequences'][component_performance[1]].max(), link2['sequences'][component_performance2[1]].max()), 2),
+                   round(variable_costs, 2),
+                   round(periodical_costs, 2),
+                   round(link_investment, 2)
+                   ]], 
+                   columns=['ID', 
+                                      'type', 
+                                      'input 1/kWh', 
+                                      'input 2/kWh', 
+                                      'output 1/kWh', 
+                                      'output 2/kWh', 
+                                      'capacity/kW', 
+                                      'variable costs/CU', 
+                                      'periodical costs/CU',
+                                      'investment/kW'])    
+                df_list_of_components = df_list_of_components.append(df_demand)
             
 
             
