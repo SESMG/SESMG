@@ -842,12 +842,12 @@ SOFTWARE.
 
 Contact
 -------
-Developed by
 
-.. figure:: images/Contact.PNG
-   :width: 55 %
-   :alt: contact_Klemm
-   :align: left
+Münster University of Applied Sciences
+
+Christian Klemm
+christian.klemm@fh-muenster.de
+
 
 Acknowledgements
 ----------------
