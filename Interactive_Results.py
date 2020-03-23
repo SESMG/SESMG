@@ -46,7 +46,7 @@ def return_component_value(ID, df_table):
 #Imports Data created by the Spreadsheet Energy System Model Generator
 df_table = pd.read_csv(r"results/results.csv")
 df_components = pd.read_csv(r"results/components.csv")
-df_model_properties = pd.read_csv(r"results/model_properties.csv")
+#df_model_properties = pd.read_csv(r"results/model_properties.csv")
 
 # Prepares Data for table 1
 df_summary = pd.read_csv(r"results/summary.csv")
