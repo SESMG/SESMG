@@ -276,7 +276,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                          + ' cost units')
             # Periodical Costs
             if source_investment > 0:
-                periodical_costs = (so['periodical costs [CU/(kW a)]']*
+                periodical_costs = (so['periodical costs /(CU/(kW a))']*
                                     source_investment)
                 total_periodical_costs = (total_periodical_costs 
                                          + periodical_costs)
@@ -407,7 +407,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                     
             # Periodical Costs        
             if transformer_investment > 0:     ### Wert auf beide Busse anwenden! (Es muss die Summe der Busse, inklusive des Wirkungsgrades einbezogen werden!!!)
-                periodical_costs = (t['periodical costs [CU/(kW a)]']
+                periodical_costs = (t['periodical costs /(CU/(kW a))']
                                     *transformer_investment)
                 total_periodical_costs = (total_periodical_costs 
                                           + periodical_costs)
@@ -478,7 +478,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                 
             # Periodical Costs
             if storage_investment > float(s['existing capacity /(kWh)']):
-                periodical_costs = (s['periodical costs [CU/(kWh a)]']
+                periodical_costs = (s['periodical costs /(CU/(kWh a))']
                                     *storage_investment)
                 total_periodical_costs = (total_periodical_costs 
                                         + periodical_costs)
@@ -580,7 +580,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                         
                 # Periodical Costs        
                 if link_investment > 0:     ### Wert auf beide Busse anwenden! 
-                    periodical_costs = p['periodical costs [CU/(kW a)]']
+                    periodical_costs = p['periodical costs /(CU/(kW a))']
                     total_periodical_costs = (total_periodical_costs 
                                              + periodical_costs)
                     investments_to_be_made[p['label']] = (str(round(
@@ -908,7 +908,7 @@ def prepare_plotly_results(nodes_data,
 
             # Periodical Costs
             if source_investment > 0:
-                periodical_costs = (so['periodical costs [CU/(kW a)]']*
+                periodical_costs = (so['periodical costs /(CU/(kW a))']*
                                     source_investment)
                 total_periodical_costs = (total_periodical_costs 
                                          + periodical_costs)
@@ -1053,7 +1053,7 @@ def prepare_plotly_results(nodes_data,
                     
             # Periodical Costs        
             if transformer_investment > 0:     ### Wert auf beide Busse anwenden! (Es muss die Summe der Busse, inklusive des Wirkungsgrades einbezogen werden!!!)
-                periodical_costs = (t['periodical costs [CU/(kW a)]']
+                periodical_costs = (t['periodical costs /(CU/(kW a))']
                                     *transformer_investment)
                 total_periodical_costs = (total_periodical_costs 
                                           + periodical_costs)
@@ -1213,7 +1213,7 @@ def prepare_plotly_results(nodes_data,
                 
             # Periodical Costs
             if storage_investment > float(s['existing capacity /(kWh)']):
-                periodical_costs = (s['periodical costs [CU/(kWh a)]']
+                periodical_costs = (s['periodical costs /(CU/(kWh a))']
                                     *storage_investment)
                 total_periodical_costs = (total_periodical_costs 
                                         + periodical_costs)
@@ -1334,7 +1334,7 @@ def prepare_plotly_results(nodes_data,
                         
                 # Periodical Costs        
                 if link_investment > 0:     ### Wert auf beide Busse anwenden! 
-                    periodical_costs = p['periodical costs [CU/(kW a)]']
+                    periodical_costs = p['periodical costs /(CU/(kW a))']
                     total_periodical_costs = (total_periodical_costs 
                                              + periodical_costs)
                     investments_to_be_made[p['label']] = (str(round(
