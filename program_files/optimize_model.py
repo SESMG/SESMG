@@ -30,7 +30,6 @@ def least_cost_model(nodes_data, energy_system):
     
     esys = energy_system
 
-    
     # add nodes and flows to energy system
     logging.info('   '+"******************************************************"
                              +"***")

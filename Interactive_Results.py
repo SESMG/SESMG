@@ -23,6 +23,11 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 import plotly.graph_objects as go
 import subprocess
+import os
+import base64
+from dash_canvas import DashCanvas
+import io
+from PIL import Image
 
 def return_component_value(ID, df_table):
     """Returns data for the graph.
@@ -66,6 +71,19 @@ dates = df_table["date"].tolist()
 list_of_components = df_table.columns.values
 list_of_components = list_of_components[1:len(list_of_components)]
 
+#Import Image
+graph_png = 'results/graph.gv.png'
+test_base64 = base64.b64encode(open(graph_png, 'rb').read()).decode('ascii')
+
+# Sets Canvas width in dependency from the image height
+imgdata = base64.b64decode(test_base64)
+im = Image.open(io.BytesIO(imgdata))
+width, height = im.size
+canvas_width = (800/height)*width
+if canvas_width > 2300:
+    canvas_width = 2300
+print(height)
+print(width)
 
 # loading external resources (stylesheets)
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -75,10 +93,15 @@ options = dict(
 # Creating the application, which is running the interactive page
 demo_app = dash.Dash(__name__, **options)
 
+
+
+
 demo_app.layout = html.Div(
+
     children=[
         # Creates the Headline
         html.H1(children='Spreadsheet Energy System Model Generator - Interactive Results'),
+
         # Creates the Sub-Headline
         html.Div(children='''Summary of the modelling:'''),
         #Creates Table 1
@@ -94,6 +117,16 @@ demo_app.layout = html.Div(
                             }
                          }
         ),
+
+        # Includes Image
+        DashCanvas(id='graph',
+                   tool='line',
+                   lineWidth=5,
+                   #hide_buttons=['line', 'zoom', 'pan'],
+                   lineColor='red',
+                   image_content='data:image/png;base64,{}'.format(test_base64),
+                   width=canvas_width),
+
         # Creates the Sub-Headline
         html.Div(
                 children=[html.Div("-"),
@@ -165,7 +198,8 @@ demo_app.layout = html.Div(
                         }
                 }
             }
-        )
+        ),
+
     ]
 )
 

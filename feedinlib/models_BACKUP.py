@@ -17,14 +17,14 @@ import warnings
 import pandas as pd
 from copy import deepcopy
 
-from windpowerlib import ModelChain as WindpowerlibModelChain
-from windpowerlib import (
-    TurbineClusterModelChain as WindpowerlibClusterModelChain,
-)
-from windpowerlib import WindTurbine as WindpowerlibWindTurbine
-from windpowerlib import WindFarm as WindpowerlibWindFarm
-from windpowerlib import WindTurbineCluster as WindpowerlibWindTurbineCluster
-from windpowerlib import get_turbine_types
+#from windpowerlib import ModelChain as WindpowerlibModelChain
+#from windpowerlib import (
+#    TurbineClusterModelChain as WindpowerlibClusterModelChain,
+#)
+#from windpowerlib import WindTurbine as WindpowerlibWindTurbine
+#from windpowerlib import WindFarm as WindpowerlibWindFarm
+#from windpowerlib import WindTurbineCluster as WindpowerlibWindTurbineCluster
+#from windpowerlib import get_turbine_types
 
 from pvlib.modelchain import ModelChain as PvlibModelChain
 from pvlib.pvsystem import PVSystem as PvlibPVSystem
@@ -676,7 +676,7 @@ class WindpowerlibTurbine(WindpowerModelBase):
             Wind turbine to calculate feed-in for.
 
         """
-        return WindpowerlibWindTurbine(**kwargs)
+        return WindpowerlibTurbine(**kwargs)
 
     def feedin(self, weather, power_plant_parameters, **kwargs):
         r"""

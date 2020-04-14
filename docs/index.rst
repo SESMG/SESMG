@@ -136,6 +136,20 @@ listed in the following table.
 |   snow cover, old     	| 0.45 - 0.70                    |
 +---------------------------+--------------------------------+
 
+**Wind Turbines**
+
+For the modelilng of wind turbines, the weather data set must 
+include wind speeds. The wind speeds must be available for a 
+measurement height of 10 m in the unit m/s.
+
+The system data of the wind turbine to be modelled are obtained 
+from the `"oedb" <https://github.com/wind-python/windpowerlib/tree/dev/windpowerlib/oedb>`_ 
+database.
+
+
+
+
+
 
 Sinks
 ^^^^^
@@ -324,7 +338,7 @@ Installation
 
 
 - go to the `Python download page <https://www.python.org/downloads/>`_
-- chose a Python version (e.g., "Python 3.7.6") and klick "download"
+- chose a Python version (e.g., "Python 3.7.6") and click "download"
 - download an installer (e.g., "Windows x86-64 executable installer")
 - execute the installer on your computer
 	
@@ -482,7 +496,9 @@ defined if the parameter "technology" is set on "photovoltaic". The following pa
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. Input options: "photovoltaic", "wind", "other". Time series are automatically generated for photovoltaic systems and wind turbines. If "other" is selected, a time series must be provided in the "time_series" sheet.
+- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "other". Time series are automatically generated for photovoltaic systems and wind turbines. If "other" is selected, a time series must be provided in the "time_series" sheet.
+- **Turbine Model (Windpower ONLY)**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_. 
+- **Hub Height (Windpower ONLY)**: Hub height of the wind turbine. Which hub heights are possible for the selected reference turbine can be viewed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
 - **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
 - **existing capacity/(kW)**: Existing capacity of the source before possible investments.
 - **min. investment capacity/(kW)**: Minimum capacity to be installed in case of an investment.
@@ -790,6 +806,13 @@ or
 	
 - **Possible Error Cause**: The column "annual demand" was not filled in correctly for a sink. 
 - **Debugging**: Make sure to use the "annual demand" column for SLP and Richardson sinks and the "nominal value" column for time series sinks.
+
+..warning::
+
+	AttributeError: 'str' object has no attribute 'is_variable_type'
+	
+- **Possible Error Cause**: The cost value for an activated excess sink or shortage source was not correctly specified in the bus sheet
+- **Debugging**: Make sure that all excess/sortage prices consist of real numbers. Also check for typos.
 
 
 Your error message is not included? Do not hesitate to contact the developers.
