@@ -30,7 +30,10 @@ pip install pvlib==0.7.1
 pip install feedinlib==0.0.12
 pip install richardsonpy==0.2.1
 pip install dash==1.7.0
-pip install dash_canvas
+pip install dash_canvas=0.1.0
+pip install pydot==1.4.1
+pip install graphviz==0.13.2
+
 
 @echo ######################
 @echo Installation completed
