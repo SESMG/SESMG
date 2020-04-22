@@ -826,7 +826,53 @@ Your error message is not included? Do not hesitate to contact the developers.
 
 Program Functions
 =================
-Hier mit teste Ich die Funktion meines GIThubs.
+`◆  <#a230c7d68904cba8e136a4ab0db48fec4>`__\ import_scenario()
+==============================================================
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      ====================================================== = = ========== =
+      def program_files.create_energy_system.import_scenario (   *filepath* ) 
+      ====================================================== = = ========== =
+
+   .. container:: memdoc
+
+      Imports data from a spreadsheet scenario file.
+
+      The excel sheet has to contain the following sheets:
+
+      -  timesystem
+      -  buses
+      -  transformers
+      -  sinks
+      -  sources
+      -  storages
+      -  powerlines
+      -  time_series
+
+      --------------
+
+      Parameters
+         ======== =========================================
+         filename : obj:'str' – path to excel scenario file
+         ======== =========================================
+
+      --------------
+
+      Returns
+         nodes_data : obj:'dict' – dictionary containing data from excel
+         scenario file
+
+      --------------
+
+      Author
+         Christian Klemm -
+         `chris.nosp@m.tian.nosp@m..klem.nosp@m.m@fh.nosp@m.-muen.nosp@m.ster.nosp@m..de <#>`__,
+         05.03.2020
+
+--------------
 
 
 
