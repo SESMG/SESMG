@@ -104,7 +104,7 @@ def create_graph(filepath, nodes_data, legend=False):
                 dot.node(b['label'], shape='ellipse', fontsize="10")
 
                 # Adds edge to the graph
-                dot.edge(excess, b['label'])
+                dot.edge(b['label'], excess)
 
     # Implements sources and their connected buses in the graph
     for i, so in nd['sources'].iterrows():
@@ -189,3 +189,6 @@ def create_graph(filepath, nodes_data, legend=False):
                 dot.edge(p['label'], p['bus_1'])
 
     dot.render(filepath+'/graph.gv', view=True)
+
+
+
