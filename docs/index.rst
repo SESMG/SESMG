@@ -980,5 +980,4 @@ The authors thank the German Federal Ministry of Education (BMBF) for funding th
    :alt: R2Q_logos
    :align: center
 
-Test
 
