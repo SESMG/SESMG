@@ -813,12 +813,19 @@ or
 - **Possible Error Cause**: The column "annual demand" was not filled in correctly for a sink. 
 - **Debugging**: Make sure to use the "annual demand" column for SLP and Richardson sinks and the "nominal value" column for time series sinks.
 
-..warning::
+.. warning::
 
 	AttributeError: 'str' object has no attribute 'is_variable_type'
 	
 - **Possible Error Cause**: The cost value for an activated excess sink or shortage source was not correctly specified in the bus sheet
 - **Debugging**: Make sure that all excess/sortage prices consist of real numbers. Also check for typos.
+
+.. warning::
+
+	"exe.cmd" is not executed (no errror messages)
+	
+- **Possible Error Cause**: Your python version may be broken
+- **Debugging**: Reinstall python (see "Getting Started", step 1 "Install Python")
 
 
 Your error message is not included? Do not hesitate to contact the developers.
