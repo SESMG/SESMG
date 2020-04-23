@@ -353,13 +353,13 @@ Installation
 6. Install "Graphviz"
 
 - go to `Graphviz download page <https://graphviz.gitlab.io/download/>`_ 
-- select and download the graphviz version for your device (e.g. `graphviz-2.38.msi for Windows <https://graphviz.gitlab.io/_pages/Download/windows/graphviz-2.38.zip>`_ 
+- select and download the graphviz version for your device (e.g. `graphviz-2.38.msi for Windows <https://graphviz.gitlab.io/_pages/Download/windows/graphviz-2.38.msi>`_)
 
 .. note:: 
 
 	Make sure to select the correct installation location for Graphviz!!
 
-- Execute the installation manager you just downloaded. Choose the following directory for the installation: "C:\Program Files (x86)\Graphviz2.38\" (should be the default settings)
+- Execute the installation manager you just downloaded. Choose the following directory for the installation: "C:\\Program Files (x86)\\Graphviz2.38\\" (should be the default settings)
 
 7. Execute the "installation.cmd" file.
 
