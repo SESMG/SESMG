@@ -824,8 +824,8 @@ or
 
 	"exe.cmd" is not executed (no errror messages)
 	
-- **Possible Error Cause**: Your python version may be broken
-- **Debugging**: Reinstall python (see "Getting Started", step 1 "Install Python")
+- **Possible Error Cause**: The used Python environment does not work correctly.
+- **Debugging**: Reinstall python (see "Getting Started", step 1 "Install Python").
 
 
 Your error message is not included? Do not hesitate to contact the developers.
