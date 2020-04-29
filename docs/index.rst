@@ -8,10 +8,8 @@ The Spreadsheet Energy System Model Generator
 
 .. toctree::
    :maxdepth: 4
+   :caption: Contents:
    
-   
-   program_functions
-
 About the Model Generator
 =========================
 
