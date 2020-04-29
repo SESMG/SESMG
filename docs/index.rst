@@ -10,6 +10,8 @@ The Spreadsheet Energy System Model Generator
    :maxdepth: 4
    :caption: Contents:
    
+   program_functions
+   
 About the Model Generator
 =========================
 
@@ -831,7 +833,7 @@ or
 Your error message is not included? Do not hesitate to contact the developers.
 
 
-program_functions
+
 
 
 General Information
