@@ -833,7 +833,7 @@ Your error message is not included? Do not hesitate to contact the developers.
 
 Program Functions
 =================
-.. include:: ../program_functions.rst
+.. include:: /program_functions.rst
 
 
 General Information
