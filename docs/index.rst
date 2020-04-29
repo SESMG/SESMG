@@ -831,9 +831,7 @@ or
 Your error message is not included? Do not hesitate to contact the developers.
 
 
-Program Functions
-=================
-.. include:: /program_functions.rst
+program_functions
 
 
 General Information
