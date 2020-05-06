@@ -32,7 +32,7 @@ Within this sheet, the time horizon and the temporal resolution of the model is 
 
 
   
-.. figure:: images/BSP_timesystem.PNG
+.. figure:: ../images/BSP_timesystem.PNG
    :width: 100 %
    :alt: Bus-Example
    :align: center
@@ -52,7 +52,7 @@ Within this sheet, the buses of the energy system are defined. The following par
 - **shortage costs/(CU/kWh)**: Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "x" is used. 
 - **excess costs/(CU/kWh)**: Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "x" is used. 
 	
-.. figure:: images/BSP_buses.PNG
+.. figure:: ../images/BSP_buses.PNG
    :width: 100 %
    :alt: Bus-Example
    :align: center
@@ -61,7 +61,7 @@ Within this sheet, the buses of the energy system are defined. The following par
   
 
 	
-.. figure:: images/BSP_Graph_Bus.png
+.. figure:: ../images/BSP_Graph_Bus.png
    :width: 60 %
    :alt: Bus_Graph
    :align: center
@@ -86,7 +86,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **wind class [HEAT SLP ONLY]**: wind classification for building location (0=not windy, 1=windy)
 - **fixed**: Indicates whether it is a fixed sink or not. 0 = not fixed; 1 = fixed.
  
-.. figure:: images/BSP_sinks.png
+.. figure:: ../images/BSP_sinks.png
    :width: 100 %
    :alt: Sink-Example
    :align: center
@@ -95,7 +95,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
   
 
 	
-.. figure:: images/BSP_Graph_sink.png
+.. figure:: ../images/BSP_Graph_sink.png
    :width: 60 %
    :alt: Sink_Graph
    :align: center
@@ -132,7 +132,7 @@ defined if the parameter "technology" is set on "photovoltaic". The following pa
 - **Longitude (PV ONLY)**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 
-.. figure:: images/BSP_source.png
+.. figure:: ../images/BSP_source.png
    :width: 100 %
    :alt: Source-Example
    :align: center
@@ -141,7 +141,7 @@ defined if the parameter "technology" is set on "photovoltaic". The following pa
   
 
 	
-.. figure:: images/BSP_Graph_source.png
+.. figure:: ../images/BSP_Graph_source.png
    :width: 60 %
    :alt: Source_Graph
    :align: center
@@ -170,7 +170,7 @@ Within this sheet, the transformers of the energy system are defined. The follow
 - **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
 
 
-.. figure:: images/BSP_transformers.png
+.. figure:: ../images/BSP_transformers.png
    :width: 100 %
    :alt: Transformer-Example
    :align: center
@@ -179,7 +179,7 @@ Within this sheet, the transformers of the energy system are defined. The follow
   
 
 	
-.. figure:: images/BSP_Graph_transformer.png
+.. figure:: ../images/BSP_Graph_transformer.png
    :width: 60 %
    :alt: Transformer_Graph
    :align: center
@@ -210,7 +210,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **max. investment capacity/(kW)**: Maximum in addition to existing capacity, installable storage capacity.
 - **min. investment capacity/(kW)**: Minimum storage capacity to be installed.
 
-.. figure:: images/BSP_storage.png
+.. figure:: ../images/BSP_storage.png
    :width: 100 %
    :alt: Storage-Example
    :align: center
@@ -219,7 +219,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
   
 
 	
-.. figure:: images/BSP_Graph_Storage.png
+.. figure:: ../images/BSP_Graph_Storage.png
    :width: 60 %
    :alt: Transformer_Graph
    :align: center
@@ -246,7 +246,7 @@ to be entered:
 - **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon.
 
 
-.. figure:: images/BSP_link.png
+.. figure:: ../images/BSP_link.png
    :width: 100 %
    :alt: bsp_link_input
    :align: center
@@ -255,7 +255,7 @@ to be entered:
   
 
 	
-.. figure:: images/BSP_Graph_link.png
+.. figure:: ../images/BSP_Graph_link.png
    :width: 60 %
    :alt: bsp-graph-link
    :align: center
@@ -274,7 +274,7 @@ with the "technology" property "others". The following parameters have to be ent
 
  
  
-.. figure:: images/BSP_timeseries.PNG
+.. figure:: ../images/BSP_timeseries.PNG
    :width: 50 %
    :alt: timeseries-sxample
    :align: center
@@ -289,13 +289,13 @@ photovoltaic systems with the feedinlib, weather data must be stored here. The w
 data time system should be in conformity with the model’s time system, defined in the sheet "timesystem".
 
 - **timestamp**: Points in time to which the stored weather data are related. 
-- **dhi**: diffuse horizontal irradiance in W/m:sup:`2
-- **dirhi**: direct horizontal irradiance in W/m:sup:`2
+- **dhi**: diffuse horizontal irradiance in W/m:sup:`2`
+- **dirhi**: direct horizontal irradiance in W/m:sup:`2`
 - **pressure**: air pressure in Pa
 - **windspeed**: Wind speed, measured at 10 m height, in unit m/s
 - **z0**: roughness length of the environment in units m
 
-.. figure:: images/BSP_weatherdata.PNG
+.. figure:: ../images/BSP_weatherdata.PNG
    :width: 100 %
    :alt: weatherdata-Example
    :align: center

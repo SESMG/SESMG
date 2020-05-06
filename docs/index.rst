@@ -8,13 +8,9 @@ included Python program and the open source Python library "oemof", assembled
 to an energy system and optimized with the open source solver "cbc". The modeling 
 results can be viewed and analyzed using a browser-based results output.
 
-For more details, please read on here,
 
 Structure of Energy System
 -------------------------------------------------
-Explanation of the basic structure of energy systems, as used in the Model Generator.
-Furthermore, the methods and databases used are explained.
-
 * :doc:`structure_of_energy_system/structure`
 	
 	
@@ -27,11 +23,6 @@ Furthermore, the methods and databases used are explained.
 	
 Getting started 
 -------------------------------------------------
-	
-Description of how to install and use the components 
-of the Spreadsheet Energy System Model Generator. 
-
-	
 * :doc:`getting_started/how_to_install`
 * :doc:`getting_started/how_to_execute`
 * :doc:`getting_started/how_to_use`
@@ -50,10 +41,6 @@ of the Spreadsheet Energy System Model Generator.
 	
 Troubleshooting 
 -------------------------------------------------
-Known errors in the use of the model generator,
-their causes and how to fix them.
-
-	
 * :doc:`troubleshooting/troubleshooting`
 	
 
@@ -66,9 +53,6 @@ their causes and how to fix them.
 
 Sourcecode
 -------------------------------------------------
-Documentation of the used python source code.
-
-	
 * :doc:`Python code documentation <sourcecode_documentation/program_functions>`
 	
 	

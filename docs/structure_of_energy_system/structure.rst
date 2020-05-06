@@ -18,7 +18,7 @@ Buses furthermore form connection points of an energy system. The graph of a sim
 consisting of each one source, one transformer, one sink, as well as two buses, could look like the 
 example displayed in the following figure.
   
-.. figure:: images/simple_energy_system.png
+.. figure:: ../images/simple_energy_system.png
    :width: 100 %
    :alt: Bus-Example
    :align: center
@@ -70,7 +70,7 @@ source could represent the purchase of energy at a fixed price.
 The following Figure sketches the fractions of radiation
 arriving at a PV-module as well as further relevant parameters. 
 
-.. figure:: images/PV_Aufbau.png
+.. figure:: ../images/PV_Aufbau.png
    :width: 100 %
    :alt: pv_systems
    :align: center
@@ -274,7 +274,7 @@ In an energy system, links can represent, for
 example, electrical powerlines, gas pipelines, district heating
 distribution networks or similar.
 
-.. figure:: images/link.png
+.. figure:: ../images/link.png
    :width: 100 %
    :alt: links
    :align: center
