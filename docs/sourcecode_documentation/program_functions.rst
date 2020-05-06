@@ -1,5 +1,8 @@
-`<#a6b8053b5f7956e9286fc7dd814f0625e>`__\ define_energy_system()
-----------------------------------------------------------------
+Sourcecode documentation
+*************************************************
+
+define_energy_system()
+-------------------------------------------------
 
 .. container:: memitem
 
@@ -39,8 +42,8 @@
          dict esys : oemof energy system
         
 
-`<#a230c7d68904cba8e136a4ab0db48fec4>`__\ import_scenario()
------------------------------------------------------------
+import_scenario()
+-------------------------------------------------
 
 .. container:: memitem
 

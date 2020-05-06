@@ -82,10 +82,10 @@ Documentation of the used python source code.
 	
 Further Information
 -------------------------------------------------
-* :doc:`further_information/links`
-* :doc:`further_information/license`
-* :doc:`further_information/contact`
-* :doc:`further_information/acknowledgements.rst`
+* :doc:`information/links`
+* :doc:`information/license`
+* :doc:`information/contact`
+* :doc:`information/acknowledgements`
 		
 ..	toctree::
 	:maxdepth: 2
