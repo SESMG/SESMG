@@ -12,21 +12,25 @@ For more details, please read on here,
 
 Structure of Energy System
 -------------------------------------------------
-Explanation of the basic structure of energy systems, as used in the Model Generator.
-Furthermore, the methods and databases used are explained.
 .. 	toctree:: 
 	:maxdepth:	1
 	:glob:
+	
+Explanation of the basic structure of energy systems, as used in the Model Generator.
+Furthermore, the methods and databases used are explained.
+
 	
 	Structure <./structure_of_energy_system/structure.rst>
 	
 Getting started 
 -------------------------------------------------
-Description of how to install and use the components 
-of the Spreadsheet Energy System Model Generator. 
 ..	toctree::
 	:maxdepth:	1
 	:glob:
+	
+Description of how to install and use the components 
+of the Spreadsheet Energy System Model Generator. 
+
 	
 	How to install <./getting_started/how_to_install.rst>
 	How to execute <./getting_started/how_to_execute.rst>
@@ -35,20 +39,24 @@ of the Spreadsheet Energy System Model Generator.
 	
 Troubleshooting 
 -------------------------------------------------
-Known errors in the use of the model generator,
-their causes and how to fix them.
 ..	toctree::
 	:maxdepth:	1
 	:glob:
+	
+Known errors in the use of the model generator,
+their causes and how to fix them.
+
 	
 	Troubleshooting <./troubleshooting/troubleshooting.rst>
 
 Sourcecode
 -------------------------------------------------
-Documentation of the used python source code.
 ..	toctree::
 	:maxdepth:	1
 	:glob:
+	
+Documentation of the used python source code.
+
 	
 	Python code documentation <./sourcecode_documentation/program_functions.rst>
 	
