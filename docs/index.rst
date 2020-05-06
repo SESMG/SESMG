@@ -15,8 +15,7 @@ Structure of Energy System
 Explanation of the basic structure of energy systems, as used in the Model Generator.
 Furthermore, the methods and databases used are explained.
 
-* Structure: 
-	 :doc:`structure_of_energy_system/structure.rst`
+* :doc:`structure_of_energy_system/structure`
 	
 	
 ..	toctree::
@@ -24,7 +23,7 @@ Furthermore, the methods and databases used are explained.
 	:hidden:
 	:caption: Structure of Energy System
 	
-	structure_of_energy_system/structure.rst
+	structure_of_energy_system/structure
 	
 Getting started 
 -------------------------------------------------
@@ -35,11 +34,11 @@ of the Spreadsheet Energy System Model Generator.
 	
 * How to install: 
 	:doc:`getting_started/how_to_install.rst`
-* How to execute 
+* How to execute: 
 	:doc:`getting_started/how_to_execute.rst`
-* How to use 
+* How to use: 
 	:doc:`getting_started/how_to_use.rst`
-* How to analyze the results 
+* How to analyze the results: 
 	:doc:`getting_started/analyze_results.rst`
 	
 
@@ -59,7 +58,7 @@ Known errors in the use of the model generator,
 their causes and how to fix them.
 
 	
-* Troubleshooting 
+* Troubleshooting: 
 	:doc:`troubleshooting/troubleshooting.rst`
 	
 
@@ -75,7 +74,7 @@ Sourcecode
 Documentation of the used python source code.
 
 	
-* Python code documentation 
+* Python code documentation: 
 	:doc:`sourcecode_documentation/program_functions.rst`
 	
 	
@@ -89,13 +88,13 @@ Documentation of the used python source code.
 	
 Further Information
 -------------------------------------------------
-* Related Links 
+* Related Links: 
 	:doc:`further_information/links.rst`
-* License 
+* License: 
 	:doc:`further_information/license.rst`
-* Contact 
+* Contact: 
 	:doc:`further_information/contact.rst`
-* Acknowledgements 
+* Acknowledgements: 
 	:doc:`further_information/acknowledgements.rst`
 	
 	
