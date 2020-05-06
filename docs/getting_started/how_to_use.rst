@@ -289,8 +289,8 @@ photovoltaic systems with the feedinlib, weather data must be stored here. The w
 data time system should be in conformity with the model’s time system, defined in the sheet "timesystem".
 
 - **timestamp**: Points in time to which the stored weather data are related. 
-- **dhi**: diffuse horizontal irradiance in W/m:sup:`2`
-- **dirhi**: direct horizontal irradiance in W/m:sup:`2`
+- **dhi**: diffuse horizontal irradiance in W/m\ :sup:`2`
+- **dirhi**: direct horizontal irradiance in W/m\ :sup:`2`
 - **pressure**: air pressure in Pa
 - **windspeed**: Wind speed, measured at 10 m height, in unit m/s
 - **z0**: roughness length of the environment in units m
