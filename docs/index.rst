@@ -32,14 +32,10 @@ Description of how to install and use the components
 of the Spreadsheet Energy System Model Generator. 
 
 	
-* How to install: 
-	:doc:`getting_started/how_to_install.rst`
-* How to execute: 
-	:doc:`getting_started/how_to_execute.rst`
-* How to use: 
-	:doc:`getting_started/how_to_use.rst`
-* How to analyze the results: 
-	:doc:`getting_started/analyze_results.rst`
+* :doc:`getting_started/how_to_install`
+* :doc:`getting_started/how_to_execute`
+* :doc:`getting_started/how_to_use`
+* :doc:`getting_started/analyze_results`
 	
 
 ..	toctree::
@@ -47,10 +43,10 @@ of the Spreadsheet Energy System Model Generator.
 	:hidden:
 	:caption: Getting started
 	
-	getting_started/how_to_install.rst
-	getting_started/how_to_execute.rst
-	getting_started/how_to_use.rst
-	getting_started/analyze_results.rst
+	getting_started/how_to_install
+	getting_started/how_to_execute
+	getting_started/how_to_use
+	getting_started/analyze_results
 	
 Troubleshooting 
 -------------------------------------------------
@@ -58,8 +54,7 @@ Known errors in the use of the model generator,
 their causes and how to fix them.
 
 	
-* Troubleshooting: 
-	:doc:`troubleshooting/troubleshooting.rst`
+* :doc:`troubleshooting/troubleshooting`
 	
 
 ..	toctree::
@@ -67,15 +62,14 @@ their causes and how to fix them.
 	:hidden:
 	:caption: Troubleshooting
 	
-	troubleshooting/troubleshooting.rst
+	troubleshooting/troubleshooting
 
 Sourcecode
 -------------------------------------------------
 Documentation of the used python source code.
 
 	
-* Python code documentation: 
-	:doc:`sourcecode_documentation/program_functions.rst`
+* :doc:`Python code documentation <sourcecode_documentation/program_functions>`
 	
 	
 ..	toctree::
@@ -83,28 +77,23 @@ Documentation of the used python source code.
 	:hidden:
 	:caption: Sourcecode
 	
-	sourcecode_documentation/program_functions.rst
+	sourcecode_documentation/program_functions
 	
 	
 Further Information
 -------------------------------------------------
-* Related Links: 
-	:doc:`further_information/links.rst`
-* License: 
-	:doc:`further_information/license.rst`
-* Contact: 
-	:doc:`further_information/contact.rst`
-* Acknowledgements: 
-	:doc:`further_information/acknowledgements.rst`
-	
-	
+* :doc:`further_information/links`
+* :doc:`further_information/license`
+* :doc:`further_information/contact`
+* :doc:`further_information/acknowledgements.rst`
+		
 ..	toctree::
 	:maxdepth: 2
 	:hidden:
 	:caption: Further Information 
 	
-	further_information/links.rst
-	further_information/license.rst
-	further_information/contact.rst
-	further_information/acknowledgements.rst
+	further_information/links
+	further_information/license
+	further_information/contact
+	further_information/acknowledgements
 	
