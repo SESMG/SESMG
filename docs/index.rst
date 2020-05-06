@@ -15,8 +15,7 @@ Structure of Energy System
 Explanation of the basic structure of energy systems, as used in the Model Generator.
 Furthermore, the methods and databases used are explained.
 
-	
-*	**Structure**: :doc: 'Structure<structure_of_energy_system/structure>'
+	 * :doc: `Structure <structure_of_energy_system/structure>`
 	
 	
 ..	toctree::
