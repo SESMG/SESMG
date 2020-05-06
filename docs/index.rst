@@ -17,7 +17,7 @@ Furthermore, the methods and databases used are explained.
 
 	
 *	Structure: 
-	:doc:'Structure of Energy Systems'
+	:doc:'Structure<structure_of_energy_system/structure>'
 	
 	
 ..	toctree::
@@ -25,7 +25,7 @@ Furthermore, the methods and databases used are explained.
 	:hidden:
 	:caption: Structure of Energy System
 	
-	structure_of_energy_system/structure.rst
+	structure_of_energy_system/structure
 	
 Getting started 
 -------------------------------------------------
