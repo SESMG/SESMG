@@ -20,22 +20,30 @@ Explanation of the basic structure of energy systems, as used in the Model Gener
 Furthermore, the methods and databases used are explained.
 
 	
-	Structure <./structure_of_energy_system/structure.rst>
+	Structure <structure_of_energy_system/structure.rst>
 	
 Getting started 
 -------------------------------------------------
-..	toctree::
-	:maxdepth:	1
-	:glob:
 	
 Description of how to install and use the components 
 of the Spreadsheet Energy System Model Generator. 
 
 	
-	How to install <./getting_started/how_to_install.rst>
-	How to execute <./getting_started/how_to_execute.rst>
-	How to use <./getting_started/how_to_use.rst>
-	How to analyze the results <./getting_started/analyze_results.rst>
+	How to install <getting_started/how_to_install.rst>
+	How to execute <getting_started/how_to_execute.rst>
+	How to use <getting_started/how_to_use.rst>
+	How to analyze the results <getting_started/analyze_results.rst>
+	
+
+..	toctree::
+	:maxdepth: 2
+	:hidden:
+	:caption: Getting started
+	
+	getting_started/how_to_install.rst
+	getting_started/how_to_execute.rst
+	getting_started/how_to_use.rst
+	getting_started/analyze_results.rst
 	
 Troubleshooting 
 -------------------------------------------------
