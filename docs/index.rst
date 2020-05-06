@@ -15,7 +15,8 @@ Structure of Energy System
 Explanation of the basic structure of energy systems, as used in the Model Generator.
 Furthermore, the methods and databases used are explained.
 
-	 * :doc: `Structure <structure_of_energy_system/structure>`
+* Structure: 
+	 :doc:`structure_of_energy_system/structure.rst`
 	
 	
 ..	toctree::
@@ -23,7 +24,7 @@ Furthermore, the methods and databases used are explained.
 	:hidden:
 	:caption: Structure of Energy System
 	
-	structure_of_energy_system/structure
+	structure_of_energy_system/structure.rst
 	
 Getting started 
 -------------------------------------------------
@@ -32,14 +33,14 @@ Description of how to install and use the components
 of the Spreadsheet Energy System Model Generator. 
 
 	
-	How to install 
-	:doc: getting_started/how_to_install.rst
-	How to execute 
-	:doc: getting_started/how_to_execute.rst
-	How to use 
-	:doc: getting_started/how_to_use.rst
-	How to analyze the results 
-	:doc: getting_started/analyze_results.rst
+* How to install: 
+	:doc:`getting_started/how_to_install.rst`
+* How to execute 
+	:doc:`getting_started/how_to_execute.rst`
+* How to use 
+	:doc:`getting_started/how_to_use.rst`
+* How to analyze the results 
+	:doc:`getting_started/analyze_results.rst`
 	
 
 ..	toctree::
@@ -58,8 +59,8 @@ Known errors in the use of the model generator,
 their causes and how to fix them.
 
 	
-	Troubleshooting 
-	:doc: troubleshooting/troubleshooting.rst
+* Troubleshooting 
+	:doc:`troubleshooting/troubleshooting.rst`
 	
 
 ..	toctree::
@@ -74,8 +75,8 @@ Sourcecode
 Documentation of the used python source code.
 
 	
-	Python code documentation 
-	:doc: sourcecode_documentation/program_functions.rst
+* Python code documentation 
+	:doc:`sourcecode_documentation/program_functions.rst`
 	
 	
 ..	toctree::
@@ -88,14 +89,14 @@ Documentation of the used python source code.
 	
 Further Information
 -------------------------------------------------
-	Related Links 
-	:doc: further_information/links.rst
-	License 
-	:doc: further_information/license.rst
-	Contact 
-	:doc: further_information/contact.rst
-	Acknowledgements 
-	:doc: further_information/acknowledgements.rst
+* Related Links 
+	:doc:`further_information/links.rst`
+* License 
+	:doc:`further_information/license.rst`
+* Contact 
+	:doc:`further_information/contact.rst`
+* Acknowledgements 
+	:doc:`further_information/acknowledgements.rst`
 	
 	
 ..	toctree::
