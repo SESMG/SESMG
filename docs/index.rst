@@ -16,8 +16,8 @@ Explanation of the basic structure of energy systems, as used in the Model Gener
 Furthermore, the methods and databases used are explained.
 
 	
-	Structure 
-	:doc: '<structure_of_energy_system/structure.rst>'
+*	Structure: 
+	:doc:'<structure_of_energy_system/structure>'
 	
 	
 ..	toctree::
