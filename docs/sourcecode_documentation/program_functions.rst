@@ -48,49 +48,12 @@ every time step of the entire time horizon. With the second function, a set of s
 for every component is returned into a log-file. Finally, the results are illustrated as
 shown in the chapters above.
 
-define_energy_system()
--------------------------------------------------
 
-.. container:: memitem
-
-   .. container:: memproto
-
-      ======================================================================================
-      def program_files.create_energy_system.define_energy_system (*filepath*, *nodes_data*) 
-      ======================================================================================
-
-   .. container:: memdoc
-
-      Creates an energy system.
-
-      Creates an energy system with the parameters defined in the given
-      .xlsx- file. The file has to contain a sheet called "timesystem",
-      which must have the following structure:
-
-      =================== =================== ======== ===================
-      start_date          end_date            holidays temporal resolution
-      =================== =================== ======== ===================
-      YYYY-MM-DD hh:mm:ss YYYY-MM-DD hh:mm:ss          h
-      =================== =================== ======== ===================
-
-      --------------
-
-      Parameters
-         
-         -  String filename : path to excel scenario file
-         -  String sheet : sheet in excel file, where the timesystem is defined
-         -  dict   nodes_data : dictionary containing data from excel scenario file
-         
-
-      --------------
-
-      Return values
-         
-         -  dict esys : oemof energy system
-        
+create energy system 
+-------------------------------------------------       
 
 import_scenario()
--------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. container:: memitem
 
@@ -129,6 +92,49 @@ import_scenario()
          -  dict nodes_data : dictionary containing data from excel scenario file
 		 
 		 
+define_energy_system()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      ======================================================================================
+      def program_files.create_energy_system.define_energy_system (*filepath*, *nodes_data*) 
+      ======================================================================================
+
+   .. container:: memdoc
+
+      Creates an energy system.
+
+      Creates an energy system with the parameters defined in the given
+      .xlsx- file. The file has to contain a sheet called "timesystem",
+      which must have the following structure:
+
+      =================== =================== ======== ===================
+      start_date          end_date            holidays temporal resolution
+      =================== =================== ======== ===================
+      YYYY-MM-DD hh:mm:ss YYYY-MM-DD hh:mm:ss          h
+      =================== =================== ======== ===================
+
+      --------------
+
+      Parameters
+         
+         -  String filename : path to excel scenario file
+         -  String sheet : sheet in excel file, where the timesystem is defined
+         -  dict   nodes_data : dictionary containing data from excel scenario file
+         
+
+      --------------
+
+      Return values
+         
+         -  dict esys : oemof energy system
+		 
+create objects
+-------------------------------------------------
+		                
 buses()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -159,67 +165,7 @@ buses()
       Return values
          
          -  dict busd : dictionary containing all buses created
-         
-
-links()
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. container:: memitem
-
-   .. container:: memproto
-
-      =====================================================================
-      def program_files.create_objects.links (*nodes_data*, *nodes*, *bus*)   
-      =====================================================================
-
-   .. container:: memdoc
-
-      Creates link objects.
-
-      Creates links objects as defined in 'nodes_data' and adds them to
-      the list of components 'nodes'.
-
-      --------------
-
-      Parameters
-         
-         -  dict nodes_data : dictionary containing data from excel scenario file. The following data have to be provided: label, active, bus_1, bus_2, (un)directed, efficiency, existing capacity /(kW), min. investment capacity /(kW), max. investment capacity /(kW), variable costs  /(CU/kWh), periodical costs /(CU/(kW a))
-         -  dict bus : dictionary containing the busses of the energy system
-         -  list nodes : list of components
-
-sinks()
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. container:: memitem
-
-   .. container:: memproto
-
-      =================================================================================
-      def program_files.create_objects.sinks (*nodes_data*, *bus*, *nodes*, *filepath*)   
-      =================================================================================
-
-   .. container:: memdoc
-
-      Creates sink objects.
-
-      Creates sinks objects with the parameters given in 'nodes_data'
-      and adds them to the list of components 'nodes'.
-
-      --------------
-
-      Parameters
-        
-         -  dict nodes_data : dictionary containing parameters of sinks to  be created. The following data have to be provided: label, active, input, input2, load profile, nominal value /(kW), annual demand /(kWh/a), occupants [RICHARDSON], building class [HEAT SLP ONLY], wind class [HEAT SLP ONLY], fixed
-         -  dict bus : dictionary containing the busses of the energy system             
-         -  String filepath : path to .xlsx scenario-file containing a "weather data" sheet with         timeseries for                                                     
-			 -  "dhi" (diffuse horizontal irradiation) W/m^2             
-			 -  "dirhi" (direct horizontal     irradiance) W/m^2              
-			 -  "pressure" in Pa               
-			 -  "temperature" in °C            
-			 -  "windspeed" in m/s             
-			 -  "z0" (roughness length) in m   
-         -  list nodes : list of components created before (can be empty)     
-         
-
+		 
 sources()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -256,6 +202,65 @@ sources()
 		 	-  "temperature" in °C            
 		 	-  "windspeed" in m/s             
 		 	-  "z0" (roughness length) in m
+			
+sinks()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      =================================================================================
+      def program_files.create_objects.sinks (*nodes_data*, *bus*, *nodes*, *filepath*)   
+      =================================================================================
+
+   .. container:: memdoc
+
+      Creates sink objects.
+
+      Creates sinks objects with the parameters given in 'nodes_data'
+      and adds them to the list of components 'nodes'.
+
+      --------------
+
+      Parameters
+        
+         -  dict nodes_data : dictionary containing parameters of sinks to  be created. The following data have to be provided: label, active, input, input2, load profile, nominal value /(kW), annual demand /(kWh/a), occupants [RICHARDSON], building class [HEAT SLP ONLY], wind class [HEAT SLP ONLY], fixed
+         -  dict bus : dictionary containing the busses of the energy system             
+         -  String filepath : path to .xlsx scenario-file containing a "weather data" sheet with         timeseries for                                                     
+			 -  "dhi" (diffuse horizontal irradiation) W/m^2             
+			 -  "dirhi" (direct horizontal     irradiance) W/m^2              
+			 -  "pressure" in Pa               
+			 -  "temperature" in °C            
+			 -  "windspeed" in m/s             
+			 -  "z0" (roughness length) in m   
+         -  list nodes : list of components created before (can be empty)
+		 
+transformers()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      ============================================================================
+      def program_files.create_objects.transformers (*nodes_data*, *nodes*, *bus*)   
+      ============================================================================
+
+   .. container:: memdoc
+
+      Creates a transformer object.
+
+      Creates transformers objects as defined in 'nodes_data' and adds
+      them to the list of components 'nodes'.
+
+      --------------
+
+      Parameters
+         
+         -  dict nodes_data : dictionary containing data from excel scenario file. The following data have to be provided: label, active, transformer type, input, output, output2, efficiency, efficency2, variable input costs /(CU/kWh), variable output costs /(CU/kWh), existing capacity /(kW), max. investment capacity /(kW), min. investment capacity /(kW), periodical costs /(CU/(kW a))
+         -  dict bus : dictionary containing the busses of the energy system  
+         -  list nodes : list of components 
 
 storages()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -281,36 +286,38 @@ storages()
          
          -  dict nodes_data : dictionary containing data from excel scenario file. The following data have to be provided: label, active, bus, existing capacity /(kW), min. investment capacity /(kW), max. investment capacity /(kW), periodical costs /(CU/(kW a)), capacity inflow, capacity outflow, capacity loss, efficiency inflow, efficiency outflow, initial capacity, capacity min, capacity max, variable input costs, variable output costs 
          -  dict bus : dictionary containing the busses of the energy system                          
-         -  list nodes : list of components                          
+         -  list nodes : list of components                                
 
-transformers()
+links()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. container:: memitem
 
    .. container:: memproto
 
-      ============================================================================
-      def program_files.create_objects.transformers (*nodes_data*, *nodes*, *bus*)   
-      ============================================================================
+      =====================================================================
+      def program_files.create_objects.links (*nodes_data*, *nodes*, *bus*)   
+      =====================================================================
 
    .. container:: memdoc
 
-      Creates a transformer object.
+      Creates link objects.
 
-      Creates transformers objects as defined in 'nodes_data' and adds
-      them to the list of components 'nodes'.
+      Creates links objects as defined in 'nodes_data' and adds them to
+      the list of components 'nodes'.
 
       --------------
 
       Parameters
          
-         -  dict nodes_data : dictionary containing data from excel scenario file. The following data have to be provided: label, active, transformer type, input, output, output2, efficiency, efficency2, variable input costs /(CU/kWh), variable output costs /(CU/kWh), existing capacity /(kW), max. investment capacity /(kW), min. investment capacity /(kW), periodical costs /(CU/(kW a))
-         -  dict bus : dictionary containing the busses of the energy system  
-         -  list nodes : list of components                             
+         -  dict nodes_data : dictionary containing data from excel scenario file. The following data have to be provided: label, active, bus_1, bus_2, (un)directed, efficiency, existing capacity /(kW), min. investment capacity /(kW), max. investment capacity /(kW), variable costs  /(CU/kWh), periodical costs /(CU/(kW a))
+         -  dict bus : dictionary containing the busses of the energy system
+         -  list nodes : list of components
+	
+optimize model
+-------------------------------------------------
 
 least_cost_model()
--------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. container:: memitem
 
@@ -432,9 +439,44 @@ prepare_plotly_results()
 		 -  energy_system: original (unoptimized) energy system
          -  String result_path: path, where the data frames shall be saved as csv-file  
 
-
-statistics()
+create results
 -------------------------------------------------
+
+xlsx()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      =======================================================================================================
+      def program_files.create_results.xlsx (*nodes_data*, *optimization_model*, *energy_system*, *filepath*)   
+	  =======================================================================================================
+
+   .. container:: memdoc
+
+      Returns model results as xlsx-files.
+
+      Saves the in- and outgoing flows of every bus of a given,
+      optimized energy system as .xlsx file
+
+      --------------
+
+      Parameters
+         
+         -  dict nodes_data : dictionary containing data from excel scenario file         
+         -  oemof.solph.models.Model optimization_model: optimized energy system        
+         -  energy_system: original (unoptimized) energy system    
+         -  String filepath: path, where the results will be stored 
+         
+      --------------
+
+      Return values
+         
+         -  obj '.xlsx' results: xlsx files containing in and outgoing flows of the energy systems' buses.    
+		 
+statistics()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. container:: memitem
 
@@ -478,35 +520,4 @@ statistics()
          -  energy_system: original (unoptimized) energy system 
         
 
-xlsx()
--------------------------------------------------
-
-.. container:: memitem
-
-   .. container:: memproto
-
-      =======================================================================================================
-      def program_files.create_results.xlsx (*nodes_data*, *optimization_model*, *energy_system*, *filepath*)   
-	      =======================================================================================================
-
-   .. container:: memdoc
-
-      Returns model results as xlsx-files.
-
-      Saves the in- and outgoing flows of every bus of a given,
-      optimized energy system as .xlsx file
-
-      --------------
-
-      Parameters
-         
-         -  dict nodes_data : dictionary containing data from excel scenario file         
-         -  oemof.solph.models.Model optimization_model: optimized energy system        
-         -  energy_system: original (unoptimized) energy system    
-         -  String filepath: path, where the results will be stored 
-         
-      --------------
-
-      Return values
-         
-         -  obj '.xlsx' results: xlsx files containing in and outgoing flows of the energy systems' buses.               
+           
