@@ -77,16 +77,16 @@ define_energy_system()
 
       Parameters
          
-         -String filename : path to excel scenario file
-         -String sheet : sheet in excel file, where the timesystem is defined
-         -dict   nodes_data : dictionary containing data from excel scenario file
+         -  String filename : path to excel scenario file
+         -  String sheet : sheet in excel file, where the timesystem is defined
+         -  dict   nodes_data : dictionary containing data from excel scenario file
          
 
       --------------
 
       Return values
          
-         dict esys : oemof energy system
+         -  dict esys : oemof energy system
         
 
 import_scenario()
@@ -119,14 +119,14 @@ import_scenario()
 
       Parameters
          
-         -String filename : path to excel scenario file
+         -  String filename : path to excel scenario file
          
 
       --------------
 
       Return values
          
-         -dict nodes_data : dictionary containing data from excel scenario file
+         -  dict nodes_data : dictionary containing data from excel scenario file
 		 
 		 
 buses()
@@ -151,14 +151,14 @@ buses()
 
       Parameters
          
-          -String nodes_data : dictionary containing parameters of the buses to be created. The following parameters have to be provided: label, active, excess, shortage, shortage costs /(CU/kWh), excess costs /(CU/kWh)           
-          -list nodes : list of components created before (can be empty)                            
+          -  String nodes_data : dictionary containing parameters of the buses to be created. The following parameters have to be provided: label, active, excess, shortage, shortage costs /(CU/kWh), excess costs /(CU/kWh)           
+          -  list nodes : list of components created before (can be empty)                            
          
       --------------
 
       Return values
          
-         -dict busd : dictionary containing all buses created
+         -  dict busd : dictionary containing all buses created
          
 
 links()
@@ -182,9 +182,9 @@ links()
 
       Parameters
          
-         -dict nodes_data : dictionary containing data from excel scenario file. The following data have to be provided: label, active, bus_1, bus_2, (un)directed, efficiency, existing capacity /(kW), min. investment capacity /(kW), max. investment capacity /(kW), variable costs  /(CU/kWh), periodical costs /(CU/(kW a))
-         -dict bus : dictionary containing the busses of the energy system
-         -list nodes : list of components
+         -  dict nodes_data : dictionary containing data from excel scenario file. The following data have to be provided: label, active, bus_1, bus_2, (un)directed, efficiency, existing capacity /(kW), min. investment capacity /(kW), max. investment capacity /(kW), variable costs  /(CU/kWh), periodical costs /(CU/(kW a))
+         -  dict bus : dictionary containing the busses of the energy system
+         -  list nodes : list of components
 
 sinks()
 -------------------------------------------------
@@ -208,16 +208,16 @@ sinks()
 
       Parameters
         
-         -dict nodes_data : dictionary containing parameters of sinks to  be created. The following data have to be provided: label, active, input, input2, load profile, nominal value /(kW), annual demand /(kWh/a), occupants [RICHARDSON], building class [HEAT SLP ONLY], wind class [HEAT SLP ONLY], fixed
-         -dict bus : dictionary containing the busses of the energy system             
-         -str filepath : path to .xlsx scenario-file containing a "weather data" sheet with         timeseries for                                                     
+         -  dict nodes_data : dictionary containing parameters of sinks to  be created. The following data have to be provided: label, active, input, input2, load profile, nominal value /(kW), annual demand /(kWh/a), occupants [RICHARDSON], building class [HEAT SLP ONLY], wind class [HEAT SLP ONLY], fixed
+         -  dict bus : dictionary containing the busses of the energy system             
+         -  String filepath : path to .xlsx scenario-file containing a "weather data" sheet with         timeseries for                                                     
 			 -  "dhi" (diffuse horizontal irradiation) W/m^2             
 			 -  "dirhi" (direct horizontal     irradiance) W/m^2              
 			 -  "pressure" in Pa               
 			 -  "temperature" in °C            
 			 -  "windspeed" in m/s             
 			 -  "z0" (roughness length) in m   
-         -list nodes : list of components created before (can be empty)     
+         -  list nodes : list of components created before (can be empty)     
          
 
 sources()
@@ -246,10 +246,10 @@ sources()
 
       Parameters
          
-         -dict nodes_data : dictionary containing parameters of sources to be created. The following data have to be provided: label, active, output, technology, variable costs /(CU/kWh), existing capacity /(kW), min. investment capacity /(kW), max. investment capacity /(kW), periodical costs /(CU/(kW a)), technology database (PV ONLY), inverter database (PV ONLY), Modul Model (PV ONLY), Inverter Model (PV ONLY), Azimuth (PV ONLY), Surface Tilt (PV ONLY), Albedo (PV ONLY), Altitude (PV ONLY), Latitude (PV ONLY), Longitude (PV ONLY)               
-         -dict bus : dictionary containing the buses of the energy system 
-         -list nodes : list of components created before (can be empty) 
-		 -String filepath : path to .xlsx scenario-file containing a "weather data" sheet with         timeseries for                                                     
+         -  dict nodes_data : dictionary containing parameters of sources to be created. The following data have to be provided: label, active, output, technology, variable costs /(CU/kWh), existing capacity /(kW), min. investment capacity /(kW), max. investment capacity /(kW), periodical costs /(CU/(kW a)), technology database (PV ONLY), inverter database (PV ONLY), Modul Model (PV ONLY), Inverter Model (PV ONLY), Azimuth (PV ONLY), Surface Tilt (PV ONLY), Albedo (PV ONLY), Altitude (PV ONLY), Latitude (PV ONLY), Longitude (PV ONLY)               
+         -  dict bus : dictionary containing the buses of the energy system 
+         -  list nodes : list of components created before (can be empty) 
+		 -  String filepath : path to .xlsx scenario-file containing a "weather data" sheet with         timeseries for                                                     
 		 	-  "dhi" (diffuse horizontal irradiation) W/m^2             
 		 	-  "dirhi" (direct horizontal     irradiance) W/m^2              
 		 	-  "pressure" in Pa               
@@ -279,9 +279,9 @@ storages()
 
       Parameters
          
-         -dict nodes_data : dictionary containing data from excel scenario file. The following data have to be provided: label, active, bus, existing capacity /(kW), min. investment capacity /(kW), max. investment capacity /(kW), periodical costs /(CU/(kW a)), capacity inflow, capacity outflow, capacity loss, efficiency inflow, efficiency outflow, initial capacity, capacity min, capacity max, variable input costs, variable output costs 
-         -dict bus : dictionary containing the busses of the energy system                          
-         -list nodes : list of components                          
+         -  dict nodes_data : dictionary containing data from excel scenario file. The following data have to be provided: label, active, bus, existing capacity /(kW), min. investment capacity /(kW), max. investment capacity /(kW), periodical costs /(CU/(kW a)), capacity inflow, capacity outflow, capacity loss, efficiency inflow, efficiency outflow, initial capacity, capacity min, capacity max, variable input costs, variable output costs 
+         -  dict bus : dictionary containing the busses of the energy system                          
+         -  list nodes : list of components                          
 
 transformers()
 -------------------------------------------------
@@ -305,9 +305,9 @@ transformers()
 
       Parameters
          
-         -dict nodes_data : dictionary containing data from excel scenario file. The following data have to be provided: label, active, transformer type, input, output, output2, efficiency, efficency2, variable input costs /(CU/kWh), variable output costs /(CU/kWh), existing capacity /(kW), max. investment capacity /(kW), min. investment capacity /(kW), periodical costs /(CU/(kW a))
-         -dict bus : dictionary containing the busses of the energy system  
-         -list nodes : list of components                             
+         -  dict nodes_data : dictionary containing data from excel scenario file. The following data have to be provided: label, active, transformer type, input, output, output2, efficiency, efficency2, variable input costs /(CU/kWh), variable output costs /(CU/kWh), existing capacity /(kW), max. investment capacity /(kW), min. investment capacity /(kW), periodical costs /(CU/(kW a))
+         -  dict bus : dictionary containing the busses of the energy system  
+         -  list nodes : list of components                             
 
 least_cost_model()
 -------------------------------------------------
@@ -331,14 +331,14 @@ least_cost_model()
 
       Parameters
          
-         -String nodes_data : dictionary containing data from excel   scenario file
-         - energy_system : energy system consisting a number of components 
+         -  String nodes_data : dictionary containing data from excel   scenario file
+         -  energy_system : energy system consisting a number of components 
 		 
       --------------
 
       Return values
          
-         -dict nodes_data : dictionary containing data from excel scenario file                              
+         -  dict nodes_data : dictionary containing data from excel scenario file                              
 create_graph()
 -------------------------------------------------
 
@@ -362,9 +362,9 @@ create_graph()
 
       Parameters
          
-         -String filepath : path, where the PNG-result shall be saved  
-         -dict nodes_data : dictionary containing data from excel scenario file.                    
-         -bool legend : specifies, whether a legend will be added to the graph or not   
+         -  String filepath : path, where the PNG-result shall be saved  
+         -  dict nodes_data : dictionary containing data from excel scenario file.                    
+         -  bool legend : specifies, whether a legend will be added to the graph or not   
 
          
 charts()
@@ -389,15 +389,15 @@ charts()
 
       Parameters
          
-          -dict nodes_data : dictionary containing data from excel scenario file    
-          -oemof.solph.models.Model optimization_model: optimized energy system                     
-          - energy_system: original (unoptimized) energy system        
+          -  dict nodes_data : dictionary containing data from excel scenario file    
+          -  oemof.solph.models.Model optimization_model: optimized energy system                     
+          -  energy_system: original (unoptimized) energy system        
 
       --------------
 
       Return values
          
-          -plots plots displaying in and outgoing flows of the energy systems' buses.    
+          -  plots plots displaying in and outgoing flows of the energy systems' buses.    
         
 
 prepare_plotly_results()
@@ -427,10 +427,10 @@ prepare_plotly_results()
 
       Parameters
          
-         -dict nodes_data: dictionary containing data from excel scenario file      
-         -oemof.solph.models.Model optimization_model: optimized energy system                    
-		 - energy_system: original (unoptimized) energy system
-         -String result_path: path, where the data frames shall be saved as csv-file  
+         -  dict nodes_data: dictionary containing data from excel scenario file      
+         -  oemof.solph.models.Model optimization_model: optimized energy system                    
+		 -  energy_system: original (unoptimized) energy system
+         -  String result_path: path, where the data frames shall be saved as csv-file  
 
 
 statistics()
@@ -473,9 +473,9 @@ statistics()
 
       Parameters
          
-         -dict nodes_data: dictionary containing data from excel scenario file 
-         -oemof.solph.models.Model optimization_model: optimized energy system                      
-         - energy_system: original (unoptimized) energy system 
+         -  dict nodes_data: dictionary containing data from excel scenario file 
+         -  oemof.solph.models.Model optimization_model: optimized energy system                      
+         -  energy_system: original (unoptimized) energy system 
         
 
 xlsx()
@@ -500,13 +500,13 @@ xlsx()
 
       Parameters
          
-         -dict nodes_data : dictionary containing data from excel scenario file         
-         -oemof.solph.models.Model optimization_model: optimized energy system        
-         - energy_system: original (unoptimized) energy system    
-         -String filepath: path, where the results will be stored 
+         -  dict nodes_data : dictionary containing data from excel scenario file         
+         -  oemof.solph.models.Model optimization_model: optimized energy system        
+         -  energy_system: original (unoptimized) energy system    
+         -  String filepath: path, where the results will be stored 
          
       --------------
 
       Return values
          
-         -obj '.xlsx' results: xlsx files containing in and outgoing flows of the energy systems' buses.               
+         -  obj '.xlsx' results: xlsx files containing in and outgoing flows of the energy systems' buses.               
