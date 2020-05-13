@@ -20,9 +20,11 @@ The results interface has the following elements:
 
 - **Table with a summary of the modelling (1).**
 
-- **Table with information about every component (2):** The entries can be filtered and sorted according to their content.
+- **Graph of the energy system (2).**
 
-- **Graph, where time series of the different components can be shown (4).** With the help of a selection window (drop-down menu and search function) (3) time series to be shown can be selected. With the help of a number of tools (5) the graphs can be scaled, sections can be displayed and images can be saved.
+- **Table with information about every component (3):** The entries can be filtered and sorted according to their content.
+
+- **Plot, where time series of the different components can be shown (5).** With the help of a selection window (drop-down menu and search function) (4) time series to be shown can be selected. With the help of a number of tools (6) the graphs can be scaled, sections can be displayed and images can be saved.
 
 
 Results as Spreadsheets and Log-Files
