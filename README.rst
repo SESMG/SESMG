@@ -11,7 +11,13 @@ viewed and analyzed using a browser-based results output.
 
 Documentation
 -------------
-`Documentation of the Spreadsheet Energy System Model Generator <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/>`_: https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
+The `documentation <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/>`_,
+which includes detailed instructions for installation and use, troubleshooting 
+and much more, can be accessed via the following link:
+
+https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
+
+
 
 
 Acknowledgements
