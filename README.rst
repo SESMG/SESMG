@@ -19,8 +19,7 @@ Installation
 1. Install Python (version 3.5 or higher) 
 
 
-- **note: Make sure to select "Add pyton to PATH" at the beginning of the Python
-installation.**
+- **note: Make sure to select "Add pyton to PATH" at the beginning of the Python installation.**
 
 
 - go to the `Python download page <https://www.python.org/downloads/>`_
