@@ -10,7 +10,7 @@ results can be viewed and analyzed using a browser-based results output.
 
 .. figure:: ../images/SESMG_principle.png
    :width: 100 %
-   :alt: SESMG_operating_principle
+   :alt: SESMG_principle.png
    :align: center
 
    From an input spreadsheet to interactive modelling results: The Spreadsheet Energy System Model Generator
