@@ -8,6 +8,14 @@ included Python program and the open source Python library "oemof", assembled
 to an energy system and optimized with the open source solver "cbc". The modeling 
 results can be viewed and analyzed using a browser-based results output.
 
+.. figure:: ../images/SESMG_principle.png
+   :width: 100 %
+   :alt: SESMG_operating_principle
+   :align: center
+
+   From an input spreadsheet to interactive modelling results: The Spreadsheet Energy System Model Generator
+
+
 
 Structure of Energy System
 -------------------------------------------------
