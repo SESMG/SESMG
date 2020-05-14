@@ -50,4 +50,4 @@ Installation
 	If you receive a "Your computer has been protected by Windows" error message, click "More Information," and then "Run Anyway".
 
 
-7. The Spreadsheet Energy System Model Generator has been installed
+8. The Spreadsheet Energy System Model Generator has been installed
