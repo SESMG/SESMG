@@ -12,17 +12,15 @@ viewed and analyzed using a browser-based results output.
 Installation
 -----------------------------------------
 
-.. warning:: 
-
-	Warning! The installation has only been tested under Windows, using Python 3.7.6 (64 bit)! Python 3.8 is currently not supported.
+**Warning! The installation has only been tested under Windows, using Python 
+3.7.6 (64 bit)! Python 3.8 is currently not supported.**
 
 
 1. Install Python (version 3.5 or higher) 
 
 
-.. note:: 
-
-	Make sure to select "Add pyton to PATH" at the beginning of the Python installation.
+- **note: Make sure to select "Add pyton to PATH" at the beginning of the Python
+installation.**
 
 
 - go to the `Python download page <https://www.python.org/downloads/>`_
@@ -47,18 +45,14 @@ Installation
 - go to `Graphviz download page <https://graphviz.gitlab.io/download/>`_ 
 - select and download the graphviz version for your device (e.g. `graphviz-2.38.msi for Windows <https://graphviz.gitlab.io/_pages/Download/windows/graphviz-2.38.msi>`_)
 
-.. note:: 
-
-	Make sure to select the correct installation location for Graphviz!!
+- **note: Make sure to select the correct installation location for Graphviz!**
 
 - Execute the installation manager you just downloaded. Choose the following directory for the installation: "C:\\Program Files (x86)\\Graphviz2.38\\" (should be the default settings)
 
 7. Execute the "installation.cmd" file.
 
 
-.. note:: 
-
-	If you receive a "Your computer has been protected by Windows" error message, click "More Information," and then "Run Anyway".
+- **note: If you receive a "Your computer has been protected by Windows" error message, click "More Information," and then "Run Anyway".**
 
 
 8. The Spreadsheet Energy System Model Generator has been installed
