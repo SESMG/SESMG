@@ -321,7 +321,7 @@ timeseries_sink()
       Creates a sink with fixed input.
 
       Creates a sink object with a fixed input. The input must be given
-      as a time series in nodes_data.
+      as a time series in 'nodes_data'.
 	 
 residentialheatslp_sink()
 +++++++++++++++++++++++++++++++++++++++++++++++++
@@ -425,7 +425,45 @@ transformers()
          -  dict nodes_data : dictionary containing data from excel scenario file. The following data have to be provided: label, active, transformer type, input, output, output2, efficiency, efficency2, variable input costs /(CU/kWh), variable output costs /(CU/kWh), existing capacity /(kW), max. investment capacity /(kW), min. investment capacity /(kW), periodical costs /(CU/(kW a))
          -  dict bus : dictionary containing the busses of the energy system  
          -  list nodes : list of components 
+		
+generic_transformer()
++++++++++++++++++++++++++++++++++++++++++++++++++
 
+.. container:: memitem
+
+   .. container:: memproto
+
+      ====================================================================
+      def program_files.create_objects.transformers.generic_transformer () 
+      ====================================================================
+
+   .. container:: memdoc
+
+      Creates a Generic Transformer object.
+
+      Creates a generic transformer with the paramters given in
+      'nodes_data' and adds it to the list
+      of components 'nodes'.
+
+genericchp_transformer()
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      =======================================================================
+      def program_files.create_objects.transformers.genericchp_transformer () 
+      =======================================================================
+
+   .. container:: memdoc
+
+      Creates a Generic CHP transformer object.
+
+      Creates a generic chp transformer with the paramters given in
+      'nodes_data' and adds it to the list
+      of components 'nodes'.
+	  
 storages()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -476,6 +514,44 @@ links()
          -  dict nodes_data : dictionary containing data from excel scenario file. The following data have to be provided: label, active, bus_1, bus_2, (un)directed, efficiency, existing capacity /(kW), min. investment capacity /(kW), max. investment capacity /(kW), variable costs  /(CU/kWh), periodical costs /(CU/(kW a))
          -  dict bus : dictionary containing the busses of the energy system
          -  list nodes : list of components
+
+undirected_link()
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      =========================================================
+      def program_files.create_objects.links.undirected_link () 
+      =========================================================
+	  
+   .. container:: memdoc
+
+      Creates an undirected link object.
+
+      Creates an undirected link between two buses and adds it to the
+      list of components 'nodes'.
+
+directed_link()
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      =======================================================
+      def program_files.create_objects.links.directed_link () 
+      =======================================================
+
+   .. container:: memdoc
+
+      Creates a directed link object.
+
+      Creates a directed link between two buses and adds it to the list
+      of components 'nodes'.
+
+
 	
 optimize model
 -------------------------------------------------
