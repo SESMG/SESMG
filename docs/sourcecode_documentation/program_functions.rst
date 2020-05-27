@@ -217,6 +217,7 @@ commodity_source()
    .. container:: memdoc
 
       Creates a source object with unfixed time-series.
+	  |
 	  
 
 pv_source()
