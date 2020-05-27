@@ -167,7 +167,7 @@ buses()
          -  dict busd : dictionary containing all buses created
 		 
 sources()
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. container:: memitem
 
@@ -217,6 +217,7 @@ commodity_source()
    .. container:: memdoc
 
       Creates a source object with unfixed time-series.
+	  
 
 pv_source()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -235,6 +236,7 @@ pv_source()
 
       Simulates the yield of a photovoltaic system using feedinlib and
       creates a source object with the yield as time series.
+	  
 
 windpower_source()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -253,6 +255,7 @@ windpower_source()
 
       Simulates the yield of a windturbine using feedinlib and creates a
       source object with the yield as time series.
+	  
 			
 sinks()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
