@@ -290,6 +290,116 @@ sinks()
 			 -  "z0" (roughness length) in m   
          -  list nodes : list of components created before (can be empty)
 		 
+unfixed_sink()
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      ======================================================
+      def program_files.create_objects.sinks.unfixed_sink () 
+      ======================================================
+
+   .. container:: memdoc
+
+      Creates a sink object with an unfixed energy input.
+	  
+timeseries_sink()
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      =========================================================
+      def program_files.create_objects.sinks.timeseries_sink () 
+      =========================================================
+
+   .. container:: memdoc
+
+      Creates a sink with fixed input.
+
+      Creates a sink object with a fixed input. The input must be given
+      as a time series in nodes_data.
+	 
+residentialheatslp_sink()
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      =================================================================
+      def program_files.create_objects.sinks.residentialheatslp_sink () 
+      =================================================================
+
+   .. container:: memdoc
+
+      Creates a sink with a residential SLP time series.
+
+      Creates a sink with inputs according to VDEW standard load
+      profiles, using oemofs demandlib and adds it to the list of
+      components 'nodes'. Used for the modelling of residential
+      ectricity demands.
+	  
+		 
+commercialheatslp_sink()
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      ================================================================
+      def program_files.create_objects.sinks.commercialheatslp_sink () 
+      ================================================================
+
+   .. container:: memdoc
+
+      Creates a sink with commercial SLP timeseries Creates a sink with
+      inputs according to VDEW standard load profiles, using oemofs
+      demandlib and adds it to the list of components 'nodes'.
+
+      Used for the modelling of commercial electricity demands.
+	  
+	  
+richardson_sink()
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      =========================================================
+      def program_files.create_objects.sinks.richardson_sink () 
+      =========================================================
+
+   .. container:: memdoc
+
+      Creates a sink with stochastical timeseries.
+
+      Creates a sink with stochastical input, using richardson.py and
+      adds it to the list of components 'nodes'. Used for the modelling
+      of residential electricity demands.
+	  
+
+electricslp_sink()
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      ==========================================================
+      def program_files.create_objects.sinks.electricslp_sink () 
+      ==========================================================
+
+   .. container:: memdoc
+
+      Creates a sink based on german standard load profiles.
+
+		 
 transformers()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
