@@ -203,6 +203,57 @@ sources()
 		 	-  "windspeed" in m/s             
 		 	-  "z0" (roughness length) in m
 			
+commodity_source()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      ============================================================
+      def program_files.create_objects.sources.commodity_source () 
+      ============================================================
+
+   .. container:: memdoc
+
+      Creates a source object with unfixed time-series.
+
+pv_source()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      ====================================================
+      def program_files.create_ojects.sources.pv_source () 
+      ====================================================
+
+   .. container:: memdoc
+
+      Creates photovoltaic source object.
+
+      Simulates the yield of a photovoltaic system using feedinlib and
+      creates a source object with the yield as time series.
+
+windpower_source()
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. container:: memitem
+
+   .. container:: memproto
+
+      ============================================================
+      def program_files.create_objects.sources.windpower_source () 
+      ============================================================
+	  
+   .. container:: memdoc
+
+      Creates windpower source object.
+
+      Simulates the yield of a windturbine using feedinlib and creates a
+      source object with the yield as time series.
+			
 sinks()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
