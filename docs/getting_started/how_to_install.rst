@@ -43,7 +43,7 @@ Windows
 
 - Execute the installation manager you just downloaded. Choose the following directory for the installation: "C:\\Program Files (x86)\\Graphviz2.38\\" (should be the default settings)
 
-7. Execute the "installation.cmd" file.
+7. Execute the "Windows_installation.cmd" file.
 
 
 .. note:: 
