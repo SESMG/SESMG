@@ -8,7 +8,7 @@ input and output variables and further details can be easily accessed via the py
 help function. The model generator’s flow chart is shown in the following figure, including all
 input and output data, used functions and Python libraries.
 
-.. figure:: ../images/program_flow.pdf
+.. figure:: ../images/program_flow.png
 	:width: 100%
 	:alt: Program-Flow
 	:align: center
