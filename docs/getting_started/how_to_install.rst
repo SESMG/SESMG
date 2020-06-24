@@ -66,7 +66,7 @@ MacOS
 
 - go to the `Python download page <https://www.python.org/downloads/>`_
 - chose a Python version (e.g., "Python 3.7.6") and click "download"
-- download an installer (e.g., "Windows x86-64 executable installer")
+- download an installer (e.g., "Python 3.7.6 macOS 64-bit installer")
 - execute the installer on your computer
 	
 
