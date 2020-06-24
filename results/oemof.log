@@ -1,0 +1,33 @@
+******************************************************
+2020-06-17 10:36:02,453 - INFO - logger - Path for logging: C:\Users\klemm\Documents\Python Scripts\Spreadsheet_Energy_System_Model_Generator/results\oemof.log
+2020-06-17 10:36:02,454 - INFO - logger - Used oemof version: 0.3.2
+2020-06-17 10:36:06,339 - INFO - create_energy_system - Date time index successfully defined:
+ start date:          2012-01-01 00:00:00,
+ end date:            2012-12-30 23:00:00,
+ temporal resolution: h
+2020-06-17 10:36:06,340 - INFO - create_objects -    Bus created: elektrizitaets_bus
+2020-06-17 10:36:06,343 - INFO - create_objects -    Bus created: erdgas_bus
+2020-06-17 10:36:06,344 - INFO - create_objects -    Bus created: waerme_bus
+2020-06-17 10:36:06,346 - INFO - create_objects -    Bus created: fernwaerme_bus
+2020-06-17 10:36:10,650 - INFO - utils - NumExpr defaulting to 4 threads.
+2020-06-17 10:36:12,815 - INFO - create_objects -    Source created: photovoltaik_elektrizitaets_quelle
+2020-06-17 10:36:12,950 - DEBUG - modelchain - Calculating wind speed using logarithmic wind profile.
+2020-06-17 10:36:12,958 - DEBUG - modelchain - Calculating power output using power curve.
+2020-06-17 10:36:12,961 - INFO - create_objects -    Source created: windenergie_elektrizitaets_quelle
+2020-06-17 10:36:17,633 - INFO - create_objects -    Sink created: efh_elektrizitaet_bedarf
+2020-06-17 10:36:18,402 - INFO - create_objects -    Sink created: mfh_elektrizitaet_bedarf
+2020-06-17 10:36:18,567 - INFO - create_objects -    Sink created: efh_waerme_bedarf
+2020-06-17 10:36:18,731 - INFO - create_objects -    Sink created: mfh_waerme_bedarf
+2020-06-17 10:36:18,735 - INFO - create_objects -    Sink created: residential_electricity_demand
+2020-06-17 10:36:18,739 - INFO - create_objects -    Sink created: unfixed_electricity_demand
+2020-06-17 10:36:18,748 - INFO - create_objects -    Transformer created: gasheizung_transformer
+2020-06-17 10:36:18,752 - INFO - create_objects -    Transformer created: bhkw_transformer
+2020-06-17 10:36:18,762 - INFO - create_objects -    Storage created: batterie_elektrizitaet_speicher
+2020-06-17 10:36:18,768 - INFO - create_objects -    Storage created: thermischer_speicher
+2020-06-17 10:36:18,770 - INFO - create_objects -    Link created: fernwaermenetz_link
+2020-06-17 10:36:18,774 - INFO - create_objects -    Link created: undirected_link
+2020-06-17 10:36:18,796 - DEBUG - files - write 4062 bytes to 'C:\\Users\\klemm\\Documents\\Python Scripts\\Spreadsheet_Energy_System_Model_Generator/results/graph.gv'
+2020-06-17 10:36:18,801 - DEBUG - backend - run ['dot', '-Tpng', '-O', 'graph.gv']
+2020-06-17 10:36:19,653 - DEBUG - backend - view: 'C:\\Users\\klemm\\Documents\\Python Scripts\\Spreadsheet_Energy_System_Model_Generator\\results\\graph.gv.png'
+2020-06-17 10:36:20,973 - INFO - optimize_model -    *********************************************************
+2020-06-17 10:36:20,974 - INFO - optimize_model -    Starting Optimization...

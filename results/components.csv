@@ -1,0 +1,21 @@
+ID,type,input 1/kWh,input 2/kWh,output 1/kWh,output 2/kWh,capacity/kW,variable costs/CU,periodical costs/CU,investment/kW
+efh_elektrizitaet_bedarf,sink,3989787.27,---,---,---,839.53,---,---,---
+mfh_elektrizitaet_bedarf,sink,6483404.31,---,---,---,1364.24,---,---,---
+efh_waerme_bedarf,sink,32812952.33,---,---,---,16622.57,---,---,---
+mfh_waerme_bedarf,sink,19389551.12,---,---,---,7614.67,---,---,---
+richardson_elektrizitaet_bedarf,sink,19389551.12,---,---,---,7614.67,---,---,---
+cb001_heat_demand,sink,19389551.12,---,---,---,7614.67,---,---,---
+residential_electricity_demand,sink,597843.64,---,---,---,100.0,---,---,---
+unfixed_electricity_demand,sink,0.0,---,---,---,0.0,---,---,---
+elektrizitaets_bus_excess,sink,240283781.62,---,---,---,82306.32,-9371067.48,---,---
+fernwaerme_bus_excess,sink,0.0,---,---,---,0.0,0.0,---,---
+photovoltaik_elektrizitaets_quelle,source,---,---,92174816.18,---,54000.0,0.0,3078000.0,54000.0
+windenergie_elektrizitaets_quelle,source,---,---,158824482.32,---,29700.0,0.0,2970000.0,29700.0
+elektrizitaets_bus_shortage,source,---,---,355518.64,---,2142.86,110210.78,0,---
+erdgas_bus_shortage,source,---,---,61414709.94,---,28076.22,3930541.44,0,---
+gasheizung_transformer,transformer,61414709.94,---,52202503.44,---,28076.22,0.0,0,0
+bhkw_transformer,transformer,0.0,---,0.0,0.0,0.0,0.0,0,0.0
+batterie_elektrizitaet_speicher,storage,0.0,---,0.0,---,0.0,0.0,0,0.0
+thermischer_speicher,storage,0.0,---,-0.0,---,0.0,0.0,0,0.0
+fernwaermenetz_link,link,0.0,--,0.0,--,0.0,0.0,4300000,1.0
+undirected_link,link,-0.0,0.0,-0.0,0.0,0.0,-0.0,4300000,1.0
