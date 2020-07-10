@@ -27,7 +27,7 @@ def least_cost_model(nodes_data, energy_system):
     
     from oemof import solph
     import logging
-    
+
     esys = energy_system
 
     # add nodes and flows to energy system
@@ -38,8 +38,12 @@ def least_cost_model(nodes_data, energy_system):
     # creation of a least cost model from the energy system
     om = solph.Model(esys)
 
+    logging.info('   '+"******************************************************"
+                             +"***")
+    logging.info('   '+"Starting CBC-Solver")
+
     # solving the linear problem using the given solver
-    om.solve(solver='cbc')
-    
+    om.solve(solver='cbc', cmdline_options={"threads":10})
+
     return om
 

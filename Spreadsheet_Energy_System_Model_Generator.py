@@ -58,26 +58,35 @@ https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator
 
 @ Christian Klemm - christian.klemm@fh-muenster.de, 13.03.2020
 """
-
 import logging
 from oemof.tools import logger
 import os
-
+import sys
+from threading import *
 from program_files import (create_objects,
                            create_results,
                            create_energy_system,
                            optimize_model,
                            create_graph)
 
+
+
+
 # DEFINES PATH OF INPUT DATA
 scenario_file = os.path.join(os.path.dirname(__file__), 'scenario.xlsx')
 
+# SETS NUMBER OF THREADS FOR NUMPY
+os.environ['NUMEXPR_NUM_THREADS'] = '10'
+
 # DEFINES PATH OF OUTPUT DATA
+# FOR WINDOWS
 result_path = os.path.join(os.path.dirname(__file__) + '/results')
+# FOR MACOS
+if sys.platform.startswith('darwin'):
+    result_path = os.path.dirname(os.path.abspath(__file__)) + '/results'
 
 # DEFINES A LOGGING FILE
-log_path = os.path.join(os.path.dirname(__file__) + '/results')
-logger.define_logging(logpath=log_path)
+logger.define_logging(logpath=result_path)
 
 # IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
 nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
@@ -85,46 +94,43 @@ nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
 # CREATES AN ENERGYSYSTEM AS DEFINED IN THE SCENARIO FILE
 esys = create_energy_system.define_energy_system(nodes_data=nodes_data)
 
-# CREATES THE LIST OF COMPONENTS
+# CREATES AN LIST OF COMPONENTS
 nodes = []
 
-# CREATES BUS OBJECTS, EXCESS SINKS, AND SHORTAGE SOURCES AS DEFINED IN THE 
+# CREATES BUS OBJECTS, EXCESS SINKS, AND SHORTAGE SOURCES AS DEFINED IN THE
 # SCENARIO FILE AND ADDS THEM TO THE lIST OF COMPONENTS
 busd = create_objects.buses(nodes_data=nodes_data,
                             nodes=nodes)
 
+# PARALLEL CREATION OF ALL OBJECTS OF THE SCENARIO FILE
+
 # CREATES SOURCE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
 # THE lIST OF COMPONENTS
-create_objects.sources(nodes_data=nodes_data,
-                       nodes=nodes,
-                       bus=busd,
-                       filepath=scenario_file)
-
+t1 = Thread(target=create_objects.Sources, args=(nodes_data, nodes, busd, scenario_file,))
+t1.start()
 # CREATES SINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
 # THE lIST OF COMPONENTS
-create_objects.sinks(nodes_data=nodes_data,
-                     bus=busd,
-                     nodes=nodes,
-                     filepath=scenario_file)
-
+t2 = Thread(target=create_objects.Sinks, args=(nodes_data, busd, nodes, scenario_file,))
+t2.start()
 # CREATES TRANSFORMER OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
 # THE lIST OF COMPONENTS
-create_objects.transformers(nodes_data=nodes_data,
-                            bus=busd,
-                            nodes=nodes)
-
+t3 = Thread(target=create_objects.Transformers, args=(nodes_data, nodes, busd,))
+t3.start()
 # CREATES STORAGE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
 # THE lIST OF COMPONENTS
-create_objects.storages(nodes_data=nodes_data,
-                        bus=busd,
-                        nodes=nodes)
-
+t4 = Thread(target=create_objects.Storages, args=(nodes_data, nodes, busd,))
+t4.start()
 # CREATES LINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
 # THE lIST OF COMPONENTS
-create_objects.links(nodes_data=nodes_data,
-                     bus=busd,
-                     nodes=nodes)
+t5 = Thread(target=create_objects.Links, args=(nodes_data, nodes, busd,))
+t5.start()
 
+# WAIT UNTIL THE THREADS HAVE DONE THEIR JOBS
+t1.join()
+t2.join()
+t3.join()
+t4.join()
+t5.join()
 # ADDS THE COMPONENTS TO THE ENERGYSYSTEM
 my_nodes = nodes
 esys.add(*my_nodes)
@@ -148,7 +154,7 @@ create_results.statistics(nodes_data=nodes_data,
                           optimization_model=om,
                           energy_system=esys)
 
-###### PREPARES RESULTS FOR PLOTLY
+# PREPARES RESULTS FOR PLOTLY
 create_results.prepare_plotly_results(nodes_data=nodes_data,
                                       optimization_model=om,
                                       energy_system=esys,
