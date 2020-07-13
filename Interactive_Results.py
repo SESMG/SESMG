@@ -28,6 +28,7 @@ import base64
 from dash_canvas import DashCanvas
 import io
 from PIL import Image
+import sys
 
 def return_component_value(ID, df_table):
     """Returns data for the graph.
@@ -203,8 +204,12 @@ demo_app.layout = html.Div(
     ]
 )
 
-# Opens the HTML-Page by utilizing an .cmd command.
-subprocess.call("start http://127.0.0.1:8050/", shell=True)
+# Opens the HTML-Page by utilizing an .cmd command.(WINDOWS)
+if sys.platform.startswith("win"):
+    subprocess.call("start http://127.0.0.1:8050/", shell=True)
+# Opens the HTML-Page by utilizing an .command command.(MACOS)
+elif sys.platform.startswith("darwin"):
+    subprocess.call("open http://127.0.0.1:8050/", shell=True)
 
 # app for updating the drop-down menue         
 @demo_app.callback(
