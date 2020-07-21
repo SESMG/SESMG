@@ -17,8 +17,14 @@ and much more, can be accessed via the following link:
 
 https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
 
+Contact
+----------------
 
+Münster University of Applied Sciences
 
+Christian Klemm
+
+christian.klemm@fh-muenster.de
 
 Acknowledgements
 ----------------
@@ -27,5 +33,3 @@ research project `R2Q "Resource Planing for Urban Districts" <https://www.fh-mue
 The project was funded by the BMBF within the framework of the Federal Ministry 
 of Education and Research's `RES:Z "Resource-Efficient Urban Districts" <https://ressourceneffiziente-stadtquartiere.de/>`_ funding 
 programme. The funding measure is part of the flagship initiative "City of the Future" within the BMBF's framework programme "Research for Sustainable Development - FONA3".
-
-
