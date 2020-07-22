@@ -32,6 +32,18 @@ or
 - **Possible Error Cause**: A system component was entered incorrectly in the input file. 
 - **Debugging**: For all components, make sure that 1) each column is filled correctly, and 2) the first component of a sheet is entered in the row directly below the header row, and that there are no blank rows between the individual components of a sheet
 
+
+.. warning::
+
+    df = node_results['sequences']
+    
+    KeyError: 'sequences'
+    
+- **Possible Error Cause**: The implemented model probably has an circuit. For example, the excess sink of a bus could achieve higher selling prices than buying from a shortage source. In theory, this could generate an infinitely large profit. Such a model cannot be solved.
+- **Debugging**: Make sure, there are no circuits within the model.
+
+
+
 .. warning:: 
 
 	Memory Error
