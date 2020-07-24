@@ -850,6 +850,25 @@ class Transformers:
         # returns logging info
         logging.info('   ' + 'Transformer created: ' + t['label'])
 
+    def ground_coupled_heat_pump_transormer(self, t):
+        """HIER DIE FUNKTION BESCHREIBEN (DOCSTRING NACH PEP 257)
+
+        ----
+        @ Janik Budde - HIER E_MAIL EINTRAGEN, DATUM
+        """
+        import oemof.thermal
+
+        print("ground_coupled_heat_pump_transormer TEST!")
+        #
+        #
+        #
+        #
+        # HIER DEN CODE FÜR DIE ERSTELLUNG DER WÄRMEPUMPE EINFÜGEN!
+        #
+        # BEZUG FÜR INPUT BUS: self.busd[t['input']]
+        # BEZUG FÜR OUTPUT BUS: self.busd[t['output']]
+
+
     def __init__(self, nodes_data, nodes, busd):
 
         # renames variables
@@ -883,6 +902,9 @@ class Transformers:
                     logging.info('   ' + 'WARNING: OffsetTransformer are currently'
                                  + ' not a part of this model generator, but will'
                                  + ' be added later.')
+
+                elif t['transformer type'] == 'GroundCoupledHeatPump':
+                    self.ground_coupled_heat_pump_transormer(t)
 
                 # Error Message for invalid Transformers
                 else:
