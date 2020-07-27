@@ -225,7 +225,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                 logging.info('   '+'Total Energy Input: ' 
                              + str(round(flowsum[[0][0]], 2)) + ' kWh')
                 # adds the sinks energy demand to the total_usage variable
-                total_usage = total_usage + flowsum[[0][0]] 
+                # total_usage = total_usage + flowsum[[0][0]] 
                 # calculates the maximum capacity of the excess sink
                 flowmax = excess['sequences'].max()
                 # returns logging info
@@ -849,7 +849,7 @@ def prepare_plotly_results(nodes_data,
                 # Flows
                 flowsum = excess['sequences'].sum()
 
-                total_usage = total_usage + flowsum[[0][0]] 
+                #total_usage = total_usage + flowsum[[0][0]] 
                 # Capacity
           
                 # Variable Costs
