@@ -1201,12 +1201,12 @@ def prepare_plotly_results(nodes_data,
 
     for i, s in nd['storages'].iterrows():
         
-        if flowsum[[0][0]]:
-            flowsum[[0][0]] = 0
-        if flowsum[[1][0]]:
-            flowsum[[1][0]] = 0
-        if flowmax[[0][0]]:
-            flowmax[[0][0]] = 0
+        #if flowsum[[0][0]]:
+        #    flowsum[[0][0]] = 0
+        #if flowsum[[1][0]]:
+        #    flowsum[[1][0]] = 0
+        #if flowmax[[0][0]]:
+        #    flowmax[[0][0]] = 0
         variable_costs = 0
         periodical_costs = 0   
         storage_investment = 0
@@ -1293,12 +1293,12 @@ def prepare_plotly_results(nodes_data,
 
     for i, p in nd['links'].iterrows():
     
-        if flowsum[[0][0]]:
-            flowsum[[0][0]] = 0
-        if flowsum[[1][0]]:
-            flowsum[[1][0]] = 0
-        if flowmax[[0][0]]:
-            flowmax[[0][0]] = 0
+        #if flowsum[[0][0]]:
+        #    flowsum[[0][0]] = 0
+        #if flowsum[[1][0]]:
+        #    flowsum[[1][0]] = 0
+        #if flowmax[[0][0]]:
+        #    flowmax[[0][0]] = 0
         variable_costs = 0
         periodical_costs = 0
         
