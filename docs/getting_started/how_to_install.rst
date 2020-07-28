@@ -3,7 +3,7 @@ Installation
 
 .. warning:: 
 
-	Warning! The installation has only been tested under Windows, using Python 3.7.6 (64 bit)! Python 3.8 is currently not supported.
+	Warning! The installation has only been tested using Python 3.7.6 (64 bit)! Python 3.8 is currently not supported.
 
 Windows
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
