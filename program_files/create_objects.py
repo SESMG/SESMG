@@ -17,7 +17,6 @@ import demandlib.bdew as bdew
 import datetime
 
 
-
 def buses(nodes_data, nodes):
     """Creates bus objects.
     
@@ -279,6 +278,26 @@ class Sources:
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
 
+    def ambient_source(self, so):
+        """Creates heat pump source object.
+
+         Simulates the yield of a heat exchanger of a heat.
+         """
+        # Creates a oemof-source object with unfixed time-series
+        self.nodes_sources.append(
+            solph.Source(label=so['label'],
+                         outputs={self.busd[so['output']]: solph.Flow(
+                             investment=solph.Investment(
+                                 ep_costs=so['periodical costs /(CU/(kW a))'],
+                                 minimum=so['min. investment capacity /(kW)'],
+                                 maximum=so['max. investment capacity /(kW)'],
+                                 existing=so['existing capacity /(kW)']),
+                             variable_costs=so['variable costs /(CU/kWh)'])}))
+
+        # Returns logging info
+        logging.info('   ' + 'Heat Source created: ' + so['label'])
+
+
     def __init__(self, nodes_data, nodes, busd, filepath):
 
         # rename variables
@@ -303,6 +322,10 @@ class Sources:
                 # Create Windpower Sources
                 elif so['technology'] == 'windpower':
                     self.windpower_source(so)
+
+                # Create Heat Sources
+                elif so['technology'] == 'heatpump':
+                    self.ambient_source(so)
 
         # The feedinlib can only read .csv data sets, so the weather data from
         # the .xlsx scenario file have to be converted into a .csv data set and
@@ -717,7 +740,7 @@ class Transformers:
         nodes_data : obj:'dict'
            -- dictionary containing data from excel scenario file. The
            following data have to be provided: label, active, transformer type,
-           input, output, output2, efficiency, efficency2,
+           input, input2, output, output2, efficiency, efficency2,
            variable input costs /(CU/kWh), variable output costs /(CU/kWh),
            existing capacity /(kW), max. investment capacity /(kW),
            min. investment capacity /(kW), periodical costs /(CU/(kW a))
@@ -765,7 +788,7 @@ class Transformers:
                             existing=t['existing capacity /(kW)']
                         ))},
                     conversion_factors={self.busd[t['output']]:
-                                        t['efficiency']}))
+                                            t['efficiency']}))
 
             # returns logging info
             logging.info('   ' + 'Transformer created: ' + t['label'])
@@ -804,7 +827,7 @@ class Transformers:
                                 maximum=maximum_capacity2)
                         )},
                     conversion_factors={self.busd[t['output']]:
-                                        t['efficiency'],
+                                            t['efficiency'],
                                         self.busd[t['output2']]:
                                             t['efficiency2']}))
 
@@ -851,33 +874,54 @@ class Transformers:
         logging.info('   ' + 'Transformer created: ' + t['label'])
 
     def heat_pump_transformer(self, t):
-        """HIER DIE FUNKTION BESCHREIBEN (DOCSTRING NACH PEP 257)
+        """Creates a Heat Pump object by using oemof.thermal.
+
+                Creates a heat pump with the paramters given in
+                'nodes_data' and adds it to the list of components 'nodes'.
 
         ----
-        @ Janik Budde - HIER E_MAIL EINTRAGEN, DATUM
+        @ Janik Budde - Janik.Budde@fh-muenster.de, 30.07.2020
         """
-        # import oemof.thermal
 
-        print("heat_pump_transormer TEST!")
-
-        #
-        #
-        #
-        #
-        # HIER DEN CODE FÜR DIE ERSTELLUNG DER WÄRMEPUMPE EINFÜGEN!
-        #
-        # BEZUG FÜR INPUT BUS: self.busd[t['input']]
-        # BEZUG FÜR OUTPUT BUS: self.busd[t['output']]
+        # precalculation leads to time issues, simplification can be seen below
+        import oemof.thermal.compression_heatpumps_and_chillers as cmpr_hp_chiller
 
         if t['heat source'] == "Ground":
-            print('placeholder')
-            # HIER DEN CODE FÜR DIE GROUNDCOUPLED HEAT PUMP EINFÜGEN
+        # precalculation of COPs
+            cops_gchp = cmpr_hp_chiller.calc_cops(
+                temp_high=[40],
+                temp_low=[10],
+                quality_grade=0.4,
+                mode='heat_pump')
 
-        if t['heat source'] == "Air":
-            print('placeholder')
-            # HIER DEN CODE FÜR DIE GROUNDCOUPLED HEAT PUMP EINFÜGEN
+        # testing of the cop calculation
+        print(cops_gchp)
 
-        # HIER WEITERE WÄRMEPUMPENARTEN EINFÜGEN!
+        # simplification
+        gchp = 4.2
+
+        # Creates transformer object and adds it to the list of components
+        # Problem with conversion factors, variable which is calc doesnt fix with the function
+        self.nodes_transformer.append(
+            solph.Transformer(
+                label=t['label'],
+                inputs={self.busd[t['input']]: solph.Flow(
+                    variable_costs=t['variable input costs /(CU/kWh)']),
+                    self.busd[t['input2']]: solph.Flow(
+                        variable_costs=t['variable input costs 2 /(CU/kWh)'])},
+                outputs={self.busd[t['output']]: solph.Flow(
+                    variable_costs=t['variable output costs /(CU/kWh)'],
+                    investment=solph.Investment(
+                        ep_costs=t['periodical costs /(CU/(kW a))'],
+                        minimum=t['min. investment capacity /(kW)'],
+                        maximum=t['max. investment capacity /(kW)'],
+                        existing=t['existing capacity /(kW)']
+                    ))},
+                conversion_factors={self.busd[t['input']]: 1 / gchp,
+                                    self.busd[t['input2']]: (gchp - 1) / gchp}))
+
+        # returns logging info
+        logging.info('   ' + 'Transformer created: ' + t['label'])
 
 
     def __init__(self, nodes_data, nodes, busd):
@@ -914,6 +958,7 @@ class Transformers:
                                  + ' not a part of this model generator, but will'
                                  + ' be added later.')
 
+                # Create Heat Pump
                 elif t['transformer type'] == 'HeatPump':
                     self.heat_pump_transformer(t)
 
@@ -1125,3 +1170,6 @@ class Links:
         # appends created links to the list of nodes
         for i in range(len(self.nodes_links)):
             nodes.append(self.nodes_links[i])
+
+
+
