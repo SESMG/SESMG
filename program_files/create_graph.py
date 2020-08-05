@@ -151,6 +151,11 @@ def create_graph(filepath, nodes_data, legend=False):
             if t['output2'] != "None":
                 dot.node(t['output2'], shape='ellipse', fontsize="10")
                 dot.edge(t['label'], t['output2'])
+                
+            # Adds a second input (node and edge), if the transformer has two inputs
+            if t['transformer type'] == "HeatPump":
+                dot.node(t['input2'], shape='ellipse', fontsize="10")
+                dot.edge(t['input2'], t['label'])
 
     # Implements storages and their connected buses in the graph
     for i, s in nd['storages'].iterrows():
