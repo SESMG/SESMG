@@ -239,7 +239,7 @@ def show_results():
         subprocess.call(command,shell=True)
     #Starts the new Plotlydashserver for Windows
     if sys.platform.startswith("win"):
-        subprocess.call("Interactive_Results.py",shell=True)
+        subprocess.call("Interactive_Results.py",timeout=10,shell=True)
         subprocess.call("start http://127.0.0.1:8050/", shell=True)
     # Starts the new Plotlydashserver for MACOS
     elif sys.platform.startswith("darwin"):
@@ -249,10 +249,10 @@ def show_results():
     #proc()
 
 
-def end_program():
-    ''' kills the entire application'''
-    app_pid = os.getpid()
-    os.kill(app_pid, 0)
+# def end_program():
+#     ''' kills the entire application'''
+#     app_pid = os.getpid()
+#     os.kill(app_pid, 0)
 
 
 # def create_scenario_graph():
@@ -420,7 +420,7 @@ execution_elements = {'row2':['Show Graph',show_graph,'Execute',''],
                      #'row1':['Shapeconverter',create_scenario,'Execute','Developing Version'],
                      #'row5':['Shapeconverter + Show Graph',create_scenario_graph,'Execute','Developing Version'],
                      #'row6':['Shapeconverter + Optimize Model',create_scenario_optimize,'Execute','Developing Version'],
-                     'row7':['End Program',end_program,'End',' '],
+                     #'row7':['End Program',end_program,'End',' '],
                      }
 comments = []
 create_main_frame_elements(elements=execution_elements, sheet=main_frame, first_row=3+len(selection_elements), file_paths=comments, frame=main_frame)
