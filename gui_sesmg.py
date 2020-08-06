@@ -217,11 +217,17 @@ def get_pid():
             closeprocess = True
     s.close()
     if closeprocess:
-        command = "lsof -i tcp:8050"
+        if sys.platform.startswith("win"):
+            command = "netstat -aon| findstr 8050"
+        elif sys.platform.startswith("darwin"):
+            command = "lsof -i tcp:8050"
         pids = subprocess.check_output(command,shell=True)
         pids = str(pids)
         pidslist = pids.split()
-        pid = pidslist[9]
+        if sys.platform.startswith("win"):
+            pid = pidslist[4]
+        elif sys.platform.startswith("darwin"):
+            pid = pidslist[9]
         return pid
     else:
         return ''
