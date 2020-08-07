@@ -393,7 +393,16 @@ def statistics(nodes_data, optimization_model, energy_system):
                              + str(round(flowsum[[7][0]], 2)) 
                              + ' kWh')
                 max_transformer_flow = flowmax[2]
-            
+
+            elif t['transformer type'] == 'HeatPump':
+                logging.info('   ' + 'Total Energy Output to '
+                             + t['output'] + ': '
+                             + str(round(flowsum[[1][0]], 2))
+                             + ' kWh')
+                max_transformer_flow = flowmax[2]
+
+                print(flowsum)
+
             elif t['transformer type'] == 'OffsetTransformer':
                 logging.info('   '+'WARNING: OffsetTransformer are currently'
                              +' not a part of this model generator, but will'
@@ -1190,12 +1199,42 @@ def prepare_plotly_results(nodes_data,
                                       'variable costs/CU', 
                                       'periodical costs/CU',
                                       'investment/kW'])   
-                df_list_of_components = df_list_of_components.append(df_demand)    
+                df_list_of_components = df_list_of_components.append(df_demand)
 
-            
-            
+            elif t['transformer type'] == 'HeatPump':
+                component_performance = transformer['sequences'].columns.values
+                df_transformer = transformer['sequences'][component_performance[1]]
+                df_result_table[t['label'] + '_input1'] = df_transformer
+                df_transformer = transformer['sequences'][component_performance[2]]
+                df_result_table[t['label'] + '_input2'] = df_transformer
+                df_transformer = transformer['sequences'][component_performance[0]]
+                df_result_table[t['label'] + '_output1'] = df_transformer
 
-######################
+                df_demand = pd.DataFrame([[t['label'],
+                   'transformer',
+                   round(transformer['sequences'][component_performance[1]].sum(), 2),
+                   round(transformer['sequences'][component_performance[2]].sum(), 2),
+                   round(transformer['sequences'][component_performance[0]].sum(), 2),
+                   '---',
+                   round(transformer['sequences'][component_performance[0]].max(), 2),
+                   round(variable_costs, 2),
+                   round(periodical_costs, 2),
+                   round(transformer_investment, 2)
+                   ]],
+                 columns=['ID',
+                                      'type',
+                                      'input 1/kWh',
+                                      'input 2/kWh',
+                                      'output 1/kWh',
+                                      'output 2/kWh',
+                                      'capacity/kW',
+                                      'variable costs/CU',
+                                      'periodical costs/CU',
+                                      'investment/kW'])
+                df_list_of_components = df_list_of_components.append(df_demand)
+
+
+            ######################
 ##### STORAGES ##########
 ######################           
 

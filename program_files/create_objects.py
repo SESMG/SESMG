@@ -278,24 +278,7 @@ class Sources:
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
 
-    def ambient_source(self, so):
-        """Creates heat pump source object.
 
-         Simulates the yield of a heat exchanger of a heat.
-         """
-        # Creates a oemof-source object with unfixed time-series
-        self.nodes_sources.append(
-            solph.Source(label=so['label'],
-                         outputs={self.busd[so['output']]: solph.Flow(
-                             investment=solph.Investment(
-                                 ep_costs=so['periodical costs /(CU/(kW a))'],
-                                 minimum=so['min. investment capacity /(kW)'],
-                                 maximum=so['max. investment capacity /(kW)'],
-                                 existing=so['existing capacity /(kW)']),
-                             variable_costs=so['variable costs /(CU/kWh)'])}))
-
-        # Returns logging info
-        logging.info('   ' + 'Heat Source created: ' + so['label'])
 
 
     def __init__(self, nodes_data, nodes, busd, filepath):
@@ -323,9 +306,7 @@ class Sources:
                 elif so['technology'] == 'windpower':
                     self.windpower_source(so)
 
-                # Create Heat Sources
-                elif so['technology'] == 'heatpump':
-                    self.ambient_source(so)
+
 
         # The feedinlib can only read .csv data sets, so the weather data from
         # the .xlsx scenario file have to be converted into a .csv data set and
@@ -353,7 +334,7 @@ class Sinks:
 
         nodes_data : obj:'dict'
            -- dictionary containing parameters of sinks to be created. The
-           following data have to be provided: label, active, input, input2,
+           following data have to be provided: label, active, input,
            load profile, nominal value /(kW), annual demand /(kWh/a),
            occupants [RICHARDSON], building class [HEAT SLP ONLY],
            wind class [HEAT SLP ONLY], fixed
@@ -740,7 +721,7 @@ class Transformers:
         nodes_data : obj:'dict'
            -- dictionary containing data from excel scenario file. The
            following data have to be provided: label, active, transformer type,
-           input, input2, output, output2, efficiency, efficency2,
+           input, output, output2, efficiency, efficency2,
            variable input costs /(CU/kWh), variable output costs /(CU/kWh),
            existing capacity /(kW), max. investment capacity /(kW),
            min. investment capacity /(kW), periodical costs /(CU/(kW a))
@@ -757,6 +738,7 @@ class Transformers:
     """
     # intern variables
     nodes_transformer = []
+    nodes_sources = []
     nodes = []
     busd = None
 
@@ -882,33 +864,74 @@ class Transformers:
         ----
         @ Janik Budde - Janik.Budde@fh-muenster.de, 30.07.2020
         """
-
-        # precalculation leads to time issues, simplification can be seen below
+        # import oemof.thermal in order to calculate the cop
         import oemof.thermal.compression_heatpumps_and_chillers as cmpr_hp_chiller
 
+        # local variable 'cops_gchp' might be referenced before assignment
+        global cops_hp
+
+        # set up weather dataframe for heat pumps
+        weather_df_heatpump = pd.read_csv(os.path.join(
+            os.path.dirname(__file__)) + '/interim_data/weather_data.csv',
+                                      index_col=0,
+                                      date_parser=lambda idx: pd.to_datetime(idx, utc=True))
+
+        # creates an oemof-bus object, all heat pumps use the same low temp bus
+        bus = solph.Bus(label=t['label']+'_low_temp_bus')
+        # adds the bus object to the list of components "nodes"
+        self.nodes.append(bus)
+        self.busd[t['label']+'_low_temp_bus'] = bus
+        # returns logging info
+        logging.info('   ' + 'Bus created: ' + t['label']+'_low_temp_bus')
+
+        # differentation between heat sources e.g. by investment costs or co2 impact
         if t['heat source'] == "Ground":
-        # precalculation of COPs
-            cops_gchp = cmpr_hp_chiller.calc_cops(
-                temp_high=[40],
-                temp_low=[10],
+            self.nodes_sources.append(
+                solph.Source(label=t['label']+'_low_temp_source',
+                             outputs={self.busd[t['label']+'_low_temp_bus']: solph.Flow(
+                                 investment=solph.Investment(
+                                     ep_costs=0,
+                                     minimum=0,
+                                     maximum=0,
+                                     existing=1000),
+                                 variable_costs=0)}))
+
+        elif t['heat source'] == "Air":
+            self.nodes_sources.append(
+                solph.Source(label=t['label'] + '_low_temp_source',
+                             outputs={self.busd[t['label'] + '_low_temp_bus']: solph.Flow(
+                                 investment=solph.Investment(
+                                     ep_costs=0,
+                                     minimum=0,
+                                     maximum=0,
+                                     existing=1000),
+                                 variable_costs=0)}))
+        # Returns logging info
+        logging.info('   ' + 'Heat Source created: ' + t['label']+'_low_temp_source')
+
+        # precalculation of COPs, referring to different low temp sources
+        if t['heat source'] == "Ground":
+            cops_hp = cmpr_hp_chiller.calc_cops(
+                temp_high=[t['temperature high \(deg C)']],
+                temp_low=weather_df_heatpump['ground_temp'],
                 quality_grade=0.4,
                 mode='heat_pump')
 
-        # testing of the cop calculation
-        print(cops_gchp)
-
-        # simplification
-        gchp = 4.2
+        elif t['heat source'] == "Air":
+            cops_hp = cmpr_hp_chiller.calc_cops(
+                temp_high=[t['temperature high \(deg C)']],
+                temp_low=weather_df_heatpump['temperature'],
+                quality_grade=0.4,
+                mode='heat_pump')
 
         # Creates transformer object and adds it to the list of components
-        # Problem with conversion factors, variable which is calc doesnt fix with the function
         self.nodes_transformer.append(
             solph.Transformer(
                 label=t['label'],
                 inputs={self.busd[t['input']]: solph.Flow(
                     variable_costs=t['variable input costs /(CU/kWh)']),
-                    self.busd[t['input2']]: solph.Flow(
-                        variable_costs=t['variable input costs 2 /(CU/kWh)'])},
+                    self.busd[t['label'] + '_low_temp_bus']: solph.Flow(
+                        variable_costs=0)},
                 outputs={self.busd[t['output']]: solph.Flow(
                     variable_costs=t['variable output costs /(CU/kWh)'],
                     investment=solph.Investment(
@@ -917,9 +940,10 @@ class Transformers:
                         maximum=t['max. investment capacity /(kW)'],
                         existing=t['existing capacity /(kW)']
                     ))},
-                conversion_factors={self.busd[t['input']]: 1 / gchp,
-                                    self.busd[t['input2']]: (gchp - 1) / gchp}))
-
+                conversion_factors={self.busd[t['label']+'_low_temp_bus']:
+                                    [(cop - 1) / cop for cop in cops_hp],
+                                    self.busd[t['input']]:
+                                    [1 / cop for cop in cops_hp]}))
         # returns logging info
         logging.info('   ' + 'Transformer created: ' + t['label'])
 
@@ -973,6 +997,12 @@ class Transformers:
         # appends created transformers to the list of nodes
         for i in range(len(self.nodes_transformer)):
             nodes.append(self.nodes_transformer[i])
+
+        for i in range(len(self.nodes_sources)):
+            nodes.append(self.nodes_sources[i])
+
+        for i in range(len(self.nodes)):
+            nodes.append(self.nodes[i])
 
 
 class Storages:
