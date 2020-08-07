@@ -179,14 +179,15 @@ def get_pid():
     s.close()
     if closeprocess:
         if sys.platform.startswith("win"):
-            command = "netstat -aon| findstr 8050"
+            command = "netstat -aon| findstr :8050"
         elif sys.platform.startswith("darwin"):
             command = "lsof -i tcp:8050"
         pids = subprocess.check_output(command, shell=True)
         pids = str(pids)
         pidslist = pids.split()
         if sys.platform.startswith("win"):
-            pid = pidslist[4]
+                    pid = pidslist[5]
+                    pid = pid[:-4]
         elif sys.platform.startswith("darwin"):
             pid = pidslist[9]
         return pid
@@ -202,7 +203,7 @@ def show_results():
     # Checks if the ID is not an empty return (no process available)
     if pid != '':
         if sys.platform.startswith("win"):
-            command = 'taskkill /PID ' + pid
+            command = 'taskkill /F /PID ' + pid
         elif sys.platform.startswith("darwin"):
             command = 'kill ' + pid
         # Kills the still running process on port 8050

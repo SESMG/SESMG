@@ -94,7 +94,6 @@ def SESMG(scenario_file,result_path):
 
     # CREATES AN ENERGYSYSTEM AS DEFINED IN THE SCENARIO FILE
     esys = create_energy_system.define_energy_system(nodes_data=nodes_data)
-
     # CREATES AN LIST OF COMPONENTS
     nodes = []
 
@@ -160,6 +159,8 @@ def SESMG(scenario_file,result_path):
                                           optimization_model=om,
                                           energy_system=esys,
                                           result_path=result_path)
+    del nodes_data
+    del esys
 
     logging.info('   ' + '--------------------------------------------------------')
     logging.info('   ' + 'Modelling and optimization successfully completed!')
