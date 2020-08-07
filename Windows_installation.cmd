@@ -19,10 +19,20 @@ python get-py.py
 @echo download and install required python packages
 @echo #############################################
 
+pip install oemof.thermal==0.0.3
+pip uninstall oemof.solph
+pip uninstall oemof.tools
+pip uninstall oemof.network
+
 pip install pandas==0.25.3
 pip install numpy==1.17.4
 pip install tables==3.5.2
 pip install openpyxl==3.0.0
+
+pip install pyutilib==5.8
+pip install pyomo==5.6.9
+
+pip uninstall oemof
 
 pip install oemof==0.3.2
 pip install demandlib==0.1.6
