@@ -1,3 +1,0 @@
-@echo Spreadsheet Energy System Model Generator is beeing started...
-Spreadsheet_Energy_System_Model_Generator.py
-Interactive_Results.py
