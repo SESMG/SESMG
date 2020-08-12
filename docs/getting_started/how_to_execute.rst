@@ -3,7 +3,7 @@ Application of the Model Generator
 
 1. Fill in the spreadsheet document according to the instructions in the "Using th Scenario File" chapter.
 
-2. Execute the "exe.cmd" file in the main folder of the program. 
+2. Execute the "SESMG_EXE.py" file in the main folder of the program. 
 .. note:: 
 
 	If you receive a "Your computer has been protected by Windows" error message, click "More Information," and then "Run Anyway".
@@ -12,14 +12,16 @@ Application of the Model Generator
    :width: 100 %
    :alt: GUI
    :align: center
+   
+   The display may vary depending on the operating system.
 Description of the GUI functions
 
-First select the spreadsheet to be optimized with the Change button
+Select the xlsx-scenario to be executed.
 
 Now there are three functions:
- 1. Display the actual situation as a graph. 
- 2. Optimization of the spreadsheet with the display of the results. 
- 3. Display the results of an already optimized spreadsheet separately.
+ 1. Displays the currently selected xlsx-scenario as graph.
+ 2. Modeling and optimization of the selected xlsx-scenario with subsequent output of results.  
+ 3. Display of the latest optimized scenario.
  .. note::
 	The detailed modelling results are also stored within the "results" folder.
 
