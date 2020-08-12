@@ -19,6 +19,8 @@ pip3 install pandas==0.25.3
 pip3 install numpy==1.17.4
 pip3 install tables==3.5.2
 pip3 install openpyxl==3.0.0
+pip3 install pyutilib==5.8
+sudo apt-get install python3-tk
 
 pip3 install oemof==0.3.2
 pip3 install demandlib==0.1.6
