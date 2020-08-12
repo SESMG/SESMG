@@ -88,7 +88,6 @@ def SESMG(scenario_file,result_path):
 
     # DEFINES A LOGGING FILE
     logger.define_logging(logpath=result_path)
-
     # IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
     nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
 
@@ -159,8 +158,7 @@ def SESMG(scenario_file,result_path):
                                           optimization_model=om,
                                           energy_system=esys,
                                           result_path=result_path)
-    del nodes_data
-    del esys
+
 
     logging.info('   ' + '--------------------------------------------------------')
     logging.info('   ' + 'Modelling and optimization successfully completed!')

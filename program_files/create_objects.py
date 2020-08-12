@@ -282,6 +282,8 @@ class Sources:
     def __init__(self, nodes_data, nodes, busd, filepath):
 
         # rename variables
+        self.nodes = []
+        self.nodes_sources = []
         self.busd = busd.copy()
         for i in range(len(nodes)):
             self.nodes.append(nodes[i])
@@ -650,8 +652,10 @@ class Sinks:
     def __init__(self, nodes_data, busd, nodes, filepath):
 
         # renames variables
-        self.nd = nodes_data.copy()
-        self.busd = busd.copy()
+        self.nd = nodes_data
+        self.busd = busd
+        self.nodes = []
+        self.nodes_sinks = []
         for i in range(len(nodes)):
             self.nodes.append(nodes[i])
 
@@ -698,10 +702,10 @@ class Sinks:
                 # Create Sinks with Electricity SLP's
                 elif de['load profile'] in electricity_slps:
                     self.electricslp_sink(de)
-
         # appends created sinks on the list of nodes
         for i in range(len(self.nodes_sinks)):
             nodes.append(self.nodes_sinks[i])
+
 
 
 class Transformers:
@@ -854,6 +858,8 @@ class Transformers:
 
         # renames variables
         self.busd = busd
+        self.nodes = []
+        self.nodes_transformer = []
         for i in range(len(nodes)):
             self.nodes.append(nodes[i])
 
@@ -932,6 +938,8 @@ class Storages:
     def __init__(self, nodes_data, nodes, busd):
 
         # rename variables
+        self.nodes = []
+        self.nodes_storages = []
         for i in range(len(nodes)):
             self.nodes.append(nodes[i])
 
@@ -1077,6 +1085,8 @@ class Links:
 
         # renames variables
         self.busd = bus
+        self.nodes = []
+        self.nodes_links = []
         for i in range(len(nodes)):
             self.nodes.append(nodes[i])
 
