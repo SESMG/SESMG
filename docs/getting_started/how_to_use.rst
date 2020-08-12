@@ -112,7 +112,7 @@ defined if the parameter "technology" is set on "photovoltaic". The following pa
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "other". Time series are automatically generated for photovoltaic systems and wind turbines. If "other" is selected, a time series must be provided in the "time_series" sheet.
+- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
 - **Turbine Model (Windpower ONLY)**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_. 
 - **Hub Height (Windpower ONLY)**: Hub height of the wind turbine. Which hub heights are possible for the selected reference turbine can be viewed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
 - **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
