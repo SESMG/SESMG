@@ -21,6 +21,7 @@ pip3 install tables==3.5.2
 pip3 install openpyxl==3.0.0
 pip3 install pyutilib==5.8
 sudo apt-get install python3-tk
+sudo apt install graphviz 
 
 pip3 install oemof==0.3.2
 pip3 install demandlib==0.1.6
