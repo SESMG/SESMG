@@ -225,7 +225,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                 logging.info('   '+'Total Energy Input: ' 
                              + str(round(flowsum[[0][0]], 2)) + ' kWh')
                 # adds the sinks energy demand to the total_usage variable
-                # total_usage = total_usage + flowsum[[0][0]] 
+                total_usage = total_usage + flowsum[[0][0]] 
                 # calculates the maximum capacity of the excess sink
                 flowmax = excess['sequences'].max()
                 # returns logging info
@@ -834,10 +834,10 @@ def prepare_plotly_results(nodes_data,
         
     for i, b in nd['buses'].iterrows():
         
-        if flowsum[[0][0]]:
-            flowsum[[0][0]] = 0
-        if flowmax[[0][0]]:
-            flowmax[[0][0]] = 0
+        # if flowsum[[0][0]]:
+        #     flowsum[[0][0]] = 0
+        # if flowmax[[0][0]]:
+        #     flowmax[[0][0]] = 0
         variable_costs = 0
         periodical_costs = 0
         
@@ -849,7 +849,7 @@ def prepare_plotly_results(nodes_data,
                 # Flows
                 flowsum = excess['sequences'].sum()
 
-                #total_usage = total_usage + flowsum[[0][0]] 
+                total_usage = total_usage + flowsum[[0][0]] 
                 # Capacity
           
                 # Variable Costs
@@ -899,10 +899,10 @@ def prepare_plotly_results(nodes_data,
     
     for i, so in nd['sources'].iterrows():
         
-        if flowsum[[0][0]]:
-            flowsum[[0][0]] = 0
-        if flowmax[[0][0]]:
-            flowmax[[0][0]] = 0
+        # if flowsum[[0][0]]:
+        #     flowsum[[0][0]] = 0
+        # if flowmax[[0][0]]:
+        #     flowmax[[0][0]] = 0
         variable_costs = 0
         periodical_costs = 0
         source_investment = 0
@@ -984,10 +984,10 @@ def prepare_plotly_results(nodes_data,
          
     for i, b in nd['buses'].iterrows():
         
-        if flowsum[[0][0]]:
-            flowsum[[0][0]] = 0
-        if flowmax[[0][0]]:
-            flowmax[[0][0]] = 0
+        # if flowsum[[0][0]]:
+        #     flowsum[[0][0]] = 0
+        # if flowmax[[0][0]]:
+        #     flowmax[[0][0]] = 0
         variable_costs = 0
         periodical_costs = 0
         
@@ -1043,10 +1043,10 @@ def prepare_plotly_results(nodes_data,
 
     for i, t in nd['transformers'].iterrows(): 
         
-        if flowsum[[0][0]]:
-            flowsum[[0][0]] = 0
-        if flowmax[[0][0]]:
-            flowmax[[0][0]] = 0
+        # if flowsum[[0][0]]:
+        #     flowsum[[0][0]] = 0
+        # if flowmax[[0][0]]:
+        #     flowmax[[0][0]] = 0
         variable_costs = 0
         periodical_costs = 0
         transformer_investment = 0
@@ -1201,12 +1201,12 @@ def prepare_plotly_results(nodes_data,
 
     for i, s in nd['storages'].iterrows():
         
-        #if flowsum[[0][0]]:
-        #    flowsum[[0][0]] = 0
-        #if flowsum[[1][0]]:
-        #    flowsum[[1][0]] = 0
-        #if flowmax[[0][0]]:
-        #    flowmax[[0][0]] = 0
+        # if flowsum[[0][0]]:
+        #     flowsum[[0][0]] = 0
+        # if flowsum[[1][0]]:
+        #     flowsum[[1][0]] = 0
+        # if flowmax[[0][0]]:
+        #     flowmax[[0][0]] = 0
         variable_costs = 0
         periodical_costs = 0   
         storage_investment = 0
@@ -1293,12 +1293,12 @@ def prepare_plotly_results(nodes_data,
 
     for i, p in nd['links'].iterrows():
     
-        #if flowsum[[0][0]]:
-        #    flowsum[[0][0]] = 0
-        #if flowsum[[1][0]]:
-        #    flowsum[[1][0]] = 0
-        #if flowmax[[0][0]]:
-        #    flowmax[[0][0]] = 0
+        if flowsum[[0][0]]:
+            flowsum[[0][0]] = 0
+        if flowsum[[1][0]]:
+            flowsum[[1][0]] = 0
+        if flowmax[[0][0]]:
+            flowmax[[0][0]] = 0
         variable_costs = 0
         periodical_costs = 0
         

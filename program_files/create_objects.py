@@ -134,6 +134,7 @@ class Sources:
     nodes_sources = []
     nodes = []
     busd = None
+    #nd = None
 
     def commodity_source(self, so):
         """Creates a source object with unfixed time-series."""
@@ -151,6 +152,29 @@ class Sources:
 
         # Returns logging info
         logging.info('   ' + 'Commodity Source created: ' + so['label'])
+
+    def timeseries_source(self, so):
+        """Creates a source object from a pre-defined timeseries time-series."""
+
+        for col in self.nodes_data['timeseries'].columns.values:
+            if col.split('.')[0] == so['label']:
+        #         inflow_args[col.split('.')[1]] = self.nodes_data['timeseries'][col]
+                actual_value = self.nodes_data['timeseries'][col]
+
+        self.nodes_sources.append(
+            solph.Source(label=so['label'],
+                         outputs={self.busd[so['output']]: solph.Flow(
+                             investment=solph.Investment(
+                                                         ep_costs=so['periodical costs /(CU/(kW a))'],
+                                                         minimum=so['min. investment capacity /(kW)'],
+                                                         maximum=so['max. investment capacity /(kW)'],
+                                                         existing=so['existing capacity /(kW)']),
+                             actual_value = actual_value,
+                             fixed = so['fixed'],
+                             variable_costs=so['variable costs /(CU/kWh)'])}))
+
+        # Returns logging info
+        logging.info('   ' + 'Timeseries Source created: ' + so['label'])
 
     def pv_source(self, so):
         """Creates photovoltaic source object.
@@ -285,6 +309,7 @@ class Sources:
         self.nodes = []
         self.nodes_sources = []
         self.busd = busd.copy()
+        self.nodes_data = nodes_data
         for i in range(len(nodes)):
             self.nodes.append(nodes[i])
 
@@ -305,6 +330,10 @@ class Sources:
                 # Create Windpower Sources
                 elif so['technology'] == 'windpower':
                     self.windpower_source(so)
+
+                # Create Windpower Sources
+                elif so['technology'] == 'timeseries':
+                    self.timeseries_source(so)
 
         # The feedinlib can only read .csv data sets, so the weather data from
         # the .xlsx scenario file have to be converted into a .csv data set and
