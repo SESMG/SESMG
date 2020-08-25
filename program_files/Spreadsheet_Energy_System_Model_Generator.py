@@ -132,7 +132,7 @@ def SESMG(scenario_file, result_path):
     # ADDS THE COMPONENTS TO THE ENERGYSYSTEM
     my_nodes = nodes
     esys.add(*my_nodes)
-    print(my_nodes)
+
     # PRINTS A GRAPH OF THE ENERGY SYSTEM
     create_graph.create_graph(filepath=result_path,
                               nodes_data=nodes_data,
