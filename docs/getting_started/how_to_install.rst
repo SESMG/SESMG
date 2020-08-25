@@ -83,15 +83,20 @@ Linux
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 1. Install Python (version 3.5 or higher)
 
-``$ sudo apt-get install python3.7``
-
+- go to `<https://phoenixnap.com/kb/how-to-install-python-3-ubuntu/>`_
+- use Python3.7 instead of Python3.8
+.. note:: 
+	
+	Make sure that the alias python3 is set to Python3.7.x.
+	If not use update-alternatives to change it.
+	 
 2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/chrklemm/SESMG/tree/master>`_ as .zip folder.
 
 3. Extract the .zip folder into any directory on the computer.
 
 4. Install PIP 
 
-``$ sudo apt-get install python3.7-pip``
+``$ sudo apt-get install python3-pip``
 
 5. Install tkinter 
 
@@ -99,7 +104,7 @@ Linux
 	
 6. Install Graphviz
 
-``$ sudo apt-get install graphviz`` 
+``$ sudo apt-get install graphviz``
 	
 7. Install the CBC-Solver 
 
