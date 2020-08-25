@@ -70,7 +70,7 @@ from program_files import (create_objects,
                            create_graph)
 
 
-def SESMG(scenario_file,result_path):
+def SESMG(scenario_file, result_path):
 
 
         # # DEFINES PATH OF INPUT DATA
@@ -82,9 +82,8 @@ def SESMG(scenario_file,result_path):
         # # DEFINES PATH OF OUTPUT DATA
         # # FOR WINDOWS
         # result_path = os.path.join(os.path.dirname(__file__) + '/results')
-    # FOR MACOS
-    if sys.platform.startswith('darwin'):
-        result_path = os.path.dirname(os.path.abspath(__file__)) + '/results'
+        # FOR MACOS
+
 
     # DEFINES A LOGGING FILE
     logger.define_logging(logpath=result_path)
@@ -158,7 +157,6 @@ def SESMG(scenario_file,result_path):
                                           optimization_model=om,
                                           energy_system=esys,
                                           result_path=result_path)
-
 
     logging.info('   ' + '--------------------------------------------------------')
     logging.info('   ' + 'Modelling and optimization successfully completed!')

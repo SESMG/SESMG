@@ -22,7 +22,7 @@ Windows
 - execute the installer on your computer
 	
 
-2. Download the Spreadsheet Energy System Model Generator from `GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator/-/archive/master/spreadsheet-energy-system-model-generator-master.zip>`_ as .zip folder.
+2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/chrklemm/SESMG/tree/master>`_ as .zip folder.
 
 
 3. Extract the .zip folder into any directory on the computer.
@@ -70,7 +70,7 @@ MacOS
 - execute the installer on your computer
 	
 
-2. Download the Spreadsheet Energy System Model Generator from `GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator/-/archive/master/spreadsheet-energy-system-model-generator-master.zip>`_ as .zip folder.
+2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/chrklemm/SESMG/tree/master>`_ as .zip folder.
 
 
 3. Extract the .zip folder into any directory on the computer.
@@ -78,3 +78,39 @@ MacOS
 4. Excecute the "MacOS_installation.command" file.
 
 5. The Spreadsheet Energy System Model Generator has been installed.
+
+Linux 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1. Install Python (version 3.5 or higher)
+
+- go to `<https://phoenixnap.com/kb/how-to-install-python-3-ubuntu/>`_
+- use Python3.7 instead of Python3.8
+.. note:: 
+	
+	Make sure that the alias python3 is set to Python3.7.x.
+	If not use update-alternatives to change it.
+	 
+2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/chrklemm/SESMG/tree/master>`_ as .zip folder.
+
+3. Extract the .zip folder into any directory on the computer.
+
+4. Install PIP 
+
+``$ sudo apt-get install python3-pip``
+
+5. Install tkinter 
+
+``$ sudo apt-get install python3.7-tk``
+	
+6. Install Graphviz
+
+``$ sudo apt-get install graphviz``
+	
+7. Install the CBC-Solver 
+
+``$ sudo apt-get install coinor-cbc``
+	
+8. Execute the "Linux_installtion.sh" file.
+
+9. The Spreadsheet Energy System Model Generator has been installed.
+ 

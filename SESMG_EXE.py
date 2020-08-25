@@ -5,11 +5,11 @@ from tkinter import ttk
 from tkinter import filedialog
 import subprocess
 import os
-from Spreadsheet_Energy_System_Model_Generator import SESMG
+from program_files.Spreadsheet_Energy_System_Model_Generator import SESMG
 
 
 def create_elements(sheet, elements, texts, values, first_row):
-    ''' Creates a block of tk-inter elements. The elements are created from an input dictionary. The tk-inter output
+    """ Creates a block of tk-inter elements. The elements are created from an input dictionary. The tk-inter output
     has the following structure:
 
     TEXT 1 | TEXT 2 | TEXT 3 | INPUT FIELD   | TEXT 4
@@ -34,7 +34,7 @@ def create_elements(sheet, elements, texts, values, first_row):
 
     first_row: top line of the window sheet where the block should be positioned.
 
-    '''
+    """
 
     element_keys = [i for i in elements.keys()]
 
@@ -42,26 +42,26 @@ def create_elements(sheet, elements, texts, values, first_row):
     for i in range(len(elements)):
         row = i + first_row + 1
 
-        variable_name = Label(sheet, text=elements[element_keys[i]][0], font=('Helvetica 10'))
+        variable_name = Label(sheet, text=elements[element_keys[i]][0], font='Helvetica 10')
         variable_name.grid(column=0, row=row, sticky="W")
 
-        variable_value = Label(sheet, text=str(elements[element_keys[i]][1]), font=('Helvetica 10'))
+        variable_value = Label(sheet, text=str(elements[element_keys[i]][1]), font='Helvetica 10')
         values.append(variable_value)
         values[i].grid(column=1, row=row)
 
-        variable_unit = Label(sheet, text=str(elements[element_keys[i]][2]), font=('Helvetica 10'))
+        variable_unit = Label(sheet, text=str(elements[element_keys[i]][2]), font='Helvetica 10')
         variable_unit.grid(column=2, row=row, sticky="W")
 
-        variable_text = Entry(sheet, width=20, font=('Helvetica 10'))
+        variable_text = Entry(sheet, width=20, font='Helvetica 10')
         texts.append(variable_text)
         texts[i].grid(column=3, row=row)
 
-        variable_format = Label(sheet, text=elements[element_keys[i]][3], font=('Helvetica 10'))
+        variable_format = Label(sheet, text=elements[element_keys[i]][3], font='Helvetica 10')
         variable_format.grid(column=4, row=row, sticky="W")
 
 
 def create_main_frame_elements(elements, sheet, first_row, file_paths, frame):
-    ''' Creates a block of tk-inter elements. The elements are created from an input dictionary. The tk-inter output
+    """ Creates a block of tk-inter elements. The elements are created from an input dictionary. The tk-inter output
        has the following structure:
 
        TEXT 1 | BUTTON | TEXT 2 |
@@ -76,8 +76,9 @@ def create_main_frame_elements(elements, sheet, first_row, file_paths, frame):
 
        sheet: sheet within the window, where the element block will be placed
 
-       elements: dictionary containing elements wich will be shown within this tk-inter block. Structure of the dictionary
-                   has to be as follows: elements = {'rowname':['text 1', function to be executed, 'text 2'}
+       elements: dictionary containing elements wich will be shown within this tk-inter block.
+       Structure of the dictionary has to be as follows:
+            elements = {'rowname':['text 1', function to be executed, 'text 2'}
 
        frame: sheet within the window, where the element block will be placed
 
@@ -85,19 +86,19 @@ def create_main_frame_elements(elements, sheet, first_row, file_paths, frame):
 
        first_row: top line of the window sheet where the block should be positioned.
 
-       '''
+       """
     element_keys = [i for i in elements.keys()]
 
     for i in range(len(elements)):
         row = i + first_row + 1
 
-        label_name = Label(sheet, text=elements[element_keys[i]][0], font=('Helvetica 10'))
+        label_name = Label(sheet, text=elements[element_keys[i]][0], font='Helvetica 10')
         label_name.grid(column=0, row=row, sticky="W")
 
         button = Button(frame, text=elements[element_keys[i]][2], command=elements[element_keys[i]][1])
         button.grid(column=3, row=row)
 
-        label_comment = Label(sheet, text=elements[element_keys[i]][3], font=('Helvetica 10'))
+        label_comment = Label(sheet, text=elements[element_keys[i]][3], font='Helvetica 10')
         file_paths.append(label_comment)
         file_paths[i].grid(column=4, row=row, sticky="W")
 
@@ -117,8 +118,7 @@ def data_path():
 
 
 def getFolderPath():
-    ''' opens a file dialog and sets the selected path for the variable "scenario_path"
-    '''
+    """ opens a file dialog and sets the selected path for the variable "scenario_path" """
 
     path = filedialog.askopenfilename(filetypes=(("Spreadsheet Files", "*.xlsx"), ("all files", "*.*")))
     print(path)
@@ -130,7 +130,7 @@ def getFolderPath():
 
 
 def show_graph():
-    ''' creates and shows a graph of the energy system given by a Spreadsheet'''
+    """ creates and shows a graph of the energy system given by a Spreadsheet"""
     import os
     from program_files import (create_energy_system,
                                create_graph)
@@ -139,7 +139,15 @@ def show_graph():
     scenario_file = scenario_path.get()
 
     # DEFINES PATH OF OUTPUT DATA
-    result_path = os.path.join(os.path.dirname(__file__) + '/results')
+    if sys.platform.startswith("win"):
+        result_path = os.path.join(os.path.dirname(__file__) + '/results')
+    elif sys.platform.startswith('darwin'):
+        result_path = os.path.dirname(os.path.abspath(__file__))
+        result_path = result_path + '/results'
+    elif sys.platform.startswith("linux"):
+        result_path = os.path.dirname(os.path.abspath(__file__))
+        result_path = result_path + '/results'
+        subprocess.call("chmod +x " + result_path, shell=True)
 
     # IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
     nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
@@ -151,10 +159,18 @@ def show_graph():
 
 
 def execute_sesmg():
-    ''' Excecutes the optimization algorithm '''
+    """ Excecutes the optimization algorithm """
     if scenario_path.get() != "No scenario selected.":
         scenario_file = scenario_path.get()
-        result_path = os.path.join(os.path.dirname(__file__) + '/results')
+        if sys.platform.startswith("win"):
+            result_path = os.path.join(os.path.dirname(__file__) + '/results')
+        elif sys.platform.startswith('darwin'):
+            result_path = os.path.dirname(os.path.abspath(__file__))
+            result_path = result_path + '/results'
+        elif sys.platform.startswith("linux"):
+            result_path = os.path.dirname(os.path.abspath(__file__))
+            result_path = result_path + '/results'
+            subprocess.call("chmod +x " + result_path, shell=True)
         SESMG(scenario_file=scenario_file, result_path=result_path)
         show_results()
     else:
@@ -163,7 +179,7 @@ def execute_sesmg():
 
 
 def get_pid():
-    ''' Returns the ID of the running process on Port 8050 '''
+    """ Returns the ID of the running process on Port 8050 """
     import socket
     import errno
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -182,22 +198,26 @@ def get_pid():
             command = "netstat -aon| findstr :8050"
         elif sys.platform.startswith("darwin"):
             command = "lsof -i tcp:8050"
+        elif sys.platform.startswith("linux"):
+            command = "fuser -n tcp 8050"
         pids = subprocess.check_output(command, shell=True)
         pids = str(pids)
         pidslist = pids.split()
+        print(pidslist)
         if sys.platform.startswith("win"):
-                    pid = pidslist[5]
-                    pid = pid[:-4]
+            pid = pidslist[5]
+            pid = pid[:-4]
         elif sys.platform.startswith("darwin"):
             pid = pidslist[9]
+        elif sys.platform.startswith("linux"):
+            pid = pidslist[1]
         return pid
     else:
         return ''
 
 
 def show_results():
-    ''' executes the external program, which executes a plotl.dash app for displaying interactive results.
-    '''
+    """ executes the external program, which executes a plotl.dash app for displaying interactive results."""
     # Determines the ID of a still running process on port 8050.
     pid = get_pid()
     # Checks if the ID is not an empty return (no process available)
@@ -206,6 +226,8 @@ def show_results():
             command = 'taskkill /F /PID ' + pid
         elif sys.platform.startswith("darwin"):
             command = 'kill ' + pid
+        elif sys.platform.startswith("linux"):
+            command = 'kill ' + pid
         # Kills the still running process on port 8050
         subprocess.call(command, shell=True)
     else:
@@ -213,15 +235,22 @@ def show_results():
             subprocess.call("start http://127.0.0.1:8050", shell=True)
         elif sys.platform.startswith("darwin"):
             subprocess.call("open http://127.0.0.1:8050", shell=True)
+        elif sys.platform.startswith("linux"):
+            subprocess.call("xdg-open http://127.0.0.1:8050", shell=True)
 
     # Starts the new Plotly Dash Server for Windows
     if sys.platform.startswith("win"):
-        subprocess.call("Interactive_Results.py", timeout=10, shell=True)
+        IR_PATH = os.path.join(os.path.dirname(__file__) + '/program_files')
+        subprocess.call(IR_PATH + "/Interactive_Results.py", timeout=10, shell=True)
     # Starts the new Plotly Dash Server for MACOS
     elif sys.platform.startswith("darwin"):
-        subprocess.call("python3 Interactive_Results.py", timeout=10, shell=True)
-
-
+        IR_PATH = os.path.dirname(os.path.abspath(__file__))
+        IR_PATH = IR_PATH + '/program_files'
+        subprocess.call("python3 " + IR_PATH + "/Interactive_Results.py", timeout=10, shell=True)
+    elif sys.platform.startswith("linux"):
+        IR_PATH = os.path.dirname(os.path.abspath(__file__))
+        IR_PATH = IR_PATH + '/program_files'
+        subprocess.call("python3 " + IR_PATH + "/Interactive_Results.py", timeout=10, shell=True)
 
 
 # def end_program():
@@ -239,12 +268,11 @@ tab_control.pack(expand=1, fill='both')
 tab_control.pressed_index = None
 scenario_path = StringVar(window, str(os.path.join(os.path.dirname(__file__), 'scenario.xlsx')))
 
-
 ############
 # MAIN FRAME
 ############
 # Definition of the Main-Frames
-    # main_frame = ttk.Frame(tab_control)
+# main_frame = ttk.Frame(tab_control)
 main_frame = ttk.Frame(window)
 tab_control.add(main_frame, text='Home')
 
@@ -260,7 +288,7 @@ create_main_frame_elements(elements=selection_elements, sheet=main_frame, first_
                            frame=main_frame)
 
 # Headline 2
-main_head2 = Label(main_frame, text='Execution Options', font=('Helvetica 10 bold'))
+main_head2 = Label(main_frame, text='Execution Options', font='Helvetica 10 bold')
 main_head2.grid(column=0, row=3 + len(selection_elements), sticky="w")
 
 # ERstellung des zweiten Element-Blocks

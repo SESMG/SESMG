@@ -55,8 +55,7 @@ def xlsx(nodes_data, optimization_model, energy_system, filepath):
     for i, b in nd['buses'].iterrows():
             if b['active']:
                 bus = outputlib.views.node(results, b['label'])                
-                file_path = os.path.join(filepath, 'results_'+b['label']
-                                                    +'.xlsx')                        
+                file_path = os.path.join(filepath, 'results_'+b['label'] +'.xlsx')
                 node_results = outputlib.views.node(results, b['label'])
                 df = node_results['sequences']
                 df.head(2)          
