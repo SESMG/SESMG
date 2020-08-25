@@ -83,8 +83,8 @@ Linux
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 1. Install Python (version 3.5 or higher)
 
-..
-	sudo apt-get install python3.7
+..code-block:: bash
+	$ sudo apt-get install python3.7
 
 2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/chrklemm/SESMG/tree/master>`_ as .zip folder.
 
@@ -92,23 +92,23 @@ Linux
 
 4. Install PIP 
 
-..
-	sudo apt-get install python3.7-pip
+..code-block:: bash
+	$ sudo apt-get install python3.7-pip
 
 5. Install tkinter 
 
-.. 
-	sudo apt-get install python3.7-tk
+..code-block:: bash
+	$ sudo apt-get install python3.7-tk
 	
 6. Install Graphviz
 
-..  
-	sudo apt-get install graphviz 
+..code-block:: bash
+	$ sudo apt-get install graphviz 
 	
 7. Install the CBC-Solver 
 
-..  
-	sudo apt-get install coinor-cbc
+..code-block:: bash
+	$ sudo apt-get install coinor-cbc
 	
 8. Execute the "Linux_installtion.sh" file.
 
