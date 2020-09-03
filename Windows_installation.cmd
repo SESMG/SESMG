@@ -23,9 +23,8 @@ pip install pandas==0.25.3
 pip install numpy==1.17.4
 pip install tables==3.5.2
 pip install openpyxl==3.0.0
-pip install pyutilib==5.8
 
-pip install oemof==0.3.2
+pip install https://github.com/oemof/oemof-solph/archive/master.zip
 pip install demandlib==0.1.6
 pip install pvlib==0.7.1
 pip install feedinlib==0.0.12

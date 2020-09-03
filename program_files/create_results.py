@@ -6,7 +6,7 @@
 
 import logging
 import pandas as pd
-from oemof import outputlib
+from oemof import solph
 from matplotlib import pyplot as plt
 import os
 
@@ -48,15 +48,15 @@ def xlsx(nodes_data, optimization_model, energy_system, filepath):
     nd = nodes_data
     esys = energy_system 
     om = optimization_model
-    results = outputlib.processing.results(om)
+    results = solph.processing.results(om)
 
     # Writes a spreadsheet containing the input and output flows into every
     # bus of the energy system for every timestep of the timesystem
     for i, b in nd['buses'].iterrows():
             if b['active']:
-                bus = outputlib.views.node(results, b['label'])                
+                bus = solph.views.node(results, b['label'])
                 file_path = os.path.join(filepath, 'results_'+b['label'] +'.xlsx')
-                node_results = outputlib.views.node(results, b['label'])
+                node_results = solph.views.node(results, b['label'])
                 df = node_results['sequences']
                 df.head(2)          
                 
@@ -100,7 +100,7 @@ def charts(nodes_data, optimization_model, energy_system):
     nd = nodes_data
     esys = energy_system 
     om = optimization_model
-    results = outputlib.processing.results(om)
+    results = solph.processing.results(om)
 
     for i, b in nd['buses'].iterrows():
             if b['active']:
@@ -108,7 +108,7 @@ def charts(nodes_data, optimization_model, energy_system):
                              +"***************")            
                 logging.info('   '+'RESULTS: ' + b['label'])
                 
-                bus = outputlib.views.node(results, b['label'])
+                bus = solph.views.node(results, b['label'])
                 logging.info('   '+bus['sequences'].sum())
                 fig, ax = plt.subplots(figsize=(10,5))
                 bus['sequences'].plot(ax=ax)
@@ -117,9 +117,9 @@ def charts(nodes_data, optimization_model, energy_system):
                 fig.subplots_adjust(top=0.7)
                 plt.show()
                                             
-    esys.results['main'] = outputlib.processing.results(om)
-    esys.results['meta'] = outputlib.processing.meta_results(om)
-    string_results = outputlib.views.convert_keys_to_strings(
+    esys.results['main'] = solph.processing.results(om)
+    esys.results['meta'] = solph.processing.meta_results(om)
+    string_results = solph.views.convert_keys_to_strings(
                                 esys.results['main'])
     esys.dump(dpath=None, filename=None)
 
@@ -164,7 +164,7 @@ def statistics(nodes_data, optimization_model, energy_system):
     nd = nodes_data
     esys = energy_system 
     om = optimization_model
-    results = outputlib.processing.results(om)
+    results = solph.processing.results(om)
     
     #######################
     ### Analyze Results ###
@@ -193,7 +193,7 @@ def statistics(nodes_data, optimization_model, energy_system):
             # returns logging info
             logging.info('   '+de['label'])
             # reads the sinks optimized time series
-            demand = outputlib.views.node(results, de['label'])
+            demand = solph.views.node(results, de['label'])
             # continues, if the sink has a non-zero timeseries
             if demand:
                 # calculates the total demand of the sink
@@ -217,7 +217,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                 # returns logging info
                 logging.info('   '+b['label']+'_excess')
                 # reads the sinks optimized time series
-                excess = outputlib.views.node(results, b['label']+'_excess')
+                excess = solph.views.node(results, b['label']+'_excess')
                 # calculates the total demand of the sink
                 flowsum = excess['sequences'].sum()
                 # returns logging info
@@ -257,7 +257,7 @@ def statistics(nodes_data, optimization_model, energy_system):
             # returns logging info
             logging.info('   '+so['label'])
             # reads the time series of the sink
-            source = outputlib.views.node(results, so['label'])
+            source = solph.views.node(results, so['label'])
             # calculates the sum of all energy flows
             flowsum = source['sequences'].sum()
             # returns logging info
@@ -324,7 +324,7 @@ def statistics(nodes_data, optimization_model, energy_system):
             if b['shortage']:
                 logging.info('   '+b['label']+'_shortage')
                         
-                shortage = outputlib.views.node(results, b['label']
+                shortage = solph.views.node(results, b['label']
                                                 +'_shortage')
                 # Flows
                 flowsum = shortage['sequences'].sum()
@@ -355,7 +355,7 @@ def statistics(nodes_data, optimization_model, energy_system):
         if t['active']:
             logging.info('   '+t['label'])   
                         
-            transformer = outputlib.views.node(results, t['label'])
+            transformer = solph.views.node(results, t['label'])
             flowsum = transformer['sequences'].sum()
             flowmax = transformer['sequences'].max()
             
@@ -462,7 +462,7 @@ def statistics(nodes_data, optimization_model, energy_system):
     for i, s in nd['storages'].iterrows():    
         if s['active']:
             logging.info('   '+s['label'])                     
-            storages = outputlib.views.node(results, s['label'])
+            storages = solph.views.node(results, s['label'])
             flowsum = storages['sequences'].sum()
             #logging.info('   '+flowsum)
             logging.info('   '+'Energy Output from ' 
@@ -474,14 +474,14 @@ def statistics(nodes_data, optimization_model, energy_system):
                          + str(round(flowsum[[2][0]], 2)) 
                          + ' kWh')
             
-            storage = outputlib.views.node(results, s['label'])
+            storage = solph.views.node(results, s['label'])
             flowmax = storage['sequences'].max()
             #variable_costs = s['variable input costs'] * flowsum[[0][0]]
             logging.info('   '+'Max. Capacity: ' 
                          + str(round(flowmax[[0][0]], 2)) 
                          + ' kW')
             
-            storage = outputlib.views.node(results, s['label'])
+            storage = solph.views.node(results, s['label'])
             flowsum = storage['sequences'].sum()
             variable_costs = s['variable input costs'] * flowsum[[0][0]]
             logging.info('   '+'Total variable costs for: ' 
@@ -532,7 +532,7 @@ def statistics(nodes_data, optimization_model, energy_system):
         if p['active']:
             logging.info('   '+p['label'])   
                         
-            link = outputlib.views.node(results, p['label'])
+            link = solph.views.node(results, p['label'])
             
             if link:
                 
@@ -549,7 +549,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                                  + ' kWh')
                     max_link_flow = flowmax[1]                
                 else:
-                    link2 = outputlib.views.node(results, p['label']
+                    link2 = solph.views.node(results, p['label']
                                                  +'_direction_2')
                     flowsum2 = link2['sequences'].sum()
                     flowmax2 = link2['sequences'].max()
@@ -634,7 +634,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                              +"***")
     logging.info('   '+'------------------------------------------------------'
                              +'---')
-    meta_results = outputlib.processing.meta_results(om)
+    meta_results = solph.processing.meta_results(om)
     meta_results_objective = meta_results['objective']
     logging.info('   '+'Total System Costs:             ' 
                  + str(round(meta_results_objective, 1)) 
@@ -705,7 +705,7 @@ def prepare_plotly_results(nodes_data,
     nd = nodes_data
     esys = energy_system 
     om = optimization_model
-    results = outputlib.processing.results(om)
+    results = solph.processing.results(om)
     
     #######################
     ### Analyze Results ###
@@ -778,7 +778,7 @@ def prepare_plotly_results(nodes_data,
         
         if de['active']:
                      
-            demand = outputlib.views.node(results, de['label'])
+            demand = solph.views.node(results, de['label'])
             
 #            for i in range len(demand):
             
@@ -844,7 +844,7 @@ def prepare_plotly_results(nodes_data,
         if b['active']:
             if b['excess']:
                         
-                excess = outputlib.views.node(results, b['label']+'_excess')
+                excess = solph.views.node(results, b['label']+'_excess')
                 # Flows
                 flowsum = excess['sequences'].sum()
 
@@ -908,7 +908,7 @@ def prepare_plotly_results(nodes_data,
         
         if so['active']:
             #Flows                  
-            source = outputlib.views.node(results, so['label'])
+            source = solph.views.node(results, so['label'])
             flowsum = source['sequences'].sum()
 
             total_usage = total_usage + flowsum[[0][0]]                 
@@ -993,7 +993,7 @@ def prepare_plotly_results(nodes_data,
         if b['active']:
             if b['shortage']:
 
-                shortage = outputlib.views.node(results, b['label']
+                shortage = solph.views.node(results, b['label']
                                                 +'_shortage')
                 # Flows
                 flowsum = shortage['sequences'].sum()
@@ -1053,7 +1053,7 @@ def prepare_plotly_results(nodes_data,
         if t['active']:
 
                         
-            transformer = outputlib.views.node(results, t['label'])
+            transformer = solph.views.node(results, t['label'])
             flowsum = transformer['sequences'].sum()
             flowmax = transformer['sequences'].max()
 
@@ -1212,16 +1212,16 @@ def prepare_plotly_results(nodes_data,
         
         if s['active']:
                                
-            storages = outputlib.views.node(results, s['label'])
+            storages = solph.views.node(results, s['label'])
             flowsum = storages['sequences'].sum()
             #logging.info('   '+flowsum)
                         
-            storage = outputlib.views.node(results, s['label'])
+            storage = solph.views.node(results, s['label'])
             flowmax = storage['sequences'].max()
             #variable_costs = s['variable input costs'] * flowsum[[0][0]]
             
             
-            storage = outputlib.views.node(results, s['label'])
+            storage = solph.views.node(results, s['label'])
             flowsum = storage['sequences'].sum()
             variable_costs = s['variable input costs'] * flowsum[[0][0]]
             
@@ -1303,7 +1303,7 @@ def prepare_plotly_results(nodes_data,
         
         if p['active']:
                         
-            link = outputlib.views.node(results, p['label'])
+            link = solph.views.node(results, p['label'])
             #print(link)
             
             if link:
@@ -1322,7 +1322,7 @@ def prepare_plotly_results(nodes_data,
                     flowsum2[[1][0]] = 0
                     
                 else:
-                    link2 = outputlib.views.node(results, p['label']
+                    link2 = solph.views.node(results, p['label']
                                                  +'_direction_2')
                     flowsum2 = link2['sequences'].sum()
                     flowmax2 = link2['sequences'].max()
@@ -1447,7 +1447,7 @@ def prepare_plotly_results(nodes_data,
 ################
             
             
-    meta_results = outputlib.processing.meta_results(om)
+    meta_results = solph.processing.meta_results(om)
     meta_results_objective = meta_results['objective']
     
     investment_objects = list(investments_to_be_made.keys())

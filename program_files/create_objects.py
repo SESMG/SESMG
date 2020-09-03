@@ -169,8 +169,7 @@ class Sources:
                                                          minimum=so['min. investment capacity /(kW)'],
                                                          maximum=so['max. investment capacity /(kW)'],
                                                          existing=so['existing capacity /(kW)']),
-                             actual_value = actual_value,
-                             fixed = so['fixed'],
+                             fix=actual_value,
                              variable_costs=so['variable costs /(CU/kWh)'])}))
 
         # Returns logging info
@@ -237,8 +236,7 @@ class Sources:
                                  minimum=so['min. investment capacity /(kW)'],
                                  maximum=so['max. investment capacity /(kW)'],
                                  existing=so['existing capacity /(kW)']),
-                             actual_value=feedin,
-                             fixed=True,
+                             fix=feedin,
                              variable_costs=so['variable costs /(CU/kWh)'])}))
 
         # returns logging info
@@ -296,8 +294,7 @@ class Sources:
                                  minimum=so['min. investment capacity /(kW)'],
                                  maximum=so['max. investment capacity /(kW)'],
                                  existing=so['existing capacity /(kW)']),
-                             actual_value=feedin_wind_scaled,
-                             fixed=True,
+                             fix=feedin_wind_scaled,
                              variable_costs=so['variable costs /(CU/kWh)'])}))
 
         # returns logging info
@@ -483,8 +480,8 @@ class Sinks:
                        inputs={
                            self.busd[de['input']]: solph.Flow(
                                nominal_value=de['annual demand /(kWh/a)'],
-                               actual_value=demand[de['load profile']],
-                               fixed=True)}))
+                               fix=demand[de['load profile']],
+                           )}))
 
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
@@ -536,8 +533,8 @@ class Sinks:
                        inputs={
                            self.busd[de['input']]: solph.Flow(
                                nominal_value=de['annual demand /(kWh/a)'],
-                               actual_value=demand[de['load profile']],
-                               fixed=True)}))
+                               fix=demand[de['load profile']],
+                               )}))
 
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
@@ -576,7 +573,7 @@ class Sinks:
         dhi = dhi / 1000
         dirhi = dirhi / 1000
 
-        # Reades the temporal resolution from the sceanrio file
+        # Reades the temporal resolution from the scenario file
         for i, ts in self.nd['timesystem'].iterrows():
             temp_resolution = ts['temporal resolution']
 
@@ -641,8 +638,8 @@ class Sinks:
             solph.Sink(label=de['label'],
                        inputs={self.busd[de['input']]: solph.Flow(
                            nominal_value=0.001 * demand_ratio,
-                           actual_value=load_profile,
-                           fixed=True)}))
+                           fix=load_profile,
+                           )}))
 
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
@@ -672,8 +669,8 @@ class Sinks:
             solph.Sink(label=de['label'],
                        inputs={self.busd[de['input']]: solph.Flow(
                            nominal_value=de['annual demand /(kWh/a)'],
-                           actual_value=elec_demand[de['load profile']],
-                           fixed=True)}))
+                           fix=elec_demand[de['load profile']],
+                           )}))
 
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])

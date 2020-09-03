@@ -203,7 +203,6 @@ def get_pid():
         pids = subprocess.check_output(command, shell=True)
         pids = str(pids)
         pidslist = pids.split()
-        print(pidslist)
         if sys.platform.startswith("win"):
             pid = pidslist[5]
             pid = pid[:-4]
