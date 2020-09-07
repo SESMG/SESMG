@@ -303,4 +303,153 @@ comments = []
 create_main_frame_elements(elements=execution_elements, sheet=main_frame, first_row=3 + len(selection_elements),
                            file_paths=comments, frame=main_frame)
 
+
+############
+# DEMO FRAME
+############
+
+
+def monetary_demo_scenario():
+    '''modifies financial demo scenario'''
+    #windpower_capacity = entry_windpower.get()
+    #print(windpower_capacity)
+    print("Windpower: " + entry_windpower.get())
+    print("Phtovoltaics: " + entry_photovoltaics.get())
+    print("Battery: " + entry_battery.get())
+    print("CHP: " + entry_chp.get())
+    print("Thermal Storage: " + entry_thermalstorage.get())
+    print("District Heating: " + entry_districtheating.get())
+
+    import openpyxl
+    xfile = openpyxl.load_workbook('demo_scenario_monetaer.xlsx')
+
+    # WINDPOWER
+    sheet = xfile["sources"]
+    sheet['H2'] = (entry_windpower.get())
+    sheet['I2'] = (entry_windpower.get())
+    # PHOTOVOLTAICS
+    sheet = xfile["sources"]
+    sheet['H3'] = (int(entry_photovoltaics.get()))
+    sheet['I3'] = (int(entry_photovoltaics.get()))
+    # BATTERY
+    sheet = xfile["storages"]
+    sheet['F2'] = (int(entry_battery.get()))
+    sheet['G2'] = (int(entry_battery.get()))
+    # CHP
+    sheet = xfile["transformers"]
+    sheet['N3'] = (int(entry_chp.get()))
+    sheet['O3'] = (int(entry_chp.get()))
+    # THERMAL STORAGE
+    sheet = xfile["storages"]
+    sheet['F3'] = (int(entry_thermalstorage.get()))
+    sheet['G3'] = (int(entry_thermalstorage.get()))
+    # District Heating
+    sheet = xfile["links"]
+    sheet['C2'] = (int(entry_districtheating.get()))
+
+    xfile.save('scenario.xlsx')
+    execute_sesmg()
+
+def emission_demo_scenario():
+    '''modifies financial demo scenario'''
+    #windpower_capacity = entry_windpower.get()
+    #print(windpower_capacity)
+    print("Windpower: " + entry_windpower.get())
+    print("Phtovoltaics: " + entry_photovoltaics.get())
+    print("Battery: " + entry_battery.get())
+    print("CHP: " + entry_chp.get())
+    print("Thermal Storage: " + entry_thermalstorage.get())
+    print("District Heating: " + entry_districtheating.get())
+
+    import openpyxl
+    xfile = openpyxl.load_workbook('demo_scenario_emissionen.xlsx')
+
+    # WINDPOWER
+    sheet = xfile["sources"]
+    sheet['H2'] = (entry_windpower.get())
+    sheet['I2'] = (entry_windpower.get())
+    # PHOTOVOLTAICS
+    sheet = xfile["sources"]
+    sheet['H3'] = (int(entry_photovoltaics.get()))
+    sheet['I3'] = (int(entry_photovoltaics.get()))
+    # BATTERY
+    sheet = xfile["storages"]
+    sheet['F2'] = (int(entry_battery.get()))
+    sheet['G2'] = (int(entry_battery.get()))
+    # CHP
+    sheet = xfile["transformers"]
+    sheet['N3'] = (int(entry_chp.get()))
+    sheet['O3'] = (int(entry_chp.get()))
+    # THERMAL STORAGE
+    sheet = xfile["storages"]
+    sheet['F3'] = (int(entry_thermalstorage.get()))
+    sheet['G3'] = (int(entry_thermalstorage.get()))
+    # District Heating
+    sheet = xfile["links"]
+    sheet['C2'] = (int(entry_districtheating.get()))
+
+    xfile.save('scenario.xlsx')
+    execute_sesmg()
+
+
+
+# Definition of the DEMO-Frames
+# main_frame = ttk.Frame(tab_control)
+demo_frame = ttk.Frame(window)
+tab_control.add(demo_frame, text='DEMO')
+
+# WINDPOWER
+row = 0
+label_windpower = Label(demo_frame, text='Windpower', font=('Helvetica 10'))
+label_windpower.grid(column=0, row=row, sticky="W")
+
+entry_windpower = Entry(demo_frame)
+entry_windpower.grid(column=1, row=row)
+
+# PHOTOVOLTAICS
+row = row+1
+label_photovoltaics = Label(demo_frame, text='Photovoltaics', font=('Helvetica 10'))
+label_photovoltaics.grid(column=0, row=row, sticky="W")
+
+entry_photovoltaics = Entry(demo_frame)
+entry_photovoltaics.grid(column=1, row=row)
+
+# BATTERY
+row = row+1
+label_battery = Label(demo_frame, text='Battery', font=('Helvetica 10'))
+label_battery.grid(column=0, row=row, sticky="W")
+
+entry_battery = Entry(demo_frame)
+entry_battery.grid(column=1, row=row)
+
+# CHP
+row = row+1
+label_chp = Label(demo_frame, text='CHP', font=('Helvetica 10'))
+label_chp.grid(column=0, row=row, sticky="W")
+
+entry_chp = Entry(demo_frame)
+entry_chp.grid(column=1, row=row)
+
+# THERMAL STORAGE
+row = row+1
+label_thermalstorage = Label(demo_frame, text='Thermal Storage', font=('Helvetica 10'))
+label_thermalstorage.grid(column=0, row=row, sticky="W")
+
+entry_thermalstorage = Entry(demo_frame)
+entry_thermalstorage.grid(column=1, row=row)
+
+# District Heating
+row = row+1
+label_districtheating = Label(demo_frame, text='District Heating', font=('Helvetica 10'))
+label_districtheating.grid(column=0, row=row, sticky="W")
+
+entry_districtheating = Entry(demo_frame)
+entry_districtheating.grid(column=1, row=row)
+
+
+# EXECUTION BUTTONS
+row = row + 1
+Button(demo_frame, text='modify monetary scenario and execute', command=monetary_demo_scenario).grid(column=1, row=row, sticky=W, pady=4)
+Button(demo_frame, text='modify emission scenario and execute', command=emission_demo_scenario).grid(column=1, row=row+1, sticky=W, pady=4)
+
 window.mainloop()
