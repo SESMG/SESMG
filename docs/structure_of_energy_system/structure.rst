@@ -262,6 +262,16 @@ These may have one or more different outputs, e.g., heat and electricity. For th
 the nominal performance of a generic transformer with several outputs,
 the respective output ratios, and an efficiency for each output need to be known.
 
+**Heat Pumps**
+
+For the modelilng of heat pumps, different heat sources
+are considered so the weather data set must include different temperatures. 
+At the moment it is possible to use ground water, 
+soil (vertical heat exchanger), surface water and 
+ambient air as a heat source.
+
+The heat pumps are implemnted by using  `"oemof.thermal." <https://github.com/oemof/oemof-thermal>`_ 
+
 
 Links
 =================================================
