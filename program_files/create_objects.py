@@ -164,7 +164,7 @@ class Sources:
                                                              minimum=so['min. investment capacity /(kW)'],
                                                              maximum=so['max. investment capacity /(kW)'],
                                                              existing=so['existing capacity /(kW)']),
-                                 fix=time_series['FIX'].tolist(),
+                                 fix=time_series[so['label']+'.fix'].tolist(),
                                  variable_costs=so['variable costs /(CU/kWh)'])}))
         elif so['fixed'] == 0:
             self.nodes_sources.append(
@@ -175,8 +175,8 @@ class Sources:
                                      minimum=so['min. investment capacity /(kW)'],
                                      maximum=so['max. investment capacity /(kW)'],
                                      existing=so['existing capacity /(kW)']),
-                                 min=time_series['MIN'].tolist(),
-                                 max=time_series['MAX'].tolist(),
+                                 min=time_series[so['label']+'.min'].tolist(),
+                                 max=time_series[so['label']+'.max'].tolist(),
                                  variable_costs=so['variable costs /(CU/kWh)'])}))
 
         # Returns logging info
@@ -328,7 +328,7 @@ class Sources:
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
 
-    def __init__(self, nodes_data, nodes, busd, filepath,main):
+    def __init__(self, nodes_data, nodes, busd, filepath):
 
         # rename variables
         self.nodes = []
@@ -443,11 +443,11 @@ class Sinks:
         time_series = pd.read_excel(filepath, sheet_name='time_series')
 
         if de['fixed'] == 0:
-            min = time_series['MIN'].tolist()
-            max = time_series['MAX'].tolist()
+            min = time_series[de['label']+'.min'].tolist()
+            max = time_series[de['label']+'.max'].tolist()
             inflow_args = {'min': min, 'max': max, 'nominal_value': de['nominal value /(kW)']}
         elif de['fixed'] == 1:
-            fix = time_series['FIX'].tolist()
+            fix = time_series[de['label']+'.fix'].tolist()
             inflow_args = {'fix': fix, 'nominal_value': de['nominal value /(kW)']}
 
         # creates sink object and adds it to the list of components
