@@ -270,7 +270,7 @@ At the moment it is possible to use ground water,
 soil (vertical heat exchanger), surface water and 
 ambient air as a heat source.
 
-The heat pumps are implemnted by using  `"oemof.thermal." <https://github.com/oemof/oemof-thermal>`_ 
+The heat pumps are implemnted by using  `"oemof.thermal" <https://github.com/oemof/oemof-thermal>`_ .
 
 
 Links
