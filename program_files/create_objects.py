@@ -278,9 +278,6 @@ class Sources:
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
 
-
-
-
     def __init__(self, nodes_data, nodes, busd, filepath):
 
         # rename variables
@@ -305,8 +302,6 @@ class Sources:
                 # Create Windpower Sources
                 elif so['technology'] == 'windpower':
                     self.windpower_source(so)
-
-
 
         # The feedinlib can only read .csv data sets, so the weather data from
         # the .xlsx scenario file have to be converted into a .csv data set and
@@ -660,7 +655,7 @@ class Sinks:
             self.nodes.append(nodes[i])
 
         # richardson.py and demandlib can only read .csv data sets, so the weather
-        # data from the .xlsx scenario file have to be converted into a .csv data
+        # data from the .xlsx scenario file has to be converted into a .csv data
         # set and saved
         read_file = pd.read_excel(filepath, sheet_name='weather data')
         read_file.to_csv(
@@ -865,64 +860,121 @@ class Transformers:
         @ Janik Budde - Janik.Budde@fh-muenster.de, 30.07.2020
         """
         # import oemof.thermal in order to calculate the cop
+        global cops_hp, heatsource_capacity, heatpump_label
         import oemof.thermal.compression_heatpumps_and_chillers as cmpr_hp_chiller
+        import numpy
 
-        # local variable 'cops_gchp' might be referenced before assignment
-        global cops_hp
-
-        # set up weather dataframe for heat pumps
-        weather_df_heatpump = pd.read_csv(os.path.join(
-            os.path.dirname(__file__)) + '/interim_data/weather_data.csv',
-                                      index_col=0,
-                                      date_parser=lambda idx: pd.to_datetime(idx, utc=True))
+        # Import weather Data
+        data = pd.read_csv(os.path.join(
+            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
 
         # creates an oemof-bus object, all heat pumps use the same low temp bus
-        bus = solph.Bus(label=t['label']+'_low_temp_bus')
+        bus = solph.Bus(label=t['label'] + '_low_temp_bus')
+
         # adds the bus object to the list of components "nodes"
         self.nodes.append(bus)
-        self.busd[t['label']+'_low_temp_bus'] = bus
+        self.busd[t['label'] + '_low_temp_bus'] = bus
+
         # returns logging info
-        logging.info('   ' + 'Bus created: ' + t['label']+'_low_temp_bus')
+        logging.info('   ' + 'Bus created: ' + t['label'] + '_low_temp_bus')
 
-        # differentation between heat sources e.g. by investment costs or co2 impact
+        # differentiation between heat sources
+        # ground as a heat source referring to vertical-borehole ground-coupled heat pumps
         if t['heat source'] == "Ground":
-            self.nodes_sources.append(
-                solph.Source(label=t['label']+'_low_temp_source',
-                             outputs={self.busd[t['label']+'_low_temp_bus']: solph.Flow(
-                                 investment=solph.Investment(
-                                     ep_costs=0,
-                                     minimum=0,
-                                     maximum=0,
-                                     existing=1000),
-                                 variable_costs=0)}))
 
+            # borehole that acts as heat source for the heat pump
+            heatpump_label = t['label'] + '_low_temp_ground_source'
+
+            # the capacity of a borehole is limited by the area
+            heatsource_capacity = t['area /(sq m)'] * (t['length of the geoth. probe (m)'] *
+                                                       t['heat extraction (kW/(m*a))'] /
+                                                       t['min. borehole area (sq m)'])
+
+        # ground water as a heat source
+        elif t['heat source'] == "GroundWater":
+
+            # ground water that acts as heat source for the heat pump
+            heatpump_label = t['label'] + '_low_temp_groundwater_source'
+
+            # the capacity of ambient air is not limited
+            heatsource_capacity = 999999
+
+        # ambient air as a heat source
         elif t['heat source'] == "Air":
-            self.nodes_sources.append(
-                solph.Source(label=t['label'] + '_low_temp_source',
-                             outputs={self.busd[t['label'] + '_low_temp_bus']: solph.Flow(
-                                 investment=solph.Investment(
-                                     ep_costs=0,
-                                     minimum=0,
-                                     maximum=0,
-                                     existing=1000),
-                                 variable_costs=0)}))
+
+            # ambient air that acts as heat source for the heat pump
+            heatpump_label = t['label'] + '_low_temp_air_source'
+
+            # the capacity of ambient air is not limited
+            heatsource_capacity = 999999
+
+        # surface water as a heat source
+        elif t['heat source'] == "Water":
+
+            # ambient air that acts as heat source for the heat pump
+            heatpump_label = t['label'] + '_low_temp_water_source'
+
+            # the capacity of ambient air is not limited
+            heatsource_capacity = 999999
+
+        # the heat source costs are considered by the transformer
+        self.nodes_sources.append(
+            solph.Source(label=heatpump_label,
+                         outputs={self.busd[t['label'] + '_low_temp_bus']: solph.Flow(
+                             investment=solph.Investment(
+                                 ep_costs=0,
+                                 minimum=0,
+                                 maximum=heatsource_capacity,
+                                 existing=0),
+                             variable_costs=0)}))
+
         # Returns logging info
-        logging.info('   ' + 'Heat Source created: ' + t['label']+'_low_temp_source')
+        logging.info('   ' + 'Heat Source created: ' + t['label'] + '_low_temp_source')
 
         # precalculation of COPs, referring to different low temp sources
         if t['heat source'] == "Ground":
             cops_hp = cmpr_hp_chiller.calc_cops(
-                temp_high=[t['temperature high \(deg C)']],
-                temp_low=weather_df_heatpump['ground_temp'],
-                quality_grade=0.4,
+                temp_high=[t['temperature high /(deg C)']],
+                temp_low=data['ground_temp'],
+                quality_grade=t['quality grade'],
+                temp_threshold_icing=t['temp threshold icing'],
+                factor_icing=t['factor icing'],
                 mode='heat_pump')
+            logging.info('   ' + t['label'] + ", Average Coefficient of Performance (COP): {:2.2f}".format(
+                numpy.mean(cops_hp)))
+
+        elif t['heat source'] == "GroundWater":
+            cops_hp = cmpr_hp_chiller.calc_cops(
+                temp_high=[t['temperature high /(deg C)']],
+                temp_low=data['groundwater_temp'],
+                quality_grade=t['quality grade'],
+                temp_threshold_icing=t['temp threshold icing'],
+                factor_icing=t['factor icing'],
+                mode='heat_pump')
+            logging.info('   ' + t['label'] + ", Average Coefficient of Performance (COP): {:2.2f}".format(
+                numpy.mean(cops_hp)))
 
         elif t['heat source'] == "Air":
             cops_hp = cmpr_hp_chiller.calc_cops(
-                temp_high=[t['temperature high \(deg C)']],
-                temp_low=weather_df_heatpump['temperature'],
-                quality_grade=0.4,
+                temp_high=[t['temperature high /(deg C)']],
+                temp_low=data['temperature'],
+                quality_grade=t['quality grade'],
+                temp_threshold_icing=t['temp threshold icing'],
+                factor_icing=t['factor icing'],
                 mode='heat_pump')
+            logging.info('   ' + t['label'] + ", Average Coefficient of Performance (COP): {:2.2f}".format(
+                numpy.mean(cops_hp)))
+            
+        elif t['heat source'] == "Water":
+            cops_hp = cmpr_hp_chiller.calc_cops(
+                temp_high=[t['temperature high /(deg C)']],
+                temp_low=data['water_temp'],
+                quality_grade=t['quality grade'],
+                temp_threshold_icing=t['temp threshold icing'],
+                factor_icing=t['factor icing'],
+                mode='heat_pump')
+            logging.info('   ' + t['label'] + ", Average Coefficient of Performance (COP): {:2.2f}".format(
+                numpy.mean(cops_hp)))
 
         # Creates transformer object and adds it to the list of components
         self.nodes_transformer.append(
@@ -940,20 +992,28 @@ class Transformers:
                         maximum=t['max. investment capacity /(kW)'],
                         existing=t['existing capacity /(kW)']
                     ))},
-                conversion_factors={self.busd[t['label']+'_low_temp_bus']:
-                                    [(cop - 1) / cop for cop in cops_hp],
+                conversion_factors={self.busd[t['label'] + '_low_temp_bus']:
+                                        [(cop - 1) / cop for cop in cops_hp],
                                     self.busd[t['input']]:
-                                    [1 / cop for cop in cops_hp]}))
+                                        [1 / cop for cop in cops_hp]}))
         # returns logging info
         logging.info('   ' + 'Transformer created: ' + t['label'])
-
 
     def __init__(self, nodes_data, nodes, busd):
 
         # renames variables
         self.busd = busd
-        for i in range(len(nodes)):
-            self.nodes.append(nodes[i])
+        # for i in range(len(nodes)):
+        # self.nodes.append(nodes[i])
+
+        # The oemof.thermal can only read .csv data sets, so the weather data from
+        # the .xlsx scenario file have to be converted into a .csv data set and
+        # saved
+        # read_file = pd.read_excel(filepath, sheet_name='weather data')
+        # read_file.to_csv(
+        # os.path.join(os.path.dirname(__file__)) + '/interim_data/weather_data.csv',
+        # index=None,
+        # header=True)
 
         # creates a transformer object for every transformer item within nd
         for i, t in nodes_data['transformers'].iterrows():
@@ -1200,6 +1260,3 @@ class Links:
         # appends created links to the list of nodes
         for i in range(len(self.nodes_links)):
             nodes.append(self.nodes_links[i])
-
-
-

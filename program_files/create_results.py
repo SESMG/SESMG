@@ -351,8 +351,8 @@ def statistics(nodes_data, optimization_model, energy_system):
     logging.info('   '+"******************************************************"
                              +"***")
     logging.info('   '+'------------------------------------------------------'
-                             +'---')  
-    for i, t in nd['transformers'].iterrows():    
+                             +'---')
+    for i, t in nd['transformers'].iterrows():
         if t['active']:
             logging.info('   '+t['label'])   
                         
@@ -395,13 +395,20 @@ def statistics(nodes_data, optimization_model, energy_system):
                 max_transformer_flow = flowmax[2]
 
             elif t['transformer type'] == 'HeatPump':
-                logging.info('   ' + 'Total Energy Output to '
-                             + t['output'] + ': '
+                logging.info('   ' + 'Electricity Energy Input to '
+                             + t['label'] + ': '
+                             + str(round(flowsum[[2][0]], 2))
+                             + ' kWh')
+                logging.info('   ' + 'Ambient Energy Input to '
+                             + t['label'] + ': '
                              + str(round(flowsum[[1][0]], 2))
                              + ' kWh')
-                max_transformer_flow = flowmax[2]
+                logging.info('   ' + 'Total Energy Output to '
+                             + t['output'] + ': '
+                             + str(round(flowsum[[0][0]], 2))
+                             + ' kWh')
 
-                print(flowsum)
+                max_transformer_flow = flowmax[2]
 
             elif t['transformer type'] == 'OffsetTransformer':
                 logging.info('   '+'WARNING: OffsetTransformer are currently'
@@ -709,8 +716,8 @@ def prepare_plotly_results(nodes_data,
     @ Christian Klemm - christian.klemm@fh-muenster.de, 13.03.2020
         
     """
-    
-    logging.info('   '+'--------------------------------------------------------') 
+
+    logging.info('   '+'--------------------------------------------------------')
     logging.info('   '+'Preparing the results for interactive results...')
     nd = nodes_data
     esys = energy_system 
@@ -776,18 +783,17 @@ def prepare_plotly_results(nodes_data,
 
 
 ######################
-##### SOURCES ##########
+##### SINKS ##########
 ######################  
 
     
     for i, de in nd['demand'].iterrows():
-        
 
         variable_costs = 0
         periodical_costs = 0      
         
         if de['active']:
-                     
+
             demand = outputlib.views.node(results, de['label'])
             
 #            for i in range len(demand):
@@ -842,11 +848,11 @@ def prepare_plotly_results(nodes_data,
     
         
     for i, b in nd['buses'].iterrows():
-        
-        if flowsum[[0][0]]:
-            flowsum[[0][0]] = 0
-        if flowmax[[0][0]]:
-            flowmax[[0][0]] = 0
+        #commented out because of issues with interactive results
+        #if flowsum[[0][0]]:
+            #flowsum[[0][0]] = 0
+        #if flowmax[[0][0]]:
+            #flowmax[[0][0]] = 0
         variable_costs = 0
         periodical_costs = 0
         
@@ -1399,7 +1405,7 @@ def prepare_plotly_results(nodes_data,
                         
                 # Periodical Costs        
                 if link_investment > 0:     ### Wert auf beide Busse anwenden! 
-                    periodical_costs = p['periodical costs /(CU/(kW a))']
+                    periodical_costs = p['periodical costs /(CU/(kW a))'] * link_investment
                     total_periodical_costs = (total_periodical_costs 
                                              + periodical_costs)
                     investments_to_be_made[p['label']] = (str(round(
