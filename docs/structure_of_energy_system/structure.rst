@@ -270,7 +270,7 @@ creates a heat source and a low temperature bus. So only a transformer and a ele
 bus needs to be created. An example is shown in the following figure
 
 .. figure:: ../images/heatpump_graph.png
-   :width: 50 %
+   :width: 10 %
    :alt: HeatPump-Example
    :align: center
 
