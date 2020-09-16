@@ -294,7 +294,7 @@ example, electrical powerlines, gas pipelines, district heating
 distribution networks or similar.
 
 .. figure:: ../images/link.png
-   :width: 100 %
+   :width: 50 %
    :alt: links
    :align: center
 
