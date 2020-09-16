@@ -264,11 +264,20 @@ the respective output ratios, and an efficiency for each output need to be known
 
 **Heat Pumps**
 
-For the modelilng of heat pumps, different heat sources
-are considered so the weather data set must include different temperatures. 
-At the moment it is possible to use ground water, 
-soil (vertical heat exchanger), surface water and 
-ambient air as a heat source.
+For the modelilng of heat pumps, different heat sources are considered so the 
+weather data set must include different temperatures. The heat pump automatically 
+creates a heat source and a low temperature bus. So only a transformer and a electricity
+bus needs to be created. An example is shown in the following figure
+
+.. figure:: ../images/heatpump_graph.png
+   :width: 100 %
+   :alt: HeatPump-Example
+   :align: center
+
+   Graph of a heat pump system.
+
+At the moment it is possible to use ground water, soil (vertical heat exchanger), surface water 
+and ambient air as a heat source. 
 
 The heat pumps are implemnted by using  `"oemof.thermal" <https://github.com/oemof/oemof-thermal>`_ .
 
