@@ -266,11 +266,11 @@ the respective output ratios, and an efficiency for each output need to be known
 
 For the modelilng of heat pumps, different heat sources are considered so the 
 weather data set must include different temperatures. The heat pump automatically 
-creates a heat source and a low temperature bus. So only a transformer and a electricity
+creates a heat source and a low temperature bus (see dashed lines below). So only a transformer and a electricity
 bus needs to be created. An example is shown in the following figure
 
 .. figure:: ../images/heatpump_graph.png
-   :width: 10 %
+   :width: 30 %
    :alt: HeatPump-Example
    :align: center
 
