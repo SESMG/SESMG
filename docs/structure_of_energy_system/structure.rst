@@ -270,7 +270,7 @@ creates a heat source and a low temperature bus (see dashed lines below). So onl
 bus needs to be created. An example is shown in the following figure
 
 .. figure:: ../images/heatpump_graph.png
-   :width: 30 %
+   :width: 50 %
    :alt: HeatPump-Example
    :align: center
 
