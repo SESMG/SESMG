@@ -263,7 +263,7 @@ def show_results():
 # Definition of the user interface
 window = Tk()
 window.title("SESMG - Spreadsheet Energy System Model Generator")
-window.geometry('1000x1100')
+window.geometry('1200x900')
 tab_control = ttk.Notebook(window)
 tab_control.pack(expand=1, fill='both')
 tab_control.pressed_index = None
@@ -590,13 +590,12 @@ tab_control.add(demo_frame, text='DEMO')
 # DEMO explanation
 
 row = 0
-explanation = '''DEMO-Energy System: In this DEMO the financial costs and carbon dioxide emissions of a residential area are simulated. 
-For improvement, the technologies listed below are available with the parameters below. The simulated scenarios can be compared with 
-the status quo, the financial minimum and the emission minimum.
-'''
+explanation = '''DEMO-Energy System: In this DEMO the financial costs and carbon dioxide emissions of a residential area are simulated. For improvement, the technologies 
+                 listed below are available with the parameters below. The simulated scenarios can be compared with the status quo, the financial minimum and the emission minimum.          
+                 '''
 
 label_explanation = Label(demo_frame, text=explanation, font=('Helvetica 10 bold'))
-label_explanation.grid(column=0, columnspan=7, row=row, sticky="W")
+label_explanation.grid(column=0, columnspan=7, row=row)
 
 row = row + 1
 label_monetary_costs = Label(demo_frame, text='Simulation Input', font=('Helvetica 10 bold'))
@@ -751,22 +750,27 @@ label_emission_unit_2.grid(column=2+4, row=row, sticky="W")
 row = 14
 Button(demo_frame, text='SAVE', command=save_manual_results).grid(column=1+4, row=row, pady=4)
 row = row + 1
-Button(demo_frame, text='SCATTER PLOT', command=plot_results_scatter).grid(column=3, row=row, pady=4)
+label_line = Label(demo_frame, text=14*'===========', font=('Helvetica 10'))
+label_line.grid(column=0, row=row, columnspan=7)
 row = row + 1
-Button(demo_frame, text='BAR PLOT', command=plot_results_bar).grid(column=3, row=row, pady=4)
-row = row + 1
+Button(demo_frame, text='SCATTER PLOT', command=plot_results_scatter).grid(column=2, row=row, pady=4)
+Button(demo_frame, text='BAR PLOT', command=plot_results_bar).grid(column=4, row=row, pady=4)
 Button(demo_frame, text='Include Optimized Scenarios', command=include_optimized_scenarios).grid(column=3, row=row, pady=4)
+row = row + 1
+label_line = Label(demo_frame, text=14*'===========', font=('Helvetica 10'))
+label_line.grid(column=0, row=row, columnspan=7)
 
 row = row + 1
 img = PhotoImage(file='examples/v0.0.4_demo_scenario/DEMO_System.png')
-img = img.subsample(2, 2)
+img = img.subsample(2,2)
 panel = Label(demo_frame, image = img)
-panel.grid(column=0,columnspan=7, row=row)
+panel.grid(column=0,columnspan=4, row=row, rowspan=30)
 
 # panel.pack(side = "bottom", fill = "both", expand = "yes")
 
 
-demo_assumptions = {'Residential Heat Demand':'15 000 Inhabitants, 14 000 000 kWh/a electricity demand, 52 203 000 kWh/a heat demand, H0 Loadprofile',
+demo_assumptions = {'Electricity Demand':'14 000 000 kWh/a, h0 Load Profile',
+                    'Heaty Demand':'52 203 000 kWh/a, EFH Load Profile',
                     'Windturbines':'2 000 000 €/MW, 8 g/kWh, 20 a, max. 29.7 MW',
                     'Photovoltaics':'1 140 000 €/MW, 56 g/kWh, 20 a, max. 10 MW',
                     'Battery':'1 000 000 €/MWh, 155 t/MWh (Invest!), 20 a',
@@ -777,37 +781,40 @@ demo_assumptions = {'Residential Heat Demand':'15 000 Inhabitants, 14 000 000 kW
                     'Electricity Import':'30.5 ct/kWh, 474 g/kWh'
                     }
 
-# demo_assumptions2 = {'Residential Heat Demand':['15 000 Inhabitants', '14 000 000 kWh/a electricity demand', '52 203 000 kWh/a heat demand', 'H0 Loadprofile'],
-#                     'Windturbines':['2 000 000 €/MW', '8 g/kWh', '20 a', 'max. 29.7 MW'],
-#                     'Photovoltaics':'1 140 000 €/MW, 56 g/kWh, 20 a, max. 10 MW',
-#                     'Battery':'1 000 000 €/MWh, 155 t/MWh (Invest!), 20 a',
-#                     'CHP':'190 000 €/MWh (el.), 375 g/kWh (el), 165 g/kWh (th.), 20 a',
-#                     'Thermal Storage':'35 000 €/MWh, 46 g/kWh, 20 a, 3 % loss /d',
-#                     'district heating':'86 000 000 €, 15 % loss, 40 a',
-#                     'Gas Import/Heating':'6.4 ct/kWh (gas), 85 % efficiency, 45.62 g/kWh',
-#                     'Electricity Import':'30.5 ct/kWh, 474 g/kWh'
-
-                    # 'Battery':['Invest = 1 000 000 €/MWh',
-                    #            'Emissions = 155 152 t/MWh (invest)',
-                    #            'Life Time = 20 a'],
-                    # }
+demo_assumptions2 = {' Demand':['14 000 000 kWh/a (electricity)','H0 Loadprofile', '52 203 000 kWh/a heat demand', 'EFH Loadprofile'],
+                    'Windturbines':['2 000 000 €/MW', '8 g/kWh', '20 a', 'max. 29.7 MW'],
+                    'Photovoltaics':['1 140 000 €/MW', '56 g/kWh', '20 a', 'max. 10 MW'],
+                    # 'Battery':'1 000 000 €/MWh, 155 t/MWh (Invest!), 20 a',
+                    # 'CHP':'190 000 €/MWh (el.), 375 g/kWh (el), 165 g/kWh (th.), 20 a',
+                    # 'Thermal Storage':'35 000 €/MWh, 46 g/kWh, 20 a, 3 % loss /d',
+                    # 'district heating':'86 000 000 €, 15 % loss, 40 a',
+                    # 'Gas Import/Heating':'6.4 ct/kWh (gas), 85 % efficiency, 45.62 g/kWh',
+                    # 'Electricity Import':'30.5 ct/kWh, 474 g/kWh'
+                    }
 
 assumption_keys = list(demo_assumptions.keys())
 assumption_values = list(demo_assumptions.values())
 
-row = row + 1
+# row = row + 1
+rowcount = 0
+column = 4
 
 for i in range(len(demo_assumptions)):
-    column = 0
+
     label = Label(demo_frame, text=assumption_keys[i], font=('Helvetica 10 bold'))
     label.grid(column=column, row=row, sticky="W")
 
-    column = column+1
+
 
     label = Label(demo_frame, text=assumption_values[i], font=('Helvetica 10'))
-    label.grid(column=column, columnspan=5, row=row, sticky="W")
+    label.grid(column=column+1, columnspan=2, row=row, sticky="W")
 
     row = row + 1
+    # rowcount = rowcount + 1
+    # if rowcount == 5:
+    #     row = row - 5
+    #     column = column + 4
+    #     rowcount = 0
 
 
 
