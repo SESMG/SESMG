@@ -76,7 +76,7 @@ def buses(nodes_data, nodes):
             # Create a source for every bus, which is marked with "shortage"
             if b['shortage']:
                 # creates the oemof-source object and directly adds it to the list
-                # of components "nodes"
+                # of components "nodes"re
                 nodes.append(
                     solph.Source(label=b['label'] + '_shortage',
                                  outputs={busd[b['label']]: solph.Flow(
@@ -145,7 +145,9 @@ class Sources:
                                  ep_costs=so['periodical costs /(CU/(kW a))'],
                                  minimum=so['min. investment capacity /(kW)'],
                                  maximum=so['max. investment capacity /(kW)'],
-                                 existing=so['existing capacity /(kW)']),
+                                 existing=so['existing capacity /(kW)'],
+                                 nonconvex=True if so['Non-Convex Investment'] == 1 else False,
+                                 offset=so['Fix Investment Capacity']),
                              variable_costs=so['variable costs /(CU/kWh)'])}))
 
         # Returns logging info
@@ -163,7 +165,9 @@ class Sources:
                                                              ep_costs=so['periodical costs /(CU/(kW a))'],
                                                              minimum=so['min. investment capacity /(kW)'],
                                                              maximum=so['max. investment capacity /(kW)'],
-                                                             existing=so['existing capacity /(kW)']),
+                                                             existing=so['existing capacity /(kW)'],
+                                                             nonconvex=True if so['Non-Convex Investment'] == 1 else False,
+                                                             offset=so['Fix Investment Capacity']),
                                  fix=time_series[so['label']+'.fix'].tolist(),
                                  variable_costs=so['variable costs /(CU/kWh)'])}))
         elif so['fixed'] == 0:
@@ -174,7 +178,9 @@ class Sources:
                                      ep_costs=so['periodical costs /(CU/(kW a))'],
                                      minimum=so['min. investment capacity /(kW)'],
                                      maximum=so['max. investment capacity /(kW)'],
-                                     existing=so['existing capacity /(kW)']),
+                                     existing=so['existing capacity /(kW)'],
+                                     nonconvex=True if so['Non-Convex Investment'] == 1 else False,
+                                     offset=so['Fix Investment Capacity']),
                                  min=time_series[so['label']+'.min'].tolist(),
                                  max=time_series[so['label']+'.max'].tolist(),
                                  variable_costs=so['variable costs /(CU/kWh)'])}))
@@ -242,7 +248,9 @@ class Sources:
                                      ep_costs=so['periodical costs /(CU/(kW a))'],
                                      minimum=so['min. investment capacity /(kW)'],
                                      maximum=so['max. investment capacity /(kW)'],
-                                     existing=so['existing capacity /(kW)']),
+                                     existing=so['existing capacity /(kW)'],
+                                     nonconvex=True if so['Non-Convex Investment'] == 1 else False,
+                                     offset=so['Fix Investment Capacity']),
                                  fix=feedin,
                                  variable_costs=so['variable costs /(CU/kWh)'])}))
         elif so['fixed'] == 0:
@@ -253,7 +261,9 @@ class Sources:
                                      ep_costs=so['periodical costs /(CU/(kW a))'],
                                      minimum=so['min. investment capacity /(kW)'],
                                      maximum=so['max. investment capacity /(kW)'],
-                                     existing=so['existing capacity /(kW)']),
+                                     existing=so['existing capacity /(kW)'],
+                                     nonconvex=True if so['Non-Convex Investment'] == 1 else False,
+                                     offset=so['Fix Investment Capacity']),
                                  max=feedin,
                                  variable_costs=so['variable costs /(CU/kWh)'])}))
         # returns logging info
@@ -311,7 +321,9 @@ class Sources:
                                      ep_costs=so['periodical costs /(CU/(kW a))'],
                                      minimum=so['min. investment capacity /(kW)'],
                                      maximum=so['max. investment capacity /(kW)'],
-                                     existing=so['existing capacity /(kW)']),
+                                     existing=so['existing capacity /(kW)'],
+                                     nonconvex=True if so['Non-Convex Investment'] == 1 else False,
+                                     offset=so['Fix Investment Capacity']),
                                  fix=feedin_wind_scaled,
                                  variable_costs=so['variable costs /(CU/kWh)'])}))
         elif so['fixed'] == 0:
@@ -322,7 +334,10 @@ class Sources:
                                      ep_costs=so['periodical costs /(CU/(kW a))'],
                                      minimum=so['min. investment capacity /(kW)'],
                                      maximum=so['max. investment capacity /(kW)'],
-                                     existing=so['existing capacity /(kW)']),
+                                     existing=so['existing capacity /(kW)'],
+                                     nonconvex=True if so['Non-Convex Investment'] == 1 else False,
+                                     offset=so['Fix Investment Capacity']
+                                     ),
                                  max=feedin_wind_scaled,
                                  variable_costs=so['variable costs /(CU/kWh)'])}))
         # returns logging info
@@ -765,7 +780,9 @@ class Transformers:
                             ep_costs=t['periodical costs /(CU/(kW a))'],
                             minimum=t['min. investment capacity /(kW)'],
                             maximum=t['max. investment capacity /(kW)'],
-                            existing=t['existing capacity /(kW)']
+                            existing=t['existing capacity /(kW)'],
+                            nonconvex=True if t['Non-Convex Investment'] == 1 else False,
+                            offset=t['Fix Investment Capacity']
                         ))},
                     conversion_factors={self.busd[t['output']]:
                                         t['efficiency']}))
@@ -796,16 +813,20 @@ class Transformers:
                             ep_costs=t['periodical costs /(CU/(kW a))'],
                             minimum=t['min. investment capacity /(kW)'],
                             maximum=t['max. investment capacity /(kW)'],
-                            existing=t['existing capacity /(kW)']
+                            existing=t['existing capacity /(kW)'],
+                            nonconvex=True if t['Non-Convex Investment'] == 1 else False,
+                            offset=t['Fix Investment Capacity']
                         )),
                         self.busd[t['output2']]: solph.Flow(
                             variable_costs=t['variable output costs 2 /(CU/kWh)'],
                             investment=solph.Investment(
-                                ep_costs=t['periodical costs /(CU/(kW a))'],
+                                ep_costs=0,#t['periodical costs /(CU/(kW a))'],
                                 existing=existing_capacity2,
                                 minimum=minimum_capacity2,
-                                maximum=maximum_capacity2)
-                        )},
+                                maximum=maximum_capacity2,
+                                nonconvex = True if t['Non-Convex Investment'] == 1 else False,
+                                offset = t['Fix Investment Capacity']
+                            ))},
                     conversion_factors={self.busd[t['output']]:
                                         t['efficiency'],
                                         self.busd[t['output2']]:
@@ -964,7 +985,9 @@ class Storages:
                             ep_costs=s['periodical costs /(CU/(kWh a))'],
                             existing=s['existing capacity /(kWh)'],
                             minimum=s['min. investment capacity /(kWh)'],
-                            maximum=s['max. investment capacity /(kWh)']
+                            maximum=s['max. investment capacity /(kWh)'],
+                            nonconvex = True if s['Non-Convex Investment'] == 1 else False,
+                            offset = s['Fix Investment Capacity']
                         )))
 
                 # returns logging info
@@ -1028,7 +1051,9 @@ class Links:
                         ep_costs=p['periodical costs /(CU/(kW a))'],
                         minimum=p['min. investment capacity /(kW)'],
                         maximum=p['max. investment capacity /(kW)'],
-                        existing=p['existing capacity /(kW)']
+                        existing=p['existing capacity /(kW)'],
+                        nonconvex = True if p['Non-Convex Investment'] == 1 else False,
+                        offset = p['Fix Investment Capacity']
                     ))},
                 conversion_factors={self.busd[p['bus_2']]: p['efficiency']}))
 
@@ -1045,7 +1070,9 @@ class Links:
                         ep_costs=p['periodical costs /(CU/(kW a))'],
                         minimum=p['min. investment capacity /(kW)'],
                         maximum=p['max. investment capacity /(kW)'],
-                        existing=p['existing capacity /(kW)']
+                        existing=p['existing capacity /(kW)'],
+                        nonconvex = True if p['Non-Convex Investment'] == 1 else False,
+                        offset = p['Fix Investment Capacity']
                     ))},
                 conversion_factors={self.busd[p['bus_2']]: p['efficiency']}))
 
@@ -1061,6 +1088,7 @@ class Links:
         ----   
         @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
         """
+
         # creates transformer object representing the link and adds it to
         # the list of components
         self.nodes_links.append(
@@ -1073,7 +1101,9 @@ class Links:
                         ep_costs=p['periodical costs /(CU/(kW a))'],
                         minimum=p['min. investment capacity /(kW)'],
                         maximum=p['max. investment capacity /(kW)'],
-                        existing=p['existing capacity /(kW)']
+                        existing=p['existing capacity /(kW)'],
+                        nonconvex = True if p['Non-Convex Investment'] == 1 else False,
+                        offset=p['Fix Investment Capacity']
                     ))},
                 conversion_factors={self.busd[p['bus_2']]: p['efficiency']}))
 
