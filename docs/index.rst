@@ -46,6 +46,7 @@ Getting started
 	getting_started/how_to_execute
 	getting_started/how_to_use
 	getting_started/analyze_results
+	getting_started/demo_feature
 	
 Troubleshooting 
 -------------------------------------------------
