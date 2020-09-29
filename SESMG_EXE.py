@@ -444,22 +444,6 @@ def save_results():
 
 
 def save_manual_results():
-    # results_dict[entry_name_manuel.get()] = [int(entry_monetary_costs_value.get()),
-    #                                   int(entry_emission_costs_value.get()),
-    #                                   int(entry_windpower_manuel.get()),
-    #                                   int(entry_photovoltaics_manuel.get()),
-    #                                   int(entry_battery_manuel.get()),
-    #                                   int(entry_chp_manuel.get()),
-    #                                   int(entry_thermalstorage_manuel.get()),
-    #                                   int(entry_districtheating_manuel.get())]
-    #                                   # entry_windpower.get(),
-    #                                   # entry_photovoltaics.get(),
-    #                                   # entry_battery.get(),
-    #                                   # entry_chp.get(),
-    #                                   # entry_thermalstorage.get(),
-    #                                   # entry_districtheating.get()]
-
-    # print(results_dict)
     interim_results2 = [float(entry_monetary_costs_value.get()),
                         float(entry_emission_costs_value.get()),]
 
@@ -471,18 +455,8 @@ def save_manual_results():
 
 def plot_results_scatter():
 
-    # from matplotlib.figure import Figure
-    # from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
-    #                                                NavigationToolbar2Tk)
-    #
-    # # the figure that will contain the plot
-    # fig2 = Figure(figsize=(5, 5),dpi=100)
-
     plt.xlabel('Mio. EUR/a')
     plt.ylabel('t/a')
-    # for i in range len(test_results):
-    #     test_results.keys()
-    #     plt.scatter(test)
 
     keys = list(results_dict.keys())
     print(keys)
@@ -495,18 +469,6 @@ def plot_results_scatter():
     plt.legend()
     # fig2.tight_layout()
     plt.show()
-
-    # # creating the Tkinter canvas
-    # # containing the Matplotlib figure
-    # canvas = FigureCanvasTkAgg(fig2, master=window)
-    # canvas.draw()
-    # # placing the canvas on the Tkinter window
-    # canvas.get_tk_widget().pack()
-    # # creating the Matplotlib toolbar
-    # toolbar = NavigationToolbar2Tk(canvas, window)
-    # toolbar.update()
-    # # placing the toolbar on the Tkinter window
-    # canvas.get_tk_widget().pack()
 
 def plot_results_bar():
     import matplotlib
@@ -561,23 +523,6 @@ def plot_results_bar():
     fig.tight_layout()
 
     plt.show()
-
-
-
-    # # creating the Tkinter canvas
-    # # containing the Matplotlib figure
-    # canvas = FigureCanvasTkAgg(fig, master = window)
-    #
-    # canvas.draw_idle()
-    # # placing the canvas on the Tkinter window
-    # canvas.get_tk_widget().pack()
-    # # creating the Matplotlib toolbar
-    # toolbar = NavigationToolbar2Tk(canvas,window)
-    # toolbar.update()
-    # # placing the toolbar on the Tkinter window
-    # canvas.get_tk_widget().pack()
-    #
-    # canvas.update_idletasks()
 
 
 # Definition of the DEMO-Frames
@@ -781,16 +726,6 @@ demo_assumptions = {'Electricity Demand':'14 000 000 kWh/a, h0 Load Profile',
                     'Electricity Import':'30.5 ct/kWh, 474 g/kWh'
                     }
 
-demo_assumptions2 = {' Demand':['14 000 000 kWh/a (electricity)','H0 Loadprofile', '52 203 000 kWh/a heat demand', 'EFH Loadprofile'],
-                    'Windturbines':['2 000 000 €/MW', '8 g/kWh', '20 a', 'max. 29.7 MW'],
-                    'Photovoltaics':['1 140 000 €/MW', '56 g/kWh', '20 a', 'max. 10 MW'],
-                    # 'Battery':'1 000 000 €/MWh, 155 t/MWh (Invest!), 20 a',
-                    # 'CHP':'190 000 €/MWh (el.), 375 g/kWh (el), 165 g/kWh (th.), 20 a',
-                    # 'Thermal Storage':'35 000 €/MWh, 46 g/kWh, 20 a, 3 % loss /d',
-                    # 'district heating':'86 000 000 €, 15 % loss, 40 a',
-                    # 'Gas Import/Heating':'6.4 ct/kWh (gas), 85 % efficiency, 45.62 g/kWh',
-                    # 'Electricity Import':'30.5 ct/kWh, 474 g/kWh'
-                    }
 
 assumption_keys = list(demo_assumptions.keys())
 assumption_values = list(demo_assumptions.values())
@@ -810,11 +745,7 @@ for i in range(len(demo_assumptions)):
     label.grid(column=column+1, columnspan=2, row=row, sticky="W")
 
     row = row + 1
-    # rowcount = rowcount + 1
-    # if rowcount == 5:
-    #     row = row - 5
-    #     column = column + 4
-    #     rowcount = 0
+
 
 
 
