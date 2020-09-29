@@ -300,8 +300,8 @@ def statistics(nodes_data, optimization_model, energy_system):
             # Continues, if this is an investment object
             if source_investment > 0:
                 # calculates the periodical costs
-                periodical_costs = (so['periodical costs /(CU/(kW a))']*
-                                    source_investment)
+                periodical_costs = so['Fix Investment Costs /(CU/a)'] if (so['periodical costs /(CU/(kW a))'] == 0) and (so['Non-Convex Investment'] == 1) \
+                                       else (so['periodical costs /(CU/(kW a))']*source_investment)
                 # adds the periodical costs to the total_periodical_costs variable
                 total_periodical_costs = (total_periodical_costs 
                                          + periodical_costs)
@@ -392,7 +392,23 @@ def statistics(nodes_data, optimization_model, energy_system):
                              + str(round(flowsum[[7][0]], 2)) 
                              + ' kWh')
                 max_transformer_flow = flowmax[2]
-            
+ 
+            elif t['transformer type'] == 'HeatPump':
+                logging.info('   ' + 'Electricity Energy Input to '
+                             + t['label'] + ': '
+                             + str(round(flowsum[[2][0]], 2))
+                             + ' kWh')
+                logging.info('   ' + 'Ambient Energy Input to '
+                             + t['label'] + ': '
+                             + str(round(flowsum[[1][0]], 2))
+                             + ' kWh')
+                logging.info('   ' + 'Total Energy Output to '
+                             + t['output'] + ': '
+                             + str(round(flowsum[[0][0]], 2))
+                             + ' kWh')
+
+                max_transformer_flow = flowmax[2]
+ 
             elif t['transformer type'] == 'OffsetTransformer':
                 logging.info('   '+'WARNING: OffsetTransformer are currently'
                              +' not a part of this model generator, but will'
@@ -432,8 +448,8 @@ def statistics(nodes_data, optimization_model, energy_system):
                     
             # Periodical Costs        
             if transformer_investment > 0:     ### Wert auf beide Busse anwenden! (Es muss die Summe der Busse, inklusive des Wirkungsgrades einbezogen werden!!!)
-                periodical_costs = (t['periodical costs /(CU/(kW a))']
-                                    *transformer_investment)
+                periodical_costs = t['Fix Investment Costs /(CU/a)'] if (t['periodical costs /(CU/(kW a))'] == 0) and (t['Non-Convex Investment'] == 1) \
+                                       else (t['periodical costs /(CU/(kW a))']*transformer_investment)
                 total_periodical_costs = (total_periodical_costs 
                                           + periodical_costs)
                 investments_to_be_made[t['label']] = (str(round(
@@ -503,8 +519,8 @@ def statistics(nodes_data, optimization_model, energy_system):
                 
             # Periodical Costs
             if storage_investment > float(s['existing capacity /(kWh)']):
-                periodical_costs = (s['periodical costs /(CU/(kWh a))']
-                                    *storage_investment)
+                periodical_costs = s['Fix Investment Costs /(CU/a)'] if (s['periodical costs /(CU/(kWh a))'] == 0) and (s['Non-Convex Investment'] == 1) \
+                                       else (s['periodical costs /(CU/(kWh a))']*storage_investment)
                 total_periodical_costs = (total_periodical_costs 
                                         + periodical_costs)
                 investments_to_be_made[s['label']] = (str(round(
@@ -605,7 +621,8 @@ def statistics(nodes_data, optimization_model, energy_system):
                         
                 # Periodical Costs        
                 if link_investment > 0:     ### Wert auf beide Busse anwenden! 
-                    periodical_costs = p['periodical costs /(CU/(kW a))']
+                    periodical_costs = p['Fix Investment Costs /(CU/a)'] if (p['periodical costs /(CU/(kW a))'] == 0) and (p['Non-Convex Investment'] == 1) \
+                                       else (p['periodical costs /(CU/(kW a))']*link_investment)
                     total_periodical_costs = (total_periodical_costs 
                                              + periodical_costs)
                     investments_to_be_made[p['label']] = (str(round(
@@ -933,8 +950,8 @@ def prepare_plotly_results(nodes_data,
 
             # Periodical Costs
             if source_investment > 0:
-                periodical_costs = (so['periodical costs /(CU/(kW a))']*
-                                    source_investment)
+                periodical_costs = so['Fix Investment Costs /(CU/a)'] if (so['periodical costs /(CU/(kW a))'] == 0) and (so['Non-Convex Investment'] == 1) \
+                                       else (so['periodical costs /(CU/(kW a))']*source_investment)
                 total_periodical_costs = (total_periodical_costs 
                                          + periodical_costs)
                 investments_to_be_made[so['label']] = (str(results[source_node, 
@@ -1078,8 +1095,8 @@ def prepare_plotly_results(nodes_data,
                     
             # Periodical Costs        
             if transformer_investment > 0:     ### Wert auf beide Busse anwenden! (Es muss die Summe der Busse, inklusive des Wirkungsgrades einbezogen werden!!!)
-                periodical_costs = (t['periodical costs /(CU/(kW a))']
-                                    *transformer_investment)
+                periodical_costs = t['Fix Investment Costs /(CU/a)'] if (t['periodical costs /(CU/(kW a))'] == 0) and (t['Non-Convex Investment'] == 1) \
+                                       else (t['periodical costs /(CU/(kW a))']*transformer_investment)
                 total_periodical_costs = (total_periodical_costs 
                                           + periodical_costs)
                 investments_to_be_made[t['label']] = (str(round(
@@ -1191,7 +1208,37 @@ def prepare_plotly_results(nodes_data,
                                       'investment/kW'])   
                 df_list_of_components = df_list_of_components.append(df_demand)    
 
-            
+            elif t['transformer type'] == 'HeatPump':
+                component_performance = transformer['sequences'].columns.values
+                df_transformer = transformer['sequences'][component_performance[1]]
+                df_result_table[t['label'] + '_input1'] = df_transformer
+                df_transformer = transformer['sequences'][component_performance[2]]
+                df_result_table[t['label'] + '_input2'] = df_transformer
+                df_transformer = transformer['sequences'][component_performance[0]]
+                df_result_table[t['label'] + '_output1'] = df_transformer
+
+                df_demand = pd.DataFrame([[t['label'],
+                   'transformer',
+                   round(transformer['sequences'][component_performance[1]].sum(), 2),
+                   round(transformer['sequences'][component_performance[2]].sum(), 2),
+                   round(transformer['sequences'][component_performance[0]].sum(), 2),
+                   '---',
+                   round(transformer['sequences'][component_performance[0]].max(), 2),
+                   round(variable_costs, 2),
+                   round(periodical_costs, 2),
+                   round(transformer_investment, 2)
+                   ]],
+                 columns=['ID',
+                                      'type',
+                                      'input 1/kWh',
+                                      'input 2/kWh',
+                                      'output 1/kWh',
+                                      'output 2/kWh',
+                                      'capacity/kW',
+                                      'variable costs/CU',
+                                      'periodical costs/CU',
+                                      'investment/kW'])
+                df_list_of_components = df_list_of_components.append(df_demand)            
             
 
 ######################
@@ -1238,8 +1285,8 @@ def prepare_plotly_results(nodes_data,
                 
             # Periodical Costs
             if storage_investment > float(s['existing capacity /(kWh)']):
-                periodical_costs = (s['periodical costs /(CU/(kWh a))']
-                                    *storage_investment)
+                periodical_costs = s['Fix Investment Costs /(CU/a)'] if (s['periodical costs /(CU/(kWh a))'] == 0) and (s['Non-Convex Investment'] == 1) \
+                                       else (s['periodical costs /(CU/(kWh a))']*storage_investment)
                 total_periodical_costs = (total_periodical_costs 
                                         + periodical_costs)
                 investments_to_be_made[s['label']] = (str(round(
@@ -1359,7 +1406,8 @@ def prepare_plotly_results(nodes_data,
                         
                 # Periodical Costs        
                 if link_investment > 0:     ### Wert auf beide Busse anwenden! 
-                    periodical_costs = p['periodical costs /(CU/(kW a))']
+                    periodical_costs = p['Fix Investment Costs /(CU/a)'] if (p['periodical costs /(CU/(kW a))'] == 0) and (p['Non-Convex Investment'] == 1) \
+                                       else (p['periodical costs /(CU/(kW a))']*link_investment)
                     total_periodical_costs = (total_periodical_costs 
                                              + periodical_costs)
                     investments_to_be_made[p['label']] = (str(round(
