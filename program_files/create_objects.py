@@ -147,7 +147,7 @@ class Sources:
                                  maximum=so['max. investment capacity /(kW)'],
                                  existing=so['existing capacity /(kW)'],
                                  nonconvex=True if so['Non-Convex Investment'] == 1 else False,
-                                 offset=so['Fix Investment Capacity']),
+                                 offset=so['Fix Investment Costs /(CU/a)']),
                              variable_costs=so['variable costs /(CU/kWh)'])}))
 
         # Returns logging info
@@ -167,7 +167,7 @@ class Sources:
                                                              maximum=so['max. investment capacity /(kW)'],
                                                              existing=so['existing capacity /(kW)'],
                                                              nonconvex=True if so['Non-Convex Investment'] == 1 else False,
-                                                             offset=so['Fix Investment Capacity']),
+                                                             offset=so['Fix Investment Costs /(CU/a)']),
                                  fix=time_series[so['label']+'.fix'].tolist(),
                                  variable_costs=so['variable costs /(CU/kWh)'])}))
         elif so['fixed'] == 0:
@@ -180,7 +180,7 @@ class Sources:
                                      maximum=so['max. investment capacity /(kW)'],
                                      existing=so['existing capacity /(kW)'],
                                      nonconvex=True if so['Non-Convex Investment'] == 1 else False,
-                                     offset=so['Fix Investment Capacity']),
+                                     offset=so['Fix Investment Costs /(CU/a)']),
                                  min=time_series[so['label']+'.min'].tolist(),
                                  max=time_series[so['label']+'.max'].tolist(),
                                  variable_costs=so['variable costs /(CU/kWh)'])}))
@@ -250,7 +250,7 @@ class Sources:
                                      maximum=so['max. investment capacity /(kW)'],
                                      existing=so['existing capacity /(kW)'],
                                      nonconvex=True if so['Non-Convex Investment'] == 1 else False,
-                                     offset=so['Fix Investment Capacity']),
+                                     offset=so['Fix Investment Costs /(CU/a)']),
                                  fix=feedin,
                                  variable_costs=so['variable costs /(CU/kWh)'])}))
         elif so['fixed'] == 0:
@@ -263,7 +263,7 @@ class Sources:
                                      maximum=so['max. investment capacity /(kW)'],
                                      existing=so['existing capacity /(kW)'],
                                      nonconvex=True if so['Non-Convex Investment'] == 1 else False,
-                                     offset=so['Fix Investment Capacity']),
+                                     offset=so['Fix Investment Costs /(CU/a)']),
                                  max=feedin,
                                  variable_costs=so['variable costs /(CU/kWh)'])}))
         # returns logging info
@@ -323,7 +323,7 @@ class Sources:
                                      maximum=so['max. investment capacity /(kW)'],
                                      existing=so['existing capacity /(kW)'],
                                      nonconvex=True if so['Non-Convex Investment'] == 1 else False,
-                                     offset=so['Fix Investment Capacity']),
+                                     offset=so['Fix Investment Costs /(CU/a)']),
                                  fix=feedin_wind_scaled,
                                  variable_costs=so['variable costs /(CU/kWh)'])}))
         elif so['fixed'] == 0:
@@ -336,7 +336,7 @@ class Sources:
                                      maximum=so['max. investment capacity /(kW)'],
                                      existing=so['existing capacity /(kW)'],
                                      nonconvex=True if so['Non-Convex Investment'] == 1 else False,
-                                     offset=so['Fix Investment Capacity']
+                                     offset=so['Fix Investment Costs /(CU/a)']
                                      ),
                                  max=feedin_wind_scaled,
                                  variable_costs=so['variable costs /(CU/kWh)'])}))
@@ -782,7 +782,7 @@ class Transformers:
                             maximum=t['max. investment capacity /(kW)'],
                             existing=t['existing capacity /(kW)'],
                             nonconvex=True if t['Non-Convex Investment'] == 1 else False,
-                            offset=t['Fix Investment Capacity']
+                            offset=t['Fix Investment Costs /(CU/a)']
                         ))},
                     conversion_factors={self.busd[t['output']]:
                                         t['efficiency']}))
@@ -815,7 +815,7 @@ class Transformers:
                             maximum=t['max. investment capacity /(kW)'],
                             existing=t['existing capacity /(kW)'],
                             nonconvex=True if t['Non-Convex Investment'] == 1 else False,
-                            offset=t['Fix Investment Capacity']
+                            offset=t['Fix Investment Costs /(CU/a)']
                         )),
                         self.busd[t['output2']]: solph.Flow(
                             variable_costs=t['variable output costs 2 /(CU/kWh)'],
@@ -825,7 +825,7 @@ class Transformers:
                                 minimum=minimum_capacity2,
                                 maximum=maximum_capacity2,
                                 nonconvex = True if t['Non-Convex Investment'] == 1 else False,
-                                offset = t['Fix Investment Capacity']
+                                offset = t['Fix Investment Costs /(CU/a)']
                             ))},
                     conversion_factors={self.busd[t['output']]:
                                         t['efficiency'],
@@ -987,7 +987,7 @@ class Storages:
                             minimum=s['min. investment capacity /(kWh)'],
                             maximum=s['max. investment capacity /(kWh)'],
                             nonconvex = True if s['Non-Convex Investment'] == 1 else False,
-                            offset = s['Fix Investment Capacity']
+                            offset = s['Fix Investment Costs /(CU/a)']
                         )))
 
                 # returns logging info
@@ -1053,7 +1053,7 @@ class Links:
                         maximum=p['max. investment capacity /(kW)'],
                         existing=p['existing capacity /(kW)'],
                         nonconvex = True if p['Non-Convex Investment'] == 1 else False,
-                        offset = p['Fix Investment Capacity']
+                        offset = p['Fix Investment Costs /(CU/a)']/2
                     ))},
                 conversion_factors={self.busd[p['bus_2']]: p['efficiency']}))
 
@@ -1072,7 +1072,7 @@ class Links:
                         maximum=p['max. investment capacity /(kW)'],
                         existing=p['existing capacity /(kW)'],
                         nonconvex = True if p['Non-Convex Investment'] == 1 else False,
-                        offset = p['Fix Investment Capacity']
+                        offset = p['Fix Investment Costs /(CU/a)']/2
                     ))},
                 conversion_factors={self.busd[p['bus_2']]: p['efficiency']}))
 
@@ -1103,7 +1103,7 @@ class Links:
                         maximum=p['max. investment capacity /(kW)'],
                         existing=p['existing capacity /(kW)'],
                         nonconvex = True if p['Non-Convex Investment'] == 1 else False,
-                        offset=p['Fix Investment Capacity']
+                        offset=p['Fix Investment Costs /(CU/a)']
                     ))},
                 conversion_factors={self.busd[p['bus_2']]: p['efficiency']}))
 
