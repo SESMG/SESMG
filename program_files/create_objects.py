@@ -126,18 +126,39 @@ class Sources:
                - "windspeed" in m/s
                - "z0" (roughness length) in m
                
-    ---- 
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
+    ---
+    Contributors:
+        - Christian Klemm - christian.klemm@fh-muenster.de
     """
-    # intern variables
-    nodes_sources = []
-    nodes = []
-    busd = None
 
-    def commodity_source(self, so):
-        """Creates a source object with unfixed time-series."""
+    def create_fixed_source(self, so, fix_timeseries):
+        '''Creates an oemof sink with fixed timeseries
 
-        # Creates a oemof-source object with unfixed time-series
+        ----
+        Keyword arguments:
+
+            so : obj:'dict'
+                -- dictionary containing all informations for the creation of an oemof source.
+                   At least the following key-value-pairs have to be included:
+                   'label'
+                   'output'
+                   'periodical costs /(CU/(kW a))'
+                   'min. investment capacity /(kW)'
+                   'max. investment capacity /(kW)'
+                   'existing capacity /(kW)'
+                   'Non-Convex Investment'
+                   'Fix Investment Costs /(CU/a)'
+                   'variable costs /(CU/kWh)'
+
+            fix_timeseries : obj:pandas timeseries
+                -- timeseries for the fix energy supply of the source
+
+        ---
+        Contributors:
+            - Christian Klemm - christian.klemm@fh-muenster.de
+        '''
+
+        # Creates a oemof source and appends it to the nodes_sources (variable of the create_sources-class) list
         self.nodes_sources.append(
             solph.Source(label=so['label'],
                          outputs={self.busd[so['output']]: solph.Flow(
@@ -148,7 +169,62 @@ class Sources:
                                  existing=so['existing capacity /(kW)'],
                                  nonconvex=True if so['Non-Convex Investment'] == 1 else False,
                                  offset=so['Fix Investment Costs /(CU/a)']),
+                             fix=fix_timeseries,
                              variable_costs=so['variable costs /(CU/kWh)'])}))
+
+    def create_unfixed_source(self, so, min_timeseries, max_timeseries):
+        '''Creates an oemof sink with unfixed timeseries. Ether a minimum timeseries and/or a maximum timeseries can be
+        given.
+
+        ----
+        Keyword arguments:
+
+            so : obj:'dict'
+                -- dictionary containing all informations for the creation of an oemof source.
+                   At least the following key-value-pairs have to be included:
+                   'label'
+                   'output'
+                   'periodical costs /(CU/(kW a))'
+                   'min. investment capacity /(kW)'
+                   'max. investment capacity /(kW)'
+                   'existing capacity /(kW)'
+                   'Non-Convex Investment'
+                   'Fix Investment Costs /(CU/a)'
+                   'variable costs /(CU/kWh)'
+
+            min_timeseries : obj:pandas timeseries
+                -- timeseries for the minimum energy supply of the source. For no min limit, 0 must be entered here.
+
+            max_timeseries : obj:pandas timeseries
+                -- timeseries for the maximum energy supply of the source. For no max limit, 1 must be entered here.
+
+        ---
+        Contributors:
+            - Christian Klemm - christian.klemm@fh-muenster.de
+        '''
+
+        # Creates a oemof source and appends it to the nodes_sources (variable of the create_sources-class) list
+        self.nodes_sources.append(
+            solph.Source(label=so['label'],
+                         outputs={self.busd[so['output']]: solph.Flow(
+                             investment=solph.Investment(
+                                 ep_costs=so['periodical costs /(CU/(kW a))'],
+                                 minimum=so['min. investment capacity /(kW)'],
+                                 maximum=so['max. investment capacity /(kW)'],
+                                 existing=so['existing capacity /(kW)'],
+                                 nonconvex=True if so['Non-Convex Investment'] == 1 else False,
+                                 offset=so['Fix Investment Costs /(CU/a)']),
+                             min=min_timeseries,
+                             max=max_timeseries,
+                             variable_costs=so['variable costs /(CU/kWh)'])}))
+
+    def commodity_source(self, so):
+        """Creates a source object with unfixed time-series."""
+
+        # Creates a oemof source with flexible time-series (no maximum or minimum)
+        self.create_unfixed_source(so,
+                                   min_timeseries=0,
+                                   max_timeseries=1)
 
         # Returns logging info
         logging.info('   ' + 'Commodity Source created: ' + so['label'])
@@ -158,32 +234,14 @@ class Sources:
 
         time_series = pd.read_excel(filepath, sheet_name='time_series')
         if so['fixed'] == 1:
-            self.nodes_sources.append(
-                solph.Source(label=so['label'],
-                             outputs={self.busd[so['output']]: solph.Flow(
-                                 investment=solph.Investment(
-                                                             ep_costs=so['periodical costs /(CU/(kW a))'],
-                                                             minimum=so['min. investment capacity /(kW)'],
-                                                             maximum=so['max. investment capacity /(kW)'],
-                                                             existing=so['existing capacity /(kW)'],
-                                                             nonconvex=True if so['Non-Convex Investment'] == 1 else False,
-                                                             offset=so['Fix Investment Costs /(CU/a)']),
-                                 fix=time_series[so['label']+'.fix'].tolist(),
-                                 variable_costs=so['variable costs /(CU/kWh)'])}))
+            # creates a source with fixed time-series
+            self.create_fixed_source(so, fix_timeseries=time_series[so['label']+'.fix'].tolist())
+
         elif so['fixed'] == 0:
-            self.nodes_sources.append(
-                solph.Source(label=so['label'],
-                             outputs={self.busd[so['output']]: solph.Flow(
-                                 investment=solph.Investment(
-                                     ep_costs=so['periodical costs /(CU/(kW a))'],
-                                     minimum=so['min. investment capacity /(kW)'],
-                                     maximum=so['max. investment capacity /(kW)'],
-                                     existing=so['existing capacity /(kW)'],
-                                     nonconvex=True if so['Non-Convex Investment'] == 1 else False,
-                                     offset=so['Fix Investment Costs /(CU/a)']),
-                                 min=time_series[so['label']+'.min'].tolist(),
-                                 max=time_series[so['label']+'.max'].tolist(),
-                                 variable_costs=so['variable costs /(CU/kWh)'])}))
+            # creates a source with unfixed time-series
+            self.create_unfixed_source(so,
+                                  min_timeseries=time_series[so['label']+'.min'].tolist(),
+                                  max_timeseries=time_series[so['label']+'.max'].tolist())
 
         # Returns logging info
         logging.info('   ' + 'Timeseries Source created: ' + so['label'])
@@ -239,33 +297,17 @@ class Sources:
                 feedin[i] = 1
         # Replace 'nan' value with 0
         feedin = feedin.fillna(0)
+
         if so['fixed'] == 1:
-        # creates oemof-source object and adds it to the list of components
-            self.nodes_sources.append(
-                solph.Source(label=so['label'],
-                             outputs={self.busd[so['output']]: solph.Flow(
-                                 investment=solph.Investment(
-                                     ep_costs=so['periodical costs /(CU/(kW a))'],
-                                     minimum=so['min. investment capacity /(kW)'],
-                                     maximum=so['max. investment capacity /(kW)'],
-                                     existing=so['existing capacity /(kW)'],
-                                     nonconvex=True if so['Non-Convex Investment'] == 1 else False,
-                                     offset=so['Fix Investment Costs /(CU/a)']),
-                                 fix=feedin,
-                                 variable_costs=so['variable costs /(CU/kWh)'])}))
+            # creates a source with fixed time-series
+            self.create_fixed_source(so, fix_timeseries = feedin)
+
         elif so['fixed'] == 0:
-            self.nodes_sources.append(
-                solph.Source(label=so['label'],
-                             outputs={self.busd[so['output']]: solph.Flow(
-                                 investment=solph.Investment(
-                                     ep_costs=so['periodical costs /(CU/(kW a))'],
-                                     minimum=so['min. investment capacity /(kW)'],
-                                     maximum=so['max. investment capacity /(kW)'],
-                                     existing=so['existing capacity /(kW)'],
-                                     nonconvex=True if so['Non-Convex Investment'] == 1 else False,
-                                     offset=so['Fix Investment Costs /(CU/a)']),
-                                 max=feedin,
-                                 variable_costs=so['variable costs /(CU/kWh)'])}))
+            # creates a source with unfixed time-series
+            self.create_unfixed_source(so,
+                                  min_timeseries=0,
+                                  max_timeseries=feedin)
+
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
 
@@ -313,33 +355,15 @@ class Sources:
             scaling='nominal_power')
 
         if so['fixed'] == 1:
-            # creates oemof source object and adds it to the list of components
-            self.nodes_sources.append(
-                solph.Source(label=so['label'],
-                             outputs={self.busd[so['output']]: solph.Flow(
-                                 investment=solph.Investment(
-                                     ep_costs=so['periodical costs /(CU/(kW a))'],
-                                     minimum=so['min. investment capacity /(kW)'],
-                                     maximum=so['max. investment capacity /(kW)'],
-                                     existing=so['existing capacity /(kW)'],
-                                     nonconvex=True if so['Non-Convex Investment'] == 1 else False,
-                                     offset=so['Fix Investment Costs /(CU/a)']),
-                                 fix=feedin_wind_scaled,
-                                 variable_costs=so['variable costs /(CU/kWh)'])}))
+            # creates a source with fixed time-series
+            self.create_fixed_source(so, fix_timeseries=feedin_wind_scaled)
+
         elif so['fixed'] == 0:
-            self.nodes_sources.append(
-                solph.Source(label=so['label'],
-                             outputs={self.busd[so['output']]: solph.Flow(
-                                 investment=solph.Investment(
-                                     ep_costs=so['periodical costs /(CU/(kW a))'],
-                                     minimum=so['min. investment capacity /(kW)'],
-                                     maximum=so['max. investment capacity /(kW)'],
-                                     existing=so['existing capacity /(kW)'],
-                                     nonconvex=True if so['Non-Convex Investment'] == 1 else False,
-                                     offset=so['Fix Investment Costs /(CU/a)']
-                                     ),
-                                 max=feedin_wind_scaled,
-                                 variable_costs=so['variable costs /(CU/kWh)'])}))
+            # creates a source with unfixed time-series
+            self.create_unfixed_source(so,
+                                  min_timeseries=0,
+                                  max_timeseries=feedin_wind_scaled)
+
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
 
