@@ -5,7 +5,9 @@ Functions for the creation of oemof energy system objects from a given set
 of object parameters.
 
 ---
-@ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+Contributors:
+    - Christian Klemm - christian.klemm@fh-muenster.de
+    - Gregor Becker - gb611137@fh-muenster.de
 """
 
 from oemof import solph
@@ -76,7 +78,7 @@ def buses(nodes_data, nodes):
             # Create a source for every bus, which is marked with "shortage"
             if b['shortage']:
                 # creates the oemof-source object and directly adds it to the list
-                # of components "nodes"
+                # of components "nodes"re
                 nodes.append(
                     solph.Source(label=b['label'] + '_shortage',
                                  outputs={busd[b['label']]: solph.Flow(
@@ -126,18 +128,40 @@ class Sources:
                - "windspeed" in m/s
                - "z0" (roughness length) in m
                
-    ---- 
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
+    ---
+    Contributors:
+        - Christian Klemm - christian.klemm@fh-muenster.de
+        - Gregor Becker - gb611137@fh-muenster.de
     """
-    # intern variables
-    nodes_sources = []
-    nodes = []
-    busd = None
 
-    def commodity_source(self, so):
-        """Creates a source object with unfixed time-series."""
+    def create_fixed_source(self, so, fix_timeseries):
+        '''Creates an oemof sink with fixed timeseries
 
-        # Creates a oemof-source object with unfixed time-series
+        ----
+        Keyword arguments:
+
+            so : obj:'dict'
+                -- dictionary containing all informations for the creation of an oemof source.
+                   At least the following key-value-pairs have to be included:
+                   'label'
+                   'output'
+                   'periodical costs /(CU/(kW a))'
+                   'min. investment capacity /(kW)'
+                   'max. investment capacity /(kW)'
+                   'existing capacity /(kW)'
+                   'Non-Convex Investment'
+                   'Fix Investment Costs /(CU/a)'
+                   'variable costs /(CU/kWh)'
+
+            fix_timeseries : obj:pandas timeseries
+                -- timeseries for the fix energy supply of the source
+
+        ---
+        Contributors:
+            - Christian Klemm - christian.klemm@fh-muenster.de
+        '''
+
+        # Creates a oemof source and appends it to the nodes_sources (variable of the create_sources-class) list
         self.nodes_sources.append(
             solph.Source(label=so['label'],
                          outputs={self.busd[so['output']]: solph.Flow(
@@ -145,11 +169,85 @@ class Sources:
                                  ep_costs=so['periodical costs /(CU/(kW a))'],
                                  minimum=so['min. investment capacity /(kW)'],
                                  maximum=so['max. investment capacity /(kW)'],
-                                 existing=so['existing capacity /(kW)']),
+                                 existing=so['existing capacity /(kW)'],
+                                 nonconvex=True if so['Non-Convex Investment'] == 1 else False,
+                                 offset=so['Fix Investment Costs /(CU/a)']),
+                             fix=fix_timeseries,
                              variable_costs=so['variable costs /(CU/kWh)'])}))
+
+    def create_unfixed_source(self, so, min_timeseries, max_timeseries):
+        '''Creates an oemof sink with unfixed timeseries. Ether a minimum timeseries and/or a maximum timeseries can be
+        given.
+
+        ----
+        Keyword arguments:
+
+            so : obj:'dict'
+                -- dictionary containing all informations for the creation of an oemof source.
+                   At least the following key-value-pairs have to be included:
+                   'label'
+                   'output'
+                   'periodical costs /(CU/(kW a))'
+                   'min. investment capacity /(kW)'
+                   'max. investment capacity /(kW)'
+                   'existing capacity /(kW)'
+                   'Non-Convex Investment'
+                   'Fix Investment Costs /(CU/a)'
+                   'variable costs /(CU/kWh)'
+
+            min_timeseries : obj:pandas timeseries
+                -- timeseries for the minimum energy supply of the source. For no min limit, 0 must be entered here.
+
+            max_timeseries : obj:pandas timeseries
+                -- timeseries for the maximum energy supply of the source. For no max limit, 1 must be entered here.
+
+        ---
+        Contributors:
+            - Christian Klemm - christian.klemm@fh-muenster.de
+        '''
+
+        # Creates a oemof source and appends it to the nodes_sources (variable of the create_sources-class) list
+        self.nodes_sources.append(
+            solph.Source(label=so['label'],
+                         outputs={self.busd[so['output']]: solph.Flow(
+                             investment=solph.Investment(
+                                 ep_costs=so['periodical costs /(CU/(kW a))'],
+                                 minimum=so['min. investment capacity /(kW)'],
+                                 maximum=so['max. investment capacity /(kW)'],
+                                 existing=so['existing capacity /(kW)'],
+                                 nonconvex=True if so['Non-Convex Investment'] == 1 else False,
+                                 offset=so['Fix Investment Costs /(CU/a)']),
+                             min=min_timeseries,
+                             max=max_timeseries,
+                             variable_costs=so['variable costs /(CU/kWh)'])}))
+
+    def commodity_source(self, so):
+        """Creates a source object with unfixed time-series."""
+
+        # Creates a oemof source with flexible time-series (no maximum or minimum)
+        self.create_unfixed_source(so,
+                                   min_timeseries=0,
+                                   max_timeseries=1)
 
         # Returns logging info
         logging.info('   ' + 'Commodity Source created: ' + so['label'])
+
+    def timeseries_source(self, so, filepath):
+        """Creates a source object from a pre-defined timeseries time-series."""
+
+        time_series = pd.read_excel(filepath, sheet_name='time_series')
+        if so['fixed'] == 1:
+            # creates a source with fixed time-series
+            self.create_fixed_source(so, fix_timeseries=time_series[so['label']+'.fix'].tolist())
+
+        elif so['fixed'] == 0:
+            # creates a source with unfixed time-series
+            self.create_unfixed_source(so,
+                                  min_timeseries=time_series[so['label']+'.min'].tolist(),
+                                  max_timeseries=time_series[so['label']+'.max'].tolist())
+
+        # Returns logging info
+        logging.info('   ' + 'Timeseries Source created: ' + so['label'])
 
     def pv_source(self, so):
         """Creates photovoltaic source object.
@@ -203,18 +301,15 @@ class Sources:
         # Replace 'nan' value with 0
         feedin = feedin.fillna(0)
 
-        # creates oemof-source object and adds it to the list of components
-        self.nodes_sources.append(
-            solph.Source(label=so['label'],
-                         outputs={self.busd[so['output']]: solph.Flow(
-                             investment=solph.Investment(
-                                 ep_costs=so['periodical costs /(CU/(kW a))'],
-                                 minimum=so['min. investment capacity /(kW)'],
-                                 maximum=so['max. investment capacity /(kW)'],
-                                 existing=so['existing capacity /(kW)']),
-                             actual_value=feedin,
-                             fixed=True,
-                             variable_costs=so['variable costs /(CU/kWh)'])}))
+        if so['fixed'] == 1:
+            # creates a source with fixed time-series
+            self.create_fixed_source(so, fix_timeseries = feedin)
+
+        elif so['fixed'] == 0:
+            # creates a source with unfixed time-series
+            self.create_unfixed_source(so,
+                                  min_timeseries=0,
+                                  max_timeseries=feedin)
 
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
@@ -262,18 +357,15 @@ class Sources:
             weather=weather_df_wind,
             scaling='nominal_power')
 
-        # creates oemof source object and adds it to the list of components
-        self.nodes_sources.append(
-            solph.Source(label=so['label'],
-                         outputs={self.busd[so['output']]: solph.Flow(
-                             investment=solph.Investment(
-                                 ep_costs=so['periodical costs /(CU/(kW a))'],
-                                 minimum=so['min. investment capacity /(kW)'],
-                                 maximum=so['max. investment capacity /(kW)'],
-                                 existing=so['existing capacity /(kW)']),
-                             actual_value=feedin_wind_scaled,
-                             fixed=True,
-                             variable_costs=so['variable costs /(CU/kWh)'])}))
+        if so['fixed'] == 1:
+            # creates a source with fixed time-series
+            self.create_fixed_source(so, fix_timeseries=feedin_wind_scaled)
+
+        elif so['fixed'] == 0:
+            # creates a source with unfixed time-series
+            self.create_unfixed_source(so,
+                                  min_timeseries=0,
+                                  max_timeseries=feedin_wind_scaled)
 
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
@@ -281,7 +373,10 @@ class Sources:
     def __init__(self, nodes_data, nodes, busd, filepath):
 
         # rename variables
+        self.nodes = []
+        self.nodes_sources = []
         self.busd = busd.copy()
+        self.nodes_data = nodes_data
         for i in range(len(nodes)):
             self.nodes.append(nodes[i])
 
@@ -303,14 +398,9 @@ class Sources:
                 elif so['technology'] == 'windpower':
                     self.windpower_source(so)
 
-        # The feedinlib can only read .csv data sets, so the weather data from
-        # the .xlsx scenario file have to be converted into a .csv data set and
-        # saved
-        read_file = pd.read_excel(filepath, sheet_name='weather data')
-        read_file.to_csv(
-            os.path.join(os.path.dirname(__file__)) + '/interim_data/weather_data.csv',
-            index=None,
-            header=True)
+                # Create Time-series Sources
+                elif so['technology'] == 'timeseries':
+                    self.timeseries_source(so, filepath)
 
         # appends created sources to the list of nodes
         for i in range(len(self.nodes_sources)):
@@ -329,7 +419,7 @@ class Sinks:
 
         nodes_data : obj:'dict'
            -- dictionary containing parameters of sinks to be created. The
-           following data have to be provided: label, active, input,
+           following data have to be provided: label, active, input, input2,
            load profile, nominal value /(kW), annual demand /(kWh/a),
            occupants [RICHARDSON], building class [HEAT SLP ONLY],
            wind class [HEAT SLP ONLY], fixed
@@ -363,8 +453,7 @@ class Sinks:
         """Creates a sink object with an unfixed energy input."""
 
         # set static inflow values
-        inflow_args = {'nominal_value': de['nominal value /(kW)'],
-                       'fixed': de['fixed']}
+        inflow_args = {'nominal_value': de['nominal value /(kW)']}
 
         # creates the sink object and adds it to the list of components
         self.nodes_sinks.append(
@@ -375,7 +464,7 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
 
-    def timeseries_sink(self, de):
+    def timeseries_sink(self, de,filepath):
         """Creates a sink with fixed input.
 
         Creates a sink object with a fixed input. The input must be given
@@ -384,15 +473,15 @@ class Sinks:
         ----
         @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
         """
+        time_series = pd.read_excel(filepath, sheet_name='time_series')
 
-        # set static inflow values
-        inflow_args = {'nominal_value': de['nominal value /(kW)'],
-                       'fixed': de['fixed']}
-
-        # get time series for node and parameter
-        for col in self.nd['timeseries'].columns.values:
-            if col.split('.')[0] == de['label']:
-                inflow_args[col.split('.')[1]] = self.nd['timeseries'][col]
+        if de['fixed'] == 0:
+            min = time_series[de['label']+'.min'].tolist()
+            max = time_series[de['label']+'.max'].tolist()
+            inflow_args = {'min': min, 'max': max, 'nominal_value': de['nominal value /(kW)']}
+        elif de['fixed'] == 1:
+            fix = time_series[de['label']+'.fix'].tolist()
+            inflow_args = {'fix': fix, 'nominal_value': de['nominal value /(kW)']}
 
         # creates sink object and adds it to the list of components
         self.nodes_sinks.append(
@@ -403,7 +492,7 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
 
-    def residentialheatslp_sink(self, de):
+    def slp_sink(self, de):
         """Creates a sink with a residential SLP time series.
 
         Creates a sink with inputs according to VDEW standard load profiles,
@@ -413,7 +502,11 @@ class Sinks:
         ----
         @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
         """
-
+        heat_slps = ['efh', 'mfh']
+        heat_slps_commercial = ['gmf', 'gpd', 'ghd', 'gwa', 'ggb', 'gko', 'gbd',
+                                'gba', 'gmk', 'gbh', 'gga', 'gha']
+        electricity_slps = ['h0', 'g0', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6',
+                            'l0', 'l1', 'l2']
         # Import weather Data
         data = pd.read_csv(os.path.join(
             os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
@@ -423,6 +516,8 @@ class Sinks:
             temp_resolution = ts['temporal resolution']
             periods = ts["periods"]
             start_date = str(ts['start date'])
+            year = datetime.datetime.strptime(str(ts['start date']),
+                                              '%Y-%m-%d %H:%M:%S').year
 
         # Converting start date into datetime format
         start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
@@ -436,76 +531,49 @@ class Sinks:
                                 periods=periods, freq=temp_resolution))
 
         # creates time series
-        demand[de['load profile']] = bdew.HeatBuilding(
-            demand.index,
-            temperature=data['temperature'],
-            shlp_type=de['load profile'],
-            building_class=de['building class [HEAT SLP ONLY]'],
-            wind_class=de['wind class [HEAT SLP ONLY]'],
-            annual_heat_demand=1,
-            name=de['load profile']).get_bdew_profile()
+        if de['load profile'] in heat_slps:
+            demand[de['load profile']] = bdew.HeatBuilding(
+                demand.index,
+                temperature=data['temperature'],
+                shlp_type=de['load profile'],
+                building_class=de['building class [HEAT SLP ONLY]'],
+                wind_class=de['wind class [HEAT SLP ONLY]'],
+                annual_heat_demand=1,
+                name=de['load profile']).get_bdew_profile()
+        elif de['load profile'] in heat_slps_commercial:
+            demand[de['load profile']] = bdew.HeatBuilding(
+                demand.index,
+                temperature=data['temperature'],
+                shlp_type=de['load profile'],
+                wind_class=de['wind class [HEAT SLP ONLY]'],
+                annual_heat_demand=1,
+                name=de['load profile']).get_bdew_profile()
+        elif de['load profile'] in electricity_slps:
+            # Imports standard load profiles
+            e_slp = bdew.ElecSlp(year)
+            demand = e_slp.get_profile({de['load profile']: 1})
 
-        # creates sink object and adds it to the list of components
-        self.nodes_sinks.append(
-            solph.Sink(label=de['label'],
-                       inputs={
-                           self.busd[de['input']]: solph.Flow(
-                               nominal_value=de['annual demand /(kWh/a)'],
-                               actual_value=demand[de['load profile']],
-                               fixed=True)}))
+            # creates time series based on standard load profiles
+            demand = demand.resample(temp_resolution).mean()
 
-        # returns logging info
-        logging.info('   ' + 'Sink created: ' + de['label'])
-
-    def commercialheatslp_sink(self, de):
-        """Creates a sink with commercial SLP timeseries
-
-        Creates a sink with inputs according to VDEW standard load profiles,
-        using oemofs demandlib and adds it to the list of components 'nodes'.
-        Used for the modelling of commercial electricity demands.
-
-        ----
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
-        """
-
-        # Import weather Data
-        data = pd.read_csv(os.path.join(
-            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
-
-        # Importing timesystem parameters from the scenario file
-        for j, ts in self.nd['timesystem'].iterrows():
-            temp_resolution = ts['temporal resolution']
-            periods = ts["periods"]
-            start_date = str(ts['start date'])
-
-        # Converting start date into datetime format
-        start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
-
-        # Create DataFrame
-        demand = pd.DataFrame(
-            index=pd.date_range(pd.datetime(start_date.year,
-                                            start_date.month,
-                                            start_date.day,
-                                            start_date.hour),
-                                periods=periods, freq=temp_resolution))
-
-        # creates bdew time series
-        demand[de['load profile']] = bdew.HeatBuilding(
-            demand.index,
-            temperature=data['temperature'],
-            shlp_type=de['load profile'],
-            wind_class=de['wind class [HEAT SLP ONLY]'],
-            annual_heat_demand=1,
-            name=de['load profile']).get_bdew_profile()
-
-        # create Sink and adds it to the list of components
-        self.nodes_sinks.append(
-            solph.Sink(label=de['label'],
-                       inputs={
-                           self.busd[de['input']]: solph.Flow(
-                               nominal_value=de['annual demand /(kWh/a)'],
-                               actual_value=demand[de['load profile']],
-                               fixed=True)}))
+        if de['fixed'] == 1:
+            # create Sink and adds it to the list of components
+            self.nodes_sinks.append(
+                solph.Sink(label=de['label'],
+                           inputs={
+                               self.busd[de['input']]: solph.Flow(
+                                   nominal_value=de['annual demand /(kWh/a)'],
+                                   fix=demand[de['load profile']],
+                               )}))
+        elif de['fixed'] == 0:
+            # create Sink and adds it to the list of components
+            self.nodes_sinks.append(
+                solph.Sink(label=de['label'],
+                           inputs={
+                               self.busd[de['input']]: solph.Flow(
+                                   nominal_value=de['annual demand /(kWh/a)'],
+                                   max=demand[de['load profile']],
+                               )}))
 
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
@@ -544,7 +612,7 @@ class Sinks:
         dhi = dhi / 1000
         dirhi = dirhi / 1000
 
-        # Reades the temporal resolution from the sceanrio file
+        # Reads the temporal resolution from the scenario file
         for i, ts in self.nd['timesystem'].iterrows():
             temp_resolution = ts['temporal resolution']
 
@@ -604,58 +672,36 @@ class Sinks:
         # of the sink generated in the spreadsheet
         demand_ratio = annual_demand / richardson_demand
 
-        # create sink and adds it to the list of components
-        self.nodes_sinks.append(
-            solph.Sink(label=de['label'],
-                       inputs={self.busd[de['input']]: solph.Flow(
-                           nominal_value=0.001 * demand_ratio,
-                           actual_value=load_profile,
-                           fixed=True)}))
-
-        # returns logging info
-        logging.info('   ' + 'Sink created: ' + de['label'])
-
-    def electricslp_sink(self, de):
-        """Creates a sink based on german standard load profiles.
-
-        ----
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
-        """
-
-        # read timesystem data from scenario file
-        for j, ts in self.nd['timesystem'].iterrows():
-            temp_resolution = ts['temporal resolution']
-            year = datetime.datetime.strptime(str(ts['start date']),
-                                              '%Y-%m-%d %H:%M:%S').year
-
-        # Imports standard load profiles
-        e_slp = bdew.ElecSlp(year)
-        elec_demand = e_slp.get_profile({de['load profile']: 1})
-
-        # creates time series based on standard load profiles
-        elec_demand = elec_demand.resample(temp_resolution).mean()
-
-        # create sink and adds it to the list of components
-        self.nodes_sinks.append(
-            solph.Sink(label=de['label'],
-                       inputs={self.busd[de['input']]: solph.Flow(
-                           nominal_value=de['annual demand /(kWh/a)'],
-                           actual_value=elec_demand[de['load profile']],
-                           fixed=True)}))
-
+        if de['fixed'] == 1:
+            # create sink and adds it to the list of components
+            self.nodes_sinks.append(
+                solph.Sink(label=de['label'],
+                           inputs={self.busd[de['input']]: solph.Flow(
+                               nominal_value=0.001 * demand_ratio,
+                               fix=load_profile,
+                               )}))
+        elif de['fixed'] == 0:
+            self.nodes_sinks.append(
+                solph.Sink(label=de['label'],
+                           inputs={self.busd[de['input']]: solph.Flow(
+                               nominal_value=0.001 * demand_ratio,
+                               max=load_profile,
+                           )}))
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
 
     def __init__(self, nodes_data, busd, nodes, filepath):
 
         # renames variables
-        self.nd = nodes_data.copy()
-        self.busd = busd.copy()
+        self.nd = nodes_data
+        self.busd = busd
+        self.nodes = []
+        self.nodes_sinks = []
         for i in range(len(nodes)):
             self.nodes.append(nodes[i])
 
         # richardson.py and demandlib can only read .csv data sets, so the weather
-        # data from the .xlsx scenario file has to be converted into a .csv data
+        # data from the .xlsx scenario file have to be converted into a .csv data
         # set and saved
         read_file = pd.read_excel(filepath, sheet_name='weather data')
         read_file.to_csv(
@@ -666,37 +712,28 @@ class Sinks:
 
         # Create sink objects
         for i, de in self.nd['demand'].iterrows():
-            heat_slps = ['efh', 'mfh']
-            heat_slps_commercial = ['gmf', 'gpd', 'ghd', 'gwa', 'ggb', 'gko', 'gbd',
-                                    'gba', 'gmk', 'gbh', 'gga', 'gha']
-            electricity_slps = ['h0', 'g0', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6',
+            slps = ['efh', 'mfh','gmf', 'gpd', 'ghd', 'gwa', 'ggb', 'gko', 'gbd',
+                                    'gba', 'gmk', 'gbh', 'gga', 'gha','h0', 'g0', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6',
                                 'l0', 'l1', 'l2']
             richardson = ['richardson']
-            #
+
             if de['active']:
 
                 # Create Sinks un-fixed time-series
                 if de['load profile'] == 'x':
                     self.unfixed_sink(de)
 
-                # Create Sinks with Timeseries
+                # Create Sinks with Time-series
                 elif de['load profile'] == 'timeseries':
-                    self.timeseries_sink(de)
+                    self.timeseries_sink(de, filepath)
 
-                # Create Sinks with Heat SLP's
-                elif de['load profile'] in heat_slps:
-                    self.residentialheatslp_sink(de)
-
-                elif de['load profile'] in heat_slps_commercial:
-                    self.commercialheatslp_sink(de)
+                # Create Sinks with SLP's
+                elif de['load profile'] in slps:
+                    self.slp_sink(de)
 
                 # Richardson
                 elif de['load profile'] in richardson:
                     self.richardson_sink(de)
-
-                # Create Sinks with Electricity SLP's
-                elif de['load profile'] in electricity_slps:
-                    self.electricslp_sink(de)
 
         # appends created sinks on the list of nodes
         for i in range(len(self.nodes_sinks)):
@@ -733,14 +770,14 @@ class Transformers:
     """
     # intern variables
     nodes_transformer = []
-    nodes_sources = []
     nodes = []
+    nodes_sources = []
     busd = None
 
     def generic_transformer(self, t):
         """Creates a Generic Transformer object.
 
-                Creates a generic transformer with the paramters given in
+                Creates a generic transformer with the parameters given in
                 'nodes_data' and adds it to the list of components 'nodes'.
 
                 ----
@@ -762,10 +799,12 @@ class Transformers:
                             ep_costs=t['periodical costs /(CU/(kW a))'],
                             minimum=t['min. investment capacity /(kW)'],
                             maximum=t['max. investment capacity /(kW)'],
-                            existing=t['existing capacity /(kW)']
+                            existing=t['existing capacity /(kW)'],
+                            nonconvex=True if t['Non-Convex Investment'] == 1 else False,
+                            offset=t['Fix Investment Costs /(CU/a)']
                         ))},
                     conversion_factors={self.busd[t['output']]:
-                                            t['efficiency']}))
+                                        t['efficiency']}))
 
             # returns logging info
             logging.info('   ' + 'Transformer created: ' + t['label'])
@@ -793,72 +832,36 @@ class Transformers:
                             ep_costs=t['periodical costs /(CU/(kW a))'],
                             minimum=t['min. investment capacity /(kW)'],
                             maximum=t['max. investment capacity /(kW)'],
-                            existing=t['existing capacity /(kW)']
+                            existing=t['existing capacity /(kW)'],
+                            nonconvex=True if t['Non-Convex Investment'] == 1 else False,
+                            offset=t['Fix Investment Costs /(CU/a)']
                         )),
                         self.busd[t['output2']]: solph.Flow(
                             variable_costs=t['variable output costs 2 /(CU/kWh)'],
                             investment=solph.Investment(
-                                ep_costs=t['periodical costs /(CU/(kW a))'],
+                                ep_costs=0,#t['periodical costs /(CU/(kW a))'],
                                 existing=existing_capacity2,
                                 minimum=minimum_capacity2,
-                                maximum=maximum_capacity2)
-                        )},
+                                maximum=maximum_capacity2,
+                                nonconvex = True if t['Non-Convex Investment'] == 1 else False,
+                                offset = t['Fix Investment Costs /(CU/a)']
+                            ))},
                     conversion_factors={self.busd[t['output']]:
-                                            t['efficiency'],
+                                        t['efficiency'],
                                         self.busd[t['output2']]:
                                             t['efficiency2']}))
 
             # returns logging info
             logging.info('   ' + 'Transformer created: ' + t['label'])
 
-    def genericchp_transformer(self, t):
-        """Creates a Generic CHP transformer object.
-
-        Creates a generic chp transformer with the parameters given in
-        'nodes_data' and adds it to the list of components 'nodes'.
-
-        ----
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
-        """
-        from pandas.tests.arrays.test_datetimelike import datetime_index
-        # counts the number of periods within the given datetime index and saves it as variable
-        # (number of periods is required for creating generic chp transformers)
-        periods = len(datetime_index)
-
-        # creates genericCHP transformer object and adds it to the list of components
-        self.nodes_transformer.append(
-            solph.components.GenericCHP(
-                label=t['label'],
-                fuel_input={self.busd[t['input']]: solph.Flow(
-                    H_L_FG_share_max=[t['share of flue gas loss at max heat extraction [GenericCHP]']
-                                      for p in range(0, periods)])},
-                electrical_output={self.busd[t['output']]: solph.Flow(
-                    P_max_woDH=[t['max. electric power without district heating [GenericCHP]'] for p in
-                                range(0, periods)],
-                    P_min_woDH=[t['min. electric power without district heating [GenericCHP]'] for p in
-                                range(0, periods)],
-                    Eta_el_max_woDH=[t['el. eff. at max. fuel flow w/o distr. heating [GenericCHP]'] for p in
-                                     range(0, periods)],
-                    Eta_el_min_woDH=[t['el. eff. at min. fuel flow w/o distr. heating [GenericCHP]'] for p in
-                                     range(0, periods)])},
-                heat_output={self.busd[t['output2']]: solph.Flow(
-                    Q_CW_min=[t['minimal therm. condenser load to cooling water [GenericCHP]'] for p in
-                              range(0, periods)])},
-                Beta=[t['power loss index [GenericCHP]'] for p in range(0, periods)],
-                back_pressure=False))
-
-        # returns logging info
-        logging.info('   ' + 'Transformer created: ' + t['label'])
-
     def heat_pump_transformer(self, t):
         """Creates a Heat Pump object by using oemof.thermal.
-
-                Creates a heat pump with the paramters given in
-                'nodes_data' and adds it to the list of components 'nodes'.
-
-        ----
-        @ Janik Budde - Janik.Budde@fh-muenster.de, 30.07.2020
+                       Creates a heat pump with the paramters given in
+                       'nodes_data' and adds it to the list of components 'nodes'.
+           ----
+           @ Janik Budde - Janik.Budde@fh-muenster.de, 30.07.2020
         """
+
         # import oemof.thermal in order to calculate the cop
         global cops_hp, heatsource_capacity, heatpump_label
         import oemof.thermal.compression_heatpumps_and_chillers as cmpr_hp_chiller
@@ -964,7 +967,7 @@ class Transformers:
                 mode='heat_pump')
             logging.info('   ' + t['label'] + ", Average Coefficient of Performance (COP): {:2.2f}".format(
                 numpy.mean(cops_hp)))
-            
+
         elif t['heat source'] == "Water":
             cops_hp = cmpr_hp_chiller.calc_cops(
                 temp_high=[t['temperature high /(deg C)']],
@@ -999,21 +1002,54 @@ class Transformers:
         # returns logging info
         logging.info('   ' + 'Transformer created: ' + t['label'])
 
+
+    def genericchp_transformer(self, t):
+        """Creates a Generic CHP transformer object.
+
+        Creates a generic chp transformer with the parameters given in
+        'nodes_data' and adds it to the list of components 'nodes'.
+
+        ----
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+        """
+        from pandas.tests.arrays.test_datetimelike import datetime_index
+        # counts the number of periods within the given datetime index and saves it as variable
+        # (number of periods is required for creating generic chp transformers)
+        periods = len(datetime_index)
+
+        # creates genericCHP transformer object and adds it to the list of components
+        self.nodes_transformer.append(
+            solph.components.GenericCHP(
+                label=t['label'],
+                fuel_input={self.busd[t['input']]: solph.Flow(
+                    H_L_FG_share_max=[t['share of flue gas loss at max heat extraction [GenericCHP]']
+                                      for p in range(0, periods)])},
+                electrical_output={self.busd[t['output']]: solph.Flow(
+                    P_max_woDH=[t['max. electric power without district heating [GenericCHP]'] for p in
+                                range(0, periods)],
+                    P_min_woDH=[t['min. electric power without district heating [GenericCHP]'] for p in
+                                range(0, periods)],
+                    Eta_el_max_woDH=[t['el. eff. at max. fuel flow w/o distr. heating [GenericCHP]'] for p in
+                                     range(0, periods)],
+                    Eta_el_min_woDH=[t['el. eff. at min. fuel flow w/o distr. heating [GenericCHP]'] for p in
+                                     range(0, periods)])},
+                heat_output={self.busd[t['output2']]: solph.Flow(
+                    Q_CW_min=[t['minimal therm. condenser load to cooling water [GenericCHP]'] for p in
+                              range(0, periods)])},
+                Beta=[t['power loss index [GenericCHP]'] for p in range(0, periods)],
+                back_pressure=False))
+
+        # returns logging info
+        logging.info('   ' + 'Transformer created: ' + t['label'])
+
     def __init__(self, nodes_data, nodes, busd):
 
         # renames variables
         self.busd = busd
+        self.nodes = []
+        self.nodes_transformer = []
         # for i in range(len(nodes)):
-        # self.nodes.append(nodes[i])
-
-        # The oemof.thermal can only read .csv data sets, so the weather data from
-        # the .xlsx scenario file have to be converted into a .csv data set and
-        # saved
-        # read_file = pd.read_excel(filepath, sheet_name='weather data')
-        # read_file.to_csv(
-        # os.path.join(os.path.dirname(__file__)) + '/interim_data/weather_data.csv',
-        # index=None,
-        # header=True)
+        #     self.nodes.append(nodes[i])
 
         # creates a transformer object for every transformer item within nd
         for i, t in nodes_data['transformers'].iterrows():
@@ -1022,6 +1058,10 @@ class Transformers:
                 # Create Generic Transformers
                 if t['transformer type'] == 'GenericTransformer':
                     self.generic_transformer(t)
+
+                # Create Heat Pump
+                elif t['transformer type'] == 'HeatPump':
+                    self.heat_pump_transformer(t)
 
                 # Create Extraction Turbine CHPs
                 elif t['transformer type'] == 'ExtractionTurbineCHP':
@@ -1041,10 +1081,6 @@ class Transformers:
                     logging.info('   ' + 'WARNING: OffsetTransformer are currently'
                                  + ' not a part of this model generator, but will'
                                  + ' be added later.')
-
-                # Create Heat Pump
-                elif t['transformer type'] == 'HeatPump':
-                    self.heat_pump_transformer(t)
 
                 # Error Message for invalid Transformers
                 else:
@@ -1100,6 +1136,8 @@ class Storages:
     def __init__(self, nodes_data, nodes, busd):
 
         # rename variables
+        self.nodes = []
+        self.nodes_storages = []
         for i in range(len(nodes)):
             self.nodes.append(nodes[i])
 
@@ -1125,7 +1163,9 @@ class Storages:
                             ep_costs=s['periodical costs /(CU/(kWh a))'],
                             existing=s['existing capacity /(kWh)'],
                             minimum=s['min. investment capacity /(kWh)'],
-                            maximum=s['max. investment capacity /(kWh)']
+                            maximum=s['max. investment capacity /(kWh)'],
+                            nonconvex = True if s['Non-Convex Investment'] == 1 else False,
+                            offset = s['Fix Investment Costs /(CU/a)']
                         )))
 
                 # returns logging info
@@ -1154,7 +1194,7 @@ class Links:
            variable costs /(CU/kWh), periodical costs /(CU/(kW a))
         
         bus : obj:'dict'
-           -- dictionary containing the busses of the energy system
+           -- dictionary containing the buses of the energy system
         
         nodes : obj:'list'
             -- list of components
@@ -1189,7 +1229,9 @@ class Links:
                         ep_costs=p['periodical costs /(CU/(kW a))'],
                         minimum=p['min. investment capacity /(kW)'],
                         maximum=p['max. investment capacity /(kW)'],
-                        existing=p['existing capacity /(kW)']
+                        existing=p['existing capacity /(kW)'],
+                        nonconvex = True if p['Non-Convex Investment'] == 1 else False,
+                        offset = p['Fix Investment Costs /(CU/a)']/2
                     ))},
                 conversion_factors={self.busd[p['bus_2']]: p['efficiency']}))
 
@@ -1206,7 +1248,9 @@ class Links:
                         ep_costs=p['periodical costs /(CU/(kW a))'],
                         minimum=p['min. investment capacity /(kW)'],
                         maximum=p['max. investment capacity /(kW)'],
-                        existing=p['existing capacity /(kW)']
+                        existing=p['existing capacity /(kW)'],
+                        nonconvex = True if p['Non-Convex Investment'] == 1 else False,
+                        offset = p['Fix Investment Costs /(CU/a)']/2
                     ))},
                 conversion_factors={self.busd[p['bus_2']]: p['efficiency']}))
 
@@ -1222,6 +1266,7 @@ class Links:
         ----   
         @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
         """
+
         # creates transformer object representing the link and adds it to
         # the list of components
         self.nodes_links.append(
@@ -1234,7 +1279,9 @@ class Links:
                         ep_costs=p['periodical costs /(CU/(kW a))'],
                         minimum=p['min. investment capacity /(kW)'],
                         maximum=p['max. investment capacity /(kW)'],
-                        existing=p['existing capacity /(kW)']
+                        existing=p['existing capacity /(kW)'],
+                        nonconvex = True if p['Non-Convex Investment'] == 1 else False,
+                        offset=p['Fix Investment Costs /(CU/a)']
                     ))},
                 conversion_factors={self.busd[p['bus_2']]: p['efficiency']}))
 
@@ -1245,6 +1292,8 @@ class Links:
 
         # renames variables
         self.busd = bus
+        self.nodes = []
+        self.nodes_links = []
         for i in range(len(nodes)):
             self.nodes.append(nodes[i])
 
