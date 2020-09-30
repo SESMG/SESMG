@@ -783,7 +783,7 @@ def prepare_plotly_results(nodes_data,
 
 
 ######################
-##### SOURCES ##########
+##### SINKS ##########
 ######################  
 
     
