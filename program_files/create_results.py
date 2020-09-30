@@ -6,7 +6,7 @@
 
 import logging
 import pandas as pd
-from oemof import outputlib
+from oemof import solph
 from matplotlib import pyplot as plt
 import os
 
@@ -48,16 +48,15 @@ def xlsx(nodes_data, optimization_model, energy_system, filepath):
     nd = nodes_data
     esys = energy_system 
     om = optimization_model
-    results = outputlib.processing.results(om)
+    results = solph.processing.results(om)
 
     # Writes a spreadsheet containing the input and output flows into every
     # bus of the energy system for every timestep of the timesystem
     for i, b in nd['buses'].iterrows():
             if b['active']:
-                bus = outputlib.views.node(results, b['label'])                
-                file_path = os.path.join(filepath, 'results_'+b['label']
-                                                    +'.xlsx')                        
-                node_results = outputlib.views.node(results, b['label'])
+                bus = solph.views.node(results, b['label'])
+                file_path = os.path.join(filepath, 'results_'+b['label'] +'.xlsx')
+                node_results = solph.views.node(results, b['label'])
                 df = node_results['sequences']
                 df.head(2)          
                 
@@ -101,7 +100,7 @@ def charts(nodes_data, optimization_model, energy_system):
     nd = nodes_data
     esys = energy_system 
     om = optimization_model
-    results = outputlib.processing.results(om)
+    results = solph.processing.results(om)
 
     for i, b in nd['buses'].iterrows():
             if b['active']:
@@ -109,7 +108,7 @@ def charts(nodes_data, optimization_model, energy_system):
                              +"***************")            
                 logging.info('   '+'RESULTS: ' + b['label'])
                 
-                bus = outputlib.views.node(results, b['label'])
+                bus = solph.views.node(results, b['label'])
                 logging.info('   '+bus['sequences'].sum())
                 fig, ax = plt.subplots(figsize=(10,5))
                 bus['sequences'].plot(ax=ax)
@@ -118,9 +117,9 @@ def charts(nodes_data, optimization_model, energy_system):
                 fig.subplots_adjust(top=0.7)
                 plt.show()
                                             
-    esys.results['main'] = outputlib.processing.results(om)
-    esys.results['meta'] = outputlib.processing.meta_results(om)
-    string_results = outputlib.views.convert_keys_to_strings(
+    esys.results['main'] = solph.processing.results(om)
+    esys.results['meta'] = solph.processing.meta_results(om)
+    string_results = solph.views.convert_keys_to_strings(
                                 esys.results['main'])
     esys.dump(dpath=None, filename=None)
 
@@ -165,7 +164,7 @@ def statistics(nodes_data, optimization_model, energy_system):
     nd = nodes_data
     esys = energy_system 
     om = optimization_model
-    results = outputlib.processing.results(om)
+    results = solph.processing.results(om)
     
     #######################
     ### Analyze Results ###
@@ -194,7 +193,7 @@ def statistics(nodes_data, optimization_model, energy_system):
             # returns logging info
             logging.info('   '+de['label'])
             # reads the sinks optimized time series
-            demand = outputlib.views.node(results, de['label'])
+            demand = solph.views.node(results, de['label'])
             # continues, if the sink has a non-zero timeseries
             if demand:
                 # calculates the total demand of the sink
@@ -218,7 +217,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                 # returns logging info
                 logging.info('   '+b['label']+'_excess')
                 # reads the sinks optimized time series
-                excess = outputlib.views.node(results, b['label']+'_excess')
+                excess = solph.views.node(results, b['label']+'_excess')
                 # calculates the total demand of the sink
                 flowsum = excess['sequences'].sum()
                 # returns logging info
@@ -258,7 +257,7 @@ def statistics(nodes_data, optimization_model, energy_system):
             # returns logging info
             logging.info('   '+so['label'])
             # reads the time series of the sink
-            source = outputlib.views.node(results, so['label'])
+            source = solph.views.node(results, so['label'])
             # calculates the sum of all energy flows
             flowsum = source['sequences'].sum()
             # returns logging info
@@ -301,8 +300,8 @@ def statistics(nodes_data, optimization_model, energy_system):
             # Continues, if this is an investment object
             if source_investment > 0:
                 # calculates the periodical costs
-                periodical_costs = (so['periodical costs /(CU/(kW a))']*
-                                    source_investment)
+                periodical_costs = so['Fix Investment Costs /(CU/a)'] if (so['periodical costs /(CU/(kW a))'] == 0) and (so['Non-Convex Investment'] == 1) \
+                                       else (so['periodical costs /(CU/(kW a))']*source_investment)
                 # adds the periodical costs to the total_periodical_costs variable
                 total_periodical_costs = (total_periodical_costs 
                                          + periodical_costs)
@@ -325,7 +324,7 @@ def statistics(nodes_data, optimization_model, energy_system):
             if b['shortage']:
                 logging.info('   '+b['label']+'_shortage')
                         
-                shortage = outputlib.views.node(results, b['label']
+                shortage = solph.views.node(results, b['label']
                                                 +'_shortage')
                 # Flows
                 flowsum = shortage['sequences'].sum()
@@ -351,12 +350,12 @@ def statistics(nodes_data, optimization_model, energy_system):
     logging.info('   '+"******************************************************"
                              +"***")
     logging.info('   '+'------------------------------------------------------'
-                             +'---')
-    for i, t in nd['transformers'].iterrows():
+                             +'---')  
+    for i, t in nd['transformers'].iterrows():    
         if t['active']:
             logging.info('   '+t['label'])   
                         
-            transformer = outputlib.views.node(results, t['label'])
+            transformer = solph.views.node(results, t['label'])
             flowsum = transformer['sequences'].sum()
             flowmax = transformer['sequences'].max()
             
@@ -393,7 +392,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                              + str(round(flowsum[[7][0]], 2)) 
                              + ' kWh')
                 max_transformer_flow = flowmax[2]
-
+ 
             elif t['transformer type'] == 'HeatPump':
                 logging.info('   ' + 'Electricity Energy Input to '
                              + t['label'] + ': '
@@ -409,7 +408,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                              + ' kWh')
 
                 max_transformer_flow = flowmax[2]
-
+ 
             elif t['transformer type'] == 'OffsetTransformer':
                 logging.info('   '+'WARNING: OffsetTransformer are currently'
                              +' not a part of this model generator, but will'
@@ -449,8 +448,8 @@ def statistics(nodes_data, optimization_model, energy_system):
                     
             # Periodical Costs        
             if transformer_investment > 0:     ### Wert auf beide Busse anwenden! (Es muss die Summe der Busse, inklusive des Wirkungsgrades einbezogen werden!!!)
-                periodical_costs = (t['periodical costs /(CU/(kW a))']
-                                    *transformer_investment)
+                periodical_costs = t['Fix Investment Costs /(CU/a)'] if (t['periodical costs /(CU/(kW a))'] == 0) and (t['Non-Convex Investment'] == 1) \
+                                       else (t['periodical costs /(CU/(kW a))']*transformer_investment)
                 total_periodical_costs = (total_periodical_costs 
                                           + periodical_costs)
                 investments_to_be_made[t['label']] = (str(round(
@@ -479,7 +478,7 @@ def statistics(nodes_data, optimization_model, energy_system):
     for i, s in nd['storages'].iterrows():    
         if s['active']:
             logging.info('   '+s['label'])                     
-            storages = outputlib.views.node(results, s['label'])
+            storages = solph.views.node(results, s['label'])
             flowsum = storages['sequences'].sum()
             #logging.info('   '+flowsum)
             logging.info('   '+'Energy Output from ' 
@@ -491,14 +490,14 @@ def statistics(nodes_data, optimization_model, energy_system):
                          + str(round(flowsum[[2][0]], 2)) 
                          + ' kWh')
             
-            storage = outputlib.views.node(results, s['label'])
+            storage = solph.views.node(results, s['label'])
             flowmax = storage['sequences'].max()
             #variable_costs = s['variable input costs'] * flowsum[[0][0]]
             logging.info('   '+'Max. Capacity: ' 
                          + str(round(flowmax[[0][0]], 2)) 
                          + ' kW')
             
-            storage = outputlib.views.node(results, s['label'])
+            storage = solph.views.node(results, s['label'])
             flowsum = storage['sequences'].sum()
             variable_costs = s['variable input costs'] * flowsum[[0][0]]
             logging.info('   '+'Total variable costs for: ' 
@@ -520,8 +519,8 @@ def statistics(nodes_data, optimization_model, energy_system):
                 
             # Periodical Costs
             if storage_investment > float(s['existing capacity /(kWh)']):
-                periodical_costs = (s['periodical costs /(CU/(kWh a))']
-                                    *storage_investment)
+                periodical_costs = s['Fix Investment Costs /(CU/a)'] if (s['periodical costs /(CU/(kWh a))'] == 0) and (s['Non-Convex Investment'] == 1) \
+                                       else (s['periodical costs /(CU/(kWh a))']*storage_investment)
                 total_periodical_costs = (total_periodical_costs 
                                         + periodical_costs)
                 investments_to_be_made[s['label']] = (str(round(
@@ -549,7 +548,7 @@ def statistics(nodes_data, optimization_model, energy_system):
         if p['active']:
             logging.info('   '+p['label'])   
                         
-            link = outputlib.views.node(results, p['label'])
+            link = solph.views.node(results, p['label'])
             
             if link:
                 
@@ -566,7 +565,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                                  + ' kWh')
                     max_link_flow = flowmax[1]                
                 else:
-                    link2 = outputlib.views.node(results, p['label']
+                    link2 = solph.views.node(results, p['label']
                                                  +'_direction_2')
                     flowsum2 = link2['sequences'].sum()
                     flowmax2 = link2['sequences'].max()
@@ -622,7 +621,8 @@ def statistics(nodes_data, optimization_model, energy_system):
                         
                 # Periodical Costs        
                 if link_investment > 0:     ### Wert auf beide Busse anwenden! 
-                    periodical_costs = p['periodical costs /(CU/(kW a))']
+                    periodical_costs = p['Fix Investment Costs /(CU/a)'] if (p['periodical costs /(CU/(kW a))'] == 0) and (p['Non-Convex Investment'] == 1) \
+                                       else (p['periodical costs /(CU/(kW a))']*link_investment)
                     total_periodical_costs = (total_periodical_costs 
                                              + periodical_costs)
                     investments_to_be_made[p['label']] = (str(round(
@@ -651,7 +651,7 @@ def statistics(nodes_data, optimization_model, energy_system):
                              +"***")
     logging.info('   '+'------------------------------------------------------'
                              +'---')
-    meta_results = outputlib.processing.meta_results(om)
+    meta_results = solph.processing.meta_results(om)
     meta_results_objective = meta_results['objective']
     logging.info('   '+'Total System Costs:             ' 
                  + str(round(meta_results_objective, 1)) 
@@ -716,13 +716,13 @@ def prepare_plotly_results(nodes_data,
     @ Christian Klemm - christian.klemm@fh-muenster.de, 13.03.2020
         
     """
-
-    logging.info('   '+'--------------------------------------------------------')
+    
+    logging.info('   '+'--------------------------------------------------------') 
     logging.info('   '+'Preparing the results for interactive results...')
     nd = nodes_data
     esys = energy_system 
     om = optimization_model
-    results = outputlib.processing.results(om)
+    results = solph.processing.results(om)
     
     #######################
     ### Analyze Results ###
@@ -788,13 +788,14 @@ def prepare_plotly_results(nodes_data,
 
     
     for i, de in nd['demand'].iterrows():
+        
 
         variable_costs = 0
         periodical_costs = 0      
         
         if de['active']:
-
-            demand = outputlib.views.node(results, de['label'])
+                     
+            demand = solph.views.node(results, de['label'])
             
 #            for i in range len(demand):
             
@@ -848,11 +849,11 @@ def prepare_plotly_results(nodes_data,
     
         
     for i, b in nd['buses'].iterrows():
-        #commented out because of issues with interactive results
-        #if flowsum[[0][0]]:
-            #flowsum[[0][0]] = 0
-        #if flowmax[[0][0]]:
-            #flowmax[[0][0]] = 0
+        
+        # if flowsum[[0][0]]:
+        #     flowsum[[0][0]] = 0
+        # if flowmax[[0][0]]:
+        #     flowmax[[0][0]] = 0
         variable_costs = 0
         periodical_costs = 0
         
@@ -860,7 +861,7 @@ def prepare_plotly_results(nodes_data,
         if b['active']:
             if b['excess']:
                         
-                excess = outputlib.views.node(results, b['label']+'_excess')
+                excess = solph.views.node(results, b['label']+'_excess')
                 # Flows
                 flowsum = excess['sequences'].sum()
 
@@ -914,17 +915,17 @@ def prepare_plotly_results(nodes_data,
     
     for i, so in nd['sources'].iterrows():
         
-        if flowsum[[0][0]]:
-            flowsum[[0][0]] = 0
-        if flowmax[[0][0]]:
-            flowmax[[0][0]] = 0
+        # if flowsum[[0][0]]:
+        #     flowsum[[0][0]] = 0
+        # if flowmax[[0][0]]:
+        #     flowmax[[0][0]] = 0
         variable_costs = 0
         periodical_costs = 0
         source_investment = 0
         
         if so['active']:
             #Flows                  
-            source = outputlib.views.node(results, so['label'])
+            source = solph.views.node(results, so['label'])
             flowsum = source['sequences'].sum()
 
             total_usage = total_usage + flowsum[[0][0]]                 
@@ -949,8 +950,8 @@ def prepare_plotly_results(nodes_data,
 
             # Periodical Costs
             if source_investment > 0:
-                periodical_costs = (so['periodical costs /(CU/(kW a))']*
-                                    source_investment)
+                periodical_costs = so['Fix Investment Costs /(CU/a)'] if (so['periodical costs /(CU/(kW a))'] == 0) and (so['Non-Convex Investment'] == 1) \
+                                       else (so['periodical costs /(CU/(kW a))']*source_investment)
                 total_periodical_costs = (total_periodical_costs 
                                          + periodical_costs)
                 investments_to_be_made[so['label']] = (str(results[source_node, 
@@ -999,17 +1000,17 @@ def prepare_plotly_results(nodes_data,
          
     for i, b in nd['buses'].iterrows():
         
-        if flowsum[[0][0]]:
-            flowsum[[0][0]] = 0
-        if flowmax[[0][0]]:
-            flowmax[[0][0]] = 0
+        # if flowsum[[0][0]]:
+        #     flowsum[[0][0]] = 0
+        # if flowmax[[0][0]]:
+        #     flowmax[[0][0]] = 0
         variable_costs = 0
         periodical_costs = 0
         
         if b['active']:
             if b['shortage']:
 
-                shortage = outputlib.views.node(results, b['label']
+                shortage = solph.views.node(results, b['label']
                                                 +'_shortage')
                 # Flows
                 flowsum = shortage['sequences'].sum()
@@ -1058,10 +1059,10 @@ def prepare_plotly_results(nodes_data,
 
     for i, t in nd['transformers'].iterrows(): 
         
-        if flowsum[[0][0]]:
-            flowsum[[0][0]] = 0
-        if flowmax[[0][0]]:
-            flowmax[[0][0]] = 0
+        # if flowsum[[0][0]]:
+        #     flowsum[[0][0]] = 0
+        # if flowmax[[0][0]]:
+        #     flowmax[[0][0]] = 0
         variable_costs = 0
         periodical_costs = 0
         transformer_investment = 0
@@ -1069,7 +1070,7 @@ def prepare_plotly_results(nodes_data,
         if t['active']:
 
                         
-            transformer = outputlib.views.node(results, t['label'])
+            transformer = solph.views.node(results, t['label'])
             flowsum = transformer['sequences'].sum()
             flowmax = transformer['sequences'].max()
 
@@ -1094,8 +1095,8 @@ def prepare_plotly_results(nodes_data,
                     
             # Periodical Costs        
             if transformer_investment > 0:     ### Wert auf beide Busse anwenden! (Es muss die Summe der Busse, inklusive des Wirkungsgrades einbezogen werden!!!)
-                periodical_costs = (t['periodical costs /(CU/(kW a))']
-                                    *transformer_investment)
+                periodical_costs = t['Fix Investment Costs /(CU/a)'] if (t['periodical costs /(CU/(kW a))'] == 0) and (t['Non-Convex Investment'] == 1) \
+                                       else (t['periodical costs /(CU/(kW a))']*transformer_investment)
                 total_periodical_costs = (total_periodical_costs 
                                           + periodical_costs)
                 investments_to_be_made[t['label']] = (str(round(
@@ -1205,7 +1206,7 @@ def prepare_plotly_results(nodes_data,
                                       'variable costs/CU', 
                                       'periodical costs/CU',
                                       'investment/kW'])   
-                df_list_of_components = df_list_of_components.append(df_demand)
+                df_list_of_components = df_list_of_components.append(df_demand)    
 
             elif t['transformer type'] == 'HeatPump':
                 component_performance = transformer['sequences'].columns.values
@@ -1237,37 +1238,37 @@ def prepare_plotly_results(nodes_data,
                                       'variable costs/CU',
                                       'periodical costs/CU',
                                       'investment/kW'])
-                df_list_of_components = df_list_of_components.append(df_demand)
+                df_list_of_components = df_list_of_components.append(df_demand)            
+            
 
-
-            ######################
+######################
 ##### STORAGES ##########
 ######################           
 
     for i, s in nd['storages'].iterrows():
         
-        if flowsum[[0][0]]:
-            flowsum[[0][0]] = 0
-        if flowsum[[1][0]]:
-            flowsum[[1][0]] = 0
-        if flowmax[[0][0]]:
-            flowmax[[0][0]] = 0
+        # if flowsum[[0][0]]:
+        #     flowsum[[0][0]] = 0
+        # if flowsum[[1][0]]:
+        #     flowsum[[1][0]] = 0
+        # if flowmax[[0][0]]:
+        #     flowmax[[0][0]] = 0
         variable_costs = 0
         periodical_costs = 0   
         storage_investment = 0
         
         if s['active']:
                                
-            storages = outputlib.views.node(results, s['label'])
+            storages = solph.views.node(results, s['label'])
             flowsum = storages['sequences'].sum()
             #logging.info('   '+flowsum)
                         
-            storage = outputlib.views.node(results, s['label'])
+            storage = solph.views.node(results, s['label'])
             flowmax = storage['sequences'].max()
             #variable_costs = s['variable input costs'] * flowsum[[0][0]]
             
             
-            storage = outputlib.views.node(results, s['label'])
+            storage = solph.views.node(results, s['label'])
             flowsum = storage['sequences'].sum()
             variable_costs = s['variable input costs'] * flowsum[[0][0]]
             
@@ -1284,8 +1285,8 @@ def prepare_plotly_results(nodes_data,
                 
             # Periodical Costs
             if storage_investment > float(s['existing capacity /(kWh)']):
-                periodical_costs = (s['periodical costs /(CU/(kWh a))']
-                                    *storage_investment)
+                periodical_costs = s['Fix Investment Costs /(CU/a)'] if (s['periodical costs /(CU/(kWh a))'] == 0) and (s['Non-Convex Investment'] == 1) \
+                                       else (s['periodical costs /(CU/(kWh a))']*storage_investment)
                 total_periodical_costs = (total_periodical_costs 
                                         + periodical_costs)
                 investments_to_be_made[s['label']] = (str(round(
@@ -1349,7 +1350,7 @@ def prepare_plotly_results(nodes_data,
         
         if p['active']:
                         
-            link = outputlib.views.node(results, p['label'])
+            link = solph.views.node(results, p['label'])
             #print(link)
             
             if link:
@@ -1368,7 +1369,7 @@ def prepare_plotly_results(nodes_data,
                     flowsum2[[1][0]] = 0
                     
                 else:
-                    link2 = outputlib.views.node(results, p['label']
+                    link2 = solph.views.node(results, p['label']
                                                  +'_direction_2')
                     flowsum2 = link2['sequences'].sum()
                     flowmax2 = link2['sequences'].max()
@@ -1405,7 +1406,8 @@ def prepare_plotly_results(nodes_data,
                         
                 # Periodical Costs        
                 if link_investment > 0:     ### Wert auf beide Busse anwenden! 
-                    periodical_costs = p['periodical costs /(CU/(kW a))'] * link_investment
+                    periodical_costs = p['Fix Investment Costs /(CU/a)'] if (p['periodical costs /(CU/(kW a))'] == 0) and (p['Non-Convex Investment'] == 1) \
+                                       else (p['periodical costs /(CU/(kW a))']*link_investment)
                     total_periodical_costs = (total_periodical_costs 
                                              + periodical_costs)
                     investments_to_be_made[p['label']] = (str(round(
@@ -1493,7 +1495,7 @@ def prepare_plotly_results(nodes_data,
 ################
             
             
-    meta_results = outputlib.processing.meta_results(om)
+    meta_results = solph.processing.meta_results(om)
     meta_results_objective = meta_results['objective']
     
     investment_objects = list(investments_to_be_made.keys())
