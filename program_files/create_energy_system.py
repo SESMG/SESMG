@@ -132,6 +132,9 @@ def define_energy_system(nodes_data):
 def format_weather_dataset(filepath):
     '''DOCSTRING'''
 
+    import pandas as pd
+    import os
+
     # The feedinlib can only read .csv data sets, so the weather data from
     # the .xlsx scenario file have to be converted into a .csv data set and
     # saved

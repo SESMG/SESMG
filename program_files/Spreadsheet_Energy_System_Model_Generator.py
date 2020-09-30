@@ -90,6 +90,9 @@ def SESMG(scenario_file, result_path):
     # IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
     nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
 
+    # formatting of the weather data record according to the requirements of the classes used
+    create_energy_system.format_weather_dataset(filepath=scenario_file)
+
     # CREATES AN ENERGYSYSTEM AS DEFINED IN THE SCENARIO FILE
     esys = create_energy_system.define_energy_system(nodes_data=nodes_data)
     # CREATES AN LIST OF COMPONENTS
