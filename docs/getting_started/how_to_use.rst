@@ -151,7 +151,9 @@ defined if the parameter "technology" is set on "photovoltaic". The following pa
 Transformers
 =================================================
 
-Within this sheet, the transformers of the energy system are defined. Properties with the addition “HP ONLY” have only to be defined if the parameter “transformer type” is set on “HeatPump”. The following parameters have to be entered:
+Within this sheet, the transformers of the energy system are defined. Properties with the addition “HP ONLY” have only to be defined if the parameter “transformer type” is set on “HeatPump”. With other transformers, these fields can be left empty or filled with any placeholder. 
+
+The following parameters have to be entered:
 
 
 - **label**: Unique designation of the transformer. The following format is recommended: "ID_energy sector_transformer".
