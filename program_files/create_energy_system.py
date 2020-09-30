@@ -127,3 +127,16 @@ def define_energy_system(nodes_data):
 
     # returns oemof energy system as result of this function
     return esys
+
+
+def format_weather_dataset(filepath):
+    '''DOCSTRING'''
+
+    # The feedinlib can only read .csv data sets, so the weather data from
+    # the .xlsx scenario file have to be converted into a .csv data set and
+    # saved
+    read_file = pd.read_excel(filepath, sheet_name='weather data')
+    read_file.to_csv(
+        os.path.join(os.path.dirname(__file__)) + '/interim_data/weather_data.csv',
+        index=None,
+        header=True)
