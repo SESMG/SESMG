@@ -266,7 +266,7 @@ window.geometry('1200x900')
 tab_control = ttk.Notebook(window)
 tab_control.pack(expand=1, fill='both')
 tab_control.pressed_index = None
-scenario_path = StringVar(window, str(os.path.join(os.path.dirname(__file__), 'scenario.xlsx')))
+scenario_path = StringVar(window, str(os.path.join(os.path.dirname(__file__), 'scenario_v0.0.6.xlsx')))
 
 ############
 # MAIN FRAME
