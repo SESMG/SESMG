@@ -151,6 +151,23 @@ def create_graph(filepath, nodes_data, legend=False):
             if t['output2'] != "None":
                 dot.node(t['output2'], shape='ellipse', fontsize="10")
                 dot.edge(t['label'], t['output2'])
+                
+
+
+
+            if t['transformer type'] == "HeatPump":
+
+                # adds "_low_temp_source" to the label
+                low_temp_source = t['label']+'_low_temp_source'
+                # Linebreaks, so that the labels fit the boxes
+                low_temp_source = linebreaks(low_temp_source)
+
+                # Adds a second input and a heat source (node and edge) for heat pumps
+                dot.node(t['label'] + '_low_temp_bus', shape='ellipse', fontsize="10")
+                dot.edge(t['label'] + '_low_temp_bus', t['label'])
+                dot.node(low_temp_source, shape='trapezium', fontsize="10",
+                         fixedsize='shape', width='1.1', height='0.6')
+                dot.edge(low_temp_source, t['label'] + '_low_temp_bus')
 
     # Implements storages and their connected buses in the graph
     for i, s in nd['storages'].iterrows():

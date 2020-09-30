@@ -151,7 +151,9 @@ defined if the parameter "technology" is set on "photovoltaic". The following pa
 Transformers
 =================================================
 
-Within this sheet, the transformers of the energy system are defined. The following parameters have to be entered:
+Within this sheet, the transformers of the energy system are defined. Properties with the addition “HP ONLY” have only to be defined if the parameter “transformer type” is set on “HeatPump”. With other transformers, these fields can be left empty or filled with any placeholder. 
+
+The following parameters have to be entered:
 
 
 - **label**: Unique designation of the transformer. The following format is recommended: "ID_energy sector_transformer".
@@ -168,6 +170,15 @@ Within this sheet, the transformers of the energy system are defined. The follow
 - **max investment capacity/(kW)**: Maximum  installable transformer capacity in addition to the previously existing one.
 - **min investment capacity/(kW)**: Minimum transformer capacity to be installed.
 - **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
+- **heat source (HP ONLY)**: Specifies the heat source. At the moment are "GroundWater", "Ground", "Air" and "Water" possible.
+- **temperature high /(deg C) (HP ONLY)**: Temperature of the high temperature heat reservoir
+- **quality grade (HP ONLY)**: To determine the COP of a real machine a scale-down factor (the quality grade) is applied on the Carnot efficiency (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
+- **area /(sq m) (HP ONLY)**: Open spaces for ground-coupled heat pumps (GCHP).
+- **length of the geoth. probe (m) (HP ONLY)**: Length of the vertical heat exchanger, only for GCHP.
+- **heat extraction (kW/(m*a)) (HP ONLY)**: Heat extraction for the heat exchanger referring to the location, only for GCHP.
+- **min. borehole area (sq m) (HP ONLY)**: Limited space due to the regeneation of the ground source, only for GCHP.
+- **temp threshold icing (HP ONLY)**: Temperature below which icing occurs (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
+- **factor icing (HP ONLY)**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
 
 
 .. figure:: ../images/BSP_transformers.png
