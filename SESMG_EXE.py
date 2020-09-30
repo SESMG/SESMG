@@ -309,7 +309,6 @@ create_main_frame_elements(elements=execution_elements, sheet=main_frame, first_
 ############
 import pandas as pd
 import openpyxl
-from program_files.Spreadsheet_Energy_System_Model_Generator import SESMG_DEMO
 import matplotlib as mlp
 import matplotlib.pyplot as plt
 import numpy as np
