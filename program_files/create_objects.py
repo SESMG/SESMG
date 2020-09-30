@@ -5,7 +5,9 @@ Functions for the creation of oemof energy system objects from a given set
 of object parameters.
 
 ---
-@ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+Contributors:
+    - Christian Klemm - christian.klemm@fh-muenster.de
+    - Gregor Becker - gb611137@fh-muenster.de
 """
 
 from oemof import solph
@@ -129,6 +131,7 @@ class Sources:
     ---
     Contributors:
         - Christian Klemm - christian.klemm@fh-muenster.de
+        - Gregor Becker - gb611137@fh-muenster.de
     """
 
     def create_fixed_source(self, so, fix_timeseries):
@@ -398,15 +401,6 @@ class Sources:
                 # Create Time-series Sources
                 elif so['technology'] == 'timeseries':
                     self.timeseries_source(so, filepath)
-
-        # The feedinlib can only read .csv data sets, so the weather data from
-        # the .xlsx scenario file have to be converted into a .csv data set and
-        # saved
-        read_file = pd.read_excel(filepath, sheet_name='weather data')
-        read_file.to_csv(
-            os.path.join(os.path.dirname(__file__)) + '/interim_data/weather_data.csv',
-            index=None,
-            header=True)
 
         # appends created sources to the list of nodes
         for i in range(len(self.nodes_sources)):
