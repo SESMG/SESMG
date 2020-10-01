@@ -52,38 +52,28 @@ shown in the chapters above.
 create energy system 
 -------------------------------------------------       
 
-import_scenario()
+def import_scenario(filepath)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. container:: memitem
-
-   .. container:: memproto
-
-      ===================================================================
-      def program_files.create_energy_system.import_scenario (*filepath*) 
-      ===================================================================
-
-   .. container:: memdoc
-
-      Imports data from a spreadsheet scenario file.
-
-      The excel sheet has to contain the following sheets:
-
-      -  timesystem
-      -  buses
-      -  transformers
-      -  sinks
-      -  sources
-      -  storages
-      -  powerlines
-      -  time_series
-
-      --------------
-
-      Parameters
-         
-         -  String filename : path to excel scenario file
-         
+	+-----------------------------------------------------+
+    | Imports Data from a Spreadsheet Scenario File.	  |
+	|													  |
+	| The excel sheet has to contain the following sheets:|
+	|													  |
+    |  -  timesystem									  |
+    |  -  buses											  |
+    |  -  transformers									  |
+    |  -  sinks											  |
+    |  -  sources										  |
+    |  -  storages										  |
+    |  -  powerlines									  |
+    |  -  time_series									  |
+	|													  |
+    +-----------------------------------------------------+
+	+-----------------------------------------------------+
+    | Parameters										  |
+    |     												  |
+    |     -  String filename : path to excel scenario file|
+    +-----------------------------------------------------+     
 
       --------------
 
@@ -92,37 +82,26 @@ import_scenario()
          -  dict nodes_data : dictionary containing data from excel scenario file
 		 
 		 
-define_energy_system()
+def define_energy_system(nodes_data)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. container:: memitem
-
-   .. container:: memproto
-
-      ======================================================================================
-      def program_files.create_energy_system.define_energy_system (*filepath*, *nodes_data*) 
-      ======================================================================================
-
-   .. container:: memdoc
 
       Creates an energy system.
 
       Creates an energy system with the parameters defined in the given
-      .xlsx- file. The file has to contain a sheet called "timesystem",
+      .xlsx-file. The file has to contain a sheet called "timesystem",
       which must have the following structure:
 
-      =================== =================== ======== ===================
-      start_date          end_date            holidays temporal resolution
-      =================== =================== ======== ===================
-      YYYY-MM-DD hh:mm:ss YYYY-MM-DD hh:mm:ss          h
-      =================== =================== ======== ===================
+      =================== =================== ===================
+      start_date          end_date            temporal resolution
+      =================== =================== ===================
+      YYYY-MM-DD hh:mm:ss YYYY-MM-DD hh:mm:ss h
+      =================== =================== ===================
 
       --------------
 
       Parameters
          
-         -  String filename : path to excel scenario file
-         -  String sheet : sheet in excel file, where the timesystem is defined
          -  dict   nodes_data : dictionary containing data from excel scenario file
          
 
