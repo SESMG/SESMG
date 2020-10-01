@@ -14,6 +14,7 @@ pip3 install tables==3.5.2
 pip3 install openpyxl==3.0.0
 
 pip3 install https://github.com/oemof/oemof-solph/archive/master.zip
+pip3 install oemof.thermal==0.0.3
 pip3 install demandlib==0.1.6
 pip3 install pvlib==0.7.1
 pip3 install feedinlib==0.0.12
