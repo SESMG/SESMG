@@ -210,11 +210,6 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **max. investment capacity/(kW)**: Maximum in addition to existing capacity, installable storage capacity.
 - **min. investment capacity/(kW)**: Minimum storage capacity to be installed.
 
-.. figure:: ../images/BSP_storage.png
-   :width: 100 %
-   :alt: Storage-Example
-   :align: center
-   
 .. figure:: ../images/BSP_storage_2.png
    :width: 100 %
    :alt: Storage-Example
