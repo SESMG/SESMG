@@ -214,6 +214,11 @@ Within this sheet, the sinks of the energy system are defined. The following par
    :width: 100 %
    :alt: Storage-Example
    :align: center
+   
+.. figure:: ../images/BSP_storage_2.png
+   :width: 100 %
+   :alt: Storage-Example
+   :align: center
 
    Exemplary input for the storages sheet
   
