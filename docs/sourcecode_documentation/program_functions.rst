@@ -618,87 +618,31 @@ class Links:
 			labels for an undirected link
 			
 			- int outnum: Defines in which direction the link is directed.
-
-                              
-
-links()
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. container:: memitem
-
-   .. container:: memproto
-
-      =====================================================================
-      def program_files.create_objects.links (*nodes_data*, *nodes*, *bus*)   
-      =====================================================================
-
-   .. container:: memdoc
-
-      Creates link objects.
-
-      Creates links objects as defined in 'nodes_data' and adds them to
-      the list of components 'nodes'.
-
-      --------------
-
-      Parameters
-         
-         -  dict nodes_data : dictionary containing data from excel scenario file. The following data have to be provided: label, active, bus_1, bus_2, (un)directed, efficiency, existing capacity /(kW), min. investment capacity /(kW), max. investment capacity /(kW), variable costs  /(CU/kWh), periodical costs /(CU/(kW a))
-         -  dict bus : dictionary containing the busses of the energy system
-         -  list nodes : list of components
-
-undirected_link()
-+++++++++++++++++++++++++++++++++++++++++++++++++
-
-.. container:: memitem
-
-   .. container:: memproto
-
-      =========================================================
-      def program_files.create_objects.links.undirected_link () 
-      =========================================================
-	  
-   .. container:: memdoc
-
-      Creates an undirected link object.
-
-      Creates an undirected link between two buses and adds it to the
-      list of components 'nodes'.
-
-directed_link()
-+++++++++++++++++++++++++++++++++++++++++++++++++
-
-.. container:: memitem
-
-   .. container:: memproto
-
-      =======================================================
-      def program_files.create_objects.links.directed_link () 
-      =======================================================
-
-   .. container:: memdoc
-
-      Creates a directed link object.
-
-      Creates a directed link between two buses and adds it to the list
-      of components 'nodes'.
-
-
+	
+	def __init__(self, nodes_data, nodes, bus)
+	+++++++++++++++++++++++++++++++++++++++++++++++
+	
+		Inits the Links class.
+		
+  		--------------
+		
+  		Parameters:
+		
+			- dict nodes_data: dictionary containing data from excel scenario file. The
+			following data have to be provided:
+				- 'active'
+				- 'label'
+				- '(un)directed'
+				
+			- dict bus: dictionary containing the buses of the energy system
+			
+			- list nodes: list of components created before (can be empty)
 	
 optimize model
 -------------------------------------------------
 
-least_cost_model()
+def least_cost_model(energy_system)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. container:: memitem
-
-   .. container:: memproto
-
-      =================================================================================
-      def program_files.optimize_model.least_cost_model (*nodes_data*, *energy_system*)   
-      =================================================================================
-
-   .. container:: memdoc
 
       Solves a given energy system model.
 
@@ -709,14 +653,14 @@ least_cost_model()
 
       Parameters
          
-         -  String nodes_data : dictionary containing data from excel   scenario file
-         -  energy_system : energy system consisting a number of components 
+		  -  energy_system : energy system consisting a number of components 
 		 
       --------------
 
       Return values
          
-         -  dict nodes_data : dictionary containing data from excel scenario file                              
+         -  Model om: solved oemof model
+		                             
 create_graph()
 -------------------------------------------------
 
