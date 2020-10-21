@@ -97,7 +97,7 @@ def buses(nodes_data, nodes):
 											 b['shortage costs /(CU/kWh)'])}))
 
 			# Returns the list of buses as result of the function
-			return busd
+	return busd
 
 
 class Sources:
