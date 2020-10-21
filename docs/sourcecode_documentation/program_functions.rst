@@ -85,7 +85,6 @@ def import_scenario(filepath)
 def define_energy_system(nodes_data)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-
       Creates an energy system.
 
       Creates an energy system with the parameters defined in the given
@@ -114,18 +113,8 @@ def define_energy_system(nodes_data)
 create objects
 -------------------------------------------------
 		                
-buses()
+def buses(nodes_data, nodes)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. container:: memitem
-
-   .. container:: memproto
-
-      ==============================================================
-      def program_files.create_objects.buses (*nodes_data*, *nodes*)   
-      ==============================================================
-
-   .. container:: memdoc
 
       Creates bus objects.
 
@@ -136,7 +125,15 @@ buses()
 
       Parameters
          
-          -  String nodes_data : dictionary containing parameters of the buses to be created. The following parameters have to be provided: label, active, excess, shortage, shortage costs /(CU/kWh), excess costs /(CU/kWh)           
+          -  dict nodes_data : dictionary containing parameters 
+		  the buses to be created. The following parameters have to be provided: 
+		  		- label,
+				- active, 
+				- excess, 
+				- shortage,
+				- shortage costs /(CU/kWh), 
+				- excess costs /(CU/kWh)  
+				         
           -  list nodes : list of components created before (can be empty)                            
          
       --------------
@@ -145,241 +142,367 @@ buses()
          
          -  dict busd : dictionary containing all buses created
 		 
-sources()
+class Sources
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	  Creates source objects.
 
-.. container:: memitem
+	      There are four options for labeling source objects to be created:
+	          - 'commodity' : a source with flexible time series
+	          - 'timeseries' : a source with predefined time series
+	          - 'photovoltaic' : a photovoltaic component
+	          - 'wind power' : a wind power component
+	  
+	def create_source(self, so, timeseries_args)
+	+++++++++++++++++++++++++++++++++++++++++++++++++
+		Creates an oemof source with fixed / unfixed timeseries
+	
+		--------------
+		
+		Paramters
+		
+			- dict so: dictionary containing all information for the
+                   creation of an oemof source.
+                   At least the following key-value-pairs have to be
+                   included:
+                   - 'label'
+                   - 'output'
+                   - 'periodical costs /(CU/(kW a))'
+                   - 'min. investment capacity /(kW)'
+                   - 'max. investment capacity /(kW)'
+                   - 'existing capacity /(kW)'
+                   - 'Non-Convex Investment'
+                   - 'Fix Investment Costs /(CU/a)'
+                   - 'variable costs /(CU/kWh)'
+				   
+			- dict timeseries_args: dictionary rather containing the 'fix-attribute'  or the 
+					'min-' and 'max-attribute' of a source  
+	
+	def commodity_source(self,so)
+	+++++++++++++++++++++++++++++
+		Creates an oemof source with flexible time series (no maximum or minimum) with the use of the
+		create_source method.
+		
+		--------------
+		
+		Parameters
+			
+			 - dict so: dictionary containing all information for the
+                   creation of an oemof source.
+                   At least the following key-value-pairs have to be
+                   included:
+                   - 'label'
+	
+	def timeseries_source(self, so ,filepath)
+	+++++++++++++++++++++++++++++++++++++++++
+		Creates an oemof source object from a pre-defined timeseries with the use of 
+		the create_source method.
+		
+		--------------
+		
+		Parameters 
+			
+			 - dict so: dictionary containing all information for the
+                  creation of an oemof source.
+                  At least the following key-value-pairs have to be
+                  included:
+                  - 'label'
+                  - 'fixed'
+				  
+			- String filepath: path to .xlsx scenario-file containing a "time_series" sheet
+			
+	def pv_source(self, so)
+	++++++++++++++++++++++
+		Creates an oemof photovoltaic source object.
 
-   .. container:: memproto
+		Simulates the yield of a photovoltaic system using feedinlib and
+		creates a source object with the yield as time series 
+		and the use of the create_source method.
+		
+		--------------
+		
+		Parameters 
+			
+		 	- dict so: dictionary containing all information for the
+                 creation of an oemof source.
+                 At least the following key-value-pairs have to be
+                 included:
+				 - 'label'
+				 - 'fixed'
+				 - 'Azimuth (PV ONLY)'
+				 - 'Surface Tilt (PV ONLY)'
+				 - 'Modul Model (PV ONLY)'
+				 - 'Inverter Model (PV ONLY)'
+				 - 'Albedo (PV ONLY)'
+				 - 'Latitude (PV ONLY)'
+				 - 'Longitude (PV ONLY)'				                        
+			
+	def windpower_source(self, so)
+	++++++++++++++++++++++++++++++
+		Creates an oemof windpower source object.
 
-      ===================================================================================
-      def program_files.create_objects.sources (*nodes_data*, *nodes*, *bus*, *filepath*)   
-      ===================================================================================
+		Simulates the yield of a windturbine using feedinlib and
+		creates a source object with the yield as time series 
+		and the use of the create_source method.
+			
+		--------------
+		
+		Parameters 
+		
+		 	- dict so: dictionary containing all information for the
+                 creation of an oemof source.
+                 At least the following key-value-pairs have to be
+                 included:
+				 - 'label'
+				 - 'fixed'
+				 - 'Turbine Model (Windpower ONLY)'
+				 - 'Hub Height (Windpower ONLY)'
+	
+	def __init__(self, nodes_data, nodes, busd, filepath)
+	+++++++++++++++++++++++++++++++++++++++++++++++++++++
+		Inits the source class.
+		
+        --------------
 
-   .. container:: memdoc
-
-      Creates source objects.
-
-      Creates source objects with the parameters given in 'nodes_data'
-      and adds them to the list of components 'nodes'. If the parameter
-      'technology' in nodes_data is labeled as 'commodity source', a
-      source with defined timeseries will be created. If technology is
-      labeled as 'photovoltaic' a photovoltaic system component will be
-      created.
-
-      --------------
-
-      Parameters
+        Parameters
          
-         -  dict nodes_data : dictionary containing parameters of sources to be created. The following data have to be provided: label, active, output, technology, variable costs /(CU/kWh), existing capacity /(kW), min. investment capacity /(kW), max. investment capacity /(kW), periodical costs /(CU/(kW a)), technology database (PV ONLY), inverter database (PV ONLY), Modul Model (PV ONLY), Inverter Model (PV ONLY), Azimuth (PV ONLY), Surface Tilt (PV ONLY), Albedo (PV ONLY), Altitude (PV ONLY), Latitude (PV ONLY), Longitude (PV ONLY)               
-         -  dict bus : dictionary containing the buses of the energy system 
-         -  list nodes : list of components created before (can be empty) 
-		 -  String filepath : path to .xlsx scenario-file containing a "weather data" sheet with         timeseries for                                                     
-		 	-  "dhi" (diffuse horizontal irradiation) W/m^2             
-		 	-  "dirhi" (direct horizontal     irradiance) W/m^2              
-		 	-  "pressure" in Pa               
-		 	-  "temperature" in °C            
-		 	-  "windspeed" in m/s             
-		 	-  "z0" (roughness length) in m
+        	-  dict nodes_data : dictionary containing parameters of sources to be created. 
+		   		The following data have to be provided: 
+					- 'label'
+				    - 'active'
+					- 'fixed'
+				    - 'output'
+				    - 'technology'
+				    - 'variable costs / (CU / kWh)'
+				    - 'existing capacity / (kW)'
+				    - 'min.investment capacity / (kW)'
+				    - 'max.investment capacity / (kW)'
+				    - 'periodical costs / (CU / (kW a))'
+				    - 'Non-Convex Investment'
+				    - 'Fix Investment Cost / (CU/a)'
+				    - 'Turbine Model (Windpower ONLY)'
+				    - 'Hub Height (Windpower ONLY)'
+				    - 'technology database(PV ONLY)'
+				    - 'inverter database(PV ONLY)'
+				    - 'Modul Model(PV ONLY)'
+				    - 'Inverter Model(PV ONLY)'
+				    - 'Azimuth(PV ONLY)'
+				    - 'Surface Tilt(PV ONLY)'
+				    - 'Albedo(PV ONLY)'
+				    - 'Altitude(PV ONLY)'
+				    - 'Latitude(PV ONLY)'
+				    - 'Longitude(PV ONLY)'
+				
+			-  dict bus : dictionary containing the buses of the energy system 
 			
-commodity_source()
-+++++++++++++++++++++++++++++++++++++++++++++++++
-
-.. container:: memitem
-
-   .. container:: memproto
-
-      ============================================================
-      def program_files.create_objects.sources.commodity_source () 
-      ============================================================
-
-   .. container:: memdoc
-
-      Creates a source object with unfixed time-series.
-	  
-	  
-
-pv_source()
-+++++++++++++++++++++++++++++++++++++++++++++++++
-
-.. container:: memitem
-
-   .. container:: memproto
-
-      ====================================================
-      def program_files.create_ojects.sources.pv_source () 
-      ====================================================
-
-   .. container:: memdoc
-
-      Creates photovoltaic source object.
-
-      Simulates the yield of a photovoltaic system using feedinlib and
-      creates a source object with the yield as time series.
-	  
-
-windpower_source()
-+++++++++++++++++++++++++++++++++++++++++++++++++
-
-.. container:: memitem
-
-   .. container:: memproto
-
-      ============================================================
-      def program_files.create_objects.sources.windpower_source () 
-      ============================================================
-	  
-   .. container:: memdoc
-
-      Creates windpower source object.
-
-      Simulates the yield of a windturbine using feedinlib and creates a
-      source object with the yield as time series.
-	  
+			-  list nodes : list of components created before (can be empty) 
 			
-sinks()
+			-  String filepath : path to .xlsx scenario-file containing a "weather data" sheet 
+		 		with timeseries for                                                     
+  		 		-  "dhi" (diffuse horizontal irradiation) W/m^2             
+  		 		-  "dirhi" (direct horizontal     irradiance) W/m^2              
+  		 		-  "pressure" in Pa               
+  		 		-  "temperature" in °C            
+  		 		-  "windspeed" in m/s             
+  		 		-  "z0" (roughness length) in m  
+		
+		--------------
+		
+		Other Variables
+				
+			- list nodes_sources : class intern list of sources that are already created
+			
+class Sinks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	Creates sink objects.
 
-.. container:: memitem
+	There are four options for labeling source objects to be
+	created:
+		- 'unfixed' : a source with flexible time series
+	    - 'timeseries' : a source with predefined time series
+	    -  SLP : a VDEW standard load profile component
+	    - 'richardson' : a component with stochatical generated timeseries
+					
+	def create_sink(self, de, timeseries_args)
+	++++++++++++++++++++++++++++++++++++++++++
+		Creates an oemof sink with fixed or unfixed timeseries.
+		
+        --------------
+		
+		Parameters
+			
+			- dict de: dictionary containing all information for the 
+				creation of an oemof sink.
+				At least the following key-value-pairs have to be 
+				included:
+			    	- 'label'
+					- 'input'
+	
+			- dict timeseries_args: dictionary rather containing the 'fix-attribute'
+            	or the 'min-' and 'max-attribute' of a sink
+	
+	def unfixed_sink(self, de)
+	++++++++++++++++++++++++++
+		Creates a sink object with an unfixed energy input and the
+		use of the create_sink method.
+		
+		--------------
+		
+		Parameters:
+		   
+			- dict de: dictionary containing all information for the 
+				creation of an oemof sink.
+				At least the following key-value-pairs have to be 
+				included:
+			    	- 'label'
+			    	- 'nominal value /(kW)'
 
-   .. container:: memproto
+	def timeseries_sink(self, de, filepath)
+	+++++++++++++++++++++++++++++++++++++++
+		Creates a sink object with fixed input. The input must be given as a time series 
+		in the scenario file. In this context the method uses the create_sink method.
+		
+		--------------
+		
+		Parameters:
+		
+			- dict de: dictionary containing all information for the 
+				creation of an oemof sink.
+				At least the following key-value-pairs have to be 
+				included:
+			    	- 'label'
+			    	- 'nominal value /(kW)'
+					
+			- String filepath: path to .xlsx scenario-file containing a "time_series" sheet
+			
+	def slp_sink(self, de, nd)
+	++++++++++++++++++++++++++
+		Creates a sink with a residential or commercial SLP time series.
+		
+		Creates a sink with inputs according to VDEW standard load profiles, 
+		using oemofs demandlib. Used for the modelling of residential or commercial
+	    electricity demand. In this context the method uses the create_sink method.
+		
+		--------------
+		
+		Parameters:
+		
+			- dict de: dictionary containing all information for the 
+				creation of an oemof sink.
+				At least the following key-value-pairs have to be 
+				included:
+					- 'label'
+					- 'load profile'
+					- 'annual demand /(kWh/a)'
+					- 'building class [HEAT SLP ONLY]'
+					- 'wind class [HEAT SLP ONLY]'
+				
+			- dict nd: dictionary containing the whole scenario file
+			
+	def richardson_sink(self, de, filepath)
+	++++++++++++++++++++++++++
+		Creates a sink with stochastical timeseries.
 
-      =================================================================================
-      def program_files.create_objects.sinks (*nodes_data*, *bus*, *nodes*, *filepath*)   
-      =================================================================================
+		Creates a sink with stochastical input, using richardson.py.
+		Used for the modelling of residential electricity demands.
+		In this context the method uses the create_sink method.
+		
+		--------------
+		
+		Parameters:
+		
+			- dict de: dictionary containing all information for the 
+				creation of an oemof sink.
+				At least the following key-value-pairs have to be 
+				included:
+					- 'label'
+					- 'fixed'
+					- 'annual demand /(kWh/a)'
+					- 'occupants [RICHARDSON]'
+				
+			- String filepath: path to the .xlsx scenario-file containing a "timesysten" sheet
+	
+	def __init__(self, nodes_data, busd, nodes, filepath)
+	++++++++++++++++++++++++++
+		Creates a sink with stochastical timeseries.
 
-   .. container:: memdoc
+		Creates a sink with stochastical input, using richardson.py.
+		Used for the modelling of residential electricity demands.
+		In this context the method uses the create_sink method.
+		
+		--------------
+		
+		Parameters:
+		
+			- dict de: dictionary containing all information for the 
+				creation of an oemof sink.
+				At least the following key-value-pairs have to be 
+				included:
+					- 'label'
+					- 'active'
+					- 'fixed'
+				    - 'input'
+				    - 'load profile'
+				    - 'nominal value /(kW)'
+				    - 'annual demand /(kWh/a)'
+				    - 'occupants [Richardson]'
+				    - 'building class [HEAT SLP ONLY]'
+				    - 'wind class [HEAT SLP ONLY]'
+			
+			- dict busd: dicitionary containing the buses of the energy system
+			
+			- list nodes: list of components created before (can be empty)
+				
+			- String filepath: path to .xlsx scenario-file containing a
+                    "weather data" sheet with timeseries for
+                        -   "dhi"(diffuse horizontal irradiation)
+                            W / m ^ 2
+                        -   "dirhi"(direct horizontal irradiance)
+                            W / m ^ 2
+                        -   "pressure" in Pa
+                        -   "temperature" in °C
+                        -   "windspeed" in m / s
+                        -   "z0"(roughness length) in m
+   		
+		--------------
+		Other variables:
+		
+			- list nodes_sinks: class intern list of sinks that are already created 
+			
+class Transformers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	
+	def generic_transformer(self, tf)
+	+++++++++++++++++++++++++++++++++++++++++++++++++
 
-      Creates sink objects.
+	     Creates a Generic Transformer object.
 
-      Creates sinks objects with the parameters given in 'nodes_data'
-      and adds them to the list of components 'nodes'.
-
-      --------------
-
-      Parameters
-        
-         -  dict nodes_data : dictionary containing parameters of sinks to  be created. The following data have to be provided: label, active, input, input2, load profile, nominal value /(kW), annual demand /(kWh/a), occupants [RICHARDSON], building class [HEAT SLP ONLY], wind class [HEAT SLP ONLY], fixed
-         -  dict bus : dictionary containing the busses of the energy system             
-         -  String filepath : path to .xlsx scenario-file containing a "weather data" sheet with         timeseries for                                                     
-			 -  "dhi" (diffuse horizontal irradiation) W/m^2             
-			 -  "dirhi" (direct horizontal     irradiance) W/m^2              
-			 -  "pressure" in Pa               
-			 -  "temperature" in °C            
-			 -  "windspeed" in m/s             
-			 -  "z0" (roughness length) in m   
-         -  list nodes : list of components created before (can be empty)
-		 
-unfixed_sink()
-+++++++++++++++++++++++++++++++++++++++++++++++++
-
-.. container:: memitem
-
-   .. container:: memproto
-
-      ======================================================
-      def program_files.create_objects.sinks.unfixed_sink () 
-      ======================================================
-
-   .. container:: memdoc
-
-      Creates a sink object with an unfixed energy input.
-	  
-timeseries_sink()
-+++++++++++++++++++++++++++++++++++++++++++++++++
-
-.. container:: memitem
-
-   .. container:: memproto
-
-      =========================================================
-      def program_files.create_objects.sinks.timeseries_sink () 
-      =========================================================
-
-   .. container:: memdoc
-
-      Creates a sink with fixed input.
-
-      Creates a sink object with a fixed input. The input must be given
-      as a time series in 'nodes_data'.
-	 
-residentialheatslp_sink()
-+++++++++++++++++++++++++++++++++++++++++++++++++
-
-.. container:: memitem
-
-   .. container:: memproto
-
-      =================================================================
-      def program_files.create_objects.sinks.residentialheatslp_sink () 
-      =================================================================
-
-   .. container:: memdoc
-
-      Creates a sink with a residential SLP time series.
-
-      Creates a sink with inputs according to VDEW standard load
-      profiles, using oemofs demandlib and adds it to the list of
-      components 'nodes'. Used for the modelling of residential
-      ectricity demands.
-	  
-		 
-commercialheatslp_sink()
-+++++++++++++++++++++++++++++++++++++++++++++++++
-
-.. container:: memitem
-
-   .. container:: memproto
-
-      ================================================================
-      def program_files.create_objects.sinks.commercialheatslp_sink () 
-      ================================================================
-
-   .. container:: memdoc
-
-      Creates a sink with commercial SLP timeseries Creates a sink with
-      inputs according to VDEW standard load profiles, using oemofs
-      demandlib and adds it to the list of components 'nodes'.
-
-      Used for the modelling of commercial electricity demands.
-	  
-	  
-richardson_sink()
-+++++++++++++++++++++++++++++++++++++++++++++++++
-
-.. container:: memitem
-
-   .. container:: memproto
-
-      =========================================================
-      def program_files.create_objects.sinks.richardson_sink () 
-      =========================================================
-
-   .. container:: memdoc
-
-      Creates a sink with stochastical timeseries.
-
-      Creates a sink with stochastical input, using richardson.py and
-      adds it to the list of components 'nodes'. Used for the modelling
-      of residential electricity demands.
-	  
-
-electricslp_sink()
-+++++++++++++++++++++++++++++++++++++++++++++++++
-
-.. container:: memitem
-
-   .. container:: memproto
-
-      ==========================================================
-      def program_files.create_objects.sinks.electricslp_sink () 
-      ==========================================================
-
-   .. container:: memdoc
-
-      Creates a sink based on german standard load profiles.
-
-		 
+	     Creates a generic transformer with the paramters given in
+	     'nodes_data' and adds it to the list
+	     of components 'nodes'.	 
+		  
+  		--------------
+		
+  		Parameters:
+		
+  			- dict de: dictionary containing all information for the 
+  				creation of an oemof transformer.
+  				At least the following key-value-pairs have to be 
+  				included:
+					- 'label'
+					- 'input'
+					- 'output'
+					- 'output2'
+					- 'efficiency'
+					- 'efficiency2'
+					- 'variable input costs / (CU/kWh)'
+					- 'variable output costs / (CU/kWh)'
+					- 'variable output costs 2 / (CU/kWh)'
+					- 'periodical costs / (CU/kWh)'
+					- 'min. investment capacity / (kW)'
+					- 'max. investment capacacity / (kW)'
+					- 'existing capacity / (kW)'
+					- 'Non-Convex Investment'
+					- 'Fix Investment Costs / (CU/a)'
 transformers()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -406,24 +529,7 @@ transformers()
          -  dict bus : dictionary containing the busses of the energy system  
          -  list nodes : list of components 
 		
-generic_transformer()
-+++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. container:: memitem
-
-   .. container:: memproto
-
-      ====================================================================
-      def program_files.create_objects.transformers.generic_transformer () 
-      ====================================================================
-
-   .. container:: memdoc
-
-      Creates a Generic Transformer object.
-
-      Creates a generic transformer with the paramters given in
-      'nodes_data' and adds it to the list
-      of components 'nodes'.
 
 genericchp_transformer()
 +++++++++++++++++++++++++++++++++++++++++++++++++
@@ -444,31 +550,76 @@ genericchp_transformer()
       'nodes_data' and adds it to the list
       of components 'nodes'.
 	  
-storages()
+class Storages 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	Creates oemof storage objects as defined in 'nodes_data' 
+	and adds them to the list of components 'nodes'.
+	
+	def __init__(self, nodes_data, nodes, busd)
+	+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	
+		Inits the storage class.
+		
+  		--------------
+		
+  		Parameters:
+			
+			- dict nodes_data: dictionary containing parameters of storages to be
+              created.The following data have to be provided:
+              		- 'label'
+                	- 'active'
+                	- 'bus'
+                	- 'existing capacity / (kWh)'
+                	- 'min.investment capacity / (kWh)'
+                	- 'max.investment capacity / (kWh)'
+                	- 'Non-Convex Investments'
+                	- 'Fix Investment Costs /(CU/a)'
+                	- 'input/capacity ratio (invest)'
+                    - 'output/capacity ratio (invest)'
+                    - 'capacity loss'
+                    - 'efficiency inflow'
+                    - 'efficiency outflow'
+                    - 'initial capacity'
+                    - 'capacity min'
+                    - 'capacity max'
+                    - 'variable input costs'
+                    - 'variable output costs' 
+					
+			- dict busd: dicitionary containing the buses of the energy system
+			
+			- list nodes: list of components created before (can be empty)
+		
+class Links:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	
+	def create_link(self, link, label, outnum)
+	+++++++++++++++++++++++++++++++++++++++++++++
+	
+		Creates an oemof link object with the given parameters and returns it.
+		
+  		--------------
+		
+  		Parameters:
+			
+			- dict link: dictionary containing parameters of link to be
+			created.The following data have to be provided:
+					- 'bus_1'
+					- 'bus_2'
+					- 'efficiency'
+					- 'variable costs /(CU/kWh)'
+					- 'existing capacity /(kW)'
+					- 'min. investment capacity /(kW)'
+					- 'max. investment capacity /(kW)'
+					- 'periodical costs /(CU/(kW a))'
+					- 'Non-Convex Investment'
+					- 'Fix Investment Costs /(CU/a)'
+					
+			- String label: separate transmission of the label, because there are two
+			labels for an undirected link
+			
+			- int outnum: Defines in which direction the link is directed.
 
-.. container:: memitem
-
-   .. container:: memproto
-
-      ========================================================================
-      def program_files.create_objects.storages (*nodes_data*, *nodes*, *bus*)   
-      ========================================================================
-
-   .. container:: memdoc
-
-      Creates storage objects.
-
-      Creates storage objects as defined in 'nodes_data' and adds them
-      to the list of components 'nodes'.
-
-      --------------
-
-      Parameters
-         
-         -  dict nodes_data : dictionary containing data from excel scenario file. The following data have to be provided: label, active, bus, existing capacity /(kW), min. investment capacity /(kW), max. investment capacity /(kW), periodical costs /(CU/(kW a)), capacity inflow, capacity outflow, capacity loss, efficiency inflow, efficiency outflow, initial capacity, capacity min, capacity max, variable input costs, variable output costs 
-         -  dict bus : dictionary containing the busses of the energy system                          
-         -  list nodes : list of components                                
+                              
 
 links()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
