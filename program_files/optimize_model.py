@@ -39,6 +39,5 @@ def least_cost_model(energy_system):
 
     # solving the linear problem using the given solver
     om.solve(solver='cbc')
-    print(type(om))
 
     return om
