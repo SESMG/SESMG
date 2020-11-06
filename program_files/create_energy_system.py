@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """Functions for creating an oemof energy system.
-
 ---
 @ Christian Klemm - christian.klemm@fh-muenster.de, 27.01.2020
 """
+import os
+import pandas as pd
+import logging
 
 
 def import_scenario(filepath):
@@ -35,13 +37,11 @@ def import_scenario(filepath):
     @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
     """
 
-    import os
-    import pandas as pd
-
+    from oemof.tools import logger
     # reads node data from Excel sheet
-    filepath = filepath
     if not filepath or not os.path.isfile(filepath):
-        raise FileNotFoundError('Excel data file {} not found.'.format(filepath))
+        raise FileNotFoundError(
+            'Excel data file {} not found.'.format(filepath))
 
     # creates nodes from excel sheet
     xls = pd.ExcelFile(filepath)
@@ -58,20 +58,19 @@ def import_scenario(filepath):
     if not nd:
         raise ValueError('No nodes data provided.')
 
-    # returns nodes
-    return nd
-
     # returns logging info
     logger.define_logging()
     logging.info('Spreadsheet scenario successfully imported.')
+    # returns nodes
+    return nd
 
 
 def define_energy_system(nodes_data):
     """Creates an energy system.
     
-    Creates an energy system with the parameters defined in the given .xlsx-
-    file. The file has to contain a sheet called "timesystem", which has to
-    be structured as follows:
+    Creates an energy system with the parameters defined in the given
+    .xlsx-file. The file has to contain a sheet called "timesystem",
+    which has to be structured as follows:
         
     |start_date         |end_date           |temporal resolution|
     |-------------------|-------------------|-------------------|
@@ -93,18 +92,12 @@ def define_energy_system(nodes_data):
     @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
     """
 
-    import logging
     from oemof import solph
-    import pandas as pd
-
-    # re-names the nodes_data variable
-    nd = nodes_data
-
-    # read start and end date from nodes_data
-    for j, ts in nd['timesystem'].iterrows():
-        start_date = ts['start date']
-        end_date = ts['end date']
-        temp_resolution = ts['temporal resolution']
+    # Importing timesystem parameters from the scenario
+    ts = next(nodes_data['timesystem'].iterrows())[1]
+    temp_resolution = ts['temporal resolution']
+    start_date = ts['start date']
+    end_date = ts['end date']
 
     # creates time index
     datetime_index = pd.date_range(start_date, end_date, freq=temp_resolution)
@@ -115,31 +108,36 @@ def define_energy_system(nodes_data):
     # defines a time series
     nodes_data['timeseries'].set_index('timestamp', inplace=True)
     nodes_data['timeseries'].index = pd.to_datetime(
-                                nodes_data['timeseries'].index)
+        nodes_data['timeseries'].index)
 
     # returns logging info
-    logging.info('Date time index successfully defined:\n start date:          '
-                 + str(start_date)
-                 + ',\n end date:            '
-                 + str(end_date)
-                 + ',\n temporal resolution: '
-                 + str(temp_resolution))
+    logging.info(
+        'Date time index successfully defined:\n start date:          '
+        + str(start_date)
+        + ',\n end date:            '
+        + str(end_date)
+        + ',\n temporal resolution: '
+        + str(temp_resolution))
 
     # returns oemof energy system as result of this function
     return esys
 
 
 def format_weather_dataset(filepath):
-    '''DOCSTRING'''
+    """
+    The feedinlib can only read .csv data sets, so the weather data from
+    the .xlsx scenario file have to be converted into a .csv data set
+    and saved
+    ----
+    Keyword arguments:
+        filepath: obj:'str'
+        -- -- path to excel scenario file
+    """
 
-    import pandas as pd
-    import os
-
-    # The feedinlib can only read .csv data sets, so the weather data from
-    # the .xlsx scenario file have to be converted into a .csv data set and
-    # saved
+    # The feedinlib can only read .csv data sets, so the weather data
+    # from the .xlsx scenario file have to be converted into a
+    # .csv data set and saved
     read_file = pd.read_excel(filepath, sheet_name='weather data')
-    read_file.to_csv(
-        os.path.join(os.path.dirname(__file__)) + '/interim_data/weather_data.csv',
-        index=None,
-        header=True)
+    read_file.to_csv(os.path.join(os.path.dirname(__file__))
+                     + '/interim_data/weather_data.csv', index=None,
+                     header=True)
