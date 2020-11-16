@@ -164,7 +164,7 @@ def SESMG(scenario_file, result_path):
     logging.info('   ' + '--------------------------------------------------------')
     logging.info('   ' + 'Modelling and optimization successfully completed!')
     
- def SESMG_DEMO(scenario_file, result_path):
+def SESMG_DEMO(scenario_file, result_path):
 
     # # DEFINES PATH OF INPUT DATA
     # scenario_file = os.path.join(os.path.dirname(__file__), 'scenario.xlsx')
@@ -252,3 +252,4 @@ def SESMG(scenario_file, result_path):
 
     logging.info('   ' + '--------------------------------------------------------')
     logging.info('   ' + 'Modelling and optimization successfully completed!')
+
