@@ -312,6 +312,7 @@ import openpyxl
 import matplotlib as mlp
 import matplotlib.pyplot as plt
 import numpy as np
+from program_files.Spreadsheet_Energy_System_Model_Generator import SESMG_DEMO
 
 monetary_costs = StringVar()
 monetary_costs.set('--')
@@ -345,7 +346,7 @@ def monetary_demo_scenario():
     '''modifies financial demo scenario'''
 
 
-    xfile = openpyxl.load_workbook('examples/v0.0.4_demo_scenario/demo_scenario_monetaer.xlsx')
+    xfile = openpyxl.load_workbook('examples/v0.0.6_demo_scenario/demo_scenario_monetaer.xlsx')
 
     # WINDPOWER
     sheet = xfile["sources"]
@@ -382,7 +383,7 @@ def monetary_demo_scenario():
 def emission_demo_scenario():
     '''modifies financial demo scenario'''
 
-    xfile = openpyxl.load_workbook('examples/v0.0.4_demo_scenario/demo_scenario_emissionen.xlsx')
+    xfile = openpyxl.load_workbook('examples/v0.0.6_demo_scenario/demo_scenario_emissionen.xlsx')
 
     # WINDPOWER
     sheet = xfile["sources"]
@@ -704,7 +705,7 @@ label_line = Label(demo_frame, text=14*'===========', font=('Helvetica 10'))
 label_line.grid(column=0, row=row, columnspan=7)
 
 row = row + 1
-img = PhotoImage(file='examples/v0.0.4_demo_scenario/DEMO_System.png')
+img = PhotoImage(file='examples/v0.0.6_demo_scenario/DEMO_System.png')
 img = img.subsample(2,2)
 panel = Label(demo_frame, image = img)
 panel.grid(column=0,columnspan=4, row=row, rowspan=30)
