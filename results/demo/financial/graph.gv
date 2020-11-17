@@ -1,0 +1,146 @@
+digraph {
+	"elektrizi-
+taets_bus_-
+shortage" [fixedsize=shape fontsize=10 height=0.6 shape=trapezium width=1.1]
+	elektrizitaets_bus [fontsize=10 shape=ellipse]
+	"elektrizi-
+taets_bus_-
+shortage" -> elektrizitaets_bus
+	"elektrizi-
+taets_bus_-
+excess" [fixedsize=shape fontsize=10 height=0.6 shape=invtrapezium width=1.1]
+	elektrizitaets_bus [fontsize=10 shape=ellipse]
+	elektrizitaets_bus -> "elektrizi-
+taets_bus_-
+excess"
+	"erdgas_bu-
+s_shortage" [fixedsize=shape fontsize=10 height=0.6 shape=trapezium width=1.1]
+	erdgas_bus [fontsize=10 shape=ellipse]
+	"erdgas_bu-
+s_shortage" -> erdgas_bus
+	"fernwaerm-
+e_bus_exce-
+ss" [fixedsize=shape fontsize=10 height=0.6 shape=invtrapezium width=1.1]
+	fernwaerme_bus [fontsize=10 shape=ellipse]
+	fernwaerme_bus -> "fernwaerm-
+e_bus_exce-
+ss"
+	"photovolt-
+aik_elektr-
+izitaets_q-
+uelle" [fixedsize=shape fontsize=10 height=0.6 shape=trapezium width=1.1]
+	elektrizitaets_bus [fontsize=10 shape=ellipse]
+	"photovolt-
+aik_elektr-
+izitaets_q-
+uelle" -> elektrizitaets_bus
+	"windenerg-
+ie_elektri-
+zitaets_qu-
+elle" [fixedsize=shape fontsize=10 height=0.6 shape=trapezium width=1.1]
+	elektrizitaets_bus [fontsize=10 shape=ellipse]
+	"windenerg-
+ie_elektri-
+zitaets_qu-
+elle" -> elektrizitaets_bus
+	"efh_elekt-
+rizitaet_b-
+edarf" [fixedsize=shape fontsize=10 height=0.6 shape=invtrapezium width=1.1]
+	elektrizitaets_bus [fontsize=10 shape=ellipse]
+	elektrizitaets_bus -> "efh_elekt-
+rizitaet_b-
+edarf"
+	"mfh_elekt-
+rizitaet_b-
+edarf" [fixedsize=shape fontsize=10 height=0.6 shape=invtrapezium width=1.1]
+	elektrizitaets_bus [fontsize=10 shape=ellipse]
+	elektrizitaets_bus -> "mfh_elekt-
+rizitaet_b-
+edarf"
+	"efh_waerm-
+e_bedarf" [fixedsize=shape fontsize=10 height=0.6 shape=invtrapezium width=1.1]
+	waerme_bus [fontsize=10 shape=ellipse]
+	waerme_bus -> "efh_waerm-
+e_bedarf"
+	"mfh_waerm-
+e_bedarf" [fixedsize=shape fontsize=10 height=0.6 shape=invtrapezium width=1.1]
+	waerme_bus [fontsize=10 shape=ellipse]
+	waerme_bus -> "mfh_waerm-
+e_bedarf"
+	"residenti-
+al_electri-
+city_demand" [fixedsize=shape fontsize=10 height=0.6 shape=invtrapezium width=1.1]
+	elektrizitaets_bus [fontsize=10 shape=ellipse]
+	elektrizitaets_bus -> "residenti-
+al_electri-
+city_demand"
+	"unfixed_e-
+lectricity-
+_demand" [fixedsize=shape fontsize=10 height=0.6 shape=invtrapezium width=1.1]
+	elektrizitaets_bus [fontsize=10 shape=ellipse]
+	elektrizitaets_bus -> "unfixed_e-
+lectricity-
+_demand"
+	"gasheizun-
+g_transfor-
+mer" [fixedsize=shape fontsize=10 height=0.6 shape=box width=1.1]
+	erdgas_bus [fontsize=10 shape=ellipse]
+	waerme_bus [fontsize=10 shape=ellipse]
+	erdgas_bus -> "gasheizun-
+g_transfor-
+mer"
+	"gasheizun-
+g_transfor-
+mer" -> waerme_bus
+	"bhkw_tran-
+sformer" [fixedsize=shape fontsize=10 height=0.6 shape=box width=1.1]
+	erdgas_bus [fontsize=10 shape=ellipse]
+	elektrizitaets_bus [fontsize=10 shape=ellipse]
+	erdgas_bus -> "bhkw_tran-
+sformer"
+	"bhkw_tran-
+sformer" -> elektrizitaets_bus
+	fernwaerme_bus [fontsize=10 shape=ellipse]
+	"bhkw_tran-
+sformer" -> fernwaerme_bus
+	"batterie_-
+elektrizit-
+aet_speich-
+er" [fixedsize=shape fontsize=10 height=0.6 shape=box style=dashed width=1.1]
+	elektrizitaets_bus [fontsize=10 shape=ellipse]
+	elektrizitaets_bus -> "batterie_-
+elektrizit-
+aet_speich-
+er"
+	"batterie_-
+elektrizit-
+aet_speich-
+er" -> elektrizitaets_bus
+	"thermisch-
+er_speicher" [fixedsize=shape fontsize=10 height=0.6 shape=box style=dashed width=1.1]
+	fernwaerme_bus [fontsize=10 shape=ellipse]
+	fernwaerme_bus -> "thermisch-
+er_speicher"
+	"thermisch-
+er_speicher" -> fernwaerme_bus
+	"fernwaerm-
+enetz_link" [fixedsize=shape fontsize=10 height=0.6 shape=box width=1.1]
+	fernwaerme_bus [fontsize=10 shape=ellipse]
+	waerme_bus [shape=ellipse]
+	fernwaerme_bus -> "fernwaerm-
+enetz_link"
+	"fernwaerm-
+enetz_link" -> waerme_bus
+	"undirecte-
+d_link" [fixedsize=shape fontsize=10 height=0.6 shape=box width=1.1]
+	fernwaerme_bus [fontsize=10 shape=ellipse]
+	waerme_bus [shape=ellipse]
+	fernwaerme_bus -> "undirecte-
+d_link"
+	"undirecte-
+d_link" -> waerme_bus
+	waerme_bus -> "undirecte-
+d_link"
+	"undirecte-
+d_link" -> fernwaerme_bus
+}
