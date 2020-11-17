@@ -172,7 +172,11 @@ def execute_sesmg():
             result_path = os.path.dirname(os.path.abspath(__file__))
             result_path = result_path + '/results'
             subprocess.call("chmod +x " + result_path, shell=True)
-        SESMG(scenario_file=scenario_file, result_path=result_path)
+        SESMG(scenario_file=scenario_file,
+              result_path=result_path,
+              graph=True,
+              results=True,
+              plotly=True)
         show_results()
     else:
         print('Please select scenario first!')
@@ -312,7 +316,9 @@ import openpyxl
 import matplotlib as mlp
 import matplotlib.pyplot as plt
 import numpy as np
-from program_files.Spreadsheet_Energy_System_Model_Generator import SESMG_DEMO
+from threading import *
+#from program_files.Spreadsheet_Energy_System_Model_Generator import SESMG_DEMO
+
 
 monetary_costs = StringVar()
 monetary_costs.set('--')
@@ -322,21 +328,30 @@ emission_costs.set('--')
 
 results_dict = {}
 
-def execute_sesmg_DEMO():
+def execute_sesmg_DEMO(demo_file, demo_results):
     """ Excecutes the optimization algorithm """
-    if scenario_path.get() != "No scenario selected.":
-        scenario_file = scenario_path.get()
-        if sys.platform.startswith("win"):
-            result_path = os.path.join(os.path.dirname(__file__) + '/results')
-        elif sys.platform.startswith('darwin'):
-            result_path = os.path.dirname(os.path.abspath(__file__))
-            result_path = result_path + '/results'
-        elif sys.platform.startswith("linux"):
-            result_path = os.path.dirname(os.path.abspath(__file__))
-            result_path = result_path + '/results'
-            subprocess.call("chmod +x " + result_path, shell=True)
-    scenario_file = 'scenario.xlsx'
-    SESMG_DEMO(scenario_file=scenario_file, result_path=result_path)
+    print(demo_file)
+    print(demo_results)
+
+    # if scenario_path.get() != "No scenario selected.":
+    #    scenario_file = scenario_path.get()
+    if sys.platform.startswith("win"):
+        result_path = os.path.join(os.path.dirname(__file__) + demo_results)
+        demo_path = os.path.join(os.path.dirname(__file__) + demo_file)
+    elif sys.platform.startswith('darwin'):
+        result_path = os.path.dirname(os.path.abspath(__file__))
+        result_path = result_path + demo_results
+    elif sys.platform.startswith("linux"):
+        result_path = os.path.dirname(os.path.abspath(__file__))
+        result_path = result_path + demo_results
+        subprocess.call("chmod +x " + result_path, shell=True)
+    # scenario_file = 'scenario.xlsx'
+    # SESMG_DEMO(scenario_file=scenario_file, result_path=result_path)
+    SESMG(scenario_file=demo_path,
+          result_path=result_path,
+          graph=False,
+          results=False,
+          plotly=True)
     # show_results()
     # else:
     #     print('Please select scenario first!')
@@ -372,10 +387,11 @@ def monetary_demo_scenario():
     sheet = xfile["links"]
     sheet['C2'] = (int(entry_values['district heating'].get()))
 
-    xfile.save('scenario.xlsx')
-    execute_sesmg_DEMO()
+    xfile.save('results/demo/financial/scenario.xlsx')
+    execute_sesmg_DEMO(demo_file=r"/results/demo/financial/scenario.xlsx",
+                       demo_results=r"/results/demo/financial")
 
-    df_summary = pd.read_csv(r"results/summary.csv")
+    df_summary = pd.read_csv(r"results/demo/financial/summary.csv")
     # monetary_costs = float(df_summary['Total System Costs'])
     monetary_costs.set(str(round(float(df_summary['Total System Costs']/1000000),2)))
     window.update_idletasks()
@@ -409,10 +425,12 @@ def emission_demo_scenario():
     sheet = xfile["links"]
     sheet['C2'] = (int(entry_values['district heating'].get()))
 
-    xfile.save('scenario.xlsx')
-    execute_sesmg_DEMO()
+    xfile.save('results/demo/emissions/scenario.xlsx')
+    execute_sesmg_DEMO(demo_file='/results/demo/emissions/scenario.xlsx',
+                       demo_results='/results/demo/emissions')
 
-    df_summary = pd.read_csv(r"results/summary.csv")
+    df_summary = pd.read_csv(r"results/demo/emissions/summary.csv")
+
     emission_costs.set(str(round(float(df_summary['Total System Costs'])/1000000,0)))
     window.update_idletasks()
 
@@ -421,8 +439,17 @@ def simulate_scenario():
     for i in range(len(entry_values)):
         print(demo_names[i] + ': ' + entry_values[demo_names[i]].get() + ' ' + demo_unit[demo_names[i]])
 
-    monetary_demo_scenario()
-    emission_demo_scenario()
+    t_monetary = Thread(target=monetary_demo_scenario(), args=())
+    t_emission = Thread(target=emission_demo_scenario(), args=())
+
+    t_monetary.start()
+    t_emission.start()
+
+    t_monetary.join()
+    t_emission.join()
+
+    # monetary_demo_scenario()
+    # emission_demo_scenario()
 
 def include_optimized_scenarios():
     results_dict['Status Quo'] = [8.2594606, 18521.2, 0, 0, 0, 0, 0, 0]
@@ -744,8 +771,6 @@ for i in range(len(demo_assumptions)):
     label.grid(column=column+1, columnspan=2, row=row, sticky="W")
 
     row = row + 1
-
-
 
 
 

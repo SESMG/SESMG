@@ -70,7 +70,7 @@ from program_files import (create_objects,
                            create_graph)
 
 
-def SESMG(scenario_file, result_path):
+def SESMG(scenario_file, result_path, graph, results, plotly):
 
 
         # # DEFINES PATH OF INPUT DATA
@@ -137,29 +137,33 @@ def SESMG(scenario_file, result_path):
     esys.add(*my_nodes)
 
     # PRINTS A GRAPH OF THE ENERGY SYSTEM
-    create_graph.create_graph(filepath=result_path,
-                              nodes_data=nodes_data,
-                              legend=False)
+    if graph == True:
+        create_graph.create_graph(filepath=result_path,
+                                  nodes_data=nodes_data,
+                                  legend=False)
 
     # OPTIMIZES THE ENERGYSYSTEM AND RETURNS THE OPTIMIZED ENERGY SYSTEM
-    om = optimize_model.least_cost_model(nodes_data=nodes_data,
+    om = optimize_model.least_cost_model(#nodes_data=nodes_data,
                                          energy_system=esys)
 
-    # SHOWS AND SAVES RESULTS OF THE OPTIMIZED MODEL / POST-PROCESSING
-    create_results.xlsx(nodes_data=nodes_data,
-                        optimization_model=om,
-                        energy_system=esys,
-                        filepath=result_path)
 
-    create_results.statistics(nodes_data=nodes_data,
-                              optimization_model=om,
-                              energy_system=esys)
+    # SHOWS AND SAVES RESULTS OF THE OPTIMIZED MODEL / POST-PROCESSING
+    if results == True:
+        create_results.xlsx(nodes_data=nodes_data,
+                            optimization_model=om,
+                            energy_system=esys,
+                            filepath=result_path)
+
+        create_results.statistics(nodes_data=nodes_data,
+                                  optimization_model=om,
+                                  energy_system=esys)
 
     # PREPARES RESULTS FOR PLOTLY
-    create_results.prepare_plotly_results(nodes_data=nodes_data,
-                                          optimization_model=om,
-                                          energy_system=esys,
-                                          result_path=result_path)
+    if plotly == True:
+        create_results.prepare_plotly_results(nodes_data=nodes_data,
+                                              optimization_model=om,
+                                              energy_system=esys,
+                                              result_path=result_path)
 
     logging.info('   ' + '--------------------------------------------------------')
     logging.info('   ' + 'Modelling and optimization successfully completed!')
@@ -181,6 +185,9 @@ def SESMG_DEMO(scenario_file, result_path):
     logger.define_logging(logpath=result_path)
     # IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
     nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
+
+    # formatting of the weather data record according to the requirements of the classes used
+    create_energy_system.format_weather_dataset(filepath=scenario_file)
 
     # CREATES AN ENERGYSYSTEM AS DEFINED IN THE SCENARIO FILE
     esys = create_energy_system.define_energy_system(nodes_data=nodes_data)
@@ -252,4 +259,3 @@ def SESMG_DEMO(scenario_file, result_path):
 
     logging.info('   ' + '--------------------------------------------------------')
     logging.info('   ' + 'Modelling and optimization successfully completed!')
-
