@@ -22,7 +22,7 @@ Windows
 - execute the installer on your computer
 	
 
-2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/chrklemm/SESMG/tree/master>`_ as .zip folder.
+2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/chrklemm/SESMG/archive/SESMG-v0.0.6.zip>`_ as .zip folder.
 
 
 3. Extract the .zip folder into any directory on the computer.
@@ -70,7 +70,7 @@ MacOS
 - execute the installer on your computer
 	
 
-2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/chrklemm/SESMG/tree/master>`_ as .zip folder.
+2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/chrklemm/SESMG/archive/SESMG-v0.0.6.zip>`_ as .zip folder.
 
 
 3. Extract the .zip folder into any directory on the computer.
@@ -90,7 +90,7 @@ Linux
 	Make sure that the alias python3 is set to Python3.7.x.
 	If not use update-alternatives to change it.
 	 
-2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/chrklemm/SESMG/tree/master>`_ as .zip folder.
+2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/chrklemm/SESMG/archive/SESMG-v0.0.6.zip>`_ as .zip folder.
 
 3. Extract the .zip folder into any directory on the computer.
 
