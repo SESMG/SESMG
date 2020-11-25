@@ -174,7 +174,7 @@ def execute_sesmg():
             subprocess.call("chmod +x " + result_path, shell=True)
         sesmg_main(scenario_file=scenario_file,
                    result_path=result_path,
-                   num_threads=num_threads.get(),
+                   num_threads=1,
                    graph=True,
                    results=True,
                    plotly=True)
