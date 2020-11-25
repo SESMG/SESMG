@@ -651,8 +651,8 @@ class Sinks:
                 # the non commercial slps
                 args.update(
                     {'building_class': de['building class [HEAT SLP ONLY]']})
-                demand[de['load profile']] = bdew.HeatBuilding(
-                    demand.index, **args).get_bdew_profile()
+            demand[de['load profile']] = bdew.HeatBuilding(
+                demand.index, **args).get_bdew_profile()
         elif de['load profile'] in electricity_slps:
             year = datetime.datetime.strptime(str(ts['start date']),
                                               '%Y-%m-%d %H:%M:%S').year
