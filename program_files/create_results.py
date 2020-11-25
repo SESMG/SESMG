@@ -140,7 +140,6 @@ class Results:
         # creates component by componentlabel
         component = solph.views.node(self.results, componentlabel)
         # reads the flows of the given component
-        print(component['sequences'])
         flowsum = component['sequences'].sum()
         flowmax = component['sequences'].max()
         # sets the performance of the given component
@@ -156,7 +155,6 @@ class Results:
                                     flowsum[[component_log[type][0]]
                                             [component_log[type][1]]], 2))
                          + 'kWh')
-            print(flowsum[[0][0]])
         if type == 'busexcess' or type == 'storage':
             if type == 'storage':
                 logging.info('   ' + 'Energy Input to ' + componentlabel + ': '
