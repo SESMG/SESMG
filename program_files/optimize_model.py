@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-def least_cost_model(energy_system):
+def least_cost_model(energy_system, num_threads):
     """
     Solves a given energy system model.
     Solves a given energy system for least costs and returns the
@@ -32,12 +32,12 @@ def least_cost_model(energy_system):
     
     # creation of a least cost model from the energy system
     om = solph.Model(energy_system)
-
+    
     logging.info('   '+"******************************************************"
                  + "***")
     logging.info('   '+"Starting Optimization with CBC-Solver")
 
     # solving the linear problem using the given solver
-    om.solve(solver='cbc')
+    om.solve(solver='cbc', cmdline_options={"threads": num_threads})
 
     return om

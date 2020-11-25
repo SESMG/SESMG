@@ -5,7 +5,7 @@ from tkinter import ttk
 from tkinter import filedialog
 import subprocess
 import os
-from program_files.Spreadsheet_Energy_System_Model_Generator import SESMG
+from program_files.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 
 
 def create_elements(sheet, elements, texts, values, first_row):
@@ -172,11 +172,12 @@ def execute_sesmg():
             result_path = os.path.dirname(os.path.abspath(__file__))
             result_path = result_path + '/results'
             subprocess.call("chmod +x " + result_path, shell=True)
-        SESMG(scenario_file=scenario_file,
-              result_path=result_path,
-              graph=True,
-              results=True,
-              plotly=True)
+        sesmg_main(scenario_file=scenario_file,
+                   result_path=result_path,
+                   num_threads=num_threads.get(),
+                   graph=True,
+                   results=True,
+                   plotly=True)
         show_results()
     else:
         print('Please select scenario first!')
@@ -271,6 +272,7 @@ tab_control = ttk.Notebook(window)
 tab_control.pack(expand=1, fill='both')
 tab_control.pressed_index = None
 scenario_path = StringVar(window, str(os.path.join(os.path.dirname(__file__), 'scenario_v0.0.6.xlsx')))
+num_threads = 2
 
 ############
 # MAIN FRAME

@@ -1,5 +1,5 @@
 """Functions for returning optimization results in several forms.
- 
+
 ----
 @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
 """
@@ -11,1540 +11,856 @@ from matplotlib import pyplot as plt
 import os
 
 
-def xlsx(nodes_data, optimization_model, energy_system, filepath):
+def xlsx(nodes_data, optimization_model, filepath):
     """Returns model results as xlsx-files.
+    Saves the in- and outgoing flows of every bus of a given,
+    optimized energy system as .xlsx file
     
-    Saves the in- and outgoing flows of every bus of a given, optimized energy 
-    system as .xlsx file
+    ----
     
-    ----    
-        
     Keyword arguments:
-        
+    
         nodes_data : obj:'dict'
-           -- dictionary containing data from excel scenario file
+            -- dictionary containing data from excel scenario file
         
         optimization_model
             -- optimized energy system
-            
-        energy_system : obj:
-            -- original (unoptimized) energy system
-            
+        
         filepath : obj:'str'
             -- path, where the results will be stored
-        
+    
     ----
     
     Returns:
-       results : obj:'.xlsx'
-           -- xlsx files containing in and outgoing flows of the energy 
-           systems' buses.
-           
-    ----  
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020   
+        results : obj:'.xlsx'
+            -- xlsx files containing in and outgoing flows of the energy
+            systems' buses.
+    
+    ----
+    @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
     """
-
-    # renames input variables
-    nd = nodes_data
-    esys = energy_system 
-    om = optimization_model
-    results = solph.processing.results(om)
-
-    # Writes a spreadsheet containing the input and output flows into every
-    # bus of the energy system for every timestep of the timesystem
-    for i, b in nd['buses'].iterrows():
-            if b['active']:
-                bus = solph.views.node(results, b['label'])
-                file_path = os.path.join(filepath, 'results_'+b['label'] +'.xlsx')
-                node_results = solph.views.node(results, b['label'])
-                df = node_results['sequences']
-                df.head(2)          
-                
-                with pd.ExcelWriter(file_path) as writer:  # doctest: +SKIP
-                     df.to_excel(writer, sheet_name=b['label'])
-
-                # returns logging info
-                logging.info('   '+'Results saved as xlsx for '+b['label'])
+    results = solph.processing.results(optimization_model)
+    
+    # Writes a spreadsheet containing the input and output flows into
+    # every bus of the energy system for every timestep of the
+    # timesystem
+    for i, b in nodes_data['buses'].iterrows():
+        if b['active']:
+            file_path = \
+                os.path.join(filepath, 'results_' + b['label'] + '.xlsx')
+            node_results = solph.views.node(results, b['label'])
+            df = node_results['sequences']
+            df.head(2)
+            with pd.ExcelWriter(file_path) as writer:  # doctest: +SKIP
+                df.to_excel(writer, sheet_name=b['label'])
+            # returns logging info
+            logging.info('   ' + 'Results saved as xlsx for ' + b['label'])
 
 
 def charts(nodes_data, optimization_model, energy_system):
     """Plots model results.
     
-    Plots the in- and outgoing flows of every bus of a given, optimized energy 
+    Plots the in- and outgoing flows of every bus of a given, optimized energy
     system
     
-    ----    
-        
+    ----
+    
     Keyword arguments:
-        
+    
         nodes_data : obj:'dict'
-           -- dictionary containing data from excel scenario file
+            -- dictionary containing data from excel scenario file
         
         optimization_model
             -- optimized energy system
-            
+        
         energy_system : obj:
             -- original (unoptimized) energy system
-        
+    
     ----
     
     Returns:
-       plots 
-           -- plots displaying in and outgoing flows of the energy 
-           systems' buses.
-           
-    ---- 
+        plots
+            -- plots displaying in and outgoing flows of the energy
+            systems' buses.
+    
+    ----
     @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
     """
-
-    nd = nodes_data
-    esys = energy_system 
-    om = optimization_model
-    results = solph.processing.results(om)
-
-    for i, b in nd['buses'].iterrows():
-            if b['active']:
-                logging.info('   '+"******************************************"
-                             +"***************")            
-                logging.info('   '+'RESULTS: ' + b['label'])
-                
-                bus = solph.views.node(results, b['label'])
-                logging.info('   '+bus['sequences'].sum())
-                fig, ax = plt.subplots(figsize=(10,5))
-                bus['sequences'].plot(ax=ax)
-                ax.legend(loc='upper center', prop={'size': 8}, 
-                          bbox_to_anchor=(0.5, 1.4), ncol=2)
-                fig.subplots_adjust(top=0.7)
-                plt.show()
-                                            
-    esys.results['main'] = solph.processing.results(om)
-    esys.results['meta'] = solph.processing.meta_results(om)
-    string_results = solph.views.convert_keys_to_strings(
-                                esys.results['main'])
+    # rename variables
+    esys = energy_system
+    results = solph.processing.results(optimization_model)
+    
+    for i, b in nodes_data['buses'].iterrows():
+        if b['active']:
+            logging.info('   ' + "******************************************"
+                         + "***************")
+            logging.info('   ' + 'RESULTS: ' + b['label'])
+            
+            bus = solph.views.node(results, b['label'])
+            logging.info('   ' + bus['sequences'].sum())
+            fig, ax = plt.subplots(figsize=(10, 5))
+            bus['sequences'].plot(ax=ax)
+            ax.legend(loc='upper center', prop={'size': 8},
+                      bbox_to_anchor=(0.5, 1.4), ncol=2)
+            fig.subplots_adjust(top=0.7)
+            plt.show()
+    
+    esys.results['main'] = solph.processing.results(optimization_model)
+    esys.results['meta'] = solph.processing.meta_results(optimization_model)
     esys.dump(dpath=None, filename=None)
 
 
-def statistics(nodes_data, optimization_model, energy_system):
+class Results:
     """
-    Returns a list of all defined components with the following information:
-        
-    component   |   information
-    ---------------------------------------------------------------------------
-    sinks       |   Total Energy Demand
-    sources     |   Total Energy Input, Max. Capacity, Variable Costs, 
-                    Periodical Costs
-    transformers|   Total Energy Output, Max. Capacity, Variable Costs, 
-                    Investment Capacity, Periodical Costs
-    storages    |   Energy Output, Energy Input, Max. Capacity, 
-                    Total variable costs, Investment Capacity, 
-                    Periodical Costs
-    links       |   Total Energy Output
-    
-    Furthermore, a list of recommended investments is printed.
-
-    ----    
-        
-    Keyword arguments:
-        
-        nodes_data : obj:'dict'
-           -- dictionary containing data from excel scenario file
-        
-        optimization_model
-            -- optimized energy system
-            
-        energy_system : obj:
-            -- original (unoptimized) energy system
-        
-           
-    ----
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+    Class for preparing Plotly results and logging the results of
+    Cbc-Solver
     """
-
-    # renames input variables
-    nd = nodes_data
-    esys = energy_system 
-    om = optimization_model
-    results = solph.processing.results(om)
+    results = None
+    esys = None
     
-    #######################
-    ### Analyze Results ###
-    #######################
-    total_usage = 0
-    total_demand = 0
-    total_costs = 0
-    total_periodical_costs = 0
-    investments_to_be_made = {}
-    list_of_components = {}
-
-    # returns logging infos
-    logging.info('   '+"******************************************************"
-                             +"***") 
-    logging.info('   '+"***SINKS**********************************************"
-                             +"***") 
-    logging.info('   '+"******************************************************"
-                             +"***")
-    logging.info('   '+'------------------------------------------------------'
-                             +'---')
-
-    # creates and returns results for sinks defined in the sinks-sheet of the
-    # input spreadsheet
-    for i, de in nd['demand'].iterrows():    
-        if de['active']:
-            # returns logging info
-            logging.info('   '+de['label'])
-            # reads the sinks optimized time series
-            demand = solph.views.node(results, de['label'])
-            # continues, if the sink has a non-zero timeseries
-            if demand:
-                # calculates the total demand of the sink
-                flowsum = demand['sequences'].sum()
-                # returns logging info containing the total demand of the sink
-                logging.info('   '+'Total Energy Demand: ' 
-                             + str(round(flowsum[[0][0]], 2)) 
-                             + ' kWh')
-                # adds the sinks energy demand to the total_demand variable
-                total_demand = total_demand + flowsum[[0][0]]
-
-            # returns logging info
-            logging.info('   '+'----------------------------------------------'
-                             +'---')
-
-    # creates and returns results for sinks defined in the buses-sheet of the
-    # input spreadsheet (excess sinks)
-    for i, b in nd['buses'].iterrows():    
-        if b['active']:
-            if b['excess']:
-                # returns logging info
-                logging.info('   '+b['label']+'_excess')
-                # reads the sinks optimized time series
-                excess = solph.views.node(results, b['label']+'_excess')
-                # calculates the total demand of the sink
-                flowsum = excess['sequences'].sum()
-                # returns logging info
-                logging.info('   '+'Total Energy Input: ' 
-                             + str(round(flowsum[[0][0]], 2)) + ' kWh')
-                # adds the sinks energy demand to the total_usage variable
-                total_usage = total_usage + flowsum[[0][0]] 
-                # calculates the maximum capacity of the excess sink
-                flowmax = excess['sequences'].max()
-                # returns logging info
-                logging.info('   '+'Max. Capacity: ' 
-                             + str(round(flowmax[[0][0]], 2)) + ' kW')             
-                # calculates the total variable costs of the sink
-                variable_costs = b['excess costs /(CU/kWh)'] * flowsum[[0][0]]
-                # adds the variable costs to the total_costs variable
-                total_costs = total_costs + variable_costs
-                # returns logging info
-                logging.info('   '+'Variable Costs: ' 
-                             + str(round(variable_costs, 2)) + ' cost units')
-                logging.info('   '+'------------------------------------------'
-                             +'--------------')        
-
-    # returns logging infos
-    logging.info('   '+"******************************************************"
-                             +"***") 
-    logging.info('   '+"***SOURCES********************************************"
-                             +"***") 
-    logging.info('   '+"******************************************************"
-                             +"***")
-    logging.info('   '+'------------------------------------------------------'
-                             +'---')
-
-    # creates and returns results for sources defined in the sources-sheet of the
-    # input spreadsheet
-    for i, so in nd['sources'].iterrows():    
-        if so['active']:
-            # returns logging info
-            logging.info('   '+so['label'])
-            # reads the time series of the sink
-            source = solph.views.node(results, so['label'])
-            # calculates the sum of all energy flows
-            flowsum = source['sequences'].sum()
-            # returns logging info
-            logging.info('   ' + 'Total Energy Input: '
-                         + str(round(flowsum[[0][0]], 2)) + ' kWh')
-            # adds the flowsum to the total_usage variable
-            total_usage = total_usage + flowsum[[0][0]]                 
-            # calculates the maximum capacity of the source
-            flowmax = source['sequences'].max()
-            # returns logging info
-            logging.info('   '+'Max. Capacity: ' 
+    def getflow(self, componentlabel, type):
+        """
+            Calculates the flow and performance of the given component,
+            then logs it in the output and returns it to the statistics
+            method.
+            ----
+            Keyword arguments:
+                
+                componentlabel: obj:'str'
+                    -- label of component to be calculated
+                type: obj:'str'
+                    -- type of component to be calculated
+            ----
+            Returns:
+                flowsum: -- sum of the of the calculated flow
+                flowmax: -- maximum of the calculated flow
+                df_component: -- component_performance(input or output)
+        """
+        logging.info('   ' + componentlabel)
+        # creates component by componentlabel
+        component = solph.views.node(self.results, componentlabel)
+        # reads the flows of the given component
+        print(component['sequences'])
+        flowsum = component['sequences'].sum()
+        flowmax = component['sequences'].max()
+        # sets the performance of the given component
+        component_performance = component['sequences'].columns.values
+        df_component1 = component['sequences'][component_performance[0]]
+        # Dictionary for the information of components to be logged
+        component_log = {'demand': [0, 0, 'Total Energy Demand: '],
+                         'busexcess': [0, 0, 'Total Energy Input: '],
+                         'storage': [1, 0, 'Energy Output from: ']}
+        if type == 'demand' or type == 'busexcess' or type == 'storage':
+            logging.info('   ' + component_log[type][2]
+                         + str(round(
+                                    flowsum[[component_log[type][0]]
+                                            [component_log[type][1]]], 2))
+                         + 'kWh')
+            print(flowsum[[0][0]])
+        if type == 'busexcess' or type == 'storage':
+            if type == 'storage':
+                logging.info('   ' + 'Energy Input to ' + componentlabel + ': '
+                             + str(round(flowsum[[2][0]], 2)) + ' kWh')
+            logging.info('   ' + 'Max. Capacity: '
                          + str(round(flowmax[[0][0]], 2)) + ' kW')
-            # continues, if the model decided to take a investment decision
-            # for this source
-            if so['max. investment capacity /(kW)'] > 0:        
-                # Reads the Investment Capacity
-                source_node = esys.groups[so['label']]
-                bus_node = esys.groups[so['output']]
-                source_investment = (results[source_node, bus_node]['scalars']
-                                    ['invest'])
+        # returns the parameters to the statistics method
+        if type == 'demand' or type == 'busexcess':
+            return flowsum[[0][0]], df_component1
+        elif type == 'storage':
+            return flowsum[[0][0]]
+        elif type == 'transformer':
+            df_transformer2 = component['sequences'][component_performance[1]]
+            df_transformer3 = component['sequences'][component_performance[2]]
+            return (flowsum, flowmax, df_component1, df_transformer2,
+                    df_transformer3)
+        elif type == 'shortage':
+            return flowsum[[0][0]], flowmax[[0][0]], df_component1
+        elif type == 'link':
+            df_link2 = component['sequences'][component_performance[1]]
+            return flowsum, flowmax, df_component1, df_link2
+
+    def get_Investment(self, component, type):
+        """
+        Calculates the investment to be made and the resulting periodical
+        costs.
+        ----
+        Keyword arguments:
+            component: obj
+                -- one component of the energy system with
+                'max. investment' > 0
+            type: obj: 'str'
+                -- type of the component to be calculated
+        ----
+        Returns:
+            component_investment: obj: 'float'
+                -- investment to be made
+            periodical_costs: obj: 'float'
+                -- periodic_costs resulting from the investment decision
+        """
+        component_node = self.esys.groups[component['label']]
+        # defines bus_node for different components
+        if type == 'source':
+            bus_node = self.esys.groups[component['output']]
+        elif type == 'storage':
+            bus_node = None
+        elif type == 'link':
+            bus_node = self.esys.groups[component['bus_2']]
+        else:
+            raise SystemError('Wrong type chosen!')
+        # sets component investment
+        component_investment = \
+            (self.results[component_node, bus_node]['scalars']['invest'])
+        # returns logging info
+        logging.info('   ' + 'Investment Capacity: '
+                     + str(component_investment) + ' kW')
+        if type == 'storage':
+            # calculates the periodical costs
+            periodical_costs = (component['periodical costs /(CU/(kWh a))'] *
+                                component_investment)
+        else:
+            # calculates the periodical costs
+            periodical_costs = (component['periodical costs /(CU/(kW a))'] *
+                                component_investment)
+        # logs periodical costs in system output
+        logging.info('   ' + 'Periodical costs: '
+                     + str(round(periodical_costs, 2))
+                     + ' cost units p.a.')
+        if type == 'link':
+            return component_investment
+        else:
+            return component_investment, periodical_costs
+
+    def log(self, component):
+        """
+        Returns logging info for type of given components.
+        ----
+        Keyword arguments:
+             component: obj: 'str'
+             -- component type
+        """
+        # returns logging infos
+        logging.info(
+            '   ' + "********************************************************")
+        logging.info(
+            '   ' + "***"+component+"****************************************")
+        logging.info(
+            '   ' + "********************************************************")
+        logging.info(
+            '   ' + '--------------------------------------------------------')
+
+    def statistics(self, nodes_data, optimization_model, energy_system,
+                   result_path):
+        """
+        Returns a list of all defined components with the following information:
+        
+        component   |   information
+        ---------------------------------------------------------------------------
+        sinks       |   Total Energy Demand
+        sources     |   Total Energy Input, Max. Capacity, Variable Costs,
+                        Periodical Costs
+        transformers|   Total Energy Output, Max. Capacity, Variable Costs,
+                        Investment Capacity, Periodical Costs
+        storages    |   Energy Output, Energy Input, Max. Capacity,
+                        Total variable costs, Investment Capacity,
+                        Periodical Costs
+        links       |   Total Energy Output
+        
+        Furthermore, a list of recommended investments is printed.
+        ----
+        Keyword arguments:
+        
+            nodes_data : obj:'dict'
+               -- dictionary containing data from excel scenario file
+        
+            optimization_model
+                -- optimized energy system
+        
+            energy_system : obj:
+                -- original (unoptimized) energy system
+            
+            result_path : obj: 'str'
+                -- Path where the results are saved.
+        ----
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+        """
+
+        # renames input variables
+        nd = nodes_data
+        self.esys = energy_system
+        om = optimization_model
+        self.results = solph.processing.results(om)
+        # columns of list of components
+        columns = ['ID',
+                   'type',
+                   'input 1/kWh',
+                   'input 2/kWh',
+                   'output 1/kWh',
+                   'output 2/kWh',
+                   'capacity/kW',
+                   'variable costs/CU',
+                   'periodical costs/CU',
+                   'investment/kW']
+
+        df_list_of_components = pd.DataFrame(columns=columns)
+        df_result_table = pd.DataFrame()
+
+        ###################
+        # Analyze Results #
+        ###################
+        total_usage = 0
+        total_demand = 0
+        total_costs = 0
+        total_periodical_costs = 0
+        investments_to_be_made = {}
+        # logs the next type of components(sinks)
+        self.log("SINKS       ")
+        # creates and returns results for sinks defined in the
+        # sinks-sheet of the input spreadsheet
+        for i, de in nd['demand'].iterrows():
+            if de['active']:
+                # gets the flow for the given sink
+                (flowsum, df_demand) = self.getflow(de['label'], 'demand')
+                total_demand = total_demand + flowsum
+                df_result_table[de['label']] = df_demand
+                # adds the sink to the list of components
+                df_list_of_components = \
+                    df_list_of_components.append(
+                        pd.DataFrame([[de['label'], 'sink',
+                                       round(df_demand.sum(), 2),
+                                       '---', '---', '---',
+                                       round(df_demand.max(), 2),
+                                       '---', '---', '---']],
+                                     columns=columns))
                 # returns logging info
-                logging.info('   '+'Investment Capacity: ' 
-                             + str(source_investment) + ' kW')
-
-                # adds the investment to the investments_to_be_made list
-                investments_to_be_made[so['label']] = (str(round(
-                                                   source_investment, 2))+' kW')
-            # return 0, if no investment decision for this source has been taken
-            else:
-                source_investment = 0
-    
-            # Calculates Variable Costs, adds it to the total_cost variable and
-            # returns logging info
-            variable_costs = so['variable costs /(CU/kWh)'] * flowsum[[0][0]]
-            total_costs = total_costs + variable_costs
-            logging.info('   '+'Variable costs: ' 
-                         + str(round(variable_costs, 2)) 
-                         + ' cost units')
-
-            # Continues, if this is an investment object
-            if source_investment > 0:
-                # calculates the periodical costs
-                periodical_costs = so['Fix Investment Costs /(CU/a)'] if (so['periodical costs /(CU/(kW a))'] == 0) and (so['Non-Convex Investment'] == 1) \
-                                       else (so['periodical costs /(CU/(kW a))']*source_investment)
-                # adds the periodical costs to the total_periodical_costs variable
-                total_periodical_costs = (total_periodical_costs 
-                                         + periodical_costs)
-                investments_to_be_made[so['label']] = (str(results[source_node, 
-                                                bus_node]['scalars']['invest'])
-                                                +' kW; '
-                                                +str(round(periodical_costs, 2))
-                                                +' cost units (p.a.)')
-            else:
-                periodical_costs = 0
-    
-            logging.info('   '+'Periodical costs: ' 
-                         + str(round(periodical_costs, 2)) 
-                         + ' cost units p.a.')
-            logging.info('   '+'----------------------------------------------'
-                             +'---')
-            
-    for i, b in nd['buses'].iterrows():    
-        if b['active']:
-            if b['shortage']:
-                logging.info('   '+b['label']+'_shortage')
-                        
-                shortage = solph.views.node(results, b['label']
-                                                +'_shortage')
-                # Flows
-                flowsum = shortage['sequences'].sum()
-                logging.info('   '+'Total Energy Input: ' 
-                             + str(round(flowsum[[0][0]], 2)) + ' kWh')
-                total_usage = total_usage + flowsum[[0][0]] 
-                # Capacity
-                flowmax = shortage['sequences'].max()
-                logging.info('   '+'Max. Capacity: ' 
-                             + str(round(flowmax[[0][0]], 2)) + ' kW')             
-                # Variable Costs
-                variable_costs = b['shortage costs /(CU/kWh)'] * flowsum[[0][0]]
-                total_costs = total_costs + variable_costs
-                logging.info('   '+'Variable Costs: ' 
-                             + str(round(variable_costs, 2)) + ' cost units')    
-                logging.info('   '+'------------------------------------------'
-                             +'--------------')        
-
-    logging.info('   '+"******************************************************"
-                             +"***") 
-    logging.info('   '+"***TRANSFORMERS***************************************"
-                             +"***") 
-    logging.info('   '+"******************************************************"
-                             +"***")
-    logging.info('   '+'------------------------------------------------------'
-                             +'---')  
-    for i, t in nd['transformers'].iterrows():    
-        if t['active']:
-            logging.info('   '+t['label'])   
-                        
-            transformer = solph.views.node(results, t['label'])
-            flowsum = transformer['sequences'].sum()
-            flowmax = transformer['sequences'].max()
-            
-            if t['transformer type'] == 'GenericTransformer':            
-                if t['output2'] == 'None':
-                    logging.info('   '+'Total Energy Output to ' 
-                                 +  t['output'] + ': ' 
-                                 + str(round(flowsum[[1][0]], 2)) 
-                                 + ' kWh')
-                    max_transformer_flow = flowmax[1]                
-                else:    
-                    logging.info('   '+'Total Energy Output to ' 
-                                 +  t['output'] + ': ' 
-                                 + str(round(flowsum[[0][0]], 2)) 
-                                 + ' kWh')
-                    logging.info('   '+'Total Energy Output to ' 
-                                 +  t['output2'] + ': ' 
-                                 + str(round(flowsum[[1][0]], 2)) 
-                                 + ' kWh')
-                    max_transformer_flow = flowmax[1]
-            
-            elif t['transformer type'] == 'ExtractionTurbineCHP':
-                logging.info('   '+'WARNING: ExtractionTurbineCHP are'
-                             +' currently not a part of this model generator,'
-                             +' but will be added later.')                
-            
-            elif t['transformer type'] == 'GenericCHP':
-                logging.info('   '+'Total Energy Output to ' 
-                             +  t['output'] + ': ' 
-                             + str(round(flowsum[[6][0]], 2)) 
-                             + ' kWh')
-                logging.info('   '+'Total Energy Output to ' 
-                             +  t['output2'] + ': ' 
-                             + str(round(flowsum[[7][0]], 2)) 
-                             + ' kWh')
-                max_transformer_flow = flowmax[2]
- 
-            elif t['transformer type'] == 'HeatPump':
-                logging.info('   ' + 'Electricity Energy Input to '
-                             + t['label'] + ': '
-                             + str(round(flowsum[[2][0]], 2))
-                             + ' kWh')
-                logging.info('   ' + 'Ambient Energy Input to '
-                             + t['label'] + ': '
-                             + str(round(flowsum[[1][0]], 2))
-                             + ' kWh')
-                logging.info('   ' + 'Total Energy Output to '
-                             + t['output'] + ': '
-                             + str(round(flowsum[[0][0]], 2))
-                             + ' kWh')
-
-                max_transformer_flow = flowmax[2]
- 
-            elif t['transformer type'] == 'OffsetTransformer':
-                logging.info('   '+'WARNING: OffsetTransformer are currently'
-                             +' not a part of this model generator, but will'
-                             +' be added later.')
-            
-    
-            logging.info('   '+'Max. Capacity: ' 
-                         + str(round(max_transformer_flow, 2)) 
-                         + ' kW') ### Wert auf beide Busse anwenden!
-            if t['output2'] != 'None': 
-                logging.info('   '+'WARNING: Capacity to bus2 will be added'
-                             +' later')
-                
-
-            variable_costs = (t['variable input costs /(CU/kWh)'] 
-                              * flowsum[[0][0]] 
-                              + t['variable output costs /(CU/kWh)']
-                              * flowsum[[1][0]])
-            total_costs = total_costs + variable_costs
-            logging.info('   '+'Variable Costs: ' 
-                         + str(round(variable_costs, 2)) 
-                         + ' cost units')
-
-            
-            # Investment Capacity
-            if t['max. investment capacity /(kW)'] > 0:
-                transformer_node = esys.groups[t['label']]
-                bus_node = esys.groups[t['output']]
-                transformer_investment = (results[transformer_node, bus_node]
-                                          ['scalars']['invest'])
-                logging.info('   '+'Investment Capacity: ' 
-                             + str(round(transformer_investment, 2)) 
-                             + ' kW')
-    
-            else:
-                transformer_investment = 0
-                    
-            # Periodical Costs        
-            if transformer_investment > 0:     ### Wert auf beide Busse anwenden! (Es muss die Summe der Busse, inklusive des Wirkungsgrades einbezogen werden!!!)
-                periodical_costs = t['Fix Investment Costs /(CU/a)'] if (t['periodical costs /(CU/(kW a))'] == 0) and (t['Non-Convex Investment'] == 1) \
-                                       else (t['periodical costs /(CU/(kW a))']*transformer_investment)
-                total_periodical_costs = (total_periodical_costs 
-                                          + periodical_costs)
-                investments_to_be_made[t['label']] = (str(round(
-                                                    transformer_investment, 2))
-                                                +' kW; '
-                                                +str(round(periodical_costs,2))
-                                                +' cost units (p.a.)')
-            else:
-                periodical_costs = 0
-            logging.info('   '+'Periodical costs (p.a.): ' 
-                         + str(round(periodical_costs, 2)) 
-                         + ' cost units p.a.')
-            
-            logging.info('   '+'----------------------------------------------'
-                             +'---') 
-            
-            
-    logging.info('   '+"******************************************************"
-                             +"***") 
-    logging.info('   '+"***STORAGES*******************************************"
-                             +"***") 
-    logging.info('   '+"******************************************************"
-                             +"***")
-    logging.info('   '+'------------------------------------------------------'
-                             +'---')          
-    for i, s in nd['storages'].iterrows():    
-        if s['active']:
-            logging.info('   '+s['label'])                     
-            storages = solph.views.node(results, s['label'])
-            flowsum = storages['sequences'].sum()
-            #logging.info('   '+flowsum)
-            logging.info('   '+'Energy Output from ' 
-                         + s['label'] + ': ' 
-                         + str(round(flowsum[[1][0]], 2)) 
-                         + ' kWh')
-            logging.info('   '+'Energy Input to ' 
-                         +  s['label'] + ': ' 
-                         + str(round(flowsum[[2][0]], 2)) 
-                         + ' kWh')
-            
-            storage = solph.views.node(results, s['label'])
-            flowmax = storage['sequences'].max()
-            #variable_costs = s['variable input costs'] * flowsum[[0][0]]
-            logging.info('   '+'Max. Capacity: ' 
-                         + str(round(flowmax[[0][0]], 2)) 
-                         + ' kW')
-            
-            storage = solph.views.node(results, s['label'])
-            flowsum = storage['sequences'].sum()
-            variable_costs = s['variable input costs'] * flowsum[[0][0]]
-            logging.info('   '+'Total variable costs for: ' 
-                         + str(round(variable_costs, 2)) 
-                         + ' cost units')
-            total_costs = total_costs + variable_costs 
-    
-            # Investment Capacity
-            if s['max. investment capacity /(kWh)'] > 0:
-                storage_node = esys.groups[s['label']]
-                bus_node = esys.groups[s['bus']]
-                storage_investment = results[storage_node, None]['scalars']['invest']
-                logging.info('   '+'Investment Capacity: ' 
-                             + str(round(storage_investment, 2)) 
-                             + ' kW')
-    
-            else:
-                storage_investment = 0
-                
-            # Periodical Costs
-            if storage_investment > float(s['existing capacity /(kWh)']):
-                periodical_costs = s['Fix Investment Costs /(CU/a)'] if (s['periodical costs /(CU/(kWh a))'] == 0) and (s['Non-Convex Investment'] == 1) \
-                                       else (s['periodical costs /(CU/(kWh a))']*storage_investment)
-                total_periodical_costs = (total_periodical_costs 
-                                        + periodical_costs)
-                investments_to_be_made[s['label']] = (str(round(
-                                                        storage_investment, 2))
-                                                +' kWh; '
-                                                +str(round(periodical_costs,2))
-                                                +' cost units (p.a.)')
-            else:
-                periodical_costs = 0
-            logging.info('   '+'Periodical costs (p.a.): ' 
-                         + str(round(periodical_costs, 2)) 
-                         + ' cost units p.a.')
-            
-            logging.info('   '+'----------------------------------------------'
-                             +'---')        
-    
-    logging.info('   '+"******************************************************"
-                             +"***") 
-    logging.info('   '+"***LINKS********************************************") 
-    logging.info('   '+"******************************************************"
-                             +"***")
-    logging.info('   '+'------------------------------------------------------'
-                             +'---')  
-    for i, p in nd['links'].iterrows():    
-        if p['active']:
-            logging.info('   '+p['label'])   
-                        
-            link = solph.views.node(results, p['label'])
-            
-            if link:
-                
-                flowsum = link['sequences'].sum()
-                #transformer_test = flowsum
-                #transformer = outputlib.views.node(results, t['label'])
-                flowmax = link['sequences'].max()
-                        
-                
-                if p['(un)directed'] == 'directed':
-                    logging.info('   '+'Total Energy Output to ' 
-                                 +  p['bus_2'] + ': ' 
-                                 + str(round(flowsum[[1][0]], 2)) 
-                                 + ' kWh')
-                    max_link_flow = flowmax[1]                
+                logging.info(
+                    '   ' + '------------------------------------------------')
+        # creates and returns results for sinks defined in the
+        # buses-sheet of the input spreadsheet (excess sinks)
+        for i, b in nd['buses'].iterrows():
+            if b['active']:
+                if b['excess']:
+                    (flowsum, df_excess) = \
+                        self.getflow(b['label'] + '_excess', 'demand')
+                    total_usage = total_usage + flowsum
+                    # calculates the total variable costs of the sink
+                    variable_costs = b['excess costs /(CU/kWh)'] * flowsum
+                    # adds the variable costs to the total_costs variable
+                    total_costs = total_costs + variable_costs
+                    df_result_table[b['label'] + '_excess'] = df_excess
+                    # adds the bus to the list of components
+                    df_list_of_components = \
+                        df_list_of_components.append(
+                                pd.DataFrame([[b['label'] + '_excess', 'sink',
+                                               round(df_excess.sum(), 2),
+                                               '---', '---', '---',
+                                               round(df_excess.max(), 2),
+                                               round(variable_costs, 2),
+                                               '---', '---']],
+                                             columns=columns))
+                    # returns logging info
+                    logging.info('   ' + 'Variable Costs: '
+                                 + str(round(variable_costs, 2))
+                                 + ' cost units')
+                    logging.info(
+                            '   ' + '-----------------------------------------'
+                            + '---------------')
+        # logs the next type of components(sources)
+        self.log("SOURCES     ")
+        # creates and returns results for sources defined in the
+        # sources-sheet of the input spreadsheet
+        for i, so in nd['sources'].iterrows():
+            if so['active']:
+                (flowsum, df_source) = self.getflow(so['label'], 'busexcess')
+                # adds the flowsum to the total_usage variable
+                total_usage = total_usage + flowsum
+                # continues, if the model decided to take a investment
+                # decision for this source
+                if so['max. investment capacity /(kW)'] > 0:
+                    # gets the investment for the given source
+                    (component_investment, periodical_costs) = \
+                        self.get_Investment(so, 'source')
+                    # adds the investment to the investments_to_be_made
+                    # list
+                    investments_to_be_made[so['label']] = \
+                        (str(round(component_investment, 2)) + ' kW')
+                    if component_investment > 0:
+                        total_periodical_costs = (total_periodical_costs
+                                                  + periodical_costs)
+                        investments_to_be_made[so['label']] = \
+                            (str(component_investment)
+                             + ' kW; ' + str(round(periodical_costs, 2))
+                             + ' cost units (p.a.)')
                 else:
-                    link2 = solph.views.node(results, p['label']
-                                                 +'_direction_2')
-                    flowsum2 = link2['sequences'].sum()
-                    flowmax2 = link2['sequences'].max()
-                    
-                    logging.info('   '+'Total Energy Output to ' +  p['bus_2'] 
-                                 + ': ' 
-                                 + str(round(flowsum[[1][0]], 2)) 
-                                 + ' kWh')
-                    logging.info('   '+'Total Energy Output to ' 
-                                 +  p['bus_1'] + ': ' 
-                                 + str(round(flowsum2[[1][0]], 2)) 
-                                 + ' kWh')
-                    
-                if p['(un)directed'] == 'directed':
-                    max_link_flow = flowmax[1]
-                    logging.info('   '+'Max. Capacity to '+  p['bus_2'] 
-                                 + ': ' 
-                                 + str(round(max_link_flow, 2)) 
-                                 + ' kW') ### Wert auf beide Busse anwenden!
-                else:
-                    max_link_flow = flowmax[1]
-                    logging.info('   '+'Max. Capacity to '
-                                 +  p['bus_2'] + ': ' 
-                                 + str(round(max_link_flow, 2)) 
-                                 + ' kW')
-                    max_link_flow = flowmax2[1]
-                    logging.info('   '+'Max. Capacity to '
-                                 +  p['bus_1'] + ': ' 
-                                 + str(round(max_link_flow, 2)) 
-                                 + ' kW')
-                    
-                #transformer = outputlib.views.node(results, t['label'])
-                #flowsum = transformer['sequences'].sum()
-                variable_costs = p['variable costs /(CU/kWh)'] * flowsum[[0][0]]
+                    periodical_costs = 0
+                    component_investment = 0
+
+                # Calculates Variable Costs, adds it to the total_cost
+                # variable and returns logging info
+                variable_costs = so['variable costs /(CU/kWh)'] * flowsum
                 total_costs = total_costs + variable_costs
-                logging.info('   '+'Variable Costs: ' 
-                             + str(round(variable_costs, 2)) 
+                logging.info('   ' + 'Variable costs: '
+                             + str(round(variable_costs, 2)) + ' cost units')
+                # Adds the components time series to the
+                # df_component_flows data frame for further usage
+                df_result_table[so['label']] = df_source
+                # adds the source to the list of components
+                df_list_of_components = \
+                    df_list_of_components.append(
+                            pd.DataFrame([[so['label'], 'source',
+                                           '---', '---',
+                                           round(df_source.sum(), 2), '---',
+                                           round(df_source.max(), 2),
+                                           round(variable_costs, 2),
+                                           round(periodical_costs, 2),
+                                           round(component_investment, 2)]],
+                                         columns=columns))
+                logging.info(
+                        '   ' + '---------------------------------------------'
+                        + '----')
+        for i, b in nd['buses'].iterrows():
+            if b['active']:
+                if b['shortage']:
+                    (flowsum, flowmax, df_shortage) = \
+                        self.getflow(b['label'] + '_shortage', 'shortage')
+                    total_usage = total_usage + flowsum
+                    # Variable Costs
+                    variable_costs = b['shortage costs /(CU/kWh)'] * flowsum
+                    total_costs = total_costs + variable_costs
+                    logging.info('   ' + 'Variable Costs: '
+                                 + str(round(variable_costs, 2))
+                                 + ' cost units')
+                    # adds the bus to the list of components
+                    df_list_of_components = \
+                        df_list_of_components.append(
+                                pd.DataFrame([[b['label'] + '_shortage',
+                                               'source', '---', '---',
+                                               round(flowsum, 2), '---',
+                                               round(flowmax, 2),
+                                               round(variable_costs, 2),
+                                               '---', '---']],
+                                             columns=columns))
+                    
+                    df_result_table[b['label'] + '_shortage'] = df_shortage
+                    logging.info(
+                            '   ' + '-----------------------------------------'
+                            + '---------------')
+        # logs the next type of components
+        self.log("TRANSFORMERS")
+        for i, t in nd['transformers'].iterrows():
+            variable_costs = 0
+            if t['active']:
+                if t['output2'] != 'None':
+                    (flowsum, flowmax, df_transformer1, df_transformer2,
+                     df_transformer3) = \
+                        self.getflow(t['label'], 'transformer')
+                else:
+                    (flowsum, flowmax, df_transformer1, df_transformer2) = \
+                        self.getflow(t['label'], 'link')
+                if t['transformer type'] == 'GenericTransformer' or \
+                        t['transformer type'] == 'GenericCHP':
+                    transformer_log = {'GenericTransformer': [0, 1, 1],
+                                       'GenericCHP': [6, 7, 2]}
+                    if t['output2'] != 'None':
+                        # TODO potential for Optimization within the use of get
+                        # TODO Flow
+                        logging.info('   ' + 'Total Energy Output to '
+                                     + t['output'] + ': '
+                                     + str(round(
+                                        flowsum[
+                                            [transformer_log[t['transformer type']]
+                                                        [0]][0]], 2))
+                                     + ' kWh')
+                        output = t['output2']
+                    else:
+                        output = t['output']
+                    logging.info('   ' + 'Total Energy Output to ' + output
+                                 + ': ' + str(round(
+                                                 flowsum[
+                                                     [transformer_log
+                                                      [t['transformer type']]
+                                                        [1]][0]], 2))
+                                 + ' kWh')
+                    max_transformer_flow = \
+                        flowmax[transformer_log[t['transformer type']][2]]
+
+                elif t['transformer type'] == 'ExtractionTurbineCHP':
+                    logging.info('   ' + 'WARNING: ExtractionTurbineCHP are'
+                                 + ' currently not a part of this model '
+                                 + 'generator, but will be added later.')
+                # TODO Implemented correctly ? s.o.
+                # elif t['transformer type'] == 'GenericCHP':
+                #    logging.info('   ' + 'Total Energy Output to '
+                # + t['output'] + ': '
+                # + str(round(flowsum[[6][0]], 2))
+                # + ' kWh')
+                #    logging.info('   ' + 'Total Energy Output to '
+                # + t['output2'] + ': '
+                # + str(round(flowsum[[7][0]], 2))
+                # + ' kWh')
+                #   max_transformer_flow = flowmax[2]
+                    
+                elif t['transformer type'] == 'HeatPump':
+                    logging.info('   ' + 'Electricity Energy Input to '
+                                 + t['label'] + ': '
+                                 + str(round(flowsum[[2][0]], 2))
+                                 + ' kWh')
+                    logging.info('   ' + 'Ambient Energy Input to '
+                                 + t['label'] + ': '
+                                 + str(round(flowsum[[1][0]], 2))
+                                 + ' kWh')
+                    logging.info('   ' + 'Total Energy Output to '
+                                 + t['output'] + ': '
+                                 + str(round(flowsum[[0][0]], 2))
+                                 + ' kWh')
+                elif t['transformer type'] == 'OffsetTransformer':
+                    logging.info('   ' + 'WARNING: OffsetTransformer are '
+                                 + 'currently not a part of this model '
+                                 + 'generator, but will be added later.')
+                
+                logging.info('   ' + 'Max. Capacity: '
+                             + str(round(max_transformer_flow, 2))
+                             + ' kW')
+                if t['output2'] != 'None':
+                    variable_costs = (t['variable output costs 2 /(CU/kWh)']
+                                      * df_transformer1.sum())
+                    total_costs = total_costs + variable_costs
+                variable_costs+=(t['variable input costs /(CU/kWh)'] * df_transformer3.sum() if t['output2'] != 'None' else df_transformer1.sum())
+                variable_costs+=(t['variable output costs /(CU/kWh)'] * df_transformer2.sum())
+                total_costs += variable_costs
+                logging.info('   ' + 'Variable Costs: '
+                             + str(round(variable_costs, 2))
+                             + ' cost units')
+
+                # Investment Capacity
+                if t['max. investment capacity /(kW)'] > 0:
+                    # gets investment for given transformer
+                    (transformer_investment, periodical_costs) = \
+                        self.get_Investment(t, 'source')
+                    logging.info('   ' + 'Investment Capacity: '
+                                 + str(round(transformer_investment, 2))
+                                 + ' kW')
+                else:
+                    transformer_investment = 0
+
+                # Periodical Costs
+                if transformer_investment > 0:
+                    # max investment capacity * periodical costs
+                    periodical_costs = (t['periodical costs /(CU/(kW a))']
+                                        * transformer_investment)
+                    total_periodical_costs = (total_periodical_costs
+                                              + periodical_costs)
+                    investments_to_be_made[t['label']] = \
+                        (str(round(transformer_investment, 2)) + ' kW; '
+                         + str(round(periodical_costs, 2))
+                         + ' cost units (p.a.)')
+                else:
+                    periodical_costs = 0
+                logging.info('   ' + 'Periodical costs (p.a.): '
+                             + str(round(periodical_costs, 2))
+                             + ' cost units p.a.')
+                if t['transformer type'] == 'GenericTransformer':
+                    df_result_table[t['label'] + '_input1'] = df_transformer3 \
+                        if t['output2'] != 'None' else df_transformer1
+                    df_result_table[t['label'] + '_output1'] = df_transformer2
+                    if t['output2'] == 'None':
+                        # adds Generic transformer with one given
+                        # outputs to the list of components
+                        df_list_of_components = \
+                            df_list_of_components.append(
+                                    pd.DataFrame([[t['label'], 'transformer',
+                                                   round(df_transformer1.sum(),
+                                                         2), '---',
+                                                   round(df_transformer2.sum(),
+                                                         2), '---',
+                                                   round(df_transformer1.max(),
+                                                         2),
+                                                   round(variable_costs, 2),
+                                                   round(periodical_costs, 2),
+                                                   round(transformer_investment, 2)
+                                                   ]], columns=columns))
+                    else:
+                        # adds Generic transformer with two given
+                        # outputs to the list of components
+                        df_result_table[t['label'] + '_output2'] = \
+                            df_transformer1
+                        df_list_of_components = \
+                            df_list_of_components.append(
+                                    pd.DataFrame([[t['label'], 'transformer',
+                                                   round(df_transformer3.sum(),2),
+                                                    '---',
+                                                   round(df_transformer2.sum(),2),
+                                                   
+                                                   round(df_transformer1.sum(),2),
+                                                   round(df_transformer1.max(),
+                                                         2),
+                                                   round(variable_costs, 2),
+                                                   round(periodical_costs, 2),
+                                                   round(transformer_investment, 2)
+                                                   ]], columns=columns))
+                elif t['transformer type'] == 'HeatPump':
+                    df_result_table[t['label'] + '_input2'] = df_transformer3
+                    # adds heatpump transformer to the list of
+                    # components
+                    df_list_of_components = \
+                        df_list_of_components.append(
+                                pd.DataFrame([[t['label'], 'transformer',
+                                               round(df_transformer2.sum(), 2),
+                                               round(df_transformer3.sum(), 2),
+                                               round(df_transformer1.sum(), 2),
+                                               '---',
+                                               round(df_transformer1.max(), 2),
+                                               round(variable_costs, 2),
+                                               round(periodical_costs, 2),
+                                               round(transformer_investment, 2)
+                                               ]],
+                                             columns=columns))
+                       
+                elif t['transformer type'] == 'GenericCHP':
+                    # adds genericchp transformer to the list of
+                    # components
+                    df_list_of_components = \
+                        df_list_of_components.append(
+                                pd.DataFrame([[t['label'], 'transformer', 'nn',
+                                               'nn',
+                                               round(flowsum[[6][0]], 2),
+                                               round(flowsum[[7][0]], 2), 'nn',
+                                               round(variable_costs, 2),
+                                               round(periodical_costs, 2),
+                                               round(transformer_investment, 2)
+                                               ]], columns=columns))
+                logging.info(
+                        '   ' + '---------------------------------------------'
+                        + '----')
+        # logs the next type of components
+        self.log("STORAGES")
+        for i, s in nd['storages'].iterrows():
+            if s['active']:
+                # gets component flow and performance for given storages
+                (flowsum, flowmax, df_storage1, df_storage2, df_storage3) = \
+                    self.getflow(s['label'], 'transformer')
+                variable_costs = s['variable input costs'] * flowsum[[0][0]]
+                logging.info('   ' + 'Total variable costs for: '
+                             + str(round(variable_costs, 2))
                              + ' cost units')
                 total_costs = total_costs + variable_costs
-                
                 # Investment Capacity
-                if p['max. investment capacity /(kW)'] > 0:
-                    link_node = esys.groups[p['label']]
-                    bus_node = esys.groups[p['bus_2']]
-                    link_investment = (results[link_node, bus_node]
-                                       ['scalars']['invest'])
-                    logging.info('   '+'Investment Capacity: ' 
-                                 + str(round(link_investment, 2)) 
-                                 + ' kW')
-        
+                if s['max. investment capacity /(kWh)'] > 0:
+                    # gets investment and periodical cost for given
+                    # storage
+                    (storage_investment, periodical_costs) = \
+                        self.get_Investment(s, 'storage')
                 else:
-                    link_investment = 0
-                        
-                # Periodical Costs        
-                if link_investment > 0:     ### Wert auf beide Busse anwenden! 
-                    periodical_costs = p['Fix Investment Costs /(CU/a)'] if (p['periodical costs /(CU/(kW a))'] == 0) and (p['Non-Convex Investment'] == 1) \
-                                       else (p['periodical costs /(CU/(kW a))']*link_investment)
-                    total_periodical_costs = (total_periodical_costs 
-                                             + periodical_costs)
-                    investments_to_be_made[p['label']] = (str(round(
-                                                        link_investment, 2))
-                                                +' kW; '
-                                                +str(round(periodical_costs,2))
-                                                +' cost units (p.a.)')
-                else:
+                    # if no investment decision has been taken
+                    storage_investment = 0
                     periodical_costs = 0
-                logging.info('   '+'Periodical costs (p.a.): ' 
-                             + str(round(periodical_costs, 2)) 
-                             + ' cost units p.a.')
-            else:
-                logging.info('   '+'Total Energy Output to ' 
-                             +  p['bus_2'] 
-                             + ': 0 kWh')
-            logging.info('   '+'----------------------------------------------'
-                             +'---') 
-    
- 
-    logging.info('   '+"******************************************************"
-                             +"***") 
-    logging.info('   '+"***SUMMARY********************************************"
-                             +"***") 
-    logging.info('   '+"******************************************************"
-                             +"***")
-    logging.info('   '+'------------------------------------------------------'
-                             +'---')
-    meta_results = solph.processing.meta_results(om)
-    meta_results_objective = meta_results['objective']
-    logging.info('   '+'Total System Costs:             ' 
-                 + str(round(meta_results_objective, 1)) 
-                 + ' cost units')
-    logging.info('   '+'Total Variable Costs:           ' 
-                 + str(round(total_costs)) + ' cost units')
-    logging.info('   '+'Total Periodical Costs (p.a.):  ' 
-                 + str(round(total_periodical_costs)) 
-                 + ' cost units p.a.')
-    logging.info('   '+'Total Energy Demand:            ' 
-                 + str(round(total_demand)) + ' kWh')
-    logging.info('   '+'Total Energy Usage:             ' 
-                 + str(round(total_usage)) + ' kWh')
-    logging.info('   '+'------------------------------------------------------'
-                             +'---') 
-    logging.info('   '+'Investments to be made:')
-    
-    investment_objects = list(investments_to_be_made.keys())
-    
-    for i in range(len(investment_objects)):
-        logging.info('   '+investment_objects[i]+': '
-                     + investments_to_be_made[investment_objects[i]])
 
-    logging.info('   '+'------------------------------------------------------'
-                             +'---')             
-    logging.info('   '+"******************************************************"
-                             +"***\n") 
-
-
-
-def prepare_plotly_results(nodes_data, 
-                           optimization_model, 
-                           energy_system, 
-                           result_path):
-    
-    """Function which prepares the results for the creation of a HTML page.
-    
-    Creates three pandas data frames and saves them, which are required for 
-    creating an interactive HTML result page:
-       - df_list_of_components: Consists all components with several properties
-       - df_result_table: Consists timeseries of al components
-       - df_summary: Consists summarizing results of the modelling
-       
-    ----    
-        
-    Keyword arguments:
-        
-        nodes_data : obj:'dict'
-           -- dictionary containing data from excel scenario file
-        
-        optimization_model
-            -- optimized energy system
-            
-        energy_system : obj:
-            -- original (unoptimized) energy system
-            
-        result_path : obj:'str'
-            -- path, where the data frames shall be saved as csv-file
-        
-           
-    ----
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 13.03.2020
-        
-    """
-    
-    logging.info('   '+'--------------------------------------------------------') 
-    logging.info('   '+'Preparing the results for interactive results...')
-    nd = nodes_data
-    esys = energy_system 
-    om = optimization_model
-    results = solph.processing.results(om)
-    
-    #######################
-    ### Analyze Results ###
-    #######################
-    total_usage = 0
-    total_demand = 0
-    total_costs = 0
-    total_periodical_costs = 0
-    investments_to_be_made = {}
-    
-    df_list_of_components = pd.DataFrame(columns=['ID', 
-                                      'type', 
-                                      'input 1/kWh', 
-                                      'input 2/kWh', 
-                                      'output 1/kWh', 
-                                      'output 2/kWh', 
-                                      'capacity/kW', 
-                                      'variable costs/CU', 
-                                      'periodical costs/CU',
-                                      'investment/kW'])
-    #Add dummy component
-#    df_demand = pd.DataFrame([['---------------', 
-#           '---------------', 
-#           '---------------', 
-#           '---------------', 
-#           '---------------', 
-#           '---------------',
-#           '---------------',
-#           '--------------------',
-#           '--------------------',
-#           '---------------'
-#           ]], 
-#           columns=['ID', 
-#                      'type', 
-#                      'input 1 [kWh]', 
-#                      'input 2 [kWh]', 
-#                      'output 1 [kWh]', 
-#                      'output 2 [kWh]', 
-#                      'capacity [kW]', 
-#                      'variable costs [CU]', 
-#                      'periodical costs [CU]',
-#                      'investment [kW]']) 
-#    df_list_of_components = df_list_of_components.append(df_demand) 
-    
-    df_component_flows = pd.DataFrame(columns=['component',
-                                               'date',
-                                               'performance',
-                                               'ID'])
-    
-    #Add dummy component (required for starting the plotly app)
-    
-    df_result_table = pd.DataFrame()
- #   print(type(results))
- #   print(results)
-
-
-
-
-
-######################
-##### SINKS ##########
-######################  
-
-    
-    for i, de in nd['demand'].iterrows():
-        
-
-        variable_costs = 0
-        periodical_costs = 0      
-        
-        if de['active']:
-                     
-            demand = solph.views.node(results, de['label'])
-            
-#            for i in range len(demand):
-            
-
-            
-            if demand:
-                flowsum = demand['sequences'].sum()
-                flowmax = demand['sequences'].max()
-
-                total_demand = total_demand + flowsum[[0][0]]
-                
-                # Adds the components time series to the df_component_flows
-                # data frame for further usage
-                i=0
-                number_of_periods = len(demand['sequences'].values)
-                
-
-             
-                component_performance = demand['sequences'].columns.values
-                df_demand = demand['sequences'][component_performance[0]]
-                df_result_table[de['label']] = df_demand
-                    
-
-
-            
-        df_demand = pd.DataFrame([[de['label'], 
-                           'sink', 
-                           round(demand['sequences'][component_performance[0]].sum(), 2), 
-                           '---', 
-                           '---', 
-                           '---',
-                           round(demand['sequences'][component_performance[0]].max(), 2),
-                           '---',
-                           '---',
-                           '---'
-                           ]], 
-                           columns=['ID', 
-                                      'type', 
-                                      'input 1/kWh', 
-                                      'input 2/kWh', 
-                                      'output 1/kWh', 
-                                      'output 2/kWh', 
-                                      'capacity/kW', 
-                                      'variable costs/CU', 
-                                      'periodical costs/CU',
-                                      'investment/kW'])   
-        df_list_of_components = df_list_of_components.append(df_demand)              
-                
-#            logging.info('   '+'----------------------------------------------'
- #                            +'---')
-    
-        
-    for i, b in nd['buses'].iterrows():
-        
-        # if flowsum[[0][0]]:
-        #     flowsum[[0][0]] = 0
-        # if flowmax[[0][0]]:
-        #     flowmax[[0][0]] = 0
-        variable_costs = 0
-        periodical_costs = 0
-        
-        
-        if b['active']:
-            if b['excess']:
-                        
-                excess = solph.views.node(results, b['label']+'_excess')
-                # Flows
-                flowsum = excess['sequences'].sum()
-
-                total_usage = total_usage + flowsum[[0][0]] 
-                # Capacity
-          
-                # Variable Costs
-                variable_costs = b['excess costs /(CU/kWh)'] * flowsum[[0][0]]
-                total_costs = total_costs + variable_costs
-              
-
-                component_performance = excess['sequences'].columns.values
-                df_excess = excess['sequences'][component_performance[0]]
-                if len(df_result_table) != 0:
-                    df_result_table[b['label']+'_excess'] = df_excess
-                elif len(df_result_table) == 0:
-                    df_result_table[b['label']+'_excess'] = df_excess
-
-        
-
-
-                df_demand = pd.DataFrame([[b['label'] + '_excess', 
-                                   'sink', 
-                                   round(excess['sequences'][component_performance[0]].sum(), 2), 
-                                   '---', 
-                                   '---', 
-                                   '---',
-                                   round(excess['sequences'][component_performance[0]].max(), 2),
-                                   round(variable_costs, 2),
-                                   '---',
-                                   '---'
-                                   ]], 
-                                   columns=['ID', 
-                                      'type', 
-                                      'input 1/kWh', 
-                                      'input 2/kWh', 
-                                      'output 1/kWh', 
-                                      'output 2/kWh', 
-                                      'capacity/kW', 
-                                      'variable costs/CU', 
-                                      'periodical costs/CU',
-                                      'investment/kW'])   
-                df_list_of_components = df_list_of_components.append(df_demand)
-                
-
-
-
-######################
-##### SOURCES ##########
-######################    
-    
-    for i, so in nd['sources'].iterrows():
-        
-        # if flowsum[[0][0]]:
-        #     flowsum[[0][0]] = 0
-        # if flowmax[[0][0]]:
-        #     flowmax[[0][0]] = 0
-        variable_costs = 0
-        periodical_costs = 0
-        source_investment = 0
-        
-        if so['active']:
-            #Flows                  
-            source = solph.views.node(results, so['label'])
-            flowsum = source['sequences'].sum()
-
-            total_usage = total_usage + flowsum[[0][0]]                 
-            # Capacity
-            flowmax = source['sequences'].max()
-
-            if so['max. investment capacity /(kW)'] > 0:        
-            # Investment Capacity
-                source_node = esys.groups[so['label']]
-                bus_node = esys.groups[so['output']]
-                source_investment = (results[source_node, bus_node]['scalars']
-                                    ['invest'])
-
-                investments_to_be_made[so['label']] = (str(round(
-                                                   source_investment,2))+' kW')
-            else:
-                source_investment = 0
-    
-            # Variable Costs
-            variable_costs = so['variable costs /(CU/kWh)'] * flowsum[[0][0]]
-            total_costs = total_costs + variable_costs
-
-            # Periodical Costs
-            if source_investment > 0:
-                periodical_costs = so['Fix Investment Costs /(CU/a)'] if (so['periodical costs /(CU/(kW a))'] == 0) and (so['Non-Convex Investment'] == 1) \
-                                       else (so['periodical costs /(CU/(kW a))']*source_investment)
-                total_periodical_costs = (total_periodical_costs 
-                                         + periodical_costs)
-                investments_to_be_made[so['label']] = (str(results[source_node, 
-                                                bus_node]['scalars']['invest'])
-                                                +' kW; '
-                                                +str(round(periodical_costs,2))
-                                                +' cost units (p.a.)')
-            else:
-                periodical_costs = 0
-    
-
-            # Adds the components time series to the df_component_flows
-            # data frame for further usage
-            component_performance = source['sequences'].columns.values
-            df_source = source['sequences'][component_performance[0]]
-            df_result_table[so['label']] = df_source      
-            
-            
-            
-            df_demand = pd.DataFrame([[so['label'], 
-                               'source', 
-                               '---', 
-                               '---', 
-                               round(source['sequences'][component_performance[0]].sum(), 2), 
-                               '---',
-                               round(source['sequences'][component_performance[0]].max(), 2),
-                               round(variable_costs, 2),
-                               round(periodical_costs, 2),
-                               round(source_investment, 2)
-                               ]], 
-                               columns=['ID', 
-                                          'type', 
-                                          'input 1/kWh', 
-                                          'input 2/kWh', 
-                                          'output 1/kWh', 
-                                          'output 2/kWh', 
-                                          'capacity/kW', 
-                                          'variable costs/CU', 
-                                          'periodical costs/CU',
-                                          'investment/kW'])   
-            df_list_of_components = df_list_of_components.append(df_demand) 
-
-
-
-   
-         
-    for i, b in nd['buses'].iterrows():
-        
-        # if flowsum[[0][0]]:
-        #     flowsum[[0][0]] = 0
-        # if flowmax[[0][0]]:
-        #     flowmax[[0][0]] = 0
-        variable_costs = 0
-        periodical_costs = 0
-        
-        if b['active']:
-            if b['shortage']:
-
-                shortage = solph.views.node(results, b['label']
-                                                +'_shortage')
-                # Flows
-                flowsum = shortage['sequences'].sum()
-    
-                total_usage = total_usage + flowsum[[0][0]] 
-                # Capacity
-                flowmax = shortage['sequences'].max()
-           
-                # Variable Costs
-                variable_costs = b['shortage costs /(CU/kWh)'] * flowsum[[0][0]]
-                total_costs = total_costs + variable_costs
-       
-                    
-                df_demand = pd.DataFrame([[b['label']+'_shortage', 
-                                   'source', 
-                                   '---', 
-                                   '---', 
-                                   round(flowsum[[0][0]], 2), 
-                                   '---',
-                                   round(flowmax[[0][0]], 2),
-                                   round(variable_costs, 2),
-                                   round(periodical_costs, 2),
-                                   '---'
-                                   ]], 
-                                   columns=['ID', 
-                                      'type', 
-                                      'input 1/kWh', 
-                                      'input 2/kWh', 
-                                      'output 1/kWh', 
-                                      'output 2/kWh', 
-                                      'capacity/kW', 
-                                      'variable costs/CU', 
-                                      'periodical costs/CU',
-                                      'investment/kW'])   
-                df_list_of_components = df_list_of_components.append(df_demand) 
-                
-                component_performance = shortage['sequences'].columns.values
-                df_shortage = shortage['sequences'][component_performance[0]]
-                df_result_table[b['label']+'_shortage'] = df_shortage
-            
-        
-
-######################
-##### TRANSFORMERS ##########
-######################  
-
-    for i, t in nd['transformers'].iterrows(): 
-        
-        # if flowsum[[0][0]]:
-        #     flowsum[[0][0]] = 0
-        # if flowmax[[0][0]]:
-        #     flowmax[[0][0]] = 0
-        variable_costs = 0
-        periodical_costs = 0
-        transformer_investment = 0
-        
-        if t['active']:
-
-                        
-            transformer = solph.views.node(results, t['label'])
-            flowsum = transformer['sequences'].sum()
-            flowmax = transformer['sequences'].max()
-
-              
-
-            variable_costs = (t['variable input costs /(CU/kWh)'] 
-                              * flowsum[[0][0]] 
-                              + t['variable output costs /(CU/kWh)']
-                              * flowsum[[1][0]])
-            total_costs = total_costs + variable_costs
-
-            
-            # Investment Capacity
-            if t['max. investment capacity /(kW)'] > 0:
-                transformer_node = esys.groups[t['label']]
-                bus_node = esys.groups[t['output']]
-                transformer_investment = (results[transformer_node, bus_node]
-                                          ['scalars']['invest'])
-    
-            else:
-                transformer_investment = 0
-                    
-            # Periodical Costs        
-            if transformer_investment > 0:     ### Wert auf beide Busse anwenden! (Es muss die Summe der Busse, inklusive des Wirkungsgrades einbezogen werden!!!)
-                periodical_costs = t['Fix Investment Costs /(CU/a)'] if (t['periodical costs /(CU/(kW a))'] == 0) and (t['Non-Convex Investment'] == 1) \
-                                       else (t['periodical costs /(CU/(kW a))']*transformer_investment)
-                total_periodical_costs = (total_periodical_costs 
-                                          + periodical_costs)
-                investments_to_be_made[t['label']] = (str(round(
-                                                    transformer_investment, 2))
-                                                +' kW; '
-                                                +str(round(periodical_costs,2))
-                                                +' cost units (p.a.)')
-            else:
-                periodical_costs = 0
-            
-            if t['transformer type'] == 'GenericTransformer':            
-                if t['output2'] == 'None':
-
-                    max_transformer_flow = flowmax[1]
-                    
-                    component_performance = transformer['sequences'].columns.values
-                    df_transformer = transformer['sequences'][component_performance[0]]
-                    df_result_table[t['label']+'_input1'] = df_transformer
-                    df_transformer = transformer['sequences'][component_performance[1]]
-                    df_result_table[t['label']+'_output1'] = df_transformer
-                    
-                    df_demand = pd.DataFrame([[t['label'], 
-                       'transformer', 
-                       round(transformer['sequences'][component_performance[0]].sum(),2), 
-                       '---', 
-                       round(transformer['sequences'][component_performance[1]].sum(), 2), 
-                       '---',
-                       round(transformer['sequences'][component_performance[0]].max(),2),
-                       round(variable_costs,2),
-                       round(periodical_costs,2),
-                       round(transformer_investment, 2)
-                       ]], 
-                       columns=['ID', 
-                                      'type', 
-                                      'input 1/kWh', 
-                                      'input 2/kWh', 
-                                      'output 1/kWh', 
-                                      'output 2/kWh', 
-                                      'capacity/kW', 
-                                      'variable costs/CU', 
-                                      'periodical costs/CU',
-                                      'investment/kW'])   
-                    df_list_of_components = df_list_of_components.append(df_demand) 
-                    
-                else:    
-
-                    max_transformer_flow = flowmax[1]
-                    
-
-                    component_performance = transformer['sequences'].columns.values
-                    df_transformer = transformer['sequences'][component_performance[0]]
-                    df_result_table[t['label']+'_input1'] = df_transformer
-                    df_transformer = transformer['sequences'][component_performance[1]]
-                    df_result_table[t['label']+'_output1'] = df_transformer
-                    df_transformer = transformer['sequences'][component_performance[2]]
-                    df_result_table[t['label']+'_output2'] = df_transformer
-
-                    
-                    
-                    df_demand = pd.DataFrame([[t['label'], 
-                       'transformer', 
-                       round(transformer['sequences'][component_performance[0]].sum(),2), 
-                       '---', 
-                       round(transformer['sequences'][component_performance[1]].sum(), 2), 
-                       round(transformer['sequences'][component_performance[2]].sum(), 2),
-                       round(transformer['sequences'][component_performance[0]].max(),2),
-                       round(variable_costs,2),
-                       round(periodical_costs,2),
-                       round(transformer_investment, 2)
-                       ]], 
-                       columns=['ID', 
-                                      'type', 
-                                      'input 1/kWh', 
-                                      'input 2/kWh', 
-                                      'output 1/kWh', 
-                                      'output 2/kWh', 
-                                      'capacity/kW', 
-                                      'variable costs/CU', 
-                                      'periodical costs/CU',
-                                      'investment/kW'])   
-                    df_list_of_components = df_list_of_components.append(df_demand) 
-                           
-            
-            elif t['transformer type'] == 'GenericCHP':
-
-                max_transformer_flow = flowmax[2]
-                      
-                
-                df_demand = pd.DataFrame([[t['label'], 
-                   'transformer', 
-                   'nn', 
-                   'nn', 
-                   round(flowsum[[6][0]], 2), 
-                   round(flowsum[[7][0]], 2),
-                   'nn',
-                   round(variable_costs, 2),
-                   round(periodical_costs, 2),
-                   round(transformer_investment, 2)
-                   ]], 
-                   columns=['ID', 
-                                      'type', 
-                                      'input 1/kWh', 
-                                      'input 2/kWh', 
-                                      'output 1/kWh', 
-                                      'output 2/kWh', 
-                                      'capacity/kW', 
-                                      'variable costs/CU', 
-                                      'periodical costs/CU',
-                                      'investment/kW'])   
-                df_list_of_components = df_list_of_components.append(df_demand)    
-
-            elif t['transformer type'] == 'HeatPump':
-                component_performance = transformer['sequences'].columns.values
-                df_transformer = transformer['sequences'][component_performance[1]]
-                df_result_table[t['label'] + '_input1'] = df_transformer
-                df_transformer = transformer['sequences'][component_performance[2]]
-                df_result_table[t['label'] + '_input2'] = df_transformer
-                df_transformer = transformer['sequences'][component_performance[0]]
-                df_result_table[t['label'] + '_output1'] = df_transformer
-
-                df_demand = pd.DataFrame([[t['label'],
-                   'transformer',
-                   round(transformer['sequences'][component_performance[1]].sum(), 2),
-                   round(transformer['sequences'][component_performance[2]].sum(), 2),
-                   round(transformer['sequences'][component_performance[0]].sum(), 2),
-                   '---',
-                   round(transformer['sequences'][component_performance[0]].max(), 2),
-                   round(variable_costs, 2),
-                   round(periodical_costs, 2),
-                   round(transformer_investment, 2)
-                   ]],
-                 columns=['ID',
-                                      'type',
-                                      'input 1/kWh',
-                                      'input 2/kWh',
-                                      'output 1/kWh',
-                                      'output 2/kWh',
-                                      'capacity/kW',
-                                      'variable costs/CU',
-                                      'periodical costs/CU',
-                                      'investment/kW'])
-                df_list_of_components = df_list_of_components.append(df_demand)            
-            
-
-######################
-##### STORAGES ##########
-######################           
-
-    for i, s in nd['storages'].iterrows():
-        
-        # if flowsum[[0][0]]:
-        #     flowsum[[0][0]] = 0
-        # if flowsum[[1][0]]:
-        #     flowsum[[1][0]] = 0
-        # if flowmax[[0][0]]:
-        #     flowmax[[0][0]] = 0
-        variable_costs = 0
-        periodical_costs = 0   
-        storage_investment = 0
-        
-        if s['active']:
-                               
-            storages = solph.views.node(results, s['label'])
-            flowsum = storages['sequences'].sum()
-            #logging.info('   '+flowsum)
-                        
-            storage = solph.views.node(results, s['label'])
-            flowmax = storage['sequences'].max()
-            #variable_costs = s['variable input costs'] * flowsum[[0][0]]
-            
-            
-            storage = solph.views.node(results, s['label'])
-            flowsum = storage['sequences'].sum()
-            variable_costs = s['variable input costs'] * flowsum[[0][0]]
-            
-            total_costs = total_costs + variable_costs 
-    
-            # Investment Capacity
-            if s['max. investment capacity /(kWh)'] > 0:
-                storage_node = esys.groups[s['label']]
-                bus_node = esys.groups[s['bus']]
-                storage_investment = results[storage_node, None]['scalars']['invest']
-                
-            else:
-                storage_investment = 0
-                
-            # Periodical Costs
-            if storage_investment > float(s['existing capacity /(kWh)']):
-                periodical_costs = s['Fix Investment Costs /(CU/a)'] if (s['periodical costs /(CU/(kWh a))'] == 0) and (s['Non-Convex Investment'] == 1) \
-                                       else (s['periodical costs /(CU/(kWh a))']*storage_investment)
-                total_periodical_costs = (total_periodical_costs 
-                                        + periodical_costs)
-                investments_to_be_made[s['label']] = (str(round(
-                                                        storage_investment, 2))
-                                                +' kWh; '
-                                                +str(round(periodical_costs,2))
-                                                +' cost units (p.a.)')
-            else:
-                periodical_costs = 0
-            
-            df_demand = pd.DataFrame([[s['label'], 
-               'storage', 
-               round(flowsum[[2][0]], 2), 
-               '---', 
-               round(flowsum[[1][0]], 2), 
-               '---',
-               round(flowmax[[0][0]], 2),
-               round(variable_costs, 2),
-               round(periodical_costs, 2),
-               round(storage_investment, 2)
-               ]], 
-               columns=['ID', 
-                                      'type', 
-                                      'input 1/kWh', 
-                                      'input 2/kWh', 
-                                      'output 1/kWh', 
-                                      'output 2/kWh', 
-                                      'capacity/kW', 
-                                      'variable costs/CU', 
-                                      'periodical costs/CU',
-                                      'investment/kW'])   
-            df_list_of_components = df_list_of_components.append(df_demand)
-          
-            component_performance = storage['sequences'].columns.values
-          
-            
-            df_storage = storage['sequences'][component_performance[0]]
-            df_result_table[s['label']+'_capacity'] = df_storage
-            df_storage = storage['sequences'][component_performance[2]]
-            df_result_table[s['label']+'_input'] = df_storage
-            df_storage = storage['sequences'][component_performance[1]]
-            df_result_table[s['label']+'_output'] = df_storage
-            
-            
-
-######################
-##### LINKS ##########
-######################            
-
-
-    for i, p in nd['links'].iterrows():
-    
-        if flowsum[[0][0]]:
-            flowsum[[0][0]] = 0
-        if flowsum[[1][0]]:
-            flowsum[[1][0]] = 0
-        if flowmax[[0][0]]:
-            flowmax[[0][0]] = 0
-        variable_costs = 0
-        periodical_costs = 0
-        
-        if p['active']:
-                        
-            link = solph.views.node(results, p['label'])
-            #print(link)
-            
-            if link:
-                
-                flowsum = link['sequences'].sum()
-                #transformer_test = flowsum
-                #transformer = outputlib.views.node(results, t['label'])
-                flowmax = link['sequences'].max()
-                        
-                
+                # Periodical Costs
+                if storage_investment > float(s['existing capacity /(kWh)']):
+                    total_periodical_costs = (total_periodical_costs
+                                              + periodical_costs)
+                    investments_to_be_made[s['label']] = \
+                        (str(round(storage_investment, 2)) + ' kWh; '
+                         + str(round(periodical_costs, 2)) +
+                         ' cost units (p.a.)')
+                df_list_of_components = \
+                    df_list_of_components.append(
+                            pd.DataFrame([[s['label'], 'storage',
+                                           round(flowsum[[2][0]], 2), '---',
+                                           round(flowsum[[1][0]], 2), '---',
+                                           round(flowmax[[0][0]], 2),
+                                           round(variable_costs, 2),
+                                           round(periodical_costs, 2),
+                                           round(storage_investment, 2)]],
+                                         columns=columns))
+                df_result_table[s['label'] + '_capacity'] = df_storage1
+                df_result_table[s['label'] + '_input'] = df_storage3
+                df_result_table[s['label'] + '_output'] = df_storage2
+                logging.info(
+                        '   ' + '---------------------------------------------'
+                        + '----')
+        # logs the next type of components (links
+        self.log("LINKS")
+        for i, p in nd['links'].iterrows():
+            variable_costs = 0
+            if p['active']:
+                (flowsum, flowmax, df_link1, df_link2) = \
+                    self.getflow(p['label'], 'link')
                 if p['(un)directed'] == 'directed':
-
-                    max_link_flow = flowmax[1] 
-                    # define flowsum2[[1][0]] as 0 to avoid later errors
-                    flowsum2 = link['sequences'].sum()
-                    flowsum2[[1][0]] = 0
-                    
-                else:
-                    link2 = solph.views.node(results, p['label']
-                                                 +'_direction_2')
-                    flowsum2 = link2['sequences'].sum()
-                    flowmax2 = link2['sequences'].max()
-                                         
-                    
-                if p['(un)directed'] == 'directed':
+                    logging.info('   ' + 'Total Energy Output to '
+                                 + p['bus_2'] + ': '
+                                 + str(round(flowsum[[1][0]], 2)) + ' kWh')
                     max_link_flow = flowmax[1]
-                    
-
-                    
-
+                    logging.info('   ' + 'Max. Capacity to ' + p['bus_2']
+                                 + ': ' + str(round(max_link_flow, 2)) + ' kW')
+                    # TODO Implemented correctly ? variable costs for
+                    # TODO second output
                 else:
+                    (flowsum2, flowmax2, df_link1_2, df_link2_2) = \
+                        self.getflow(p['label'] + '_direction_2', 'link')
+                    logging.info('   ' + 'Total Energy Output to ' + p['bus_2']
+                                 + ': ' + str(round(flowsum[[1][0]], 2))
+                                 + ' kWh')
+                    logging.info('   ' + 'Total Energy Output to ' + p['bus_1']
+                                 + ': ' + str(round(flowsum2[[1][0]], 2))
+                                 + ' kWh')
                     max_link_flow = flowmax[1]
-
+                    logging.info('   ' + 'Max. Capacity to ' + p['bus_2']
+                                 + ': ' + str(round(max_link_flow, 2)) + ' kW')
                     max_link_flow = flowmax2[1]
-                    
-
-
-                    
-                variable_costs = p['variable costs /(CU/kWh)'] * flowsum[[0][0]]
-                total_costs = total_costs + variable_costs
-                total_costs = total_costs + variable_costs
+                    logging.info('   ' + 'Max. Capacity to ' + p['bus_1']
+                                 + ': ' + str(round(max_link_flow, 2)) + ' kW')
+                    variable_costs += p['variable costs /(CU/kWh)'] * \
+                                      flowsum2[[0][0]]
+                variable_costs += p['variable costs /(CU/kWh)'] * \
+                                 flowsum[[0][0]]
                 
+                total_costs = total_costs + variable_costs
+                logging.info('   ' + 'Variable Costs: '
+                             + str(round(variable_costs, 2))
+                             + ' cost units')
+
                 # Investment Capacity
                 if p['max. investment capacity /(kW)'] > 0:
-                    link_node = esys.groups[p['label']]
-                    bus_node = esys.groups[p['bus_2']]
-                    link_investment = (results[link_node, bus_node]
-                                       ['scalars']['invest'])
-
-        
+                    # get investment for the given link
+                    link_investment = self.get_Investment(p, 'link')
+                    logging.info('   ' + 'Investment Capacity: '
+                                 + str(round(link_investment, 2))
+                                 + ' kW')
                 else:
+                    # if no investment decision has been taken
                     link_investment = 0
-                        
-                # Periodical Costs        
-                if link_investment > 0:     ### Wert auf beide Busse anwenden! 
-                    periodical_costs = p['Fix Investment Costs /(CU/a)'] if (p['periodical costs /(CU/(kW a))'] == 0) and (p['Non-Convex Investment'] == 1) \
-                                       else (p['periodical costs /(CU/(kW a))']*link_investment)
-                    total_periodical_costs = (total_periodical_costs 
-                                             + periodical_costs)
-                    investments_to_be_made[p['label']] = (str(round(
-                                                        link_investment, 2))
-                                                +' kW; '
-                                                +str(round(periodical_costs,2))
-                                                +' cost units (p.a.)')
+
+                # Periodical Costs
+                if link_investment > 0:
+                    # TODO Issue #37
+                    periodical_costs = p['periodical costs /(CU/(kW a))']
+                    total_periodical_costs = \
+                        (total_periodical_costs + periodical_costs)
+                    investments_to_be_made[p['label']] = \
+                        (str(round(link_investment, 2)) + ' kW; '
+                         + str(round(periodical_costs, 2))
+                         + ' cost units (p.a.)')
                 else:
                     periodical_costs = 0
+                logging.info('   ' + 'Periodical costs (p.a.): '
+                             + str(round(periodical_costs, 2))
+                             + ' cost units p.a.')
+                #else:
+                #    logging.info('   ' + 'Total Energy Output to ' + p['bus_2']
+                #                 + ': 0 kWh')
+                df_result_table[p['label'] + '_input1'] = df_link2
+                df_result_table[p['label'] + '_output1'] = df_link1
+                if p['(un)directed'] == 'directed':
+                    df_list_of_components = \
+                        df_list_of_components.append(
+                                pd.DataFrame([[p['label'], 'link',
+                                               round(df_link2.sum(), 2),
+                                               '--',
+                                               round(df_link1.sum(), 2),
+                                               '--',
+                                               round(df_link2.max(), 2),
+                                               round(variable_costs, 2),
+                                               round(periodical_costs, 2),
+                                               round(link_investment, 2)]],
+                                             columns=columns))
+                else:
+                    df_result_table[p['label'] + '_input2'] = df_link1_2
+                    df_result_table[p['label'] + '_output2'] = df_link2_2
+                    df_list_of_components = \
+                        df_list_of_components.append(
+                                pd.DataFrame([[p['label'], 'link',
+                                               round(df_link1.sum(), 2),
+                                               round(df_link1_2.sum(), 2),
+                                               round(df_link2.sum(), 2),
+                                               round(df_link2_2.sum(), 2),
+                                               round(max(df_link2.max(),
+                                                         df_link2_2.max()), 2),
+                                               round(variable_costs, 2),
+                                               round(periodical_costs, 2),
+                                               round(link_investment, 2)]],
+                                             columns=columns))
+            logging.info(
+                    '   ' + '------------------------------------------------')
+        self.log("SUMMARY")
+        meta_results = solph.processing.meta_results(om)
+        meta_results_objective = meta_results['objective']
+        logging.info('   ' + 'Total System Costs:             '
+                     + str(round(meta_results_objective, 1))
+                     + ' cost units')
+        logging.info('   ' + 'Total Variable Costs:           '
+                     + str(round(total_costs)) + ' cost units')
+        logging.info('   ' + 'Total Periodical Costs (p.a.):  '
+                     + str(round(total_periodical_costs))
+                     + ' cost units p.a.')
+        logging.info('   ' + 'Total Energy Demand:            '
+                     + str(round(total_demand)) + ' kWh')
+        logging.info('   ' + 'Total Energy Usage:             '
+                     + str(round(total_usage)) + ' kWh')
+        logging.info('   ' + '------------------------------------------------'
+                     + '---------')
+        logging.info('   ' + 'Investments to be made:')
 
-            if p['(un)directed'] == 'directed':
-                component_performance = link['sequences'].columns.values
-                df_link = link['sequences'][component_performance[0]]
-                df_result_table[p['label']+'_input1'] = df_link
-                df_link = link['sequences'][component_performance[1]]
-                df_result_table[p['label']+'_output1'] = df_link
-              
-    
-                df_demand = pd.DataFrame([[p['label'], 
-                   'link', 
-                   round(link['sequences'][component_performance[0]].sum(), 2), 
-                   '--',#round(link2['sequences'][component_performance2[0]].sum(), 2), 
-                   round(link['sequences'][component_performance[1]].sum(), 2),
-                   '--',#round(link2['sequences'][component_performance2[1]].sum(), 2),
-                   round(link['sequences'][component_performance[1]].max(), 2),
-                   round(variable_costs, 2),
-                   round(periodical_costs, 2),
-                   round(link_investment, 2)
-                   ]], 
-                   columns=['ID', 
-                                      'type', 
-                                      'input 1/kWh', 
-                                      'input 2/kWh', 
-                                      'output 1/kWh', 
-                                      'output 2/kWh', 
-                                      'capacity/kW', 
-                                      'variable costs/CU', 
-                                      'periodical costs/CU',
-                                      'investment/kW'])    
-                df_list_of_components = df_list_of_components.append(df_demand)                
-            else:
-                component_performance = link['sequences'].columns.values
-                df_link = link['sequences'][component_performance[0]]
-                df_result_table[p['label']+'_input1'] = df_link
-                df_link = link['sequences'][component_performance[1]]
-                df_result_table[p['label']+'_output1'] = df_link
-                
-                
-                component_performance2 = link2['sequences'].columns.values
-                df_link2 = link2['sequences'][component_performance2[0]]
-                df_result_table[p['label']+'_input2'] = df_link2
-                df_link2 = link2['sequences'][component_performance2[1]]
-                df_result_table[p['label']+'_output2'] = df_link2
-    
-    
-    
-                df_demand = pd.DataFrame([[p['label'], 
-                   'link', 
-                   round(link['sequences'][component_performance[0]].sum(), 2), 
-                   round(link2['sequences'][component_performance2[0]].sum(), 2), 
-                   round(link['sequences'][component_performance[1]].sum(), 2),
-                   round(link2['sequences'][component_performance2[1]].sum(), 2),
-                   round(max(link['sequences'][component_performance[1]].max(), link2['sequences'][component_performance2[1]].max()), 2),
-                   round(variable_costs, 2),
-                   round(periodical_costs, 2),
-                   round(link_investment, 2)
-                   ]], 
-                   columns=['ID', 
-                                      'type', 
-                                      'input 1/kWh', 
-                                      'input 2/kWh', 
-                                      'output 1/kWh', 
-                                      'output 2/kWh', 
-                                      'capacity/kW', 
-                                      'variable costs/CU', 
-                                      'periodical costs/CU',
-                                      'investment/kW'])    
-                df_list_of_components = df_list_of_components.append(df_demand)
-            
-
-            
-    
-################
-### SUMMARY ####
-################
-            
-            
-    meta_results = solph.processing.meta_results(om)
-    meta_results_objective = meta_results['objective']
-    
-    investment_objects = list(investments_to_be_made.keys())
-
-
-    for j, ts in nd['timesystem'].iterrows():
+        investment_objects = list(investments_to_be_made.keys())
+        # Importing timesystem parameters from the scenario
+        ts = next(nd['timesystem'].iterrows())[1]
+        temp_resolution = ts['temporal resolution']
         start_date = ts['start date']
         end_date = ts['end date']
-        temp_resolution = ts['temporal resolution']
 
+        df_summary = pd.DataFrame([[start_date,
+                                    end_date,
+                                    temp_resolution,
+                                    round(meta_results_objective, 2),
+                                    round(total_costs, 2),
+                                    round(total_periodical_costs, 2),
+                                    round(total_demand, 2),
+                                    round(total_usage, 2)
+                                    ]],
+                                  columns=['Start Date',
+                                           'End Date',
+                                           'Resolution',
+                                           'Total System Costs',
+                                           'Total Variable Costs',
+                                           'Total Periodical Costs',
+                                           'Total Energy Demand',
+                                           'Total Energy Usage'])
+        for i in range(len(investment_objects)):
+            logging.info('   ' + investment_objects[i] + ': '
+                         + investments_to_be_made[investment_objects[i]])
+        logging.info(
+                '   ' + '-----------------------------------------------------'
+                + '----')
+        logging.info(
+                '   ' + "*****************************************************"
+                + "****\n")
+        # Dataframes are exported as csv for further processing
+        df_list_of_components.to_csv(result_path + '/components.csv',
+                                     index=False)
 
-    df_summary = pd.DataFrame([[start_date,
-                                end_date,
-                                temp_resolution,
-                                round(meta_results_objective, 2),
-                                round(total_costs,2),
-                                round(total_periodical_costs, 2),
-                                round(total_demand, 2),
-                                round(total_usage, 2)
-                               
-       ]], 
-       columns=['Start Date',
-                'End Date',
-                'Resolution',
-                'Total System Costs',
-                'Total Variable Costs',
-                'Total Periodical Costs',
-                'Total Energy Demand',
-                'Total Energy Usage'
+        df_result_table = df_result_table.rename_axis('date')
+        df_result_table.to_csv(result_path + '/results.csv')
 
-              ])    
+        df_summary.to_csv(result_path + '/summary.csv', index=False)
 
+        logging.info('   ' + 'Successfully prepared results...')
 
-    for j, ts in nd['timesystem'].iterrows():
-        start_date = ts['start date']
-        end_date = ts['end date']
-        temp_resolution = ts['temporal resolution']
-
-   
-
-    
-    
-    # Dataframes werden als csv zur weiterverarbeitung abgelegt
-
-    df_list_of_components.to_csv(result_path+'/components.csv', index=False) 
-    
-    df_result_table = df_result_table.rename_axis('date')
-    df_result_table.to_csv(result_path+'/results.csv') 
-    
-    df_summary.to_csv(result_path+'/summary.csv', index=False)
-    
-    logging.info('   '+'Successfully prepared results...')
+    def __init__(self, nodes_data, optimization_model, energy_system,
+                 result_path):
+        """
+            Inits the Results class for preparing Plotly results and
+            logging the results of Cbc-Solver.
+            
+            ----
+            Keyword arguments:
+                
+                nodes_data: obj:'dict'
+                    -- dictionary containing data from excel scenario
+                    file.
+                optimization_model: -- optimized energy system
+                energy_system: obj:
+                    -- original (unoptimized) energy system
+                result_path:
+                    -- Path where the results are saved.
+        """
+        self.statistics(nodes_data, optimization_model, energy_system,
+                        result_path)

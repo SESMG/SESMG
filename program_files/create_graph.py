@@ -96,7 +96,8 @@ def create_graph(filepath, nodes_data, legend=False):
                     if b['shortage']:
                         dot.node(label, shape='trapezium', fontsize="10",
                                  fixedsize='shape', width='1.1', height='0.6')
-                    if b['excess']:
+                        
+                    if b['excess'] and not b['shortage']:
                         dot.node(label, shape='invtrapezium', fontsize="10",
                                  fixedsize='shape', width='1.1', height='0.6')
                 # creates bus nodes
@@ -105,7 +106,8 @@ def create_graph(filepath, nodes_data, legend=False):
                     dot.node(b['bus_2'], shape='ellipse')
                 # creates edges
                 if i == 'demand' or i == 'storages' or i == 'links' \
-                        or (i == 'buses' and b['excess']):
+                        or (i == 'buses' and b['excess']
+                            and not b['shortage']):
                     dot.edge(b[bus[i][0]], label)
                 if i == 'sources' or i == 'storages' \
                         or (i == 'buses' and b['shortage']):
@@ -138,4 +140,12 @@ def create_graph(filepath, nodes_data, legend=False):
                                  fixedsize='shape', width='1.1', height='0.6')
                         dot.edge(low_temp_source,
                                  label + '_low_temp_bus')
+                elif i == 'buses':
+                    if b['excess'] and b['shortage']:
+                        label = b['label'] + '_excess'
+                        label = linebreaks(label)
+                        dot.node(label, shape='invtrapezium', fontsize="10",
+                                 fixedsize='shape', width='1.1', height='0.6')
+                        dot.node(b[bus[i][0]], shape='ellipse', fontsize="10")
+                        dot.edge(b[bus[i][0]], label)
     dot.render(filepath + '/graph.gv', view=True)
