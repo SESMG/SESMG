@@ -867,8 +867,6 @@ class Sinks:
             nodes.append(self.nodes_sinks[i])
 
 
-# TODO Is there a potential for optimization?
-# TODO Discussion with Janik
 class Transformers:
     """
     Creates a transformer object.
@@ -902,10 +900,7 @@ class Transformers:
     """
     # intern variables
     nodes_transformer = []
-    nodes_sources = []
     busd = None
-    
-    # TODO Revision
     
     def create_transformer(self, tf, inputs, outputs, conversion_factors):
         self.nodes_transformer.append(solph.Transformer(
@@ -964,7 +959,6 @@ class Transformers:
             maximum_capacity2 = ((float(tf['efficiency2'])
                                   / float(tf['efficiency']))
                                  * float(tf['max. investment capacity /(kW)']))
-        
             # Creates transformer object and adds it to the list of
             # components
             outputs.update(
@@ -999,6 +993,7 @@ class Transformers:
         # import oemof.thermal in order to calculate the cop
         import oemof.thermal.compression_heatpumps_and_chillers \
             as cmpr_hp_chiller
+        import math
         
         # Import weather Data
         data = pd.read_csv(os.path.join(
@@ -1009,7 +1004,7 @@ class Transformers:
         bus = solph.Bus(label=t['label'] + '_low_temp_bus')
         
         # adds the bus object to the list of components "nodes"
-        self.nodes.append(bus)
+        self.nodes_transformer.append(bus)
         self.busd[t['label'] + '_low_temp_bus'] = bus
         
         # returns logging info
@@ -1034,8 +1029,8 @@ class Transformers:
             # ground water that acts as heat source for the heat pump
             heatpump_label = t['label'] + '_low_temp_groundwater_source'
             
-            # the capacity of ambient air is not limited
-            heatsource_capacity = 999999
+            # the capacity of ambient ground water is not limited
+            heatsource_capacity = math.inf
         
         # ambient air as a heat source
         elif t['heat source'] == "Air":
@@ -1044,7 +1039,7 @@ class Transformers:
             heatpump_label = t['label'] + '_low_temp_air_source'
             
             # the capacity of ambient air is not limited
-            heatsource_capacity = 999999
+            heatsource_capacity = math.inf
         
         # surface water as a heat source
         elif t['heat source'] == "Water":
@@ -1052,13 +1047,13 @@ class Transformers:
             # ambient air that acts as heat source for the heat pump
             heatpump_label = t['label'] + '_low_temp_water_source'
             
-            # the capacity of ambient air is not limited
-            heatsource_capacity = 999999
+            # the capacity of ambient water is not limited
+            heatsource_capacity = math.inf
         else:
             raise SystemError(t['label'] + " Error in heat source attribute")
         maximum = heatsource_capacity
         # the heat source costs are considered by the transformer
-        self.nodes_sources.append(
+        self.nodes_transformer.append(
             solph.Source(label=heatpump_label,
                          outputs={self.busd[
                              t['label'] + '_low_temp_bus']: solph.Flow(
@@ -1117,19 +1112,18 @@ class Transformers:
                     [(cop - 1) / cop for cop in cops_hp],
                 self.busd[t['input']]: [1 / cop for cop in cops_hp]}}
         self.create_transformer(t, inputs, outputs, conversion_factors)
-        # returns logging info
-        logging.info('   ' + 'Transformer created: ' + t['label'])
     
-    def genericchp_transformer(self, tf):
+    def genericchp_transformer(self, tf, nd):
         """
             Creates a Generic CHP transformer object.
-            Creates a generic chp transformer with the parameters given in
-            'nodes_data' and adds it to the list of components 'nodes'.
+            Creates a generic chp transformer with the parameters given
+            in 'nodes_data' and adds it to the list of components
+            'nodes'.
             ----
             Keyword arguments:
             tf : obj:'dict'
-                -- dictionary containing all information for thecreation of
-                an oemof transformer.
+                -- dictionary containing all information for
+                the creation of an oemof transformer.
                 At least the following key-value-pairs have to be included:
                     - 'label'
                     - 'input'
@@ -1148,11 +1142,13 @@ class Transformers:
                     - 'Fix Investment Costs / (CU/a)'
             @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
         """
-        from pandas.tests.arrays.test_datetimelike import datetime_index
+        # TODO Issue #35
         # counts the number of periods within the given datetime index
         # and saves it as variable
         # (number of periods is required for creating generic chp transformers)
-        periods = len(datetime_index)
+        # Importing timesystem parameters from the scenario
+        ts = next(nd['timesystem'].iterrows())[1]
+        periods = ts['periods']
         # TODO p value is not used
         # creates genericCHP transformer object and adds it to the
         # list of components
@@ -1171,31 +1167,34 @@ class Transformers:
                                 solph.Flow(
                                         P_max_woDH=[
                                             tf['max. electric power without '
-                                               'district heating [GenericCHP]']
-                                            for p in range(0, periods)],
+                                               'district heating '
+                                               '[GenericCHP]']],
+                                            #for p in range(0, periods)],
                                         P_min_woDH=[
                                             tf['min. electric power without '
-                                               'district heating [GenericCHP]']
-                                            for p in range(0, periods)],
+                                               'district heating '
+                                               '[GenericCHP]']],
+                                            #for p in range(0, periods)],
                                         Eta_el_max_woDH=[
                                             tf['el. eff. at max. fuel flow '
                                                'w/o distr. heating '
-                                               '[GenericCHP]']
-                                            for p in range(0, periods)],
+                                               '[GenericCHP]']],
+                                            #for p in range(0, periods)],
                                         Eta_el_min_woDH=[
                                             tf['el. eff. at min. fuel flow '
                                                'w/o distr. heating '
-                                               '[GenericCHP]']
-                                            for p in range(0, periods)])},
+                                               '[GenericCHP]']])},
+                                            #for p in range(0, periods)])},
                         heat_output={
                             self.busd[tf['output2']]:
                                 solph.Flow(
                                         Q_CW_min=[
                                             tf['minimal therm. condenser load '
-                                               'to cooling water [GenericCHP]']
-                                            for p in range(0, periods)])},
-                        Beta=[tf['power loss index [GenericCHP]']
-                              for p in range(0, periods)],
+                                               'to cooling water '
+                                               '[GenericCHP]']])},
+                                            #for p in range(0, periods)])},
+                        Beta=[tf['power loss index [GenericCHP]']],
+                              #for p in range(0, periods)],
                         back_pressure=False))
         
         # returns logging info
@@ -1205,11 +1204,7 @@ class Transformers:
     
         # renames variables
         self.busd = busd
-        self.nodes = []
         self.nodes_transformer = []
-        self.nodes_sources = []
-        # for i in range(len(nodes)):
-        #     self.nodes.append(nodes[i])
         
         # creates a transformer object for every transformer item within nd
         for i, t in nodes_data['transformers'].iterrows():
@@ -1223,9 +1218,6 @@ class Transformers:
                 elif t['transformer type'] == 'HeatPump':
                     self.heat_pump_transformer(t)
                 
-                # elif t['transformer type'] == 'Chiller':
-                # self.compression_heat_pump_and_chiller_transformer(t)
-                
                 # Create Extraction Turbine CHPs
                 elif t['transformer type'] == 'ExtractionTurbineCHP':
                     logging.info('   ' + 'WARNING: ExtractionTurbineCHP are'
@@ -1235,7 +1227,7 @@ class Transformers:
                 # Create Generic CHPs
                 elif t['transformer type'] == 'GenericCHP':
                     # TODO Issue #35
-                    self.genericchp_transformer(t)
+                    self.genericchp_transformer(t, nodes_data)
                     logging.info(
                         '   ' + 'WARNING: GenericCHP currently does not '
                                 'support investments and variable costs! Will '
@@ -1259,12 +1251,6 @@ class Transformers:
         # appends created transformers to the list of nodes
         for i in range(len(self.nodes_transformer)):
             nodes.append(self.nodes_transformer[i])
-        
-        for i in range(len(self.nodes_sources)):
-            nodes.append(self.nodes_sources[i])
-        
-        for i in range(len(self.nodes)):
-            nodes.append(self.nodes[i])
 
 
 class Storages:
@@ -1410,7 +1396,7 @@ class Links:
                     offset=link['Fix Investment Costs /(CU/a)']))}
         # returns logging info
         logging.info('   ' + 'Link created: ' + link['label'])
-        # TODO Discuss if it is wrong implemented
+        # TODO Discuss if it is wrong implemented Issue #37
         return (solph.Transformer(label=label, inputs=inputs, outputs=output,
                                   conversion_factors={
                                       self.busd[link['bus_2']]:
