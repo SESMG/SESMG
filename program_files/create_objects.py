@@ -1380,6 +1380,8 @@ class Links:
         if outnum == 1:
             busin = 'bus_1'
             busout = 'bus_2'
+            # returns logging info
+            logging.info('   ' + 'Link created: ' + link['label'])
         else:
             busin = 'bus_2'
             busout = 'bus_1'
@@ -1394,8 +1396,7 @@ class Links:
                     nonconvex=True if
                     link['Non-Convex Investment'] == 1 else False,
                     offset=link['Fix Investment Costs /(CU/a)']))}
-        # returns logging info
-        logging.info('   ' + 'Link created: ' + link['label'])
+
         # TODO Discuss if it is wrong implemented Issue #37
         return (solph.Transformer(label=label, inputs=inputs, outputs=output,
                                   conversion_factors={

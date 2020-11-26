@@ -415,8 +415,10 @@ class Results:
         for i, comp in nd['transformers'].iterrows():
             variable_costs = 0
             max_transformer_flow = 0
+            df_transformer3 = 0
             if comp['active']:
-                if comp['output2'] != 'None':
+                if comp['output2'] != 'None' \
+                        or comp['transformer type'] == 'HeatPump':
                     (flow_sum, flow_max, df_transformer1, df_transformer2,
                      df_transformer3) = \
                         self.get_flow(comp['label'], 'transformer')
@@ -473,10 +475,10 @@ class Results:
                     variable_costs = (comp['variable output costs 2 /(CU/kWh)']
                                       * df_transformer1.sum())
                     total_costs = total_costs + variable_costs
-                variable_costs += \
-                    (comp['variable input costs /(CU/kWh)']
-                     * df_transformer3.sum() if comp['output2'] != 'None'
-                     else df_transformer1.sum())
+                variable_costs += (comp['variable input costs /(CU/kWh)']
+                                   * (df_transformer3.sum()
+                                      if comp['output2'] != 'None'
+                                      else df_transformer1.sum()))
                 variable_costs += \
                     (comp['variable output costs /(CU/kWh)']
                      * df_transformer2.sum())
