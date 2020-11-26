@@ -312,3 +312,5 @@ The investment costs help to compare the costs of building new components to the
 should compensate the investment costs. The investment method can be applied to any new component to be built. In addition to the usual component parameters, the 
 maximum installable capacity needs to be known. Further, the periodic costs need to be assigned to the investment costs. The periodic costs refer to the defined 
 time horizon. If the time horizon is one year, the periodical costs correspond to the annualized capital costs of an investment.
+
+**Non-Convex-Investments:** While a linear programming approach is used for normal investment decisions, a mixed integer variable is defined for non-convex investment decisions. The model can thus decide, for example, whether a component should be implemented FULL or NOT. Mixed-integer variables increase the computational effort significantly and should be used with caution.
