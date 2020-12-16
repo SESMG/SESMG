@@ -605,7 +605,7 @@ class Sinks:
         
             filepath : String
                 -- -- path to .xlsx scenario-file containing a
-                "timesystem" sheet
+                "energysystem" sheet
         
         ----
         @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
@@ -620,7 +620,7 @@ class Sinks:
         data = pd.read_csv(os.path.join(
             os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
         # Importing timesystem parameters from the scenario
-        nd = pd.read_excel(filepath, sheet_name='timesystem')
+        nd = pd.read_excel(filepath, sheet_name='energysystem')
         ts = next(nd.iterrows())[1]
         temp_resolution = ts['temporal resolution']
         periods = ts["periods"]
@@ -693,7 +693,7 @@ class Sinks:
         
             filepath : String
                 -- path to .xlsx scenario-file containing a
-                "timesystem" sheet
+                "energysystem" sheet
         ----
         @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
         """
@@ -715,7 +715,7 @@ class Sinks:
         dirhi = dirhi / 1000
         
         # Reads the temporal resolution from the scenario file
-        nd = pd.read_excel(filepath, sheet_name='timesystem')
+        nd = pd.read_excel(filepath, sheet_name='energysystem')
         ts = next(nd.iterrows())[1]
         temp_resolution = ts['temporal resolution']
         
@@ -1147,56 +1147,65 @@ class Transformers:
         # and saves it as variable
         # (number of periods is required for creating generic chp transformers)
         # Importing timesystem parameters from the scenario
-        ts = next(nd['timesystem'].iterrows())[1]
+        ts = next(nd['energysystem'].iterrows())[1]
         periods = ts['periods']
-        # TODO p value is not used
         # creates genericCHP transformer object and adds it to the
         # list of components
-        self.nodes_transformer.append(
-                solph.components.GenericCHP(
-                        label=tf['label'],
-                        fuel_input={self.busd[tf['input']]:
-                                    solph.Flow(
-                                            H_L_FG_share_max=[
-                                                tf['share of flue gas loss at '
-                                                   'max heat extraction '
-                                                   '[GenericCHP]']
-                                                for p in range(0, periods)])},
-                        electrical_output={
-                            self.busd[tf['output']]:
-                                solph.Flow(
-                                        P_max_woDH=[
-                                            tf['max. electric power without '
-                                               'district heating '
-                                               '[GenericCHP]']],
-                                            #for p in range(0, periods)],
-                                        P_min_woDH=[
-                                            tf['min. electric power without '
-                                               'district heating '
-                                               '[GenericCHP]']],
-                                            #for p in range(0, periods)],
-                                        Eta_el_max_woDH=[
-                                            tf['el. eff. at max. fuel flow '
-                                               'w/o distr. heating '
-                                               '[GenericCHP]']],
-                                            #for p in range(0, periods)],
-                                        Eta_el_min_woDH=[
-                                            tf['el. eff. at min. fuel flow '
-                                               'w/o distr. heating '
-                                               '[GenericCHP]']])},
-                                            #for p in range(0, periods)])},
-                        heat_output={
-                            self.busd[tf['output2']]:
-                                solph.Flow(
-                                        Q_CW_min=[
-                                            tf['minimal therm. condenser load '
-                                               'to cooling water '
-                                               '[GenericCHP]']])},
-                                            #for p in range(0, periods)])},
-                        Beta=[tf['power loss index [GenericCHP]']],
-                              #for p in range(0, periods)],
-                        back_pressure=False))
-        
+        self.nodes_transformer.append(solph.components.GenericCHP(
+                label=tf['label'],
+                fuel_input={
+                    self.busd[tf['input']]: solph.Flow(
+                            H_L_FG_share_max=[
+                                tf['share of flue gas loss at max heat '
+                                   'extraction [GenericCHP]']
+                                for p in range(0, periods)],
+                            H_L_FG_share_min=[
+                                tf['share of flue gas loss at min heat '
+                                   'extraction [GenericCHP]']
+                                for p in range(0, periods)],
+                            variable_costs=tf[
+                                'variable input costs /(CU/kWh)'])},
+                electrical_output={
+                    self.busd[tf['output']]: solph.Flow(
+                            investment=solph.Investment(
+                                    ep_costs=tf[
+                                        'periodical costs /(CU/(kW a))'],
+                                    minimum=tf[
+                                        'min. investment capacity /(kW)'],
+                                    maximum=tf[
+                                        'max. investment capacity /(kW)'],
+                                    existing=tf['existing capacity /(kW)']),
+                            P_max_woDH=[
+                                tf['max. electric power without district '
+                                   'heating [GenericCHP]']
+                                for p in range(0, periods)],
+                            P_min_woDH=[tf['min. electric power without '
+                                           'district heating [GenericCHP]']
+                                        for p in range(0, periods)],
+                            Eta_el_max_woDH=[
+                                tf['el. eff. at max. fuel flow w/o distr. '
+                                   'heating [GenericCHP]']
+                                for p in range(0, periods)],
+                            Eta_el_min_woDH=[
+                                tf['el. eff. at min. fuel flow w/o distr. '
+                                   'heating [GenericCHP]']
+                                for p in range(0, periods)],
+                            variable_costs=tf[
+                                'variable output costs /(CU/kWh)']
+                            )
+                        },
+                heat_output={self.busd[tf['output2']]: solph.Flow(
+                    Q_CW_min=[tf['minimal therm. condenser load to '
+                                 'cooling water [GenericCHP]']
+                              for p in range(0, periods)],
+                    variable_costs=tf[
+                        'variable output costs 2 /(CU/kWh)'])},
+                Beta=[tf['power loss index [GenericCHP]']
+                      for p in range(0, periods)],
+                # fixed_costs=0,
+                back_pressure=tf['back pressure [GenericCHP]'],
+                ))
+
         # returns logging info
         logging.info('   ' + 'Transformer created: ' + tf['label'])
     
@@ -1226,12 +1235,7 @@ class Transformers:
                 
                 # Create Generic CHPs
                 elif t['transformer type'] == 'GenericCHP':
-                    # TODO Issue #35
                     self.genericchp_transformer(t, nodes_data)
-                    logging.info(
-                        '   ' + 'WARNING: GenericCHP currently does not '
-                                'support investments and variable costs! Will '
-                                'be added with upcoming updates')
                 
                 # Create Offset Transformers
                 elif t['transformer type'] == 'OffsetTransformer':
@@ -1348,61 +1352,6 @@ class Links:
     # intern variables
     busd = None
     
-    def create_link(self, link, label, outnum):
-        """
-        Creates an oemof link object with the given parameters and
-        returns it.
-        ----
-        
-        Keyword arguments:
-        
-            link: obj:'dict'
-                -- dictionary containing parameters of link to be
-                created.The following data have to be provided:
-                    - 'bus_1'
-                    - 'bus_2'
-                    - 'efficiency'
-                    - 'variable costs /(CU/kWh)'
-                    - 'existing capacity /(kW)'
-                    - 'min. investment capacity /(kW)'
-                    - 'max. investment capacity /(kW)'
-                    - 'periodical costs /(CU/(kW a))'
-                    - 'Non-Convex Investment'
-                    - 'Fix Investment Costs /(CU/a)'
-            
-            label: String
-                -- separate transmission of the label, because there are two
-                labels for an undirected link
-            
-            outnum: int
-                -- Defines in which direction the link is directed.
-        """
-        if outnum == 1:
-            busin = 'bus_1'
-            busout = 'bus_2'
-            # returns logging info
-            logging.info('   ' + 'Link created: ' + link['label'])
-        else:
-            busin = 'bus_2'
-            busout = 'bus_1'
-        inputs = {self.busd[link[busin]]: solph.Flow(
-                variable_costs=link['variable costs /(CU/kWh)'])}
-        output = {self.busd[link[busout]]: solph.Flow(
-                investment=solph.Investment(
-                    ep_costs=link['periodical costs /(CU/(kW a))'],
-                    minimum=link['min. investment capacity /(kW)'],
-                    maximum=link['max. investment capacity /(kW)'],
-                    existing=link['existing capacity /(kW)'],
-                    nonconvex=True if
-                    link['Non-Convex Investment'] == 1 else False,
-                    offset=link['Fix Investment Costs /(CU/a)']))}
-
-        # TODO Discuss if it is wrong implemented Issue #37
-        return (solph.Transformer(label=label, inputs=inputs, outputs=output,
-                                  conversion_factors={
-                                      self.busd[link['bus_2']]:
-                                          link['efficiency']}))
-    
     def __init__(self, nodes_data, nodes, bus):
         """
         Inits the Links class.
@@ -1427,15 +1376,51 @@ class Links:
         # creates link objects for every link object in nd
         for i, link in nodes_data['links'].iterrows():
             if link['active']:
-                # TODO Issue #37
-                if link['(un)directed'] == 'undirected':
-                    link['periodical costs /(CU/(kW a))'] = \
-                        link['periodical costs /(CU/(kW a))'] / 2
-                # creates transformer representing the first link direction
-                # and adds it to the list of components
-                nodes.append(self.create_link(link, link['label'], 1))
-                if link['(un)directed'] == 'undirected':
-                    # creates transformer representing the second link
-                    # direction and adds it to the list of components
-                    label2 = str(link['label'] + '_direction_2')
-                    nodes.append(self.create_link(link, label2, 2))
+                if link['(un)directed'] == 'directed':
+                    ep_costs = link['periodical costs /(CU/(kW a))']
+                elif link['(un)directed'] == 'undirected':
+                    ep_costs = link['periodical costs /(CU/(kW a))'] / 2
+                else:
+                    raise SystemError('Problem with periodical costs')
+                nodes.append(solph.custom.Link(
+                    label=link['label'],
+                    inputs={self.busd[link['bus_1']]: solph.Flow(),
+                            self.busd[link['bus_2']]: solph.Flow()},
+                    outputs={self.busd[link['bus_2']]: solph.Flow(
+                                investment=solph.Investment(
+                                    ep_costs=ep_costs,
+                                    minimum=link[
+                                        'min. investment capacity /(kW)'],
+                                    maximum=link[
+                                        'max. investment capacity /(kW)'],
+                                    existing=link[
+                                        'existing capacity /(kW)'],
+                                    nonconvex=True if
+                                    link['Non-Convex Investment'] == 1
+                                    else False,
+                                    offset=link[
+                                        'Fix Investment Costs /(CU/a)'])),
+                             self.busd[link['bus_1']]: solph.Flow(
+                                 investment=solph.Investment(
+                                     ep_costs=ep_costs,
+                                     minimum=link[
+                                         'min. investment capacity /(kW)'],
+                                     maximum=link[
+                                         'max. investment capacity /(kW)'],
+                                     existing=link[
+                                         'existing capacity /(kW)'],
+                                     nonconvex=True if
+                                     link['Non-Convex Investment'] == 1
+                                     else False,
+                                     offset=link[
+                                         'Fix Investment Costs /(CU/a)'])), },
+                    conversion_factors={
+                        (self.busd[link['bus_1']],
+                         self.busd[link['bus_2']]): link['efficiency'],
+                        (self.busd[link['bus_2']],
+                         self.busd[link['bus_1']]):
+                             (link['efficiency']
+                              if link['(un)directed'] == 'undirected' else 0)}
+                ))
+                # returns logging info
+                logging.info('   ' + 'Link created: ' + link['label'])

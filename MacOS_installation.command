@@ -30,7 +30,7 @@ pip3 install dash==1.7.0
 pip3 install dash_canvas==0.1.0
 pip3 install pydot==1.4.1
 pip3 install graphviz==0.13.2
-
+pip3 install xlrd==1.2.0
 
 echo ----------------------
 echo Installation completed

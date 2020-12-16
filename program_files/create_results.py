@@ -147,35 +147,20 @@ class Results:
         df_component1 = component['sequences'][component_performance[0]]
         # Dictionary for the information of components to be logged
         comp_log = {'demand': [0, 0, 'Total Energy Demand: '],
-                    'source': [0, 0, 'Total Energy Input: '],
-                    'storage': [1, 0, 'Energy Output from: ']}
-        if comp_type == 'demand' or comp_type == 'source' \
-                or comp_type == 'storage':
+                    'source': [0, 0, 'Total Energy Input: ']}
+        if comp_type == 'demand' or comp_type == 'source':
             logging.info('   ' + comp_log[comp_type][2]
                          + str(round(flow_sum[[comp_log[comp_type][0]]
                                               [comp_log[comp_type][1]]], 2))
                          + 'kWh')
-        if comp_type == 'source' or comp_type == 'storage':
-            if comp_type == 'storage':
-                logging.info('   ' + 'Energy Input to ' + comp_label + ': '
-                             + str(round(flow_sum[[2][0]], 2)) + ' kWh')
+        if comp_type == 'source':
             logging.info('   ' + 'Max. Capacity: '
                          + str(round(flow_max[[0][0]], 2)) + ' kW')
         # returns the parameters to the statistics method
-        if comp_type == 'storage':
-            return flow_sum[[0][0]]
-        elif comp_type == 'demand' or comp_type == 'source':
+        if comp_type == 'demand' or comp_type == 'source' or comp_type == 'shortage':
             return flow_sum[[0][0]], df_component1
-        elif comp_type == 'shortage':
-            return flow_sum[[0][0]], flow_max[[0][0]], df_component1
-        elif comp_type == 'link':
-            df_link2 = component['sequences'][component_performance[1]]
-            return flow_sum, flow_max, df_component1, df_link2
-        elif comp_type == 'transformer':
-            df_transformer2 = component['sequences'][component_performance[1]]
-            df_transformer3 = component['sequences'][component_performance[2]]
-            return (flow_sum, flow_max, df_component1, df_transformer2,
-                    df_transformer3)
+        elif comp_type == 'link' or comp_type == 'storage':
+            return flow_sum, flow_max, component['sequences']
 
     def get_investment(self, component, comp_type):
         """
@@ -223,10 +208,7 @@ class Results:
         logging.info('   ' + 'Periodical costs: '
                      + str(round(periodical_costs, 2))
                      + ' cost units p.a.')
-        if comp_type == 'link':
-            return component_investment
-        else:
-            return component_investment, periodical_costs
+        return component_investment, periodical_costs
 
     def statistics(self, nodes_data, optimization_model, energy_system,
                    result_path):
@@ -303,9 +285,9 @@ class Results:
                 df_list_of_components = \
                     df_list_of_components.append(
                         pd.DataFrame([[comp['label'], 'sink',
-                                       round(df_demand.sum(), 2), '---', '---',
-                                       '---', round(df_demand.max(), 2), '---',
-                                       '---', '---']], columns=columns))
+                                       round(flow_sum, 2), '---', '---', '---',
+                                       round(df_demand.max(), 2), '---', '---',
+                                       '---']], columns=columns))
                 # returns logging info
                 logging.info(log_end)
         # creates and returns results for excess buses defined in the
@@ -325,9 +307,8 @@ class Results:
                     df_list_of_components = \
                         df_list_of_components.append(
                             pd.DataFrame([[comp['label'] + '_excess',
-                                           'sink', round(df_excess.sum(),
-                                                         2),
-                                           '---', '---', '---',
+                                           'sink', round(flow_sum, 2), '---',
+                                           '---', '---',
                                            round(df_excess.max(), 2),
                                            round(variable_costs, 2), '---',
                                            '---']], columns=columns))
@@ -389,7 +370,7 @@ class Results:
         for i, comp in nd['buses'].iterrows():
             if comp['active']:
                 if comp['shortage']:
-                    (flow_sum, flow_max, df_shortage) = \
+                    (flow_sum, df_shortage) = \
                         self.get_flow(comp['label'] + '_shortage', 'shortage')
                     total_usage = total_usage + flow_sum
                     # Variable Costs
@@ -405,7 +386,7 @@ class Results:
                             pd.DataFrame([[comp['label'] + '_shortage',
                                            'source', '---', '---',
                                            round(flow_sum, 2), '---',
-                                           round(flow_max, 2),
+                                           round(df_shortage.max(), 2),
                                            round(variable_costs, 2), '---',
                                            '---']], columns=columns))
                     df_result_table[comp['label'] + '_shortage'] = df_shortage
@@ -415,55 +396,58 @@ class Results:
         for i, comp in nd['transformers'].iterrows():
             variable_costs = 0
             max_transformer_flow = 0
-            df_transformer3 = 0
             if comp['active']:
-                if comp['output2'] != 'None' \
-                        or comp['transformer type'] == 'HeatPump':
-                    (flow_sum, flow_max, df_transformer1, df_transformer2,
-                     df_transformer3) = \
-                        self.get_flow(comp['label'], 'transformer')
-                else:
-                    (flow_sum, flow_max, df_transformer1, df_transformer2) = \
-                        self.get_flow(comp['label'], 'link')
+                (flow_sum, flow_max, dfcomponent) = \
+                    self.get_flow(comp['label'], 'link')
+                for index, value in flow_sum.items():
+                    if index == ((comp['input'], comp['label']), 'flow'):
+                        input = value
+                        df_input1 = dfcomponent[index]
+                    elif index == ((comp['label'] + '_low_temp_bus',
+                                    comp['label']), 'flow'):
+                        input2 = value
+                        df_input2 = dfcomponent[index]
+                    elif index == ((comp['label'], comp['output']), 'flow'):
+                        output1 = value
+                        df_output1 = dfcomponent[index]
+                    elif index == ((comp['label'], comp['output2']), 'flow'):
+                        output2 = value
+                        df_output2 = dfcomponent[index]
+                for index, value in flow_max.items():
+                    if index == ((comp['label'], comp['output']), 'flow'):
+                        max_transformer_flow = value
                 if comp['transformer type'] == 'GenericTransformer' or \
                         comp['transformer type'] == 'GenericCHP':
-                    transformer_log = {'GenericTransformer': [0, 1, 1],
-                                       'GenericCHP': [6, 7, 2]}
                     if comp['output2'] != 'None':
-                        pos1 = transformer_log[comp['transformer type']][0]
                         logging.info('   '
                                      + 'Total Energy Output to '
                                      + comp['output'] + ': '
-                                     + str(round(flow_sum[[pos1][0]], 2))
-                                     + ' kWh')
+                                     + str(round(output1, 2)) + ' kWh')
                         output = comp['output2']
                     else:
                         output = comp['output']
-                    pos2 = transformer_log[comp['transformer type']][1]
                     logging.info('   '
-                                 + 'Total Energy Output to ' + output + ': '
-                                 + str(round(flow_sum[[pos2][0]], 2)) + ' kWh')
-                    max_transformer_flow = \
-                        flow_max[transformer_log[comp['transformer type']][2]]
+                                 + 'Total Energy Output to ' + output + ':'
+                                 + str(round(
+                                            (output2 if
+                                             output == comp['output2']
+                                             else output1), 2)) + ' kWh')
 
                 elif comp['transformer type'] == 'ExtractionTurbineCHP':
                     logging.info('   ' + 'WARNING: ExtractionTurbineCHP are'
-                                 + ' currently not a part of this model '
-                                 + 'generator, but will be added later.')
+                                 ' currently not a part of this model '
+                                 'generator, but will be added later.')
 
                 elif comp['transformer type'] == 'HeatPump':
                     logging.info('   ' + 'Electricity Energy Input to '
                                  + comp['label'] + ': '
-                                 + str(round(flow_sum[[2][0]], 2))
-                                 + ' kWh')
+                                 + str(round(input, 2)) + ' kWh')
                     logging.info('   ' + 'Ambient Energy Input to '
                                  + comp['label'] + ': '
-                                 + str(round(flow_sum[[1][0]], 2))
-                                 + ' kWh')
+                                 + str(round(input2, 2)) + ' kWh')
                     logging.info('   ' + 'Total Energy Output to '
                                  + comp['output'] + ': '
-                                 + str(round(flow_sum[[0][0]], 2))
-                                 + ' kWh')
+                                 + str(round(output1, 2)) + ' kWh')
                 elif comp['transformer type'] == 'OffsetTransformer':
                     logging.info('   ' + 'WARNING: OffsetTransformer are '
                                  + 'currently not a part of this model '
@@ -473,15 +457,14 @@ class Results:
                              + str(round(max_transformer_flow, 2)) + ' kW')
                 if comp['output2'] != 'None':
                     variable_costs = (comp['variable output costs 2 /(CU/kWh)']
-                                      * df_transformer1.sum())
+                                      * df_output2.sum())
                     total_costs = total_costs + variable_costs
                 variable_costs += (comp['variable input costs /(CU/kWh)']
-                                   * (df_transformer3.sum()
-                                      if comp['output2'] != 'None'
-                                      else df_transformer1.sum()))
+                                   * df_input1.sum())
+                                   
                 variable_costs += \
                     (comp['variable output costs /(CU/kWh)']
-                     * df_transformer2.sum())
+                     * df_output1.sum())
                 total_costs += variable_costs
                 logging.info('   ' + 'Variable Costs: '
                              + str(round(variable_costs, 2)) + ' cost units')
@@ -514,23 +497,17 @@ class Results:
                              + str(round(periodical_costs, 2))
                              + ' cost units p.a.')
                 if comp['transformer type'] == 'GenericTransformer':
-                    df_result_table[comp['label'] + '_input1'] = \
-                        df_transformer3 if comp['output2'] != 'None' \
-                        else df_transformer1
-                    df_result_table[comp['label'] + '_output1'] = \
-                        df_transformer2
+                    df_result_table[comp['label'] + '_input1'] = df_input1
+                    df_result_table[comp['label'] + '_output1'] = df_output1
                     if comp['output2'] == 'None':
                         # adds Generic transformer with one given
                         # outputs to the list of components
                         df_list_of_components = \
                             df_list_of_components.append(
                                 pd.DataFrame([[comp['label'], 'transformer',
-                                               round(df_transformer1.sum(),
-                                                     2), '---',
-                                               round(df_transformer2.sum(),
-                                                     2), '---',
-                                               round(df_transformer1.max(),
-                                                     2),
+                                               round(input, 2), '---',
+                                               round(output1, 2), '---',
+                                               round(df_input1.max(), 2),
                                                round(variable_costs, 2),
                                                round(periodical_costs, 2),
                                                round(transformer_investment, 2)
@@ -539,33 +516,28 @@ class Results:
                         # adds Generic transformer with two given
                         # outputs to the list of components
                         df_result_table[comp['label'] + '_output2'] = \
-                            df_transformer1
+                            df_output2
                         df_list_of_components = \
                             df_list_of_components.append(
                                 pd.DataFrame([[comp['label'], 'transformer',
-                                               round(df_transformer3.sum(), 2),
-                                               '---',
-                                               round(df_transformer2.sum(), 2),
-
-                                               round(df_transformer1.sum(), 2),
-                                               round(df_transformer1.max(), 2),
+                                               round(input, 2), '---',
+                                               round(output1, 2),
+                                               round(output2, 2),
+                                               round(df_input1.max(), 2),
                                                round(variable_costs, 2),
                                                round(periodical_costs, 2),
                                                round(transformer_investment, 2)
                                                ]], columns=columns))
                 elif comp['transformer type'] == 'HeatPump':
-                    df_result_table[comp['label'] + '_input2'] = \
-                        df_transformer3
+                    df_result_table[comp['label'] + '_input2'] = df_input2
                     # adds heatpump transformer to the list of
                     # components
                     df_list_of_components = \
                         df_list_of_components.append(
                             pd.DataFrame([[comp['label'], 'transformer',
-                                           round(df_transformer2.sum(), 2),
-                                           round(df_transformer3.sum(), 2),
-                                           round(df_transformer1.sum(), 2),
-                                           '---',
-                                           round(df_transformer1.max(), 2),
+                                           round(input, 2), round(input2, 2),
+                                           round(output1, 2), '---',
+                                           round(df_output1.max(), 2),
                                            round(variable_costs, 2),
                                            round(periodical_costs, 2),
                                            round(transformer_investment, 2)
@@ -575,11 +547,16 @@ class Results:
                 elif comp['transformer type'] == 'GenericCHP':
                     # adds genericchp transformer to the list of
                     # components
+                    df_result_table[comp['label'] + '_input'] = df_input1
+                    df_result_table[comp['label'] + '_output1'] = df_output1
+                    df_result_table[comp['label'] + '_output2'] = df_output2
                     df_list_of_components = \
                         df_list_of_components.append(
-                            pd.DataFrame([[comp['label'], 'transformer', '---',
-                                           '---', round(flow_sum[[6][0]], 2),
-                                           round(flow_sum[[7][0]], 2), '---',
+                            pd.DataFrame([[comp['label'], 'transformer',
+                                           round(input, 2), '---',
+                                           round(output1, 2),
+                                           round(output2, 2),
+                                           round(df_output1.max(), 2),
                                            round(variable_costs, 2),
                                            round(periodical_costs, 2),
                                            round(transformer_investment, 2)
@@ -590,10 +567,25 @@ class Results:
         for i, comp in nd['storages'].iterrows():
             if comp['active']:
                 # gets component flow and performance for given storages
-                (flow_sum, flow_max, df_storage1, df_storage2, df_storage3) = \
-                    self.get_flow(comp['label'], 'transformer')
-                variable_costs = \
-                    comp['variable input costs'] * flow_sum[[0][0]]
+                (flow_sum, flow_max, dfcomponent) = \
+                    self.get_flow(comp['label'], 'link')
+                for index, value in flow_sum.items():
+                    if index == ((comp['bus'], comp['label']), 'flow'):
+                        input = value
+                        df_input = dfcomponent[index]
+                    elif index == ((comp['label'], comp['bus']), 'flow'):
+                        output = value
+                        df_output = dfcomponent[index]
+                    elif index == ((comp['label'], 'None'), 'storage_content'):
+                        df_capacity = dfcomponent[index]
+                for index, value in flow_max.items():
+                    if index == ((comp['label'], 'None'), 'storage_content'):
+                        maxcapacity = value
+                logging.info('   ' + 'Energy Output from ' + comp['label'] + ':'
+                             + str(round(output, 2)) + 'kWh')
+                logging.info('   ' + 'Energy Input to ' + comp['label'] + ': '
+                             + str(round(input, 2)) + ' kWh')
+                variable_costs = comp['variable input costs'] * input
                 logging.info('   ' + 'Total variable costs for: '
                              + str(round(variable_costs, 2))
                              + ' cost units')
@@ -608,7 +600,6 @@ class Results:
                     # if no investment decision has been taken
                     storage_investment = 0
                     periodical_costs = 0
-
                 # Periodical Costs
                 if storage_investment \
                         > float(comp['existing capacity /(kWh)']):
@@ -621,52 +612,62 @@ class Results:
                 df_list_of_components = \
                     df_list_of_components.append(
                         pd.DataFrame([[comp['label'], 'storage',
-                                       round(flow_sum[[2][0]], 2), '---',
-                                       round(flow_sum[[1][0]], 2), '---',
-                                       round(flow_max[[0][0]], 2),
+                                       round(input, 2), '---',
+                                       round(output, 2), '---',
+                                       round(maxcapacity, 2),
                                        round(variable_costs, 2),
                                        round(periodical_costs, 2),
                                        round(storage_investment, 2)]],
                                      columns=columns))
-                df_result_table[comp['label'] + '_capacity'] = df_storage1
-                df_result_table[comp['label'] + '_input'] = df_storage3
-                df_result_table[comp['label'] + '_output'] = df_storage2
+                df_result_table[comp['label'] + '_capacity'] = df_capacity
+                df_result_table[comp['label'] + '_input'] = df_input
+                df_result_table[comp['label'] + '_output'] = df_output
                 logging.info(log_end)
         # logs the next type of components (links
         log("LINKS********")
         for i, comp in nd['links'].iterrows():
             variable_costs = 0
             if comp['active']:
-                (flow_sum, flow_max, df_link1, df_link2) = \
+                (flow_sum, flow_max, dfcomponent) = \
                     self.get_flow(comp['label'], 'link')
+                for index, value in flow_sum.items():
+                    if index == ((comp['bus_1'], comp['label']), 'flow'):
+                        df_linkinput1 = dfcomponent[index]
+                    elif index == ((comp['bus_2'], comp['label']), 'flow'):
+                        df_linkinput2 = dfcomponent[index]
+                    elif index == ((comp['label'], comp['bus_1']), 'flow'):
+                        output2 = value
+                        df_linkoutput2 = dfcomponent[index]
+                    elif index == ((comp['label'], comp['bus_2']), 'flow'):
+                        output1 = value
+                        df_linkoutput1 = dfcomponent[index]
+                for index, value in flow_max.items():
+                    if index == ((comp['label'], comp['bus_1']), 'flow'):
+                        outputmax1 = value
+                    elif index == ((comp['label'], comp['bus_2']), 'flow'):
+                        outputmax2 = value
                 if comp['(un)directed'] == 'directed':
                     logging.info('   ' + 'Total Energy Output to '
                                  + comp['bus_2'] + ': '
-                                 + str(round(flow_sum[[1][0]], 2)) + ' kWh')
-                    max_link_flow = flow_max[1]
+                                 + str(round(output1, 2)) + ' kWh')
                     logging.info('   ' + 'Max. Capacity to ' + comp['bus_2']
-                                 + ': ' + str(round(max_link_flow, 2)) + ' kW')
-                    # TODO Implemented correctly ? variable costs for
-                    # TODO second output
+                                 + ': ' + str(round(outputmax2, 2)) + ' kW')
                 else:
-                    (flow_sum2, flow_max2, df_link1_2, df_link2_2) = \
-                        self.get_flow(comp['label'] + '_direction_2', 'link')
                     logging.info('   ' + 'Total Energy Output to '
                                  + comp['bus_2'] + ': '
-                                 + str(round(flow_sum[[1][0]], 2)) + ' kWh')
+                                 + str(round(output1, 2)) + ' kWh')
                     logging.info('   ' + 'Total Energy Output to '
                                  + comp['bus_1'] + ': '
-                                 + str(round(flow_sum2[[1][0]], 2)) + ' kWh')
-                    max_link_flow = flow_max[1]
+                                 + str(round(output2, 2)) + ' kWh')
                     logging.info('   ' + 'Max. Capacity to ' + comp['bus_2']
-                                 + ': ' + str(round(max_link_flow, 2)) + ' kW')
-                    max_link_flow = flow_max2[1]
+                                 + ': ' + str(round(outputmax2, 2)) + ' kW')
                     logging.info('   ' + 'Max. Capacity to ' + comp['bus_1']
-                                 + ': ' + str(round(max_link_flow, 2)) + ' kW')
+                                 + ': ' + str(round(outputmax1, 2)) + ' kW')
                     variable_costs += \
-                        comp['variable costs /(CU/kWh)'] * flow_sum2[[0][0]]
+                        comp['variable output costs /(CU/kWh)'] \
+                        * output2
                 variable_costs += \
-                    comp['variable costs /(CU/kWh)'] * flow_sum[[0][0]]
+                    comp['variable output costs /(CU/kWh)'] * output1
 
                 total_costs = total_costs + variable_costs
                 logging.info('   ' + 'Variable Costs: '
@@ -676,55 +677,49 @@ class Results:
                 # Investment Capacity
                 if comp['max. investment capacity /(kW)'] > 0:
                     # get investment for the given link
-                    link_investment = self.get_investment(comp, 'link')
-                    logging.info('   ' + 'Investment Capacity: '
-                                 + str(round(link_investment, 2))
-                                 + ' kW')
+                    (link_investment, periodical_costs) = \
+                        self.get_investment(comp, 'link')
                 else:
                     # if no investment decision has been taken
                     link_investment = 0
+                    periodical_costs = 0
 
                 # Periodical Costs
                 if link_investment > 0:
-                    # TODO Issue #37
-                    periodical_costs = comp['periodical costs /(CU/(kW a))']
                     total_periodical_costs = \
                         (total_periodical_costs + periodical_costs)
                     investments_to_be_made[comp['label']] = \
                         (str(round(link_investment, 2)) + ' kW; '
                          + str(round(periodical_costs, 2))
                          + ' cost units (p.a.)')
-                else:
-                    periodical_costs = 0
-                logging.info('   ' + 'Periodical costs (p.a.): '
-                             + str(round(periodical_costs, 2))
-                             + ' cost units p.a.')
-
-                df_result_table[comp['label'] + '_input1'] = df_link2
-                df_result_table[comp['label'] + '_output1'] = df_link1
+                df_result_table[comp['label'] + '_input1'] = df_linkinput1
+                df_result_table[comp['label'] + '_output1'] = df_linkoutput1
                 if comp['(un)directed'] == 'directed':
                     df_list_of_components = \
                         df_list_of_components.append(
                             pd.DataFrame([[comp['label'], 'link',
-                                           round(df_link2.sum(), 2), '---',
-                                           round(df_link1.sum(), 2), '---',
-                                           round(df_link2.max(), 2),
+                                           round(df_linkinput1.sum(), 2),
+                                           '---',
+                                           round(df_linkoutput1.sum(), 2),
+                                           '---',
+                                           round(df_linkinput1.max(), 2),
                                            round(variable_costs, 2),
                                            round(periodical_costs, 2),
                                            round(link_investment, 2)]],
                                          columns=columns))
                 else:
-                    df_result_table[comp['label'] + '_input2'] = df_link1_2
-                    df_result_table[comp['label'] + '_output2'] = df_link2_2
+                    df_result_table[comp['label'] + '_input2'] = df_linkinput2
+                    df_result_table[comp['label'] + '_output2'] = \
+                        df_linkoutput2
                     df_list_of_components = \
                         df_list_of_components.append(
                             pd.DataFrame([[comp['label'], 'link',
-                                           round(df_link1.sum(), 2),
-                                           round(df_link1_2.sum(), 2),
-                                           round(df_link2.sum(), 2),
-                                           round(df_link2_2.sum(), 2),
-                                           round(max(df_link2.max(),
-                                                     df_link2_2.max()), 2),
+                                           round(df_linkinput1.sum(), 2),
+                                           round(df_linkinput2.sum(), 2),
+                                           round(df_linkoutput1.sum(), 2),
+                                           round(df_linkoutput2.sum(), 2),
+                                           round(max(df_linkinput1.max(),
+                                                     df_linkinput2.max()), 2),
                                            round(variable_costs, 2),
                                            round(periodical_costs, 2),
                                            round(link_investment, 2)]],
@@ -751,7 +746,7 @@ class Results:
 
         investment_objects = list(investments_to_be_made.keys())
         # Importing timesystem parameters from the scenario
-        ts = next(nd['timesystem'].iterrows())[1]
+        ts = next(nd['energysystem'].iterrows())[1]
         temp_resolution = ts['temporal resolution']
         start_date = ts['start date']
         end_date = ts['end date']

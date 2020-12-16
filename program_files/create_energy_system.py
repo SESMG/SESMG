@@ -12,7 +12,7 @@ def import_scenario(filepath):
     """Imports data from a spreadsheet scenario file. 
     
     The excel sheet has to contain the following sheets:
-        - timesystem
+        - energysystem
         - buses
         - transformers
         - sinks
@@ -51,8 +51,10 @@ def import_scenario(filepath):
           'storages': xls.parse('storages'),
           'links': xls.parse('links'),
           'timeseries': xls.parse('time_series'),
-          'timesystem': xls.parse('timesystem'),
-          'sources': xls.parse('sources')}
+          'energysystem': xls.parse('energysystem'),
+          'sources': xls.parse('sources')
+          #'constraints': xls.parse('constraints')
+         }
 
     # error message, if no nodes are provided
     if not nd:
@@ -69,7 +71,7 @@ def define_energy_system(nodes_data):
     """Creates an energy system.
     
     Creates an energy system with the parameters defined in the given
-    .xlsx-file. The file has to contain a sheet called "timesystem",
+    .xlsx-file. The file has to contain a sheet called "energysystem",
     which has to be structured as follows:
         
     |start_date         |end_date           |temporal resolution|
@@ -93,8 +95,8 @@ def define_energy_system(nodes_data):
     """
 
     from oemof import solph
-    # Importing timesystem parameters from the scenario
-    ts = next(nodes_data['timesystem'].iterrows())[1]
+    # Importing energysystem parameters from the scenario
+    ts = next(nodes_data['energysystem'].iterrows())[1]
     temp_resolution = ts['temporal resolution']
     start_date = ts['start date']
     end_date = ts['end date']

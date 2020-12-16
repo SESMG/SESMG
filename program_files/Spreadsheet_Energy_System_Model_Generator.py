@@ -9,7 +9,7 @@ The scenario.xlsx-file must contain the following elements:
     
 sheet        | columns
 ------------------------------------------------------------------------
-timesystem   |  start_date, end_date, holidays, temporal resolution,
+energysystem   |  start_date, end_date, holidays, temporal resolution,
                 timezone
 
 buses        |  label, active, excess, shortage,
@@ -166,7 +166,7 @@ def sesmg_main(scenario_file, result_path, num_threads, graph, results,
         create_graph.create_graph(filepath=result_path, nodes_data=nodes_data)
 
     # OPTIMIZES THE ENERGYSYSTEM AND RETURNS THE OPTIMIZED ENERGY SYSTEM
-    om = optimize_model.least_cost_model(esys, num_threads,)
+    om = optimize_model.least_cost_model(esys, num_threads, nodes_data, busd)
 
     # SHOWS AND SAVES RESULTS OF THE OPTIMIZED MODEL / POST-PROCESSING
     if results:
