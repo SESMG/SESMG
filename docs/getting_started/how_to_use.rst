@@ -206,8 +206,8 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the storage shall be included to the model. 0 = inactive, 1 = active.
 - **bus**: Specifies which bus the storage is connected to.
-- **capacity inflow**: Indicates the performance with which the memory can be charged.
-- **capacity outflow**: Indicates the performance with which the memory can be discharged.
+- **input/capacity ratio (invest)**: Indicates the performance with which the memory can be charged.
+- **output/capacity ratio (invest)**: Indicates the performance with which the memory can be discharged.
 - **capacity loss**: Indicates the storage loss per time unit.
 - **efficiency inflow**: Specifies the charging efficiency.
 - **efficiency outflow**: Specifies the discharging efficiency.
@@ -221,7 +221,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **max. investment capacity/(kW)**: Maximum in addition to existing capacity, installable storage capacity.
 - **min. investment capacity/(kW)**: Minimum storage capacity to be installed.
 
-.. figure:: ../images/BSP_storage.png
+.. figure:: ../images/BSP_storage_2.png
    :width: 100 %
    :alt: Storage-Example
    :align: center
