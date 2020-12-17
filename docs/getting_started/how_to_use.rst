@@ -119,6 +119,8 @@ defined if the parameter "technology" is set on "photovoltaic". The following pa
 - **existing capacity/(kW)**: Existing capacity of the source before possible investments.
 - **min. investment capacity/(kW)**: Minimum capacity to be installed in case of an investment.
 - **max. investment capacity/(kW)**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
+- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
+- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
 - **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon
 - **technology database (PV ONLY)**: Database, from where module parameters are to be obtained. Recommended Database: "SandiaMod".
 - **inverter database (PV ONLY)**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter".
@@ -170,6 +172,8 @@ The following parameters have to be entered:
 - **max investment capacity/(kW)**: Maximum  installable transformer capacity in addition to the previously existing one.
 - **min investment capacity/(kW)**: Minimum transformer capacity to be installed.
 - **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
+- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
+- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
 - **heat source (HP ONLY)**: Specifies the heat source. At the moment are "GroundWater", "Ground", "Air" and "Water" possible.
 - **temperature high /(deg C) (HP ONLY)**: Temperature of the high temperature heat reservoir
 - **quality grade (HP ONLY)**: To determine the COP of a real machine a scale-down factor (the quality grade) is applied on the Carnot efficiency (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
@@ -220,6 +224,8 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
 - **max. investment capacity/(kW)**: Maximum in addition to existing capacity, installable storage capacity.
 - **min. investment capacity/(kW)**: Minimum storage capacity to be installed.
+- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
+- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
 
 .. figure:: ../images/BSP_storage_2.png
    :width: 100 %
@@ -255,7 +261,8 @@ to be entered:
 - **max. investment capacity/(kW)**: Maximum capacity to be installed.
 - **variable costs/(CU/kWh)**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
 - **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon.
-
+- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
+- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
 
 .. figure:: ../images/BSP_link.png
    :width: 100 %

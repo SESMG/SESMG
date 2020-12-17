@@ -35,7 +35,9 @@ Getting started
 * :doc:`getting_started/how_to_execute`
 * :doc:`getting_started/how_to_use`
 * :doc:`getting_started/analyze_results`
-	
+* :doc:`getting_started/demo_feature.rst`
+
+
 
 ..	toctree::
 	:maxdepth: 2
