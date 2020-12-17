@@ -1,0 +1,757 @@
+******************************************************
+2020-04-01 08:57:23,478 - INFO - logger - Path for logging: C:\Users\klemm\Documents\Python Scripts\Spreadsheet_Energy_System_Model_Generator/results\oemof.log
+2020-04-01 08:57:23,479 - INFO - logger - Used oemof version: 0.3.2
+2020-04-01 08:57:26,344 - INFO - create_energy_system - Date time index successfully defined:
+ start date:          2012-01-01 00:00:00,
+ end date:            2012-12-30 23:00:00,
+ temporal resolution: h
+2020-04-01 08:57:26,345 - INFO - create_objects -    Bus created: elektrizitaets_bus
+2020-04-01 08:57:26,347 - INFO - create_objects -    Bus created: erdgas_bus
+2020-04-01 08:57:26,347 - INFO - create_objects -    Bus created: waerme_bus
+2020-04-01 08:57:26,348 - INFO - create_objects -    Bus created: fernwaerme_bus
+2020-04-01 08:57:28,623 - INFO - utils - NumExpr defaulting to 4 threads.
+2020-04-01 08:57:29,695 - INFO - create_objects -    Source created: photovoltaik_elektrizitaets_quelle
+2020-04-01 08:57:29,808 - DEBUG - modelchain - Calculating wind speed using logarithmic wind profile.
+2020-04-01 08:57:29,813 - DEBUG - modelchain - Calculating power output using power curve.
+2020-04-01 08:57:29,815 - INFO - create_objects -    Source created: windenergie_elektrizitaets_quelle
+2020-04-01 08:57:32,224 - INFO - create_objects -    Sink created: efh_elektrizitaet_bedarf
+2020-04-01 08:57:32,643 - INFO - create_objects -    Sink created: mfh_elektrizitaet_bedarf
+2020-04-01 08:57:32,745 - INFO - create_objects -    Sink created: efh_waerme_bedarf
+2020-04-01 08:57:32,853 - INFO - create_objects -    Sink created: mfh_waerme_bedarf
+2020-04-01 08:57:32,854 - INFO - create_objects -    Transformer created: gasheizung_transformer
+2020-04-01 08:57:32,856 - INFO - create_objects -    Storage created: batterie_elektrizitaet_speicher
+2020-04-01 08:57:32,857 - INFO - create_objects -    Storage created: thermischer_speicher
+2020-04-01 08:57:32,858 - INFO - optimize_model -    *********************************************************
+2020-04-01 08:57:32,858 - INFO - optimize_model -    Starting Optimization...
+2020-04-01 08:58:39,123 - INFO - models - Optimization successful...
+2020-04-01 08:58:45,543 - INFO - create_results -    Results saved as xlsx for elektrizitaets_bus
+2020-04-01 08:58:48,377 - INFO - create_results -    Results saved as xlsx for erdgas_bus
+2020-04-01 08:58:51,598 - INFO - create_results -    Results saved as xlsx for waerme_bus
+2020-04-01 08:58:53,350 - INFO - create_results -    Results saved as xlsx for fernwaerme_bus
+2020-04-01 08:58:57,493 - INFO - create_results -    *********************************************************
+2020-04-01 08:58:57,493 - INFO - create_results -    ***SINKS*************************************************
+2020-04-01 08:58:57,494 - INFO - create_results -    *********************************************************
+2020-04-01 08:58:57,495 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 08:58:57,496 - INFO - create_results -    efh_elektrizitaet_bedarf
+2020-04-01 08:58:57,500 - INFO - create_results -    Total Energy Demand: 7480851.12 kWh
+2020-04-01 08:58:57,500 - INFO - create_results -    -------------------------------------------------
+2020-04-01 08:58:57,501 - INFO - create_results -    mfh_elektrizitaet_bedarf
+2020-04-01 08:58:57,503 - INFO - create_results -    Total Energy Demand: 6483404.31 kWh
+2020-04-01 08:58:57,504 - INFO - create_results -    -------------------------------------------------
+2020-04-01 08:58:57,505 - INFO - create_results -    efh_waerme_bedarf
+2020-04-01 08:58:57,507 - INFO - create_results -    Total Energy Demand: 32812952.33 kWh
+2020-04-01 08:58:57,509 - INFO - create_results -    -------------------------------------------------
+2020-04-01 08:58:57,509 - INFO - create_results -    mfh_waerme_bedarf
+2020-04-01 08:58:57,511 - INFO - create_results -    Total Energy Demand: 19389551.12 kWh
+2020-04-01 08:58:57,511 - INFO - create_results -    -------------------------------------------------
+2020-04-01 08:58:57,514 - INFO - create_results -    elektrizitaets_bus_excess
+2020-04-01 08:58:57,518 - INFO - create_results -    Total Energy Input: 339080721.44 kWh
+2020-04-01 08:58:57,519 - INFO - create_results -    Max. Capacity: 115227.08 kW
+2020-04-01 08:58:57,519 - INFO - create_results -    Variable Costs: -11494836.46 cost units
+2020-04-01 08:58:57,519 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 08:58:57,521 - INFO - create_results -    fernwaerme_bus_excess
+2020-04-01 08:58:57,525 - INFO - create_results -    Total Energy Input: 0.0 kWh
+2020-04-01 08:58:57,525 - INFO - create_results -    Max. Capacity: 0.0 kW
+2020-04-01 08:58:57,526 - INFO - create_results -    Variable Costs: 0.0 cost units
+2020-04-01 08:58:57,526 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 08:58:57,527 - INFO - create_results -    *********************************************************
+2020-04-01 08:58:57,527 - INFO - create_results -    ***SOURCES***********************************************
+2020-04-01 08:58:57,528 - INFO - create_results -    *********************************************************
+2020-04-01 08:58:57,528 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 08:58:57,530 - INFO - create_results -    photovoltaik_elektrizitaets_quelle
+2020-04-01 08:58:57,533 - INFO - create_results -    Total Energy Input: 128020578.0 kWh
+2020-04-01 08:58:57,535 - INFO - create_results -    Max. Capacity: 75000.0 kW
+2020-04-01 08:58:57,535 - INFO - create_results -    Investment Capacity: 75000.0 kW
+2020-04-01 08:58:57,536 - INFO - create_results -    Variable costs: 0.0 cost units
+2020-04-01 08:58:57,537 - INFO - create_results -    Periodical costs: 4125000.0 cost units p.a.
+2020-04-01 08:58:57,539 - INFO - create_results -    -------------------------------------------------
+2020-04-01 08:58:57,541 - INFO - create_results -    windenergie_elektrizitaets_quelle
+2020-04-01 08:58:57,544 - INFO - create_results -    Total Energy Input: 224600277.84 kWh
+2020-04-01 08:58:57,545 - INFO - create_results -    Max. Capacity: 42000.0 kW
+2020-04-01 08:58:57,546 - INFO - create_results -    Investment Capacity: 42000.0 kW
+2020-04-01 08:58:57,546 - INFO - create_results -    Variable costs: 0.0 cost units
+2020-04-01 08:58:57,547 - INFO - create_results -    Periodical costs: 2520000.0 cost units p.a.
+2020-04-01 08:58:57,547 - INFO - create_results -    -------------------------------------------------
+2020-04-01 08:58:57,548 - INFO - create_results -    elektrizitaets_bus_shortage
+2020-04-01 08:58:57,550 - INFO - create_results -    Total Energy Input: 424121.31 kWh
+2020-04-01 08:58:57,551 - INFO - create_results -    Max. Capacity: 2769.44 kW
+2020-04-01 08:58:57,552 - INFO - create_results -    Variable Costs: 129187.35 cost units
+2020-04-01 08:58:57,552 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 08:58:57,553 - INFO - create_results -    erdgas_bus_shortage
+2020-04-01 08:58:57,557 - INFO - create_results -    Total Energy Input: 61414709.94 kWh
+2020-04-01 08:58:57,559 - INFO - create_results -    Max. Capacity: 28076.22 kW
+2020-04-01 08:58:57,560 - INFO - create_results -    Variable Costs: 3930541.44 cost units
+2020-04-01 08:58:57,561 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 08:58:57,562 - INFO - create_results -    *********************************************************
+2020-04-01 08:58:57,562 - INFO - create_results -    ***TRANSFORMERS******************************************
+2020-04-01 08:58:57,564 - INFO - create_results -    *********************************************************
+2020-04-01 08:58:57,564 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 08:58:57,566 - INFO - create_results -    gasheizung_transformer
+2020-04-01 08:58:57,570 - INFO - create_results -    Total Energy Output to waerme_bus: 52202503.44 kWh
+2020-04-01 08:58:57,571 - INFO - create_results -    Max. Capacity: 23864.79 kW
+2020-04-01 08:58:57,571 - INFO - create_results -    Variable Costs: 0.0 cost units
+2020-04-01 08:58:57,572 - INFO - create_results -    Periodical costs (p.a.): 0 cost units p.a.
+2020-04-01 08:58:57,573 - INFO - create_results -    -------------------------------------------------
+2020-04-01 08:58:57,576 - INFO - create_results -    *********************************************************
+2020-04-01 08:58:57,577 - INFO - create_results -    ***STORAGES**********************************************
+2020-04-01 08:58:57,578 - INFO - create_results -    *********************************************************
+2020-04-01 08:58:57,579 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 08:58:57,580 - INFO - create_results -    batterie_elektrizitaet_speicher
+2020-04-01 08:58:57,583 - INFO - create_results -    Energy Output from batterie_elektrizitaet_speicher: -0.0 kWh
+2020-04-01 08:58:57,584 - INFO - create_results -    Energy Input to batterie_elektrizitaet_speicher: -0.0 kWh
+2020-04-01 08:58:57,588 - INFO - create_results -    Max. Capacity: 0.0 kW
+2020-04-01 08:58:57,594 - INFO - create_results -    Total variable costs for: 0.0 cost units
+2020-04-01 08:58:57,594 - INFO - create_results -    Investment Capacity: 0.0 kW
+2020-04-01 08:58:57,596 - INFO - create_results -    Periodical costs (p.a.): 0 cost units p.a.
+2020-04-01 08:58:57,596 - INFO - create_results -    -------------------------------------------------
+2020-04-01 08:58:57,598 - INFO - create_results -    thermischer_speicher
+2020-04-01 08:58:57,602 - INFO - create_results -    Energy Output from thermischer_speicher: 0.0 kWh
+2020-04-01 08:58:57,602 - INFO - create_results -    Energy Input to thermischer_speicher: 0.0 kWh
+2020-04-01 08:58:57,609 - INFO - create_results -    Max. Capacity: 0.0 kW
+2020-04-01 08:58:57,612 - INFO - create_results -    Total variable costs for: 0.0 cost units
+2020-04-01 08:58:57,613 - INFO - create_results -    Investment Capacity: 0.0 kW
+2020-04-01 08:58:57,613 - INFO - create_results -    Periodical costs (p.a.): 0 cost units p.a.
+2020-04-01 08:58:57,614 - INFO - create_results -    -------------------------------------------------
+2020-04-01 08:58:57,615 - INFO - create_results -    *********************************************************
+2020-04-01 08:58:57,616 - INFO - create_results -    ***LINKS********************************************
+2020-04-01 08:58:57,618 - INFO - create_results -    *********************************************************
+2020-04-01 08:58:57,619 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 08:58:57,620 - INFO - create_results -    *********************************************************
+2020-04-01 08:58:57,620 - INFO - create_results -    ***SUMMARY***********************************************
+2020-04-01 08:58:57,620 - INFO - create_results -    *********************************************************
+2020-04-01 08:58:57,621 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 08:58:57,706 - INFO - create_results -    Total System Costs:             -790107.7 cost units
+2020-04-01 08:58:57,706 - INFO - create_results -    Total Variable Costs:           -7435108.0 cost units
+2020-04-01 08:58:57,708 - INFO - create_results -    Total Periodical Costs (p.a.):  6645000.0 cost units p.a.
+2020-04-01 08:58:57,708 - INFO - create_results -    Total Energy Demand:            66166759.0 kWh
+2020-04-01 08:58:57,709 - INFO - create_results -    Total Energy Usage:             753540409.0 kWh
+2020-04-01 08:58:57,709 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 08:58:57,710 - INFO - create_results -    Investments to be made:
+2020-04-01 08:58:57,711 - INFO - create_results -    photovoltaik_elektrizitaets_quelle: 75000.0 kW; 4125000.0 cost units (p.a.)
+2020-04-01 08:58:57,711 - INFO - create_results -    windenergie_elektrizitaets_quelle: 42000.0 kW; 2520000.0 cost units (p.a.)
+2020-04-01 08:58:57,712 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 08:58:57,712 - INFO - create_results -    *********************************************************
+
+2020-04-01 08:58:57,713 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 08:58:57,714 - INFO - create_results -    Preparing the results for interactive results...
+2020-04-01 08:59:02,307 - INFO - create_results -    Successfully prepared results...
+2020-04-01 08:59:02,309 - INFO - Spreadsheet_Energy_System_Model_Generator -    --------------------------------------------------------
+2020-04-01 08:59:02,309 - INFO - Spreadsheet_Energy_System_Model_Generator -    Modelling and optimization successfully completed!
+******************************************************
+2020-04-01 09:03:43,684 - INFO - logger - Path for logging: C:\Users\klemm\Documents\Python Scripts\Spreadsheet_Energy_System_Model_Generator/results\oemof.log
+2020-04-01 09:03:43,684 - INFO - logger - Used oemof version: 0.3.2
+2020-04-01 09:03:46,041 - INFO - create_energy_system - Date time index successfully defined:
+ start date:          2012-01-01 00:00:00,
+ end date:            2012-12-30 23:00:00,
+ temporal resolution: h
+2020-04-01 09:03:46,042 - INFO - create_objects -    Bus created: elektrizitaets_bus
+2020-04-01 09:03:46,046 - INFO - create_objects -    Bus created: erdgas_bus
+2020-04-01 09:03:46,047 - INFO - create_objects -    Bus created: waerme_bus
+2020-04-01 09:03:46,048 - INFO - create_objects -    Bus created: fernwaerme_bus
+2020-04-01 09:03:48,428 - INFO - utils - NumExpr defaulting to 4 threads.
+2020-04-01 09:03:49,572 - INFO - create_objects -    Source created: photovoltaik_elektrizitaets_quelle
+2020-04-01 09:03:49,692 - DEBUG - modelchain - Calculating wind speed using logarithmic wind profile.
+2020-04-01 09:03:49,698 - DEBUG - modelchain - Calculating power output using power curve.
+2020-04-01 09:03:49,700 - INFO - create_objects -    Source created: windenergie_elektrizitaets_quelle
+2020-04-01 09:03:52,884 - INFO - create_objects -    Sink created: efh_elektrizitaet_bedarf
+2020-04-01 09:03:53,522 - INFO - create_objects -    Sink created: mfh_elektrizitaet_bedarf
+2020-04-01 09:03:53,613 - INFO - create_objects -    Sink created: efh_waerme_bedarf
+2020-04-01 09:03:53,703 - INFO - create_objects -    Sink created: mfh_waerme_bedarf
+2020-04-01 09:03:53,704 - INFO - create_objects -    Transformer created: gasheizung_transformer
+2020-04-01 09:03:53,705 - INFO - create_objects -    Storage created: batterie_elektrizitaet_speicher
+2020-04-01 09:03:53,706 - INFO - create_objects -    Storage created: thermischer_speicher
+2020-04-01 09:03:53,706 - INFO - optimize_model -    *********************************************************
+2020-04-01 09:03:53,706 - INFO - optimize_model -    Starting Optimization...
+2020-04-01 09:04:58,882 - INFO - models - Optimization successful...
+2020-04-01 09:05:06,372 - INFO - create_results -    Results saved as xlsx for elektrizitaets_bus
+2020-04-01 09:05:08,265 - INFO - create_results -    Results saved as xlsx for erdgas_bus
+2020-04-01 09:05:10,007 - INFO - create_results -    Results saved as xlsx for waerme_bus
+2020-04-01 09:05:11,653 - INFO - create_results -    Results saved as xlsx for fernwaerme_bus
+2020-04-01 09:05:16,790 - INFO - create_results -    *********************************************************
+2020-04-01 09:05:16,791 - INFO - create_results -    ***SINKS*************************************************
+2020-04-01 09:05:16,793 - INFO - create_results -    *********************************************************
+2020-04-01 09:05:16,793 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 09:05:16,795 - INFO - create_results -    efh_elektrizitaet_bedarf
+2020-04-01 09:05:16,798 - INFO - create_results -    Total Energy Demand: 7480851.12 kWh
+2020-04-01 09:05:16,798 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:05:16,799 - INFO - create_results -    mfh_elektrizitaet_bedarf
+2020-04-01 09:05:16,805 - INFO - create_results -    Total Energy Demand: 6483404.31 kWh
+2020-04-01 09:05:16,805 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:05:16,806 - INFO - create_results -    efh_waerme_bedarf
+2020-04-01 09:05:16,809 - INFO - create_results -    Total Energy Demand: 32812952.33 kWh
+2020-04-01 09:05:16,809 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:05:16,810 - INFO - create_results -    mfh_waerme_bedarf
+2020-04-01 09:05:16,812 - INFO - create_results -    Total Energy Demand: 19389551.12 kWh
+2020-04-01 09:05:16,813 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:05:16,817 - INFO - create_results -    elektrizitaets_bus_excess
+2020-04-01 09:05:16,823 - INFO - create_results -    Total Energy Input: 115076930.01 kWh
+2020-04-01 09:05:16,824 - INFO - create_results -    Max. Capacity: 73151.41 kW
+2020-04-01 09:05:16,825 - INFO - create_results -    Variable Costs: -3901107.93 cost units
+2020-04-01 09:05:16,826 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 09:05:16,827 - INFO - create_results -    fernwaerme_bus_excess
+2020-04-01 09:05:16,829 - INFO - create_results -    Total Energy Input: 0.0 kWh
+2020-04-01 09:05:16,830 - INFO - create_results -    Max. Capacity: 0.0 kW
+2020-04-01 09:05:16,830 - INFO - create_results -    Variable Costs: 0.0 cost units
+2020-04-01 09:05:16,832 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 09:05:16,832 - INFO - create_results -    *********************************************************
+2020-04-01 09:05:16,833 - INFO - create_results -    ***SOURCES***********************************************
+2020-04-01 09:05:16,837 - INFO - create_results -    *********************************************************
+2020-04-01 09:05:16,837 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 09:05:16,839 - INFO - create_results -    photovoltaik_elektrizitaets_quelle
+2020-04-01 09:05:16,842 - INFO - create_results -    Total Energy Input: 128020578.0 kWh
+2020-04-01 09:05:16,843 - INFO - create_results -    Max. Capacity: 75000.0 kW
+2020-04-01 09:05:16,844 - INFO - create_results -    Investment Capacity: 75000.0 kW
+2020-04-01 09:05:16,844 - INFO - create_results -    Variable costs: 0.0 cost units
+2020-04-01 09:05:16,845 - INFO - create_results -    Periodical costs: 4125000.0 cost units p.a.
+2020-04-01 09:05:16,846 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:05:16,848 - INFO - create_results -    windenergie_elektrizitaets_quelle
+2020-04-01 09:05:16,853 - INFO - create_results -    Total Energy Input: 157220.19 kWh
+2020-04-01 09:05:16,854 - INFO - create_results -    Max. Capacity: 29.4 kW
+2020-04-01 09:05:16,854 - INFO - create_results -    Investment Capacity: 29.4 kW
+2020-04-01 09:05:16,854 - INFO - create_results -    Variable costs: 0.0 cost units
+2020-04-01 09:05:16,855 - INFO - create_results -    Periodical costs: 1764.0 cost units p.a.
+2020-04-01 09:05:16,857 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:05:16,858 - INFO - create_results -    elektrizitaets_bus_shortage
+2020-04-01 09:05:16,861 - INFO - create_results -    Total Energy Input: 981856.34 kWh
+2020-04-01 09:05:16,861 - INFO - create_results -    Max. Capacity: 2435.88 kW
+2020-04-01 09:05:16,862 - INFO - create_results -    Variable Costs: 299073.44 cost units
+2020-04-01 09:05:16,862 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 09:05:16,863 - INFO - create_results -    erdgas_bus_shortage
+2020-04-01 09:05:16,869 - INFO - create_results -    Total Energy Input: 61414709.94 kWh
+2020-04-01 09:05:16,873 - INFO - create_results -    Max. Capacity: 28076.22 kW
+2020-04-01 09:05:16,875 - INFO - create_results -    Variable Costs: 3930541.44 cost units
+2020-04-01 09:05:16,875 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 09:05:16,877 - INFO - create_results -    *********************************************************
+2020-04-01 09:05:16,878 - INFO - create_results -    ***TRANSFORMERS******************************************
+2020-04-01 09:05:16,879 - INFO - create_results -    *********************************************************
+2020-04-01 09:05:16,879 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 09:05:16,880 - INFO - create_results -    gasheizung_transformer
+2020-04-01 09:05:16,889 - INFO - create_results -    Total Energy Output to waerme_bus: 52202503.44 kWh
+2020-04-01 09:05:16,889 - INFO - create_results -    Max. Capacity: 23864.79 kW
+2020-04-01 09:05:16,890 - INFO - create_results -    Variable Costs: 0.0 cost units
+2020-04-01 09:05:16,890 - INFO - create_results -    Periodical costs (p.a.): 0 cost units p.a.
+2020-04-01 09:05:16,891 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:05:16,893 - INFO - create_results -    *********************************************************
+2020-04-01 09:05:16,893 - INFO - create_results -    ***STORAGES**********************************************
+2020-04-01 09:05:16,894 - INFO - create_results -    *********************************************************
+2020-04-01 09:05:16,894 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 09:05:16,895 - INFO - create_results -    batterie_elektrizitaet_speicher
+2020-04-01 09:05:16,903 - INFO - create_results -    Energy Output from batterie_elektrizitaet_speicher: 5804986.08 kWh
+2020-04-01 09:05:16,903 - INFO - create_results -    Energy Input to batterie_elektrizitaet_speicher: 5923455.18 kWh
+2020-04-01 09:05:16,907 - INFO - create_results -    Max. Capacity: 17751.97 kW
+2020-04-01 09:05:16,911 - INFO - create_results -    Total variable costs for: 0.0 cost units
+2020-04-01 09:05:16,912 - INFO - create_results -    Investment Capacity: 17751.97 kW
+2020-04-01 09:05:16,912 - INFO - create_results -    Periodical costs (p.a.): 887598.6 cost units p.a.
+2020-04-01 09:05:16,913 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:05:16,915 - INFO - create_results -    thermischer_speicher
+2020-04-01 09:05:16,920 - INFO - create_results -    Energy Output from thermischer_speicher: 0.0 kWh
+2020-04-01 09:05:16,921 - INFO - create_results -    Energy Input to thermischer_speicher: 0.0 kWh
+2020-04-01 09:05:16,924 - INFO - create_results -    Max. Capacity: 0.0 kW
+2020-04-01 09:05:16,929 - INFO - create_results -    Total variable costs for: 0.0 cost units
+2020-04-01 09:05:16,929 - INFO - create_results -    Investment Capacity: 0.0 kW
+2020-04-01 09:05:16,930 - INFO - create_results -    Periodical costs (p.a.): 0 cost units p.a.
+2020-04-01 09:05:16,930 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:05:16,931 - INFO - create_results -    *********************************************************
+2020-04-01 09:05:16,933 - INFO - create_results -    ***LINKS********************************************
+2020-04-01 09:05:16,933 - INFO - create_results -    *********************************************************
+2020-04-01 09:05:16,934 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 09:05:16,937 - INFO - create_results -    *********************************************************
+2020-04-01 09:05:16,938 - INFO - create_results -    ***SUMMARY***********************************************
+2020-04-01 09:05:16,939 - INFO - create_results -    *********************************************************
+2020-04-01 09:05:16,939 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 09:05:17,068 - INFO - create_results -    Total System Costs:             5342869.6 cost units
+2020-04-01 09:05:17,069 - INFO - create_results -    Total Variable Costs:           328507.0 cost units
+2020-04-01 09:05:17,069 - INFO - create_results -    Total Periodical Costs (p.a.):  5014363.0 cost units p.a.
+2020-04-01 09:05:17,070 - INFO - create_results -    Total Energy Demand:            66166759.0 kWh
+2020-04-01 09:05:17,071 - INFO - create_results -    Total Energy Usage:             305651294.0 kWh
+2020-04-01 09:05:17,072 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 09:05:17,072 - INFO - create_results -    Investments to be made:
+2020-04-01 09:05:17,073 - INFO - create_results -    photovoltaik_elektrizitaets_quelle: 75000.0 kW; 4125000.0 cost units (p.a.)
+2020-04-01 09:05:17,073 - INFO - create_results -    windenergie_elektrizitaets_quelle: 29.4 kW; 1764.0 cost units (p.a.)
+2020-04-01 09:05:17,074 - INFO - create_results -    batterie_elektrizitaet_speicher: 17751.97 kWh; 887598.6 cost units (p.a.)
+2020-04-01 09:05:17,074 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 09:05:17,075 - INFO - create_results -    *********************************************************
+
+2020-04-01 09:05:17,076 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 09:05:17,077 - INFO - create_results -    Preparing the results for interactive results...
+2020-04-01 09:05:23,937 - INFO - create_results -    Successfully prepared results...
+2020-04-01 09:05:23,939 - INFO - Spreadsheet_Energy_System_Model_Generator -    --------------------------------------------------------
+2020-04-01 09:05:23,940 - INFO - Spreadsheet_Energy_System_Model_Generator -    Modelling and optimization successfully completed!
+******************************************************
+2020-04-01 09:06:17,434 - INFO - logger - Path for logging: C:\Users\klemm\Documents\Python Scripts\Spreadsheet_Energy_System_Model_Generator/results\oemof.log
+2020-04-01 09:06:17,435 - INFO - logger - Used oemof version: 0.3.2
+2020-04-01 09:06:19,144 - INFO - create_energy_system - Date time index successfully defined:
+ start date:          2012-01-01 00:00:00,
+ end date:            2012-12-30 23:00:00,
+ temporal resolution: h
+2020-04-01 09:06:19,146 - INFO - create_objects -    Bus created: elektrizitaets_bus
+2020-04-01 09:06:19,148 - INFO - create_objects -    Bus created: erdgas_bus
+2020-04-01 09:06:19,149 - INFO - create_objects -    Bus created: waerme_bus
+2020-04-01 09:06:19,149 - INFO - create_objects -    Bus created: fernwaerme_bus
+2020-04-01 09:06:21,054 - INFO - utils - NumExpr defaulting to 4 threads.
+2020-04-01 09:06:21,765 - INFO - create_objects -    Source created: photovoltaik_elektrizitaets_quelle
+2020-04-01 09:06:21,823 - DEBUG - modelchain - Calculating wind speed using logarithmic wind profile.
+2020-04-01 09:06:21,826 - DEBUG - modelchain - Calculating power output using power curve.
+2020-04-01 09:06:21,828 - INFO - create_objects -    Source created: windenergie_elektrizitaets_quelle
+2020-04-01 09:06:24,093 - INFO - create_objects -    Sink created: efh_elektrizitaet_bedarf
+2020-04-01 09:06:24,473 - INFO - create_objects -    Sink created: mfh_elektrizitaet_bedarf
+2020-04-01 09:06:24,564 - INFO - create_objects -    Sink created: efh_waerme_bedarf
+2020-04-01 09:06:24,661 - INFO - create_objects -    Sink created: mfh_waerme_bedarf
+2020-04-01 09:06:24,662 - INFO - create_objects -    Transformer created: gasheizung_transformer
+2020-04-01 09:06:24,663 - INFO - create_objects -    Storage created: batterie_elektrizitaet_speicher
+2020-04-01 09:06:24,664 - INFO - create_objects -    Storage created: thermischer_speicher
+2020-04-01 09:06:24,665 - INFO - optimize_model -    *********************************************************
+2020-04-01 09:06:24,665 - INFO - optimize_model -    Starting Optimization...
+2020-04-01 09:07:06,813 - INFO - models - Optimization successful...
+2020-04-01 09:07:12,338 - INFO - create_results -    Results saved as xlsx for elektrizitaets_bus
+2020-04-01 09:07:13,697 - INFO - create_results -    Results saved as xlsx for erdgas_bus
+2020-04-01 09:07:14,975 - INFO - create_results -    Results saved as xlsx for waerme_bus
+2020-04-01 09:07:16,213 - INFO - create_results -    Results saved as xlsx for fernwaerme_bus
+2020-04-01 09:07:20,163 - INFO - create_results -    *********************************************************
+2020-04-01 09:07:20,164 - INFO - create_results -    ***SINKS*************************************************
+2020-04-01 09:07:20,165 - INFO - create_results -    *********************************************************
+2020-04-01 09:07:20,166 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 09:07:20,167 - INFO - create_results -    efh_elektrizitaet_bedarf
+2020-04-01 09:07:20,170 - INFO - create_results -    Total Energy Demand: 7480851.12 kWh
+2020-04-01 09:07:20,170 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:07:20,171 - INFO - create_results -    mfh_elektrizitaet_bedarf
+2020-04-01 09:07:20,173 - INFO - create_results -    Total Energy Demand: 6483404.31 kWh
+2020-04-01 09:07:20,175 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:07:20,176 - INFO - create_results -    efh_waerme_bedarf
+2020-04-01 09:07:20,178 - INFO - create_results -    Total Energy Demand: 32812952.33 kWh
+2020-04-01 09:07:20,179 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:07:20,179 - INFO - create_results -    mfh_waerme_bedarf
+2020-04-01 09:07:20,181 - INFO - create_results -    Total Energy Demand: 19389551.12 kWh
+2020-04-01 09:07:20,182 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:07:20,183 - INFO - create_results -    elektrizitaets_bus_excess
+2020-04-01 09:07:20,187 - INFO - create_results -    Total Energy Input: 271792183.57 kWh
+2020-04-01 09:07:20,188 - INFO - create_results -    Max. Capacity: 102627.08 kW
+2020-04-01 09:07:20,189 - INFO - create_results -    Variable Costs: -9213755.02 cost units
+2020-04-01 09:07:20,189 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 09:07:20,190 - INFO - create_results -    fernwaerme_bus_excess
+2020-04-01 09:07:20,194 - INFO - create_results -    Total Energy Input: 0.0 kWh
+2020-04-01 09:07:20,194 - INFO - create_results -    Max. Capacity: 0.0 kW
+2020-04-01 09:07:20,195 - INFO - create_results -    Variable Costs: 0.0 cost units
+2020-04-01 09:07:20,195 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 09:07:20,196 - INFO - create_results -    *********************************************************
+2020-04-01 09:07:20,196 - INFO - create_results -    ***SOURCES***********************************************
+2020-04-01 09:07:20,197 - INFO - create_results -    *********************************************************
+2020-04-01 09:07:20,197 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 09:07:20,198 - INFO - create_results -    photovoltaik_elektrizitaets_quelle
+2020-04-01 09:07:20,201 - INFO - create_results -    Total Energy Input: 128020578.0 kWh
+2020-04-01 09:07:20,202 - INFO - create_results -    Max. Capacity: 75000.0 kW
+2020-04-01 09:07:20,202 - INFO - create_results -    Investment Capacity: 75000.0 kW
+2020-04-01 09:07:20,203 - INFO - create_results -    Variable costs: 0.0 cost units
+2020-04-01 09:07:20,205 - INFO - create_results -    Periodical costs: 4125000.0 cost units p.a.
+2020-04-01 09:07:20,205 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:07:20,207 - INFO - create_results -    windenergie_elektrizitaets_quelle
+2020-04-01 09:07:20,212 - INFO - create_results -    Total Energy Input: 157220194.06 kWh
+2020-04-01 09:07:20,213 - INFO - create_results -    Max. Capacity: 29400.0 kW
+2020-04-01 09:07:20,214 - INFO - create_results -    Investment Capacity: 29400.0 kW
+2020-04-01 09:07:20,215 - INFO - create_results -    Variable costs: 0.0 cost units
+2020-04-01 09:07:20,215 - INFO - create_results -    Periodical costs: 1764000.0 cost units p.a.
+2020-04-01 09:07:20,216 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:07:20,217 - INFO - create_results -    elektrizitaets_bus_shortage
+2020-04-01 09:07:20,220 - INFO - create_results -    Total Energy Input: 515666.68 kWh
+2020-04-01 09:07:20,221 - INFO - create_results -    Max. Capacity: 2769.44 kW
+2020-04-01 09:07:20,221 - INFO - create_results -    Variable Costs: 157072.07 cost units
+2020-04-01 09:07:20,221 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 09:07:20,222 - INFO - create_results -    erdgas_bus_shortage
+2020-04-01 09:07:20,227 - INFO - create_results -    Total Energy Input: 61414709.94 kWh
+2020-04-01 09:07:20,228 - INFO - create_results -    Max. Capacity: 28076.22 kW
+2020-04-01 09:07:20,230 - INFO - create_results -    Variable Costs: 3930541.44 cost units
+2020-04-01 09:07:20,230 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 09:07:20,231 - INFO - create_results -    *********************************************************
+2020-04-01 09:07:20,231 - INFO - create_results -    ***TRANSFORMERS******************************************
+2020-04-01 09:07:20,232 - INFO - create_results -    *********************************************************
+2020-04-01 09:07:20,232 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 09:07:20,233 - INFO - create_results -    gasheizung_transformer
+2020-04-01 09:07:20,238 - INFO - create_results -    Total Energy Output to waerme_bus: 52202503.44 kWh
+2020-04-01 09:07:20,238 - INFO - create_results -    Max. Capacity: 23864.79 kW
+2020-04-01 09:07:20,239 - INFO - create_results -    Variable Costs: 0.0 cost units
+2020-04-01 09:07:20,239 - INFO - create_results -    Periodical costs (p.a.): 0 cost units p.a.
+2020-04-01 09:07:20,240 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:07:20,241 - INFO - create_results -    *********************************************************
+2020-04-01 09:07:20,242 - INFO - create_results -    ***STORAGES**********************************************
+2020-04-01 09:07:20,243 - INFO - create_results -    *********************************************************
+2020-04-01 09:07:20,244 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 09:07:20,246 - INFO - create_results -    batterie_elektrizitaet_speicher
+2020-04-01 09:07:20,251 - INFO - create_results -    Energy Output from batterie_elektrizitaet_speicher: -0.0 kWh
+2020-04-01 09:07:20,251 - INFO - create_results -    Energy Input to batterie_elektrizitaet_speicher: -0.0 kWh
+2020-04-01 09:07:20,255 - INFO - create_results -    Max. Capacity: 0.0 kW
+2020-04-01 09:07:20,261 - INFO - create_results -    Total variable costs for: 0.0 cost units
+2020-04-01 09:07:20,262 - INFO - create_results -    Investment Capacity: 0.0 kW
+2020-04-01 09:07:20,262 - INFO - create_results -    Periodical costs (p.a.): 0 cost units p.a.
+2020-04-01 09:07:20,263 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:07:20,263 - INFO - create_results -    thermischer_speicher
+2020-04-01 09:07:20,269 - INFO - create_results -    Energy Output from thermischer_speicher: 0.0 kWh
+2020-04-01 09:07:20,269 - INFO - create_results -    Energy Input to thermischer_speicher: 0.0 kWh
+2020-04-01 09:07:20,273 - INFO - create_results -    Max. Capacity: 0.0 kW
+2020-04-01 09:07:20,278 - INFO - create_results -    Total variable costs for: 0.0 cost units
+2020-04-01 09:07:20,279 - INFO - create_results -    Investment Capacity: 0.0 kW
+2020-04-01 09:07:20,279 - INFO - create_results -    Periodical costs (p.a.): 0 cost units p.a.
+2020-04-01 09:07:20,280 - INFO - create_results -    -------------------------------------------------
+2020-04-01 09:07:20,280 - INFO - create_results -    *********************************************************
+2020-04-01 09:07:20,281 - INFO - create_results -    ***LINKS********************************************
+2020-04-01 09:07:20,281 - INFO - create_results -    *********************************************************
+2020-04-01 09:07:20,282 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 09:07:20,283 - INFO - create_results -    *********************************************************
+2020-04-01 09:07:20,283 - INFO - create_results -    ***SUMMARY***********************************************
+2020-04-01 09:07:20,284 - INFO - create_results -    *********************************************************
+2020-04-01 09:07:20,285 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 09:07:20,405 - INFO - create_results -    Total System Costs:             762858.5 cost units
+2020-04-01 09:07:20,406 - INFO - create_results -    Total Variable Costs:           -5126142.0 cost units
+2020-04-01 09:07:20,410 - INFO - create_results -    Total Periodical Costs (p.a.):  5889000.0 cost units p.a.
+2020-04-01 09:07:20,410 - INFO - create_results -    Total Energy Demand:            66166759.0 kWh
+2020-04-01 09:07:20,411 - INFO - create_results -    Total Energy Usage:             618963332.0 kWh
+2020-04-01 09:07:20,411 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 09:07:20,412 - INFO - create_results -    Investments to be made:
+2020-04-01 09:07:20,413 - INFO - create_results -    photovoltaik_elektrizitaets_quelle: 75000.0 kW; 4125000.0 cost units (p.a.)
+2020-04-01 09:07:20,413 - INFO - create_results -    windenergie_elektrizitaets_quelle: 29400.0 kW; 1764000.0 cost units (p.a.)
+2020-04-01 09:07:20,414 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 09:07:20,414 - INFO - create_results -    *********************************************************
+
+2020-04-01 09:07:20,416 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 09:07:20,417 - INFO - create_results -    Preparing the results for interactive results...
+2020-04-01 09:07:25,157 - INFO - create_results -    Successfully prepared results...
+2020-04-01 09:07:25,159 - INFO - Spreadsheet_Energy_System_Model_Generator -    --------------------------------------------------------
+2020-04-01 09:07:25,159 - INFO - Spreadsheet_Energy_System_Model_Generator -    Modelling and optimization successfully completed!
+******************************************************
+2020-04-01 14:43:48,282 - INFO - logger - Path for logging: C:\Users\klemm\Documents\Python Scripts\Spreadsheet_Energy_System_Model_Generator/results\oemof.log
+2020-04-01 14:43:48,283 - INFO - logger - Used oemof version: 0.3.2
+2020-04-01 14:43:51,008 - INFO - create_energy_system - Date time index successfully defined:
+ start date:          2012-01-01 00:00:00,
+ end date:            2012-12-30 23:00:00,
+ temporal resolution: h
+2020-04-01 14:43:51,011 - INFO - create_objects -    Bus created: elektrizitaets_bus
+2020-04-01 14:43:51,017 - INFO - create_objects -    Bus created: erdgas_bus
+2020-04-01 14:43:51,020 - INFO - create_objects -    Bus created: waerme_bus
+2020-04-01 14:43:57,604 - INFO - utils - NumExpr defaulting to 4 threads.
+2020-04-01 14:43:57,894 - INFO - create_objects -    Sink created: efh_elektrizitaet_bedarf
+2020-04-01 14:43:58,392 - INFO - create_objects -    Sink created: mfh_elektrizitaet_bedarf
+2020-04-01 14:43:58,534 - INFO - create_objects -    Sink created: efh_waerme_bedarf
+2020-04-01 14:43:58,627 - INFO - create_objects -    Sink created: mfh_waerme_bedarf
+2020-04-01 14:43:58,628 - INFO - create_objects -    Transformer created: gasheizung_transformer
+2020-04-01 14:43:58,630 - INFO - optimize_model -    *********************************************************
+2020-04-01 14:43:58,630 - INFO - optimize_model -    Starting Optimization...
+2020-04-01 14:44:13,383 - INFO - models - Optimization successful...
+2020-04-01 14:44:18,497 - INFO - create_results -    Results saved as xlsx for elektrizitaets_bus
+2020-04-01 14:44:20,125 - INFO - create_results -    Results saved as xlsx for erdgas_bus
+2020-04-01 14:44:22,362 - INFO - create_results -    Results saved as xlsx for waerme_bus
+2020-04-01 14:44:24,869 - INFO - create_results -    *********************************************************
+2020-04-01 14:44:24,883 - INFO - create_results -    ***SINKS*************************************************
+2020-04-01 14:44:24,884 - INFO - create_results -    *********************************************************
+2020-04-01 14:44:24,884 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 14:44:24,886 - INFO - create_results -    efh_elektrizitaet_bedarf
+2020-04-01 14:44:24,889 - INFO - create_results -    Total Energy Demand: 7480851.12 kWh
+2020-04-01 14:44:24,890 - INFO - create_results -    -------------------------------------------------
+2020-04-01 14:44:24,893 - INFO - create_results -    mfh_elektrizitaet_bedarf
+2020-04-01 14:44:24,899 - INFO - create_results -    Total Energy Demand: 6483404.31 kWh
+2020-04-01 14:44:24,900 - INFO - create_results -    -------------------------------------------------
+2020-04-01 14:44:24,901 - INFO - create_results -    efh_waerme_bedarf
+2020-04-01 14:44:24,904 - INFO - create_results -    Total Energy Demand: 32812952.33 kWh
+2020-04-01 14:44:24,905 - INFO - create_results -    -------------------------------------------------
+2020-04-01 14:44:24,906 - INFO - create_results -    mfh_waerme_bedarf
+2020-04-01 14:44:24,916 - INFO - create_results -    Total Energy Demand: 19389551.12 kWh
+2020-04-01 14:44:24,917 - INFO - create_results -    -------------------------------------------------
+2020-04-01 14:44:24,918 - INFO - create_results -    elektrizitaets_bus_excess
+2020-04-01 14:44:24,921 - INFO - create_results -    Total Energy Input: 0.0 kWh
+2020-04-01 14:44:24,922 - INFO - create_results -    Max. Capacity: 0.0 kW
+2020-04-01 14:44:24,923 - INFO - create_results -    Variable Costs: -0.0 cost units
+2020-04-01 14:44:24,923 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 14:44:24,929 - INFO - create_results -    *********************************************************
+2020-04-01 14:44:24,934 - INFO - create_results -    ***SOURCES***********************************************
+2020-04-01 14:44:24,936 - INFO - create_results -    *********************************************************
+2020-04-01 14:44:24,936 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 14:44:24,939 - INFO - create_results -    elektrizitaets_bus_shortage
+2020-04-01 14:44:24,942 - INFO - create_results -    Total Energy Input: 13964255.44 kWh
+2020-04-01 14:44:24,947 - INFO - create_results -    Max. Capacity: 2938.37 kW
+2020-04-01 14:44:24,948 - INFO - create_results -    Variable Costs: 4253512.21 cost units
+2020-04-01 14:44:24,949 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 14:44:24,950 - INFO - create_results -    erdgas_bus_shortage
+2020-04-01 14:44:24,954 - INFO - create_results -    Total Energy Input: 61414709.94 kWh
+2020-04-01 14:44:24,955 - INFO - create_results -    Max. Capacity: 28076.22 kW
+2020-04-01 14:44:24,955 - INFO - create_results -    Variable Costs: 3930541.44 cost units
+2020-04-01 14:44:24,956 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 14:44:24,959 - INFO - create_results -    *********************************************************
+2020-04-01 14:44:24,960 - INFO - create_results -    ***TRANSFORMERS******************************************
+2020-04-01 14:44:24,964 - INFO - create_results -    *********************************************************
+2020-04-01 14:44:24,965 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 14:44:24,966 - INFO - create_results -    gasheizung_transformer
+2020-04-01 14:44:24,975 - INFO - create_results -    Total Energy Output to waerme_bus: 52202503.44 kWh
+2020-04-01 14:44:24,979 - INFO - create_results -    Max. Capacity: 23864.79 kW
+2020-04-01 14:44:24,996 - INFO - create_results -    Variable Costs: 0.0 cost units
+2020-04-01 14:44:24,997 - INFO - create_results -    Periodical costs (p.a.): 0 cost units p.a.
+2020-04-01 14:44:24,998 - INFO - create_results -    -------------------------------------------------
+2020-04-01 14:44:25,000 - INFO - create_results -    *********************************************************
+2020-04-01 14:44:25,000 - INFO - create_results -    ***STORAGES**********************************************
+2020-04-01 14:44:25,001 - INFO - create_results -    *********************************************************
+2020-04-01 14:44:25,002 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 14:44:25,004 - INFO - create_results -    *********************************************************
+2020-04-01 14:44:25,005 - INFO - create_results -    ***LINKS********************************************
+2020-04-01 14:44:25,005 - INFO - create_results -    *********************************************************
+2020-04-01 14:44:25,006 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 14:44:25,012 - INFO - create_results -    *********************************************************
+2020-04-01 14:44:25,013 - INFO - create_results -    ***SUMMARY***********************************************
+2020-04-01 14:44:25,014 - INFO - create_results -    *********************************************************
+2020-04-01 14:44:25,014 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 14:44:25,120 - INFO - create_results -    Total System Costs:             8184053.6 cost units
+2020-04-01 14:44:25,120 - INFO - create_results -    Total Variable Costs:           8184054.0 cost units
+2020-04-01 14:44:25,122 - INFO - create_results -    Total Periodical Costs (p.a.):  0 cost units p.a.
+2020-04-01 14:44:25,122 - INFO - create_results -    Total Energy Demand:            66166759.0 kWh
+2020-04-01 14:44:25,123 - INFO - create_results -    Total Energy Usage:             75378965.0 kWh
+2020-04-01 14:44:25,124 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 14:44:25,125 - INFO - create_results -    Investments to be made:
+2020-04-01 14:44:25,125 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 14:44:25,126 - INFO - create_results -    *********************************************************
+
+2020-04-01 14:44:25,127 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 14:44:25,127 - INFO - create_results -    Preparing the results for interactive results...
+2020-04-01 14:44:28,055 - INFO - create_results -    Successfully prepared results...
+2020-04-01 14:44:28,056 - INFO - Spreadsheet_Energy_System_Model_Generator -    --------------------------------------------------------
+2020-04-01 14:44:28,059 - INFO - Spreadsheet_Energy_System_Model_Generator -    Modelling and optimization successfully completed!
+******************************************************
+2020-04-01 14:51:08,327 - INFO - logger - Path for logging: C:\Users\klemm\Documents\Python Scripts\Spreadsheet_Energy_System_Model_Generator/results\oemof.log
+2020-04-01 14:51:08,328 - INFO - logger - Used oemof version: 0.3.2
+2020-04-01 14:51:10,286 - INFO - create_energy_system - Date time index successfully defined:
+ start date:          2012-01-01 00:00:00,
+ end date:            2012-12-30 23:00:00,
+ temporal resolution: h
+2020-04-01 14:51:10,288 - INFO - create_objects -    Bus created: elektrizitaets_bus
+2020-04-01 14:51:10,290 - INFO - create_objects -    Bus created: erdgas_bus
+2020-04-01 14:51:10,290 - INFO - create_objects -    Bus created: waerme_bus
+2020-04-01 14:51:10,291 - INFO - create_objects -    Bus created: fernwaerme_bus
+2020-04-01 14:51:14,810 - INFO - utils - NumExpr defaulting to 4 threads.
+2020-04-01 14:51:15,083 - INFO - create_objects -    Sink created: efh_elektrizitaet_bedarf
+2020-04-01 14:51:15,451 - INFO - create_objects -    Sink created: mfh_elektrizitaet_bedarf
+2020-04-01 14:51:15,572 - INFO - create_objects -    Sink created: efh_waerme_bedarf
+2020-04-01 14:51:15,677 - INFO - create_objects -    Sink created: mfh_waerme_bedarf
+2020-04-01 14:51:15,678 - INFO - create_objects -    Transformer created: gasheizung_transformer
+2020-04-01 14:51:15,680 - INFO - create_objects -    Transformer created: bhkw_transformer
+2020-04-01 14:51:15,681 - INFO - create_objects -    Storage created: batterie_elektrizitaet_speicher
+2020-04-01 14:51:15,682 - INFO - create_objects -    Link created: fernwaermenetz_link
+2020-04-01 14:51:15,682 - INFO - optimize_model -    *********************************************************
+2020-04-01 14:51:15,682 - INFO - optimize_model -    Starting Optimization...
+2020-04-01 14:51:51,507 - INFO - models - Optimization successful...
+2020-04-01 14:51:58,037 - INFO - create_results -    Results saved as xlsx for elektrizitaets_bus
+2020-04-01 14:51:59,751 - INFO - create_results -    Results saved as xlsx for erdgas_bus
+2020-04-01 14:52:01,507 - INFO - create_results -    Results saved as xlsx for waerme_bus
+2020-04-01 14:52:03,419 - INFO - create_results -    Results saved as xlsx for fernwaerme_bus
+2020-04-01 14:52:07,897 - INFO - create_results -    *********************************************************
+2020-04-01 14:52:07,897 - INFO - create_results -    ***SINKS*************************************************
+2020-04-01 14:52:07,899 - INFO - create_results -    *********************************************************
+2020-04-01 14:52:07,900 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 14:52:07,901 - INFO - create_results -    efh_elektrizitaet_bedarf
+2020-04-01 14:52:07,903 - INFO - create_results -    Total Energy Demand: 7480851.12 kWh
+2020-04-01 14:52:07,904 - INFO - create_results -    -------------------------------------------------
+2020-04-01 14:52:07,905 - INFO - create_results -    mfh_elektrizitaet_bedarf
+2020-04-01 14:52:07,907 - INFO - create_results -    Total Energy Demand: 6483404.31 kWh
+2020-04-01 14:52:07,908 - INFO - create_results -    -------------------------------------------------
+2020-04-01 14:52:07,909 - INFO - create_results -    efh_waerme_bedarf
+2020-04-01 14:52:07,911 - INFO - create_results -    Total Energy Demand: 32812952.33 kWh
+2020-04-01 14:52:07,911 - INFO - create_results -    -------------------------------------------------
+2020-04-01 14:52:07,912 - INFO - create_results -    mfh_waerme_bedarf
+2020-04-01 14:52:07,914 - INFO - create_results -    Total Energy Demand: 19389551.12 kWh
+2020-04-01 14:52:07,915 - INFO - create_results -    -------------------------------------------------
+2020-04-01 14:52:07,916 - INFO - create_results -    elektrizitaets_bus_excess
+2020-04-01 14:52:07,921 - INFO - create_results -    Total Energy Input: 0.0 kWh
+2020-04-01 14:52:07,922 - INFO - create_results -    Max. Capacity: 0.0 kW
+2020-04-01 14:52:07,923 - INFO - create_results -    Variable Costs: -0.0 cost units
+2020-04-01 14:52:07,923 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 14:52:07,925 - INFO - create_results -    fernwaerme_bus_excess
+2020-04-01 14:52:07,927 - INFO - create_results -    Total Energy Input: 66398.73 kWh
+2020-04-01 14:52:07,928 - INFO - create_results -    Max. Capacity: 569.5 kW
+2020-04-01 14:52:07,929 - INFO - create_results -    Variable Costs: 0.0 cost units
+2020-04-01 14:52:07,930 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 14:52:07,931 - INFO - create_results -    *********************************************************
+2020-04-01 14:52:07,931 - INFO - create_results -    ***SOURCES***********************************************
+2020-04-01 14:52:07,932 - INFO - create_results -    *********************************************************
+2020-04-01 14:52:07,932 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 14:52:07,936 - INFO - create_results -    elektrizitaets_bus_shortage
+2020-04-01 14:52:07,938 - INFO - create_results -    Total Energy Input: 8909727.35 kWh
+2020-04-01 14:52:07,939 - INFO - create_results -    Max. Capacity: 2361.34 kW
+2020-04-01 14:52:07,940 - INFO - create_results -    Variable Costs: 2713902.95 cost units
+2020-04-01 14:52:07,941 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 14:52:07,942 - INFO - create_results -    erdgas_bus_shortage
+2020-04-01 14:52:07,945 - INFO - create_results -    Total Energy Input: 67980104.91 kWh
+2020-04-01 14:52:07,945 - INFO - create_results -    Max. Capacity: 28818.12 kW
+2020-04-01 14:52:07,946 - INFO - create_results -    Variable Costs: 4350726.71 cost units
+2020-04-01 14:52:07,946 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 14:52:07,947 - INFO - create_results -    *********************************************************
+2020-04-01 14:52:07,948 - INFO - create_results -    ***TRANSFORMERS******************************************
+2020-04-01 14:52:07,948 - INFO - create_results -    *********************************************************
+2020-04-01 14:52:07,949 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 14:52:07,954 - INFO - create_results -    gasheizung_transformer
+2020-04-01 14:52:07,957 - INFO - create_results -    Total Energy Output to waerme_bus: 45507207.4 kWh
+2020-04-01 14:52:07,958 - INFO - create_results -    Max. Capacity: 23094.05 kW
+2020-04-01 14:52:07,959 - INFO - create_results -    Variable Costs: 0.0 cost units
+2020-04-01 14:52:07,959 - INFO - create_results -    Periodical costs (p.a.): 0 cost units p.a.
+2020-04-01 14:52:07,959 - INFO - create_results -    -------------------------------------------------
+2020-04-01 14:52:07,960 - INFO - create_results -    bhkw_transformer
+2020-04-01 14:52:07,964 - INFO - create_results -    Total Energy Output to elektrizitaets_bus: 5054774.83 kWh
+2020-04-01 14:52:07,965 - INFO - create_results -    Total Energy Output to fernwaerme_bus: 7943217.6 kWh
+2020-04-01 14:52:07,965 - INFO - create_results -    Max. Capacity: 906.76 kW
+2020-04-01 14:52:07,968 - INFO - create_results -    WARNING: Capacity to bus2 will be added later
+2020-04-01 14:52:07,969 - INFO - create_results -    Variable Costs: 0.0 cost units
+2020-04-01 14:52:07,970 - INFO - create_results -    Investment Capacity: 906.76 kW
+2020-04-01 14:52:07,970 - INFO - create_results -    Periodical costs (p.a.): 8614.22 cost units p.a.
+2020-04-01 14:52:07,971 - INFO - create_results -    -------------------------------------------------
+2020-04-01 14:52:07,973 - INFO - create_results -    *********************************************************
+2020-04-01 14:52:07,974 - INFO - create_results -    ***STORAGES**********************************************
+2020-04-01 14:52:07,974 - INFO - create_results -    *********************************************************
+2020-04-01 14:52:07,975 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 14:52:07,976 - INFO - create_results -    batterie_elektrizitaet_speicher
+2020-04-01 14:52:07,988 - INFO - create_results -    Energy Output from batterie_elektrizitaet_speicher: 12090.91 kWh
+2020-04-01 14:52:07,990 - INFO - create_results -    Energy Input to batterie_elektrizitaet_speicher: 12337.66 kWh
+2020-04-01 14:52:07,997 - INFO - create_results -    Max. Capacity: 92.27 kW
+2020-04-01 14:52:08,009 - INFO - create_results -    Total variable costs for: 0.0 cost units
+2020-04-01 14:52:08,009 - INFO - create_results -    Investment Capacity: 29680.18 kW
+2020-04-01 14:52:08,010 - INFO - create_results -    Periodical costs (p.a.): 1484009.0 cost units p.a.
+2020-04-01 14:52:08,011 - INFO - create_results -    -------------------------------------------------
+2020-04-01 14:52:08,014 - INFO - create_results -    *********************************************************
+2020-04-01 14:52:08,015 - INFO - create_results -    ***LINKS********************************************
+2020-04-01 14:52:08,015 - INFO - create_results -    *********************************************************
+2020-04-01 14:52:08,016 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 14:52:08,019 - INFO - create_results -    fernwaermenetz_link
+2020-04-01 14:52:08,023 - INFO - create_results -    Total Energy Output to waerme_bus: 6695296.04 kWh
+2020-04-01 14:52:08,024 - INFO - create_results -    Max. Capacity to waerme_bus: 770.75 kW
+2020-04-01 14:52:08,024 - INFO - create_results -    Variable Costs: 0.0 cost units
+2020-04-01 14:52:08,025 - INFO - create_results -    Investment Capacity: 1.0 kW
+2020-04-01 14:52:08,027 - INFO - create_results -    Periodical costs (p.a.): 2150000 cost units p.a.
+2020-04-01 14:52:08,027 - INFO - create_results -    -------------------------------------------------
+2020-04-01 14:52:08,028 - INFO - create_results -    *********************************************************
+2020-04-01 14:52:08,028 - INFO - create_results -    ***SUMMARY***********************************************
+2020-04-01 14:52:08,029 - INFO - create_results -    *********************************************************
+2020-04-01 14:52:08,029 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 14:52:08,118 - INFO - create_results -    Total System Costs:             10715867.1 cost units
+2020-04-01 14:52:08,118 - INFO - create_results -    Total Variable Costs:           7064630.0 cost units
+2020-04-01 14:52:08,120 - INFO - create_results -    Total Periodical Costs (p.a.):  3642623.0 cost units p.a.
+2020-04-01 14:52:08,120 - INFO - create_results -    Total Energy Demand:            66166759.0 kWh
+2020-04-01 14:52:08,121 - INFO - create_results -    Total Energy Usage:             76956231.0 kWh
+2020-04-01 14:52:08,121 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 14:52:08,122 - INFO - create_results -    Investments to be made:
+2020-04-01 14:52:08,123 - INFO - create_results -    bhkw_transformer: 906.76 kW; 8614.22 cost units (p.a.)
+2020-04-01 14:52:08,123 - INFO - create_results -    batterie_elektrizitaet_speicher: 29680.18 kWh; 1484009.0 cost units (p.a.)
+2020-04-01 14:52:08,124 - INFO - create_results -    fernwaermenetz_link: 1.0 kW; 2150000 cost units (p.a.)
+2020-04-01 14:52:08,124 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 14:52:08,125 - INFO - create_results -    *********************************************************
+
+2020-04-01 14:52:08,126 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 14:52:08,127 - INFO - create_results -    Preparing the results for interactive results...
+2020-04-01 14:52:13,644 - INFO - create_results -    Successfully prepared results...
+2020-04-01 14:52:13,646 - INFO - Spreadsheet_Energy_System_Model_Generator -    --------------------------------------------------------
+2020-04-01 14:52:13,646 - INFO - Spreadsheet_Energy_System_Model_Generator -    Modelling and optimization successfully completed!
+******************************************************
+2020-04-01 15:13:02,434 - INFO - logger - Path for logging: C:\Users\klemm\Documents\Python Scripts\Spreadsheet_Energy_System_Model_Generator/results\oemof.log
+2020-04-01 15:13:02,440 - INFO - logger - Used oemof version: 0.3.2
+2020-04-01 15:13:04,288 - INFO - create_energy_system - Date time index successfully defined:
+ start date:          2012-01-01 00:00:00,
+ end date:            2012-12-30 23:00:00,
+ temporal resolution: h
+2020-04-01 15:13:04,289 - INFO - create_objects -    Bus created: elektrizitaets_bus
+2020-04-01 15:13:04,291 - INFO - create_objects -    Bus created: erdgas_bus
+2020-04-01 15:13:04,292 - INFO - create_objects -    Bus created: waerme_bus
+2020-04-01 15:13:06,425 - INFO - utils - NumExpr defaulting to 4 threads.
+2020-04-01 15:13:07,463 - INFO - create_objects -    Source created: photovoltaik_elektrizitaets_quelle
+2020-04-01 15:13:07,563 - DEBUG - modelchain - Calculating wind speed using logarithmic wind profile.
+2020-04-01 15:13:07,566 - DEBUG - modelchain - Calculating power output using power curve.
+2020-04-01 15:13:07,568 - INFO - create_objects -    Source created: windenergie_elektrizitaets_quelle
+2020-04-01 15:13:10,051 - INFO - create_objects -    Sink created: efh_elektrizitaet_bedarf
+2020-04-01 15:13:10,461 - INFO - create_objects -    Sink created: mfh_elektrizitaet_bedarf
+2020-04-01 15:13:10,596 - INFO - create_objects -    Sink created: efh_waerme_bedarf
+2020-04-01 15:13:10,734 - INFO - create_objects -    Sink created: mfh_waerme_bedarf
+2020-04-01 15:13:10,735 - INFO - create_objects -    Transformer created: gasheizung_transformer
+2020-04-01 15:13:10,737 - INFO - optimize_model -    *********************************************************
+2020-04-01 15:13:10,738 - INFO - optimize_model -    Starting Optimization...
+2020-04-01 15:13:25,906 - INFO - models - Optimization successful...
+2020-04-01 15:13:30,034 - INFO - create_results -    Results saved as xlsx for elektrizitaets_bus
+2020-04-01 15:13:31,654 - INFO - create_results -    Results saved as xlsx for erdgas_bus
+2020-04-01 15:13:33,175 - INFO - create_results -    Results saved as xlsx for waerme_bus
+2020-04-01 15:13:35,703 - INFO - create_results -    *********************************************************
+2020-04-01 15:13:35,703 - INFO - create_results -    ***SINKS*************************************************
+2020-04-01 15:13:35,703 - INFO - create_results -    *********************************************************
+2020-04-01 15:13:35,704 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 15:13:35,705 - INFO - create_results -    efh_elektrizitaet_bedarf
+2020-04-01 15:13:35,707 - INFO - create_results -    Total Energy Demand: 7480851.12 kWh
+2020-04-01 15:13:35,708 - INFO - create_results -    -------------------------------------------------
+2020-04-01 15:13:35,709 - INFO - create_results -    mfh_elektrizitaet_bedarf
+2020-04-01 15:13:35,710 - INFO - create_results -    Total Energy Demand: 6483404.31 kWh
+2020-04-01 15:13:35,711 - INFO - create_results -    -------------------------------------------------
+2020-04-01 15:13:35,712 - INFO - create_results -    efh_waerme_bedarf
+2020-04-01 15:13:35,716 - INFO - create_results -    Total Energy Demand: 32812952.33 kWh
+2020-04-01 15:13:35,717 - INFO - create_results -    -------------------------------------------------
+2020-04-01 15:13:35,718 - INFO - create_results -    mfh_waerme_bedarf
+2020-04-01 15:13:35,720 - INFO - create_results -    Total Energy Demand: 19389551.12 kWh
+2020-04-01 15:13:35,720 - INFO - create_results -    -------------------------------------------------
+2020-04-01 15:13:35,721 - INFO - create_results -    elektrizitaets_bus_excess
+2020-04-01 15:13:35,724 - INFO - create_results -    Total Energy Input: 271792183.57 kWh
+2020-04-01 15:13:35,726 - INFO - create_results -    Max. Capacity: 102627.08 kW
+2020-04-01 15:13:35,727 - INFO - create_results -    Variable Costs: 0.0 cost units
+2020-04-01 15:13:35,727 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 15:13:35,729 - INFO - create_results -    *********************************************************
+2020-04-01 15:13:35,729 - INFO - create_results -    ***SOURCES***********************************************
+2020-04-01 15:13:35,730 - INFO - create_results -    *********************************************************
+2020-04-01 15:13:35,730 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 15:13:35,732 - INFO - create_results -    photovoltaik_elektrizitaets_quelle
+2020-04-01 15:13:35,736 - INFO - create_results -    Total Energy Input: 128020578.0 kWh
+2020-04-01 15:13:35,737 - INFO - create_results -    Max. Capacity: 75000.0 kW
+2020-04-01 15:13:35,737 - INFO - create_results -    Investment Capacity: 75000.0 kW
+2020-04-01 15:13:35,738 - INFO - create_results -    Variable costs: 7169152367.85 cost units
+2020-04-01 15:13:35,738 - INFO - create_results -    Periodical costs: 0.0 cost units p.a.
+2020-04-01 15:13:35,739 - INFO - create_results -    -------------------------------------------------
+2020-04-01 15:13:35,740 - INFO - create_results -    windenergie_elektrizitaets_quelle
+2020-04-01 15:13:35,744 - INFO - create_results -    Total Energy Input: 157220194.06 kWh
+2020-04-01 15:13:35,744 - INFO - create_results -    Max. Capacity: 29400.0 kW
+2020-04-01 15:13:35,745 - INFO - create_results -    Investment Capacity: 29400.0 kW
+2020-04-01 15:13:35,746 - INFO - create_results -    Variable costs: 1257761552.47 cost units
+2020-04-01 15:13:35,749 - INFO - create_results -    Periodical costs: 0.0 cost units p.a.
+2020-04-01 15:13:35,749 - INFO - create_results -    -------------------------------------------------
+2020-04-01 15:13:35,751 - INFO - create_results -    elektrizitaets_bus_shortage
+2020-04-01 15:13:35,754 - INFO - create_results -    Total Energy Input: 515666.68 kWh
+2020-04-01 15:13:35,755 - INFO - create_results -    Max. Capacity: 2769.44 kW
+2020-04-01 15:13:35,755 - INFO - create_results -    Variable Costs: 244426006.37 cost units
+2020-04-01 15:13:35,756 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 15:13:35,757 - INFO - create_results -    erdgas_bus_shortage
+2020-04-01 15:13:35,759 - INFO - create_results -    Total Energy Input: 61414709.94 kWh
+2020-04-01 15:13:35,760 - INFO - create_results -    Max. Capacity: 28076.22 kW
+2020-04-01 15:13:35,760 - INFO - create_results -    Variable Costs: 0.0 cost units
+2020-04-01 15:13:35,761 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 15:13:35,762 - INFO - create_results -    *********************************************************
+2020-04-01 15:13:35,764 - INFO - create_results -    ***TRANSFORMERS******************************************
+2020-04-01 15:13:35,769 - INFO - create_results -    *********************************************************
+2020-04-01 15:13:35,769 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 15:13:35,770 - INFO - create_results -    gasheizung_transformer
+2020-04-01 15:13:35,774 - INFO - create_results -    Total Energy Output to waerme_bus: 52202503.44 kWh
+2020-04-01 15:13:35,775 - INFO - create_results -    Max. Capacity: 23864.79 kW
+2020-04-01 15:13:35,775 - INFO - create_results -    Variable Costs: 11902170785.13 cost units
+2020-04-01 15:13:35,776 - INFO - create_results -    Periodical costs (p.a.): 0 cost units p.a.
+2020-04-01 15:13:35,776 - INFO - create_results -    -------------------------------------------------
+2020-04-01 15:13:35,777 - INFO - create_results -    *********************************************************
+2020-04-01 15:13:35,777 - INFO - create_results -    ***STORAGES**********************************************
+2020-04-01 15:13:35,778 - INFO - create_results -    *********************************************************
+2020-04-01 15:13:35,778 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 15:13:35,779 - INFO - create_results -    *********************************************************
+2020-04-01 15:13:35,780 - INFO - create_results -    ***LINKS********************************************
+2020-04-01 15:13:35,781 - INFO - create_results -    *********************************************************
+2020-04-01 15:13:35,782 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 15:13:35,786 - INFO - create_results -    *********************************************************
+2020-04-01 15:13:35,787 - INFO - create_results -    ***SUMMARY***********************************************
+2020-04-01 15:13:35,788 - INFO - create_results -    *********************************************************
+2020-04-01 15:13:35,788 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 15:13:35,910 - INFO - create_results -    Total System Costs:             20573510711.8 cost units
+2020-04-01 15:13:35,910 - INFO - create_results -    Total Variable Costs:           20573510712.0 cost units
+2020-04-01 15:13:35,912 - INFO - create_results -    Total Periodical Costs (p.a.):  0.0 cost units p.a.
+2020-04-01 15:13:35,912 - INFO - create_results -    Total Energy Demand:            66166759.0 kWh
+2020-04-01 15:13:35,914 - INFO - create_results -    Total Energy Usage:             618963332.0 kWh
+2020-04-01 15:13:35,914 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 15:13:35,915 - INFO - create_results -    Investments to be made:
+2020-04-01 15:13:35,915 - INFO - create_results -    photovoltaik_elektrizitaets_quelle: 75000.0 kW; 0.0 cost units (p.a.)
+2020-04-01 15:13:35,916 - INFO - create_results -    windenergie_elektrizitaets_quelle: 29400.0 kW; 0.0 cost units (p.a.)
+2020-04-01 15:13:35,917 - INFO - create_results -    ---------------------------------------------------------
+2020-04-01 15:13:35,917 - INFO - create_results -    *********************************************************
+
+2020-04-01 15:13:35,918 - INFO - create_results -    --------------------------------------------------------
+2020-04-01 15:13:35,918 - INFO - create_results -    Preparing the results for interactive results...
+2020-04-01 15:13:38,858 - INFO - create_results -    Successfully prepared results...
+2020-04-01 15:13:38,859 - INFO - Spreadsheet_Energy_System_Model_Generator -    --------------------------------------------------------
+2020-04-01 15:13:38,860 - INFO - Spreadsheet_Energy_System_Model_Generator -    Modelling and optimization successfully completed!

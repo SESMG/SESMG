@@ -1,13 +1,13 @@
-import pydot
-import os
 from graphviz import Digraph
+import os
 
 
 def create_graph(filepath, nodes_data, legend=False):
     """Visualizes the energy system as graph.
 
-    Creates, using the library Graphviz, a graph containing all components
-    and connections from "nodes_data" and returns this as a PNG file.
+    Creates, using the library Graphviz, a graph containing all
+    components and connections from "nodes_data" and returns this as a
+    PNG file.
 
     ----
 
@@ -20,18 +20,18 @@ def create_graph(filepath, nodes_data, legend=False):
            -- dictionary containing data from excel scenario file.
 
         legend : obj:'bool'
-          -- specifies, whether a legend will be added to the graph or not
+          -- specifies, whether a legend will be added to the graph or
+             not
 
     ----
     @ Christian Klemm - christian.klemm@fh-muenster.de, 14.04.2020
     """
-
-
+    
     def linebreaks(text):
         """Adds linebreaks a given string.
 
-         Function which adds a line break to strings every ten characters.
-         Up to four strings are added.
+         Function which adds a line break to strings every ten
+         characters. Up to four strings are added.
 
          ----
 
@@ -54,141 +54,98 @@ def create_graph(filepath, nodes_data, legend=False):
         if text_length > 40:
             text = str(text[0:45] + "-\n" + text[45:])
         return text
-
-    # Defines the location of Graphviz as path
-    os.environ["PATH"] += os.pathsep + 'C:\\Program Files (x86)\\Graphviz2.38\\bin'
-
-    filepath = filepath
-    nd = nodes_data
-
+    
+    # Defines the location of Graphviz as path necessary for windows
+    os.environ["PATH"] += \
+        os.pathsep + 'C:\\Program Files (x86)\\Graphviz2.38\\bin'
     # Creates the Directed-Graph
     dot = Digraph(format='png')
-
-    # #Creates a Legend if Legend = True
+    # Creates a Legend if Legend = True
     if legend:
-        dot.node('Bus', shape='ellipse', fontsize="10", fixedsize='shape', width='1.1', height='0.6')
-        dot.node('Source', shape='trapezium', fontsize="10", fixedsize='shape', width='1.1', height='0.6')
-        dot.node('Sink', shape='invtrapezium', fontsize="10", fixedsize='shape', width='1.1', height='0.6')
-        dot.node('Transformer\n Links', shape='box', fontsize="10", fixedsize='shape', width='1.1', height='0.6')
-        dot.node('Storage', shape='box', fontsize="10", fixedsize='shape', width='1.1', height='0.6', style='dashed')
-
-    # Implements shortage-sources and excess-sinks and their connected buses in the graph
-    for i, b in nd['buses'].iterrows():
-        if b['active']:
-
-            # Implements shortage sources
-            if b['shortage']:
-
-                # adds "_shortage" to the label
-                shortage = b['label'] + '_shortage'
-                # Linebreaks, so that the labels fit the boxes
-                shortage = linebreaks(shortage)
-
-                # Adds nodes to the graph
-                dot.node(shortage, shape='trapezium', fontsize="10", fixedsize='shape', width='1.1', height='0.6')
-                dot.node(b['label'], shape='ellipse', fontsize="10")
-
-                # Adds edge to the graph
-                dot.edge(shortage, b['label'])
-
-            # Implements excess sinks
-            if b['excess']:
-
-                # adds "_shortage" to the label
-                excess = b['label'] + '_excess'
-                # Linebreaks, so that the labels fit the boxes
-                excess = linebreaks(excess)
-
-                # Adds nodes to the graph
-                dot.node(excess, shape='invtrapezium', fontsize="10", fixedsize='shape', width='1.1', height='0.6')
-                dot.node(b['label'], shape='ellipse', fontsize="10")
-
-                # Adds edge to the graph
-                dot.edge(b['label'], excess)
-
-    # Implements sources and their connected buses in the graph
-    for i, so in nd['sources'].iterrows():
-        if so['active']:
-
-            # Linebreaks, so that the labels fit the boxes
-            so['label'] = linebreaks(so['label'])
-
-            # Adds nodes to the graph
-            dot.node(so['label'], shape='trapezium', fontsize="10", fixedsize='shape', width='1.1', height='0.6')
-            dot.node(so['output'], shape='ellipse', fontsize="10")
-
-            # Adds edge to the graph
-            dot.edge(so['label'], so['output'])
-
-    # Implements sinks and their connected buses in the graph
-    for i, de in nd['demand'].iterrows():
-        if de['active']:
-
-            # Linebreaks, so that the labels fit the boxes
-            de['label'] = linebreaks(de['label'])
-
-            dot.node(de['label'], shape='invtrapezium', fontsize="10", fixedsize='shape', width='1.1', height='0.6')
-            dot.node(de['input'], shape='ellipse', fontsize="10")
-            dot.edge(de['input'], de['label'])
-
-    # Implements transformers and their connected buses in the graph
-    for i, t in nd['transformers'].iterrows():
-        if t['active']:
-
-            # Linebreaks, so that the labels fit the boxes
-            t['label'] = linebreaks(t['label'])
-
-            # Adds nodes to the graph
-            dot.node(t['label'], shape='box', fontsize="10", fixedsize='shape', width='1.1', height='0.6')
-            dot.node(t['input'], shape='ellipse', fontsize="10")
-            dot.node(t['output'], shape='ellipse', fontsize="10")
-
-            # Adds edges to the graph
-            dot.edge(t['input'], t['label'])
-            dot.edge(t['label'], t['output'])
-
-            # Adds a second output (node and edge), if the transformer has two outputs
-            if t['output2'] != "None":
-                dot.node(t['output2'], shape='ellipse', fontsize="10")
-                dot.edge(t['label'], t['output2'])
-
-    # Implements storages and their connected buses in the graph
-    for i, s in nd['storages'].iterrows():
-        if s['active']:
-
-            # Linebreaks, so that the labels fit the boxes
-            s['label'] = linebreaks(s['label'])
-
-            # Adds nodes to the graph
-            dot.node(s['label'], shape='box', style='dashed', fontsize="10", fixedsize='shape', width='1.1', height='0.6')
-            dot.node(s['bus'], shape='ellipse', fontsize="10")
-
-            # Adds edges to the graph
-            dot.edge(s['bus'], s['label'])
-            dot.edge(s['label'], s['bus'])
-
-    # Implements links and their connected buses in the graph
-    for i, p in nd['links'].iterrows():
-        if p['active']:
-
-            # Linebreaks, so that the labels fit the boxes
-            p['label'] = linebreaks(p['label'])
-
-            # Adds nodes to the graph
-            dot.node(p['label'], shape='box', fontsize="10", fixedsize='shape', width='1.1', height='0.6')
-            dot.node(p['bus_1'], shape='ellipse', fontsize="10")
-            dot.node(p['bus_2'], shape='ellipse')
-
-            # Adds edges to the graph
-            dot.edge(p['bus_1'], p['label'])
-            dot.edge(p['label'], p['bus_2'])
-
-            # Adds a second edge direction, if the link is an undirected link
-            if p['(un)directed'] == 'undirected':
-                dot.edge(p['bus_2'], p['label'])
-                dot.edge(p['label'], p['bus_1'])
-
-    dot.render(filepath+'/graph.gv', view=True)
-
-
-
+        component = ['Bus', 'Source', 'Sink', 'Transformer\nLinks', 'Storage']
+        shape = {'Bus': ['ellipse'], 'Source': ['trapezium'],
+                 'Sink': ['invtrapezium'], 'Transformer\nLinks': ['box'],
+                 'Storage': ['box']}
+        for i in component:
+            dot.node(i, shape=shape[i][0], fontsize="10", fixedsize='shape',
+                     width='1.1', height='0.6',
+                     style='dashed' if i == 'Storage' else '')
+    components = ["buses", "sources", "demand", "transformers", "storages",
+                  "links"]
+    shapes = {'sources': ['trapezium'], 'demand': ['invtrapezium'],
+              'transformers': ['box'], 'storages': ['box'],
+              'links': ['box']}
+    bus = {'buses': ['label'], 'sources': ['output'], 'demand': ['input'],
+           'transformers': ['input'], 'storages': ['bus'], 'links': ['bus_1']}
+    for i in components:
+        for j, b in nodes_data[i].iterrows():
+            if b['active']:
+                # sets component label
+                label = b['label']
+                if i == 'buses':
+                    if b['shortage']:
+                        label = b['label'] + '_shortage'
+                    elif b['excess']:
+                        label = b['label'] + '_excess'
+                label = linebreaks(label)
+                if i != 'buses':
+                    dot.node(label, shape=shapes[i][0], fontsize="10",
+                             fixedsize='shape', width='1.1', height='0.6',
+                             style='dashed' if i == 'storages' else '')
+                else:
+                    if b['shortage']:
+                        dot.node(label, shape='trapezium', fontsize="10",
+                                 fixedsize='shape', width='1.1', height='0.6')
+                        
+                    if b['excess'] and not b['shortage']:
+                        dot.node(label, shape='invtrapezium', fontsize="10",
+                                 fixedsize='shape', width='1.1', height='0.6')
+                # creates bus nodes
+                dot.node(b[bus[i][0]], shape='ellipse', fontsize="10")
+                if i == 'links':
+                    dot.node(b['bus_2'], shape='ellipse')
+                # creates edges
+                if i == 'demand' or i == 'storages' or i == 'links' \
+                        or (i == 'buses' and b['excess']
+                            and not b['shortage']):
+                    dot.edge(b[bus[i][0]], label)
+                if i == 'sources' or i == 'storages' \
+                        or (i == 'buses' and b['shortage']):
+                    dot.edge(label, b[bus[i][0]])
+                if i == 'links':
+                    dot.edge(label, b['bus_2'])
+                    if b['(un)directed'] == 'undirected':
+                        dot.edge(b['bus_2'], label)
+                        dot.edge(label, b['bus_1'])
+                elif i == 'transformers':
+                    dot.node(b['output'], shape='ellipse', fontsize="10")
+                    dot.edge(b[bus[i][0]], label)
+                    dot.edge(label, b['output'])
+                    if b['output2'] != "None":
+                        dot.node(b['output2'], shape='ellipse', fontsize="10")
+                        dot.edge(label, b['output2'])
+                    if b['transformer type'] == "HeatPump":
+                        # adds "_low_temp_source" to the label
+                        low_temp_source = label + '_low_temp_source'
+                        # Linebreaks, so that the labels fit the boxes
+                        low_temp_source = linebreaks(low_temp_source)
+                        # Adds a second input and a heat source (node and edge)
+                        # for heat pumps
+                        dot.node(label + '_low_temp_bus',
+                                 shape='ellipse',
+                                 fontsize="10")
+                        dot.edge(label + '_low_temp_bus', label)
+                        dot.node(low_temp_source, shape='trapezium',
+                                 fontsize="10",
+                                 fixedsize='shape', width='1.1', height='0.6')
+                        dot.edge(low_temp_source,
+                                 label + '_low_temp_bus')
+                elif i == 'buses':
+                    if b['excess'] and b['shortage']:
+                        label = b['label'] + '_excess'
+                        label = linebreaks(label)
+                        dot.node(label, shape='invtrapezium', fontsize="10",
+                                 fixedsize='shape', width='1.1', height='0.6')
+                        dot.node(b[bus[i][0]], shape='ellipse', fontsize="10")
+                        dot.edge(b[bus[i][0]], label)
+    dot.render(filepath + '/graph.gv', view=True)

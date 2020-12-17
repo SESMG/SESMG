@@ -119,6 +119,8 @@ defined if the parameter "technology" is set on "photovoltaic". The following pa
 - **existing capacity/(kW)**: Existing capacity of the source before possible investments.
 - **min. investment capacity/(kW)**: Minimum capacity to be installed in case of an investment.
 - **max. investment capacity/(kW)**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
+- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
+- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
 - **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon
 - **technology database (PV ONLY)**: Database, from where module parameters are to be obtained. Recommended Database: "SandiaMod".
 - **inverter database (PV ONLY)**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter".
@@ -151,7 +153,9 @@ defined if the parameter "technology" is set on "photovoltaic". The following pa
 Transformers
 =================================================
 
-Within this sheet, the transformers of the energy system are defined. The following parameters have to be entered:
+Within this sheet, the transformers of the energy system are defined. Properties with the addition “HP ONLY” have only to be defined if the parameter “transformer type” is set on “HeatPump”. With other transformers, these fields can be left empty or filled with any placeholder. 
+
+The following parameters have to be entered:
 
 
 - **label**: Unique designation of the transformer. The following format is recommended: "ID_energy sector_transformer".
@@ -168,6 +172,17 @@ Within this sheet, the transformers of the energy system are defined. The follow
 - **max investment capacity/(kW)**: Maximum  installable transformer capacity in addition to the previously existing one.
 - **min investment capacity/(kW)**: Minimum transformer capacity to be installed.
 - **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
+- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
+- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
+- **heat source (HP ONLY)**: Specifies the heat source. At the moment are "GroundWater", "Ground", "Air" and "Water" possible.
+- **temperature high /(deg C) (HP ONLY)**: Temperature of the high temperature heat reservoir
+- **quality grade (HP ONLY)**: To determine the COP of a real machine a scale-down factor (the quality grade) is applied on the Carnot efficiency (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
+- **area /(sq m) (HP ONLY)**: Open spaces for ground-coupled heat pumps (GCHP).
+- **length of the geoth. probe (m) (HP ONLY)**: Length of the vertical heat exchanger, only for GCHP.
+- **heat extraction (kW/(m*a)) (HP ONLY)**: Heat extraction for the heat exchanger referring to the location, only for GCHP.
+- **min. borehole area (sq m) (HP ONLY)**: Limited space due to the regeneation of the ground source, only for GCHP.
+- **temp threshold icing (HP ONLY)**: Temperature below which icing occurs (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
+- **factor icing (HP ONLY)**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
 
 
 .. figure:: ../images/BSP_transformers.png
@@ -209,6 +224,8 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
 - **max. investment capacity/(kW)**: Maximum in addition to existing capacity, installable storage capacity.
 - **min. investment capacity/(kW)**: Minimum storage capacity to be installed.
+- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
+- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
 
 .. figure:: ../images/BSP_storage_2.png
    :width: 100 %
@@ -244,7 +261,8 @@ to be entered:
 - **max. investment capacity/(kW)**: Maximum capacity to be installed.
 - **variable costs/(CU/kWh)**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
 - **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon.
-
+- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
+- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
 
 .. figure:: ../images/BSP_link.png
    :width: 100 %
@@ -267,10 +285,10 @@ Time Series
 
 Within this sheet, time series of components of which no automatically created time series exist, are stored. More 
 specifically, these are sinks to which the property "load profile" have been assigned as "timeseries" and sources 
-with the "technology" property "others". The following parameters have to be entered:
+with the "technology" property "timeseries". The following parameters have to be entered:
 
-- **timestamp**: Points in time to which the stored time series are related. Should be within the time horizon defined in the sheet "timeseries".
-- **timeseries**: Time series of a sink which has been assigned the property "timeseries" under the attribute "load profile" or source which has been assigned the property "other" under the attribute "technology". Time series contain a value between 0 and 1 for each point in time, which indicates the proportion of installed capacity accounted for by the capacity produced at that point in time. In the header line, the name must be entered in the format "componentID.actual_value".
+- **timestamp**: Points in time to which the stored time series are related. Should be within the time horizon defined in the sheet "timesystem".
+- **timeseries**: Time series of a sink or a source  which has been assigned the property "timeseries" under the attribute "load profile" or "technology. Time series contain a value between 0 and 1 for each point in time, which indicates the proportion of installed capacity accounted for by the capacity produced at that point in time. In the header line, the name must rather be entered in the format "componentID.fix" if the component enters the power system as a fixed component or it requires two columns in the format "componentID.min" and "componentID.max" if it is an unfixed component. The columns "componentID.min/.max" define the range that the solver can use for its optimisation.
 
  
  

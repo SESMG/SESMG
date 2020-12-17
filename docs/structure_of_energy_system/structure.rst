@@ -262,6 +262,27 @@ These may have one or more different outputs, e.g., heat and electricity. For th
 the nominal performance of a generic transformer with several outputs,
 the respective output ratios, and an efficiency for each output need to be known.
 
+**Heat Pumps**
+
+For the modelilng of heat pumps, different heat sources are considered so the 
+weather data set must include different temperatures. The efficiency of 
+the heat pump cycle process can be described by the Coefficient of Performance (COP).
+The heat pump automatically creates a heat source and a low temperature bus (see red bubble).
+So only a transformer and a electricity bus needs to be created.
+An example is shown in the following figure.
+
+.. figure:: ../images/heatpump_graph.png
+   :width: 50 %
+   :alt: HeatPump-Example
+   :align: center
+
+   Graph of a heat pump system.
+
+At the moment it is possible to use ground water, soil (vertical heat exchanger), surface water 
+and ambient air as a heat source. 
+
+The heat pumps are implemnted by using  `"oemof.thermal" <https://github.com/oemof/oemof-thermal>`_ .
+
 
 Links
 =================================================
@@ -275,7 +296,7 @@ example, electrical powerlines, gas pipelines, district heating
 distribution networks or similar.
 
 .. figure:: ../images/link.png
-   :width: 100 %
+   :width: 50 %
    :alt: links
    :align: center
 
@@ -291,3 +312,5 @@ The investment costs help to compare the costs of building new components to the
 should compensate the investment costs. The investment method can be applied to any new component to be built. In addition to the usual component parameters, the 
 maximum installable capacity needs to be known. Further, the periodic costs need to be assigned to the investment costs. The periodic costs refer to the defined 
 time horizon. If the time horizon is one year, the periodical costs correspond to the annualized capital costs of an investment.
+
+**Non-Convex-Investments:** While a linear programming approach is used for normal investment decisions, a mixed integer variable is defined for non-convex investment decisions. The model can thus decide, for example, whether a component should be implemented FULL or NOT. Mixed-integer variables increase the computational effort significantly and should be used with caution.
