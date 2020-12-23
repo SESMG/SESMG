@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from datetime import datetime
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
@@ -128,9 +128,17 @@ def getFolderPath():
 
     file_paths[0].configure(text=scenario_path.get())
 
+def getSavePath():
+    """ opens a file dialog and sets the selected path for the variable "save_path" """
+
+    path = filedialog.askdirectory()
+    save_path.set(path)
+
+    save_paths[0].configure(text=save_path.get())
 
 def show_graph():
-    """ creates and shows a graph of the energy system given by a Spreadsheet"""
+    """ creates and shows a graph of the energy system given by a Spreadsheet
+        - the created graphs are saved in /results/graphs"""
     import os
     from program_files import (create_energy_system,
                                create_graph)
@@ -140,13 +148,13 @@ def show_graph():
 
     # DEFINES PATH OF OUTPUT DATA
     if sys.platform.startswith("win"):
-        result_path = os.path.join(os.path.dirname(__file__) + '/results')
+        result_path = os.path.join(os.path.dirname(__file__) + '/results/graphs')
     elif sys.platform.startswith('darwin'):
         result_path = os.path.dirname(os.path.abspath(__file__))
-        result_path = result_path + '/results'
+        result_path = result_path + '/results/graphs'
     elif sys.platform.startswith("linux"):
         result_path = os.path.dirname(os.path.abspath(__file__))
-        result_path = result_path + '/results'
+        result_path = result_path + '/results/graphs'
         subprocess.call("chmod +x " + result_path, shell=True)
 
     # IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
@@ -160,20 +168,17 @@ def show_graph():
 
 
 def execute_sesmg():
-    """ Excecutes the optimization algorithm """
+    """ 1. Creates the folder where the results would be saved
+        2. Excecutes the optimization algorithm """
     if scenario_path.get() != "No scenario selected.":
-        scenario_file = scenario_path.get()
-        if sys.platform.startswith("win"):
-            result_path = os.path.join(os.path.dirname(__file__) + '/results')
-        elif sys.platform.startswith('darwin'):
-            result_path = os.path.dirname(os.path.abspath(__file__))
-            result_path = result_path + '/results'
-        elif sys.platform.startswith("linux"):
-            result_path = os.path.dirname(os.path.abspath(__file__))
-            result_path = result_path + '/results'
-            subprocess.call("chmod +x " + result_path, shell=True)
-        sesmg_main(scenario_file=scenario_file,
-                   result_path=result_path,
+        scenario_name = os.path.basename(scenario_path.get())
+        save_path.set(str(os.path.join(save_path_directory.get())
+                          + '/' + scenario_name[:-5]
+                          + str(datetime.now().strftime(
+                            '_%Y-%m-%d--%H-%M-%S'))))
+        os.mkdir(save_path.get())
+        sesmg_main(scenario_file=scenario_path.get(),
+                   result_path=save_path.get(),
                    num_threads=1,
                    graph=True,
                    results=True,
@@ -223,6 +228,9 @@ def get_pid():
 
 def show_results():
     """ executes the external program, which executes a plotl.dash app for displaying interactive results."""
+    if save_path.get() == '':
+        raise SystemError('No optimization since the last restart')
+
     # Determines the ID of a still running process on port 8050.
     pid = get_pid()
     # Checks if the ID is not an empty return (no process available)
@@ -246,22 +254,19 @@ def show_results():
     # Starts the new Plotly Dash Server for Windows
     if sys.platform.startswith("win"):
         IR_PATH = os.path.join(os.path.dirname(__file__) + '/program_files')
-        subprocess.call(IR_PATH + "/Interactive_Results.py", timeout=10, shell=True)
+        subprocess.call(IR_PATH + "/Interactive_Results.py "
+                        + str(save_path.get()), timeout=10, shell=True)
     # Starts the new Plotly Dash Server for MACOS
     elif sys.platform.startswith("darwin"):
         IR_PATH = os.path.dirname(os.path.abspath(__file__))
         IR_PATH = IR_PATH + '/program_files'
-        subprocess.call("python3 " + IR_PATH + "/Interactive_Results.py", timeout=10, shell=True)
+        subprocess.call("python3 " + IR_PATH + "/Interactive_Results.py "
+                        + str(save_path.get()), timeout=10, shell=True)
     elif sys.platform.startswith("linux"):
         IR_PATH = os.path.dirname(os.path.abspath(__file__))
         IR_PATH = IR_PATH + '/program_files'
-        subprocess.call("python3 " + IR_PATH + "/Interactive_Results.py", timeout=10, shell=True)
-
-
-# def end_program():
-#     ''' kills the entire application'''
-#     app_pid = os.getpid()
-#     os.kill(app_pid, 0)
+        subprocess.call("python3 " + IR_PATH + "/Interactive_Results.py "
+                        + str(save_path.get()), timeout=10, shell=True)
 
 
 # Definition of the user interface
@@ -271,7 +276,10 @@ window.geometry('1200x900')
 tab_control = ttk.Notebook(window)
 tab_control.pack(expand=1, fill='both')
 tab_control.pressed_index = None
-scenario_path = StringVar(window, str(os.path.join(os.path.dirname(__file__), 'scenario_v0.0.6.xlsx')))
+scenario_path = StringVar(window, str(os.path.join(os.path.dirname(__file__), 'scenario_v0.1.xlsx')))
+save_path_directory = \
+        StringVar(window, str(os.path.join(os.path.dirname(__file__), 'results')))
+save_path = StringVar(window, '')
 num_threads = 2
 
 ############
@@ -308,7 +316,16 @@ execution_elements = {'row2': ['Show Graph', show_graph, 'Execute', ''],
 comments = []
 create_main_frame_elements(elements=execution_elements, sheet=main_frame, first_row=3 + len(selection_elements),
                            file_paths=comments, frame=main_frame)
-
+main_head3 = Label(main_frame, text='Analyzing Options',
+                       font='Helvetica 10 bold')
+main_head3.grid(column=0, row=7 + len(execution_elements), sticky="w")
+analyzing_elements = {'row5': ['Select scenario result folder',
+                               getSavePath, 'Choose', save_path.get()],
+                      'row6': ['Start Plotly', show_results, 'Execute', '']}
+save_paths = []
+create_main_frame_elements(elements=analyzing_elements, sheet=main_frame,
+                           first_row=7 + len(execution_elements),
+                           file_paths=save_paths, frame=main_frame)
 
 ############
 # DEMO FRAME
@@ -349,7 +366,7 @@ def execute_sesmg_DEMO(demo_file, demo_results):
         subprocess.call("chmod +x " + result_path, shell=True)
     # scenario_file = 'scenario.xlsx'
     # SESMG_DEMO(scenario_file=scenario_file, result_path=result_path)
-    SESMG(scenario_file=demo_path,
+    sesmg_main(scenario_file=demo_path,
           result_path=result_path,
           graph=False,
           results=False,
