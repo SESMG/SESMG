@@ -276,7 +276,7 @@ window.geometry('1200x900')
 tab_control = ttk.Notebook(window)
 tab_control.pack(expand=1, fill='both')
 tab_control.pressed_index = None
-scenario_path = StringVar(window, str(os.path.join(os.path.dirname(__file__), 'scenario_v0.1.xlsx')))
+scenario_path = StringVar(window, str(os.path.join(os.path.dirname(__file__), 'scenario_v0.1.1.xlsx')))
 save_path_directory = \
         StringVar(window, str(os.path.join(os.path.dirname(__file__), 'results')))
 save_path = StringVar(window, '')
@@ -320,7 +320,7 @@ main_head3 = Label(main_frame, text='Analyzing Options',
                        font='Helvetica 10 bold')
 main_head3.grid(column=0, row=7 + len(execution_elements), sticky="w")
 analyzing_elements = {'row5': ['Select scenario result folder',
-                               getSavePath, 'Choose', save_path.get()],
+                               getSavePath, 'Change', save_path.get()],
                       'row6': ['Start Plotly', show_results, 'Execute', '']}
 save_paths = []
 create_main_frame_elements(elements=analyzing_elements, sheet=main_frame,
