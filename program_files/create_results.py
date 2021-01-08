@@ -256,7 +256,7 @@ class Results:
         # columns of list of components
         columns = ['ID', 'type', 'input 1/kWh', 'input 2/kWh', 'output 1/kWh',
                    'output 2/kWh', 'capacity/kW', 'variable costs/CU',
-                   'periodical costs/CU', 'investment/kW']
+                   'periodical costs/CU', 'investment/kW', 'constraints/CU']
 
         df_list_of_components = pd.DataFrame(columns=columns)
         df_result_table = pd.DataFrame()
@@ -270,6 +270,7 @@ class Results:
         total_demand = 0
         total_costs = 0
         total_periodical_costs = 0
+        total_constraint_costs = 0
         investments_to_be_made = {}
         # logs the next type of components(sinks)
         log("SINKS********")
@@ -287,7 +288,7 @@ class Results:
                         pd.DataFrame([[comp['label'], 'sink',
                                        round(flow_sum, 2), '---', '---', '---',
                                        round(df_demand.max(), 2), '---', '---',
-                                       '---']], columns=columns))
+                                       '---','---']], columns=columns))
                 # returns logging info
                 logging.info(log_end)
         # creates and returns results for excess buses defined in the
@@ -302,6 +303,10 @@ class Results:
                     variable_costs = comp['excess costs /(CU/kWh)'] * flow_sum
                     # adds the variable costs to the total_costs variable
                     total_costs = total_costs + variable_costs
+                    # calculates the constraint costs
+                    constraint_costs = \
+                        flow_sum * comp['variable excess constraint costs /(CU/kWh)']
+                    total_constraint_costs += constraint_costs
                     df_result_table[comp['label'] + '_excess'] = df_excess
                     # adds the bus to the list of components
                     df_list_of_components = \
@@ -311,7 +316,8 @@ class Results:
                                            '---', '---',
                                            round(df_excess.max(), 2),
                                            round(variable_costs, 2), '---',
-                                           '---']], columns=columns))
+                                           '---', round(constraint_costs,2)]],
+                                           columns=columns))
                     # returns logging info
                     logging.info('   ' + 'Variable Costs: '
                                  + str(round(variable_costs, 2))
@@ -328,6 +334,9 @@ class Results:
                 total_usage = total_usage + flow_sum
                 # continues, if the model decided to take a investment
                 # decision for this source
+                constraint_costs = \
+                    flow_sum * comp['variable constraint costs /(CU/kWh)']
+
                 if comp['max. investment capacity /(kW)'] > 0:
                     # gets the investment for the given source
                     (component_investment, periodical_costs) = \
@@ -343,10 +352,13 @@ class Results:
                             (str(component_investment)
                              + ' kW; ' + str(round(periodical_costs, 2))
                              + ' cost units (p.a.)')
+                        constraint_costs += \
+                            component_investment \
+                            * comp['periodical constraint costs /(CU/(kW a))']
                 else:
                     periodical_costs = 0
                     component_investment = 0
-
+                total_constraint_costs += constraint_costs
                 # Calculates Variable Costs, adds it to the total_cost
                 # variable and returns logging info
                 variable_costs = comp['variable costs /(CU/kWh)'] * flow_sum
@@ -364,7 +376,8 @@ class Results:
                                        '---', round(df_source.max(), 2),
                                        round(variable_costs, 2),
                                        round(periodical_costs, 2),
-                                       round(component_investment, 2)]],
+                                       round(component_investment, 2),
+                                       round(constraint_costs, 2)]],
                                      columns=columns))
                 logging.info(log_end)
         for i, comp in nd['buses'].iterrows():
@@ -373,6 +386,9 @@ class Results:
                     (flow_sum, df_shortage) = \
                         self.get_flow(comp['label'] + '_shortage', 'shortage')
                     total_usage = total_usage + flow_sum
+                    constraint_costs = \
+                        flow_sum * comp['variable shortage constraint costs /(CU/kWh)']
+                    total_constraint_costs += constraint_costs
                     # Variable Costs
                     variable_costs = \
                         comp['shortage costs /(CU/kWh)'] * flow_sum
@@ -388,7 +404,8 @@ class Results:
                                            round(flow_sum, 2), '---',
                                            round(df_shortage.max(), 2),
                                            round(variable_costs, 2), '---',
-                                           '---']], columns=columns))
+                                           '---', round(constraint_costs, 2)]],
+                                           columns=columns))
                     df_result_table[comp['label'] + '_shortage'] = df_shortage
                     logging.info(log_end)
         # logs the next type of components
@@ -396,6 +413,7 @@ class Results:
         for i, comp in nd['transformers'].iterrows():
             variable_costs = 0
             max_transformer_flow = 0
+            constraint_costs = 0
             if comp['active']:
                 (flow_sum, flow_max, dfcomponent) = \
                     self.get_flow(comp['label'], 'link')
@@ -448,6 +466,8 @@ class Results:
                     logging.info('   ' + 'Total Energy Output to '
                                  + comp['output'] + ': '
                                  + str(round(output1, 2)) + ' kWh')
+
+
                 elif comp['transformer type'] == 'OffsetTransformer':
                     logging.info('   ' + 'WARNING: OffsetTransformer are '
                                  + 'currently not a part of this model '
@@ -458,10 +478,15 @@ class Results:
                 if comp['output2'] != 'None':
                     variable_costs = (comp['variable output costs 2 /(CU/kWh)']
                                       * df_output2.sum())
+                    constraint_costs += \
+                        output2 * comp['variable constraint costs 2 /(CU/kWh)']
                     total_costs = total_costs + variable_costs
                 variable_costs += (comp['variable input costs /(CU/kWh)']
                                    * df_input1.sum())
-                                   
+                constraint_costs += \
+                    output1 * comp['variable constraint costs /(CU/kWh)']
+                constraint_costs += \
+                    input * comp['variable input constraint costs /(CU/kWh)']
                 variable_costs += \
                     (comp['variable output costs /(CU/kWh)']
                      * df_output1.sum())
@@ -491,8 +516,12 @@ class Results:
                         (str(round(transformer_investment, 2)) + ' kW; '
                          + str(round(periodical_costs, 2))
                          + ' cost units (p.a.)')
+                    constraint_costs += \
+                        transformer_investment\
+                        * comp['periodical constraint costs /(CU/(kW a))']
                 else:
                     periodical_costs = 0
+                total_constraint_costs += constraint_costs
                 logging.info('   ' + 'Periodical costs (p.a.): '
                              + str(round(periodical_costs, 2))
                              + ' cost units p.a.')
@@ -511,7 +540,8 @@ class Results:
                                                round(variable_costs, 2),
                                                round(periodical_costs, 2),
                                                round(transformer_investment, 2)
-                                               ]], columns=columns))
+                                               ,round(constraint_costs, 2)]],
+                                               columns=columns))
                     else:
                         # adds Generic transformer with two given
                         # outputs to the list of components
@@ -527,7 +557,8 @@ class Results:
                                                round(variable_costs, 2),
                                                round(periodical_costs, 2),
                                                round(transformer_investment, 2)
-                                               ]], columns=columns))
+                                               ,round(constraint_costs, 2)]],
+                                               columns=columns))
                 elif comp['transformer type'] == 'HeatPump':
                     df_result_table[comp['label'] + '_input2'] = df_input2
                     # adds heatpump transformer to the list of
@@ -540,9 +571,9 @@ class Results:
                                            round(df_output1.max(), 2),
                                            round(variable_costs, 2),
                                            round(periodical_costs, 2),
-                                           round(transformer_investment, 2)
-                                           ]],
-                                         columns=columns))
+                                           round(transformer_investment, 2) ,
+                                           round(constraint_costs, 2)]],
+                                           columns=columns))
 
                 elif comp['transformer type'] == 'GenericCHP':
                     # adds genericchp transformer to the list of
@@ -560,7 +591,8 @@ class Results:
                                            round(variable_costs, 2),
                                            round(periodical_costs, 2),
                                            round(transformer_investment, 2)
-                                           ]], columns=columns))
+                                           ,round(constraint_costs, 2)]],
+                                           columns=columns))
                 logging.info(log_end)
         # logs the next type of components
         log("STORAGES*****")
@@ -585,7 +617,12 @@ class Results:
                              + str(round(output, 2)) + 'kWh')
                 logging.info('   ' + 'Energy Input to ' + comp['label'] + ': '
                              + str(round(input, 2)) + ' kWh')
+                constraint_costs = \
+                    comp['variable input constraint costs /(CU/kWh)'] * input
+                constraint_costs += \
+                    comp['variable output constraint costs /(CU/kWh)'] * output
                 variable_costs = comp['variable input costs'] * input
+                variable_costs += comp['variable output costs'] * output
                 logging.info('   ' + 'Total variable costs for: '
                              + str(round(variable_costs, 2))
                              + ' cost units')
@@ -609,6 +646,10 @@ class Results:
                         (str(round(storage_investment, 2)) + ' kWh; '
                          + str(round(periodical_costs, 2)) +
                          ' cost units (p.a.)')
+                    constraint_costs += \
+                        comp['periodical constraint costs /(CU/(kWh a))'] \
+                        * storage_investment
+                total_constraint_costs += constraint_costs
                 df_list_of_components = \
                     df_list_of_components.append(
                         pd.DataFrame([[comp['label'], 'storage',
@@ -617,7 +658,8 @@ class Results:
                                        round(maxcapacity, 2),
                                        round(variable_costs, 2),
                                        round(periodical_costs, 2),
-                                       round(storage_investment, 2)]],
+                                       round(storage_investment, 2),
+                                       round(constraint_costs, 2)]],
                                      columns=columns))
                 df_result_table[comp['label'] + '_capacity'] = df_capacity
                 df_result_table[comp['label'] + '_input'] = df_input
@@ -627,6 +669,7 @@ class Results:
         log("LINKS********")
         for i, comp in nd['links'].iterrows():
             variable_costs = 0
+            constraint_costs = 0
             if comp['active']:
                 (flow_sum, flow_max, dfcomponent) = \
                     self.get_flow(comp['label'], 'link')
@@ -666,8 +709,12 @@ class Results:
                     variable_costs += \
                         comp['variable output costs /(CU/kWh)'] \
                         * output2
+                    constraint_costs += \
+                        comp['variable constraint costs /(CU/kWh)'] * output2
                 variable_costs += \
                     comp['variable output costs /(CU/kWh)'] * output1
+                constraint_costs = \
+                    comp['variable constraint costs /(CU/kWh)'] * output1
 
                 total_costs = total_costs + variable_costs
                 logging.info('   ' + 'Variable Costs: '
@@ -686,12 +733,16 @@ class Results:
 
                 # Periodical Costs
                 if link_investment > 0:
+                    constraint_costs += \
+                        (comp['periodical constraint costs /(CU/(kW a))']
+                         * link_investment)
                     total_periodical_costs = \
                         (total_periodical_costs + periodical_costs)
                     investments_to_be_made[comp['label']] = \
                         (str(round(link_investment, 2)) + ' kW; '
                          + str(round(periodical_costs, 2))
                          + ' cost units (p.a.)')
+                total_constraint_costs += constraint_costs
                 df_result_table[comp['label'] + '_input1'] = df_linkinput1
                 df_result_table[comp['label'] + '_output1'] = df_linkoutput1
                 if comp['(un)directed'] == 'directed':
@@ -705,7 +756,8 @@ class Results:
                                            round(df_linkinput1.max(), 2),
                                            round(variable_costs, 2),
                                            round(periodical_costs, 2),
-                                           round(link_investment, 2)]],
+                                           round(link_investment, 2),
+                                           round(constraint_costs, 2)]],
                                          columns=columns))
                 else:
                     df_result_table[comp['label'] + '_input2'] = df_linkinput2
@@ -722,7 +774,8 @@ class Results:
                                                      df_linkinput2.max()), 2),
                                            round(variable_costs, 2),
                                            round(periodical_costs, 2),
-                                           round(link_investment, 2)]],
+                                           round(link_investment, 2),
+                                           round(constraint_costs, 2)]],
                                          columns=columns))
             logging.info(log_end)
         log("SUMMARY")
@@ -731,6 +784,8 @@ class Results:
         logging.info('   ' + 'Total System Costs:             '
                      + str(round(meta_results_objective, 1))
                      + ' cost units')
+        logging.info('   ' + 'Total Constraint Costs:         '
+                     + str(round(total_constraint_costs)) + ' cost units')
         logging.info('   ' + 'Total Variable Costs:           '
                      + str(round(total_costs)) + ' cost units')
         logging.info('   ' + 'Total Periodical Costs (p.a.):  '
@@ -755,6 +810,7 @@ class Results:
                                     end_date,
                                     temp_resolution,
                                     round(meta_results_objective, 2),
+                                    round(total_constraint_costs, 2),
                                     round(total_costs, 2),
                                     round(total_periodical_costs, 2),
                                     round(total_demand, 2),
@@ -764,6 +820,7 @@ class Results:
                                            'End Date',
                                            'Resolution',
                                            'Total System Costs',
+                                           'Total Constraint Costs',
                                            'Total Variable Costs',
                                            'Total Periodical Costs',
                                            'Total Energy Demand',

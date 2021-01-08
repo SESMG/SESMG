@@ -1,4 +1,43 @@
 # -*- coding: utf-8 -*-
+def constraint(om, limit):
+    import pyomo.environ as po
+    from oemof.solph.plumbing import sequence
+
+    invest_flows = {}
+    for (i, o) in om.flows:
+        if hasattr(om.flows[i, o].investment, "periodical_constraint_costs"):
+            invest_flows[(i, o)] = om.flows[i, o].investment
+
+    limit_name = "invest_limit_" + "space"
+
+    setattr(om, limit_name, po.Expression(
+        expr=sum(om.InvestmentFlow.invest[inflow, outflow] *
+                 getattr(invest_flows[inflow, outflow],
+                         "periodical_constraint_costs")
+                 for (inflow, outflow) in invest_flows
+                 )))
+
+    ############
+    flows = {}
+    for (i, o) in om.flows:
+        if hasattr(om.flows[i, o], "emission_factor"):
+            flows[(i, o)] = om.flows[i, o]
+
+    limit_name1 = "integral_limit_" + "emission_factor"
+
+    setattr(om, limit_name1, po.Expression(
+        expr=sum(om.flow[inflow, outflow, t]
+                 * om.timeincrement[t]
+                 * sequence(getattr(flows[inflow, outflow],
+                                    "emission_factor"))[t]
+                 for (inflow, outflow) in flows
+                 for t in om.TIMESTEPS)))
+
+    setattr(om, limit_name + "_constraint", po.Constraint(
+        expr=((getattr(om, limit_name) + getattr(om, limit_name1)) <= limit)))
+
+    return om
+
 def least_cost_model(energy_system, num_threads, nodes_data, busd):
     """
     Solves a given energy system model.
@@ -32,7 +71,12 @@ def least_cost_model(energy_system, num_threads, nodes_data, busd):
     
     # creation of a least cost model from the energy system
     om = oemof.solph.Model(energy_system)
-    
+    if (str(nodes_data['energysystem']['constraint costs /(CU)'][0]) != 'x' and
+          str(nodes_data['energysystem']['constraint costs /(CU)'][0]) != 'None'):
+        print("test")
+        om = constraint(om, int(nodes_data['energysystem']
+                                ['constraint costs /(CU)']))
+
     for j, z in nodes_data['links'].iterrows():
         for i, b in om.flows.keys():
             # searching for the output-flows of the link labeled

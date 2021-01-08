@@ -26,7 +26,8 @@ import base64
 from dash_canvas import DashCanvas
 import io
 from PIL import Image
-
+import sys
+result_path_import = sys.argv[1]
 
 def return_component_value(componentid, table):
     """Returns data for the graph.
@@ -56,11 +57,11 @@ def return_component_value(componentid, table):
 
 
 # Imports Data created by the Spreadsheet Energy System Model Generator
-df_table = pd.read_csv(r"results/results.csv")
-df_components = pd.read_csv(r"results/components.csv")
+df_table = pd.read_csv(str(result_path_import) + "/results.csv")
+df_components = pd.read_csv(str(result_path_import) + "/components.csv")
 
 # Prepares Data for table 1
-df_summary = pd.read_csv(r"results/summary.csv")
+df_summary = pd.read_csv(str(result_path_import) + "/summary.csv")
 
 total_system_costs = float(df_summary['Total System Costs'])
 total_variable_costs = float(df_summary['Total Variable Costs'])
@@ -78,7 +79,7 @@ list_of_components = df_table.columns.values
 list_of_components = list_of_components[1:len(list_of_components)]
 
 # Import Image
-graph_png = 'results/graph.gv.png'
+graph_png = str(result_path_import) + '/graph.gv.png'
 test_base64 = base64.b64encode(open(graph_png, 'rb').read()).decode('ascii')
 
 # Sets Canvas width in dependency from the image height

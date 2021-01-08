@@ -74,7 +74,9 @@ def buses(nodes_data, nodes):
                 # directly adds it to the list of components "nodes"
                 inputs = {
                     busd[b['label']]:
-                        solph.Flow(variable_costs=b['excess costs /(CU/kWh)'])}
+                        solph.Flow(variable_costs=b['excess costs /(CU/kWh)'],
+                                   emission_factor=b[
+                                    'variable excess constraint costs /(CU/kWh)'])}
                 nodes.append(
                         solph.Sink(
                                 label=b['label'] + '_excess',
@@ -87,8 +89,10 @@ def buses(nodes_data, nodes):
                 # directly adds it to the list of components "nodes"
                 outputs = {
                     busd[b['label']]:
-                        solph.Flow(variable_costs=b['shortage costs /(CU/kWh)']
-                                   )}
+                        solph.Flow(
+                            variable_costs=b['shortage costs /(CU/kWh)'],
+                            emission_factor=b[
+                                'variable shortage constraint costs /(CU/kWh)'])}
                 nodes.append(
                         solph.Source(
                                 label=b['label'] + '_shortage',
@@ -147,6 +151,8 @@ class Sources:
                                 investment=solph.Investment(
                                         ep_costs=so[
                                             'periodical costs /(CU/(kW a))'],
+                                        periodical_constraint_costs=so[
+                                            'periodical constraint costs /(CU/(kW a))'],
                                         minimum=so[
                                             'min. investment capacity /(kW)'],
                                         maximum=so[
@@ -158,7 +164,10 @@ class Sources:
                                         offset=so[
                                             'Fix Investment Costs /(CU/a)']),
                                 **timeseries_args,
-                                variable_costs=so['variable costs /(CU/kWh)'])}
+                                variable_costs=so['variable costs /(CU/kWh)'],
+                                emission_factor=so[
+                                    'variable constraint costs /(CU/kWh)']
+                        )}
                 ))
     
     def commodity_source(self, so):
@@ -227,7 +236,7 @@ class Sources:
         # Returns logging info
         logging.info('   ' + 'Timeseries Source created: ' + so['label'])
         
-    def pv_source(self, so):
+    def pv_source(self, so, my_weather_pandas_dataframe):
         """Creates an oemof photovoltaic source object.
         
         Simulates the yield of a photovoltaic system using feedinlib and
@@ -264,14 +273,6 @@ class Sources:
         
         # sets pv system parameters for pv_module
         pv_module = powerplants.Photovoltaic(**parameter_set)
-        
-        # reads weather data from interim-.csv data set
-        my_weather_pandas_dataframe = \
-            pd.read_csv(
-                        os.path.join(os.path.dirname(__file__))
-                        + '/interim_data/weather_data.csv',
-                        index_col=0,
-                        date_parser=lambda idx: pd.to_datetime(idx, utc=True))
         
         # calculates global horizontal irradiance from diffuse (dhi)
         # and direct irradiance and adds it to the weather data frame
@@ -317,7 +318,7 @@ class Sources:
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
     
-    def windpower_source(self, so):
+    def windpower_source(self, so, weather_df_wind):
         """Creates an oemof windpower source object.
         
         Simulates the yield of a windturbine using feedinlib and
@@ -344,13 +345,7 @@ class Sources:
             'turbine_type': so['Turbine Model (Windpower ONLY)'],
             'hub_height': so['Hub Height (Windpower ONLY)']}
         wind_turbine = WindPowerPlant(**turbine_data)
-        
-        # set up weather dataframe for windpowerlib
-        weather_df_wind = pd.read_csv(
-                os.path.join(os.path.dirname(__file__))
-                + '/interim_data/weather_data.csv', index_col=0,
-                date_parser=lambda idx: pd.to_datetime(idx, utc=True))
-        
+
         # change type of index to datetime and set time zone
         weather_df_wind.index = \
             pd.to_datetime(weather_df_wind.index).tz_convert('Europe/Berlin')
@@ -450,7 +445,13 @@ class Sources:
         self.nodes_sources = []
         # Initialise a class intern copy of the bus dictionary
         self.busd = busd.copy()
-        
+
+        # Import weather Data
+        data = pd.read_csv(
+                os.path.join(os.path.dirname(__file__))
+                + '/interim_data/weather_data.csv', index_col=0,
+                date_parser=lambda idx: pd.to_datetime(idx, utc=True))
+
         # Create Source from "Sources" Table
         for i, so in nodes_data['sources'].iterrows():
             # Create a source object for every source,
@@ -462,11 +463,11 @@ class Sources:
                 
                 # Create Photovoltaic Sources
                 elif so['technology'] == 'photovoltaic':
-                    self.pv_source(so)
+                    self.pv_source(so, data)
                 
                 # Create Windpower Sources
                 elif so['technology'] == 'windpower':
-                    self.windpower_source(so)
+                    self.windpower_source(so, data)
                 
                 # Create Time-series Sources
                 elif so['technology'] == 'timeseries':
@@ -939,8 +940,12 @@ class Transformers:
         outputs = \
             {self.busd[tf['output']]: solph.Flow(
                     variable_costs=tf['variable output costs /(CU/kWh)'],
+                    emission_factor=tf[
+                        'variable output constraint costs /(CU/kWh)'],
                     investment=solph.Investment(
                         ep_costs=tf['periodical costs /(CU/(kW a))'],
+                        periodical_constraint_costs=tf[
+                            'periodical constraint costs /(CU/(kW a))'],
                         minimum=tf['min. investment capacity /(kW)'],
                         maximum=tf['max. investment capacity /(kW)'],
                         existing=tf['existing capacity /(kW)'],
@@ -964,6 +969,8 @@ class Transformers:
             outputs.update(
                     {self.busd[tf['output2']]: solph.Flow(
                         variable_costs=tf['variable output costs 2 /(CU/kWh)'],
+                        emission_factor=tf[
+                            'variable output constraint costs 2 /(CU/kWh)'],
                         investment=solph.Investment(
                             ep_costs=0,
                             existing=existing_capacity2,
@@ -978,10 +985,12 @@ class Transformers:
         
         conversion_factors = {"conversion_factors": conversion_factors}
         inputs = {"inputs": {self.busd[tf['input']]: solph.Flow(
-                variable_costs=tf['variable input costs /(CU/kWh)'])}}
+                variable_costs=tf['variable input costs /(CU/kWh)'],
+                emission_factor=tf['variable input constraint costs /(CU/kWh)'])
+        }}
         self.create_transformer(tf, inputs, outputs, conversion_factors)
         
-    def heat_pump_transformer(self, t):
+    def heat_pump_transformer(self, t, data):
         """
         Creates a Heat Pump object by using oemof.thermal.
         Creates a heat pump with the parameters given in
@@ -994,11 +1003,7 @@ class Transformers:
         import oemof.thermal.compression_heatpumps_and_chillers \
             as cmpr_hp_chiller
         import math
-        
-        # Import weather Data
-        data = pd.read_csv(os.path.join(
-            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
-        
+
         # creates an oemof-bus object, all heat pumps use the same low
         # temp bus
         bus = solph.Bus(label=t['label'] + '_low_temp_bus')
@@ -1096,15 +1101,21 @@ class Transformers:
         
         # Creates transformer object and adds it to the list of components
         inputs = {"inputs": {self.busd[t['input']]: solph.Flow(
-                variable_costs=t['variable input costs /(CU/kWh)']),
+                variable_costs=t['variable input costs /(CU/kWh)'],
+                emission_factor=
+                t['variable input constraint costs /(CU/kWh)']),
                 self.busd[t['label'] + '_low_temp_bus']: solph.Flow(
                 variable_costs=0)}}
         outputs = {"outputs": {self.busd[t['output']]: solph.Flow(
                 variable_costs=t['variable output costs /(CU/kWh)'],
+                emission_factor=t[
+                    'variable output constraint costs /(CU/kWh)'],
                 investment=solph.Investment(
                         ep_costs=t['periodical costs /(CU/(kW a))'],
                         minimum=t['min. investment capacity /(kW)'],
                         maximum=t['max. investment capacity /(kW)'],
+                        periodical_constraint_costs=t[
+                            'periodical constraint costs /(CU/(kW a))'],
                         existing=t['existing capacity /(kW)']))}}
         conversion_factors = {
             "conversion_factors": {
@@ -1142,7 +1153,6 @@ class Transformers:
                     - 'Fix Investment Costs / (CU/a)'
             @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
         """
-        # TODO Issue #35
         # counts the number of periods within the given datetime index
         # and saves it as variable
         # (number of periods is required for creating generic chp transformers)
@@ -1164,12 +1174,16 @@ class Transformers:
                                    'extraction [GenericCHP]']
                                 for p in range(0, periods)],
                             variable_costs=tf[
-                                'variable input costs /(CU/kWh)'])},
+                                'variable input costs /(CU/kWh)'],
+                            emission_factor=
+                            tf['variable input constraint costs /(CU/kWh)'])},
                 electrical_output={
                     self.busd[tf['output']]: solph.Flow(
                             investment=solph.Investment(
                                     ep_costs=tf[
                                         'periodical costs /(CU/(kW a))'],
+                                    periodical_constraint_costs=tf[
+                                        'periodical constraint costs /(CU/(kW a))'],
                                     minimum=tf[
                                         'min. investment capacity /(kW)'],
                                     maximum=tf[
@@ -1191,7 +1205,9 @@ class Transformers:
                                    'heating [GenericCHP]']
                                 for p in range(0, periods)],
                             variable_costs=tf[
-                                'variable output costs /(CU/kWh)']
+                                'variable output costs /(CU/kWh)'],
+                            emission_factor=tf[
+                                'variable output constraint costs /(CU/kWh)']
                             )
                         },
                 heat_output={self.busd[tf['output2']]: solph.Flow(
@@ -1199,7 +1215,10 @@ class Transformers:
                                  'cooling water [GenericCHP]']
                               for p in range(0, periods)],
                     variable_costs=tf[
-                        'variable output costs 2 /(CU/kWh)'])},
+                        'variable output costs 2 /(CU/kWh)'],
+                    emission_factor=tf[
+                        'variable output constraint costs 2 /(CU/kWh)']
+                )},
                 Beta=[tf['power loss index [GenericCHP]']
                       for p in range(0, periods)],
                 # fixed_costs=0,
@@ -1214,7 +1233,11 @@ class Transformers:
         # renames variables
         self.busd = busd
         self.nodes_transformer = []
-        
+
+        # Import weather Data
+        data = pd.read_csv(os.path.join(
+            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
+
         # creates a transformer object for every transformer item within nd
         for i, t in nodes_data['transformers'].iterrows():
             if t['active']:
@@ -1225,7 +1248,7 @@ class Transformers:
                 
                 # Create Heat Pump
                 elif t['transformer type'] == 'HeatPump':
-                    self.heat_pump_transformer(t)
+                    self.heat_pump_transformer(t, data)
                 
                 # Create Extraction Turbine CHPs
                 elif t['transformer type'] == 'ExtractionTurbineCHP':
@@ -1312,10 +1335,18 @@ class Storages:
                                 label=s['label'],
                                 inputs={busd[s['bus']]: solph.Flow(
                                         variable_costs=s[
-                                            'variable input costs'])},
+                                            'variable input costs'],
+                                        emission_factor=s[
+                                            'variable input constraint costs /'
+                                            '(CU/kWh)']
+                                )},
                                 outputs={busd[s['bus']]: solph.Flow(
                                         variable_costs=s[
-                                            'variable output costs'])},
+                                            'variable output costs'],
+                                        emission_factor=s[
+                                            'variable output constraint costs /'
+                                            '(CU/kWh)']
+                                )},
                                 loss_rate=s['capacity loss'],
                                 inflow_conversion_factor=s[
                                     'efficiency inflow'],
@@ -1328,6 +1359,8 @@ class Storages:
                                 investment=solph.Investment(
                                     ep_costs=s[
                                         'periodical costs /(CU/(kWh a))'],
+                                    periodical_constraint_costs=s[
+                                        'periodical constraint costs /(CU/(kWh a))'],
                                     existing=s[
                                         'existing capacity /(kWh)'],
                                     minimum=s[
@@ -1387,8 +1420,14 @@ class Links:
                     inputs={self.busd[link['bus_1']]: solph.Flow(),
                             self.busd[link['bus_2']]: solph.Flow()},
                     outputs={self.busd[link['bus_2']]: solph.Flow(
+                                variable_costs=
+                                link['variable output costs /(CU/kWh)'],
+                                emission_factor=
+                                link['variable constraint costs /(CU/kWh)'],
                                 investment=solph.Investment(
                                     ep_costs=ep_costs,
+                                    periodical_constraint_costs=link[
+                                        'periodical constraint costs /(CU/(kW a))'],
                                     minimum=link[
                                         'min. investment capacity /(kW)'],
                                     maximum=link[
@@ -1401,8 +1440,14 @@ class Links:
                                     offset=link[
                                         'Fix Investment Costs /(CU/a)'])),
                              self.busd[link['bus_1']]: solph.Flow(
+                                 variable_costs=
+                                 link['variable output costs /(CU/kWh)'],
+                                 emission_factor=
+                                 link['variable constraint costs /(CU/kWh)'],
                                  investment=solph.Investment(
                                      ep_costs=ep_costs,
+                                     periodical_constraint_costs=link[
+                                         'periodical constraint costs /(CU/(kW a))'],
                                      minimum=link[
                                          'min. investment capacity /(kW)'],
                                      maximum=link[
