@@ -168,7 +168,7 @@ def show_graph():
 
 
 def execute_sesmg():
-    """ 1. Creates the folder where the results would be saved
+    """ 1. Creates the folder where the results will be saved
         2. Excecutes the optimization algorithm """
     if scenario_path.get() != "No scenario selected.":
         scenario_name = os.path.basename(scenario_path.get())
@@ -229,7 +229,8 @@ def get_pid():
 def show_results():
     """ executes the external program, which executes a plotl.dash app for displaying interactive results."""
     if save_path.get() == '':
-        raise SystemError('No optimization since the last restart')
+        raise SystemError('No optimization since the last restart,'
+                          ' please select a result folder!')
 
     # Determines the ID of a still running process on port 8050.
     pid = get_pid()
