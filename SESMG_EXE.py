@@ -251,12 +251,11 @@ def show_results():
             subprocess.call("open http://127.0.0.1:8050", shell=True)
         elif sys.platform.startswith("linux"):
             subprocess.call("xdg-open http://127.0.0.1:8050", shell=True)
-
     # Starts the new Plotly Dash Server for Windows
     if sys.platform.startswith("win"):
         IR_PATH = os.path.join(os.path.dirname(__file__) + '/program_files')
         subprocess.call(IR_PATH + "/Interactive_Results.py "
-                        + str(save_path.get()), timeout=10, shell=True)
+                        + 'r"'+save_path.get()+'"', timeout=10, shell=True)
     # Starts the new Plotly Dash Server for MACOS
     elif sys.platform.startswith("darwin"):
         IR_PATH = os.path.dirname(os.path.abspath(__file__))
