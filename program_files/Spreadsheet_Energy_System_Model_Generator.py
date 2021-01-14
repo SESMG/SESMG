@@ -76,11 +76,12 @@ from program_files import (create_objects,
                            create_results,
                            create_energy_system,
                            optimize_model,
-                           create_graph)
+                           create_graph,
+                           data_preparation)
 
 
 def sesmg_main(scenario_file, result_path, num_threads, graph, results,
-               plotly):
+               plotly, timeseries_prep, timeseries_value, solver):
     """
     Main function of the Spreadsheet System Model Generator
     ----
@@ -110,6 +111,35 @@ def sesmg_main(scenario_file, result_path, num_threads, graph, results,
     logger.define_logging(logpath=result_path)
     # IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
     nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
+
+    # Data Preprocessing
+    data_prep = timeseries_prep
+    days_per_cluster = timeseries_value
+    n_timesteps = timeseries_value
+    clusters = 365//days_per_cluster
+    criterion = 'temperature'
+
+    if data_prep == 'k_means (temp)':
+        data_preparation.k_means_algorithm(clusters = clusters,
+                              criterion = 'temperature',
+                              nodes_data = nodes_data)
+
+    if data_prep == 'k_means (dhi)':
+        data_preparation.k_means_algorithm(clusters = clusters,
+                              criterion = 'dhi',
+                              nodes_data = nodes_data)
+
+    if data_prep == 'averaging':
+        data_preparation.timeseries_averaging(clusters=clusters,
+                                              nodes_data=nodes_data)
+
+    if data_prep == 'slicing':
+        data_preparation.timeseries_slicing(n_days=days_per_cluster,
+                                            nodes_data=nodes_data)
+    # data_prep = 'downsampling'
+    if data_prep == 'downsampling':
+        data_preparation.timeseries_downsampling(nodes_data, n_timesteps)
+
 
     # formatting of the weather data record according to the
     # requirements of the classes used
@@ -162,11 +192,10 @@ def sesmg_main(scenario_file, result_path, num_threads, graph, results,
     esys.add(*nodes)
 
     # PRINTS A GRAPH OF THE ENERGY SYSTEM
-    if graph:
-        create_graph.create_graph(filepath=result_path, nodes_data=nodes_data)
+    create_graph.create_graph(filepath=result_path, nodes_data=nodes_data, show=graph)
 
     # OPTIMIZES THE ENERGYSYSTEM AND RETURNS THE OPTIMIZED ENERGY SYSTEM
-    om = optimize_model.least_cost_model(esys, num_threads, nodes_data, busd)
+    om = optimize_model.least_cost_model(esys, num_threads, nodes_data, busd, solver)
 
     # SHOWS AND SAVES RESULTS OF THE OPTIMIZED MODEL / POST-PROCESSING
     if results:

@@ -38,7 +38,7 @@ def constraint(om, limit):
 
     return om
 
-def least_cost_model(energy_system, num_threads, nodes_data, busd):
+def least_cost_model(energy_system, num_threads, nodes_data, busd, solver):
     """
     Solves a given energy system model.
     Solves a given energy system for least costs and returns the
@@ -100,9 +100,9 @@ def least_cost_model(energy_system, num_threads, nodes_data, busd):
     
     logging.info('   '+"******************************************************"
                  + "***")
-    logging.info('   '+"Starting Optimization with CBC-Solver")
+    logging.info('   '+"Starting Optimization with "+solver+"-Solver")
 
     # solving the linear problem using the given solver
-    om.solve(solver='cbc', cmdline_options={"threads": num_threads})
+    om.solve(solver=solver, cmdline_options={"threads": num_threads})
 
     return om

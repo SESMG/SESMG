@@ -52,7 +52,8 @@ def import_scenario(filepath):
           'links': xls.parse('links'),
           'timeseries': xls.parse('time_series'),
           'energysystem': xls.parse('energysystem'),
-          'sources': xls.parse('sources')
+          'sources': xls.parse('sources'),
+          'weather data': xls.parse('weather data')
           #'constraints': xls.parse('constraints')
          }
 

@@ -2,7 +2,7 @@ from graphviz import Digraph
 import os
 
 
-def create_graph(filepath, nodes_data, legend=False):
+def create_graph(filepath, nodes_data, show, legend=False):
     """Visualizes the energy system as graph.
 
     Creates, using the library Graphviz, a graph containing all
@@ -148,4 +148,4 @@ def create_graph(filepath, nodes_data, legend=False):
                                  fixedsize='shape', width='1.1', height='0.6')
                         dot.node(b[bus[i][0]], shape='ellipse', fontsize="10")
                         dot.edge(b[bus[i][0]], label)
-    dot.render(filepath + '/graph.gv', view=True)
+    dot.render(filepath + '/graph.gv', view=show)
