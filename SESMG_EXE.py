@@ -112,10 +112,8 @@ def update_values(texts_input, rows, input_elements, input_values):
             input_elements[input_element_keys[j]][1] = input_text.get()
             input_values[j].configure(text=input_text.get())
 
-
 def data_path():
     print('placeholder')
-
 
 def getFolderPath():
     """ opens a file dialog and sets the selected path for the variable "scenario_path" """
@@ -180,9 +178,12 @@ def execute_sesmg():
         sesmg_main(scenario_file=scenario_path.get(),
                    result_path=save_path.get(),
                    num_threads=1,
-                   graph=True,
+                   timeseries_prep = time_prep.get(),
+                   timeseries_value = 1 if timeseries_entry.get() == 'aggregation quote' else int(timeseries_entry.get()),
+                   graph=True if graph_state.get() == 1 else False,
                    results=True,
-                   plotly=True)
+                   plotly=True,
+                   solver=solver_select.get())
         show_results()
     else:
         print('Please select scenario first!')
@@ -268,7 +269,6 @@ def show_results():
         subprocess.call("python3 " + IR_PATH + "/Interactive_Results.py "
                         + str(save_path.get()), timeout=10, shell=True)
 
-
 # Definition of the user interface
 window = Tk()
 window.title("SESMG - Spreadsheet Energy System Model Generator")
@@ -291,7 +291,7 @@ main_frame = ttk.Frame(window)
 tab_control.add(main_frame, text='Home')
 
 # Headline
-main_head1 = Label(main_frame, text='Selection Options', font='Helvetica 10 bold')
+main_head1 = Label(main_frame, text='Modeling', font='Helvetica 10 bold')
 main_head1.grid(column=0, row=0, sticky="w")
 
 # Erstellung des ersten Element-Blocks
@@ -301,11 +301,61 @@ file_paths = []
 create_main_frame_elements(elements=selection_elements, sheet=main_frame, first_row=1, file_paths=file_paths,
                            frame=main_frame)
 
+
+## TimeSeries Prep Menu
+
+OptionList = [
+    "none",
+    "k-means (temp)",
+    "k_means (dhi)",
+    "averaging",
+    "downsampling",
+    "random sampling",
+    "slicing",
+]
+
+row = 3
+Label(main_frame, text='Timeseries Preparation', font='Helvetica 10').grid(column=0, row=row,
+                                                   sticky="W")
+
+time_prep = StringVar(main_frame)
+time_prep.set('none')
+DMenu = OptionMenu(main_frame, time_prep, *OptionList)
+DMenu.grid(column=3, row=row)
+
+timeseries_entry = Entry(main_frame, textvariable=StringVar(main_frame, value='aggregation quote'))
+timeseries_entry.grid(column=4, row=row, sticky="w")
+
+
+# Graph Checkbox
+row = row + 1
+Label(main_frame, text='Show Graph', font='Helvetica 10').grid(column=0, row=row,
+                                                   sticky="W")
+graph_state = IntVar()
+graph_checkbox = Checkbutton(main_frame, variable=graph_state)
+graph_checkbox.grid(column=3, row=row)
+
+# Solver Selection
+row = row + 1
+solvers = [
+    "cbc",
+    "gurobi",
+]
+Label(main_frame, text='Optimization Solver', font='Helvetica 10').grid(column=0, row=row,
+                                                   sticky="W")
+
+solver_select = StringVar(main_frame)
+solver_select.set('cbc')
+SolverMenu = OptionMenu(main_frame, solver_select, *solvers)
+SolverMenu.grid(column=3, row=row)
+
 # Headline 2
-main_head2 = Label(main_frame, text='Execution Options', font='Helvetica 10 bold')
-main_head2.grid(column=0, row=3 + len(selection_elements), sticky="w")
+row = row + 1
+main_head2 = Label(main_frame, text='Execution', font='Helvetica 10 bold')
+main_head2.grid(column=0, row=row, sticky="w")
 
 # ERstellung des zweiten Element-Blocks
+row = row + 1
 # [Label, function to be executed, name of the button, comment]
 test = StringVar(window)
 execution_elements = {'row2': ['Show Graph', show_graph, 'Execute', ''],
@@ -314,17 +364,19 @@ execution_elements = {'row2': ['Show Graph', show_graph, 'Execute', ''],
                       # 'row7':['End Program',end_program,'End',' '],
                       }
 comments = []
-create_main_frame_elements(elements=execution_elements, sheet=main_frame, first_row=3 + len(selection_elements),
+create_main_frame_elements(elements=execution_elements, sheet=main_frame, first_row=row,
                            file_paths=comments, frame=main_frame)
-main_head3 = Label(main_frame, text='Analyzing Options',
+
+row = row + len(execution_elements)
+main_head3 = Label(main_frame, text='Results',
                        font='Helvetica 10 bold')
-main_head3.grid(column=0, row=7 + len(execution_elements), sticky="w")
+main_head3.grid(column=0, row=row, sticky="w")
 analyzing_elements = {'row5': ['Select scenario result folder',
                                getSavePath, 'Change', save_path.get()],
                       'row6': ['Start Plotly', show_results, 'Execute', '']}
 save_paths = []
 create_main_frame_elements(elements=analyzing_elements, sheet=main_frame,
-                           first_row=7 + len(execution_elements),
+                           first_row=row,
                            file_paths=save_paths, frame=main_frame)
 
 ############
@@ -370,7 +422,8 @@ def execute_sesmg_DEMO(demo_file, demo_results):
           result_path=result_path,
           graph=False,
           results=False,
-          plotly=True)
+          plotly=True,
+          solver=SolverMenu.get())
     # show_results()
     # else:
     #     print('Please select scenario first!')
