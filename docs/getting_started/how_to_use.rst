@@ -308,7 +308,7 @@ with the "technology" property "timeseries". The following parameters have to be
 
  
  
-.. figure:: ../images/BSP_timeseries.PNG
+.. figure:: ../images/example_doc_time_series.png
    :width: 50 %
    :alt: timeseries-sxample
    :align: center
