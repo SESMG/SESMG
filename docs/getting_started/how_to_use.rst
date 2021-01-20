@@ -38,7 +38,14 @@ Within this sheet, the time horizon and the temporal resolution of the model is 
    :alt: Energysystem-Example
    :align: center
 
-   Exemplary input for the time system
+ 
+   
+.. csv-table:: Exemplary input for the energy system
+   :header: start date,end date,temporal resolution,periods,constraint costs /(CU)
+
+   2012-01-01 00:00:00,2012-12-30 23:00:00,h,8760,None
+   
+ 
 
 Buses
 =================================================
@@ -55,15 +62,13 @@ Within this sheet, the buses of the energy system are defined. The following par
 - **variable shortage constraint costs /(CU/kWh)**: Only if considering constraints. Assigns a price per kWh to the purchase of energy from the shortage source referring to the constraint limit set in the "energysystem" sheet. If the shortage source was deactivated, the fill character "x" is used.
 - **variable excess constraint costs /(CU/kWh)**: Only if considering constraints. Assigns a price per kWh to the release of energy to the excess sink referring to the constraint limit set in the "energysystem" sheet. If the excess sink was deactivated, the fill character "x" is used.
 
-.. figure:: ../images/example_doc_buses.png
-   :width: 100 %
-   :alt: Bus-Example
-   :align: center
+.. csv-table:: Exemplary input for the buses sheet
+   :header: label,comments,active,excess,shortage,shortage costs /(CU/kWh),excess costs /(CU/kWh),variable shortage constraint costs /(CU/kWh),variable excess constraint costs /(CU/kWh)
 
-   Exemplary input for the buses sheet
-  
-
-	
+   bus001_electricity_bus,,1,0,1,0.300,x,0.10,-0.10
+   bus002_electricity_bus,,1,1,0,x,-0.01,0.10,-0.10
+   
+   
 .. figure:: ../images/BSP_Graph_Bus.png
    :width: 60 %
    :alt: Bus_Graph
@@ -89,12 +94,12 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **building class [HEAT SLP ONLY]**: BDEW-building class.
 - **wind class [HEAT SLP ONLY]**: wind classification for building location (0=not windy, 1=windy)
  
-.. figure:: ../images/example_doc_sinks.png
-   :width: 100 %
-   :alt: Sink-Example
-   :align: center
+.. csv-table:: Exemplary input for the sinks sheet
+   :header: label,comment,active,fixed,input,load profile,nominal value /(kW),annual demand /(kWh/a),occupants [RICHARDSON],building class [HEAT SLP ONLY],wind class [HEAT SLP ONLY]
 
-   Exemplary input for the sinks sheet
+   building001_electricity_sink,H0 standard load profile sink,1,1,electricity_bus,h0,x,1000.0,x,x,x
+
+   
   
 
 	
@@ -140,12 +145,12 @@ defined if the parameter "technology" is set on "photovoltaic". The following pa
 - **Longitude (PV ONLY)**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
 
 
-.. figure:: ../images/example_doc_sources.png
-   :width: 100 %
-   :alt: Source-Example
-   :align: center
+.. csv-table:: Exemplary input for the sources sheet
+   :header: label,Comment,active,fixed,output,technology,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),Turbine Model (Windpower ONLY),Hub Height (Windpower ONLY),technology database (PV ONLY),inverter database (PV ONLY),Modul Model (PV ONLY),Inverter Model (PV ONLY),Azimuth (PV ONLY),Surface Tilt (PV ONLY),Albedo (PV ONLY),Altitude (PV ONLY),Latitude (PV ONLY),Longitude (PV ONLY)
 
-   Exemplary input for the sources sheet
+   pv001_electricity_source,fixed photovoltaic source,1,1,bus001_electricity_bus,photovoltaic,0,0.1,10,0,10,90,0.1,0,0,x,x,SandiaMod,sandiainverter,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,180.00,35,0.18,60.000,52.13,7.36
+
+
   
 
 	
@@ -195,14 +200,13 @@ The following parameters have to be entered:
 - **temp threshold icing (HP ONLY)**: Temperature below which icing occurs (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
 - **factor icing (HP ONLY)**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
 
-
-.. figure:: ../images/example_doc_transformers.png
-   :width: 100 %
-   :alt: Transformer-Example
-   :align: center
-
-   Exemplary input for the transformers sheet
   
+.. csv-table:: Exemplary input for the transformers sheet
+   :header: label,comment,active,transformer type,input,output,output2,efficiency,efficiency2,variable input costs /(CU/kWh),variable output costs /(CU/kWh),variable output costs 2 /(CU/kWh),variable input constraint costs /(CU/kWh),variable output constraint costs /(CU/kWh),variable output constraint costs 2 /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),heat source,temperature high /(deg C),quality grade,area /(sq m),length of the geoth. probe (m),heat extraction (kW/(m*a)),min. borehole area (sq m),temp threshold icing,factor icing
+
+   tr0001_electricity_transformer,,1,GenericTransformer,bus002_electricity_bus,bus001_electricity_bus,x,0.85,x,0.01,0,0,0.1,0.2,0,1000,0,1000,60,0.1,0,0,x,x,x,x,x,x,x,x,x
+   
+ 
 
 	
 .. figure:: ../images/BSP_Graph_transformer.png
@@ -242,13 +246,11 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **variable output constraint costs**: Only if considering constraints. Indicates how many costs arise for charging with one kWh referring to the constraint limit set in the "energysystem" sheet.
 
 
-.. figure:: ../images/example_doc_storages.png
-   :width: 100 %
-   :alt: Storage-Example
-   :align: center
+.. csv-table:: Exemplary input for the storages sheet
+   :header: label,comment,active,bus,existing capacity /(kWh),min. investment capacity /(kWh),max. investment capacity /(kWh),periodical costs /(CU/(kWh a)),periodical constraint costs /(CU/(kWh a)),Non-Convex Investment,Fix Investment Costs /(CU/a),input/capacity ratio (invest),output/capacity ratio (invest),capacity loss,efficiency inflow,efficiency outflow,initial capacity,capacity min,capacity max,variable input costs,variable output costs,variable input constraint costs /(CU/kWh),variable output constraint costs /(CU/kWh)
 
-   Exemplary input for the storages sheet
-  
+   battery001_electricity_storage,,1,bus001_electricity_bus,1000,0,1000,70,0.1,0,0,0.17,0.17,0,1,0.98,0,0.1,1,0,0,0.1,0.1
+
 
 	
 .. figure:: ../images/BSP_Graph_Storage.png
@@ -280,13 +282,10 @@ to be entered:
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
 - **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
 
-.. figure:: ../images/example_doc_storages.png
-   :width: 100 %
-   :alt: bsp_link_input
-   :align: center
+.. csv-table:: Exemplary input for the link sheet
+   :header: label,Comment,active,bus_1,bus_2,(un)directed,efficiency,variable output costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a)
 
-   Exemplary input for the input in the storages sheet
-  
+   pl001_electricity_link,,1,bus001_electricity_bus,bus002_electricity_bus,directed,0.85,0,0.1,0,0,1000,1,0.1,0,0  
 
 	
 .. figure:: ../images/BSP_Graph_link.png
@@ -308,12 +307,24 @@ with the "technology" property "timeseries". The following parameters have to be
 
  
  
-.. figure:: ../images/example_doc_time_series.png
-   :width: 50 %
-   :alt: timeseries-sxample
-   :align: center
+.. csv-table:: Exemplary input for time series sheet
+   :header: timestamp,residential_electricity_demand.actual_value,fixed_timeseries_electricty_source.fix, unfixed_timeseries_electricty_source.min,unfixed_timeseries_electricty_source.max,fixed_timeseries_electricity_sink.fix,unfixed_timeseries_electricity_sink.min,unfixed_timeseries_electricity_sink.max
 
-   Exemplary input for time series sheet
+   2012-01-01 00:00:00,0.559061982,0.000000,0.000000,1.000000,0.000000,0.000000,1.000000
+   2012-01-01 01:00:00,0.533606486,0.041667,0.000000,0.500000,0.041667,0.000000,0.500000
+   2012-01-01 02:00:00,0.506058757,0.083333,0.000000,0.333333,0.083333,0.000000,0.333333
+   2012-01-01 03:00:00,0.504140877,0.125000,0.000000,0.250000,0.125000,0.000000,0.250000
+   2012-01-01 04:00:00,0.507104873,0.166667,0.000000,0.200000,0.166667,0.000000,0.200000
+   2012-01-01 05:00:00,0.511376515,0.208333,0.000000,0.166667,0.208333,0.000000,0.166667
+   2012-01-01 06:00:00,0.541801064,0.250000,0.000000,0.142857,0.250000,0.000000,0.142857
+   2012-01-01 07:00:00,0.569261616,0.291667,0.000000,0.125000,0.291667,0.000000,0.125000
+   2012-01-01 08:00:00,0.602998867,0.333333,0.000000,0.111111,0.333333,0.000000,0.111111
+   2012-01-01 09:00:00,0.629064598,0.375000,0.000000,0.100000,0.375000,0.000000,0.100000
+
+
+
+
+
 
 Weather Data
 =================================================
@@ -332,9 +343,19 @@ data time system should be in conformity with the model’s time system, defined
 - **water_temp**: varying water temperature of a river depending on the air temperature
 - **groundwater_temp**: constant temperatur of the ground water at 6 - 10 m depth in North Rhine-Westphalia
 
-.. figure:: ../images/example_doc_weather_data.png
-   :width: 100 %
-   :alt: weatherdata-Example
-   :align: center
+.. csv-table:: Exemplary input for weather data
+   :header: ,dhi,dirhi,pressure,temperature,windspeed,z0,ground_temp,water_temp,groundwater_temp
 
-   Exemplary input for weather data
+   2012-01-01 00:00:00,0.00,0.00,98405.70,10.33,7.2,0.15,13.7,14.62,13.06
+   2012-01-01 01:00:00,0.00,0.00,98405.70,10.33,7.8,0.15,13.7,14.62,13.06
+   2012-01-01 02:00:00,0.00,0.00,98405.70,10.48,7.7,0.15,13.7,14.71,13.06
+   2012-01-01 03:00:00,0.00,0.00,98405.70,10.55,7.7,0.15,13.7,14.75,13.06
+   2012-01-01 04:00:00,0.00,0.00,98405.70,10.93,7.8,0.15,13.7,14.99,13.06
+   2012-01-01 05:00:00,0.00,0.00,98405.70,10.90,8.5,0.15,13.7,14.97,13.06
+   2012-01-01 06:00:00,0.00,0.00,98405.70,10.88,8.5,0.15,13.7,14.96,13.06
+   2012-01-01 07:00:00,0.00,0.00,98405.70,11.22,7.9,0.15,13.7,15.17,13.06
+   2012-01-01 08:00:00,0.00,0.00,98405.70,11.68,8.7,0.15,13.7,15.46,13.06
+   2012-01-01 09:00:00,0.56,0.56,98405.70,11.87,8.6,0.15,13.7,15.57,13.06
+   2012-01-01 10:00:00,13.06,13.06,98405.70,11.65,8.0,0.15,13.7,15.44,13.06
+
+
