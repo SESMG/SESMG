@@ -33,8 +33,10 @@ Within this sheet, the time horizon and the temporal resolution of the model is 
 
 
   
-.. figure:: ../images/transformers_doc.png
-
+.. figure:: ../images/energysystem_doc.png
+   :width: 100 %
+   :alt: Bus-Example
+   :align: center
 
    Exemplary input for the time system
 
