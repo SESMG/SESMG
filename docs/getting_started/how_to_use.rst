@@ -3,14 +3,14 @@ Using the Scenario File
 
 For the modeling and optimization of an energy system, parameters for all system components must be given in the model 
 generator using the enclosed .xlsx file (editable with Excel, LibreOffice, …). The .xlsx file is divided into nine 
-input sheets. In the "timesystem" sheet, general parameters are defined for the time horizon to be examined, in the 
+input sheets. In the "energysystem" sheet, general parameters are defined for the time horizon to be examined, in the 
 sheets "buses", "sinks", "sources", "transformers", "storages" and "links" corresponding components are defined. In 
 the sheet "time series", the performance of individual components can be stored. In the "weather data" sheet, the 
 required weather data is stored. When completing the input file, it is recommended to enter the energy system step by 
 step and to perform test runs in between, so that potential input errors are detected early and can be localized more 
 easily. In addition to the explanation of the individual input sheets, an example energy system is built step by step 
 in the following subchapters. The input file for this example is stored in the program folder "examples" and viewed on 
-`GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator/tree/master/examples>`_. The following units are used throughout:
+`GitHub <https://github.com/chrklemm/SESMG/tree/master/examples>`_. The following units are used throughout:
 
 - capacity/performance in kW,
 - energy in kWh,
@@ -20,19 +20,20 @@ in the following subchapters. The input file for this example is stored in the p
 Cost units are any scalable quantity used to optimize the energy system, such as euros or grams of carbon dioxide emissions.
 
 
-Timesystem
+Energysystem
 =================================================
 
 Within this sheet, the time horizon and the temporal resolution of the model is defined. The following parameters have to be entered:
 
-- **start date**: start of the modelling time horizon. Format: "YYYY-MM-DD hh:mm:ss";
-- **end date**: end date of the modelling time horizon. Format: "YYYY-MM-DD hh:mm:ss"; and
-- **temporal resolution**: for the modelling considered temporal resolution. Possible inputs: "a" (years), "d" (days), "h" (hours) "min" (minutes), "s" (seconds), "ms" (mili seconds).
+- **start date**: Start of the modelling time horizon. Format: "YYYY-MM-DD hh:mm:ss";
+- **end date**: End date of the modelling time horizon. Format: "YYYY-MM-DD hh:mm:ss"; and
+- **temporal resolution**: For the modelling considered temporal resolution. Possible inputs: "a" (years), "d" (days), "h" (hours) "min" (minutes), "s" (seconds), "ms" (mili seconds).
 - **periods**: Number of periods within the time horizon (one year with hourly resolution equals 8760 periods).
+- **constraint costs /(CU)**: Value in order to set a limit for the whole energysystem, e.g. by carbon dioxide emissions. Set this field to "None" in order to ignore the limit. If you want to set a limit, you have to set specific values for each components seen below.
 
 
   
-.. figure:: ../images/BSP_timesystem.PNG
+.. figure:: ../images/energysystem_doc.PNG
    :width: 100 %
    :alt: Bus-Example
    :align: center
