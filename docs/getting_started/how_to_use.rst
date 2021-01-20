@@ -29,13 +29,13 @@ Within this sheet, the time horizon and the temporal resolution of the model is 
 - **end date**: End date of the modelling time horizon. Format: "YYYY-MM-DD hh:mm:ss"; and
 - **temporal resolution**: For the modelling considered temporal resolution. Possible inputs: "a" (years), "d" (days), "h" (hours) "min" (minutes), "s" (seconds), "ms" (mili seconds).
 - **periods**: Number of periods within the time horizon (one year with hourly resolution equals 8760 periods).
-- **constraint costs /(CU)**: Value in order to set a limit for the whole energysystem, e.g. by carbon dioxide emissions. Set this field to "None" in order to ignore the limit. If you want to set a limit, you have to set specific values for each components seen below.
+- **constraint costs /(CU)**: Value in order to set a limit for the whole energysystem, e.g. carbon dioxide emissions. Set this field to "None" in order to ignore the limit. If you want to set a limit, you have to set specific values for each components seen below.
 
 
   
 .. figure:: ../images/energysystem_doc.png
    :width: 100 %
-   :alt: Bus-Example
+   :alt: Energysystem-Example
    :align: center
 
    Exemplary input for the time system
@@ -51,9 +51,11 @@ Within this sheet, the buses of the energy system are defined. The following par
 - **excess**: Specifies whether a sink is to be generated, which consumes excess energy. 0 = no excess sink will be generated; 1 = excess sink will be generated.
 - **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits or not. 0 = no shortage source will be generated; 1 = shortage source will be generated.
 - **shortage costs/(CU/kWh)**: Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "x" is used. 
-- **excess costs/(CU/kWh)**: Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "x" is used. 
-	
-.. figure:: ../images/BSP_buses.PNG
+- **excess costs/(CU/kWh)**: Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "x" is used.
+- **variable shortage constraint costs /(CU/kWh)**: This costs can only be used if "constraint costs" are considered in the "energysystem" sheet. Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "x" is used.
+- **variable excess constraint costs /(CU/kWh)**: This costs can only be used if "constraint costs" are considered in the "energysystem" sheet. Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "x" is used.
+
+.. figure:: ../images/example_doc_buses.png
    :width: 100 %
    :alt: Bus-Example
    :align: center
@@ -78,6 +80,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **label**: Unique designation of the sink. The following format is recommended: "ID_energy sector_sinks".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the sink shall be included to the model. 0 = inactive, 1 = active.
+- **fixed**: Indicates whether it is a fixed sink or not. 0 = not fixed; 1 = fixed.
 - **input**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **load profile**: Specifies the basis onto which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles, its acronym is used. If a time series is used, "timeseries" must be entered. If the source is not fixed, the fill character "x" has to be used.
 - **nominal value/(kW)**: Nominal performance of the sink. Required when "time series" has been entered into the "load profile". When SLP or Richardson is used, use the fill character "x" here.
@@ -85,9 +88,8 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **occupants [RICHARDSON]**: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "x" for other load profiles.
 - **building class [HEAT SLP ONLY]**: BDEW-building class.
 - **wind class [HEAT SLP ONLY]**: wind classification for building location (0=not windy, 1=windy)
-- **fixed**: Indicates whether it is a fixed sink or not. 0 = not fixed; 1 = fixed.
  
-.. figure:: ../images/BSP_sinks.png
+.. figure:: ../images/example_doc_sinks.png
    :width: 100 %
    :alt: Sink-Example
    :align: center
