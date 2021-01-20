@@ -52,8 +52,8 @@ Within this sheet, the buses of the energy system are defined. The following par
 - **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits or not. 0 = no shortage source will be generated; 1 = shortage source will be generated.
 - **shortage costs/(CU/kWh)**: Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "x" is used. 
 - **excess costs/(CU/kWh)**: Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "x" is used.
-- **variable shortage constraint costs /(CU/kWh)**: This costs can only be used if "constraint costs" are considered in the "energysystem" sheet. Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "x" is used.
-- **variable excess constraint costs /(CU/kWh)**: This costs can only be used if "constraint costs" are considered in the "energysystem" sheet. Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "x" is used.
+- **variable shortage constraint costs /(CU/kWh)**: Only if considering constraints. Assigns a price per kWh to the purchase of energy from the shortage source referring to the constraint limit set in the "energysystem" sheet. If the shortage source was deactivated, the fill character "x" is used.
+- **variable excess constraint costs /(CU/kWh)**: Only if considering constraints. Assigns a price per kWh to the release of energy to the excess sink referring to the constraint limit set in the "energysystem" sheet. If the excess sink was deactivated, the fill character "x" is used.
 
 .. figure:: ../images/example_doc_buses.png
    :width: 100 %
@@ -114,17 +114,20 @@ defined if the parameter "technology" is set on "photovoltaic". The following pa
 - **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
+- **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the source is connected to.
 - **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
-- **Turbine Model (Windpower ONLY)**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_. 
-- **Hub Height (Windpower ONLY)**: Hub height of the wind turbine. Which hub heights are possible for the selected reference turbine can be viewed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
 - **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
+- **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
 - **existing capacity/(kW)**: Existing capacity of the source before possible investments.
 - **min. investment capacity/(kW)**: Minimum capacity to be installed in case of an investment.
 - **max. investment capacity/(kW)**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
+- **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon.
+- **periodical constraint costs/(CU/(kW a))**: Only if considering constraints. Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet.
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
-- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
-- **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon
+- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs).
+- **Turbine Model (Windpower ONLY)**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_. 
+- **Hub Height (Windpower ONLY)**: Hub height of the wind turbine. Which hub heights are possible for the selected reference turbine can be viewed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
 - **technology database (PV ONLY)**: Database, from where module parameters are to be obtained. Recommended Database: "SandiaMod".
 - **inverter database (PV ONLY)**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter".
 - **Modul Model (PV ONLY)**: Module name, according to the database used.
@@ -135,9 +138,9 @@ defined if the parameter "technology" is set on "photovoltaic". The following pa
 - **Altitude (PV ONLY)**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Latitude (PV ONLY)**: Geographic latitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Longitude (PV ONLY)**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
-- **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 
-.. figure:: ../images/BSP_source.png
+
+.. figure:: ../images/example_doc_sources.png
    :width: 100 %
    :alt: Source-Example
    :align: center
@@ -170,10 +173,15 @@ The following parameters have to be entered:
 - **output2**: Specifies the bus to which the output of the transformer is forwarded to, if there are several outputs. If there is no second output, the fill character "x" must be entered here.
 - **efficiency**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
 - **efficiency2**: Specifies the efficiency of the second output, if there is one. Values  between 0 and 1 are entered. If there is no second output, the fill character "x" must be entered here.
-- **variable input costs**: Variable costs incurred per kWh of input energy supplied.
+- **variable input costs/(CU/kWh)**: Variable costs incurred per kWh of input energy supplied.
+- **variable output costs/(CU/kWh)**: Variable costs incurred per kWh of output energy supplied.
+- **variable output costs 2/(CU/kWh)**: Variable costs incurred per kWh of output 2 energy supplied.
+- **variable input constraint costs/(CU/kWh)**: Only if considering constraints. Variable constraint costs incurred per kWh of input energy supplied referring to the constraint limit set in the "energysystem" sheet.
+- **variable output constraint costs/(CU/kWh)**: Only if considering constraints. Variable constraint costs incurred per kWh of output energy supplied referring to the constraint limit set in the "energysystem" sheet.
+- **variable output constraint costs 2/(CU/kWh)**: Only if considering constraints. Variable constraint costs incurred per kWh of output 2 energy supplied referring to the constraint limit set in the "energysystem" sheet.
 - **existing capacity/(kW)**: Already installed capacity of the transformer.
-- **max investment capacity/(kW)**: Maximum  installable transformer capacity in addition to the previously existing one.
 - **min investment capacity/(kW)**: Minimum transformer capacity to be installed.
+- **max investment capacity/(kW)**: Maximum  installable transformer capacity in addition to the previously existing one.
 - **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
 - **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
@@ -188,7 +196,7 @@ The following parameters have to be entered:
 - **factor icing (HP ONLY)**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
 
 
-.. figure:: ../images/BSP_transformers.png
+.. figure:: ../images/example_doc_transformers.png
    :width: 100 %
    :alt: Transformer-Example
    :align: center
@@ -213,6 +221,13 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the storage shall be included to the model. 0 = inactive, 1 = active.
 - **bus**: Specifies which bus the storage is connected to.
+- **existing capacity/(kW)**: Previously installed capacity of the storage.
+- **min. investment capacity/(kW)**: Minimum storage capacity to be installed.
+- **max. investment capacity/(kW)**: Maximum in addition to existing capacity, installable storage capacity.
+- **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
+- **periodical constraint costs /(CU/a)**: Only if considering constraints. Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet.
+- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
+- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
 - **input/capacity ratio (invest)**: Indicates the performance with which the memory can be charged.
 - **output/capacity ratio (invest)**: Indicates the performance with which the memory can be discharged.
 - **capacity loss**: Indicates the storage loss per time unit.
@@ -223,14 +238,11 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **capacity max**: Specifies the maximum amount of memory that can be loaded at any given time. Value must be between 0 and 1.
 - **variable input costs**: Indicates how many costs arise for charging with one kWh.
 - **variable output costs**: Indicates how many costs arise for charging with one kWh.
-- **existing capacity/(kW)**: Previously installed capacity of the storage.
-- **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
-- **max. investment capacity/(kW)**: Maximum in addition to existing capacity, installable storage capacity.
-- **min. investment capacity/(kW)**: Minimum storage capacity to be installed.
-- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
-- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
+- **variable input constraint costs**: Only if considering constraints. Indicates how many costs arise for charging with one kWh referring to the constraint limit set in the "energysystem" sheet.
+- **variable output constraint costs**: Only if considering constraints. Indicates how many costs arise for charging with one kWh referring to the constraint limit set in the "energysystem" sheet.
 
-.. figure:: ../images/BSP_storage_2.png
+
+.. figure:: ../images/example_doc_storages.png
    :width: 100 %
    :alt: Storage-Example
    :align: center
@@ -259,15 +271,16 @@ to be entered:
 - **bus_2**: Second bus to which the link is connected. If it is a directed link, this is the output bus.
 - **(un)directed**: Specifies whether it is a directed or an undirected link. Input options: "directed", "undirected".
 - **efficiency**: Specifies the efficiency of the link. Values between 0 and 1 are allowed entries.
+- **variable output costs/(CU/kWh)**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
+- **variable constraint costs/(CU/kWh)**: Only if considering constraints. Costs incurred per kWh referring to the constraint limit set in the "energysystem" sheet.
 - **existing capacity/(kW)**: Already installed capacity of the link.
 - **min. investment capacity/(kW)**: Minimum, in addition to existing capacity, installable capacity.
 - **max. investment capacity/(kW)**: Maximum capacity to be installed.
-- **variable costs/(CU/kWh)**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
 - **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon.
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
 - **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
 
-.. figure:: ../images/BSP_link.png
+.. figure:: ../images/example_doc_storages.png
    :width: 100 %
    :alt: bsp_link_input
    :align: center
@@ -313,10 +326,13 @@ data time system should be in conformity with the model’s time system, defined
 - **dhi**: diffuse horizontal irradiance in W/m\ :sup:`2`
 - **dirhi**: direct horizontal irradiance in W/m\ :sup:`2`
 - **pressure**: air pressure in Pa
-- **windspeed**: Wind speed, measured at 10 m height, in unit m/s
+- **windspeed**: wind speed, measured at 10 m height, in unit m/s
 - **z0**: roughness length of the environment in units m
+- **ground_temp**: constant ground temperature at 100 m depth
+- **water_temp**: varying water temperature of a river depending on the air temperature
+- **groundwater_temp**: constant temperatur of the ground water at 6 - 10 m depth in North Rhine-Westphalia
 
-.. figure:: ../images/BSP_weatherdata.PNG
+.. figure:: ../images/example_doc_weather_data.png
    :width: 100 %
    :alt: weatherdata-Example
    :align: center
