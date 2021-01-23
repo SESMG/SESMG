@@ -301,14 +301,14 @@ These may have one or more different outputs, e.g., heat and electricity. For th
 the nominal performance of a generic transformer with several outputs,
 the respective output ratios, and an efficiency for each output need to be known.
 
-**Heat Pumps**
+**Compression Heat Transformers**
 
-For the modelilng of heat pumps, different heat sources are considered so the 
+For the modelilng of compression heat pumps and chillers, different heat sources are considered so the 
 weather data set must include different temperatures. The efficiency of 
-the heat pump cycle process can be described by the Coefficient of Performance (COP).
-The heat pump automatically creates a heat source and a low temperature bus (see red bubble).
-So only a transformer and a electricity bus needs to be created.
-An example is shown in the following figure.
+the heat pump or chiller cycle process can be described by the Coefficient of Performance (COP).
+The compression heat transformer function automatically creates a heat source and a low or high 
+temperature bus, depending on the mode of operation (see red bubble). So only a transformer
+and a electricity bus needs to be created. An example is shown in the following figure.
 
 .. figure:: ../images/graph_chiller_heat_pump.png
    :width: 100 %
@@ -320,7 +320,7 @@ An example is shown in the following figure.
 At the moment it is possible to use ground water, soil (vertical heat exchanger), surface water 
 and ambient air as a heat source. 
 
-The heat pumps are implemnted by using  `"oemof.thermal" <https://github.com/oemof/oemof-thermal>`_ .
+The compression heat transformers are implemnted by using  `"oemof.thermal" <https://github.com/oemof/oemof-thermal>`_ .
 
 
 Links
