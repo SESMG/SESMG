@@ -127,11 +127,12 @@ database.
 
 **Solar thermal collectors**
 
-.. figure:: ../images/solar thermal collector structure.png
+.. figure:: ../images/solar_thermal_collector_structure.png
    :width: 100 %
-   :alt: pv_systems
+   :alt: solar_thermal_system
    :align: center
 
+  Graph of a solar thermal collector system.
 
 
 
