@@ -310,11 +310,15 @@ So only a transformer and a electricity bus needs to be created.
 An example is shown in the following figure.
 
 .. figure:: ../images/heatpump_graph.png
-   :width: 50 %
+   :width: 49 %
    :alt: HeatPump-Example
-   :align: center
-
+   
    Graph of a heat pump system.
+.. figure:: ../images/graph_cmpr_chiller.png
+   :width: 49 %
+   :alt: Chiller-Example
+
+   Graph of a chiller system.
 
 At the moment it is possible to use ground water, soil (vertical heat exchanger), surface water 
 and ambient air as a heat source. 
