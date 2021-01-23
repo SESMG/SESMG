@@ -311,13 +311,14 @@ So only a transformer and a electricity bus needs to be created.
 An example is shown in the following figure.
 
 .. figure:: ../images/graph_cmpr_heat_pump.png
-   :width: 49 %
+   :width: 40 %
    :alt: HeatPump-Example
    :align: left
    
    Graph of a heat pump system.
+   
 .. figure:: ../images/graph_cmpr_chiller.png
-   :width: 49 %
+   :width: 40 %
    :alt: Chiller-Example
    :align: right
 
