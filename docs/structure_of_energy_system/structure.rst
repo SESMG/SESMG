@@ -159,6 +159,7 @@ of this periphery can be considered by the transformer.
 
    Graph of a solar thermal collector system.
 
+The solar thermal collectors are implemented by using `"oemof.thermal" <https://github.com/oemof/oemof-thermal>`_. 
 
 
 
@@ -312,11 +313,13 @@ An example is shown in the following figure.
 .. figure:: ../images/graph_cmpr_heat_pump.png
    :width: 49 %
    :alt: HeatPump-Example
+   :align: left
    
    Graph of a heat pump system.
 .. figure:: ../images/graph_cmpr_chiller.png
    :width: 49 %
    :alt: Chiller-Example
+   :align: right
 
    Graph of a chiller system.
 
