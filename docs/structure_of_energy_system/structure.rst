@@ -137,13 +137,10 @@ photovoltaic source, although the reflected irradiance and the
 albedo are not a part of the calculation for flat plate collectors. 
 For visualization you can take a look at the graph above. 
 
-The irradiance on the parabolic through collector is based on the
-direct horizontal irradiance dirhi or the direct normal irradiance 
-dni. The direct normal irradiance is the amount of irradiance, that
-hits a specific area at an angle of 90°. The following figure illustrates
-this.
+The heat output of a parabolic through collector is based on the direct
+horizontal irradiance. (direct normal irradiance)
 
-.. figure:: ../images/solar_thermal_collector_structure.png
+.. figure:: ../images/
    :width: 50%
    :alt: solar_thermal_system
    :align: center
