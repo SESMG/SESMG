@@ -324,7 +324,12 @@ The compression heat transformers are implemnted by using  `"oemof.thermal" <htt
 
 **Absorption Heat Transformers**
 
-At this point this function implies the modeling
+At this point this function implies the modeling of an absorption chiller. An absorption chiller
+object contains a high temperature heat source, the necessary connection bus and a transformer
+object, that describes the absorption chiller. The heat source could be waste heat for example.
+The efficiency of the absortion chiller is described by the Coefficient of Performance (COP).
+
+The absorption heat transformers are implemnted by using  `"oemof.thermal" <https://github.com/oemof/oemof-thermal>`_ .
 
 Links
 =================================================
