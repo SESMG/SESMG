@@ -125,6 +125,18 @@ from the `"oedb" <https://github.com/wind-python/windpowerlib/tree/dev/windpower
 database.
 
 
+**Solar thermal collectors**
+
+.. figure:: ../images/solar thermal collector structure.png
+   :width: 100 %
+   :alt: pv_systems
+   :align: center
+
+
+
+
+
+
 Sinks
 =================================================
 
