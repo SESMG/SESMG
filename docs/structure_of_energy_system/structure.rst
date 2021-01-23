@@ -310,19 +310,12 @@ The heat pump automatically creates a heat source and a low temperature bus (see
 So only a transformer and a electricity bus needs to be created.
 An example is shown in the following figure.
 
-.. figure:: ../images/graph_cmpr_heat_pump.png
-   :width: 40 %
-   :alt: HeatPump-Example
-   :align: left
+.. figure:: ../images/graph_chiller_heat_pump.png
+   :width: 100 %
+   :alt: graph heatpump and chiller
+   :align: center
    
-   Graph of a heat pump system.
-   
-.. figure:: ../images/graph_cmpr_chiller.png
-   :width: 40 %
-   :alt: Chiller-Example
-   :align: right
-
-   Graph of a chiller system.
+   Graph of a compression heat pump (left) and compression chiller (right).
 
 At the moment it is possible to use ground water, soil (vertical heat exchanger), surface water 
 and ambient air as a heat source. 
