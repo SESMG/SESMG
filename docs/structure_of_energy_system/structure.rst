@@ -127,12 +127,19 @@ database.
 
 **Solar thermal collectors**
 
+The solar thermal collector function automatically creates a heat
+source, a collector bus object and a transformer object. The output 
+of the source is the actual heat, the collector would produce due to
+its technical parameters. The transformer object embodies the systems 
+periphery (pipes, pumps). Thermal losses and the electricity demand
+of this periphery can be considered by the transformer.
+
 .. figure:: ../images/solar_thermal_collector_structure.png
    :width: 100 %
    :alt: solar_thermal_system
    :align: center
 
-  Graph of a solar thermal collector system.
+   Graph of a solar thermal collector system.
 
 
 
