@@ -127,6 +127,27 @@ database.
 
 **Solar thermal collectors**
 
+There are two collector types that can be modeled with this function.
+
+- flat plate collectors
+- concentrated solar power (parabolic through collector)
+
+The irradiance on the flat plate collector is very similar to the 
+photovoltaic source, although the reflected irradiance and the 
+albedo are not a part of the calculation for flat plate collectors. 
+For visualization you can take a look at the graph above. 
+
+The irradiance on the parabolic through collector is based on the
+direct horizontal irradiance dirhi or the direct normal irradiance 
+dni. The direct normal irradiance is the amount of irradiance, that
+hits a specific area at an angle of 90°. The following figure illustrates
+this.
+
+.. figure:: ../images/solar_thermal_collector_structure.png
+   :width: 50%
+   :alt: solar_thermal_system
+   :align: center
+
 The solar thermal collector function automatically creates a heat
 source, a collector bus object and a transformer object. The output 
 of the source is the actual heat, the collector would produce due to
