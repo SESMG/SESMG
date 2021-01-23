@@ -322,6 +322,9 @@ and ambient air as a heat source.
 
 The compression heat transformers are implemnted by using  `"oemof.thermal" <https://github.com/oemof/oemof-thermal>`_ .
 
+**Absorption Heat Transformers**
+
+At this point this function implies the modeling
 
 Links
 =================================================
