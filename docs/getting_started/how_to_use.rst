@@ -210,7 +210,7 @@ The following parameters have to be entered:
 - **high temperature [deg C] (AbsCH ONLY)**: Temperature of the heat source, that drives the absorption heat transformer.
 - **chilling temperature [deg C] (AbsCH ONLY)**: Output temperature which is needed for the cooling demand.
 - **electrical input conversion factor (AbsCH ONLY)**: Specifies the relation of electricity consumption to energy input. Example: A value of 0,05 means, that the system comsumes 5 % of the input energy as electric energy.
-- **recooling temperature difference [deg C] (AbsCH ONLY)**: Temperature difference for cooling water cycle.
+- **recooling temperature difference [deg C] (AbsCH ONLY)**: Defines the temperature difference between temperature source for recooling and recooling cycle.
 
 
 .. figure:: ../images/BSP_transformers.png
