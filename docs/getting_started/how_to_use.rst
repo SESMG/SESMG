@@ -114,7 +114,7 @@ defined if the parameter "technology" is set on "solar_thermal_flat_plate" or "C
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
+- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "CSP", "solar_thermal_flat_plate". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
 - **Turbine Model (Windpower ONLY)**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_. 
 - **Hub Height (Windpower ONLY)**: Hub height of the wind turbine. Which hub heights are possible for the selected reference turbine can be viewed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
 - **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
@@ -133,7 +133,7 @@ defined if the parameter "technology" is set on "solar_thermal_flat_plate" or "C
 - **Albedo (PV ONLY)**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Altitude (PV ONLY)**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Latitude (PV ONLY) or (Solar Heat)**: Geographic latitude (decimal number) of the photovoltaic or solar thermal module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
-- **Longitude (PV ONLY) or (Solar Thermal)**: Geographic longitude (decimal number) of the photovoltaic or solar thermal module module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
+- **Longitude (PV ONLY) or (Solar Heat)**: Geographic longitude (decimal number) of the photovoltaic or solar thermal module module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
 - **cleanliness (Solar Heat)**: Specifies the cleanliness of a parabolic through collector. Only required if "technology" is set to "CSP".
 - **ETA 0 (Solar Heat)**: Optical efficiency of the collector. Only required if "technology" is "CSP" or "solar_thermal_flate_plate". Specific values can be found in data sheets.
 - **A1 (Solar Heat)**: Collector specific linear heat loss coefficient. Only required if "technology" is "CSP" or "solar_thermal_flate_plate". Specific values can be found in data sheets.
@@ -204,13 +204,13 @@ The following parameters have to be entered:
 - **temp threshold icing (HP ONLY)**: Temperature below which icing occurs (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
 - **factor icing (HP ONLY)**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
 
-**The following parameters are only required, if "transformer type" is set to "absorption_heat_transformer":
+**The following parameters are only required, if "transformer type" is set to "absorption_heat_transformer"**:
 
 - **name (abs chiller) (AbsCH ONLY)**: Defines the way of calculating the efficiency of the absorption heat transformer. Possible inputs are: "Rotartica", "Safarik", "Broad_01", "Broad_02", and "Kuehn". "Broad_02" refers to a double-effect absorption chiller model, whereas the other keys refer to single-effect absorption chiller models.
 - **high temperature [deg C] (AbsCH ONLY)**: Temperature of the heat source, that drives the absorption heat transformer.
-- **chilling temperature [deg C] (AbsCH ONLY)**:
-- **electrical input conversion factor (AbsCH ONLY)**:
-- **recooling temperature difference [deg C] (AbsCH ONLY)**:
+- **chilling temperature [deg C] (AbsCH ONLY)**: Output temperature which is needed for the cooling demand.
+- **electrical input conversion factor (AbsCH ONLY)**: Specifies the relation of electricity consumption to energy input. Example: A value of 0,05 means, that the system comsumes 5 % of the input energy as electric energy.
+- **recooling temperature difference [deg C] (AbsCH ONLY)**: Temperature difference for cooling water cycle.
 
 
 .. figure:: ../images/BSP_transformers.png
