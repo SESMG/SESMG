@@ -112,6 +112,7 @@ defined if the parameter "technology" is set on "solar_thermal_flat_plate" or "C
 - **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
+- **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the source is connected to.
 - **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
 - **Turbine Model (Windpower ONLY)**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_. 
@@ -133,7 +134,6 @@ defined if the parameter "technology" is set on "solar_thermal_flat_plate" or "C
 - **Altitude (PV ONLY)**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Latitude (PV ONLY) or (Solar Heat)**: Geographic latitude (decimal number) of the photovoltaic or solar thermal module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
 - **Longitude (PV ONLY) or (Solar Thermal)**: Geographic longitude (decimal number) of the photovoltaic or solar thermal module module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
-- **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **cleanliness (Solar Heat)**: Specifies the cleanliness of a parabolic through collector. Only required if "technology" is set to "CSP".
 - **ETA 0 (Solar Heat)**: Optical efficiency of the collector. Only required if "technology" is "CSP" or "solar_thermal_flate_plate". Specific values can be found in data sheets.
 - **A1 (Solar Heat)**: Collector specific linear heat loss coefficient. Only required if "technology" is "CSP" or "solar_thermal_flate_plate". Specific values can be found in data sheets.
@@ -166,7 +166,7 @@ defined if the parameter "technology" is set on "solar_thermal_flat_plate" or "C
 Transformers
 =================================================
 
-Within this sheet, the transformers of the energy system are defined. Properties with the addition “HP ONLY” have only to be defined if the parameter “transformer type” is set on “HeatPump”. With other transformers, these fields can be left empty or filled with any placeholder. 
+Within this sheet, the transformers of the energy system are defined. 
 
 The following parameters have to be entered:
 
@@ -175,27 +175,42 @@ The following parameters have to be entered:
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the transformer shall be included to the model. 0 = inactive, 1 = active.
 - **transformer type**: Indicates what kind of transformer it is. Possible entries: "GenericTransformer" for linear transformers with constant efficiencies; "GenericCHP" for transformers with varying efficiencies.
+- **mode**: Specifies, if a compression or absorption heat transformer is working as "chiller" or "heat_pump". Only required if "transformer type" is set to "compression_heat_transformer" or "absorption_heat_transformer".
 - **input**: Specifies the bus from which the input to the transformer comes from.
 - **output**: Specifies bus to which the output of the transformer is forwarded to.
 - **output2**: Specifies the bus to which the output of the transformer is forwarded to, if there are several outputs. If there is no second output, the fill character "x" must be entered here.
 - **efficiency**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
 - **efficiency2**: Specifies the efficiency of the second output, if there is one. Values  between 0 and 1 are entered. If there is no second output, the fill character "x" must be entered here.
-- **variable input costs**: Variable costs incurred per kWh of input energy supplied.
+- **variable input costs /(CU/kWh)**: Variable costs incurred per kWh of input energy supplied.
+- **variable output costs /(CU/kWh)**: Variable costs incurred per kWh of output energy supplied.
+- **variable output costs 2 /(CU/kWh)**: Variable costs incurred per kWh of output energy supplied (for output 2).
 - **existing capacity/(kW)**: Already installed capacity of the transformer.
 - **max investment capacity/(kW)**: Maximum  installable transformer capacity in addition to the previously existing one.
 - **min investment capacity/(kW)**: Minimum transformer capacity to be installed.
 - **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
 - **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
-- **heat source (HP ONLY)**: Specifies the heat source. At the moment are "GroundWater", "Ground", "Air" and "Water" possible.
-- **temperature high /(deg C) (HP ONLY)**: Temperature of the high temperature heat reservoir
-- **quality grade (HP ONLY)**: To determine the COP of a real machine a scale-down factor (the quality grade) is applied on the Carnot efficiency (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
-- **area /(sq m) (HP ONLY)**: Open spaces for ground-coupled heat pumps (GCHP).
-- **length of the geoth. probe (m) (HP ONLY)**: Length of the vertical heat exchanger, only for GCHP.
-- **heat extraction (kW/(m*a)) (HP ONLY)**: Heat extraction for the heat exchanger referring to the location, only for GCHP.
-- **min. borehole area (sq m) (HP ONLY)**: Limited space due to the regeneation of the ground source, only for GCHP.
-- **temp threshold icing (HP ONLY)**: Temperature below which icing occurs (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
-- **factor icing (HP ONLY)**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
+
+**The following parameters are only required, if "transformer type" is set to "compression_heat_transformer"**:
+
+- **heat source (CHT ONLY)**: Specifies the heat source. At the moment are "GroundWater", "Ground", "Air" and "Water" possible.
+- **temperature high /(deg C) (CHT ONLY)**: Temperature of the high temperature heat reservoir. If "mode" is set to "chiller" this value has to be set to "x".
+- **temperature low /(deg C)**: Cooling temperature needed for cooling demand. If "mode" is set to "heat_pump" this value has to be set to "x".
+- **quality grade (CHT ONLY)**: To determine the COP of a real machine a scale-down factor (the quality grade) is applied on the Carnot efficiency (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
+- **area /(sq m) (CHT ONLY)**: Open spaces for ground-coupled compression heat transformers (GC-CHT).
+- **length of the geoth. probe (m) (CHT ONLY)**: Length of the vertical heat exchanger, only for GC-CHT.
+- **heat extraction (kW/(m*a)) (CHT ONLY)**: Heat extraction for the heat exchanger referring to the location, only for GC-CHT.
+- **min. borehole area (sq m) (CHT ONLY)**: Limited space due to the regeneation of the ground source, only for GC-CHT.
+- **temp threshold icing (HP ONLY)**: Temperature below which icing occurs (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
+- **factor icing (HP ONLY)**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
+
+**The following parameters are only required, if "transformer type" is set to "absorption_heat_transformer":
+
+- **name (abs chiller) (AbsCH ONLY)**: Defines the way of calculating the efficiency of the absorption heat transformer. Possible inputs are: "Rotartica", "Safarik", "Broad_01", "Broad_02", and "Kuehn". "Broad_02" refers to a double-effect absorption chiller model, whereas the other keys refer to single-effect absorption chiller models.
+- **high temperature [deg C] (AbsCH ONLY)**: Temperature of the heat source, that drives the absorption heat transformer.
+- **chilling temperature [deg C] (AbsCH ONLY)**:
+- **electrical input conversion factor (AbsCH ONLY)**:
+- **recooling temperature difference [deg C] (AbsCH ONLY)**:
 
 
 .. figure:: ../images/BSP_transformers.png
@@ -222,10 +237,11 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **label**: Unique designation of the storage. The following format is recommended: "ID_energy sector_storage".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the storage shall be included to the model. 0 = inactive, 1 = active.
+- **storage type**: Defines whether the storage is a "Generic" or a "Stratified" sorage. These two inputs are possible.
 - **bus**: Specifies which bus the storage is connected to.
 - **input/capacity ratio (invest)**: Indicates the performance with which the memory can be charged.
 - **output/capacity ratio (invest)**: Indicates the performance with which the memory can be discharged.
-- **capacity loss**: Indicates the storage loss per time unit.
+- **capacity loss**: Indicates the storage loss per time unit. Only required, if the "storage type" is set to "Generic". 
 - **efficiency inflow**: Specifies the charging efficiency.
 - **efficiency outflow**: Specifies the discharging efficiency.
 - **initial capacity**: Specifies how far the memory is loaded at time 0 of the simulation. Value must be between 0 and 1.
@@ -233,6 +249,10 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **capacity max**: Specifies the maximum amount of memory that can be loaded at any given time. Value must be between 0 and 1.
 - **variable input costs**: Indicates how many costs arise for charging with one kWh.
 - **variable output costs**: Indicates how many costs arise for charging with one kWh.
+- **diameter [m] (Stratified Storage Only)**: Defines the diameter of a stratified thermal storage, which is necessary for the calculation of thermal losses.
+- **temperature high [°C] (Stratified Storage Only)**: Outlet temperature of the stratified thermal storage.
+- **temperature low [°C] (Stratified Storage Only)**: Inlet temperature of the stratified thermal storage.
+- **U value [W/m²*K] (Stratified Storage Only)**: Thermal transmittance coefficient of the wall of the stratified thermal storage (including thermal insulation). Specific values can be found in data sheets.
 - **existing capacity/(kW)**: Previously installed capacity of the storage.
 - **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
 - **max. investment capacity/(kW)**: Maximum in addition to existing capacity, installable storage capacity.
