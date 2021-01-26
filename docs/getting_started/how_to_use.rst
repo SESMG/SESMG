@@ -106,7 +106,8 @@ Sources
 =================================================
 
 Within this sheet, the sources of the energy system are defined. Properties with the addition "PV ONLY" have only to be 
-defined if the parameter "technology" is set on "photovoltaic". The following parameters have to be entered:
+defined if the parameter "technology" is set on "photovoltaic". Properties with the addition "Solar Heat" have only to be 
+defined if the parameter "technology" is set on "solar_thermal_flat_plate" or "CSP".The following parameters have to be entered:
 
 - **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
@@ -126,13 +127,25 @@ defined if the parameter "technology" is set on "photovoltaic". The following pa
 - **inverter database (PV ONLY)**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter".
 - **Modul Model (PV ONLY)**: Module name, according to the database used.
 - **Inverter Model (PV ONLY)**: Inverter name, according to the database used.
-- **Azimuth (PV ONLY)**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic sources, use fill character "x" for other technologies.
-- **Surface Tilt (PV ONLY)**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Azimuth (PV ONLY) or (Solar Heat)**: Specifies the orientation of the PV or solar thermal module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
+- **Surface Tilt (PV ONLY) or (Solar Heat)**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
 - **Albedo (PV ONLY)**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Altitude (PV ONLY)**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
-- **Latitude (PV ONLY)**: Geographic latitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
-- **Longitude (PV ONLY)**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Latitude (PV ONLY) or (Solar Heat)**: Geographic latitude (decimal number) of the photovoltaic or solar thermal module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
+- **Longitude (PV ONLY) or (Solar Thermal)**: Geographic longitude (decimal number) of the photovoltaic or solar thermal module module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
+- **cleanliness (Solar Heat)**: Specifies the cleanliness of a parabolic through collector. Only required if "technology" is set to "CSP".
+- **ETA 0 (Solar Heat)**: Optical efficiency of the collector. Only required if "technology" is "CSP" or "solar_thermal_flate_plate". Specific values can be found in data sheets.
+- **A1 (Solar Heat)**: Collector specific linear heat loss coefficient. Only required if "technology" is "CSP" or "solar_thermal_flate_plate". Specific values can be found in data sheets.
+- **A2 (Solar Heat)**: Collector specific quadratic heat loss coefficient. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".Specific values can be found in data sheets.
+- **C1 (Solar Heat)**: Collector specific thermal loss parameter. Only required if "technology" is "CSP". Specific values can be found in data sheets.
+- **C2 (Solar Heat)**: Collector specific thermal loss parameter. Only required if "technology" is "CSP". Specific values can be found in data sheets.
+- **Temperature Inlet [deg C] (Solar Heat)**: Inlet temperature of the solar heat collector module. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".
+- **Temperature Difference [deg C] (Solar Heat)**: Temperature Difference between in- and outlet temperature of the solar heat collector module. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".
+- **Conversion Factor m^2/kW (Solar Heat)**: 
+- **Peripheral Losses (Solar Heat)**: Heat loss coefficient for losses in the collector's peripheral system. Only required for "technology" "CSP" and "solar_thermal_flate_plate".
+- **Electric Consumption (Solar Heat)**: Electric consumption of the collector system. Example: If value is set to 0,05, the electric consumption is 5 % of the energy output. Only required for "technology" "CSP" and "solar_thermal_flate_plate".
+
 
 .. figure:: ../images/BSP_source.png
    :width: 100 %
