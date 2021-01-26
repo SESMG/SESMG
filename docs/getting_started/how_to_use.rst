@@ -195,14 +195,14 @@ The following parameters have to be entered:
 
 - **heat source (CHT ONLY)**: Specifies the heat source. At the moment are "GroundWater", "Ground", "Air" and "Water" possible.
 - **temperature high /(deg C) (CHT ONLY)**: Temperature of the high temperature heat reservoir. If "mode" is set to "chiller" this value has to be set to "x".
-- **temperature low /(deg C)**: Cooling temperature needed for cooling demand. If "mode" is set to "heat_pump" this value has to be set to "x".
+- **temperature low /(deg C) (CHT ONLY)**: Cooling temperature needed for cooling demand. If "mode" is set to "heat_pump" this value has to be set to "x".
 - **quality grade (CHT ONLY)**: To determine the COP of a real machine a scale-down factor (the quality grade) is applied on the Carnot efficiency (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
 - **area /(sq m) (CHT ONLY)**: Open spaces for ground-coupled compression heat transformers (GC-CHT).
 - **length of the geoth. probe (m) (CHT ONLY)**: Length of the vertical heat exchanger, only for GC-CHT.
 - **heat extraction (kW/(m*a)) (CHT ONLY)**: Heat extraction for the heat exchanger referring to the location, only for GC-CHT.
 - **min. borehole area (sq m) (CHT ONLY)**: Limited space due to the regeneation of the ground source, only for GC-CHT.
-- **temp threshold icing (HP ONLY)**: Temperature below which icing occurs (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
-- **factor icing (HP ONLY)**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
+- **temp threshold icing (CHT ONLY)**: Temperature below which icing occurs (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
+- **factor icing (CHT ONLY)**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
 
 **The following parameters are only required, if "transformer type" is set to "absorption_heat_transformer"**:
 
