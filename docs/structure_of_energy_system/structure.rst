@@ -138,12 +138,7 @@ albedo are not a part of the calculation for flat plate collectors.
 For visualization you can take a look at the graph above. 
 
 The heat output of a parabolic through collector is based on the direct
-horizontal irradiance. (direct normal irradiance)
-
-.. figure:: ../images/
-   :width: 50%
-   :alt: solar_thermal_system
-   :align: center
+horizontal irradiance.
 
 The solar thermal collector function automatically creates a heat
 source, a collector bus object and a transformer object. The output 
