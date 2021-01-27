@@ -142,6 +142,7 @@ defined if the parameter "technology" is set on "solar_thermal_flat_plate" or "C
 - **C2 (Solar Heat)**: Collector specific thermal loss parameter. Only required if "technology" is "CSP". Specific values can be found in data sheets.
 **Note: Exemlpary values for CSP technology**
 The following table shows examplary values for a parabolic through collector
+
 .. list-table::
     :name: Specific values for parabolic through collector according to `Janotte, N; et al: Dynamic performance evaluation of the HelioTrough collector demon-stration loop - towards a new benchmark in parabolic trough qualification, SolarPACES 2013 <https://www.sciencedirect.com/science/article/pii/S1876610214004664>`_
     :widths: 50 50 50 
