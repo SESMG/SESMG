@@ -272,7 +272,7 @@ def show_results():
 # Definition of the user interface
 window = Tk()
 window.title("SESMG - Spreadsheet Energy System Model Generator")
-window.geometry('1200x900')
+window.geometry('1200x940')
 tab_control = ttk.Notebook(window)
 tab_control.pack(expand=1, fill='both')
 tab_control.pressed_index = None
@@ -380,26 +380,30 @@ def execute_sesmg_DEMO(demo_file, demo_results):
 
 def demo_scenario():
     '''modifies financial demo scenario'''
-
-    xfile = openpyxl.load_workbook(
-        'examples/v0.1.1_demo_scenario/demo_scenario.xlsx')
+    optimization = variable.get()
+    if optimization == 'Emissionen':
+        xfile = openpyxl.load_workbook(
+            'examples/v0.1.1_demo_scenario/demo_scenario_emissions.xlsx')
+    elif optimization == 'Monetaer':
+        xfile = openpyxl.load_workbook(
+            'examples/v0.1.1_demo_scenario/demo_scenario_monetaer.xlsx')
 
     # WINDPOWER
     sheet = xfile["sources"]
-    sheet['H2'] = (int(entry_values['windpower'].get()))
-    sheet['I2'] = (int(entry_values['windpower'].get()))
+    sheet['J3'] = (int(entry_values['windpower'].get()))
+    sheet['K3'] = (int(entry_values['windpower'].get()))
     # PHOTOVOLTAICS
     sheet = xfile["sources"]
-    sheet['H3'] = (int(entry_values['photovoltaics'].get()))
-    sheet['I3'] = (int(entry_values['photovoltaics'].get()))
+    sheet['J2'] = (int(entry_values['photovoltaics'].get()))
+    sheet['K2'] = (int(entry_values['photovoltaics'].get()))
     # BATTERY
     sheet = xfile["storages"]
     sheet['F2'] = (int(entry_values['battery'].get()))
     sheet['G2'] = (int(entry_values['battery'].get()))
     # CHP
     sheet = xfile["transformers"]
-    sheet['N3'] = (int(entry_values['chp'].get()))
-    sheet['O3'] = (int(entry_values['chp'].get()))
+    sheet['Q3'] = (int(entry_values['chp'].get()))
+    sheet['R3'] = (int(entry_values['chp'].get()))
     # THERMAL STORAGE
     sheet = xfile["storages"]
     sheet['F3'] = (int(entry_values['thermal storage'].get()))
@@ -414,8 +418,16 @@ def demo_scenario():
 
     df_summary = pd.read_csv(r"results/demo/summary.csv")
     # monetary_costs = float(df_summary['Total System Costs'])
-    monetary_costs.set(str(round(float(df_summary['Total System Costs']/1000000),2)))
-    emission_costs.set(str(round(float(df_summary['Total Constraint Costs']/1000000),2)))
+    if optimization == 'Emissionen':
+        monetary_costs.set(str(
+            round(float(df_summary['Total Constraint Costs'] / 1000000), 2)))
+        emission_costs.set(
+            str(round(float(df_summary['Total System Costs'] / 1000000), 2)))
+    elif optimization == 'Monetaer':
+        monetary_costs.set(str(
+            round(float(df_summary['Total System Costs']/1000000),2)))
+        emission_costs.set(str(
+            round(float(df_summary['Total Constraint Costs']/1000000),2)))
     window.update_idletasks()
 
 
@@ -596,6 +608,10 @@ for i in range(len(demo_components)):
 
 # EXECUTION BUTTONS
 # row = row + 1
+OptionList = ['Emissionen', 'Monetaer']
+variable = StringVar()
+OptionMenu(demo_frame, variable, *OptionList).grid(column=1, row=row, pady=4)
+row = row + 1
 Button(demo_frame, text='SIMULATE', command=simulate_scenario).grid(column=1, row=row, pady=4)
 
 # RESULTS
@@ -661,7 +677,7 @@ for i in range(len(demo_components)):
 
 
 
-row = row + 2
+row = row + 3
 label_monetary_costs = Label(demo_frame, text='RESULTS', font=('Helvetica 10'))
 label_monetary_costs.grid(column=4, row=row, sticky="W")
 
@@ -693,7 +709,7 @@ label_emission_unit_2.grid(column=2+4, row=row, sticky="W")
 #
 #
 # EXECUTION BUTTONS
-row = 14
+row = 15
 Button(demo_frame, text='SAVE', command=save_manual_results).grid(column=1+4, row=row, pady=4)
 row = row + 1
 label_line = Label(demo_frame, text=14*'===========', font=('Helvetica 10'))
