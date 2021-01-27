@@ -135,14 +135,14 @@ defined if the parameter "technology" is set on "solar_thermal_flat_plate" or "C
 - **Latitude (PV ONLY) or (Solar Heat)**: Geographic latitude (decimal number) of the photovoltaic or solar thermal module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
 - **Longitude (PV ONLY) or (Solar Heat)**: Geographic longitude (decimal number) of the photovoltaic or solar thermal module module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
 - **cleanliness (Solar Heat)**: Specifies the cleanliness of a parabolic through collector. Only required if "technology" is set to "CSP".
-- **ETA 0 (Solar Heat)**: Optical efficiency of the collector. Only required if "technology" is "CSP" or "solar_thermal_flate_plate". Specific values can be found in data sheets.
-- **A1 (Solar Heat)**: Collector specific linear heat loss coefficient. Only required if "technology" is "CSP" or "solar_thermal_flate_plate". Specific values can be found in data sheets.
-- **A2 (Solar Heat)**: Collector specific quadratic heat loss coefficient. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".Specific values can be found in data sheets.
+- **ETA 0 (Solar Heat)**: Optical efficiency of the collector. Only required if "technology" is "CSP" or "solar_thermal_flate_plate". Specific values can be found in data sheets. The optical efficiency is a collector specific value. Values are based on test methods according to DIN EN ISO 9806.
+- **A1 (Solar Heat)**: Collector specific linear heat loss coefficient. Only required if "technology" is "CSP" or "solar_thermal_flate_plate". Specific values can be found in data sheets. Values are based on test methods according to DIN EN ISO 9806.
+- **A2 (Solar Heat)**: Collector specific quadratic heat loss coefficient. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".Specific values can be found in data sheets. Values are based on test methods according to DIN EN ISO 9806. 
 - **C1 (Solar Heat)**: Collector specific thermal loss parameter. Only required if "technology" is "CSP". Specific values can be found in data sheets.
 - **C2 (Solar Heat)**: Collector specific thermal loss parameter. Only required if "technology" is "CSP". Specific values can be found in data sheets.
-- **Temperature Inlet [deg C] (Solar Heat)**: Inlet temperature of the solar heat collector module. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".
-- **Temperature Difference [deg C] (Solar Heat)**: Temperature Difference between in- and outlet temperature of the solar heat collector module. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".
-- **Conversion Factor m^2/kW (Solar Heat)**: 
+- **Temperature Inlet /deg C (Solar Heat)**: Inlet temperature of the solar heat collector module. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".
+- **Temperature Difference /deg C (Solar Heat)**: Temperature Difference between in- and outlet temperature of the solar heat collector module. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".
+- **Conversion Factor /(sqm/kW) (Solar Heat)**: 
 - **Peripheral Losses (Solar Heat)**: Heat loss coefficient for losses in the collector's peripheral system. Only required for "technology" "CSP" and "solar_thermal_flate_plate".
 - **Electric Consumption (Solar Heat)**: Electric consumption of the collector system. Example: If value is set to 0,05, the electric consumption is 5 % of the energy output. Only required for "technology" "CSP" and "solar_thermal_flate_plate".
 
@@ -193,24 +193,24 @@ The following parameters have to be entered:
 
 **The following parameters are only required, if "transformer type" is set to "compression_heat_transformer"**:
 
-- **heat source (CHT ONLY)**: Specifies the heat source. At the moment are "GroundWater", "Ground", "Air" and "Water" possible.
-- **temperature high /(deg C) (CHT ONLY)**: Temperature of the high temperature heat reservoir. If "mode" is set to "chiller" this value has to be set to "x".
-- **temperature low /(deg C) (CHT ONLY)**: Cooling temperature needed for cooling demand. If "mode" is set to "heat_pump" this value has to be set to "x".
-- **quality grade (CHT ONLY)**: To determine the COP of a real machine a scale-down factor (the quality grade) is applied on the Carnot efficiency (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
-- **area /(sq m) (CHT ONLY)**: Open spaces for ground-coupled compression heat transformers (GC-CHT).
-- **length of the geoth. probe (m) (CHT ONLY)**: Length of the vertical heat exchanger, only for GC-CHT.
-- **heat extraction (kW/(m*a)) (CHT ONLY)**: Heat extraction for the heat exchanger referring to the location, only for GC-CHT.
-- **min. borehole area (sq m) (CHT ONLY)**: Limited space due to the regeneation of the ground source, only for GC-CHT.
-- **temp threshold icing (CHT ONLY)**: Temperature below which icing occurs (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
-- **factor icing (CHT ONLY)**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
+- **heat source (CHT)**: Specifies the heat source. At the moment are "GroundWater", "Ground", "Air" and "Water" possible.
+- **temperature high /deg C (CHT)**: Temperature of the high temperature heat reservoir. If "mode" is set to "chiller" this value has to be set to "x".
+- **temperature low /(deg C) (CHT)**: Cooling temperature needed for cooling demand. If "mode" is set to "heat_pump" this value has to be set to "x".
+- **quality grade (CHT)**: To determine the COP of a real machine a scale-down factor (the quality grade) is applied on the Carnot efficiency (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
+- **area /(sq m) (CHT)**: Open spaces for ground-coupled compression heat transformers (GC-CHT).
+- **length of the geoth. probe /m (CHT)**: Length of the vertical heat exchanger, only for GC-CHT.
+- **heat extraction /(kW/(m*a)) (CHT)**: Heat extraction for the heat exchanger referring to the location, only for GC-CHT.
+- **min. borehole area /(sq m) (CHT)**: Limited space due to the regeneation of the ground source, only for GC-CHT.
+- **temp threshold icing (CHT)**: Temperature below which icing occurs (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
+- **factor icing (CHT)**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
 
 **The following parameters are only required, if "transformer type" is set to "absorption_heat_transformer"**:
 
-- **name (abs chiller) (AbsCH ONLY)**: Defines the way of calculating the efficiency of the absorption heat transformer. Possible inputs are: "Rotartica", "Safarik", "Broad_01", "Broad_02", and "Kuehn". "Broad_02" refers to a double-effect absorption chiller model, whereas the other keys refer to single-effect absorption chiller models.
-- **high temperature [deg C] (AbsCH ONLY)**: Temperature of the heat source, that drives the absorption heat transformer.
-- **chilling temperature [deg C] (AbsCH ONLY)**: Output temperature which is needed for the cooling demand.
-- **electrical input conversion factor (AbsCH ONLY)**: Specifies the relation of electricity consumption to energy input. Example: A value of 0,05 means, that the system comsumes 5 % of the input energy as electric energy.
-- **recooling temperature difference [deg C] (AbsCH ONLY)**: Defines the temperature difference between temperature source for recooling and recooling cycle.
+- **name (AbsCH)**: Defines the way of calculating the efficiency of the absorption heat transformer. Possible inputs are: "Rotartica", "Safarik", "Broad_01", "Broad_02", and "Kuehn". "Broad_02" refers to a double-effect absorption chiller model, whereas the other keys refer to single-effect absorption chiller models.
+- **high temperature /deg C (AbsCH)**: Temperature of the heat source, that drives the absorption heat transformer.
+- **chilling temperature /deg C (AbsCH)**: Output temperature which is needed for the cooling demand.
+- **electrical input conversion factor (AbsCH)**: Specifies the relation of electricity consumption to energy input. Example: A value of 0,05 means, that the system comsumes 5 % of the input energy as electric energy.
+- **recooling temperature difference /deg C (AbsCH)**: Defines the temperature difference between temperature source for recooling and recooling cycle.
 
 
 .. figure:: ../images/BSP_transformers.png
@@ -249,10 +249,10 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **capacity max**: Specifies the maximum amount of memory that can be loaded at any given time. Value must be between 0 and 1.
 - **variable input costs**: Indicates how many costs arise for charging with one kWh.
 - **variable output costs**: Indicates how many costs arise for charging with one kWh.
-- **diameter [m] (Stratified Storage Only)**: Defines the diameter of a stratified thermal storage, which is necessary for the calculation of thermal losses.
-- **temperature high [°C] (Stratified Storage Only)**: Outlet temperature of the stratified thermal storage.
-- **temperature low [°C] (Stratified Storage Only)**: Inlet temperature of the stratified thermal storage.
-- **U value [W/m²*K] (Stratified Storage Only)**: Thermal transmittance coefficient of the wall of the stratified thermal storage (including thermal insulation). Specific values can be found in data sheets.
+- **diameter /m (Stratified Storage)**: Defines the diameter of a stratified thermal storage, which is necessary for the calculation of thermal losses.
+- **temperature high /deg C (Stratified Storage)**: Outlet temperature of the stratified thermal storage.
+- **temperature low /deg C (Stratified Storage)**: Inlet temperature of the stratified thermal storage.
+- **U value /(W/(sqm*K)) (Stratified Storage)**: Thermal transmittance coefficient of the wall of the stratified thermal storage (including thermal insulation). Specific values can be found in data sheets.
 - **existing capacity/(kW)**: Previously installed capacity of the storage.
 - **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
 - **max. investment capacity/(kW)**: Maximum in addition to existing capacity, installable storage capacity.
