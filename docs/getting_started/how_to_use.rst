@@ -140,9 +140,27 @@ defined if the parameter "technology" is set on "solar_thermal_flat_plate" or "C
 - **A2 (Solar Heat)**: Collector specific quadratic heat loss coefficient. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".Specific values can be found in data sheets. Values are based on test methods according to DIN EN ISO 9806. 
 - **C1 (Solar Heat)**: Collector specific thermal loss parameter. Only required if "technology" is "CSP". Specific values can be found in data sheets.
 - **C2 (Solar Heat)**: Collector specific thermal loss parameter. Only required if "technology" is "CSP". Specific values can be found in data sheets.
+**Note: Exemlpary values for CSP technology**
+The following table shows examplary values for a parabolic through collector
+.. list-table::
+    :name: Specific values for parabolic through collector according to `Janotte, N; et al: Dynamic performance evaluation of the HelioTrough collector demon-stration loop - towards a new benchmark in parabolic trough qualification, SolarPACES 2013 <https://www.sciencedirect.com/science/article/pii/S1876610214004664>`_
+    :widths: 50 50 50 
+    :header-rows: 0
+
+    * - eta0
+      - 0,816
+    * - a1
+      - -0,00159
+    * - a2
+      - 0,0000977
+    * - c1
+      - 0,0622
+    * - c2
+      - 0,00023
+
 - **Temperature Inlet /deg C (Solar Heat)**: Inlet temperature of the solar heat collector module. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".
 - **Temperature Difference /deg C (Solar Heat)**: Temperature Difference between in- and outlet temperature of the solar heat collector module. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".
-- **Conversion Factor /(sqm/kW) (Solar Heat)**: 
+- **Conversion Factor /(sqm/kW) (Solar Heat)**: Collector specific factor. The solar irradiance is given in W/sqm. Therefore the collector output is given in this unit as well. The investment object should be power (kW). So the energy output (kW/sqm) has to be multiplied with the conversion factor. The conversion factor can be calculated through the measured power per module (DIN EN ISO 9806). 
 - **Peripheral Losses (Solar Heat)**: Heat loss coefficient for losses in the collector's peripheral system. Only required for "technology" "CSP" and "solar_thermal_flate_plate".
 - **Electric Consumption (Solar Heat)**: Electric consumption of the collector system. Example: If value is set to 0,05, the electric consumption is 5 % of the energy output. Only required for "technology" "CSP" and "solar_thermal_flate_plate".
 
