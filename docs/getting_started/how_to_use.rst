@@ -140,24 +140,15 @@ defined if the parameter "technology" is set on "solar_thermal_flat_plate" or "C
 - **A2 (Solar Heat)**: Collector specific quadratic heat loss coefficient. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".Specific values can be found in data sheets. Values are based on test methods according to DIN EN ISO 9806. 
 - **C1 (Solar Heat)**: Collector specific thermal loss parameter. Only required if "technology" is "CSP". Specific values can be found in data sheets.
 - **C2 (Solar Heat)**: Collector specific thermal loss parameter. Only required if "technology" is "CSP". Specific values can be found in data sheets.
-**Note: Exemlpary values for CSP technology**
-The following table shows examplary values for a parabolic through collector
+    **Note: Exemlpary values for CSP technology**
+    The following figure shows examplary values for a parabolic through collector
 
-.. list-table::
-    :name: Specific values for parabolic through collector according to `Janotte, N; et al: Dynamic performance evaluation of the HelioTrough collector demon-stration loop - towards a new benchmark in parabolic trough qualification, SolarPACES 2013 <https://www.sciencedirect.com/science/article/pii/S1876610214004664>`_
-    :widths: 50 50 50 
-    :header-rows: 0
-
-    * - eta0
-      - 0,816
-    * - a1
-      - -0,00159
-    * - a2
-      - 0,0000977
-    * - c1
-      - 0,0622
-    * - c2
-      - 0,00023
+.. figure:: ../images/CSP_examplary.png
+   :width: 50 %
+   :alt: CSP_example
+   :align: center
+   
+   The parameters refer to `Janotte, N; et al <https://www.sciencedirect.com/science/article/pii/S1876610214004664>`_
 
 - **Temperature Inlet /deg C (Solar Heat)**: Inlet temperature of the solar heat collector module. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".
 - **Temperature Difference /deg C (Solar Heat)**: Temperature Difference between in- and outlet temperature of the solar heat collector module. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".
