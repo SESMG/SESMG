@@ -152,7 +152,7 @@ The parameters refer to `Janotte, N; et al <https://www.sciencedirect.com/scienc
 
 - **Temperature Inlet /deg C (Solar Heat)**: Inlet temperature of the solar heat collector module. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".
 - **Temperature Difference /deg C (Solar Heat)**: Temperature Difference between in- and outlet temperature of the solar heat collector module. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".
-- **Conversion Factor /(sqm/kW) (Solar Heat)**: Collector specific factor. The solar irradiance is given in W/sqm. Therefore the collector output is given in this unit as well. The investment object should be power (kW). So the energy output (kW/sqm) has to be multiplied with the conversion factor. The conversion factor can be calculated with the measured power per module (DIN EN ISO 9806). 
+- **Conversion Factor /(sqm/kW) (Solar Heat)**: Collector specific factor. The solar irradiance is given in W/sqm. Therefore the collector output is given in this unit as well. The investment object should be power (kW). So the energy output (kW/sqm) has to be multiplied with the conversion factor. The conversion factor can be calculated with the measured power per module at 1000 W/sqm (DIN EN ISO 9806). 
 - **Peripheral Losses (Solar Heat)**: Heat loss coefficient for losses in the collector's peripheral system. Only required for "technology" "CSP" and "solar_thermal_flate_plate".
 - **Electric Consumption (Solar Heat)**: Electric consumption of the collector system. Example: If value is set to 0,05, the electric consumption is 5 % of the energy output. Only required for "technology" "CSP" and "solar_thermal_flate_plate".
 
