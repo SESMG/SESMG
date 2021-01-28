@@ -380,11 +380,11 @@ def execute_sesmg_DEMO(demo_file, demo_results):
 
 def demo_scenario():
     '''modifies financial demo scenario'''
-    optimization = variable.get()
-    if optimization == 'Emissionen':
+    optimization = operation_mode.get()
+    if optimization == 'emissions':
         xfile = openpyxl.load_workbook(
             'examples/v0.1.1_demo_scenario/demo_scenario_emissions.xlsx')
-    elif optimization == 'Monetaer':
+    elif optimization == 'monetary':
         xfile = openpyxl.load_workbook(
             'examples/v0.1.1_demo_scenario/demo_scenario_monetaer.xlsx')
 
@@ -418,12 +418,12 @@ def demo_scenario():
 
     df_summary = pd.read_csv(r"results/demo/summary.csv")
     # monetary_costs = float(df_summary['Total System Costs'])
-    if optimization == 'Emissionen':
+    if optimization == 'emissions':
         monetary_costs.set(str(
             round(float(df_summary['Total Constraint Costs'] / 1000000), 2)))
         emission_costs.set(
             str(round(float(df_summary['Total System Costs'] / 1000000), 2)))
-    elif optimization == 'Monetaer':
+    elif optimization == 'monetary':
         monetary_costs.set(str(
             round(float(df_summary['Total System Costs']/1000000),2)))
         emission_costs.set(str(
@@ -608,9 +608,12 @@ for i in range(len(demo_components)):
 
 # EXECUTION BUTTONS
 # row = row + 1
-OptionList = ['Emissionen', 'Monetaer']
-variable = StringVar()
-OptionMenu(demo_frame, variable, *OptionList).grid(column=1, row=row, pady=4)
+OptionList = ['emissions', 'monetary']
+operation_mode = StringVar()
+label_operation_mode = Label(demo_frame, text='Operation Mode',
+                             font=('Helvetica 10'))
+label_operation_mode.grid(column=0, row=row, sticky="W")
+OptionMenu(demo_frame, operation_mode, *OptionList).grid(column=1, row=row, pady=4)
 row = row + 1
 Button(demo_frame, text='SIMULATE', command=simulate_scenario).grid(column=1, row=row, pady=4)
 
