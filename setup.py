@@ -38,7 +38,7 @@ setup(
         "numpy==1.17.4",
         "tables==3.5.2",
         "openpyxl==3.0.0",
-        "https://github.com/oemof/oemof-solph/archive/master.zip",
+        "oemof.solph==0.4",
         "oemof.thermal==0.0.3",
         "demandlib==0.1.6",
         "pvlib==0.7.1",
