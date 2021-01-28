@@ -4,14 +4,6 @@ program\_files package
 Submodules
 ----------
 
-program\_files.Interactive\_Results module
-------------------------------------------
-
-.. automodule:: program_files.Interactive_Results
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 program\_files.Spreadsheet\_Energy\_System\_Model\_Generator module
 -------------------------------------------------------------------
 
