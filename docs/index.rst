@@ -70,9 +70,8 @@ Sourcecode
 ..	toctree::
 	:maxdepth: 2
 	:hidden:
-	:caption: Sourcecode
 	
-	sourcecode_documentation/program_functions
+	sourcecode_documentation/index
 	
 	
 Further Information
