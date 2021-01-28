@@ -34,8 +34,8 @@ setup(
             ],
 
     install_requires=[
-        "pandas==0.25.3",
-        "numpy==1.17.4",
+        "pandas==0.24.2",
+        "numpy==1.16.9",
         "tables==3.5.2",
         "openpyxl==3.0.0",
         "oemof.solph==0.4",
