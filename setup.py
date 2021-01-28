@@ -31,7 +31,6 @@ setup(
     classifiers=[
         # complete classifier list:
         # http://pypi.python.org/pypi?%3Aaction=list_classifiers
-        python_requires='>=3.7',
         install_requires=[
             pandas==0.25.3
             numpy==1.17.4
