@@ -67,9 +67,10 @@ The scenario.xlsx-file must contain the following elements:
 
 
 Docs:
-<https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/>
+ - https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
+ 
 GIT:
-<https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>
+ - https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator
 
 @ Christian Klemm - christian.klemm@fh-muenster.de, 13.03.2020
 """
