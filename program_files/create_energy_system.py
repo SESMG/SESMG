@@ -9,34 +9,30 @@ import logging
 
 
 def import_scenario(filepath):
-    """Imports data from a spreadsheet scenario file. 
-    
-    The excel sheet has to contain the following sheets:
-        - energysystem
-        - buses
-        - transformers
-        - sinks
-        - sources
-        - storages
-        - powerlines
-        - time_series
-
-    ----    
-        
-    Keyword arguments:
-        filepath : obj:'str'
-            -- path to excel scenario file
-
-    ----
-    
-    Returns:
-       nodes_data : obj:'dict'
-           -- dictionary containing data from excel scenario file
-
-    ----   
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
     """
+        Imports data from a spreadsheet scenario file.
 
+        The excel sheet has to contain the following sheets:
+            - energysystem
+            - buses
+            - transformers
+            - sinks
+            - sources
+            - storages
+            - powerlines
+            - time_series
+
+            :param filepath: path to excel scenario file
+            :type filepath: str
+
+            :raises FileNotFoundError: excel spreadsheet not found
+            :raises ValueError: content of excel spreadsheet not
+                                readable or empty
+
+            :return: dataframe containing excel sheets
+            :rtype: pandas dataframe
+            Christian Klemm - christian.klemm@fh-muenster.de, 27.01.2021
+    """
     from oemof.tools import logger
     # reads node data from Excel sheet
     if not filepath or not os.path.isfile(filepath):
