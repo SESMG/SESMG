@@ -79,30 +79,28 @@ from program_files import (create_objects,
                            create_graph)
 
 
-def sesmg_main(scenario_file, result_path, num_threads, graph, results,
-               plotly):
+def sesmg_main(scenario_file: str, result_path: str, num_threads: int, 
+               graph: bool, results: bool, plotly: bool):
     """
-    Main function of the Spreadsheet System Model Generator
-    ----
-    Keyword arguments:
-        scenario_file: obj:'xlsx'
-        -- The scenario_file must contain the components specified
-        above.
+        Main function of the Spreadsheet System Model Generator
         
-        result_path: obj:'str'
-        -- path of the folder where the results will be saved
-        
-        num_threads: obj:'int'
-        -- number of threads that the method may use
-
-        graph: obj:'bool'
-        -- defines if the graph should be created
-
-        results: obj: 'bool'
-        -- defines if the results should be created
-
-        plotly: obj: 'bool'
-        -- defines if the plotly dash should be started
+        Parameters
+        ----------
+            :param scenario_file: The scenario_file must contain the 
+                                  components specified above.
+            :type scenario_file: str ['xlsx']    
+            
+            :param result_path: path of the folder where the results 
+                                will be saved
+            :type result_path: str ['folder']    
+            :param num_threads: number of threads that the method may use
+            :type num_threads: int
+            :param graph: defines if the graph should be created
+            :type graph: bool
+            :param results: defines if the results should be created
+            :type results: bool  
+            :param plotly: defines if the plotly dash should be started
+            :type plotly: bool 
     """
     # SETS NUMBER OF THREADS FOR NUMPY
     os.environ['NUMEXPR_NUM_THREADS'] = str(num_threads)
