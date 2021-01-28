@@ -7,6 +7,7 @@ for the purpose of least cost optimization, and returns the optimal
 scenario results.
 
 The scenario.xlsx-file must contain the following elements:
+
 +-------------+--------------------------------------------------------+
 |sheet        | columns                                                |
 +=============+========================================================+
@@ -15,12 +16,12 @@ The scenario.xlsx-file must contain the following elements:
 +-------------+--------------------------------------------------------+
 |buses        | label, active, excess, shortage,                       |
 |             | shortage costs /(CU/kWh), excess costs /(CU/kWh)       |
-+-------------+--------------------------------------------------------+               
++-------------+--------------------------------------------------------+
 |sinks        | label, active, input, input2, load profile,            |
 |             | nominal value /(kW), annual demand /(kWh/a),           |
 |             | occupants [RICHARDSON], building class [HEAT SLP ONLY],|
 |             | wind class [HEAT SLP ONLY], fixed                      |
-+-------------+--------------------------------------------------------+               
++-------------+--------------------------------------------------------+
 |sources      | label, active, output, technology,                     |
 |             | variable costs /(CU/kWh), existing capacity /(kW),     |
 |             | min. investment capacity /(kW),                        |
@@ -32,7 +33,7 @@ The scenario.xlsx-file must contain the following elements:
 |             | Azimuth (PV ONLY), Surface Tilt (PV ONLY),             |
 |             | Albedo (PV ONLY), Altitude (PV ONLY),                  |
 |             | Latitude (PV ONLY), Longitude (PV ONLY)                |
-+-------------+--------------------------------------------------------+               
++-------------+--------------------------------------------------------+
 |transformers | label, active, transformer type, input, output,        | 
 |             | output2, efficiency, efficiency2,                      | 
 |             | variable input costs /(CU/kWh),                        |
@@ -41,7 +42,7 @@ The scenario.xlsx-file must contain the following elements:
 |             | max. investment capacity /(kW),                        |
 |             | min. investment capacity /(kW),                        |
 |             | periodical costs /(CU/(kW a))                          |
-+-------------+--------------------------------------------------------+               
++-------------+--------------------------------------------------------+
 |storages     | label, active, bus, existing capacity /(kW),           |
 |             | min. investment capacity /(kW),                        |
 |             | max. investment capacity /(kW),                        |
@@ -50,19 +51,20 @@ The scenario.xlsx-file must contain the following elements:
 |             | efficiency outflow, initial capacity, capacity min,    |
 |             | capacity max, variable input costs,                    |
 |             | variable output costs                                  |
-+-------------+--------------------------------------------------------+               
++-------------+--------------------------------------------------------+
 |powerlines   | label, active, bus_1, bus_2, (un)directed, efficiency, |
 |             | existing capacity /(kW),                               | 
 |             | min. investment capacity /(kW),                        |
 |             | max. investment capacity /(kW),                        |
 |             | variable costs /(CU/kWh), periodical costs /(CU/(kW a))|
-+-------------+--------------------------------------------------------+               
++-------------+--------------------------------------------------------+
 |time_series  | timestamp,                                             |
 |             | timeseries for components with fixed input or output   |
 +-------------+--------------------------------------------------------+
 |weather_data | dates(untitled), dhi, dirhi, pressure, temp_air,       |
 |             | windspeed, z0                                          |
 +-------------+--------------------------------------------------------+
+
 ------------------------------------------------------------------------
 Docs:
 https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
