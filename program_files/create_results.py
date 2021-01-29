@@ -570,12 +570,12 @@ class Results:
                     variable_costs = (comp['variable output costs 2 /(CU/kWh)']
                                       * df_output2.sum())
                     constraint_costs += \
-                        output2 * comp['variable constraint costs 2 /(CU/kWh)']
+                        output2 * comp['variable output constraint costs 2 /(CU/kWh)']
                     total_costs = total_costs + variable_costs
                 variable_costs += (comp['variable input costs /(CU/kWh)']
                                    * df_input1.sum())
                 constraint_costs += \
-                    output1 * comp['variable constraint costs /(CU/kWh)']
+                    output1 * comp['variable output constraint costs /(CU/kWh)']
                 constraint_costs += \
                     input * comp['variable input constraint costs /(CU/kWh)']
                 variable_costs += \
