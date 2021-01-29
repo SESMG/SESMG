@@ -1140,7 +1140,7 @@ class Transformers:
             {self.busd[tf['output']]: solph.Flow(
                     variable_costs=tf['variable output costs /(CU/kWh)'],
                     emission_factor=tf[
-                        'variable constraint costs /(CU/kWh)'],
+                        'variable output constraint costs /(CU/kWh)'],
                     investment=solph.Investment(
                         ep_costs=tf['periodical costs /(CU/(kW a))'],
                         periodical_constraint_costs=tf[
@@ -1169,7 +1169,7 @@ class Transformers:
                     {self.busd[tf['output2']]: solph.Flow(
                         variable_costs=tf['variable output costs 2 /(CU/kWh)'],
                         emission_factor=tf[
-                            'variable constraint costs 2 /(CU/kWh)'],
+                            'variable output constraint costs 2/(CU/kWh)'],
                         investment=solph.Investment(
                             ep_costs=0,
                             existing=existing_capacity2,
@@ -1343,7 +1343,7 @@ class Transformers:
         outputs = {"outputs": {self.busd[tf['output']]: solph.Flow(
                 variable_costs=tf['variable output costs /(CU/kWh)'],
                 emission_factor=tf[
-                    'variable constraint costs /(CU/kWh)'],
+                    'variable output constraint costs /(CU/kWh)'],
                 investment=solph.Investment(
                         ep_costs=tf['periodical costs /(CU/(kW a))'],
                         minimum=tf['min. investment capacity /(kW)'],
@@ -1442,7 +1442,7 @@ class Transformers:
                             variable_costs=tf[
                                 'variable output costs /(CU/kWh)'],
                             emission_factor=tf[
-                                'variable constraint costs /(CU/kWh)']
+                                'variable output constraint costs /(CU/kWh)']
                             )
                         },
                 heat_output={self.busd[tf['output2']]: solph.Flow(
@@ -1452,7 +1452,7 @@ class Transformers:
                     variable_costs=tf[
                         'variable output costs 2 /(CU/kWh)'],
                     emission_factor=tf[
-                        'variable constraint costs 2 /(CU/kWh)']
+                        'variable output constraint costs 2/(CU/kWh)']
                 )},
                 Beta=[tf['power loss index [GenericCHP]']
                       for p in range(0, periods)],
@@ -1582,7 +1582,7 @@ class Transformers:
                  variable_costs=0)}}
         outputs = {"outputs": {self.busd[tf['output']]: solph.Flow(
                 variable_costs=tf['variable output costs /(CU/kWh)'],
-                emission_factor=tf['variable constraint costs /(CU/kWh)'],
+                emission_factor=tf['variable output constraint costs /(CU/kWh)'],
                 investment=solph.Investment(
                         ep_costs=tf['periodical costs /(CU/(kW a))'],
                         minimum=tf['min. investment capacity /(kW)'],
