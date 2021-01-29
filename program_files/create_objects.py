@@ -474,7 +474,8 @@ class Sources:
                 irradiance_global=(data['ghi']),
                 irradiance_diffuse=(data['dhi']),
                 temp_amb=data['temperature'])
-            # set variables collectors_heat and irradiance with unit kW/m²
+            # set variables collectors_heat and irradiance and conversion
+            # from W/sqm to kW/sqm
             collectors_heat = precalc_results.collectors_heat/1000
             irradiance = precalc_results.col_ira/1000
 
@@ -508,7 +509,8 @@ class Sources:
                                           temp_collector_outlet,
                                           data['temperature'], a_1, a_2,
                                           E_dir_hor=e_dir_hor)
-            # set variables collectors_heat and irradiance with unit kW/m²
+            # set variables collectors_heat and irradiance and conversion
+            # from W/sqm to kW/sqm
             collectors_heat = precalc_results.collector_heat/1000
             irradiance = precalc_results.collector_irradiance/1000
 
