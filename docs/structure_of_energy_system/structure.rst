@@ -124,7 +124,6 @@ The system data of the wind turbine to be modelled are obtained
 from the `"oedb" <https://github.com/wind-python/windpowerlib/tree/dev/windpowerlib/oedb>`_ 
 database.
 
-
 **Solar thermal collectors**
 
 There are two collector types that can be modeled with this function.
@@ -155,9 +154,6 @@ of this periphery can be considered by the transformer.
    Graph of a solar thermal collector system.
 
 The solar thermal collectors are implemented by using `"oemof.thermal" <https://github.com/oemof/oemof-thermal>`_. 
-
-
-
 
 Sinks
 =================================================
