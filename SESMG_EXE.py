@@ -168,7 +168,7 @@ def show_graph():
 
 
 def execute_sesmg():
-    """ 1. Creates the folder where the results will be saved
+    """ 1. Creates the folder where the results would be saved
         2. Excecutes the optimization algorithm """
     if scenario_path.get() != "No scenario selected.":
         scenario_name = os.path.basename(scenario_path.get())
@@ -229,8 +229,7 @@ def get_pid():
 def show_results():
     """ executes the external program, which executes a plotl.dash app for displaying interactive results."""
     if save_path.get() == '':
-        raise SystemError('No optimization since the last restart,'
-                          ' please select a result folder!')
+        raise SystemError('No optimization since the last restart')
 
     # Determines the ID of a still running process on port 8050.
     pid = get_pid()
@@ -251,11 +250,12 @@ def show_results():
             subprocess.call("open http://127.0.0.1:8050", shell=True)
         elif sys.platform.startswith("linux"):
             subprocess.call("xdg-open http://127.0.0.1:8050", shell=True)
+
     # Starts the new Plotly Dash Server for Windows
     if sys.platform.startswith("win"):
         IR_PATH = os.path.join(os.path.dirname(__file__) + '/program_files')
         subprocess.call(IR_PATH + "/Interactive_Results.py "
-                        + 'r"'+save_path.get()+'"', timeout=10, shell=True)
+                        + str(save_path.get()), timeout=10, shell=True)
     # Starts the new Plotly Dash Server for MACOS
     elif sys.platform.startswith("darwin"):
         IR_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -276,7 +276,7 @@ window.geometry('1200x900')
 tab_control = ttk.Notebook(window)
 tab_control.pack(expand=1, fill='both')
 tab_control.pressed_index = None
-scenario_path = StringVar(window, str(os.path.join(os.path.dirname(__file__), 'scenario_v0.1.1.xlsx')))
+scenario_path = StringVar(window, str(os.path.join(os.path.dirname(__file__), 'scenario_v0.2.0.xlsx')))
 save_path_directory = \
         StringVar(window, str(os.path.join(os.path.dirname(__file__), 'results')))
 save_path = StringVar(window, '')
@@ -320,7 +320,7 @@ main_head3 = Label(main_frame, text='Analyzing Options',
                        font='Helvetica 10 bold')
 main_head3.grid(column=0, row=7 + len(execution_elements), sticky="w")
 analyzing_elements = {'row5': ['Select scenario result folder',
-                               getSavePath, 'Change', save_path.get()],
+                               getSavePath, 'Choose', save_path.get()],
                       'row6': ['Start Plotly', show_results, 'Execute', '']}
 save_paths = []
 create_main_frame_elements(elements=analyzing_elements, sheet=main_frame,
