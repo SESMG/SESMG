@@ -350,7 +350,7 @@ class Results:
                     df_result_table[comp['label']] = df_source
                 # creates and returns results if source is a solar thermal
                 # collector (flat plate or concentrated)
-                elif comp['input'] == 'electricity_bus':
+                elif comp['input'] != 'x':
                     # reference to transformer and solar bus component
                     transformer = comp['label'] + '_collector'
                     col_bus = comp['label'] + '_bus'
@@ -405,7 +405,7 @@ class Results:
                         investments_to_be_made[comp['label']] = \
                             (str(round(component_investment, 2)) + ' kW')
                     # solar heat sources
-                    elif comp['input'] == 'electricity_bus':
+                    elif comp['input'] != 'x':
                         # gets the investment for the given source
                         (component_investment, periodical_costs) = \
                             self.get_investment(comp, 'solar_heat')
@@ -447,7 +447,7 @@ class Results:
                                            round(constraint_costs, 2)]],
                                          columns=columns))
                 # adds solar heat sources to the list of components
-                if comp['input'] == 'electricity_bus':
+                if comp['input'] != 'x':
                     df_list_of_components = \
                         df_list_of_components.append(
                             pd.DataFrame([[transformer, 'source',
