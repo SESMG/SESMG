@@ -106,8 +106,8 @@ Sources
 =================================================
 
 Within this sheet, the sources of the energy system are defined. Properties with the addition "PV ONLY" have only to be 
-defined if the parameter "technology" is set on "photovoltaic". Properties with the addition "Solar Heat" have only to be 
-defined if the parameter "technology" is set on "solar_thermal_flat_plate" or "CSP".The following parameters have to be entered:
+defined if the parameter "technology" is set on "photovoltaic", if the parameter is "solar_thermal_flat_plate" or "CSP" the
+properties with the addition "Solar Heat" have to be filled.
 
 - **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
