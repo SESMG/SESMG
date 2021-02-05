@@ -1172,7 +1172,7 @@ class Transformers:
                     {self.busd[tf['output2']]: solph.Flow(
                         variable_costs=tf['variable output costs 2 /(CU/kWh)'],
                         emission_factor=tf[
-                            'variable output constraint costs 2/(CU/kWh)'],
+                            'variable output constraint costs 2 /(CU/kWh)'],
                         investment=solph.Investment(
                             ep_costs=0,
                             existing=existing_capacity2,
