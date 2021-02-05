@@ -296,7 +296,7 @@ the respective output ratios, and an efficiency for each output need to be known
 
 For the modelilng of compression heat pumps and chillers, different heat sources are considered so the 
 weather data set must include different temperatures. The efficiency of 
-the heat pump or chiller cycle process can be described by the Coefficient of Performance (COP).
+the heat pump or chiller cycle process can be described by the coefficient of Performance (COP).
 The compression heat transformer function automatically creates a heat source and a low or high 
 temperature bus, depending on the mode of operation (see red bubble). So only a transformer
 and a electricity bus needs to be created. An example is shown in the following figure.
@@ -311,14 +311,14 @@ and a electricity bus needs to be created. An example is shown in the following 
 At the moment it is possible to use ground water, soil (vertical heat exchanger), surface water 
 and ambient air as a heat source. 
 
-The compression heat transformers are implemnted by using  `"oemof.thermal" <https://github.com/oemof/oemof-thermal>`_ .
+The compression heat transformers are implemented by using  `"oemof.thermal" <https://github.com/oemof/oemof-thermal>`_ .
 
 **Absorption Heat Transformers**
 
 At this point this function implies the modeling of an absorption chiller. An absorption chiller
 object contains a high temperature heat source, the necessary connection bus and a transformer
 object, that describes the absorption chiller. The heat source could be waste heat for example.
-The efficiency of the absortion chiller is described by the Coefficient of Performance (COP).
+The efficiency of the absortion chiller is described by the coefficient of Performance (COP).
 
 The absorption heat transformers are implemnted by using  `"oemof.thermal" <https://github.com/oemof/oemof-thermal>`_ .
 
