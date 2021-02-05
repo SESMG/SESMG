@@ -94,7 +94,7 @@ def create_graph(filepath, nodes_data, legend=False):
                              style='dashed' if i == 'storages' else '')
                     if i == 'sources':
                         # Creates graph elements for solar heat
-                        if b['input'] == 'electricity_bus':
+                        if b['input'] != 'x':
                             # creates additional transformer
                             transformer = b['label'] + '_collector'
                             transformer = linebreaks(transformer)
