@@ -106,7 +106,7 @@ Sources
 =================================================
 
 Within this sheet, the sources of the energy system are defined. Properties with the addition "PV ONLY" have only to be 
-defined if the parameter "technology" is set on "photovoltaic", if the parameter is "solar_thermal_flat_plate" or "CSP" the
+defined if the parameter "technology" is set on "photovoltaic", if the parameter "technology" is "solar_thermal_flat_plate" or "CSP" the
 properties with the addition "Solar Heat" have to be filled.
 
 - **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
@@ -114,7 +114,7 @@ properties with the addition "Solar Heat" have to be filled.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the source is connected to.
-- **input**: Has to be set to "electricity_bus", if "technology" is set to "CSP" or "solar_thermal_flat_plate". Otherwise has to be set to "x".
+- **input**: Has to be an electricity bus, if "technology" is set to "CSP" or "solar_thermal_flat_plate". Otherwise has to be set to "x".
 - **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "CSP", "solar_thermal_flat_plate". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
 - **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
 - **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
@@ -131,13 +131,13 @@ properties with the addition "Solar Heat" have to be filled.
 - **inverter database (PV ONLY)**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter".
 - **Modul Model (PV ONLY)**: Module name, according to the database used.
 - **Inverter Model (PV ONLY)**: Inverter name, according to the database used.
-- **Azimuth (PV ONLY) or (Solar Heat)**: Specifies the orientation of the PV or solar thermal module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
-- **Surface Tilt (PV ONLY) or (Solar Heat)**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
+- **Azimuth (PV and Solar Heat)**: Specifies the orientation of the PV or solar thermal module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
+- **Surface Tilt (PV and Solar Heat)**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
 - **Albedo (PV ONLY)**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Altitude (PV ONLY)**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
-- **Latitude (PV ONLY) or (Solar Heat)**: Geographic latitude (decimal number) of the photovoltaic or solar thermal module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
-- **Longitude (PV ONLY) or (Solar Heat)**: Geographic longitude (decimal number) of the photovoltaic or solar thermal module module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
-- **cleanliness (Solar Heat)**: Specifies the cleanliness of a parabolic through collector. Only required if "technology" is set to "CSP".
+- **Latitude (PV and Solar Heat)**: Geographic latitude (decimal number) of the photovoltaic or solar thermal module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
+- **Longitude (PV and Solar Heat)**: Geographic longitude (decimal number) of the photovoltaic or solar thermal module module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
+- **Cleanliness (Solar Heat)**: Specifies the cleanliness of a parabolic through collector. Only required if "technology" is set to "CSP".
 - **ETA 0 (Solar Heat)**: Optical efficiency of the collector. Only required if "technology" is "CSP" or "solar_thermal_flate_plate". Specific values can be found in data sheets. The optical efficiency is a collector specific value. Values are based on test methods according to DIN EN ISO 9806.
 - **A1 (Solar Heat)**: Collector specific linear heat loss coefficient. Only required if "technology" is "CSP" or "solar_thermal_flate_plate". Specific values can be found in data sheets. Values are based on test methods according to DIN EN ISO 9806.
 - **A2 (Solar Heat)**: Collector specific quadratic heat loss coefficient. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".Specific values can be found in data sheets. Values are based on test methods according to DIN EN ISO 9806. 
@@ -161,9 +161,9 @@ The parameters refer to `Janotte, N; et al <https://www.sciencedirect.com/scienc
 - **Electric Consumption (Solar Heat)**: Electric consumption of the collector system. Example: If value is set to 0,05, the electric consumption is 5 % of the energy output. Only required for "technology" "CSP" and "solar_thermal_flate_plate".
 
 .. csv-table:: Exemplary input for the sources sheet
-   :header: label,Comment,active,fixed,output,technology,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),Turbine Model (Windpower ONLY),Hub Height (Windpower ONLY),technology database (PV ONLY),inverter database (PV ONLY),Modul Model (PV ONLY),Inverter Model (PV ONLY),Azimuth (PV ONLY),Surface Tilt (PV ONLY),Albedo (PV ONLY),Altitude (PV ONLY),Latitude (PV ONLY),Longitude (PV ONLY)
+   :header: label,Comment,active,fixed,output,input,technology,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),Turbine Model (Windpower ONLY),Hub Height (Windpower ONLY),technology database (PV ONLY),inverter database (PV ONLY),Modul Model (PV ONLY),Inverter Model (PV ONLY),Azimuth (PV ONLY),Surface Tilt (PV ONLY),Albedo (PV ONLY),Altitude (PV ONLY),Latitude (PV ONLY),Longitude (PV ONLY),Latitude (Solar Heat),Longitude (Solar Heat),Surface Tilt (Solar Heat),Azimuth (Solar Heat),Cleanliness (Solar Heat),ETA 0 (Solar Heat),A1 (Solar Heat),A2 (Solar Heat),C1 (Solar Heat),C2 (Solar Heat),Temperature Inlet /deg C (Solar Heat),Temperature Difference /deg C (Solar Heat),Conversion Factor /(sqm/kW) (Solar Heat),Peripheral Losses (Solar Heat),Electric Consumption (Solar Heat)
 
-   pv001_electricity_source,fixed photovoltaic source,1,1,bus001_electricity_bus,photovoltaic,0,0.1,10,0,10,90,0.1,0,0,x,x,SandiaMod,sandiainverter,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,180.00,35,0.18,60.000,52.13,7.36
+   pv001_electricity_source,fixed photovoltaic source,1,1,bus001_electricity_bus,x,photovoltaic,0,0.1,10,0,10,90,0.1,0,0,x,x,SandiaMod,sandiainverter,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,180.00,35,0.18,60.000,52.13,7.36,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x
 
 
   
@@ -210,7 +210,7 @@ The following parameters have to be entered:
 
 **The following parameters are only required, if "transformer type" is set to "compression_heat_transformer"**:
 
-- **heat source (CHT)**: Specifies the heat source. At the moment are "GroundWater", "Ground", "Air" and "Water" possible.
+- **heat source (CHT)**: Specifies the heat source. Possible heat sources are "GroundWater", "Ground", "Air" and "Water" possible.
 - **temperature high /deg C (CHT)**: Temperature of the high temperature heat reservoir. If "mode" is set to "chiller" this value has to be set to "x".
 - **temperature low /(deg C) (CHT)**: Cooling temperature needed for cooling demand. If "mode" is set to "heat_pump" this value has to be set to "x".
 - **quality grade (CHT)**: To determine the COP of a real machine a scale-down factor (the quality grade) is applied on the Carnot efficiency (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
