@@ -416,7 +416,7 @@ class Sources:
                         - 'Longitude (Solar Heat)'
                         - 'Surface Tilt (Solar Heat)'
                         - 'Azimuth (Solar Heat)'
-                        - 'cleanliness (Solar Heat)'
+                        - 'Cleanliness (Solar Heat)'
                         - 'ETA 0 (Solar Heat)'
                         - 'A1 (Solar Heat)'
                         - 'A2 (Solar Heat)'
@@ -488,7 +488,7 @@ class Sources:
             longitude = so['Longitude (Solar Heat)']
             collector_tilt = so['Surface Tilt (Solar Heat)']
             collector_azimuth = so['Azimuth (Solar Heat)']
-            cleanliness = so['cleanliness (Solar Heat)']
+            cleanliness = so['Cleanliness (Solar Heat)']
             eta_0 = so['ETA 0 (Solar Heat)']
             c_1 = so['C1 (Solar Heat)']
             c_2 = so['C2 (Solar Heat)']
@@ -504,7 +504,8 @@ class Sources:
             # collector, efficiency and heat output
             precalc_results = csp_precalc(latitude, longitude,
                                           collector_tilt, collector_azimuth,
-                                          cleanliness, eta_0, c_1, c_2,
+                                          
+                                          s, eta_0, c_1, c_2,
                                           temp_collector_inlet,
                                           temp_collector_outlet,
                                           data['temperature'], a_1, a_2,
@@ -587,7 +588,7 @@ class Sources:
              - 'Longitude (Solar Heat)'
              - 'Surface Tilt (Solar Heat)'
              - 'Azimuth (Solar Heat)'
-             - 'cleanliness (Solar Heat)'
+             - 'Cleanliness (Solar Heat)'
              - 'ETA 0 (Solar Heat)'
              - 'A1 (Solar Heat)'
              - 'A2 (Solar Heat)'
