@@ -153,7 +153,7 @@ class Sources:
             existing = so['existing capacity /(kW)']
         # set variables minimum, maximum and existing for solar thermal heat
         # sources
-        if so['input'] == 'electricity_bus':
+        if so['input'] != 'x':
             minimum = so['min. investment capacity /(kW)'] * \
                 so['Conversion Factor /(sqm/kW) (Solar Heat)']
             maximum = so['max. investment capacity /(kW)'] * \
