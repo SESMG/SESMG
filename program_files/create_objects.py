@@ -394,42 +394,39 @@ class Sources:
         logging.info('   ' + 'Source created: ' + so['label'])
 
     def solar_heat_source(self, so):
-        """Creates a solar thermal collector source object.
+        """
+            Creates a solar thermal collector source object.
 
-        Calculates the yield of a solar thermal flat plate collector
-        or a concentrated solar power collector as time series by
-        using oemof.thermal and the create_source method.
-        ---
+            Calculates the yield of a solar thermal flat plate collector
+            or a concentrated solar power collector as time series by
+            using oemof.thermal and the create_source method.
 
-        Keyword arguments:
+            The following key-value-pairs have to be included in the
+            keyword arguments:
 
-            so : obj:'dict'
-                --  dictionary containing all information for the
-                    creation of an oemof source. At least the following
-                    key-value-pairs have to be included:
-                        - 'label'
-                        - 'fixed'
-                        - 'technology': Possible options:
-                            - 'solar_thermal_flat_plate'
-                            - 'CSP'
-                        - 'Latitude (Solar Heat)'
-                        - 'Longitude (Solar Heat)'
-                        - 'Surface Tilt (Solar Heat)'
-                        - 'Azimuth (Solar Heat)'
-                        - 'Cleanliness (Solar Heat)'
-                        - 'ETA 0 (Solar Heat)'
-                        - 'A1 (Solar Heat)'
-                        - 'A2 (Solar Heat)'
-                        - 'C1 (Solar Heat)'
-                        - 'C2 (Solar Heat)'
-                        - 'Temperature Inlet /deg C (Solar Heat)'
-                        - 'Temperature Difference /deg C (Solar Heat)'
-                        - 'Conversion Factor /(sqm/kW) (Solar Heat)'
-                        - 'Peripheral Losses (Solar Heat)'
-                        - 'Electric Consumption (Solar Heat)'
+            :type so: dict
+            :param so: has to contain the following keyword arguments
 
-        ---
-        @ Yannick Wittor - yw090223@fh-muenster.de, 27.11.2020
+                - 'input'
+                - 'technology':
+                    - 'solar_thermal_flat_plate' or
+                    - 'CSP'
+                - 'Latitude (Solar Heat)'
+                - 'Longitude (Solar Heat)'
+                - 'Surface Tilt (Solar Heat)'
+                - 'Azimuth (Solar Heat)'
+                - 'Cleanliness (Solar Heat)'
+                - 'ETA 0 (Solar Heat)'
+                - 'A1 (Solar Heat)'
+                - 'A2 (Solar Heat)'
+                - 'C1 (Solar Heat)'
+                - 'C2 (Solar Heat)'
+                - 'Temperature Inlet /deg C (Solar Heat)'
+                - 'Temperature Difference /deg C (Solar Heat)'
+                - 'Conversion Factor /(sqm/kW) (Solar Heat)'
+                - 'Peripheral Losses (Solar Heat)'
+                - 'Electric Consumption (Solar Heat)'
+            @ Yannick Wittor - yw090223@fh-muenster.de, 27.11.2020
         """
 
         # import oemof.thermal in order to calculate collector heat output
@@ -1194,12 +1191,31 @@ class Transformers:
         
     def compression_heat_transformer(self, tf, data):
         """
-        Creates a Compression Heat Pump or Compression Chiller by using
-        oemof.thermal and adds it to the list of components 'nodes'.
-        Parameters are given in 'nodes_data' are used .
-        ----
-        @ Janik Budde - Janik.Budde@fh-muenster.de, 30.07.2020
-        @ Yannick Wittor - yw090223@fh-muenster.de, 07.01.2021
+            Creates a Compression Heat Pump or Compression Chiller by using
+            oemof.thermal and adds it to the list of components 'nodes'.
+            Parameters are given in 'nodes_data' are used .
+
+
+            :type tf: dict
+            :param tf: has to contain the following keyword arguments
+                
+                - Standard Input information of transformer class
+                - 'transformer type': 'compression_heat_transformer'
+                - 'mode':
+                    - 'heat_pump' or
+                    - 'chiller'
+                - 'heat source (CHT)'
+                - 'temperature high /deg C (CHT)'
+                - 'temperature low /deg C (CHT)'
+                - 'quality grade (CHT)'
+                - 'area /(sq m) (CHT)'
+                - 'length of the geoth. probe /m (CHT)'
+                - 'heat extraction /(kW/(m*a)) (CHT)'
+                - 'min. borehole area /(sq m) (CHT)'
+                - 'temp threshold icing (CHT)'
+                - 'factor icing (CHT)'
+            @ Janik Budde - Janik.Budde@fh-muenster.de, 30.07.2020
+            @ Yannick Wittor - yw090223@fh-muenster.de, 07.01.2021
         """
         
         # import oemof.thermal in order to calculate the cop
@@ -1470,23 +1486,21 @@ class Transformers:
         """
             Creates an absorption heat transformer object with the parameters
             given in 'nodes_data' and adds it to the list of components 'nodes'
-            ----
-            Keyword arguments:
-            t : obj:'dict'
-                -- dictionary containing all information for
-                the creation of an oemof transformer.
-                The input information of the transformer class have to be
-                included. Additionally the following absorption heat
-                transformer specific information has to be included.
-                    - 'name (AbsCH)'
-                        - name refers to models of absorption heat transformers
-                          with different equation parameters. See documentation
-                          for possible inputs.
-                    - 'high temperature /deg C (AbsCH)'
-                    - 'chilling temperature /deg C (AbsCH)'
-                    - 'electrical input conversion factor (AbsCH)'
-                    - 'recooling temperature difference /deg C (AbsCH)'
-        ---
+
+
+            :type tf: dict
+            :param tf: has to contain the following keyword arguments
+                - Standard Input information of transformer class
+                - 'transformer type': 'absorption_heat_transformer'
+                - 'mode': 'chiller'
+                - 'name (AbsCH)'
+                    - name refers to models of absorption heat transformers
+                      with different equation parameters. See documentation
+                      for possible inputs.
+                - 'high temperature /deg C (AbsCH)'
+                - 'chilling temperature /deg C (AbsCH)'
+                - 'electrical input conversion factor (AbsCH)'
+                - 'recooling temperature difference /deg C (AbsCH)'
             @ Yannick Wittor - yw090223@fh-muenster.de, 07.01.2021
         """
         # import oemof.thermal in order to calculate COP
@@ -1722,14 +1736,17 @@ class Storages:
         """
             Creates a stratified thermal storage object with the parameters
             given in 'nodes_data' and adds it to the list of components 'nodes'
-            ----
-            Keyword arguments:
-            t : obj:'dict'
-                -- dictionary containing all information for
-                the creation of an oemof storage.
 
-        ----
-        @ Yannick Wittor - yw090223@fh-muenster.de, 26.01.2021
+
+            :type s: dict
+            :param s: has to contain the following keyword arguments:
+                - Standard information on Storages
+                - 'storage type': 'Stratified'
+                - 'diameter /m (Stratified Storage)'
+                - 'temperature high /deg C (Stratified Storage)'
+                - 'temperature low /deg C (Stratified Storage)'
+                - 'U value /(W/(sqm*K)) (Stratified Storage)'
+            @ Yannick Wittor - yw090223@fh-muenster.de, 26.01.2021
         """
         # import functions for stratified thermal storages from oemof thermal
         from oemof.thermal.stratified_thermal_storage import calculate_losses
