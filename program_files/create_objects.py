@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-"""Creates oemof energy system components.
+"""
+    Creates oemof energy system components.
 
-Functions for the creation of oemof energy system objects from a
-given set of object parameters.
+    Functions for the creation of oemof energy system objects from a
+    given set of object parameters.
 
----
-Contributors:
-- Christian Klemm - christian.klemm@fh-muenster.de
-- Gregor Becker - gb611137@fh-muenster.de
+    Contributors:
+
+        - Christian Klemm - christian.klemm@fh-muenster.de
+        - Gregor Becker - gb611137@fh-muenster.de
 """
 
 from oemof import solph
@@ -20,36 +21,30 @@ import datetime
 import numpy
 
 
-def buses(nodes_data, nodes):
+def buses(nodes_data: dict, nodes: list) -> dict:
     """
-    Creates bus objects.
-    Creates bus objects with the parameters given in 'nodes_data' and
-    adds them to the list of components 'nodes'.
-    ----
+        Creates bus objects.
+        Creates bus objects with the parameters given in 'nodes_data' and
+        adds them to the list of components 'nodes'.
 
-    Keyword arguments:
+        :param nodes_data: dictionary containing parameters of the buses
+                           to be created.
+                           The following parameters have to be provided:
 
-        nodes_data : obj:'dict'
-            -- dictionary containing parameters of the buses to be
-            created. The following parameters have to be provided:
-                - label,
-                - active,
-                - excess,
-                - shortage,
-                - shortage costs /(CU/kWh),
-                - excess costs /(CU/kWh)
-                
-        nodes : obj:'list'
-            -- list of components created before (can be empty)
-        
-    ----
-    
-    Returns:
-        busd : obj:'dict'
-            -- dictionary containing all buses created
-        
-    ----
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
+                                - label,
+                                - active,
+                                - excess,
+                                - shortage,
+                                - shortage costs /(CU/kWh),
+                                - excess costs /(CU/kWh)
+        :type nodes_data: dict
+        :param nodes: list of components created before (can be empty)
+        :type nodes: list
+
+        :return busd: dictionary containing all buses created
+        :rtype: dict
+
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
     # creates a list of buses
     busd = {}
@@ -103,43 +98,92 @@ def buses(nodes_data, nodes):
 
 
 class Sources:
-    """Creates source objects.
+    """
+        Creates source objects.
     
-    There are four options for labeling source objects to be created:
-    - 'commodity' : a source with flexible time series
-    - 'timeseries' : a source with predefined time series
-    - 'photovoltaic' : a photovoltaic component
-    - 'wind power' : a wind power component
+        There are four options for labeling source objects to be created:
+
+            - 'commodity': a source with flexible time series
+            - 'timeseries': a source with predefined time series
+            - 'photovoltaic': a photovoltaic component
+            - 'wind power': a wind power component
+
+        :param nodes_data: dictionary containing parameters of sources
+                           to be created.The following data have to be
+                           provided:
+
+                                - 'label'
+                                - 'active'
+                                - 'fixed'
+                                - 'output'
+                                - 'technology'
+                                - 'variable costs / (CU / kWh)'
+                                - 'existing capacity / (kW)'
+                                - 'min.investment capacity / (kW)'
+                                - 'max.investment capacity / (kW)'
+                                - 'periodical costs / (CU / (kW a))'
+                                - 'Non-Convex Investment'
+                                - 'Fix Investment Cost / (CU/a)'
+                                - 'Turbine Model (Windpower ONLY)'
+                                - 'Hub Height (Windpower ONLY)'
+                                - 'technology database(PV ONLY)'
+                                - 'inverter database(PV ONLY)'
+                                - 'Modul Model(PV ONLY)'
+                                - 'Inverter Model(PV ONLY)'
+                                - 'Azimuth(PV ONLY)'
+                                - 'Surface Tilt(PV ONLY)'
+                                - 'Albedo(PV ONLY)'
+                                - 'Altitude(PV ONLY)'
+                                - 'Latitude(PV ONLY)'
+                                - 'Longitude(PV ONLY)'
+        :type nodes_data: dict
+        :param busd: dictionary containing the buses of the energy system
+        :type busd: dict
+        :param nodes: list of components created before(can be empty)
+        :type nodes: list
+        :param filepath: path to .xlsx scenario-file containing a
+                         "weather data" sheet with timeseries for
+
+                            - "dhi"(diffuse horizontal irradiation)
+                              W / m ^ 2
+                            - "dirhi"(direct horizontal irradiance)
+                              W / m ^ 2
+                            - "pressure" in Pa
+                            - "temperature" in °C
+                            - "windspeed" in m / s
+                            - "z0"(roughness length) in m
+        :type filepath: str
+
+        Contributors:
+
+            - Christian Klemm - christian.klemm@fh-muenster.de
+            - Gregor Becker - gregor.becker@fh-muenster.de
     """
     
-    def create_source(self, so, timeseries_args):
-        """Creates an oemof source with fixed or unfixed timeseries
+    def create_source(self, so: dict, timeseries_args: dict):
+        """
+            Creates an oemof source with fixed or unfixed timeseries
         
-        ----
-        Keyword arguments:
-        
-            so : obj:'dict'
-                -- dictionary containing all information for the
-                creation of an oemof source. At least the following
-                key-value-pairs have to be included:
-                   'label'
-                   'output'
-                   'periodical costs /(CU/(kW a))'
-                   'min. investment capacity /(kW)'
-                   'max. investment capacity /(kW)'
-                   'existing capacity /(kW)'
-                   'Non-Convex Investment'
-                   'Fix Investment Costs /(CU/a)'
-                   'variable costs /(CU/kWh)'
-            
-            timeseries_args: dict
-                --  dictionary rather containing the 'fix-attribute' or
-                the 'min-' and 'max-attribute' of a source
-        
-        ---
-        Contributors:
-        - Christian Klemm - christian.klemm@fh-muenster.de
-        
+            :param so: dictionary containing all information for the
+                       creation of an oemof source. At least the
+                       following key-value-pairs have to be included:
+
+                           - 'label'
+                           - 'output'
+                           - 'periodical costs /(CU/(kW a))'
+                           - 'min. investment capacity /(kW)'
+                           - 'max. investment capacity /(kW)'
+                           - 'existing capacity /(kW)'
+                           - 'Non-Convex Investment'
+                           - 'Fix Investment Costs /(CU/a)'
+                           - 'variable costs /(CU/kWh)'
+            :type so: dict
+            :param timeseries_args: dictionary rather containing the
+                                    'fix-attribute' or the 'min-' and
+                                    'max-attribute' of a source
+            :type timeseries_args: dict
+
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
     
         # Creates a oemof source and appends it to the nodes_sources
@@ -170,19 +214,21 @@ class Sources:
                         )}
                 ))
     
-    def commodity_source(self, so):
-        """ Creates an oemof source object with flexible time series
-        (no maximum or minimum) with the use of the
-        create_source method.
-        
-        ----
-        Keyword arguments:
-        
-            so : obj:'dict'
-                -- dictionary containing all information for the
-                    creation of an oemof source. At least the
-                    following key-value-pairs have to be included:
-                        'label'
+    def commodity_source(self, so: dict):
+        """
+            Creates an oemof source object with flexible time series
+            (no maximum or minimum) with the use of the create_source
+            method.
+
+            :param so: dictionary containing all information for the
+                       creation of an oemof source. At least the
+                       following key-value-pairs have to be included:
+
+                            - 'label'
+            :type so: object
+
+            Christian Klemm - christian.klemm@fh-muenster.de
+
         """
         # starts the create_source method with the parameters
         # min = 0 and max = 1
@@ -191,31 +237,30 @@ class Sources:
         # Returns logging info
         logging.info('   ' + 'Commodity Source created: ' + so['label'])
     
-    def timeseries_source(self, so, filepath):
-        """Creates an oemof source object from a pre-defined
-        timeseries with the use of the create_source
-        method.
-        
-        ---
-        Keyword arguments:
-        
-        so : obj:'dict'
-        --  dictionary containing all information for the
-        creation of an oemof source. At least the following
-        key-value-pairs have to be included:
-           'label'
-           'output'
-           'periodical costs /(CU/(kW a))'
-           'min. investment capacity /(kW)'
-           'max. investment capacity /(kW)'
-           'existing capacity /(kW)'
-           'Non-Convex Investment'
-           'Fix Investment Costs /(CU/a)'
-           'variable costs /(CU/kWh)'
-        
-        filepath: String
-        --  path to .xlsx scenario-file containing a
-        "time_series" sheet
+    def timeseries_source(self, so: dict, filepath: str):
+        """
+            Creates an oemof source object from a pre-defined
+            timeseries with the use of the create_source method.
+
+            :param so: dictionary containing all information for the
+                       creation of an oemof source. At least the
+                       following key-value-pairs have to be included:
+
+                            - 'label'
+                            - 'output'
+                            - 'periodical costs /(CU/(kW a))'
+                            - 'min. investment capacity /(kW)'
+                            - 'max. investment capacity /(kW)'
+                            - 'existing capacity /(kW)'
+                            - 'Non-Convex Investment'
+                            - 'Fix Investment Costs /(CU/a)'
+                            - 'variable costs /(CU/kWh)'
+            :type so: dict
+            :param filepath: path to .xlsx scenario-file containing a
+                             "time_series" sheet
+            :type filepath: str
+
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
         # reads the timeseries sheet of the scenario file
         time_series = pd.read_excel(filepath, sheet_name='time_series')
@@ -235,31 +280,33 @@ class Sources:
         
         # Returns logging info
         logging.info('   ' + 'Timeseries Source created: ' + so['label'])
-        
-    def pv_source(self, so, my_weather_pandas_dataframe):
-        """Creates an oemof photovoltaic source object.
-        
-        Simulates the yield of a photovoltaic system using feedinlib and
-        creates a source object with the yield as time series and the
-        use of the create_source method.
-        
-        ---
-        
-        Keyword arguments:
-        
-            so : obj:'dict'
-                --  dictionary containing all information for the
-                creation of an oemof source. At least the following
-                key-value-pairs have to be included:
-                    - 'label'
-                    - 'fixed'
-                    - 'Azimuth (PV ONLY)'
-                    - 'Surface Tilt (PV ONLY)'
-                    - 'Modul Model (PV ONLY)'
-                    - 'Inverter Model (PV ONLY)'
-                    - 'Albedo (PV ONLY)'
-                    - 'Latitude (PV ONLY)'
-                    - 'Longitude (PV ONLY)'
+
+    def pv_source(self, so: dict, my_weather_pandas_dataframe: dict):
+        """
+            Creates an oemof photovoltaic source object.
+            # TODO myweatherdataframe beschreiben und Typ prüfen
+            Simulates the yield of a photovoltaic system using feedinlib
+            and creates a source object with the yield as time series
+            and the use of the create_source method.
+
+            :param so: dictionary containing all information for the
+                       creation of an oemof source. At least the
+                       following key-value-pairs have to be included:
+
+                            - 'label'
+                            - 'fixed'
+                            - 'Azimuth (PV ONLY)'
+                            - 'Surface Tilt (PV ONLY)'
+                            - 'Modul Model (PV ONLY)'
+                            - 'Inverter Model (PV ONLY)'
+                            - 'Albedo (PV ONLY)'
+                            - 'Latitude (PV ONLY)'
+                            - 'Longitude (PV ONLY)'
+            :type so: dict
+            :param my_weather_pandas_dataframe:
+            :type my_weather_pandas_dataframe: dict
+
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
         
         # reads pv system parameters from parameter dictionary
@@ -317,25 +364,29 @@ class Sources:
         
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
-    
-    def windpower_source(self, so, weather_df_wind):
-        """Creates an oemof windpower source object.
-        
-        Simulates the yield of a windturbine using feedinlib and
-        creates a source object with the yield as time series and the
-        use of the create_source method.
-        
-        ---
-        Keyword arguments:
-        
-        so : obj:'dict'
-        -- dictionary containing all information for the
-        creation of an oemof source. At least the following
-        key-value-pairs have to be included:
-            - 'label'
-            - 'fixed'
-            - 'Turbine Model (Windpower ONLY)'
-            - 'Hub Height (Windpower ONLY)'
+
+    def windpower_source(self, so: dict, weather_df_wind: dict):
+        """
+            Creates an oemof windpower source object.
+
+            Simulates the yield of a windturbine using feedinlib and
+            creates a source object with the yield as time series and the
+            use of the create_source method.
+            # TODO weather_df_wind beschreiben und Typ prüfen
+
+            :param so: dictionary containing all information for the
+                       creation of an oemof source. At least the
+                       following key-value-pairs have to be included:
+
+                            - 'label'
+                            - 'fixed'
+                            - 'Turbine Model (Windpower ONLY)'
+                            - 'Hub Height (Windpower ONLY)'
+            :type so: dict
+            :param weather_df_wind:
+            :type weather_df_wind: dict
+
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
         
         # set up wind turbine using the wind turbine library.
@@ -377,68 +428,15 @@ class Sources:
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
     
-    def __init__(self, nodes_data, nodes, busd, filepath):
+    def __init__(self, nodes_data: dict, nodes: list, busd: dict,
+                 filepath: str):
         """
-        Inits the source class
-        ---
-        Keyword arguments:
-        
-        nodes_data: obj:'dict'
-        --  dictionary containing parameters of sources to be
-        created.The following data have to be provided:
-            - 'label'
-            - 'active'
-            - 'fixed'
-            - 'output'
-            - 'technology'
-            - 'variable costs / (CU / kWh)'
-            - 'existing capacity / (kW)'
-            - 'min.investment capacity / (kW)'
-            - 'max.investment capacity / (kW)'
-            - 'periodical costs / (CU / (kW a))'
-            - 'Non-Convex Investment'
-            - 'Fix Investment Cost / (CU/a)'
-            - 'Turbine Model (Windpower ONLY)'
-            - 'Hub Height (Windpower ONLY)'
-            - 'technology database(PV ONLY)'
-            - 'inverter database(PV ONLY)'
-            - 'Modul Model(PV ONLY)'
-            - 'Inverter Model(PV ONLY)'
-            - 'Azimuth(PV ONLY)'
-            - 'Surface Tilt(PV ONLY)'
-            - 'Albedo(PV ONLY)'
-            - 'Altitude(PV ONLY)'
-            - 'Latitude(PV ONLY)'
-            - 'Longitude(PV ONLY)'
-        
-        busd: obj:'dict'
-        --  dictionary containing the buses of the energy system
-        
-        nodes: obj:'list'
-        --  list of components created before(can be empty)
-        
-        filepath: obj:'str'
-        -- path to .xlsx scenario-file containing a
-        "weather data" sheet with timeseries for
-            -   "dhi"(diffuse horizontal irradiation)
-                W / m ^ 2
-            -   "dirhi"(direct horizontal irradiance)
-                W / m ^ 2
-            -   "pressure" in Pa
-            -   "temperature" in °C
-            -   "windspeed" in m / s
-            -   "z0"(roughness length) in m
-        
-        ---
-        Other variables:
-        
-        nodes_sources: obj:'list'
-        -- class intern list of sources that are already created
-        
-        ---
-        Contributors:
-        - Christian Klemm - christian.klemm@fh-muenster.de
-        - Gregor Becker - gregor.becker@fh-muenster.de
+            Inits the source class
+            ---
+            Other variables:
+
+            nodes_sources: obj:'list'
+            -- class intern list of sources that are already created
         """
         # Delete possible residues of a previous run from the class
         # internal list nodes_sources
@@ -479,39 +477,77 @@ class Sources:
 
 
 class Sinks:
-    """Creates sink objects.
-    
-    There are four options for labeling source objects to be
-    created:
-    - 'unfixed' : a source with flexible time series
-    - 'timeseries' : a source with predefined time series
-    -  SLP : a VDEW standard load profile component
-    - 'richardson' : a component with stochastically generated
-    timeseries
     """
+        Creates sink objects.
+    
+        There are four options for labeling source objects to be
+        created:
+
+            - unfixed: a source with flexible time series
+            - timeseries: a source with predefined time series
+            - SLP: a VDEW standard load profile component
+            - richardson: a component with stochastically generated timeseries
+
+        :param nodes_data: dictionary containing parameters of sinks to
+                           be created.The following data have to be
+                           provided:
+
+                                - 'label'
+                                - 'active'
+                                - 'fixed'
+                                - 'input'
+                                - 'load profile'
+                                - 'nominal value /(kW)'
+                                - 'annual demand /(kWh/a)'
+                                - 'occupants [Richardson]'
+                                - 'building class [HEAT SLP ONLY]'
+                                - 'wind class [HEAT SLP ONLY]'
+        :type nodes_data: dict
+        :param busd: dictionary containing the buses of the energy system
+        :type busd: dict
+        :param nodes: list of components created before(can be empty)
+        :type nodes: list
+        :param filepath: path to .xlsx scenario-file containing a
+                         "weather data" sheet with timeseries for
+
+                            - "dhi"(diffuse horizontal irradiation)
+                              W / m ^ 2
+                            - "dirhi"(direct horizontal irradiance)
+                              W / m ^ 2
+                            - "pressure" in Pa
+                            - "temperature" in °C
+                            - "windspeed" in m / s
+                            - "z0"(roughness length) in m
+        :type filepath: str
+
+        Contributors:
+
+            - Christian Klemm - christian.klemm@fh-muenster.de
+            - Gregor Becker - gregor.becker@fh-muenster.de
+    """
+
     # intern variables
     busd = None
     nodes_sinks = []
     
-    def create_sink(self, de, timeseries_args):
-        """Creates an oemof sink with fixed or unfixed timeseries.
-        
-        ----
-        Keyword arguments:
-            de : obj:'dict'
-                --  dictionary containing all information for the
-                    creation of an oemof sink. At least the
-                    following key-value-pairs have to be included:
-                        - 'label'
-                        - 'input'
-            
-            timeseries_args : obj:'dict'
-                --  dictionary rather containing the 'fix-attribute'
-                    or the 'min-' and 'max-attribute' of a sink
-        
-        ---
-        Contributors:
-        - Christian Klemm - christian.klemm@fh-muenster.de
+    def create_sink(self, de: dict, timeseries_args: dict):
+        """
+            Creates an oemof sink with fixed or unfixed timeseries.
+
+            :param de: dictionary containing all information for the
+                       creation of an oemof sink. At least the
+                       following key-value-pairs have to be included:
+
+                            - 'label'
+                            - 'input'
+
+            :type de: dict
+            :param timeseries_args: dictionary rather containing the
+                                    'fix-attribute' or the 'min-' and
+                                    'max-attribute' of a sink
+            :type timeseries_args: dict
+
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
         # creates an omeof Sink and appends it to the class intern list
         # of created sinks
@@ -521,22 +557,20 @@ class Sinks:
                                self.busd[de['input']]:
                                    solph.Flow(**timeseries_args)}))
     
-    def unfixed_sink(self, de):
-        """ Creates a sink object with an unfixed energy input and the
-        use of the create_sink method.
-        ----
-        Keyword arguments:
-            de : obj:'dict'
-                --  dictionary containing all information for
-                the creation of an oemof sink. For this function
-                the following key-value-pairs have to
-                be included:
-                    - 'label'
-                    - 'nominal value /(kW)'
-        
-        ---
-        Contributors:
-        - Christian Klemm - christian.klemm@fh-muenster.de
+    def unfixed_sink(self, de: dict):
+        """
+            Creates a sink object with an unfixed energy input and the
+            use of the create_sink method.
+
+            :param de: dictionary containing all information for the
+                       creation of an oemof sink. For this function the
+                       following key-value-pairs have to be included:
+
+                            - 'label'
+                            - 'nominal value /(kW)'
+            :type de: dict
+
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
         
         # set static inflow values
@@ -546,24 +580,24 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-    def timeseries_sink(self, de, filepath):
-        """ Creates a sink object with a fixed input. The input must be
-        given as a time series in the scenario file.
-        In this context the method uses the create_sink method.
-        ----
-        Keyword arguments:
-            de : obj:'dict'
-                --  dictionary containing all information for
-                the creation of an oemof sink. At least the
-                following key-value-pairs have to be included:
-                    - 'label'
-                    - 'nominal value /(kW)'
-            
-            filepath: String
-                -- path to .xlsx scenario-file containing a
-                "time_series" sheet
-        ----
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+    def timeseries_sink(self, de: dict, filepath: str):
+        """
+            Creates a sink object with a fixed input. The input must be
+            given as a time series in the scenario file.
+            In this context the method uses the create_sink method.
+
+            :param de: dictionary containing all information for the
+                       creation of an oemof sink. At least the
+                       following key-value-pairs have to be included:
+
+                            - 'label'
+                            - 'nominal value /(kW)'
+            :type de: dict
+            :param filepath: path to .xlsx scenario-file containing a
+                             "time_series" sheet
+            :type filepath: str
+
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
         # imports the time_series sheet of the scenario file
         time_series = pd.read_excel(filepath, sheet_name='time_series')
@@ -582,34 +616,32 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-    def slp_sink(self, de, filepath):
-        """ Creates a sink with a residential or commercial
-        SLP time series.
+    def slp_sink(self, de: dict, filepath: str):
+        """
+            Creates a sink with a residential or commercial
+            SLP time series.
         
-        Creates a sink with inputs according to VDEW standard
-        load profiles, using oemofs demandlib.
-        Used for the modelling of residential or commercial
-        electricity demand.
-        In this context the method uses the create_sink method.
-        ----
-        Keyword arguments:
-            de : obj:'dict'
-                --  dictionary containing all information for
-                the creation of an oemof sink. At least the
-                following key-value-pairs have to be included:
-                    - 'label'
-                    - 'load profile'
-                    - 'annual demand /(kWh/a)'
-                    - 'building class [HEAT SLP ONLY]'
-                    - 'wind class [HEAT SLP ONLY]'
-        
-        
-            filepath : String
-                -- -- path to .xlsx scenario-file containing a
-                "energysystem" sheet
-        
-        ----
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+            Creates a sink with inputs according to VDEW standard
+            load profiles, using oemofs demandlib.
+            Used for the modelling of residential or commercial
+            electricity demand.
+            In this context the method uses the create_sink method.
+
+            :param de: dictionary containing all information for the
+                       creation of an oemof sink. At least the
+                       following key-value-pairs have to be included:
+
+                            - 'label'
+                            - 'load profile'
+                            - 'annual demand /(kWh/a)'
+                            - 'building class [HEAT SLP ONLY]'
+                            - 'wind class [HEAT SLP ONLY]'
+            :type de: dict
+            :param filepath: path to .xlsx scenario-file containing a
+                             "energysystem" sheet
+            :type filepath: str
+
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
         heat_slps = ['efh', 'mfh']
         heat_slps_commercial = \
@@ -675,28 +707,29 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-    def richardson_sink(self, de, filepath):
-        """Creates a sink with stochastically timeseries.
+    def richardson_sink(self, de: dict, filepath: str):
+        """
+            Creates a sink with stochastically timeseries.
         
-        Creates a sink with stochastically generated input, using
-        richardson.py. Used for the modelling of residential electricity
-        demands. In this context the method uses the create_sink method.
-        ----
-        Keyword arguments:
-            de : obj:'dict'
-                --  dictionary containing all information for
-                the creation of an oemof sink. At least the
-                following key-value-pairs have to be included:
-                    - 'label'
-                    - 'fixed'
-                    - 'annual demand /(kWh/a)'
-                    - 'occupants [RICHARDSON]'
-        
-            filepath : String
-                -- path to .xlsx scenario-file containing a
-                "energysystem" sheet
-        ----
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+            Creates a sink with stochastically generated input, using
+            richardson.py. Used for the modelling of residential
+            electricity demands. In this context the method uses the
+            create_sink method.
+
+            :param de: dictionary containing all information for
+                       the creation of an oemof sink. At least the
+                       following key-value-pairs have to be included:
+
+                            - 'label'
+                            - 'fixed'
+                            - 'annual demand /(kWh/a)'
+                            - 'occupants [RICHARDSON]'
+            :type de: dict
+            :param filepath: path to .xlsx scenario-file containing a
+                             "energysystem" sheet
+            :type filepath: str
+
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
     
         import richardsonpy.classes.occupancy as occ
@@ -774,54 +807,15 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-    def __init__(self, nodes_data, busd, nodes, filepath):
+    def __init__(self, nodes_data: dict, busd: dict, nodes: list,
+                 filepath: str):
         """ Inits the sink class.
-        ----
-        Keyword arguments:
-        
-            nodes_data: obj:'dict'
-                --  dictionary containing parameters of sinks to be
-                created.The following data have to be provided:
-                    - 'label'
-                    - 'active'
-                    - 'fixed'
-                    - 'input'
-                    - 'load profile'
-                    - 'nominal value /(kW)'
-                    - 'annual demand /(kWh/a)'
-                    - 'occupants [Richardson]'
-                    - 'building class [HEAT SLP ONLY]'
-                    - 'wind class [HEAT SLP ONLY]'
-            
-            
-            busd: obj:'dict'
-                --  dictionary containing the buses of the energy system
-            
-            nodes: obj:'list'
-                --  list of components created before(can be empty)
-            
-            filepath: obj:'str'
-                -- path to .xlsx scenario-file containing a
-                "weather data" sheet with timeseries for
-                    -   "dhi"(diffuse horizontal irradiation)
-                        W / m ^ 2
-                    -   "dirhi"(direct horizontal irradiance)
-                        W / m ^ 2
-                    -   "pressure" in Pa
-                    -   "temperature" in °C
-                    -   "windspeed" in m / s
-                    -   "z0"(roughness length) in m
-            
         ---
         Other variables:
         
             nodes_sinks: obj:'list'
                 -- class intern list of sinks that are already created
-        
-        ---
-        Contributors:
-        - Christian Klemm - christian.klemm@fh-muenster.de
-        - Gregor Becker - gregor.becker@fh-muenster.de
+
         """
         
         # Delete possible residues of a previous run from the class
@@ -870,72 +864,73 @@ class Sinks:
 
 class Transformers:
     """
-    Creates a transformer object.
-    Creates transformers objects as defined in 'nodes_data' and adds
-    them to the list of components 'nodes'.
-    ----
-    Keyword arguments:
-        nodes_data : obj:'dict'
-            -- dictionary containing data from excel scenario file. The
-            following data have to be provided:
-                - label,
-                - active,
-                - transformer type,
-                - input,
-                - output,
-                - output2,
-                - efficiency,
-                - efficiency2,
-                - variable input costs /(CU/kWh),
-                - variable output costs /(CU/kWh),
-                - existing capacity /(kW),
-                - max. investment capacity /(kW),
-                - min. investment capacity /(kW),
-                - periodical costs /(CU/(kW a))
-        busd : obj:'dict'
-            -- dictionary containing the buses of the energy system
-        nodes : obj:'list'
-            -- list of components
-    ----
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 13.02.2020
+        Creates a transformer object.
+        Creates transformers objects as defined in 'nodes_data' and adds
+        them to the list of components 'nodes'.
+
+        :param nodes_data: dictionary containing data from excel scenario
+                           file. The following data have to be provided:
+
+                                - label,
+                                - active,
+                                - transformer type,
+                                - input,
+                                - output,
+                                - output2,
+                                - efficiency,
+                                - efficiency2,
+                                - variable input costs /(CU/kWh),
+                                - variable output costs /(CU/kWh),
+                                - existing capacity /(kW),
+                                - max. investment capacity /(kW),
+                                - min. investment capacity /(kW),
+                                - periodical costs /(CU/(kW a))
+        :type nodes_data: dict
+        :param busd: dictionary containing the buses of the energy system
+        :type busd: dict
+        :param nodes: list of components created before(can be empty)
+        :type nodes: list
+
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
     # intern variables
     nodes_transformer = []
     busd = None
     
     def create_transformer(self, tf, inputs, outputs, conversion_factors):
+        """ TODO Docstring missing """
         self.nodes_transformer.append(solph.Transformer(
                 label=tf['label'], **inputs, **outputs, **conversion_factors))
         logging.info('   ' + 'Transformer created: ' + tf['label'])
     
-    def generic_transformer(self, tf):
+    def generic_transformer(self, tf: dict):
         """
-        Creates a Generic Transformer object.
-        Creates a generic transformer with the parameters given in
-        'nodes_data' and adds it to the list of components 'nodes'.
-        ----
-        Keyword arguments:
-            tf : obj:'dict'
-            -- dictionary containing all information for thecreation of
-            an oemof transformer.
-            At least the following key-value-pairs have to be included:
-                - 'label'
-                - 'input'
-                - 'output'
-                - 'output2'
-                - 'efficiency'
-                - 'efficiency2'
-                - 'variable input costs / (CU/kWh)'
-                - 'variable output costs / (CU/kWh)'
-                - 'variable output costs 2 / (CU/kWh)'
-                - 'periodical costs / (CU/kWh)'
-                - 'min. investment capacity / (kW)'
-                - 'max. investment capacity / (kW)'
-                - 'existing capacity / (kW)'
-                - 'Non-Convex Investment'
-                - 'Fix Investment Costs / (CU/a)'
-        ----
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+            Creates a Generic Transformer object.
+            Creates a generic transformer with the parameters given in
+            'nodes_data' and adds it to the list of components 'nodes'.
+
+            :param tf: dictionary containing all information for the
+                       creation of an oemof transformer. At least the
+                       following key-value-pairs have to be included:
+
+                            - 'label'
+                            - 'input'
+                            - 'output'
+                            - 'output2'
+                            - 'efficiency'
+                            - 'efficiency2'
+                            - 'variable input costs / (CU/kWh)'
+                            - 'variable output costs / (CU/kWh)'
+                            - 'variable output costs 2 / (CU/kWh)'
+                            - 'periodical costs / (CU/kWh)'
+                            - 'min. investment capacity / (kW)'
+                            - 'max. investment capacity / (kW)'
+                            - 'existing capacity / (kW)'
+                            - 'Non-Convex Investment'
+                            - 'Fix Investment Costs / (CU/a)'
+            :type tf: dict
+
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
         outputs = \
             {self.busd[tf['output']]: solph.Flow(
@@ -989,14 +984,42 @@ class Transformers:
                 emission_factor=tf['variable input constraint costs /(CU/kWh)'])
         }}
         self.create_transformer(tf, inputs, outputs, conversion_factors)
-        
-    def heat_pump_transformer(self, t, data):
+
+    def heat_pump_transformer(self, t: dict, data: dict):
         """
-        Creates a Heat Pump object by using oemof.thermal.
-        Creates a heat pump with the parameters given in
-        'nodes_data' and adds it to the list of components 'nodes'.
-        ----
-        @ Janik Budde - Janik.Budde@fh-muenster.de, 30.07.2020
+            Creates a Heat Pump object by using oemof.thermal.
+            Creates a heat pump with the parameters given in
+            'nodes_data' and adds it to the list of components 'nodes'.
+
+            :param t: dictionary containing all information for the \
+                      creation of an oemof transformer. At least the \
+                      following key-value-pairs have to be included:
+
+                        - 'label'
+                        - 'heat source'
+                        - 'temperature high /(deg C)'
+                        - 'quality grade'
+                        - 'temp threshold icing'
+                        - 'factor icing'
+                        - 'variable input costs / (CU/kWh)'
+                        - 'variable output costs / (CU/kWh)'
+                        - 'min. investment capacity / (kW)'
+                        - 'max. investment capacity / (kW)'
+                        - 'existing capacity / (kW)'
+            :type t: dict
+            :param data: dictionary containing all temperature information \
+                         for the low temperature source. At least the \
+                         following key-value-pairs have to be included:
+
+                            - 'ground_temp'
+                            - 'groundwater_temp'
+                            - 'temperature'
+                            - 'water_temp'
+            :type data: dict
+
+            :raise SystemError: choosen heat source not defined
+
+            Janik Budde - Janik.Budde@fh-muenster.de
         """
         
         # import oemof.thermal in order to calculate the cop
@@ -1086,7 +1109,7 @@ class Transformers:
         elif t['heat source'] == "Water":
             temp_low = data['water_temp']
         else:
-            raise SystemError('problem with HeatSource')
+            raise SystemError(t['label'] + " Error in heat source attribute")
         
         cops_hp = cmpr_hp_chiller.calc_cops(
                 temp_high=[t['temperature high /(deg C)']],
@@ -1124,34 +1147,38 @@ class Transformers:
                 self.busd[t['input']]: [1 / cop for cop in cops_hp]}}
         self.create_transformer(t, inputs, outputs, conversion_factors)
     
-    def genericchp_transformer(self, tf, nd):
+    def genericchp_transformer(self, tf: dict, nd: dict):
         """
             Creates a Generic CHP transformer object.
             Creates a generic chp transformer with the parameters given
             in 'nodes_data' and adds it to the list of components
             'nodes'.
-            ----
-            Keyword arguments:
-            tf : obj:'dict'
-                -- dictionary containing all information for
-                the creation of an oemof transformer.
-                At least the following key-value-pairs have to be included:
-                    - 'label'
-                    - 'input'
-                    - 'output'
-                    - 'output2'
-                    - 'efficiency'
-                    - 'efficiency2'
-                    - 'variable input costs / (CU/kWh)'
-                    - 'variable output costs / (CU/kWh)'
-                    - 'variable output costs 2 / (CU/kWh)'
-                    - 'periodical costs / (CU/kWh)'
-                    - 'min. investment capacity / (kW)'
-                    - 'max. investment capacity / (kW)'
-                    - 'existing capacity / (kW)'
-                    - 'Non-Convex Investment'
-                    - 'Fix Investment Costs / (CU/a)'
-            @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+
+            :param tf: dictionary containing all information for the
+                       creation of an oemof transformer. At least the
+                       following key-value-pairs have to be included:
+
+                            - 'label'
+                            - 'input'
+                            - 'output'
+                            - 'output2'
+                            - 'efficiency'
+                            - 'efficiency2'
+                            - 'variable input costs / (CU/kWh)'
+                            - 'variable output costs / (CU/kWh)'
+                            - 'variable output costs 2 / (CU/kWh)'
+                            - 'periodical costs / (CU/kWh)'
+                            - 'min. investment capacity / (kW)'
+                            - 'max. investment capacity / (kW)'
+                            - 'existing capacity / (kW)'
+                            - 'Non-Convex Investment'
+                            - 'Fix Investment Costs / (CU/a)'
+            :type tf: dict
+            :param nd: dictionary containing parameters of the buses
+                       to be created.
+            :type nd: dict
+
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
         # counts the number of periods within the given datetime index
         # and saves it as variable
@@ -1229,7 +1256,7 @@ class Transformers:
         logging.info('   ' + 'Transformer created: ' + tf['label'])
     
     def __init__(self, nodes_data, nodes, busd):
-    
+        """ TODO Docstring missing """
         # renames variables
         self.busd = busd
         self.nodes_transformer = []
@@ -1282,47 +1309,45 @@ class Transformers:
 
 class Storages:
     """
-    Creates oemof storage objects as defined in 'nodes_data' and adds them to
-    the list of components 'nodes'.
+        Creates oemof storage objects as defined in 'nodes_data' and
+        adds them to the list of components 'nodes'.
+
+        :param nodes_data: dictionary containing parameters of storages
+                           to be created.The following data have to be
+                           provided:
+
+                                - 'label'
+                                - 'active'
+                                - 'bus'
+                                - 'existing capacity / (kWh)'
+                                - 'min.investment capacity / (kWh)'
+                                - 'max.investment capacity / (kWh)'
+                                - 'Non-Convex Investments'
+                                - 'Fix Investment Costs /(CU/a)'
+                                - 'input/capacity ratio (invest)'
+                                - 'output/capacity ratio (invest)'
+                                - 'capacity loss'
+                                - 'efficiency inflow'
+                                - 'efficiency outflow'
+                                - 'initial capacity'
+                                - 'capacity min'
+                                - 'capacity max'
+                                - 'variable input costs'
+                                - 'variable output costs'
+        :type nodes_data: dict
+        :param busd: dictionary containing the buses of the energy system
+        :type busd: dict
+        :param nodes: list of components created before(can be empty)
+        :type nodes: list
+
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
     
-    def __init__(self, nodes_data, nodes, busd):
+    def __init__(self, nodes_data: dict, nodes: list, busd: dict):
         """
         Inits the storage class.
-        ----
-        
-        Keyword arguments:
-        
-        nodes_data : obj:'dict'
-            --  dictionary containing parameters of storages to be
-            created.The following data have to be provided:
-                    - 'label'
-                    - 'active'
-                    - 'bus'
-                    - 'existing capacity / (kWh)'
-                    - 'min.investment capacity / (kWh)'
-                    - 'max.investment capacity / (kWh)'
-                    - 'Non-Convex Investments'
-                    - 'Fix Investment Costs /(CU/a)'
-                    - 'input/capacity ratio (invest)'
-                    - 'output/capacity ratio (invest)'
-                    - 'capacity loss'
-                    - 'efficiency inflow'
-                    - 'efficiency outflow'
-                    - 'initial capacity'
-                    - 'capacity min'
-                    - 'capacity max'
-                    - 'variable input costs'
-                    - 'variable output costs'
-        
-        busd : obj:'dict'
-            -- dictionary containing the busses of the energy system
-    
-        nodes : obj:'list'
-            -- list of components created before (can be empty)
-        
-        ----
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+
+        Christian Klemm - christian.klemm@fh-muenster.de
         """
     
         # creates storage object for every storage element in nodes_data
@@ -1377,32 +1402,34 @@ class Storages:
 
 class Links:
     """
-    Creates links objects as defined in 'nodes_data' and adds them to
-    the list of components 'nodes'.
-    ----
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+        Creates links objects as defined in 'nodes_data' and adds them
+        to the list of components 'nodes'.
+
+        # TODO Excel columns missing
+
+        :param nodes_data: dictionary containing data from excel
+                           scenario file. The following data have to be
+                           provided:
+
+                                - 'active'
+                                - 'label'
+                                - '(un)directed'
+        :type nodes_data: dict
+        :param busd: dictionary containing the buses of the energy system
+        :type busd: dict
+        :param nodes: list of components created before(can be empty)
+        :type nodes: list
+
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
     # intern variables
     busd = None
     
     def __init__(self, nodes_data, nodes, bus):
         """
-        Inits the Links class.
-        ----
-        
-        Keyword arguments:
-        nodes_data: obj:'dict'
-        -- dictionary containing data from excel scenario file. The
-        following data have to be provided:
-        - 'active'
-        - 'label'
-        - '(un)directed'
-        
-        bus : obj:'dict'
-        -- dictionary containing the buses of the energy system
-        
-        nodes : obj:'list'
-        -- list of components created before (can be empty)
+            Inits the Links class.
+
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
         # renames variables
         self.busd = bus

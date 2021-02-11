@@ -1,7 +1,8 @@
-"""Functions for returning optimization results in several forms.
+"""
+    Functions for returning optimization results in several forms.
 
-----
-@ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+    Contributor:
+        Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
 """
 
 import logging
@@ -11,33 +12,23 @@ from matplotlib import pyplot as plt
 import os
 
 
-def xlsx(nodes_data, optimization_model, filepath):
-    """Returns model results as xlsx-files.
-    Saves the in- and outgoing flows of every bus of a given,
-    optimized energy system as .xlsx file
+def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str):
+    """
+        Returns model results as xlsx-files.
+        Saves the in- and outgoing flows of every bus of a given,
+        optimized energy system as .xlsx file
     
-    ----
-    
-    Keyword arguments:
-    
-        nodes_data : obj:'dict'
-            -- dictionary containing data from excel scenario file
-        
-        optimization_model
-            -- optimized energy system
-        
-        filepath : obj:'str'
-            -- path, where the results will be stored
-    
-    ----
-    
-    Returns:
-        results : obj:'.xlsx'
-            -- xlsx files containing in and outgoing flows of the energy
-            systems' buses.
-    
-    ----
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+        :param nodes_data: dictionary containing data from excel
+                           scenario file
+        :type nodes_data: dict
+        :param optimization_model: optimized energy system
+        :type optimization_model: oemof.solph.model
+        :param filepath: path, where the results will be stored
+        :type filepath: str
+        :return: - **results** (.xlsx) - xlsx files containing in and \
+                   outgoing flows of the energy systems' buses.
+
+        Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
     """
     results = solph.processing.results(optimization_model)
 
@@ -57,34 +48,25 @@ def xlsx(nodes_data, optimization_model, filepath):
             logging.info('   ' + 'Results saved as xlsx for ' + b['label'])
 
 
-def charts(nodes_data, optimization_model, energy_system):
-    """Plots model results.
+def charts(nodes_data: dict, optimization_model: solph.Model,
+           energy_system: solph.EnergySystem):
+    """
+        Plots model results.
     
-    Plots the in- and outgoing flows of every bus of a given, optimized energy
-    system
-    
-    ----
-    
-    Keyword arguments:
-    
-        nodes_data : obj:'dict'
-            -- dictionary containing data from excel scenario file
-        
-        optimization_model
-            -- optimized energy system
-        
-        energy_system : obj:
-            -- original (unoptimized) energy system
-    
-    ----
-    
-    Returns:
-        plots
-            -- plots displaying in and outgoing flows of the energy
-            systems' buses.
-    
-    ----
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+        Plots the in- and outgoing flows of every bus of a given,
+        optimized energy system
+
+        :param nodes_data: dictionary containing data from excel
+                            scenario file
+        :type nodes_data: dict
+        :param optimization_model: optimized energy system
+        :type optimization_model: oemof.solph.Model
+        :param energy_system: original (unoptimized) energy system
+        :type energy_system: oemof.solph.Energysystem
+        :return: - **plots** (matplotlib.plot) plots displaying in \
+                   and outgoing flows of the energy systems' buses.
+
+        Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
     """
     # rename variables
     esys = energy_system
@@ -112,29 +94,29 @@ def charts(nodes_data, optimization_model, energy_system):
 
 class Results:
     """
-    Class for preparing Plotly results and logging the results of
-    Cbc-Solver
+        Class for preparing Plotly results and logging the results of
+        Cbc-Solver
     """
     results = None
     esys = None
 
-    def get_flow(self, comp_label, comp_type):
+    def get_flow(self, comp_label: str, comp_type: str) -> dict:
         """
             Calculates the flow and performance of the given component,
             then logs it in the output and returns it to the statistics
             method.
-            ----
-            Keyword arguments:
-                
-                comp_label: obj:'str'
-                    -- label of component to be calculated
-                comp_type: obj:'str'
-                    -- type of component to be calculated
-            ----
-            Returns:
-                flow_sum: -- sum of the of the calculated flow
-                flow_max: -- maximum of the calculated flow
-                df_component: -- component_performance(input or output)
+
+            :param comp_label: label of component to be calculated
+            :type comp_label: str
+            :param comp_type: type of component to be calculated
+            :type comp_type: str
+             TODO type check Returns
+            :returns: - **flow_sum** (dict) - sum of the of the \
+                        calculated flow
+                      - **flow_max** (dict) - maximum of the \
+                        calculated flow
+                      - **df_component** (dict) - \
+                        component_performance (input or output)
         """
         logging.info('   ' + comp_label)
         # creates component by component_label
@@ -162,23 +144,25 @@ class Results:
         elif comp_type == 'link' or comp_type == 'storage':
             return flow_sum, flow_max, component['sequences']
 
-    def get_investment(self, component, comp_type):
+    def get_investment(self, component, comp_type: str) -> [float, float]:
         """
-        Calculates the investment to be made and the resulting periodical
-        costs.
-        ----
-        Keyword arguments:
-            component: obj
-                -- one component of the energy system with
-                'max. investment' > 0
-            comp_type: obj: 'str'
-                -- type of the component to be calculated
-        ----
-        Returns:
-            component_investment: obj: 'float'
-                -- investment to be made
-            periodical_costs: obj: 'float'
-                -- periodic_costs resulting from the investment decision
+            Calculates the investment to be made and the resulting
+            periodical costs.
+            TODO type definition of component
+
+            :param component: one component of the energy system with \
+                              'max. investment' > 0
+            :param comp_type: type of the component to be calculated
+            :type comp_type: str
+
+            :raise SystemError: comes up if the comp_type is not defined
+
+            :returns:
+                - **component_investment** (float) - investment to be \
+                                                     made
+                - **periodical_costs** (float) - periodic_costs \
+                                                 resulting from the \
+                                                 investment decision
         """
         component_node = self.esys.groups[component['label']]
         # defines bus_node for different components
@@ -210,42 +194,44 @@ class Results:
                      + ' cost units p.a.')
         return component_investment, periodical_costs
 
-    def statistics(self, nodes_data, optimization_model, energy_system,
-                   result_path):
+    def statistics(self, nodes_data: dict, optimization_model: solph.Model,
+                   energy_system: solph.EnergySystem, result_path: str):
         """
-        Returns a list of all defined components with the following
-        information:
-        
-        component   |   information
-        ----------------------------------------------------------------
-        sinks       |   Total Energy Demand
-        sources     |   Total Energy Input, Max. Capacity,
-                        Variable Costs, Periodical Costs
-        transformers|   Total Energy Output, Max. Capacity,
-                        Variable Costs, Investment Capacity,
-                        Periodical Costs
-        storages    |   Energy Output, Energy Input, Max. Capacity,
-                        Total variable costs, Investment Capacity,
-                        Periodical Costs
-        links       |   Total Energy Output
-        
-        Furthermore, a list of recommended investments is printed.
-        ----
-        Keyword arguments:
-        
-            nodes_data : obj:'dict'
-               -- dictionary containing data from excel scenario file
-        
-            optimization_model
-                -- optimized energy system
-        
-            energy_system : obj:
-                -- original (unoptimized) energy system
-            
-            result_path : obj: 'str'
-                -- Path where the results are saved.
-        ----
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+            Returns a list of all defined components with the following
+            information:
+
+            +------------+----------------------------------------------+
+            |component   |   information                                |
+            +------------+----------------------------------------------+
+            |sinks       |   Total Energy Demand                        |
+            +------------+----------------------------------------------+
+            |sources     |   Total Energy Input, Max. Capacity,         |
+            |            |   Variable Costs, Periodical Costs           |
+            +------------+----------------------------------------------+
+            |transformers|   Total Energy Output, Max. Capacity,        |
+            |            |   Variable Costs, Investment Capacity,       |
+            |            |   Periodical Costs                           |
+            +------------+----------------------------------------------+
+            |storages    |   Energy Output, Energy Input, Max. Capacity,|
+            |            |   Total variable costs, Investment Capacity, |
+            |            |   Periodical Costs                           |
+            +------------+----------------------------------------------+
+            |links       |   Total Energy Output                        |
+            +------------+----------------------------------------------+
+
+            Furthermore, a list of recommended investments is printed.
+
+            :param nodes_data: dictionary containing data from excel \
+                               scenario file
+            :type nodes_data: dict
+            :param optimization_model: optimized energy system
+            :type optimization_model: oemof.solph.Model
+            :param energy_system: original (unoptimized) energy system
+            :type energy_system: oemof.solph.Energysystem
+            :param result_path: Path where the results are saved.
+            :type result_path: str
+
+            Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
         """
 
         # renames input variables
@@ -845,35 +831,23 @@ class Results:
 
         logging.info('   ' + 'Successfully prepared results...')
 
-    def __init__(self, nodes_data, optimization_model, energy_system,
-                 result_path):
+    def __init__(self, nodes_data: dict, optimization_model: solph.Model,
+                 energy_system: solph.EnergySystem, result_path: str):
         """
             Inits the Results class for preparing Plotly results and
             logging the results of Cbc-Solver.
-            
-            ----
-            Keyword arguments:
-                
-                nodes_data: obj:'dict'
-                    -- dictionary containing data from excel scenario
-                    file.
-                optimization_model: -- optimized energy system
-                energy_system: obj:
-                    -- original (unoptimized) energy system
-                result_path:
-                    -- Path where the results are saved.
         """
         self.statistics(nodes_data, optimization_model, energy_system,
                         result_path)
 
 
-def log(component):
+def log(component: str):
     """
-    Returns logging info for type of given components.
-    ----
-    Keyword arguments:
-         component: obj: 'str'
-         -- component type
+        Returns logging info for type of given components.
+
+        :param component: component type
+        :type component: str
+
     """
     # returns logging infos
     logging.info(

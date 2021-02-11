@@ -72,7 +72,7 @@ Docs:
 GIT:
  - https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator
 
-@ Christian Klemm - christian.klemm@fh-muenster.de, 13.03.2020
+Christian Klemm - christian.klemm@fh-muenster.de
 """
 import logging
 from oemof.tools import logger
@@ -89,24 +89,23 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
                graph: bool, results: bool, plotly: bool):
     """
         Main function of the Spreadsheet System Model Generator
-        
-        Parameters
-        ----------
-            :param scenario_file: The scenario_file must contain the 
-                                  components specified above.
-            :type scenario_file: str ['xlsx']    
-            
-            :param result_path: path of the folder where the results 
-                                will be saved
-            :type result_path: str ['folder']    
-            :param num_threads: number of threads that the method may use
-            :type num_threads: int
-            :param graph: defines if the graph should be created
-            :type graph: bool
-            :param results: defines if the results should be created
-            :type results: bool  
-            :param plotly: defines if the plotly dash should be started
-            :type plotly: bool 
+
+        :param scenario_file: The scenario_file must contain the
+                              components specified above.
+        :type scenario_file: str ['xlsx']
+        :param result_path: path of the folder where the results
+                            will be saved
+        :type result_path: str ['folder']
+        :param num_threads: number of threads that the method may use
+        :type num_threads: int
+        :param graph: defines if the graph should be created
+        :type graph: bool
+        :param results: defines if the results should be created
+        :type results: bool
+        :param plotly: defines if the plotly dash should be started
+        :type plotly: bool
+
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
     # SETS NUMBER OF THREADS FOR NUMPY
     os.environ['NUMEXPR_NUM_THREADS'] = str(num_threads)
