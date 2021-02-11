@@ -24,6 +24,8 @@ pip3 install dash_canvas==0.1.0
 pip3 install pydot==1.4.1
 pip3 install graphviz==0.14.1
 pip3 install xlrd==1.2.0
+pip3 install tables
+pip3 install Pyomo==5.7.1
 
 echo ###################
 echo Installation completed 
