@@ -113,16 +113,4 @@ Linux
 8. Execute the "Linux_installtion.sh" file.
 
 9. The Spreadsheet Energy System Model Generator has been installed.
- 
-Troubleshooting
-*************************************************
-
-Problem: Execution of program stops at "Create Energy System..."
-Solution:
-
-Windows, MacOS, Linux
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-1) Open command line cmd
-2) type command "pip install Pyomo==5.7.1
-3) Now the program should work.
 
