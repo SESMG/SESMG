@@ -406,11 +406,11 @@ def demo_scenario():
     sheet['R3'] = (int(entry_values['chp'].get()))
     # THERMAL STORAGE
     sheet = xfile["storages"]
-    sheet['F3'] = (int(entry_values['thermal storage'].get()))
-    sheet['G3'] = (int(entry_values['thermal storage'].get()))
+    sheet['F3'] = (int(entry_values['Th. storage'].get()))
+    sheet['G3'] = (int(entry_values['Th. storage'].get()))
     # District Heating
     sheet = xfile["links"]
-    sheet['C2'] = (int(entry_values['district heating'].get()))
+    sheet['C2'] = (int(entry_values['dist. heating'].get()))
 
     xfile.save('results/demo/scenario.xlsx')
     execute_sesmg_DEMO(demo_file=r"/results/demo/scenario.xlsx",
@@ -468,8 +468,8 @@ def save_manual_results():
 
 def plot_results_scatter():
 
-    plt.xlabel('Mio. EUR/a')
-    plt.ylabel('t/a')
+    plt.xlabel('Financial Costs in Mio. EUR/a')
+    plt.ylabel('CO2-Emissions in t/a')
 
     keys = list(results_dict.keys())
     print(keys)
@@ -567,16 +567,16 @@ demo_components = {"name":'name',
                    "photovoltaics":'0',
                    "battery":'0',
                    "chp":'0',
-                   "thermal storage":'0',
-                   "district heating":'0'}
+                   "Th. storage":'0',
+                   "dist. heating":'0'}
 
 demo_unit = {"name":'',
                "windpower":'kW',
                "photovoltaics":'kW',
                "battery":'kWh',
                "chp":'kW (el.)',
-               "thermal storage":'kWh',
-               "district heating":'True (1) / False (0)'}
+               "Th. storage":'kWh',
+               "dist. heating":'True (1) / False (0)'}
 
 row = row + 1
 demo_names = list(demo_components.keys())
@@ -740,8 +740,8 @@ demo_assumptions = {'Electricity Demand':'14 000 000 kWh/a, h0 Load Profile',
                     'Photovoltaics':'1 140 000 €/MW, 56 g/kWh, 20 a, max. 10 MW',
                     'Battery':'1 000 000 €/MWh, 155 t/MWh (Invest!), 20 a',
                     'CHP':'190 000 €/MWh (el.), 375 g/kWh (el), 165 g/kWh (th.), 20 a',
-                    'Thermal Storage':'35 000 €/MWh, 46 g/kWh, 20 a, 3 % loss /d',
-                    'district heating':'86 000 000 €, 15 % loss, 40 a',
+                    'Th. storage':'35 000 €/MWh, 46 g/kWh, 20 a, 3 % loss /d',
+                    'dist. heating':'86 000 000 €, 15 % loss, 40 a',
                     'Gas Import/Heating':'6.4 ct/kWh (gas), 85 % efficiency, 45.62 g/kWh',
                     'Electricity Import':'30.5 ct/kWh, 474 g/kWh'
                     }
