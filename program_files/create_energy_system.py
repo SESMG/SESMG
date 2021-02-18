@@ -61,7 +61,6 @@ def import_scenario(filepath):
         raise ValueError('No nodes data provided.')
 
     # returns logging info
-    logger.define_logging()
     logging.info('Spreadsheet scenario successfully imported.')
     # returns nodes
     return nd
