@@ -100,7 +100,7 @@ def create_main_frame_elements(elements, sheet, first_row, file_paths, frame):
 
         label_comment = Label(sheet, text=elements[element_keys[i]][3], font='Helvetica 10')
         file_paths.append(label_comment)
-        file_paths[i].grid(column=4, row=row, sticky="W")
+        file_paths[i].grid(column=4, row=row, columnspan=7, sticky="W")
 
 
 def update_values(texts_input, rows, input_elements, input_values):
@@ -175,11 +175,18 @@ def execute_sesmg():
                           + str(datetime.now().strftime(
                             '_%Y-%m-%d--%H-%M-%S'))))
         os.mkdir(save_path.get())
+
+        timeseries_prep_param = [timeseries_algorithm.get(),
+                                 timeseries_cluster.get(),
+                                 timeseries_criterion.get(),
+                                 timeseries_period.get(),
+                                 timeseries_season.get()]
+
         sesmg_main(scenario_file=scenario_path.get(),
                    result_path=save_path.get(),
                    num_threads=1,
-                   timeseries_prep = time_prep.get(),
-                   timeseries_value = 1 if timeseries_entry.get() == 'aggregation quote' else int(timeseries_entry.get()),
+                   timeseries_prep = timeseries_prep_param, #time_prep.get(),
+                   # timeseries_value = 1 if timeseries_entry.get() == 'aggregation quote' else timeseries_entry.get(),
                    graph=True if graph_state.get() == 1 else False,
                    results=True,
                    plotly=True,
@@ -303,32 +310,116 @@ create_main_frame_elements(elements=selection_elements, sheet=main_frame, first_
 
 
 ## TimeSeries Prep Menu
-
-OptionList = [
-    "none",
-    "k-means (temp)",
-    "k_means (dhi)",
-    "averaging",
-    "downsampling",
-    "random sampling",
-    "slicing",
-]
-
 row = 3
-Label(main_frame, text='Timeseries Preparation', font='Helvetica 10').grid(column=0, row=row,
+
+timeseries_algorithm_list = ["none",
+                             "k_means",
+                             "averaging",
+                             "slicing n>=2",
+                             "slicing n<2",
+                             "downsampling n>=2",
+                             "downsampling n<2",
+                             "heuristic selection",
+                             "random sampling"]
+
+timeseries_cluster_values = list(range(1,365))
+
+timeseries_cluster_criteria = ["temperature",
+                               "dhi",
+                               "el_demand_sum",
+                               "heat_demand_sum",]
+
+timeseries_cluster_periods = ["hours",
+                              "days",
+                              "weeks"]
+
+timeseries_cluster_seasons = [4, 12]
+
+column = 0
+Label(main_frame, text='Timeseries Preparation', font='Helvetica 10').grid(column=column, row=row+1,
                                                    sticky="W")
 
-time_prep = StringVar(main_frame)
-time_prep.set('none')
-DMenu = OptionMenu(main_frame, time_prep, *OptionList)
-DMenu.grid(column=3, row=row)
+column = 3
+Label(main_frame, text='Algorithm', font='Helvetica 10').grid(column=column, row=row,sticky="n")
+timeseries_algorithm = StringVar(main_frame)
+timeseries_algorithm.set('none')
+DMenu = OptionMenu(main_frame, timeseries_algorithm, *timeseries_algorithm_list)
+DMenu.grid(column=column, row=row+1)
 
-timeseries_entry = Entry(main_frame, textvariable=StringVar(main_frame, value='aggregation quote'))
-timeseries_entry.grid(column=4, row=row, sticky="w")
+column = column + 1
+Label(main_frame, text='Index', font='Helvetica 10').grid(column=column, row=row,sticky="n")
+timeseries_cluster = StringVar(main_frame)
+timeseries_cluster.set('none')
+DMenu = OptionMenu(main_frame, timeseries_cluster, *timeseries_cluster_values)
+DMenu.grid(column=column, row=row+1)
+
+column = column + 1
+Label(main_frame, text='Criterion', font='Helvetica 10').grid(column=column, row=row,sticky="n")
+timeseries_criterion = StringVar(main_frame)
+timeseries_criterion.set('none')
+DMenu = OptionMenu(main_frame, timeseries_criterion, *timeseries_cluster_criteria)
+DMenu.grid(column=column, row=row+1)
+
+column = column + 1
+Label(main_frame, text='Period', font='Helvetica 10').grid(column=column, row=row,sticky="n")
+timeseries_period = StringVar(main_frame)
+timeseries_period.set('none')
+DMenu = OptionMenu(main_frame, timeseries_period, *timeseries_cluster_periods)
+DMenu.grid(column=column, row=row+1)
+
+column = column + 1
+Label(main_frame, text='Season', font='Helvetica 10').grid(column=column, row=row,sticky="n")
+timeseries_season = StringVar(main_frame)
+timeseries_season.set('none')
+DMenu = OptionMenu(main_frame, timeseries_season, *timeseries_cluster_seasons)
+DMenu.grid(column=column, row=row+1)
+
+
+############################
+#
+#
+# OptionList = [
+#     "none",
+#     "k_means (days, temp)",
+#     "k_means (weeks, temp)",
+#     "k_means (days, dhi)",
+#     "k_means (weeks, dhi)",
+#     "k_means (days, el_dem)",
+#     "k_means (weeks, el_dem)",
+#     "k_means (days, he_dem)",
+#     "averaging (days)",
+#     "averaging (weeks)",
+#     "downsampling",
+#     "downsampling (n<2)",
+#     "random sampling (days)",
+#     "slicing (days, n>=2)",
+#     "slicing (days, n<2)",
+#     'slicing (weeks, n>=2)',
+#     "slicing (weeks, n<2)",
+#     "slicing (hours, n>=2)",
+#     "slicing (hours, n<2)",
+#     "hierarchical selection (days from seasons)",
+#     "hierarchical selection (weeks from seasons)",
+#     "hierarchical selection (weeks from months)",
+#     "hierarchical selection (days from months)",
+# ]
+#
+#
+# row = row + 2
+# Label(main_frame, text='Timeseries Preparation', font='Helvetica 10').grid(column=0, row=row,
+#                                                    sticky="W")
+#
+# time_prep = StringVar(main_frame)
+# time_prep.set('random sampling (days)')
+# DMenu = OptionMenu(main_frame, time_prep, *OptionList)
+# DMenu.grid(column=3, row=row)
+#
+# timeseries_entry = Entry(main_frame, textvariable=StringVar(main_frame, value='aggregation quote'))
+# timeseries_entry.grid(column=4, row=row, sticky="w")
 
 
 # Graph Checkbox
-row = row + 1
+row = row + 2
 Label(main_frame, text='Show Graph', font='Helvetica 10').grid(column=0, row=row,
                                                    sticky="W")
 graph_state = IntVar()
@@ -345,7 +436,7 @@ Label(main_frame, text='Optimization Solver', font='Helvetica 10').grid(column=0
                                                    sticky="W")
 
 solver_select = StringVar(main_frame)
-solver_select.set('cbc')
+solver_select.set('gurobi')
 SolverMenu = OptionMenu(main_frame, solver_select, *solvers)
 SolverMenu.grid(column=3, row=row)
 
