@@ -63,7 +63,7 @@ weather_data |  dates(untitled), dhi, dirhi, pressure, temp_air,
 Docs:
 https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
 GIT:
-https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator
+https://github.com/chrklemm/SESMG
 -------------------------------------------------------------------------------
 
 @ Christian Klemm - christian.klemm@fh-muenster.de, 13.03.2020
@@ -71,6 +71,7 @@ https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator
 import logging
 from oemof.tools import logger
 import os
+import pandas as pd
 from threading import *
 from program_files import (create_objects,
                            create_results,
@@ -81,7 +82,7 @@ from program_files import (create_objects,
 
 
 def sesmg_main(scenario_file, result_path, num_threads, graph, results,
-               plotly, timeseries_prep, timeseries_value, solver):
+               plotly, timeseries_prep, solver):
     """
     Main function of the Spreadsheet System Model Generator
     ----
@@ -113,32 +114,26 @@ def sesmg_main(scenario_file, result_path, num_threads, graph, results,
     nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
 
     # Data Preprocessing
-    data_prep = timeseries_prep
-    days_per_cluster = timeseries_value
-    n_timesteps = timeseries_value
-    clusters = 365//days_per_cluster
-    criterion = 'temperature'
+    data_preparation.timeseries_preparation(timeseries_prep_param=timeseries_prep,
+                                            # method=timeseries_prep,
+                                            # days_per_cluster=timeseries_value,
+                                            # n_timesteps=timeseries_value,
+                                            nodes_data=nodes_data,
+                                            scheme_path=os.path.join(os.path.dirname(__file__) + r'\technical_data\hierarchical_selection_schemes.xlsx'))
 
-    if data_prep == 'k_means (temp)':
-        data_preparation.k_means_algorithm(clusters = clusters,
-                              criterion = 'temperature',
-                              nodes_data = nodes_data)
+    if timeseries_prep[0] != 'none':
+        scenario_file = os.path.join(os.path.dirname(
+            __file__) + r"\interim_data\modified_scenario.xlsx")
 
-    if data_prep == 'k_means (dhi)':
-        data_preparation.k_means_algorithm(clusters = clusters,
-                              criterion = 'dhi',
-                              nodes_data = nodes_data)
+    # if timeseries_prep != 'none':
+    #     path = os.path.join(os.path.dirname(__file__) + r"\interim_data\modified_scenario.xlsx")
+    #     writer = pd.ExcelWriter(path, engine='xlsxwriter')
+    #     nodes_data['weather data'].to_excel(writer, sheet_name = 'weather data')
+    #     nodes_data['timeseries'].to_excel(writer, sheet_name='time_series')
+    #     nodes_data['energysystem'].to_excel(writer, sheet_name='energysystem')
+    #     writer.save()
+    #     scenario_file = path
 
-    if data_prep == 'averaging':
-        data_preparation.timeseries_averaging(clusters=clusters,
-                                              nodes_data=nodes_data)
-
-    if data_prep == 'slicing':
-        data_preparation.timeseries_slicing(n_days=days_per_cluster,
-                                            nodes_data=nodes_data)
-    # data_prep = 'downsampling'
-    if data_prep == 'downsampling':
-        data_preparation.timeseries_downsampling(nodes_data, n_timesteps)
 
 
     # formatting of the weather data record according to the
