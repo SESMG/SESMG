@@ -59,7 +59,8 @@ Within this sheet, the buses of the energy system are defined. The following par
 
    bus001_electricity_bus,,1,0,1,0.300,x,0.10,-0.10
    bus002_electricity_bus,,1,1,0,x,-0.01,0.10,-0.10
-   
+   bus001_heat_bus,,1,1,1,0.1,-0.05,0.1,-0.1
+   bus001_cooling_bus,,1,0,1,0.3,x,0.1,-0.1
    
 .. figure:: ../images/BSP_Graph_Bus.png
    :width: 60 %
@@ -90,7 +91,8 @@ Within this sheet, the sinks of the energy system are defined. The following par
    :header: label,comment,active,fixed,input,load profile,nominal value /(kW),annual demand /(kWh/a),occupants [RICHARDSON],building class [HEAT SLP ONLY],wind class [HEAT SLP ONLY]
 
    building001_electricity_sink,H0 standard load profile sink,1,1,electricity_bus,h0,x,1000.0,x,x,x
-
+   building001_fixed_timeseries_cooling_demand,,1,1,bus001_cooling_bus,timeseries,1,x,x,x,x
+   building001_heat_demand,EFH standard load profile sink,1,1,bus001_heat_bus,efh,x,1000,x,1,0
    
   
 
@@ -106,7 +108,7 @@ Sources
 =================================================
 
 Within this sheet, the sources of the energy system are defined. Properties with the addition "PV ONLY" have only to be 
-defined if the parameter "technology" is set on "photovoltaic", if the parameter "technology" is "solar_thermal_flat_plate" or "CSP" the
+defined if the parameter "technology" is set on "photovoltaic", if the parameter "technology" is "solar_thermal_flat_plate" or "concentrated_solar_power" the
 properties with the addition "Solar Heat" have to be filled.
 
 - **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
@@ -114,8 +116,8 @@ properties with the addition "Solar Heat" have to be filled.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the source is connected to.
-- **input**: Has to be an electricity bus, if "technology" is set to "CSP" or "solar_thermal_flat_plate". Otherwise has to be set to "x".
-- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "CSP", "solar_thermal_flat_plate". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
+- **input**: Has to be an electricity bus, if "technology" is set to "concentrated_solar_power" or "solar_thermal_flat_plate". Otherwise has to be set to "x", "X", "None", "none", "0" or just blank.
+- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "concentrated_solar_power", "solar_thermal_flat_plate". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
 - **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
 - **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
 - **existing capacity/(kW)**: Existing capacity of the source before possible investments.
@@ -137,14 +139,14 @@ properties with the addition "Solar Heat" have to be filled.
 - **Altitude (PV ONLY)**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Latitude (PV and Solar Heat)**: Geographic latitude (decimal number) of the photovoltaic or solar thermal module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
 - **Longitude (PV and Solar Heat)**: Geographic longitude (decimal number) of the photovoltaic or solar thermal module module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
-- **Cleanliness (Solar Heat)**: Specifies the cleanliness of a parabolic through collector. Only required if "technology" is set to "CSP".
-- **ETA 0 (Solar Heat)**: Optical efficiency of the collector. Only required if "technology" is "CSP" or "solar_thermal_flate_plate". Specific values can be found in data sheets. The optical efficiency is a collector specific value. Values are based on test methods according to DIN EN ISO 9806.
-- **A1 (Solar Heat)**: Collector specific linear heat loss coefficient. Only required if "technology" is "CSP" or "solar_thermal_flate_plate". Specific values can be found in data sheets. Values are based on test methods according to DIN EN ISO 9806.
-- **A2 (Solar Heat)**: Collector specific quadratic heat loss coefficient. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".Specific values can be found in data sheets. Values are based on test methods according to DIN EN ISO 9806. 
-- **C1 (Solar Heat)**: Collector specific thermal loss parameter. Only required if "technology" is "CSP". Specific values can be found in data sheets.
-- **C2 (Solar Heat)**: Collector specific thermal loss parameter. Only required if "technology" is "CSP". Specific values can be found in data sheets.
+- **Cleanliness (Solar Heat)**: Cleanliness of a parabolic through collector. Only required if "technology" is set to "concentrated_solar_power".
+- **ETA 0 (Solar Heat)**: Optical efficiency of the collector. Only required if "technology" is "concentrated_solar_power" or "solar_thermal_flate_plate".
+- **A1 (Solar Heat)**: Collector specific linear heat loss coefficient. Only required if "technology" is "concentrated_solar_power" or "solar_thermal_flate_plate".
+- **A2 (Solar Heat)**: Collector specific quadratic heat loss coefficient. Only required if "technology" is "concentrated_solar_power" or "solar_thermal_flate_plate".
+- **C1 (Solar Heat)**: Collector specific thermal loss parameter. Only required if "technology" is "concentrated_solar_power".
+- **C2 (Solar Heat)**: Collector specific thermal loss parameter. Only required if "technology" is "concentrated_solar_power".
 
-**Note: Exemlpary values for CSP technology**
+**Note: Exemlpary values for concentrated_solar_power technology**
 The following figure shows examplary values for a parabolic through collector
 
 .. figure:: ../images/CSP_examplary.png
@@ -154,17 +156,18 @@ The following figure shows examplary values for a parabolic through collector
    
 The parameters refer to `Janotte, N; et al <https://www.sciencedirect.com/science/article/pii/S1876610214004664>`_
 
-- **Temperature Inlet /deg C (Solar Heat)**: Inlet temperature of the solar heat collector module. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".
-- **Temperature Difference /deg C (Solar Heat)**: Temperature Difference between in- and outlet temperature of the solar heat collector module. Only required if "technology" is "CSP" or "solar_thermal_flate_plate".
-- **Conversion Factor /(sqm/kW) (Solar Heat)**: Collector specific factor. The solar irradiance is given in W/sqm. Therefore the collector output is given in this unit as well. The investment object should be power (kW). So the energy output (kW/sqm) has to be multiplied with the conversion factor. The conversion factor can be calculated with the measured peak power per module at 1000 W/sqm (DIN EN ISO 9806). 
-- **Peripheral Losses (Solar Heat)**: Heat loss coefficient for losses in the collector's peripheral system. Only required for "technology" "CSP" and "solar_thermal_flate_plate".
-- **Electric Consumption (Solar Heat)**: Electric consumption of the collector system. Example: If value is set to 0,05, the electric consumption is 5 % of the energy output. Only required for "technology" "CSP" and "solar_thermal_flate_plate".
+- **Temperature Inlet /deg C (Solar Heat)**: Inlet temperature of the solar heat collector module. Only required if "technology" is "concentrated_solar_power" or "solar_thermal_flate_plate".
+- **Temperature Difference /deg C (Solar Heat)**: Temperature Difference between in- and outlet temperature of the solar heat collector module. Only required if "technology" is "concentrated_solar_power" or "solar_thermal_flate_plate".
+- **Conversion Factor /(sqm/kW) (Solar Heat)**: Collector specific factor. Further information in documentation on "Structure of Energy System".
+- **Peripheral Losses (Solar Heat)**: Heat loss coefficient for losses in the collector's peripheral system. Only required for "technology" "concentrated_solar_power" and "solar_thermal_flate_plate".
+- **Electric Consumption (Solar Heat)**: Electric consumption of the collector system. Example: If value is set to 0,05, the electric consumption is 5 % of the energy output. Only required for "technology" "concentrated_solar_power" and "solar_thermal_flate_plate".
 
 .. csv-table:: Exemplary input for the sources sheet
    :header: label,Comment,active,fixed,output,input,technology,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),Turbine Model (Windpower ONLY),Hub Height (Windpower ONLY),technology database (PV ONLY),inverter database (PV ONLY),Modul Model (PV ONLY),Inverter Model (PV ONLY),Azimuth (PV ONLY),Surface Tilt (PV ONLY),Albedo (PV ONLY),Altitude (PV ONLY),Latitude (PV ONLY),Longitude (PV ONLY),Latitude (Solar Heat),Longitude (Solar Heat),Surface Tilt (Solar Heat),Azimuth (Solar Heat),Cleanliness (Solar Heat),ETA 0 (Solar Heat),A1 (Solar Heat),A2 (Solar Heat),C1 (Solar Heat),C2 (Solar Heat),Temperature Inlet /deg C (Solar Heat),Temperature Difference /deg C (Solar Heat),Conversion Factor /(sqm/kW) (Solar Heat),Peripheral Losses (Solar Heat),Electric Consumption (Solar Heat)
 
    pv001_electricity_source,fixed photovoltaic source,1,1,bus001_electricity_bus,x,photovoltaic,0,0.1,10,0,10,90,0.1,0,0,x,x,SandiaMod,sandiainverter,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,180.00,35,0.18,60.000,52.13,7.36,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x
-
+   solar_heat001,thermaldev,1,1,bus001_heat_bus,bus001_electricity_bus,solar_thermal_flat_plate,0,0.1,10,0,100,55,0.1,0,0,x,x,x,x,x,x,x,x,x,x,x,x,52.13,7.36,10,20,x,0.719,1.063,0.005,x,x,40,15,1.6,0.05,0.06
+   windpower001_electricity_source,fixed wind power source,1,1,bus001_electricity_bus,x,windpower,0,0.1,0,10,1000,100,0.1,0,0,E-126/4200,135,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x
 
   
 
@@ -188,7 +191,7 @@ The following parameters have to be entered:
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the transformer shall be included to the model. 0 = inactive, 1 = active.
 - **transformer type**: Indicates what kind of transformer it is. Possible entries: "GenericTransformer" for linear transformers with constant efficiencies; "GenericCHP" for transformers with varying efficiencies.
-- **mode**: Specifies, if a compression or absorption heat transformer is working as "chiller" or "heat_pump". Only required if "transformer type" is set to "compression_heat_transformer" or "absorption_heat_transformer".
+- **mode**: Specifies, if a compression or absorption heat transformer is working as "chiller" or "heat_pump". Only required if "transformer type" is set to "compression_heat_transformer" or "absorption_heat_transformer". Otherwise has to be set to "x", "X", "None", "none", "0" or just blank.
 - **input**: Specifies the bus from which the input to the transformer comes from.
 - **output**: Specifies bus to which the output of the transformer is forwarded to.
 - **output2**: Specifies the bus to which the output of the transformer is forwarded to, if there are several outputs. If there is no second output, the fill character "x" must be entered here.
@@ -211,8 +214,8 @@ The following parameters have to be entered:
 **The following parameters are only required, if "transformer type" is set to "compression_heat_transformer"**:
 
 - **heat source (CHT)**: Specifies the heat source. Possible heat sources are "GroundWater", "Ground", "Air" and "Water" possible.
-- **temperature high /deg C (CHT)**: Temperature of the high temperature heat reservoir. If "mode" is set to "chiller" this value has to be set to "x".
-- **temperature low /(deg C) (CHT)**: Cooling temperature needed for cooling demand. If "mode" is set to "heat_pump" this value has to be set to "x".
+- **temperature high /deg C (CHT)**: Temperature of the high temperature heat reservoir. Only required if "mode" is set to "heat_pump".
+- **temperature low /(deg C) (CHT)**: Cooling temperature needed for cooling demand. Only required if "mode" is set to "chiller".
 - **quality grade (CHT)**: To determine the COP of a real machine a scale-down factor (the quality grade) is applied on the Carnot efficiency (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
 - **area /(sq m) (CHT)**: Open spaces for ground-coupled compression heat transformers (GC-CHT).
 - **length of the geoth. probe /m (CHT)**: Length of the vertical heat exchanger, only for GC-CHT.
@@ -231,10 +234,11 @@ The following parameters have to be entered:
 
   
 .. csv-table:: Exemplary input for the transformers sheet
-   :header: label,comment,active,transformer type,input,output,output2,efficiency,efficiency2,variable input costs /(CU/kWh),variable output costs /(CU/kWh),variable output costs 2 /(CU/kWh),variable input constraint costs /(CU/kWh),variable output constraint costs /(CU/kWh),variable output constraint costs 2 /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),heat source (CHT),temperature high /deg C (CHT),temperature low /deg C (CHT),quality grade (CHT),area /(sq m) (CHT),length of the geoth. probe /m (CHT),heat extraction /(kW/(m*a)) (CHT),min. borehole area /(sq m) (CHT),temp threshold icing (CHT),factor icing (CHT),name (AbsCH),high temperature /deg C (AbsCH),chilling temperature /deg C (AbsCH),electrical input conversion factor (AbsCH),recooling temperature difference /deg C (AbsCH)
+   :header: label,comment,active,transformer type,mode,input,output,output2,efficiency,efficiency2,variable input costs /(CU/kWh),variable output costs /(CU/kWh),variable output costs 2 /(CU/kWh),variable input constraint costs /(CU/kWh),variable output constraint costs /(CU/kWh),variable output constraint costs 2 /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),heat source (CHT),temperature high /deg C (CHT),temperature low /deg C (CHT),quality grade (CHT),area /(sq m) (CHT),length of the geoth. probe /m (CHT),heat extraction /(kW/(m*a)) (CHT),min. borehole area /(sq m) (CHT),temp threshold icing (CHT),factor icing (CHT),name (AbsCH),high temperature /deg C (AbsCH),chilling temperature /deg C (AbsCH),electrical input conversion factor (AbsCH),recooling temperature difference /deg C (AbsCH)
 
-   tr0001_electricity_transformer,,1,GenericTransformer,bus002_electricity_bus,bus001_electricity_bus,x,0.85,x,0.01,0,0,0.1,0.2,0,1000,0,1000,60,0.1,0,0,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x
-   
+   tr0001_electricity_transformer,,1,GenericTransformer,,bus002_electricity_bus,bus001_electricity_bus,x,0.85,x,0.01,0,0,0.1,0.2,0,1000,0,1000,60,0.1,0,0,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x
+   tr0002_airsource_heat_pump,,1,compression_heat_transformer,heat_pump,bus001_electricity_bus,bus001_heat_bus,None,0.95,x,10,0,x,0.1,0.1,x,10,10,100,50,0.1,0,0,Air,40,x,0.4,0,0,0,0,3,0.8,x,x,x,x,x
+   tr0003_absorption_chiller,,1,absorption_heat_transformer,chiller,bus001_electricity_bus,bus001_cooling_bus,None,0.95,x,5,0,x,0.1,0.1,x,10,10,100,50,0.1,0,0,x,x,x,x,x,x,x,x,x,x,Kuehn,85,10,0.05,6
  
 
 	
@@ -277,7 +281,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **diameter /m (Stratified Storage)**: Defines the diameter of a stratified thermal storage, which is necessary for the calculation of thermal losses.
 - **temperature high /deg C (Stratified Storage)**: Outlet temperature of the stratified thermal storage.
 - **temperature low /deg C (Stratified Storage)**: Inlet temperature of the stratified thermal storage.
-- **U value /(W/(sqm*K)) (Stratified Storage)**: Thermal transmittance coefficient of the wall of the stratified thermal storage (including thermal insulation). Specific values can be found in data sheets.
+- **U value /(W/(sqm*K)) (Stratified Storage)**: Thermal transmittance coefficient
 - **existing capacity/(kW)**: Previously installed capacity of the storage.
 - **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
 - **max. investment capacity/(kW)**: Maximum in addition to existing capacity, installable storage capacity.
@@ -290,7 +294,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
    :header: label,comment,active,storage type,bus,existing capacity /(kWh),min. investment capacity /(kWh),max. investment capacity /(kWh),periodical costs /(CU/(kWh a)),periodical constraint costs /(CU/(kWh a)),Non-Convex Investment,Fix Investment Costs /(CU/a),input/capacity ratio (invest),output/capacity ratio (invest),capacity loss (Generic only),efficiency inflow,efficiency outflow,initial capacity,capacity min,capacity max,variable input costs,variable output costs,variable input constraint costs /(CU/kWh),variable output constraint costs /(CU/kWh),diameter /(m) (Stratified Storage),temperature high /(deg C) (Stratified Storage),temperature low /(deg C) (Stratified Storage),U value /(W/(sqm*K)) (Stratified Storage)
 
    battery001_electricity_storage,,1,Generic,bus001_electricity_bus,1000,0,1000,70,0.1,0,0,0.17,0.17,0,1,0.98,0,0.1,1,0,0,0.1,0.1,x,x,x,x
-
+   stratified_thermal_storage001,,1,Stratified,bus001_heat_bus,100,0,500,40,0.1,0,0,0.2,0.2,x,1,0.98,0,0.05,0.95,0,0,0.1,0.1,1,60,45,0.04
 
 	
 .. figure:: ../images/BSP_Graph_Storage.png
