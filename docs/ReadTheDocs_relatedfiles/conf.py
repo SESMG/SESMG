@@ -19,7 +19,7 @@ extensions = [
     'sphinx.ext.viewcode',
 ]
 source_suffix = '.rst'
-master_doc = os.path.abspath("../") + '/index'
+master_doc = 'index'
 project = 'SESMG'
 year = '2021'
 author = 'Christian Klemm'
