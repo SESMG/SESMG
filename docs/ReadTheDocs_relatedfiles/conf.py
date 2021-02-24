@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import os
 import sys
-sys.path.insert(0, os.path.dirname(os.path.abspath('..')))
+sys.path.insert(0, os.path.abspath('..'))
 
 
 extensions = [
@@ -19,7 +19,7 @@ extensions = [
     'sphinx.ext.viewcode',
 ]
 source_suffix = '.rst'
-master_doc = 'index'
+master_doc = os.path.abspath("../") + '/index'
 project = 'SESMG'
 year = '2021'
 author = 'Christian Klemm'
