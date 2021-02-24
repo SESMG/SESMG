@@ -48,7 +48,8 @@ setup(
         "dash_canvas==0.1.0",
         "pydot==1.4.1",
         "graphviz==0.13.2",
-        "xlrd==1.2.0"
+        "xlrd==1.2.0",
+        "Pyomo==5.7.1"
         ],
     extras_require={
         "dev": ["pytest", "sphinx", "sphinx_rtd_theme"],
