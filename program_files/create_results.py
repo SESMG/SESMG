@@ -503,11 +503,11 @@ class Results:
                     if index == ((comp['input'], comp['label']), 'flow'):
                         input = value
                         df_input1 = dfcomponent[index]
-                    elif index == ((comp['label'] + '_low_temp' + '_bus',
+                    elif index == ((comp['label'] + '_low_temp_bus',
                                     comp['label']), 'flow'):
                         input2 = value
                         df_input2 = dfcomponent[index]
-                    elif index == ((comp['label'] + '_high_temp' + '_bus',
+                    elif index == ((comp['label'] + '_high_temp_bus',
                                     comp['label']), 'flow'):
                         input2 = value
                         df_input2 = dfcomponent[index]
