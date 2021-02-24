@@ -269,6 +269,8 @@ class Results:
         columns = ['ID', 'type', 'input 1/kWh', 'input 2/kWh', 'output 1/kWh',
                    'output 2/kWh', 'capacity/kW', 'variable costs/CU',
                    'periodical costs/CU', 'investment/kW', 'constraints/CU']
+        # sets checklist for fill in variables
+        checklist = ['X', 'x', '', '0', 'None', 'none', 'nan']
 
         df_list_of_components = pd.DataFrame(columns=columns)
         df_result_table = pd.DataFrame()
@@ -341,7 +343,7 @@ class Results:
         # sources-sheet of the input spreadsheet
         for i, comp in nd['sources'].iterrows():
             if comp['active']:
-                if comp['input'] == 'x':
+                if str(comp['input']) in checklist:
                     (flow_sum, df_source) = self.get_flow(comp['label'], 'source')
                     # adds the flowsum to the total_usage variable
                     total_usage = total_usage + flow_sum
@@ -350,7 +352,7 @@ class Results:
                     df_result_table[comp['label']] = df_source
                 # creates and returns results if source is a solar thermal
                 # collector (flat plate or concentrated)
-                elif comp['input'] != 'x':
+                elif str(comp['input']) not in checklist:
                     # reference to transformer and solar bus component
                     transformer = comp['label'] + '_collector'
                     col_bus = comp['label'] + '_bus'
@@ -396,7 +398,7 @@ class Results:
 
                 if comp['max. investment capacity /(kW)'] > 0:
                     # sources except solar heat
-                    if comp['input'] == 'x':
+                    if str(comp['input']) in checklist:
                         # gets the investment for the given source
                         (component_investment, periodical_costs) = \
                             self.get_investment(comp, 'source')
@@ -405,7 +407,7 @@ class Results:
                         investments_to_be_made[comp['label']] = \
                             (str(round(component_investment, 2)) + ' kW')
                     # solar heat sources
-                    elif comp['input'] != 'x':
+                    elif str(comp['input']) not in checklist:
                         # gets the investment for the given source
                         (component_investment, periodical_costs) = \
                             self.get_investment(comp, 'solar_heat')
@@ -435,7 +437,7 @@ class Results:
                 logging.info('   ' + 'Variable costs: '
                              + str(round(variable_costs, 2)) + ' cost units')
                 # adds the source to the list of components (except solar heat)
-                if comp['input'] == 'x':
+                if str(comp['input']) in checklist:
                     df_list_of_components = \
                         df_list_of_components.append(
                             pd.DataFrame([[comp['label'], 'source', '---',
@@ -447,7 +449,7 @@ class Results:
                                            round(constraint_costs, 2)]],
                                          columns=columns))
                 # adds solar heat sources to the list of components
-                if comp['input'] != 'x':
+                if str(comp['input']) not in checklist:
                     df_list_of_components = \
                         df_list_of_components.append(
                             pd.DataFrame([[transformer, 'source',
@@ -541,7 +543,7 @@ class Results:
                                  'generator, but will be added later.')
                 # sets logging info for compression or absorption heat
                 # transformers
-                elif comp['mode'] != 'x':
+                elif str(comp['mode']) not in checklist:
                     logging.info('   ' + 'Electricity Energy Input to '
                                  + comp['label'] + ': '
                                  + str(round(input, 2)) + ' kWh')
@@ -630,8 +632,8 @@ class Results:
                                                round(df_input1.max(), 2),
                                                round(variable_costs, 2),
                                                round(periodical_costs, 2),
-                                               round(transformer_investment, 2)
-                                               ,round(constraint_costs, 2)]],
+                                               round(transformer_investment, 2),
+                                               round(constraint_costs, 2)]],
                                                columns=columns))
                     else:
                         # adds Generic transformer with two given
@@ -647,12 +649,12 @@ class Results:
                                                round(df_input1.max(), 2),
                                                round(variable_costs, 2),
                                                round(periodical_costs, 2),
-                                               round(transformer_investment, 2)
-                                               ,round(constraint_costs, 2)]],
+                                               round(transformer_investment, 2),
+                                               round(constraint_costs, 2)]],
                                                columns=columns))
                 # adds compression or absorption heat transformer to the
                 # list of results
-                elif comp['mode'] != 'x':
+                elif str(comp['mode']) not in checklist:
                     df_result_table[comp['label'] + '_el_input'] = df_input1
                     if comp['transformer type'] ==\
                             'absorption_heat_transformer':
@@ -678,7 +680,7 @@ class Results:
                                            round(df_output1.max(), 2),
                                            round(variable_costs, 2),
                                            round(periodical_costs, 2),
-                                           round(transformer_investment, 2) ,
+                                           round(transformer_investment, 2),
                                            round(constraint_costs, 2)]],
                                            columns=columns))
 
@@ -697,8 +699,8 @@ class Results:
                                            round(df_output1.max(), 2),
                                            round(variable_costs, 2),
                                            round(periodical_costs, 2),
-                                           round(transformer_investment, 2)
-                                           ,round(constraint_costs, 2)]],
+                                           round(transformer_investment, 2),
+                                           round(constraint_costs, 2)]],
                                            columns=columns))
                 logging.info(log_end)
         # logs the next type of components
