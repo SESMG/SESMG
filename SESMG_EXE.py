@@ -230,7 +230,7 @@ def show_results():
     """ executes the external program, which executes a plotl.dash app for displaying interactive results."""
     if save_path.get() == '':
         raise SystemError('No optimization since the last restart'
-                          ' please select a result folder!'))
+                          ' please select a result folder!')
 
     # Determines the ID of a still running process on port 8050.
     pid = get_pid()
