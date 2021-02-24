@@ -114,7 +114,7 @@ class Sources:
     a flat plate or a parabolic through collector.
     """
     
-    def create_source(self, so, timeseries_args, output=None):
+    def create_source(self, so, timeseries_args, output):
         """Creates an oemof source with fixed or unfixed timeseries
         
         ----
@@ -146,25 +146,19 @@ class Sources:
         - Christian Klemm - christian.klemm@fh-muenster.de
         
         """
-        # output default
-        if output is None:
-            output = self.busd[so['output']]
-        # sets checklist for fill in variables
-        checklist = ['X', 'x', '', '0', 'None', 'none', 'nan']
         # set variables minimum, maximum and existing
-        if str(so['input']) in checklist:
-            minimum = so['min. investment capacity /(kW)']
-            maximum = so['max. investment capacity /(kW)']
-            existing = so['existing capacity /(kW)']
+        minimum = so['min. investment capacity /(kW)']
+        maximum = so['max. investment capacity /(kW)']
+        existing = so['existing capacity /(kW)']
         # set variables minimum, maximum and existing for solar thermal heat
         # sources
-        else:
+        if so['technology'] == 'CSP' or so['technology'] == 'solar_thermal_flat_plate':
             minimum = so['min. investment capacity /(kW)'] * \
-                so['Conversion Factor /(sqm/kW) (Solar Heat)']
+                so['Conversion Factor /(sqm/kW)']
             maximum = so['max. investment capacity /(kW)'] * \
-                so['Conversion Factor /(sqm/kW) (Solar Heat)']
+                so['Conversion Factor /(sqm/kW)']
             existing = so['existing capacity /(kW)'] * \
-                so['Conversion Factor /(sqm/kW) (Solar Heat)']
+                so['Conversion Factor /(sqm/kW)']
         # Creates a oemof source and appends it to the nodes_sources
         # (variable of the create_sources-class) list
         self.nodes_sources.append(
@@ -207,7 +201,7 @@ class Sources:
         """
         # starts the create_source method with the parameters
         # min = 0 and max = 1
-        self.create_source(so, {'min': 0, 'max': 1})
+        self.create_source(so, {'min': 0, 'max': 1}, self.busd[so['output']])
         
         # Returns logging info
         logging.info('   ' + 'Commodity Source created: ' + so['label'])
@@ -252,7 +246,7 @@ class Sources:
             raise SystemError(so['label'] + " Error in fixed attribute")
         
         # starts the create_source method with the parameters set before
-        self.create_source(so, args)
+        self.create_source(so, args, self.busd[so['output']])
         
         # Returns logging info
         logging.info('   ' + 'Timeseries Source created: ' + so['label'])
@@ -274,23 +268,23 @@ class Sources:
                 key-value-pairs have to be included:
                     - 'label'
                     - 'fixed'
-                    - 'Azimuth (PV ONLY)'
-                    - 'Surface Tilt (PV ONLY)'
-                    - 'Modul Model (PV ONLY)'
-                    - 'Inverter Model (PV ONLY)'
-                    - 'Albedo (PV ONLY)'
-                    - 'Latitude (PV ONLY)'
-                    - 'Longitude (PV ONLY)'
+                    - 'Azimuth'
+                    - 'Surface Tilt'
+                    - 'Modul Model'
+                    - 'Inverter Model'
+                    - 'Albedo'
+                    - 'Latitude'
+                    - 'Longitude'
         """
         
         # reads pv system parameters from parameter dictionary
         # nodes_data
         parameter_set = {
-            'azimuth': so['Azimuth (PV ONLY)'],
-            'tilt': so['Surface Tilt (PV ONLY)'],
-            'module_name': so['Modul Model (PV ONLY)'],
-            'inverter_name': so['Inverter Model (PV ONLY)'],
-            'albedo': so['Albedo (PV ONLY)']}
+            'azimuth': so['Azimuth'],
+            'tilt': so['Surface Tilt'],
+            'module_name': so['Modul Model'],
+            'inverter_name': so['Inverter Model'],
+            'albedo': so['Albedo']}
         
         # sets pv system parameters for pv_module
         pv_module = powerplants.Photovoltaic(**parameter_set)
@@ -309,7 +303,7 @@ class Sources:
         # calculates time series normed on 1 kW pv peak performance
         feedin = pv_module.feedin(
                 weather=my_weather_pandas_dataframe,
-                location=(so['Latitude (PV ONLY)'], so['Longitude (PV ONLY)']),
+                location=(so['Latitude'], so['Longitude']),
                 scaling='peak_power')
         
         # Prepare data set for compatibility with oemof
@@ -334,7 +328,7 @@ class Sources:
             raise SystemError(so['label'] + " Error in fixed attribute")
         
         # starts the create_source method with the parameters set before
-        self.create_source(so, args)
+        self.create_source(so, args, self.busd[so['output']])
         
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
@@ -355,16 +349,16 @@ class Sources:
         key-value-pairs have to be included:
             - 'label'
             - 'fixed'
-            - 'Turbine Model (Windpower ONLY)'
-            - 'Hub Height (Windpower ONLY)'
+            - 'Turbine Model'
+            - 'Hub Height'
         """
         
         # set up wind turbine using the wind turbine library.
         # The turbine name must correspond to an entry in the turbine
         # data-base of the feedinlib. Unit of the hub height is m.
         turbine_data = {
-            'turbine_type': so['Turbine Model (Windpower ONLY)'],
-            'hub_height': so['Hub Height (Windpower ONLY)']}
+            'turbine_type': so['Turbine Model'],
+            'hub_height': so['Hub Height']}
         wind_turbine = WindPowerPlant(**turbine_data)
 
         # change type of index to datetime and set time zone
@@ -393,12 +387,12 @@ class Sources:
             raise SystemError(so['label'] + " Error in fixed attribute")
         
         # starts the create_source method with the parameters set before
-        self.create_source(so, args)
+        self.create_source(so, args, self.busd[so['output']])
         
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
 
-    def solar_heat_source(self, so, data):
+    def solar_heat_source(self, so):
         """
             Creates a solar thermal collector source object.
 
@@ -409,47 +403,29 @@ class Sources:
             The following key-value-pairs have to be included in the
             keyword arguments:
 
-            :param so: has to contain the following keyword arguments:
+            :type so: dict
+            :param so: has to contain the following keyword arguments
 
-                - 'label'
-                - 'active'
-                - 'fixed'
-                - 'output'
                 - 'input'
                 - 'technology':
                     - 'solar_thermal_flat_plate' or
-                    - 'concentrated_solar_power'
-                - 'variable costs /(CU/kWh)'
-                - 'variable constraint costs /(CU/kWh)'
-                - 'existing capacity /(kW)'
-                - 'min. investment capacity /(kW)'
-                - 'max. investment capacity /(kW)'
-                - 'periodical costs /(CU/(kW a))'
-                - 'periodical constraint costs /(CU/(kW a))'
-                - 'Non-Convex Investment'
-                - 'Fix Investment Cost / (CU/a)'
-                - 'Latitude (Solar Heat)'
-                - 'Longitude (Solar Heat)'
-                - 'Surface Tilt (Solar Heat)'
-                - 'Azimuth (Solar Heat)'
-                - 'Cleanliness (Solar Heat)'
-                - 'ETA 0 (Solar Heat)'
-                - 'A1 (Solar Heat)'
-                - 'A2 (Solar Heat)'
-                - 'C1 (Solar Heat)'
-                - 'C2 (Solar Heat)'
-                - 'Temperature Inlet /deg C (Solar Heat)'
-                - 'Temperature Difference /deg C (Solar Heat)'
-                - 'Conversion Factor /(sqm/kW) (Solar Heat)'
-                - 'Peripheral Losses (Solar Heat)'
-                - 'Electric Consumption (Solar Heat)'
-
-            :type so: dict
-
-            :param data: weather data
-            :type data: dict
-
-            Yannick Wittor - yw090223@fh-muenster.de, 27.11.2020
+                    - 'CSP'
+                - 'Latitude'
+                - 'Longitude'
+                - 'Surface Tilt'
+                - 'Azimuth'
+                - 'Cleanliness'
+                - 'ETA 0'
+                - 'A1'
+                - 'A2'
+                - 'C1'
+                - 'C2'
+                - 'Temperature Inlet /deg C'
+                - 'Temperature Difference /deg C'
+                - 'Conversion Factor /(sqm/kW)'
+                - 'Peripheral Losses'
+                - 'Electric Consumption'
+            @ Yannick Wittor - yw090223@fh-muenster.de, 27.11.2020
         """
 
         # import oemof.thermal in order to calculate collector heat output
@@ -460,9 +436,17 @@ class Sources:
         # creates an oemof-bus object for solar thermal collector
         col_bus = solph.Bus(label=so['label'] + '_bus')
         # adds the bus object to the list of components "nodes"
-        self.nodes_sources.append(col_bus)
+        self.nodes.append(col_bus)
         self.busd[so['label'] + '_bus'] = col_bus
         output = col_bus
+
+        # import weather data and set datetime index with hourly frequency
+        data = pd.read_csv(os.path.join(
+            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
+        data['Unnamed: 0'] = pd.to_datetime(data['Unnamed: 0'])
+        data = data.set_index(['Unnamed: 0'])
+        data.index.name = 'Datum'
+        data = data.asfreq('h')
 
         # calculates global horizontal irradiance from diffuse (dhi)
         # and direct irradiance (dirhi) and adds it to the weather data frame
@@ -472,17 +456,17 @@ class Sources:
         # irradiance on collector, efficiency and heat output
         if so['technology'] == 'solar_thermal_flat_plate':
             precalc_results = flat_plate_precalc(
-                lat=so['Latitude (Solar Heat)'],
-                long=so['Longitude (Solar Heat)'],
-                collector_tilt=so['Surface Tilt (Solar Heat)'],
-                collector_azimuth=so['Azimuth (Solar Heat)'],
-                eta_0=so['ETA 0 (Solar Heat)'],
-                a_1=so['A1 (Solar Heat)'],
-                a_2=so['A2 (Solar Heat)'],
+                lat=so['Latitude'],
+                long=so['Longitude'],
+                collector_tilt=so['Surface Tilt'],
+                collector_azimuth=so['Azimuth'],
+                eta_0=so['ETA 0'],
+                a_1=so['A1'],
+                a_2=so['A2'],
                 temp_collector_inlet=
-                so['Temperature Inlet /deg C (Solar Heat)'],
+                so['Temperature Inlet /deg C'],
                 delta_temp_n=
-                so['Temperature Difference /deg C (Solar Heat)'],
+                so['Temperature Difference /deg C'],
                 irradiance_global=(data['ghi']),
                 irradiance_diffuse=(data['dhi']),
                 temp_amb=data['temperature'])
@@ -492,23 +476,23 @@ class Sources:
             irradiance = precalc_results.col_ira/1000
 
         # set parameters for precalculations for concentrating solar power
-        elif so['technology'] == 'concentrated_solar_power':
+        elif so['technology'] == 'CSP':
             temp_collector_outlet = \
-                so['Temperature Inlet /deg C (Solar Heat)'] + \
-                so['Temperature Difference /deg C (Solar Heat)']
-            latitude = so['Latitude (Solar Heat)']
-            longitude = so['Longitude (Solar Heat)']
-            collector_tilt = so['Surface Tilt (Solar Heat)']
-            collector_azimuth = so['Azimuth (Solar Heat)']
-            cleanliness = so['Cleanliness (Solar Heat)']
-            eta_0 = so['ETA 0 (Solar Heat)']
-            c_1 = so['C1 (Solar Heat)']
-            c_2 = so['C2 (Solar Heat)']
+                so['Temperature Inlet /deg C'] + \
+                so['Temperature Difference /deg C']
+            latitude = so['Latitude']
+            longitude = so['Longitude']
+            collector_tilt = so['Surface Tilt']
+            collector_azimuth = so['Azimuth']
+            cleanliness = so['Cleanliness']
+            eta_0 = so['ETA 0']
+            c_1 = so['C1']
+            c_2 = so['C2']
             temp_collector_inlet = \
-                so['Temperature Inlet /deg C (Solar Heat)']
+                so['Temperature Inlet /deg C']
             temp_collector_outlet = temp_collector_outlet
-            a_1 = so['A1 (Solar Heat)']
-            a_2 = so['A2 (Solar Heat)']
+            a_1 = so['A1']
+            a_2 = so['A2']
             e_dir_hor = data['dirhi']
 
             # precalculation with parameter set, ambient temperature and
@@ -548,18 +532,18 @@ class Sources:
             conversion_factors={
                 self.busd[so['label'] + '_bus']: 1,
                 self.busd[so['input']]:
-                    so['Electric Consumption (Solar Heat)'] *
-                    (1 - so['Peripheral Losses (Solar Heat)']),
+                    so['Electric Consumption'] *
+                    (1 - so['Peripheral Losses']),
                 self.busd[so['output']]:
-                    1 - so['Peripheral Losses (Solar Heat)']
+                    1 - so['Peripheral Losses']
             }))
 
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label']
                      + ", Max Heat power output per year and m²: {:2.2f}".
-                     format(numpy.sum(collectors_heat)) + ' kWh/(m²a)'
+                     format(numpy.sum(collectors_heat)) + ' kW/m²'
                      + ", Irradiance on collector per year and m²: "
-                       "{:2.2f}".format(numpy.sum(irradiance)) + ' kWh/(m²a)')
+                       "{:2.2f}".format(numpy.sum(irradiance)) + ' kW/m²')
 
     def __init__(self, nodes_data, nodes, busd, filepath):
         """
@@ -574,7 +558,7 @@ class Sources:
              - 'active'
              - 'fixed'
              - 'output'
-             - 'input' (Only solar thermal flat plate)
+             - 'input'
              - 'technology'
              - 'variable costs / (CU / kWh)'
              - 'existing capacity / (kW)'
@@ -583,39 +567,39 @@ class Sources:
              - 'periodical costs / (CU / (kW a))'
              - 'Non-Convex Investment'
              - 'Fix Investment Cost / (CU/a)'
-             - 'Turbine Model (Windpower ONLY)'
-             - 'Hub Height (Windpower ONLY)'
-             - 'technology database(PV ONLY)'
-             - 'inverter database(PV ONLY)'
-             - 'Modul Model(PV ONLY)'
-             - 'Inverter Model(PV ONLY)'
-             - 'Azimuth(PV ONLY)'
-             - 'Surface Tilt(PV ONLY)'
-             - 'Albedo(PV ONLY)'
-             - 'Altitude(PV ONLY)'
-             - 'Latitude(PV ONLY)'
-             - 'Longitude(PV ONLY)'
-             - 'Latitude (Solar Heat)'
-             - 'Longitude (Solar Heat)'
-             - 'Surface Tilt (Solar Heat)'
-             - 'Azimuth (Solar Heat)'
-             - 'Cleanliness (Solar Heat)'
-             - 'ETA 0 (Solar Heat)'
-             - 'A1 (Solar Heat)'
-             - 'A2 (Solar Heat)'
-             - 'C1 (Solar Heat)'
-             - 'C2 (Solar Heat)'
-             - 'Temperature Inlet /deg C (Solar Heat)'
-             - 'Temperature Difference /deg C (Solar Heat)'
-             - 'Conversion Factor /(sqm/kW) (Solar Heat)'
-             - 'Peripheral Losses (Solar Heat)'
-             - 'Electric Consumption (Solar Heat)'
-
-        nodes: obj:'list'
-             -  list of components created before(can be empty)
+             - 'Turbine Model'
+             - 'Hub Height'
+             - 'technology database'
+             - 'inverter database'
+             - 'Modul Model'
+             - 'Inverter Model'
+             - 'Azimuth'
+             - 'Surface Tilt'
+             - 'Albedo'
+             - 'Altitude'
+             - 'Latitude'
+             - 'Longitude'
+             - 'Latitude'
+             - 'Longitude'
+             - 'Surface Tilt'
+             - 'Azimuth'
+             - 'Cleanliness'
+             - 'ETA 0'
+             - 'A1'
+             - 'A2'
+             - 'C1'
+             - 'C2'
+             - 'Temperature Inlet /deg C'
+             - 'Temperature Difference /deg C'
+             - 'Conversion Factor /(sqm/kW)'
+             - 'Peripheral Losses'
+             - 'Electric Consumption'
 
         busd: obj:'dict'
         --  dictionary containing the buses of the energy system
+
+        nodes: obj:'list'
+        --  list of components created before(can be empty)
 
         filepath: obj:'str'
         -- path to .xlsx scenario-file containing a
@@ -645,6 +629,8 @@ class Sources:
         self.nodes_sources = []
         # Initialise a class intern copy of the bus dictionary
         self.busd = busd.copy()
+        # internal list nodes
+        self.nodes = []
 
         # Import weather Data
         data = pd.read_csv(
@@ -673,14 +659,20 @@ class Sources:
                 elif so['technology'] == 'timeseries':
                     self.timeseries_source(so, filepath)
 
-                # Create flat plate solar thermal Sources
-                elif so['technology'] == 'solar_thermal_flat_plate' or \
-                        'concentrated_solar_power':
-                    self.solar_heat_source(so, data)
+                # Create flat plate solar thermal collector Sources
+                elif so['technology'] == 'solar_thermal_flat_plate':
+                    self.solar_heat_source(so)
+
+                # Create concentrated solar heat Sources
+                elif so['technology'] == 'CSP':
+                    self.solar_heat_source(so)
             
-        # appends created sources and other objects to the list of nodes
+        # appends created sources to the list of nodes
         for i in range(len(self.nodes_sources)):
             nodes.append(self.nodes_sources[i])
+        # appends created buses to the list of nodes
+        for i in range(len(self.nodes)):
+            nodes.append(self.nodes[i])
 
 
 class Sinks:
@@ -1202,46 +1194,26 @@ class Transformers:
             Parameters are given in 'nodes_data' are used .
 
 
+            :type tf: dict
             :param tf: has to contain the following keyword arguments
-
-                - 'label'
-                - 'active'
+                
+                - Standard Input information of transformer class
                 - 'transformer type': 'compression_heat_transformer'
                 - 'mode':
                     - 'heat_pump' or
                     - 'chiller'
-                - 'input'
-                - 'output'
-                - 'efficiency'
-                - 'variable input costs /(CU/kWh)'
-                - 'variable output costs /(CU/kWh)'
-                - 'variable input constraint costs /(CU/kWh)'
-                - 'variable output constraint costs /(CU/kWh)'
-                - 'existing capacity /(kW)'
-                - 'min. investment capacity /(kW)'
-                - 'max. investment capacity /(kW)'
-                - 'periodical costs /(CU/(kW a))'
-                - 'periodical constraint costs /(CU/(kW a))'
-                - 'Non-Convex Investment'
-                - 'Fix Investment Costs /(CU/a)'
-                - 'heat source (CHT)'
-                - 'temperature high /deg C (CHT)'
-                - 'temperature low /deg C (CHT)'
-                - 'quality grade (CHT)'
-                - 'area /(sq m) (CHT)'
-                - 'length of the geoth. probe /m (CHT)'
-                - 'heat extraction /(kW/(m*a)) (CHT)'
-                - 'min. borehole area /(sq m) (CHT)'
-                - 'temp threshold icing (CHT)'
-                - 'factor icing (CHT)'
-
-            :type tf: dict
-
-            :param data: weather data
-            :type data: dict
-
-            Janik Budde - Janik.Budde@fh-muenster.de, 30.07.2020
-            Yannick Wittor - yw090223@fh-muenster.de, 07.01.2021
+                - 'heat source'
+                - 'temperature high /deg C'
+                - 'temperature low /deg C'
+                - 'quality grade'
+                - 'area /(sq m)'
+                - 'length of the geoth. probe /m'
+                - 'heat extraction /(kW/(m*a))'
+                - 'min. borehole area /(sq m)'
+                - 'temp threshold icing'
+                - 'factor icing'
+            @ Janik Budde - Janik.Budde@fh-muenster.de, 30.07.2020
+            @ Yannick Wittor - yw090223@fh-muenster.de, 07.01.2021
         """
         
         # import oemof.thermal in order to calculate the cop
@@ -1268,7 +1240,7 @@ class Transformers:
         # of operation
         # ground as a heat source referring to vertical-borehole
         # ground-coupled compression heat transformers
-        if tf['heat source (CHT)'] == "Ground":
+        if tf['heat source'] == "Ground":
         
             # borehole that acts as heat source for the transformer
             cmpr_heat_transformer_label = tf['label'] + \
@@ -1276,12 +1248,12 @@ class Transformers:
             
             # the capacity of a borehole is limited by the area
             heatsource_capacity = \
-                tf['area /(sq m) (CHT)'] * \
-                (tf['length of the geoth. probe /m (CHT)']
-                 * tf['heat extraction /(kW/(m*a)) (CHT)']
-                 / tf['min. borehole area /(sq m) (CHT)'])
+                tf['area /(sq m)'] * \
+                (tf['length of the geoth. probe /m']
+                 * tf['heat extraction /(kW/(m*a))']
+                 / tf['min. borehole area /(sq m)'])
         # ground water as a heat source
-        elif tf['heat source (CHT)'] == "GroundWater":
+        elif tf['heat source'] == "GroundWater":
         
             # ground water that acts as heat source for the transformer
             cmpr_heat_transformer_label = tf['label'] + \
@@ -1291,7 +1263,7 @@ class Transformers:
             heatsource_capacity = math.inf
         
         # ambient air as a heat source
-        elif tf['heat source (CHT)'] == "Air":
+        elif tf['heat source'] == "Air":
         
             # ambient air that acts as heat source for the transformer
             cmpr_heat_transformer_label = tf['label'] + temp + '_air_source'
@@ -1300,7 +1272,7 @@ class Transformers:
             heatsource_capacity = math.inf
         
         # surface water as a heat source
-        elif tf['heat source (CHT)'] == "Water":
+        elif tf['heat source'] == "Water":
         
             # ambient air that acts as heat source for the transformer
             cmpr_heat_transformer_label = tf['label'] + temp + '_water_source'
@@ -1329,27 +1301,27 @@ class Transformers:
         
         # set temp_high and temp_low and icing considering different
         # heat sources and the mode of operation
-        if tf['heat source (CHT)'] == "Ground":
+        if tf['heat source'] == "Ground":
             if tf['mode'] == 'heat_pump':
                 temp_low = data['ground_temp']
             elif tf['mode'] == 'chiller':
                 temp_high = data['ground_temp']
-        elif tf['heat source (CHT)'] == "GroundWater":
+        elif tf['heat source'] == "GroundWater":
             if tf['mode'] == 'heat_pump':
                 temp_low = data['groundwater_temp']
             elif tf['mode'] == 'chiller':
                 temp_high = data['groundwater_temp']
-        elif tf['heat source (CHT)'] == "Air":
+        elif tf['heat source'] == "Air":
             if tf['mode'] == 'heat_pump':
                 temp_low = data['temperature']
             elif tf['mode'] == 'chiller':
                 temp_high = data['temperature'].copy()
-                temp_low_value = tf['temperature low /deg C (CHT)']
+                temp_low_value = tf['temperature low /deg C']
                 # low temperature as formula to avoid division by zero error
                 for index, value in enumerate(temp_high):
                     if value == temp_low_value:
                         temp_high[index] = temp_low_value + 0.1
-        elif tf['heat source (CHT)'] == "Water":
+        elif tf['heat source'] == "Water":
             if tf['mode'] == 'heat_pump':
                 temp_low = data['water_temp']
             elif tf['mode'] == 'chiller':
@@ -1358,19 +1330,19 @@ class Transformers:
             raise SystemError('problem with HeatSource')
         
         if tf['mode'] == 'heat_pump':
-            temp_threshold_icing = tf['temp threshold icing (CHT)']
-            factor_icing = tf['factor icing (CHT)']
-            temp_high = [tf['temperature high /deg C (CHT)']]
+            temp_threshold_icing = tf['temp threshold icing']
+            factor_icing = tf['factor icing']
+            temp_high = [tf['temperature high /deg C']]
         elif tf['mode'] == 'chiller':
             # variable "icing" is not important in cooling mode
             temp_threshold_icing = None
             factor_icing = None
-            temp_low = [tf['temperature low /deg C (CHT)']]
+            temp_low = [tf['temperature low /deg C']]
         # calculation of COPs with set parameters
         cops_hp = cmpr_hp_chiller.calc_cops(
                 temp_high=temp_high,
                 temp_low=temp_low,
-                quality_grade=tf['quality grade (CHT)'],
+                quality_grade=tf['quality grade'],
                 temp_threshold_icing=temp_threshold_icing,
                 factor_icing=factor_icing,
                 mode=tf['mode'])
@@ -1471,18 +1443,18 @@ class Transformers:
                                     existing=tf['existing capacity /(kW)']),
                             P_max_woDH=[
                                 tf['max. electric power without district '
-                                   'heating [GenericCHP]']
+                                   'heating']
                                 for p in range(0, periods)],
                             P_min_woDH=[tf['min. electric power without '
-                                           'district heating [GenericCHP]']
+                                           'district heating ']
                                         for p in range(0, periods)],
                             Eta_el_max_woDH=[
                                 tf['el. eff. at max. fuel flow w/o distr. '
-                                   'heating [GenericCHP]']
+                                   'heating']
                                 for p in range(0, periods)],
                             Eta_el_min_woDH=[
                                 tf['el. eff. at min. fuel flow w/o distr. '
-                                   'heating [GenericCHP]']
+                                   'heating']
                                 for p in range(0, periods)],
                             variable_costs=tf[
                                 'variable output costs /(CU/kWh)'],
@@ -1492,63 +1464,42 @@ class Transformers:
                         },
                 heat_output={self.busd[tf['output2']]: solph.Flow(
                     Q_CW_min=[tf['minimal therm. condenser load to '
-                                 'cooling water [GenericCHP]']
+                                 'cooling water']
                               for p in range(0, periods)],
                     variable_costs=tf[
                         'variable output costs 2 /(CU/kWh)'],
                     emission_factor=tf[
                         'variable output constraint costs 2/(CU/kWh)']
                 )},
-                Beta=[tf['power loss index [GenericCHP]']
+                Beta=[tf['power loss index']
                       for p in range(0, periods)],
                 # fixed_costs=0,
-                back_pressure=tf['back pressure [GenericCHP]'],
+                back_pressure=tf['back pressure'],
                 ))
 
         # returns logging info
         logging.info('   ' + 'Transformer created: ' + tf['label'])
 
-    def absorption_heat_transformer(self, tf, data):
+    def absorption_heat_transformer(self, tf):
         """
             Creates an absorption heat transformer object with the parameters
             given in 'nodes_data' and adds it to the list of components 'nodes'
 
 
+            :type tf: dict
             :param tf: has to contain the following keyword arguments
-
-                - 'label'
-                - 'active'
+                - Standard Input information of transformer class
                 - 'transformer type': 'absorption_heat_transformer'
                 - 'mode': 'chiller'
-                - 'input'
-                - 'output'
-                - 'efficiency'
-                - 'variable input costs /(CU/kWh)'
-                - 'variable output costs /(CU/kWh)'
-                - 'variable input constraint costs /(CU/kWh)'
-                - 'variable constraint costs /(CU/kWh)'
-                - 'existing capacity /(kW)'
-                - 'min. investment capacity /(kW)'
-                - 'max. investment capacity /(kW)'
-                - 'periodical costs /(CU/(kW a))'
-                - 'periodical constraint costs /(CU/(kW a))'
-                - 'Non-Convex Investment'
-                - 'Fix Investment Costs /(CU/a)'
-                - 'name (AbsCH)'
+                - 'name'
                     - name refers to models of absorption heat transformers
                       with different equation parameters. See documentation
                       for possible inputs.
-                - 'high temperature /deg C (AbsCH)'
-                - 'chilling temperature /deg C (AbsCH)'
-                - 'electrical input conversion factor (AbsCH)'
-                - 'recooling temperature difference /deg C (AbsCH)'
-
-            :type tf: dict
-
-            :param data: weather data
-            :type data: dict
-
-            Yannick Wittor - yw090223@fh-muenster.de, 07.01.2021
+                - 'high temperature /deg C'
+                - 'chilling temperature /deg C'
+                - 'electrical input conversion factor'
+                - 'recooling temperature difference /deg C'
+            @ Yannick Wittor - yw090223@fh-muenster.de, 07.01.2021
         """
         # import oemof.thermal in order to calculate COP
         import oemof.thermal.absorption_heatpumps_and_chillers \
@@ -1556,7 +1507,9 @@ class Transformers:
         from math import inf
         import numpy as np
 
-        # Import characteristic equation parameters
+        # Import weather Data and characteristic equation parameters
+        data = pd.read_csv(os.path.join(
+            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
         char_para = pd.read_csv(os.path.join(
             os.path.dirname(__file__)) +
                             '/technical_data/characteristic_parameters.csv')
@@ -1596,15 +1549,15 @@ class Transformers:
         # ambient temperature of recooling system
         data_np = np.array(data['temperature'])
         t_cool = data_np + \
-            tf['recooling temperature difference /deg C (AbsCH)']
+            tf['recooling temperature difference /deg C']
         t_cool = list(map(int, t_cool))
 
         # Calculation of characteristic temperature difference
-        chiller_name = tf['name (AbsCH)']
+        chiller_name = tf['name']
         ddt = abs_hp_chiller.calc_characteristic_temp(
-            t_hot=[tf['high temperature /deg C (AbsCH)']],
+            t_hot=[tf['high temperature /deg C']],
             t_cool=t_cool,
-            t_chill=[tf['chilling temperature /deg C (AbsCH)']],
+            t_chill=[tf['chilling temperature /deg C']],
             coef_a=char_para[(char_para['name'] ==
                               chiller_name)]['a'].values[0],
             coef_e=char_para[(char_para['name'] ==
@@ -1655,7 +1608,7 @@ class Transformers:
                 self.busd[tf['output']]:
                     [cop for cop in cops_abs],
                 self.busd[tf['input']]:
-                    tf['electrical input conversion factor (AbsCH)']
+                    tf['electrical input conversion factor']
                 }}
         self.create_transformer(tf, inputs, outputs, conversion_factors)
 
@@ -1672,7 +1625,6 @@ class Transformers:
         # creates a transformer object for every transformer item within nd
         for i, t in nodes_data['transformers'].iterrows():
             if t['active']:
-        
                 # Create Generic Transformers
                 if t['transformer type'] == 'GenericTransformer':
                     self.generic_transformer(t)
@@ -1700,7 +1652,7 @@ class Transformers:
 
                 # Create Absorption Chiller
                 elif t['transformer type'] == 'absorption_heat_transformer':
-                    self.absorption_heat_transformer(t, data)
+                    self.absorption_heat_transformer(t)
 
                 # Error Message for invalid Transformers
                 else:
@@ -1723,38 +1675,12 @@ class Storages:
     def generic_storage(self, s):
         """
             Creates a generic storage object with the parameters
-            given in 'nodes_data' and adds it to the list of components 'nodes
-
-
-            :param s: has to contain the following keyword arguments
-
-                - 'label'
-                - 'active'
-                - 'storage type': 'Generic'
-                - 'bus'
-                - 'existing capacity /(kWh)'
-                - 'min. investment capacity /(kWh)'
-                - 'max. investment capacity /(kWh)'
-                - 'periodical costs /(CU/(kWh a))'
-                - 'periodical constraint costs /(CU/(kWh a))'
-                - 'Non-Convex Investments'
-                - 'Fix Investment Costs /(CU/a)'
-                - 'input/capacity ratio (invest)'
-                - 'output/capacity ratio (invest)'
-                - 'capacity loss (Generic only)'
-                - 'efficiency inflow'
-                - 'efficiency outflow'
-                - 'initial capacity'
-                - 'capacity min'
-                - 'capacity max'
-                - 'variable input costs'
-                - 'variable output costs'
-                - 'variable input constraint costs /(CU/kWh)'
-                - 'variable output constraint costs /(CU/kWh)'
-
-            :type s: dict
-
-            Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+            given in 'nodes_data' and adds it to the list of components 'nodes'
+            ----
+            Keyword arguments:
+            t : obj:'dict'
+                -- dictionary containing all information for
+                the creation of an oemof storage.
         """
 
         # creates storage object and adds it to the
@@ -1776,7 +1702,7 @@ class Storages:
                         'variable output constraint costs /'
                         '(CU/kWh)']
                 )},
-                loss_rate=s['capacity loss (Generic only)'],
+                loss_rate=s['capacity loss'],
                 inflow_conversion_factor=s[
                     'efficiency inflow'],
                 outflow_conversion_factor=s[
@@ -1803,55 +1729,34 @@ class Storages:
         # returns logging info
         logging.info('   ' + 'Storage created: ' + s['label'])
 
-    def stratified_thermal_storage(self, s, data):
+    def stratified_thermal_storage(self, s):
         """
             Creates a stratified thermal storage object with the parameters
             given in 'nodes_data' and adds it to the list of components 'nodes'
 
 
-            :param s: has to contain the following keyword arguments:
-
-                - 'label'
-                - 'active'
-                - 'storage type': 'Stratified'
-                - 'bus'
-                - 'existing capacity /(kWh)'
-                - 'min. investment capacity /(kWh)'
-                - 'max. investment capacity /(kWh)'
-                - 'periodical costs /(CU/(kWh a))'
-                - 'periodical constraint costs /(CU/(kWh a))'
-                - 'Non-Convex Investments'
-                - 'Fix Investment Costs /(CU/a)'
-                - 'input/capacity ratio (invest)'
-                - 'output/capacity ratio (invest)'
-                - 'efficiency inflow'
-                - 'efficiency outflow'
-                - 'initial capacity'
-                - 'capacity min'
-                - 'capacity max'
-                - 'variable input costs'
-                - 'variable output costs'
-                - 'variable input constraint costs /(CU/kWh)'
-                - 'variable output constraint costs /(CU/kWh)'
-                - 'diameter /(m) (Stratified Storage)'
-                - 'temperature high /(deg C) (Stratified Storage)'
-                - 'temperature low /(deg C) (Stratified Storage)'
-                - 'U value /(W/(sqm*K)) (Stratified Storage)'
-
             :type s: dict
-
-            Yannick Wittor - yw090223@fh-muenster.de, 26.01.2021
+            :param s: has to contain the following keyword arguments:
+                - Standard information on Storages
+                - 'storage type': 'Stratified'
+                - 'diameter /m'
+                - 'temperature high /deg C'
+                - 'temperature low /deg C'
+                - 'U value /(W/(sqm*K))'
+            @ Yannick Wittor - yw090223@fh-muenster.de, 26.01.2021
         """
         # import functions for stratified thermal storages from oemof thermal
         from oemof.thermal.stratified_thermal_storage import calculate_losses
-
+        # Import weather Data
+        data = pd.read_csv(os.path.join(
+            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
         # calculations for stratified thermal storage
         loss_rate, fixed_losses_relative, fixed_losses_absolute = \
             calculate_losses(
-                s['U value /(W/(sqm*K)) (Stratified Storage)'],
-                s['diameter /m (Stratified Storage)'],
-                s['temperature high /deg C (Stratified Storage)'],
-                s['temperature low /deg C (Stratified Storage)'],
+                s['U value /(W/(sqm*K))'],
+                s['diameter /m'],
+                s['temperature high /deg C'],
+                s['temperature low /deg C'],
                 data['temperature'])
 
         # creates storage object and adds it to the
@@ -1905,56 +1810,49 @@ class Storages:
 
     def __init__(self, nodes_data, nodes, busd):
         """
-            Inits the storage class.
-
-
-            :param nodes_data: The following data have to be provided:
-
-                - 'label'
-                - 'active'
-                - 'storage type':
-                    - 'Generic' or
-                    - 'Stratified'
-                - 'bus'
-                - 'existing capacity /(kWh)'
-                - 'min. investment capacity /(kWh)'
-                - 'max. investment capacity /(kWh)'
-                - 'periodical costs /(CU/(kWh a))'
-                - 'periodical constraint costs /(CU/(kWh a))'
-                - 'Non-Convex Investments'
-                - 'Fix Investment Costs /(CU/a)'
-                - 'input/capacity ratio (invest)'
-                - 'output/capacity ratio (invest)'
-                - 'capacity loss (Generic only)'
-                - 'efficiency inflow'
-                - 'efficiency outflow'
-                - 'initial capacity'
-                - 'capacity min'
-                - 'capacity max'
-                - 'variable input costs'
-                - 'variable output costs'
-                - 'diameter /(m) (Stratified Storage)'
-                - 'temperature high /(deg C) (Stratified Storage)'
-                - 'temperature low /(deg C) (Stratified Storage)'
-                - 'U value /(W/(sqm*K)) (Stratified Storage)'
-
-            :type nodes_data: dict
-
-            :param busd: dictionary containing the busses of the energy system
-            :type busd: dict
-
-            :param nodes: list of components created before (can be empty)
-            :type nodes: list
-
-            Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+        Inits the storage class.
+        ----
+        
+        Keyword arguments:
+        
+        nodes_data : obj:'dict'
+            --  dictionary containing parameters of storages to be
+            created.The following data have to be provided:
+                    - 'label'
+                    - 'active'
+                    - 'bus'
+                    - 'existing capacity / (kWh)'
+                    - 'min.investment capacity / (kWh)'
+                    - 'max.investment capacity / (kWh)'
+                    - 'Non-Convex Investments'
+                    - 'Fix Investment Costs /(CU/a)'
+                    - 'input/capacity ratio (invest)'
+                    - 'output/capacity ratio (invest)'
+                    - 'capacity loss'
+                    - 'efficiency inflow'
+                    - 'efficiency outflow'
+                    - 'initial capacity'
+                    - 'capacity min'
+                    - 'capacity max'
+                    - 'variable input costs'
+                    - 'variable output costs'
+                    - 'diameter /m'
+                    - 'temperature high /deg C'
+                    - 'temperature low /deg C'
+                    - 'U value /(W/(sqm*K))'
+        
+        busd : obj:'dict'
+            -- dictionary containing the busses of the energy system
+    
+        nodes : obj:'list'
+            -- list of components created before (can be empty)
+        
+        ----
+        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
         """
         # renames variables
         self.busd = busd
         self.nodes = []
-
-        # Import weather Data
-        data = pd.read_csv(os.path.join(
-            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
 
         # creates storage object for every storage element in nodes_data
         for i, s in nodes_data['storages'].iterrows():
@@ -1966,7 +1864,7 @@ class Storages:
 
                 # Create Generic Storage
                 if s['storage type'] == 'Stratified':
-                    self.stratified_thermal_storage(s, data)
+                    self.stratified_thermal_storage(s)
 
         # appends created storages to the list of nodes
         for i in range(len(self.nodes)):
@@ -2007,6 +1905,7 @@ class Links:
         # creates link objects for every link object in nd
         for i, link in nodes_data['links'].iterrows():
             if link['active']:
+                print(link)
                 if link['(un)directed'] == 'directed':
                     ep_costs = link['periodical costs /(CU/(kW a))']
                 elif link['(un)directed'] == 'undirected':

@@ -77,8 +77,6 @@ def create_graph(filepath, nodes_data, legend=False):
               'links': ['box']}
     bus = {'buses': ['label'], 'sources': ['output'], 'demand': ['input'],
            'transformers': ['input'], 'storages': ['bus'], 'links': ['bus_1']}
-    # sets checklist for fill in variables
-    checklist = ['X', 'x', '', '0', 'None', 'none', 'nan']
     for i in components:
         for j, b in nodes_data[i].iterrows():
             if b['active']:
@@ -96,7 +94,8 @@ def create_graph(filepath, nodes_data, legend=False):
                              style='dashed' if i == 'storages' else '')
                     if i == 'sources':
                         # Creates graph elements for solar heat
-                        if str(b['input']) not in checklist:
+                        if b['technology'] == "solar_thermal_flat_plate" or \
+                            b['technology'] == "CSP":
                             # creates additional transformer
                             transformer = b['label'] + '_collector'
                             transformer = linebreaks(transformer)
@@ -104,7 +103,7 @@ def create_graph(filepath, nodes_data, legend=False):
                                      fixedsize='shape', width='1.1', height='0.6')
                             # creates additional bus
                             c_bus = b['label'] + '_bus'
-                            c_bus = linebreaks(c_bus)
+                            c_bus=linebreaks(c_bus)
                             dot.node(c_bus, shape='ellipse', fontsize="10")
                             # Adds edge for transformer, source and bus to the graph
                             dot.edge(b['input'], transformer)
@@ -128,7 +127,8 @@ def create_graph(filepath, nodes_data, legend=False):
                         or (i == 'buses' and b['excess']
                             and not b['shortage']):
                     dot.edge(b[bus[i][0]], label)
-                if (i == 'sources' and str(b['input']) in checklist) \
+                if (i == 'sources' and (b['technology'] != "solar_thermal_flat_plate" or \
+                            b['technology'] != "CSP")) \
                         or i == 'storages' or (i == 'buses' and b['shortage']):
                     dot.edge(label, b[bus[i][0]])
                 if i == 'links':
@@ -143,7 +143,7 @@ def create_graph(filepath, nodes_data, legend=False):
                     if b['output2'] != "None":
                         dot.node(b['output2'], shape='ellipse', fontsize="10")
                         dot.edge(label, b['output2'])
-                    if str(b['mode']) not in checklist:
+                    if b['transformer type'] == 'compression_heat_transformer':
                         # consideration of mode of operation
                         if b['mode'] == 'heat_pump':
                             temp = '_low_temp'
@@ -156,7 +156,7 @@ def create_graph(filepath, nodes_data, legend=False):
                         cmpr_abs_source = linebreaks(cmpr_abs_source)
                         cmpr_abs_bus = linebreaks(cmpr_abs_bus)
                         # Adds a second input and a heat source (node and edge)
-                        # for compressionand absorption heat transformers
+                        # for compression heat transformers
                         dot.node(cmpr_abs_bus,
                                  shape='ellipse',
                                  fontsize="10")

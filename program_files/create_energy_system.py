@@ -45,14 +45,37 @@ def import_scenario(filepath):
 
     # creates nodes from excel sheet
     xls = pd.ExcelFile(filepath)
+    sources = \
+        pd.concat(pd.read_excel(filepath,
+                                sheet_name=['PV', 'ConcentratedSolar',
+                                            'FlatPlate', 'Timeseries',
+                                            'Wind', 'Commodity']),
+                  ignore_index=True, sort=True)
+    transformer = \
+        pd.concat(pd.read_excel(filepath,
+                                sheet_name=['GenericTransformer',
+                                            'GenericCHP',
+                                            'HeatPump&Chiller',
+                                            'AbsorptionChiller']),
+                  ignore_index=True, sort=True)
+
+    storages = \
+        pd.concat(pd.read_excel(filepath,
+                                sheet_name=['GenericStorage',
+                                            'StratifiedStorage']),
+                  ignore_index=True, sort=True)
+
+    print(sources)
+    print(transformer)
+    print(storages)
     nd = {'buses': xls.parse('buses'),
-          'transformers': xls.parse('transformers'),
-          'demand': xls.parse('sinks'),
-          'storages': xls.parse('storages'),
-          'links': xls.parse('links'),
-          'timeseries': xls.parse('time_series'),
           'energysystem': xls.parse('energysystem'),
-          'sources': xls.parse('sources')
+          'demand': xls.parse('sinks'),
+          'links': xls.parse('links'),
+          'sources': sources,
+          'timeseries': xls.parse('time_series'),
+          'transformers': transformer,
+          'storages': storages
           #'constraints': xls.parse('constraints')
          }
 
