@@ -243,14 +243,13 @@ class demo_frame_class:
 
         plt.show()
 
-    def __init__(self, window, tab_control):
+    def __init__(self, window, tab_control, demo_frame):
         # Definition of the DEMO-Frames
         # main_frame = ttk.Frame(tab_control)
         self.mainpath = \
             os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
         self.window = window
-        demo_frame = ttk.Frame(window)
         tab_control.add(demo_frame, text='DEMO')
         self.monetary_costs = StringVar()
         self.monetary_costs.set('--')
@@ -262,11 +261,11 @@ class demo_frame_class:
         # DEMO explanation
 
         row = 0
-        explanation = ('DEMO-Energy System: In this DEMO the financial costs ' 
+        explanation = ('DEMO-Energy System: In this DEMO the financial costs '
                        'and carbon dioxide emissions of a residential area are '
-                       'simulated. For improvement, the technologies listed ' 
-                       'below are \n available with the parameters below. The ' 
-                       'simulated scenarios can be compared with the status ' 
+                       'simulated. For improvement, the technologies listed '
+                       'below are \n available with the parameters below. The '
+                       'simulated scenarios can be compared with the status '
                        'quo, the financial minimum and the emission minimum.')
 
         label_explanation = Label(demo_frame, text=explanation,
@@ -474,16 +473,7 @@ class demo_frame_class:
         label_line = Label(demo_frame, text=14 * '===========',
                            font='Helvetica 10')
         label_line.grid(column=0, row=row, columnspan=7)
-
-        row = row + 1
-        img = PhotoImage(file=os.path.dirname(
-            __file__) + "/v0.0.6_demo_scenario/Demo_System.png")
-        #img = img.subsample(2, 2)
-        panel = Label(demo_frame, width=300, image=img)
-        #panel = Label(demo_frame, image=img)
-        panel.grid(column=0, columnspan=5, row=row, rowspan=40)
-        # panel.pack(side = "bottom", fill = "both", expand = "yes")
-
+        
         demo_assumptions = {
             'Electricity Demand': '14 000 000 kWh/a, h0 Load Profile',
             'Heaty Demand': '52 203 000 kWh/a, EFH Load Profile',
@@ -502,7 +492,7 @@ class demo_frame_class:
         assumption_keys = list(demo_assumptions.keys())
         assumption_values = list(demo_assumptions.values())
 
-        # row = row + 1
+        row = row + 1
         rowcount = 0
         column = 4
 

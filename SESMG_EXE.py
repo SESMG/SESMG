@@ -9,6 +9,7 @@ from program_files.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 from program_files.Demo_Tool import demo_tool
 
 
+
 def create_elements(sheet, elements, texts, values, first_row):
     """ Creates a block of tk-inter elements. The elements are created from an input dictionary. The tk-inter output
     has the following structure:
@@ -274,7 +275,7 @@ def show_results():
 # Definition of the user interface
 window = Tk()
 window.title("SESMG - Spreadsheet Energy System Model Generator")
-window.geometry('1200x1000')
+window.geometry('1200x1050')
 tab_control = ttk.Notebook(window)
 tab_control.pack(expand=1, fill='both')
 tab_control.pressed_index = None
@@ -330,7 +331,14 @@ create_main_frame_elements(elements=analyzing_elements, sheet=main_frame,
                            first_row=7 + len(execution_elements),
                            file_paths=save_paths, frame=main_frame)
 
-demo_frame = demo_tool.demo_frame_class(window, tab_control)
-
+demo_frame = ttk.Frame(window)
+demo_frame1 = demo_tool.demo_frame_class(window, tab_control, demo_frame)
+# add picture
+img = PhotoImage(
+        file=os.path.dirname(__file__)
+             + "/program_files/Demo_Tool/v0.0.6_demo_scenario/Demo_System.png")
+img = img.subsample(2, 2)
+lab = Label(master=demo_frame,image=img)\
+        .grid(column=0, columnspan=4, row=19, rowspan=40)
 
 window.mainloop()

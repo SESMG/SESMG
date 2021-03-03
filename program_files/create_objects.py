@@ -856,8 +856,7 @@ class Sinks:
                                               '%Y-%m-%d %H:%M:%S').year
             # Imports standard load profiles
             e_slp = bdew.ElecSlp(year)
-            demand = e_slp.get_profile({de['load profile']: 1},
-                                       dyn_function_h0=False)
+            demand = e_slp.get_profile({de['load profile']: 1})
             # creates time series based on standard load profiles
             demand = demand.resample(temp_resolution).mean()
         # sets the nominal value
