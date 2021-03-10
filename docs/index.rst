@@ -77,18 +77,18 @@ Sourcecode
 	
 Further Information
 -------------------------------------------------
-* :doc:`futher_information/links`
-* :doc:`further_information/license`
-* :doc:`further_information/contact`
-* :doc:`further_information/acknowledgements`
+* :doc:`information/links`
+* :doc:`information/license`
+* :doc:`information/contact`
+* :doc:`information/acknowledgements`
 		
 ..	toctree::
 	:maxdepth: 2
 	:hidden:
 	:caption: Further Information 
 	
-	further_information/links
-	further_information/license
-	further_information/contact
-	further_information/acknowledgements
+	information/links
+	information/license
+	information/contact
+	information/acknowledgements
 	

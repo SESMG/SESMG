@@ -377,7 +377,6 @@ def execute_sesmg_DEMO(demo_file, demo_results):
     #     print('Please select scenario first!')
     #     comments[2].configure(text='Please select scenario first!')
 
-def demo_scenario():
 def monetary_demo_scenario():
     '''modifies financial demo scenario'''
 
