@@ -2,7 +2,6 @@
 def constraint(om, limit):
     import pyomo.environ as po
     from oemof.solph.plumbing import sequence
-
     invest_flows = {}
     for (i, o) in om.flows:
         if hasattr(om.flows[i, o].investment, "periodical_constraint_costs"):
@@ -73,7 +72,6 @@ def least_cost_model(energy_system, num_threads, nodes_data, busd):
     om = oemof.solph.Model(energy_system)
     if (str(nodes_data['energysystem']['constraint costs /(CU)'][0]) != 'x' and
           str(nodes_data['energysystem']['constraint costs /(CU)'][0]) != 'None'):
-        print("test")
         om = constraint(om, int(nodes_data['energysystem']
                                 ['constraint costs /(CU)']))
 
@@ -103,6 +101,6 @@ def least_cost_model(energy_system, num_threads, nodes_data, busd):
     logging.info('   '+"Starting Optimization with CBC-Solver")
 
     # solving the linear problem using the given solver
-    om.solve(solver='cbc', cmdline_options={"threads": num_threads})
+    om.solve(solver='gurobi', cmdline_options={"threads": num_threads})
 
     return om

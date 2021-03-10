@@ -856,6 +856,7 @@ class Sinks:
                                               '%Y-%m-%d %H:%M:%S').year
             # Imports standard load profiles
             e_slp = bdew.ElecSlp(year)
+            # TODO Discuss if this is right !!! ( dyn_function_h0 )
             demand = e_slp.get_profile({de['load profile']: 1})
             # creates time series based on standard load profiles
             demand = demand.resample(temp_resolution).mean()
@@ -1419,11 +1420,11 @@ class Transformers:
                     self.busd[tf['input']]: solph.Flow(
                             H_L_FG_share_max=[
                                 tf['share of flue gas loss at max heat '
-                                   'extraction [GenericCHP]']
+                                   'extraction']
                                 for p in range(0, periods)],
                             H_L_FG_share_min=[
                                 tf['share of flue gas loss at min heat '
-                                   'extraction [GenericCHP]']
+                                   'extraction']
                                 for p in range(0, periods)],
                             variable_costs=tf[
                                 'variable input costs /(CU/kWh)'],
@@ -1446,7 +1447,7 @@ class Transformers:
                                    'heating']
                                 for p in range(0, periods)],
                             P_min_woDH=[tf['min. electric power without '
-                                           'district heating ']
+                                           'district heating']
                                         for p in range(0, periods)],
                             Eta_el_max_woDH=[
                                 tf['el. eff. at max. fuel flow w/o distr. '
@@ -1905,7 +1906,6 @@ class Links:
         # creates link objects for every link object in nd
         for i, link in nodes_data['links'].iterrows():
             if link['active']:
-                print(link)
                 if link['(un)directed'] == 'directed':
                     ep_costs = link['periodical costs /(CU/(kW a))']
                 elif link['(un)directed'] == 'undirected':

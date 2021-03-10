@@ -65,9 +65,6 @@ def import_scenario(filepath):
                                             'StratifiedStorage']),
                   ignore_index=True, sort=True)
 
-    print(sources)
-    print(transformer)
-    print(storages)
     nd = {'buses': xls.parse('buses'),
           'energysystem': xls.parse('energysystem'),
           'demand': xls.parse('sinks'),
@@ -76,15 +73,14 @@ def import_scenario(filepath):
           'timeseries': xls.parse('time_series'),
           'transformers': transformer,
           'storages': storages
-          #'constraints': xls.parse('constraints')
-         }
+          # 'constraints': xls.parse('constraints')
+          }
 
     # error message, if no nodes are provided
     if not nd:
         raise ValueError('No nodes data provided.')
 
     # returns logging info
-    logger.define_logging()
     logging.info('Spreadsheet scenario successfully imported.')
     # returns nodes
     return nd
