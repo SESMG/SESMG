@@ -107,16 +107,78 @@ Within this sheet, the sinks of the energy system are defined. The following par
 Sources
 =================================================
 
-Within this sheet, the sources of the energy system are defined. Properties with the addition "PV ONLY" have only to be 
-defined if the parameter "technology" is set on "photovoltaic", if the parameter "technology" is "solar_thermal_flat_plate" or "concentrated_solar_power" the
-properties with the addition "Solar Heat" have to be filled.
+Within these sheets, the sources of the energy system are defined. 
+
+PV
+-------------------------
+Within this sheet, the PV sources of the energy system are defined.
 
 - **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the source is connected to.
-- **input**: Has to be an electricity bus, if "technology" is set to "concentrated_solar_power" or "solar_thermal_flat_plate". Otherwise has to be set to "x", "X", "None", "none", "0" or just blank.
+- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "concentrated_solar_power", "solar_thermal_flat_plate". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
+- **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
+- **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
+- **existing capacity/(kW)**: Existing capacity of the source before possible investments.
+- **min. investment capacity/(kW)**: Minimum capacity to be installed in case of an investment.
+- **max. investment capacity/(kW)**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
+- **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon.
+- **periodical constraint costs/(CU/(kW a))**: Only if considering constraints. Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet.
+- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
+- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs).
+- **technology database**: Database, from where module parameters are to be obtained. Recommended Database: "SandiaMod".
+- **inverter database**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter".
+- **Modul Model**: Module name, according to the database used.
+- **Inverter Model**: Inverter name, according to the database used.
+- **Azimuth**: Specifies the orientation of the PV or solar thermal module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
+- **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
+- **Albedo**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Altitude**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Latitude**: Geographic latitude (decimal number) of the photovoltaic or solar thermal module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
+- **Longitude**: Geographic longitude (decimal number) of the photovoltaic or solar thermal module module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
+
+.. csv-table:: Exemplary input for the PV sheet
+   :header: label,Comment,active,fixed,technology,output,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),technology database,inverter database,Modul Model,Inverter Model,Azimuth,Surface Tilt,Albedo,Altitude,Latitude,Longitude
+
+   pv001_electricity_source,fixed photovoltaic source,1,1,photovoltaic,bus001_electricity_bus,0,0.1,10,0,10,90,0.1,0,0,SandiaMod,sandiainverter,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,180.00,35,0.18,60.000,52.13,7.36
+
+Timeseries
+---------------------------
+Within this sheet, the Timeseries sources of the energy system are defined.
+
+- **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
+- **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
+- **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
+- **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
+- **output**: Specifies which bus the source is connected to.
+- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "concentrated_solar_power", "solar_thermal_flat_plate". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
+- **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
+- **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
+- **existing capacity/(kW)**: Existing capacity of the source before possible investments.
+- **min. investment capacity/(kW)**: Minimum capacity to be installed in case of an investment.
+- **max. investment capacity/(kW)**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
+- **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon.
+- **periodical constraint costs/(CU/(kW a))**: Only if considering constraints. Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet.
+- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
+- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs).
+
+.. csv-table:: Exemplary input for the Timeseries sheet
+   :header: label,Comment,active,fixed,technology,output,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a)
+   
+   fixed_timeseries_electricty_source,fixed_timeseries_source,1,1,timeseries,bus001_electricity_bus,0.01,0.1,0,10,10000,100.00,0.1,0.00,0.00
+   unfixed_timeseries_electricty_source,unfixed_timeseries_source,1,0,timeseries,electricity_bus,0.01,0.1,0,10,1000,100,00,0,1,0.00,0.00
+   
+Wind
+---------------------------
+Within this sheet, the Windpower sources of the energy system are defined.
+
+- **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
+- **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
+- **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
+- **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
+- **output**: Specifies which bus the source is connected to.
 - **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "concentrated_solar_power", "solar_thermal_flat_plate". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
 - **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
 - **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
@@ -129,55 +191,45 @@ properties with the addition "Solar Heat" have to be filled.
 - **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs).
 - **Turbine Model (Windpower ONLY)**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_. 
 - **Hub Height (Windpower ONLY)**: Hub height of the wind turbine. Which hub heights are possible for the selected reference turbine can be viewed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
-- **technology database (PV ONLY)**: Database, from where module parameters are to be obtained. Recommended Database: "SandiaMod".
-- **inverter database (PV ONLY)**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter".
-- **Modul Model (PV ONLY)**: Module name, according to the database used.
-- **Inverter Model (PV ONLY)**: Inverter name, according to the database used.
-- **Azimuth (PV and Solar Heat)**: Specifies the orientation of the PV or solar thermal module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
-- **Surface Tilt (PV and Solar Heat)**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
-- **Albedo (PV ONLY)**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "x" for other technologies.
-- **Altitude (PV ONLY)**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
-- **Latitude (PV and Solar Heat)**: Geographic latitude (decimal number) of the photovoltaic or solar thermal module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
-- **Longitude (PV and Solar Heat)**: Geographic longitude (decimal number) of the photovoltaic or solar thermal module module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
-- **Cleanliness (Solar Heat)**: Cleanliness of a parabolic through collector. Only required if "technology" is set to "concentrated_solar_power".
-- **ETA 0 (Solar Heat)**: Optical efficiency of the collector. Only required if "technology" is "concentrated_solar_power" or "solar_thermal_flate_plate".
-- **A1 (Solar Heat)**: Collector specific linear heat loss coefficient. Only required if "technology" is "concentrated_solar_power" or "solar_thermal_flate_plate".
-- **A2 (Solar Heat)**: Collector specific quadratic heat loss coefficient. Only required if "technology" is "concentrated_solar_power" or "solar_thermal_flate_plate".
-- **C1 (Solar Heat)**: Collector specific thermal loss parameter. Only required if "technology" is "concentrated_solar_power".
-- **C2 (Solar Heat)**: Collector specific thermal loss parameter. Only required if "technology" is "concentrated_solar_power".
 
-**Note: Exemlpary values for concentrated_solar_power technology**
-The following figure shows examplary values for a parabolic through collector
-
-.. figure:: ../images/CSP_examplary.png
-   :width: 100 %
-   :alt: CSP_example
-   :align: center
+.. csv-table:: Exemplary input for the Wind sheet
+   :header: label,Comment,active,fixed,technology,output,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a), Turbine Model, Turbine Model
    
-The parameters refer to `Janotte, N; et al <https://www.sciencedirect.com/science/article/pii/S1876610214004664>`_
+   windpower_electricity_source,fixed windpower source,1,windpower,1,electricity_bus,0,0.1,0,10,1000,100,0.1,0,0,E-126/4200,135
+   windpower_unfixed_electricity_source,unfixed windpower source,1,windpower,0,electricity_bus,0,0.1,0,10,1000,100,0.1,0,0,E-126/4200,135
 
-- **Temperature Inlet /deg C (Solar Heat)**: Inlet temperature of the solar heat collector module. Only required if "technology" is "concentrated_solar_power" or "solar_thermal_flate_plate".
-- **Temperature Difference /deg C (Solar Heat)**: Temperature Difference between in- and outlet temperature of the solar heat collector module. Only required if "technology" is "concentrated_solar_power" or "solar_thermal_flate_plate".
-- **Conversion Factor /(sqm/kW) (Solar Heat)**: Collector specific factor. Further information in documentation on "Structure of Energy System".
-- **Peripheral Losses (Solar Heat)**: Heat loss coefficient for losses in the collector's peripheral system. Only required for "technology" "concentrated_solar_power" and "solar_thermal_flate_plate".
-- **Electric Consumption (Solar Heat)**: Electric consumption of the collector system. Example: If value is set to 0,05, the electric consumption is 5 % of the energy output. Only required for "technology" "concentrated_solar_power" and "solar_thermal_flate_plate".
+Commodity
+---------------------------
+Within this sheet, the Commodity sources of the energy system are defined.
 
-.. csv-table:: Exemplary input for the sources sheet
-   :header: label,Comment,active,fixed,output,input,technology,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),Turbine Model (Windpower ONLY),Hub Height (Windpower ONLY),technology database (PV ONLY),inverter database (PV ONLY),Modul Model (PV ONLY),Inverter Model (PV ONLY),Azimuth (PV ONLY),Surface Tilt (PV ONLY),Albedo (PV ONLY),Altitude (PV ONLY),Latitude (PV ONLY),Longitude (PV ONLY),Latitude (Solar Heat),Longitude (Solar Heat),Surface Tilt (Solar Heat),Azimuth (Solar Heat),Cleanliness (Solar Heat),ETA 0 (Solar Heat),A1 (Solar Heat),A2 (Solar Heat),C1 (Solar Heat),C2 (Solar Heat),Temperature Inlet /deg C (Solar Heat),Temperature Difference /deg C (Solar Heat),Conversion Factor /(sqm/kW) (Solar Heat),Peripheral Losses (Solar Heat),Electric Consumption (Solar Heat)
+- **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
+- **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
+- **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
+- **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
+- **output**: Specifies which bus the source is connected to.
+- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "concentrated_solar_power", "solar_thermal_flat_plate". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
+- **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
+- **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
+- **existing capacity/(kW)**: Existing capacity of the source before possible investments.
+- **min. investment capacity/(kW)**: Minimum capacity to be installed in case of an investment.
+- **max. investment capacity/(kW)**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
+- **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon.
+- **periodical constraint costs/(CU/(kW a))**: Only if considering constraints. Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet.
+- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
+- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs).
 
-   pv001_electricity_source,fixed photovoltaic source,1,1,bus001_electricity_bus,x,photovoltaic,0,0.1,10,0,10,90,0.1,0,0,x,x,SandiaMod,sandiainverter,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,180.00,35,0.18,60.000,52.13,7.36,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x
-   solar_heat001,thermaldev,1,1,bus001_heat_bus,bus001_electricity_bus,solar_thermal_flat_plate,0,0.1,10,0,100,55,0.1,0,0,x,x,x,x,x,x,x,x,x,x,x,x,52.13,7.36,10,20,x,0.719,1.063,0.005,x,x,40,15,1.6,0.05,0.06
-   windpower001_electricity_source,fixed wind power source,1,1,bus001_electricity_bus,x,windpower,0,0.1,0,10,1000,100,0.1,0,0,E-126/4200,135,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x
-
+.. csv-table:: Exemplary input for the Timeseries sheet
+   :header: label,Comment,active,fixed,output,technology,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a)
+   
+   commodity_source,-,1,1,electricity_bus,other,0.01,0.1,0,10,1000,100.00,0.1,0.00,0.00
   
-
 	
 .. figure:: ../images/BSP_Graph_source.png
    :width: 60 %
    :alt: Source_Graph
    :align: center
 
-   Graph of the energy system, which is created by entering the example components. By the input in the sources-sheet one sink has been created.
+   Graph of the energy system, which is created by entering the example components of PV sheet. By the input in the sources sheets one sink has been created.
    
 Transformers
 =================================================
