@@ -368,6 +368,7 @@ def execute_sesmg_DEMO(demo_file, demo_results):
     # SESMG_DEMO(scenario_file=scenario_file, result_path=result_path)
     sesmg_main(scenario_file=demo_path,
           result_path=result_path,
+          num_threads=2,
           graph=False,
           results=False,
           plotly=True)
