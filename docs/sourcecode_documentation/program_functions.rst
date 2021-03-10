@@ -106,7 +106,7 @@ Interactive\_Results module
 -------------------------------------
 
 .. automodule:: program_files.Interactive_Results
-   :members:
+   :members: _result_path_import
    :undoc-members:
    :show-inheritance:
            
