@@ -272,7 +272,7 @@ def show_results():
 # Definition of the user interface
 window = Tk()
 window.title("SESMG - Spreadsheet Energy System Model Generator")
-window.geometry('1200x940')
+window.geometry('1200x900')
 tab_control = ttk.Notebook(window)
 tab_control.pack(expand=1, fill='both')
 tab_control.pressed_index = None
@@ -360,7 +360,6 @@ def execute_sesmg_DEMO(demo_file, demo_results):
     elif sys.platform.startswith('darwin'):
         result_path = os.path.dirname(os.path.abspath(__file__))
         result_path = result_path + demo_results
-        demo_path = os.path.join(os.path.dirname(__file__) + demo_file)
     elif sys.platform.startswith("linux"):
         result_path = os.path.dirname(os.path.abspath(__file__))
         result_path = result_path + demo_results
@@ -379,31 +378,28 @@ def execute_sesmg_DEMO(demo_file, demo_results):
     #     comments[2].configure(text='Please select scenario first!')
 
 def demo_scenario():
+def monetary_demo_scenario():
     '''modifies financial demo scenario'''
-    optimization = operation_mode.get()
-    if optimization == 'emissions':
-        xfile = openpyxl.load_workbook(
-            'examples/v0.1.1_demo_scenario/demo_scenario_emissions.xlsx')
-    elif optimization == 'monetary':
-        xfile = openpyxl.load_workbook(
-            'examples/v0.1.1_demo_scenario/demo_scenario_monetaer.xlsx')
+
+
+    xfile = openpyxl.load_workbook('examples/v0.0.6_demo_scenario/demo_scenario_monetaer.xlsx')
 
     # WINDPOWER
     sheet = xfile["sources"]
-    sheet['J3'] = (int(entry_values['windpower'].get()))
-    sheet['K3'] = (int(entry_values['windpower'].get()))
+    sheet['H2'] = (int(entry_values['windpower'].get()))
+    sheet['I2'] = (int(entry_values['windpower'].get()))
     # PHOTOVOLTAICS
     sheet = xfile["sources"]
-    sheet['J2'] = (int(entry_values['photovoltaics'].get()))
-    sheet['K2'] = (int(entry_values['photovoltaics'].get()))
+    sheet['H3'] = (int(entry_values['photovoltaics'].get()))
+    sheet['I3'] = (int(entry_values['photovoltaics'].get()))
     # BATTERY
     sheet = xfile["storages"]
     sheet['F2'] = (int(entry_values['battery'].get()))
     sheet['G2'] = (int(entry_values['battery'].get()))
     # CHP
     sheet = xfile["transformers"]
-    sheet['Q3'] = (int(entry_values['chp'].get()))
-    sheet['R3'] = (int(entry_values['chp'].get()))
+    sheet['N3'] = (int(entry_values['chp'].get()))
+    sheet['O3'] = (int(entry_values['chp'].get()))
     # THERMAL STORAGE
     sheet = xfile["storages"]
     sheet['F3'] = (int(entry_values['thermal storage'].get()))
@@ -412,37 +408,74 @@ def demo_scenario():
     sheet = xfile["links"]
     sheet['C2'] = (int(entry_values['district heating'].get()))
 
-    xfile.save('results/demo/scenario.xlsx')
-    execute_sesmg_DEMO(demo_file=r"/results/demo/scenario.xlsx",
-                       demo_results=r"/results/demo")
+    xfile.save('results/demo/financial/scenario.xlsx')
+    execute_sesmg_DEMO(demo_file=r"/results/demo/financial/scenario.xlsx",
+                       demo_results=r"/results/demo/financial")
 
-    df_summary = pd.read_csv(r"results/demo/summary.csv")
+    df_summary = pd.read_csv(r"results/demo/financial/summary.csv")
     # monetary_costs = float(df_summary['Total System Costs'])
-    if optimization == 'emissions':
-        monetary_costs.set(str(
-            round(float(df_summary['Total Constraint Costs'] / 1000000), 2)))
-        emission_costs.set(
-            str(round(float(df_summary['Total System Costs'] / 1000000), 2)))
-    elif optimization == 'monetary':
-        monetary_costs.set(str(
-            round(float(df_summary['Total System Costs']/1000000),2)))
-        emission_costs.set(str(
-            round(float(df_summary['Total Constraint Costs']/1000000),2)))
+    monetary_costs.set(str(round(float(df_summary['Total System Costs']/1000000),2)))
     window.update_idletasks()
 
+def emission_demo_scenario():
+    '''modifies financial demo scenario'''
+
+    xfile = openpyxl.load_workbook('examples/v0.0.6_demo_scenario/demo_scenario_emissionen.xlsx')
+
+    # WINDPOWER
+    sheet = xfile["sources"]
+    sheet['H2'] = (int(entry_values['windpower'].get()))
+    sheet['I2'] = (int(entry_values['windpower'].get()))
+    # PHOTOVOLTAICS
+    sheet = xfile["sources"]
+    sheet['H3'] = (int(entry_values['photovoltaics'].get()))
+    sheet['I3'] = (int(entry_values['photovoltaics'].get()))
+    # BATTERY
+    sheet = xfile["storages"]
+    sheet['F2'] = (int(entry_values['battery'].get()))
+    sheet['G2'] = (int(entry_values['battery'].get()))
+    # CHP
+    sheet = xfile["transformers"]
+    sheet['N3'] = (int(entry_values['chp'].get()))
+    sheet['O3'] = (int(entry_values['chp'].get()))
+    # THERMAL STORAGE
+    sheet = xfile["storages"]
+    sheet['F3'] = (int(entry_values['thermal storage'].get()))
+    sheet['G3'] = (int(entry_values['thermal storage'].get()))
+    # District Heating
+    sheet = xfile["links"]
+    sheet['C2'] = (int(entry_values['district heating'].get()))
+
+    xfile.save('results/demo/emissions/scenario.xlsx')
+    execute_sesmg_DEMO(demo_file='/results/demo/emissions/scenario.xlsx',
+                       demo_results='/results/demo/emissions')
+
+    df_summary = pd.read_csv(r"results/demo/emissions/summary.csv")
+
+    emission_costs.set(str(round(float(df_summary['Total System Costs'])/1000000,0)))
+    window.update_idletasks()
 
 def simulate_scenario():
 
     for i in range(len(entry_values)):
         print(demo_names[i] + ': ' + entry_values[demo_names[i]].get() + ' ' + demo_unit[demo_names[i]])
-    demo_scenario()
 
+    t_monetary = Thread(target=monetary_demo_scenario(), args=())
+    t_emission = Thread(target=emission_demo_scenario(), args=())
+
+    t_monetary.start()
+    t_emission.start()
+
+    t_monetary.join()
+    t_emission.join()
+
+    # monetary_demo_scenario()
+    # emission_demo_scenario()
 
 def include_optimized_scenarios():
     results_dict['Status Quo'] = [8.2594606, 18521.2, 0, 0, 0, 0, 0, 0]
     results_dict['Financial Minimum'] = [1.310668, 14400.430112, 29700, 10000, 0, 0, 0, 0]
     results_dict['Emission Minimum'] = [9.825963, 12574.7, 5526, 644, 29680, 2769, 0, 10000]
-
 
 def save_results():
 
@@ -454,6 +487,7 @@ def save_results():
 
     results_dict[entry_values[demo_names[0]].get()] = interim_results
     print(results_dict)
+
 
 
 def save_manual_results():
@@ -608,13 +642,6 @@ for i in range(len(demo_components)):
 
 # EXECUTION BUTTONS
 # row = row + 1
-OptionList = ['emissions', 'monetary']
-operation_mode = StringVar()
-label_operation_mode = Label(demo_frame, text='Operation Mode',
-                             font=('Helvetica 10'))
-label_operation_mode.grid(column=0, row=row, sticky="W")
-OptionMenu(demo_frame, operation_mode, *OptionList).grid(column=1, row=row, pady=4)
-row = row + 1
 Button(demo_frame, text='SIMULATE', command=simulate_scenario).grid(column=1, row=row, pady=4)
 
 # RESULTS
@@ -680,7 +707,7 @@ for i in range(len(demo_components)):
 
 
 
-row = row + 3
+row = row + 2
 label_monetary_costs = Label(demo_frame, text='RESULTS', font=('Helvetica 10'))
 label_monetary_costs.grid(column=4, row=row, sticky="W")
 
@@ -712,7 +739,7 @@ label_emission_unit_2.grid(column=2+4, row=row, sticky="W")
 #
 #
 # EXECUTION BUTTONS
-row = 15
+row = 14
 Button(demo_frame, text='SAVE', command=save_manual_results).grid(column=1+4, row=row, pady=4)
 row = row + 1
 label_line = Label(demo_frame, text=14*'===========', font=('Helvetica 10'))
@@ -726,7 +753,7 @@ label_line = Label(demo_frame, text=14*'===========', font=('Helvetica 10'))
 label_line.grid(column=0, row=row, columnspan=7)
 
 row = row + 1
-img = PhotoImage(file='examples/v0.1.1_demo_scenario/DEMO_System.png')
+img = PhotoImage(file='examples/v0.0.6_demo_scenario/DEMO_System.png')
 img = img.subsample(2,2)
 panel = Label(demo_frame, image = img)
 panel.grid(column=0,columnspan=4, row=row, rowspan=30)
@@ -735,8 +762,8 @@ panel.grid(column=0,columnspan=4, row=row, rowspan=30)
 
 
 demo_assumptions = {'Electricity Demand':'14 000 000 kWh/a, h0 Load Profile',
-                    'Heaty Demand': '52 203 000 kWh/a, EFH Load Profile',
-                    'Windturbines': '2 000 000 €/MW, 8 g/kWh, 20 a, max. 29.7 MW',
+                    'Heaty Demand':'52 203 000 kWh/a, EFH Load Profile',
+                    'Windturbines':'2 000 000 €/MW, 8 g/kWh, 20 a, max. 29.7 MW',
                     'Photovoltaics':'1 140 000 €/MW, 56 g/kWh, 20 a, max. 10 MW',
                     'Battery':'1 000 000 €/MWh, 155 t/MWh (Invest!), 20 a',
                     'CHP':'190 000 €/MWh (el.), 375 g/kWh (el), 165 g/kWh (th.), 20 a',
