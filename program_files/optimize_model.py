@@ -76,7 +76,7 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
 
         :return: - **om** (oemof.solph.Model) - solved oemof model
 
-        Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
 
     import logging

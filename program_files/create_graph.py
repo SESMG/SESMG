@@ -19,7 +19,7 @@ def create_graph(filepath: str, nodes_data: dict, legend=False):
                        graph or not
         :type legend: bool
 
-        Christian Klemm - christian.klemm@fh-muenster.de, 14.04.2020
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
     
     def linebreaks(text: str):
@@ -32,7 +32,7 @@ def create_graph(filepath: str, nodes_data: dict, legend=False):
             :param text: string to which line breaks will be added
             :type text: str
 
-            Christian Klemm - christian.klemm@fh-muenster.de, 14.04.2020
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
         text_length = len(text)
         if text_length > 10:

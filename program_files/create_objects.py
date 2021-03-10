@@ -281,10 +281,10 @@ class Sources:
         # Returns logging info
         logging.info('   ' + 'Timeseries Source created: ' + so['label'])
 
-    def pv_source(self, so: dict, my_weather_pandas_dataframe: dict):
+    def pv_source(self, so: dict, my_weather_pandas_dataframe):
         """
             Creates an oemof photovoltaic source object.
-            # TODO myweatherdataframe beschreiben und Typ prüfen
+
             Simulates the yield of a photovoltaic system using feedinlib
             and creates a source object with the yield as time series
             and the use of the create_source method.
@@ -303,12 +303,16 @@ class Sources:
                             - 'Latitude (PV ONLY)'
                             - 'Longitude (PV ONLY)'
             :type so: dict
-            :param my_weather_pandas_dataframe:
-            :type my_weather_pandas_dataframe: dict
+            :param my_weather_pandas_dataframe: Dataframe containing:
+                            
+                            - 'dirhi'
+                            - 'dhi'
+                            - 'temperature'
+                            - 'windspeed'
+            :type my_weather_pandas_dataframe: pandas.core.frame.Dataframe
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
-        
         # reads pv system parameters from parameter dictionary
         # nodes_data
         parameter_set = {
@@ -365,14 +369,13 @@ class Sources:
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
 
-    def windpower_source(self, so: dict, weather_df_wind: dict):
+    def windpower_source(self, so: dict, weather_df_wind):
         """
             Creates an oemof windpower source object.
 
             Simulates the yield of a windturbine using feedinlib and
             creates a source object with the yield as time series and the
             use of the create_source method.
-            # TODO weather_df_wind beschreiben und Typ prüfen
 
             :param so: dictionary containing all information for the
                        creation of an oemof source. At least the
@@ -383,8 +386,13 @@ class Sources:
                             - 'Turbine Model (Windpower ONLY)'
                             - 'Hub Height (Windpower ONLY)'
             :type so: dict
-            :param weather_df_wind:
-            :type weather_df_wind: dict
+            :param weather_df_wind: Dataframe containing:
+                            
+                            - 'windspeed'
+                            - 'temperature'
+                            - 'z0'
+                            - 'pressure'
+            :type weather_df_wind: pandas.core.frame.Dataframe
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
@@ -985,7 +993,7 @@ class Transformers:
         }}
         self.create_transformer(tf, inputs, outputs, conversion_factors)
 
-    def heat_pump_transformer(self, t: dict, data: dict):
+    def heat_pump_transformer(self, t: dict, data):
         """
             Creates a Heat Pump object by using oemof.thermal.
             Creates a heat pump with the parameters given in
@@ -1007,7 +1015,7 @@ class Transformers:
                         - 'max. investment capacity / (kW)'
                         - 'existing capacity / (kW)'
             :type t: dict
-            :param data: dictionary containing all temperature information \
+            :param data: Dataframe containing all temperature information \
                          for the low temperature source. At least the \
                          following key-value-pairs have to be included:
 
@@ -1015,7 +1023,7 @@ class Transformers:
                             - 'groundwater_temp'
                             - 'temperature'
                             - 'water_temp'
-            :type data: dict
+            :type data: pandas.core.frame.Dataframe
 
             :raise SystemError: choosen heat source not defined
 

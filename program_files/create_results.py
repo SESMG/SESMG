@@ -2,7 +2,7 @@
     Functions for returning optimization results in several forms.
 
     Contributor:
-        Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+        Christian Klemm - christian.klemm@fh-muenster.de
 """
 
 import logging
@@ -28,7 +28,7 @@ def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str):
         :return: - **results** (.xlsx) - xlsx files containing in and \
                    outgoing flows of the energy systems' buses.
 
-        Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
     results = solph.processing.results(optimization_model)
 
@@ -66,7 +66,7 @@ def charts(nodes_data: dict, optimization_model: solph.Model,
         :return: - **plots** (matplotlib.plot) plots displaying in \
                    and outgoing flows of the energy systems' buses.
 
-        Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
     # rename variables
     esys = energy_system
@@ -100,7 +100,7 @@ class Results:
     results = None
     esys = None
 
-    def get_flow(self, comp_label: str, comp_type: str) -> dict:
+    def get_flow(self, comp_label: str, comp_type: str):
         """
             Calculates the flow and performance of the given component,
             then logs it in the output and returns it to the statistics
@@ -110,12 +110,11 @@ class Results:
             :type comp_label: str
             :param comp_type: type of component to be calculated
             :type comp_type: str
-             TODO type check Returns
-            :returns: - **flow_sum** (dict) - sum of the of the \
+            :returns: - **flow_sum** (Dataframe) - sum of the of the \
                         calculated flow
-                      - **flow_max** (dict) - maximum of the \
+                      - **flow_max** (Dataframe) - maximum of the \
                         calculated flow
-                      - **df_component** (dict) - \
+                      - **df_component** (Dataframe) - \
                         component_performance (input or output)
         """
         logging.info('   ' + comp_label)
@@ -148,10 +147,10 @@ class Results:
         """
             Calculates the investment to be made and the resulting
             periodical costs.
-            TODO type definition of component
 
             :param component: one component of the energy system with \
                               'max. investment' > 0
+            :type component: Dataframe
             :param comp_type: type of the component to be calculated
             :type comp_type: str
 
@@ -231,7 +230,7 @@ class Results:
             :param result_path: Path where the results are saved.
             :type result_path: str
 
-            Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
 
         # renames input variables

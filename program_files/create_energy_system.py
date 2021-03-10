@@ -2,11 +2,9 @@
 """
     Functions for creating an oemof energy system.
 
-    Christian Klemm - christian.klemm@fh-muenster.de, 27.01.2020
+    Christian Klemm - christian.klemm@fh-muenster.de
 """
 import os
-
-import oemof as oemof
 import pandas as pd
 import logging
 
@@ -35,7 +33,7 @@ def import_scenario(filepath: str) -> dict:
 
         :return: - **nd** (dict) - dictionary containing excel sheets
 
-        Christian Klemm - christian.klemm@fh-muenster.de, 27.01.2021
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
     from oemof.tools import logger
     # reads node data from Excel sheet
@@ -60,7 +58,6 @@ def import_scenario(filepath: str) -> dict:
         raise ValueError('No nodes data provided.')
 
     # returns logging info
-    logger.define_logging()
     logging.info('Spreadsheet scenario successfully imported.')
     # returns nodes
     return nd
@@ -85,7 +82,7 @@ def define_energy_system(nodes_data: dict):
         :type nodes_data: dict
         :return: - **esys** (oemof.Energysystem) - oemof energy system
 
-        Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
 
     from oemof import solph
@@ -128,7 +125,7 @@ def format_weather_dataset(filepath: str):
         :param filepath: path to excel file
         :type filepath: str
 
-        Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
 
     # The feedinlib can only read .csv data sets, so the weather data
