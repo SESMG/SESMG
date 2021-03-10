@@ -164,7 +164,7 @@ Within this sheet, the Timeseries sources of the energy system are defined.
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
 - **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs).
 
-.. csv-table:: Exemplary input for the Timeseries sheet
+.. csv-table:: Exemplary input for the Timeseries sheet (not included into the example graphic below)
    :header: label,Comment,active,fixed,technology,output,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a)
    
    fixed_timeseries_electricty_source,fixed_timeseries_source,1,1,timeseries,bus001_electricity_bus,0.01,0.1,0,10,10000,100.00,0.1,0.00,0.00
@@ -196,7 +196,6 @@ Within this sheet, the Windpower sources of the energy system are defined.
    :header: label,Comment,active,fixed,technology,output,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a), Turbine Model, Turbine Model
    
    windpower_electricity_source,fixed windpower source,1,windpower,1,electricity_bus,0,0.1,0,10,1000,100,0.1,0,0,E-126/4200,135
-   windpower_unfixed_electricity_source,unfixed windpower source,1,windpower,0,electricity_bus,0,0.1,0,10,1000,100,0.1,0,0,E-126/4200,135
 
 Commodity
 ---------------------------
@@ -218,7 +217,7 @@ Within this sheet, the Commodity sources of the energy system are defined.
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
 - **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs).
 
-.. csv-table:: Exemplary input for the Timeseries sheet
+.. csv-table:: Exemplary input for the Commodity sheet (not included into the example graphic below)
    :header: label,Comment,active,fixed,output,technology,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a)
    
    commodity_source,-,1,1,electricity_bus,other,0.01,0.1,0,10,1000,100.00,0.1,0.00,0.00
