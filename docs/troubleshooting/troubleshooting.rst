@@ -109,14 +109,14 @@ or
 .. warning::
 	
 	Implicitly replacing the Component attribute equate_InvestmentFlow.in
-	    vest[districtheat_undirected_link,districtheat_bus]_InvestmentFlow.invest[
-	    districtheat_undirected_link,heat_bus] (type=<class
-	    'pyomo.core.base.constraint.SimpleConstraint'>) on block Model with a new
-	    Component (type=<class
-	    'pyomo.core.base.constraint.AbstractSimpleConstraint'>). This is usually
-	    indicative of a modelling error. To avoid this warning, use
-	    block.del_component() and block.add_component().
+	vest[districtheat_undirected_link,districtheat_bus]_InvestmentFlow.invest[
+	districtheat_undirected_link,heat_bus] (type=<class
+	'pyomo.core.base.constraint.SimpleConstraint'>) on block Model with a new
+	Component (type=<class
+	'pyomo.core.base.constraint.AbstractSimpleConstraint'>). This is usually
+	indicative of a modelling error. To avoid this warning, use
+	block.del_component() and block.add_component().
 
-- **There is no user error because this error is due to the way undirected links are implemented**
+- **This is no user error because this error is due to the way undirected links are implemented**
 
 Your error message is not included? Do not hesitate to contact the developers.
