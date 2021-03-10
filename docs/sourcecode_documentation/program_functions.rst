@@ -70,14 +70,6 @@ create\_energy\_system module
    :undoc-members:
    :show-inheritance:
 
-create\_graph module
------------------------------------
-
-.. automodule:: program_files.create_graph
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 create\_objects module
 -------------------------------------
 
@@ -85,11 +77,11 @@ create\_objects module
    :members:
    :undoc-members:
    :show-inheritance:
+   
+create\_graph module
+-----------------------------------
 
-create\_results module
--------------------------------------
-
-.. automodule:: program_files.create_results
+.. automodule:: program_files.create_graph
    :members:
    :undoc-members:
    :show-inheritance:
@@ -101,5 +93,20 @@ optimize\_model module
    :members:
    :undoc-members:
    :show-inheritance:
+   
+create\_results module
+-------------------------------------
 
+.. automodule:: program_files.create_results
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Interactive\_Results module
+-------------------------------------
+
+.. automodule:: program_files.Interactive_Results
+   :members:
+   :undoc-members:
+   :show-inheritance:
            
