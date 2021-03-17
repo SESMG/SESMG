@@ -155,7 +155,8 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
         om = constraint_optimization_against_two_values(om, limit)
    
     # limit for two given outflows e.g area_competition
-    om = competition_constraint(om, nodes_data, energy_system)
+    if "competition_constraint" in nodes_data:
+        om = competition_constraint(om, nodes_data, energy_system)
 
 
     for j, z in nodes_data['links'].iterrows():
