@@ -100,7 +100,11 @@ def buses(nodes_data: dict, nodes: list) -> dict:
 class Sources:
     """
         Creates source objects.
+    """
     
+    def create_source(self, so, timeseries_args, output):
+        """Creates an oemof source with fixed or unfixed timeseries
+
         There are four options for labeling source objects to be created:
 
             - 'commodity': a source with flexible time series
@@ -185,9 +189,11 @@ class Sources:
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
+
         # output default
         if output is None:
             output = self.busd[so['output']]
+
         # set variables minimum, maximum and existing
         minimum = so['min. investment capacity /(kW)']
         maximum = so['max. investment capacity /(kW)']
@@ -245,7 +251,7 @@ class Sources:
         """
         # starts the create_source method with the parameters
         # min = 0 and max = 1
-        self.create_source(so, {'min': 0, 'max': 1})
+        self.create_source(so, {'min': 0, 'max': 1}, self.busd[so['output']])
         
         # Returns logging info
         logging.info('   ' + 'Commodity Source created: ' + so['label'])
@@ -289,11 +295,10 @@ class Sources:
             raise SystemError(so['label'] + " Error in fixed attribute")
         
         # starts the create_source method with the parameters set before
-        self.create_source(so, args)
+        self.create_source(so, args, self.busd[so['output']])
         
         # Returns logging info
         logging.info('   ' + 'Timeseries Source created: ' + so['label'])
-
 
     def pv_source(self, so: dict, my_weather_pandas_dataframe):
         """
@@ -378,11 +383,10 @@ class Sources:
             raise SystemError(so['label'] + " Error in fixed attribute")
         
         # starts the create_source method with the parameters set before
-        self.create_source(so, args)
+        self.create_source(so, args, self.busd[so['output']])
         
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
-
 
     def windpower_source(self, so: dict, weather_df_wind):
         """
@@ -446,7 +450,7 @@ class Sources:
             raise SystemError(so['label'] + " Error in fixed attribute")
         
         # starts the create_source method with the parameters set before
-        self.create_source(so, args)
+        self.create_source(so, args, self.busd[so['output']])
         
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
@@ -880,6 +884,7 @@ class Sinks:
                                               '%Y-%m-%d %H:%M:%S').year
             # Imports standard load profiles
             e_slp = bdew.ElecSlp(year)
+            # TODO Discuss if this is right !!! ( dyn_function_h0 )
             demand = e_slp.get_profile({de['load profile']: 1})
             # creates time series based on standard load profiles
             demand = demand.resample(temp_resolution).mean()
@@ -1175,13 +1180,12 @@ class Transformers:
         self.create_transformer(tf, inputs, outputs, conversion_factors)
 
         
+
     def compression_heat_transformer(self, tf: dict, data):
         """
             Creates a Compression Heat Pump or Compression Chiller by using
             oemof.thermal and adds it to the list of components 'nodes'.
             Parameters are given in 'nodes_data' are used .
-
-
             
             :param tf: has to contain the following keyword arguments
                 
@@ -1847,7 +1851,6 @@ class Storages:
                     offset=s['Fix Investment Costs /(CU/a)'])))
         # returns logging info
         logging.info('   ' + 'Storage created: ' + s['label'])
-
     
     def __init__(self, nodes_data: dict, nodes: list, busd: dict):
         """

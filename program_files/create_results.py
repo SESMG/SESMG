@@ -187,7 +187,7 @@ class Results:
             component_investment = \
                 component_investment / \
                 component['Conversion Factor /(sqm/kW)']
-        
+
         # returns logging info
         logging.info('   ' + 'Investment Capacity: '
                      + str(round(component_investment, 2)) + ' kW')
@@ -528,6 +528,7 @@ class Results:
                                  'generator, but will be added later.')
                 # sets logging info for compression or absorption heat
                 # transformers
+
                 elif str(comp['mode']) not in checklist:
                     logging.info('   ' + 'Electricity Energy Input to '
                                  + comp['label'] + ': '
@@ -639,6 +640,7 @@ class Results:
                                                columns=columns))
                 # adds compression or absorption heat transformer to the
                 # list of results
+
                 elif str(comp['mode']) not in checklist:
                     df_result_table[comp['label'] + '_el_input'] = df_input1
                     if comp['transformer type'] ==\

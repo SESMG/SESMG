@@ -43,6 +43,7 @@ def import_scenario(filepath: str) -> dict:
 
     # creates nodes from excel sheet
     xls = pd.ExcelFile(filepath)
+
     if 'sources' in xls.sheet_names:
         # used for old scenarios and demo tool
         nd = {'buses': xls.parse('buses'),
@@ -83,8 +84,8 @@ def import_scenario(filepath: str) -> dict:
               'sources': sources,
               'timeseries': xls.parse('time_series'),
               'transformers': transformer,
-              'storages': storages
-              #'constraints': xls.parse('constraints')
+              'storages': storages,
+              'competition_constraint': xls.parse('competition_constraint')
              }
 
     # error message, if no nodes are provided
