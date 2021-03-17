@@ -186,7 +186,8 @@ class Results:
             # solar heat sources
             component_investment = \
                 component_investment / \
-                component['Conversion Factor /(sqm/kW) (Solar Heat)']
+                component['Conversion Factor /(sqm/kW)']
+        
         # returns logging info
         logging.info('   ' + 'Investment Capacity: '
                      + str(round(component_investment, 2)) + ' kW')

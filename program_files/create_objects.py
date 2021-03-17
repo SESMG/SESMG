@@ -160,7 +160,7 @@ class Sources:
             - Gregor Becker - gregor.becker@fh-muenster.de
     """
     
-    def create_source(self, so: dict, timeseries_args: dict):
+    def create_source(self, so: dict, timeseries_args: dict, output=None):
         """
             Creates an oemof source with fixed or unfixed timeseries
         
@@ -185,6 +185,9 @@ class Sources:
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
+        # output default
+        if output is None:
+            output = self.busd[so['output']]
         # set variables minimum, maximum and existing
         minimum = so['min. investment capacity /(kW)']
         maximum = so['max. investment capacity /(kW)']
@@ -242,7 +245,7 @@ class Sources:
         """
         # starts the create_source method with the parameters
         # min = 0 and max = 1
-        self.create_source(so, {'min': 0, 'max': 1}, self.busd[so['output']])
+        self.create_source(so, {'min': 0, 'max': 1})
         
         # Returns logging info
         logging.info('   ' + 'Commodity Source created: ' + so['label'])
@@ -286,7 +289,7 @@ class Sources:
             raise SystemError(so['label'] + " Error in fixed attribute")
         
         # starts the create_source method with the parameters set before
-        self.create_source(so, args, self.busd[so['output']])
+        self.create_source(so, args)
         
         # Returns logging info
         logging.info('   ' + 'Timeseries Source created: ' + so['label'])
@@ -375,7 +378,7 @@ class Sources:
             raise SystemError(so['label'] + " Error in fixed attribute")
         
         # starts the create_source method with the parameters set before
-        self.create_source(so, args, self.busd[so['output']])
+        self.create_source(so, args)
         
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
@@ -443,7 +446,7 @@ class Sources:
             raise SystemError(so['label'] + " Error in fixed attribute")
         
         # starts the create_source method with the parameters set before
-        self.create_source(so, args, self.busd[so['output']])
+        self.create_source(so, args)
         
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
@@ -601,7 +604,6 @@ class Sources:
                      + ", Irradiance on collector per year and m²: "
                        "{:2.2f}".format(numpy.sum(irradiance)) + ' kW/m²')
 
-    
     def __init__(self, nodes_data: dict, nodes: list, busd: dict,
                  filepath: str):
         """
@@ -1172,10 +1174,8 @@ class Transformers:
         }}
         self.create_transformer(tf, inputs, outputs, conversion_factors)
 
-            
-=======
-
-    def heat_pump_transformer(self, tf: dict, data):
+        
+    def compression_heat_transformer(self, tf: dict, data):
         """
             Creates a Compression Heat Pump or Compression Chiller by using
             oemof.thermal and adds it to the list of components 'nodes'.
@@ -1429,11 +1429,11 @@ class Transformers:
                     self.busd[tf['input']]: solph.Flow(
                             H_L_FG_share_max=[
                                 tf['share of flue gas loss at max heat '
-                                   'extraction [GenericCHP]']
+                                   'extraction']
                                 for p in range(0, periods)],
                             H_L_FG_share_min=[
                                 tf['share of flue gas loss at min heat '
-                                   'extraction [GenericCHP]']
+                                   'extraction']
                                 for p in range(0, periods)],
                             variable_costs=tf[
                                 'variable input costs /(CU/kWh)'],
@@ -1456,7 +1456,7 @@ class Transformers:
                                    'heating']
                                 for p in range(0, periods)],
                             P_min_woDH=[tf['min. electric power without '
-                                           'district heating ']
+                                           'district heating']
                                         for p in range(0, periods)],
                             Eta_el_max_woDH=[
                                 tf['el. eff. at max. fuel flow w/o distr. '
