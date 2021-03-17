@@ -37,6 +37,64 @@ def constraint(om, limit):
 
     return om
 
+def competition_constraint(om, nd, energy_system):
+    """
+        The outflow_competition method is used to optimise the sum of
+        the outflows of two given components multiplied by two different
+        factors (e.g. the space required for a kW) against a given limit.
+        
+        :param om: oemof solph model to which the constraints will be \
+                   added
+        :type om: oemof.solph.Model
+        :param nd:  dictionary containing all excel sheets of the spread
+                    sheet
+        :type nd: dict
+        :param energy_system: the oemof created energy_system containing
+                              all created components
+        :type energy_system: oemof.solph.energy_system
+        :return: - **om** (oemof.solph.Model) - oemof solph Model within \
+                                                the constraints
+    """
+    import pyomo.environ as po
+    for k, j in nd['competition_constraint'].iterrows():
+        limit_timerow = []
+        flows = {}
+        # Create a list in which the limit value for each time step of
+        # the energy_system is defined, since the constraints are applied
+        # to the flow, and here the system is to be dimensioned for the
+        # time step with the maximum added space/energy requirement
+        for t in om.TIMESTEPS:
+            limit_timerow.append(j['limit'])
+        # get the two outflows which are competitive
+        for i, o in om.flows:
+            if i == energy_system.groups[j['component 1']]:
+                # first output flow of the component is used to set up
+                # the competition
+                if o == (list(energy_system.groups[j['component 1']].outputs)
+                         [0]):
+                    setattr(om.flows[i, o], "competition_factor", j['factor 1'])
+                    flows[(i, o)] = om.flows[i, o]
+            elif i == energy_system.groups[j['component 2']]:
+                setattr(om.flows[i, o], "competition_factor", j['factor 2'])
+                flows[(i, o)] = om.flows[i, o]
+                
+        # rule which is used for the constraint
+        # rule : (outflow(comp1) * factor1 + outflow(comp2) * factor2) <= limit
+        
+        def competition_rule(om, t):
+            competition_flow = \
+                sum(om.flow[i, o, t] * om.flows[i, o].competition_factor *
+                    om.timeincrement[t] for (i, o) in flows)
+            limit = limit_timerow[t]
+            return (limit >= competition_flow)
+
+        setattr(om, j['component 1'] + '_' + j['component 2']
+                + "competition_constraint",
+                po.Constraint(om.TIMESTEPS, expr=competition_rule))
+    
+    return om
+
+
 def least_cost_model(energy_system, num_threads, nodes_data, busd):
     """
     Solves a given energy system model.
@@ -70,11 +128,14 @@ def least_cost_model(energy_system, num_threads, nodes_data, busd):
     
     # creation of a least cost model from the energy system
     om = oemof.solph.Model(energy_system)
+    # Optimization against a second parameter
     if (str(nodes_data['energysystem']['constraint costs /(CU)'][0]) != 'x' and
           str(nodes_data['energysystem']['constraint costs /(CU)'][0]) != 'None'):
         om = constraint(om, int(nodes_data['energysystem']
                                 ['constraint costs /(CU)']))
-
+    # limit for two given outflows e.g area_competition
+    om = competition_constraint(om, nodes_data, energy_system)
+    
     for j, z in nodes_data['links'].iterrows():
         for i, b in om.flows.keys():
             # searching for the output-flows of the link labeled
@@ -99,8 +160,7 @@ def least_cost_model(energy_system, num_threads, nodes_data, busd):
     logging.info('   '+"******************************************************"
                  + "***")
     logging.info('   '+"Starting Optimization with CBC-Solver")
-
+    
     # solving the linear problem using the given solver
     om.solve(solver='cbc', cmdline_options={"threads": num_threads})
-
     return om

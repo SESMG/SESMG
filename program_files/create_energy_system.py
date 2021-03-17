@@ -72,8 +72,8 @@ def import_scenario(filepath):
           'sources': sources,
           'timeseries': xls.parse('time_series'),
           'transformers': transformer,
-          'storages': storages
-          # 'constraints': xls.parse('constraints')
+          'storages': storages,
+          'competition_constraint': xls.parse('competition_constraint')
           }
 
     # error message, if no nodes are provided
