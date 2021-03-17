@@ -18,30 +18,12 @@ class demo_frame_class:
         print(demo_file)
         print(demo_results)
 
-        # if scenario_path.get() != "No scenario selected.":
-        #    scenario_file = scenario_path.get()
-        #if sys.platform.startswith("win"):
-        #    result_path = os.path.join(os.path.dirname(__file__) + demo_results)
-        #elif sys.platform.startswith('darwin'):
-        #    result_path = os.path.dirname(os.path.abspath(__file__))
-        #    result_path = result_path + demo_results
-        #    demo_path = os.path.join(os.path.dirname(__file__) + demo_file)
-        #elif sys.platform.startswith("linux"):
-        #    result_path = os.path.dirname(os.path.abspath(__file__))
-        #    result_path = result_path + demo_results
-        #    subprocess.call("chmod +x " + result_path, shell=True)
-        # scenario_file = 'scenario.xlsx'
-        # SESMG_DEMO(scenario_file=scenario_file, result_path=result_path)
         sesmg_main(scenario_file=demo_file,
                    result_path=demo_results,
                    num_threads=2,
                    graph=False,
                    results=False,
                    plotly=True)
-        # show_results()
-        # else:
-        #     print('Please select scenario first!')
-        #     comments[2].configure(text='Please select scenario first!')
 
     def monetary_demo_scenario(self):
         '''modifies financial demo scenario'''
@@ -137,9 +119,9 @@ class demo_frame_class:
             print(self.demo_names[i] + ': '
                   + self.entry_values[self.demo_names[i]].get()
                   + ' ' + self.demo_unit[self.demo_names[i]])
-        if self.executionmode.get() == "emissionen":
+        if self.executionmode.get() == "emissions":
             self.emission_demo_scenario()
-        elif self.executionmode.get() == "monetaer":
+        elif self.executionmode.get() == "monetary":
             self.monetary_demo_scenario()
 
     def include_optimized_scenarios(self):
@@ -326,11 +308,13 @@ class demo_frame_class:
             label_name.grid(column=column, row=row, sticky="W")
 
             row = row + 1
-
+        Label(demo_frame, text="Monetarily driven, emission driven",
+                               font='Helvetica 10').grid(
+                column=0, row=row, sticky="W")
         # EXECUTION BUTTONS
         # row = row + 1
-        self.executionmode = StringVar()
-        OptionMenu(demo_frame, self.executionmode, "emissionen", "monetaer")\
+        self.executionmode = StringVar(demo_frame, "monetary")
+        OptionMenu(demo_frame, self.executionmode, "emissions", "monetary")\
             .grid(column=1, row=row, pady=4)
         row = row + 1
         Button(demo_frame, text='SIMULATE', command=self.simulate_scenario)\
@@ -413,7 +397,7 @@ class demo_frame_class:
 
         # RESULTS
 
-        row = row + 2
+        row = row + 3
         label_monetary_costs = Label(demo_frame, text='RESULTS',
                                      font='Helvetica 10')
         label_monetary_costs.grid(column=4, row=row, sticky="W")
