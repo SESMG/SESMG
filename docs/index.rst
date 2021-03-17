@@ -35,7 +35,7 @@ Getting started
 * :doc:`getting_started/how_to_execute`
 * :doc:`getting_started/how_to_use`
 * :doc:`getting_started/analyze_results`
-* :doc:`getting_started/demo_feature.rst`
+* :doc:`getting_started/demo_feature`
 
 
 
@@ -68,9 +68,9 @@ Sourcecode
 	
 	
 ..	toctree::
-	:maxdepth: 2
+	:maxdepth: 3
 	:hidden:
-	:caption: Sourcecode
+	:caption: Sourcecode documentation
 	
 	sourcecode_documentation/program_functions
 	
@@ -87,8 +87,8 @@ Further Information
 	:hidden:
 	:caption: Further Information 
 	
-	further_information/links
-	further_information/license
-	further_information/contact
-	further_information/acknowledgements
+	information/links
+	information/license
+	information/contact
+	information/acknowledgements
 	

@@ -331,6 +331,9 @@ create_main_frame_elements(elements=analyzing_elements, sheet=main_frame,
                            first_row=7 + len(execution_elements),
                            file_paths=save_paths, frame=main_frame)
 
+##############
+# DEMO Frame #
+##############
 demo_frame = ttk.Frame(window)
 demo_frame1 = demo_tool.demo_frame_class(window, tab_control, demo_frame)
 # add picture
@@ -340,5 +343,6 @@ img = PhotoImage(
 img = img.subsample(2, 2)
 lab = Label(master=demo_frame,image=img)\
         .grid(column=0, columnspan=4, row=19, rowspan=40)
+
 
 window.mainloop()

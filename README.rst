@@ -9,6 +9,12 @@ program and the open source Python library “oemof”, assembled to an energy s
 and optimized with the open source solver “cbc”. The modeling results can be 
 viewed and analyzed using a browser-based results output.
 
+Examples
+-------------
+Examples are stored in a separate GIT-Repository:
+
+https://github.com/chrklemm/SESMG_Examples
+
 Documentation
 -------------
 The `documentation <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/>`_,

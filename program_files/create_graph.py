@@ -2,48 +2,38 @@ from graphviz import Digraph
 import os
 
 
-def create_graph(filepath, nodes_data, legend=False):
-    """Visualizes the energy system as graph.
+def create_graph(filepath: str, nodes_data: dict, legend=False):
+    """
+        Visualizes the energy system as graph.
 
-    Creates, using the library Graphviz, a graph containing all
-    components and connections from "nodes_data" and returns this as a
-    PNG file.
+        Creates, using the library Graphviz, a graph containing all
+        components and connections from "nodes_data" and returns this as
+        a PNG file.
 
-    ----
+        :param filepath: path where the PNG-result shall be saved
+        :type filepath: str
+        :param nodes_data: dictionary containing data from excel
+                           scenario file.
+        :type nodes_data: dict
+        :param legend: specifies, whether a legend will be added to the
+                       graph or not
+        :type legend: bool
 
-    Keyword arguments:
-
-        filepath : obj:'str'
-          -- path, where the PNG-result shall be saved
-
-        nodes_data : obj:'dict'
-           -- dictionary containing data from excel scenario file.
-
-        legend : obj:'bool'
-          -- specifies, whether a legend will be added to the graph or
-             not
-
-    ----
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 14.04.2020
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
     
-    def linebreaks(text):
-        """Adds linebreaks a given string.
+    def linebreaks(text: str):
+        """
+            Adds linebreaks a given string.
 
-         Function which adds a line break to strings every ten
-         characters. Up to four strings are added.
+            Function which adds a line break to strings every ten
+            characters. Up to four strings are added.
 
-         ----
+            :param text: string to which line breaks will be added
+            :type text: str
 
-        Keyword arguments:
-
-            text : obj:'str'
-              -- string to which line breaks will be added
-
-        ----
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 14.04.2020
-
-         """
+            Christian Klemm - christian.klemm@fh-muenster.de
+        """
         text_length = len(text)
         if text_length > 10:
             text = str(text[0:9] + "-\n" + text[9:])
