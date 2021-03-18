@@ -2,6 +2,10 @@ import xlsxwriter
 import pandas as pd
 import os
 
+def copy_standard_parameter_sheet(standard_parameters, sheet):
+
+    sheets[sheet] = standard_parameters.parse(sheet)
+
 def create_standard_parameter_bus(label, bustype, standard_parameters):
     """ Creates a bus with standard_parameters, based on the standard
     parameters given in the "standard_parameters" dataset and adds it to the
@@ -25,7 +29,7 @@ def create_standard_parameter_bus(label, bustype, standard_parameters):
     # Creates Bus-List-Element
     sheets["buses"] = sheets["buses"].append(pd.Series(bus_dict), ignore_index=True)
 
-def create_standard_parameter_link(label, bus_1, bus_2, standard_parameters):
+def create_standard_parameter_link(label, bus_1, bus_2, link_type, standard_parameters):
     """Creates a link with standard_parameters, based on the standard
     parameters given in the "standard_parameters" dataset and adds it to the
     "sheets"-output dataset.
@@ -44,10 +48,15 @@ def create_standard_parameter_link(label, bus_1, bus_2, standard_parameters):
 
     # read the heat network standards from standard_parameters.xlsx and append
     # them to the link_housespecific_dict
+    # link_standard_keys = link_standard_parameters.keys().tolist()
+    link_standard_parameters = standard_parameters.parse('Links', index_col='link_type').loc[link_type]
     link_standard_keys = link_standard_parameters.keys().tolist()
     for i in range(len(link_standard_keys)):
         link_housespecific_dict[link_standard_keys[i]] = \
-            link_standard_parameters[link_standard_keys[i]][0]
+            link_standard_parameters[link_standard_keys[i]]
+
+
+
 
     # produce a pandas series out of the dict above due to easier appending
     link_series = pd.Series(link_housespecific_dict)
@@ -102,6 +111,7 @@ def central_comp(central, standard_parameters):
             create_standard_parameter_link(label="district_heat_link",
                                            bus_1="district_heat_input_bus",
                                            bus_2="district_heat_output_bus",
+                                           link_type="district_heat_link",
                                            standard_parameters=standard_parameters)
 
 
@@ -158,6 +168,14 @@ def create_central_chp(gastype, standard_parameters):
                                   bustype="central_chp_"+gastype+"_electricity_bus",
                                   standard_parameters=standard_parameters)
 
+    #### Connection to district electricity bus
+    create_standard_parameter_link(label="central_chp_"+gastype+"_elec_district_link",
+                                   bus_1="chp_"+gastype+"_elec_bus",
+                                   bus_2="district_electricity_bus",
+                                   link_type="central_chp_elec_district_link",
+                                   standard_parameters=standard_parameters)
+
+
     ### CHP TRANSFORMER
 
     chp_standard_parameters = standard_parameters.parse('CHP')
@@ -202,6 +220,7 @@ def create_busses(ID: str, gas_bus: bool, pv_bus: bool, hp_elec_bus, district_he
         create_standard_parameter_link(label=str(ID) + "_gchp_building_link",
                                        bus_1=str(ID) + "_electricity_bus",
                                        bus_2=str(ID) + "_hp_elec_bus",
+                                       link_type="building_hp_elec_link",
                                        standard_parameters=standard_parameters)
 
     if district_heat_bus:
@@ -209,6 +228,7 @@ def create_busses(ID: str, gas_bus: bool, pv_bus: bool, hp_elec_bus, district_he
         create_standard_parameter_link(label= str(ID) + "_district_heat_link",
                                        bus_1="district_heat_output_bus",
                                        bus_2=str(ID) + "_heat_bus",
+                                       link_type="building_district_heat_link",
                                        standard_parameters=standard_parameters)
 
     # TODO excess constraint costs
@@ -223,82 +243,86 @@ def create_busses(ID: str, gas_bus: bool, pv_bus: bool, hp_elec_bus, district_he
         create_standard_parameter_link(label=str(ID) + "pv_" + str(ID) + "_electricity_link",
                                        bus_1=str(ID) + "_pv_bus",
                                        bus_2=str(ID) + "_electricity_bus",
+                                       link_type="building_pv_district_link",
                                        standard_parameters=standard_parameters)
 
         # LINK FROM PV BUS TO DISTRICT ELECTRICITY BUS
         create_standard_parameter_link(label=str(ID) + "pv_district_electricity_link",
                                        bus_1=str(ID) + "_pv_bus",
                                        bus_2="district_electricity_bus",
+                                       link_type="building_pv_district_link",
                                        standard_parameters=standard_parameters)
 
         # LINK FROM DISTRICT ELEC BUS TO BUILDING ELECTRICITY BUS
         create_standard_parameter_link(label=str(ID) + "district_electricity_link",
                                        bus_1="district_electricity_bus",
                                        bus_2=str(ID) + "_electricity_bus",
+                                       link_type="building_district_building_link",
                                        standard_parameters=standard_parameters)
 
 def create_sinks(ID: str, building_type: str, units: int, occupants: int, yoc: str, area: int, standard_parameters):
 
     # ELECTRICITY DEMAND
+    if building_type != 'None':
+        # residential parameters
+        if "RES" in building_type:
+            electricity_demand_residential = {}
+            electricity_demand_standard_param = standard_parameters.parse('ResElecDemand')
+            for i in range(len(electricity_demand_standard_param)):
+                electricity_demand_residential[electricity_demand_standard_param['household size'][i]] =\
+                    [electricity_demand_standard_param[building_type + ' (kWh/a)'][i]]
 
-    # residential parameters
-    if "RES" in building_type:
-        electricity_demand_residential = {}
-        electricity_demand_standard_param = standard_parameters.parse('ResElecDemand')
-        for i in range(len(electricity_demand_standard_param)):
-            electricity_demand_residential[electricity_demand_standard_param['household size'][i]] =\
-                [electricity_demand_standard_param[building_type + ' (kWh/a)'][i]]
+            if occupants <= 5:
+                demand_el = electricity_demand_residential[occupants][0]
+                demand_el = demand_el*units
+            elif occupants > 5:
+                demand_el = (electricity_demand_residential[5][0])/5*occupants
+                demand_el = demand_el * units
 
-        if occupants <= 5:
-            demand_el = electricity_demand_residential[occupants][0]
-            demand_el = demand_el*units
-        elif occupants > 5:
-            demand_el = (electricity_demand_residential[5][0])/5*occupants
-            demand_el = demand_el * units
+        # commercial parameters
+        elif "COM" in building_type:
+            electricity_demand_standard_param = standard_parameters.parse('ComElecDemand')
+            electricity_demand_standard_param.set_index("commercial type",inplace=True)
+            demand_el = electricity_demand_standard_param.loc[building_type]['specific demand (kWh/m2/a)']
+            net_floor_area = area * 0.9  # TODO: give this value with standard parameter dataset
+            demand_el = demand_el * net_floor_area
 
-    # commercial parameters
-    elif "COM" in building_type:
-        electricity_demand_standard_param = standard_parameters.parse('ComElecDemand')
-        electricity_demand_standard_param.set_index("commercial type",inplace=True)
-        demand_el = electricity_demand_standard_param.loc[building_type]['specific demand (kWh/m2/a)']
-        net_floor_area = area * 0.9  # TODO: give this value with standard parameter dataset
-        demand_el = demand_el * net_floor_area
-
-    create_standard_parameter_sink(sink_type=building_type + "_electricity_sink",
-                                   label=str(ID) + "_electricity_demand",
-                                   input=str(ID) + "_electricity_bus",
-                                   annual_demand=demand_el,
-                                   standard_parameters=standard_parameters)
+        create_standard_parameter_sink(sink_type=building_type + "_electricity_sink",
+                                       label=str(ID) + "_electricity_demand",
+                                       input=str(ID) + "_electricity_bus",
+                                       annual_demand=demand_el,
+                                       standard_parameters=standard_parameters)
 
     # HEAT DEMAND
 
     # residential building
-    if "RES" in building_type:
-        # read standard values from standard_parameter-dataset
-        heat_demand_standard_param = standard_parameters.parse('ResHeatDemand')
-        heat_demand_standard_param.set_index("Year of Construction", inplace=True)
-        specific_heat_demand = heat_demand_standard_param.loc[yoc][str(units) + ' unit(s)']
+    if building_type != "None":
+        if "RES" in building_type:
+            # read standard values from standard_parameter-dataset
+            heat_demand_standard_param = standard_parameters.parse('ResHeatDemand')
+            heat_demand_standard_param.set_index("Year of Construction", inplace=True)
+            specific_heat_demand = heat_demand_standard_param.loc[yoc][str(int(units)) + ' unit(s)']
 
-        net_floor_area = area * 0.9 # TODO: give this value with standard parameter dataset
+            net_floor_area = area * 0.9 # TODO: give this value with standard parameter dataset
 
-        if units <= 12:
-            demand_heat = specific_heat_demand * net_floor_area
-        if units > 12:
-            demand_heat = specific_heat_demand * net_floor_area
+            if units <= 12:
+                demand_heat = specific_heat_demand * net_floor_area
+            if units > 12:
+                demand_heat = specific_heat_demand * net_floor_area
 
-    # commercial building
-    elif "COM" in building_type:
-        heat_demand_standard_param = standard_parameters.parse('ComHeatDemand')
-        heat_demand_standard_param.set_index("Year of Construction",inplace=True)
-        demand_heat = heat_demand_standard_param.loc[yoc][building_type]
-        net_floor_area = area * 0.9  # TODO: give this value with standard parameter dataset
-        demand_heat = demand_heat * net_floor_area
+        # commercial building
+        elif "COM" in building_type:
+            heat_demand_standard_param = standard_parameters.parse('ComHeatDemand')
+            heat_demand_standard_param.set_index("Year of Construction",inplace=True)
+            demand_heat = heat_demand_standard_param.loc[yoc][building_type]
+            net_floor_area = area * 0.9  # TODO: give this value with standard parameter dataset
+            demand_heat = demand_heat * net_floor_area
 
-    create_standard_parameter_sink(sink_type=building_type + "_heat_sink",
-                                   label=str(ID) + "_heat_demand",
-                                   input=str(ID) + "_heat_bus",
-                                   annual_demand=demand_heat,
-                                   standard_parameters=standard_parameters)
+        create_standard_parameter_sink(sink_type=building_type + "_heat_sink",
+                                       label=str(ID) + "_heat_demand",
+                                       input=str(ID) + "_heat_bus",
+                                       annual_demand=demand_heat,
+                                       standard_parameters=standard_parameters)
 
 def create_pv_source(building_ID, plant_ID, azimuth, tilt, area, pv_standard_parameters, latitude, longitude):
     """
@@ -461,6 +485,7 @@ if __name__ == '__main__':
     genericstorage_columns = xls.parse("GenericStorage").keys()
     stratifiedstorage_columns = xls.parse("StratifiedStorage").keys()
     links_columns = xls.parse("links").keys()
+    weatherdata_columns = xls.parse("weather data").keys()
 
     columns = {"energysystem": energysystem_columns,
                "buses": buses_columns,
@@ -478,6 +503,7 @@ if __name__ == '__main__':
                "GenericStorage": genericstorage_columns,
                "StratifiedStorage": stratifiedstorage_columns,
                "links": links_columns,
+               "weather data":weatherdata_columns,
                "time_series": [0,1] # TODO: placeholder, to be deleted
                }
 
@@ -496,7 +522,7 @@ if __name__ == '__main__':
         create_busses(j['label'],
                       True if j['gas heating'] == 'yes' else False,
                       True if j['azimuth 1 (°)'] or j['azimuth 2 (°)'] else False,
-                      True if j['gchp area (m2)'] else False,
+                      True if j['gchp area (m2)'] or j['ashp'] else False,
                       True if j['district heat'] else False,
                       standard_param)
         create_sinks(ID=j['label'],
@@ -582,9 +608,22 @@ if __name__ == '__main__':
 
         print(str(j['label']) + ' subsystem added to scenario sheet')
 
-    # standard_parameters='standard_parameters.xlsx'
-    # create_pv_source(ID='Test', azimuth=180, tilt=30, area=10,
-    #                  pv_standard_parameters=standard_param.parse('PV'))
+
+
+    # Add General Energy System Information to "energysystem"-sheet
+    copy_standard_parameter_sheet(standard_parameters=standard_param,
+                                  sheet='energysystem')
+
+    # Adds weather data to "weather data"-sheet
+    copy_standard_parameter_sheet(standard_parameters=standard_param,
+                                  sheet='weather data')
+
+    # Adds weather data to "weather data"-sheet
+    copy_standard_parameter_sheet(standard_parameters=standard_param,
+                                  sheet='time_series')
+
+
+
     # Open the new Excel file and add all the created components
     j = 0
     writer = pd.ExcelWriter(os.path.dirname(__file__) + "/test_scenario.xlsx",
