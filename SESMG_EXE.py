@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from tkinter import *
@@ -163,6 +164,7 @@ def show_graph():
     # PRINTS A GRAPH OF THE ENERGY SYSTEM
     create_graph.create_graph(filepath=result_path,
                               nodes_data=nodes_data,
+                              show=True, # TODO: to be replaced by variable
                               legend=False)
 
 
@@ -379,47 +381,6 @@ DMenu.grid(column=column, row=row+1)
 
 
 ############################
-#
-#
-# OptionList = [
-#     "none",
-#     "k_means (days, temp)",
-#     "k_means (weeks, temp)",
-#     "k_means (days, dhi)",
-#     "k_means (weeks, dhi)",
-#     "k_means (days, el_dem)",
-#     "k_means (weeks, el_dem)",
-#     "k_means (days, he_dem)",
-#     "averaging (days)",
-#     "averaging (weeks)",
-#     "downsampling",
-#     "downsampling (n<2)",
-#     "random sampling (days)",
-#     "slicing (days, n>=2)",
-#     "slicing (days, n<2)",
-#     'slicing (weeks, n>=2)',
-#     "slicing (weeks, n<2)",
-#     "slicing (hours, n>=2)",
-#     "slicing (hours, n<2)",
-#     "hierarchical selection (days from seasons)",
-#     "hierarchical selection (weeks from seasons)",
-#     "hierarchical selection (weeks from months)",
-#     "hierarchical selection (days from months)",
-# ]
-#
-#
-# row = row + 2
-# Label(main_frame, text='Timeseries Preparation', font='Helvetica 10').grid(column=0, row=row,
-#                                                    sticky="W")
-#
-# time_prep = StringVar(main_frame)
-# time_prep.set('random sampling (days)')
-# DMenu = OptionMenu(main_frame, time_prep, *OptionList)
-# DMenu.grid(column=3, row=row)
-#
-# timeseries_entry = Entry(main_frame, textvariable=StringVar(main_frame, value='aggregation quote'))
-# timeseries_entry.grid(column=4, row=row, sticky="w")
-
 
 # Graph Checkbox
 row = row + 2
@@ -461,7 +422,7 @@ comments = []
 
 create_main_frame_elements(elements=execution_elements, 
                            sheet=main_frame, 
-                           first_row=3 + len(selection_elements),
+                           first_row=row,
                            file_paths=comments, 
                            frame=main_frame)
 
