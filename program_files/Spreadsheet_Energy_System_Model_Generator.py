@@ -113,28 +113,14 @@ def sesmg_main(scenario_file, result_path, num_threads, graph, results,
     # IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
     nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
 
-    # Data Preprocessing
+    # Timeseries Preprocessing
     data_preparation.timeseries_preparation(timeseries_prep_param=timeseries_prep,
-                                            # method=timeseries_prep,
-                                            # days_per_cluster=timeseries_value,
-                                            # n_timesteps=timeseries_value,
                                             nodes_data=nodes_data,
                                             scheme_path=os.path.join(os.path.dirname(__file__) + r'\technical_data\hierarchical_selection_schemes.xlsx'))
 
     if timeseries_prep[0] != 'none':
         scenario_file = os.path.join(os.path.dirname(
             __file__) + r"\interim_data\modified_scenario.xlsx")
-
-    # if timeseries_prep != 'none':
-    #     path = os.path.join(os.path.dirname(__file__) + r"\interim_data\modified_scenario.xlsx")
-    #     writer = pd.ExcelWriter(path, engine='xlsxwriter')
-    #     nodes_data['weather data'].to_excel(writer, sheet_name = 'weather data')
-    #     nodes_data['timeseries'].to_excel(writer, sheet_name='time_series')
-    #     nodes_data['energysystem'].to_excel(writer, sheet_name='energysystem')
-    #     writer.save()
-    #     scenario_file = path
-
-
 
     # formatting of the weather data record according to the
     # requirements of the classes used
