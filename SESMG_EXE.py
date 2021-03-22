@@ -180,7 +180,7 @@ def execute_sesmg():
                                  timeseries_cluster.get(),
                                  timeseries_criterion.get(),
                                  timeseries_period.get(),
-                                 timeseries_season.get()]
+                                 0 if timeseries_season.get() == 'none' else timeseries_season.get()]
 
         sesmg_main(scenario_file=scenario_path.get(),
                    result_path=save_path.get(),
@@ -461,6 +461,7 @@ create_main_frame_elements(elements=execution_elements, sheet=main_frame, first_
 row = row + len(execution_elements)
 main_head3 = Label(main_frame, text='Results',
                        font='Helvetica 10 bold')
+row = row + 1
 main_head3.grid(column=0, row=row, sticky="w")
 analyzing_elements = {'row5': ['Select scenario result folder',
                                getSavePath, 'Change', save_path.get()],
