@@ -1,8 +1,7 @@
 from graphviz import Digraph
 import os
 
-
-def create_graph(filepath: str, nodes_data: dict, legend=False):
+def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
     """
         Visualizes the energy system as graph.
 
@@ -163,4 +162,4 @@ def create_graph(filepath: str, nodes_data: dict, legend=False):
                                  fixedsize='shape', width='1.1', height='0.6')
                         dot.node(b[bus[i][0]], shape='ellipse', fontsize="10")
                         dot.edge(b[bus[i][0]], label)
-    dot.render(filepath + '/graph.gv', view=True)
+    dot.render(filepath + '/graph.gv', view=show)

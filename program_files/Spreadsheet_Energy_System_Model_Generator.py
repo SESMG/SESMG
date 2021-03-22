@@ -70,23 +70,29 @@ Docs:
  - https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
  
 GIT:
- - https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator
+
+https://github.com/chrklemm/SESMG
+-------------------------------------------------------------------------------
+
 
 Christian Klemm - christian.klemm@fh-muenster.de
 """
 import logging
 from oemof.tools import logger
 import os
+import pandas as pd
 from threading import *
 from program_files import (create_objects,
                            create_results,
                            create_energy_system,
                            optimize_model,
-                           create_graph)
+                           create_graph,
+                           data_preparation)
+
 
 
 def sesmg_main(scenario_file: str, result_path: str, num_threads: int, 
-               graph: bool, results: bool, plotly: bool):
+               graph: bool, results: bool, plotly: bool, timeseries_prep: list, solver: str):
     """
         Main function of the Spreadsheet System Model Generator
 
@@ -113,6 +119,15 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     logger.define_logging(logpath=result_path)
     # IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
     nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
+
+    # Timeseries Preprocessing
+    data_preparation.timeseries_preparation(timeseries_prep_param=timeseries_prep,
+                                            nodes_data=nodes_data,
+                                            scheme_path=os.path.join(os.path.dirname(__file__) + r'\technical_data\hierarchical_selection_schemes.xlsx'))
+
+    if timeseries_prep[0] != 'none':
+        scenario_file = os.path.join(os.path.dirname(
+            __file__) + r"\interim_data\modified_scenario.xlsx")
 
     # formatting of the weather data record according to the
     # requirements of the classes used
@@ -165,11 +180,10 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     esys.add(*nodes)
 
     # PRINTS A GRAPH OF THE ENERGY SYSTEM
-    if graph:
-        create_graph.create_graph(filepath=result_path, nodes_data=nodes_data)
+    create_graph.create_graph(filepath=result_path, nodes_data=nodes_data, show=graph)
 
     # OPTIMIZES THE ENERGYSYSTEM AND RETURNS THE OPTIMIZED ENERGY SYSTEM
-    om = optimize_model.least_cost_model(esys, num_threads, nodes_data, busd)
+    om = optimize_model.least_cost_model(esys, num_threads, nodes_data, busd, solver)
 
     # SHOWS AND SAVES RESULTS OF THE OPTIMIZED MODEL / POST-PROCESSING
     if results:
