@@ -1,7 +1,8 @@
-"""Functions for returning optimization results in several forms.
+"""
+    Functions for returning optimization results in several forms.
 
-----
-@ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+    Contributor:
+        Christian Klemm - christian.klemm@fh-muenster.de
 """
 
 import logging
@@ -11,33 +12,23 @@ from matplotlib import pyplot as plt
 import os
 
 
-def xlsx(nodes_data, optimization_model, filepath):
-    """Returns model results as xlsx-files.
-    Saves the in- and outgoing flows of every bus of a given,
-    optimized energy system as .xlsx file
+def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str):
+    """
+        Returns model results as xlsx-files.
+        Saves the in- and outgoing flows of every bus of a given,
+        optimized energy system as .xlsx file
     
-    ----
-    
-    Keyword arguments:
-    
-        nodes_data : obj:'dict'
-            -- dictionary containing data from excel scenario file
-        
-        optimization_model
-            -- optimized energy system
-        
-        filepath : obj:'str'
-            -- path, where the results will be stored
-    
-    ----
-    
-    Returns:
-        results : obj:'.xlsx'
-            -- xlsx files containing in and outgoing flows of the energy
-            systems' buses.
-    
-    ----
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+        :param nodes_data: dictionary containing data from excel
+                           scenario file
+        :type nodes_data: dict
+        :param optimization_model: optimized energy system
+        :type optimization_model: oemof.solph.model
+        :param filepath: path, where the results will be stored
+        :type filepath: str
+        :return: - **results** (.xlsx) - xlsx files containing in and \
+                   outgoing flows of the energy systems' buses.
+
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
     results = solph.processing.results(optimization_model)
 
@@ -57,34 +48,25 @@ def xlsx(nodes_data, optimization_model, filepath):
             logging.info('   ' + 'Results saved as xlsx for ' + b['label'])
 
 
-def charts(nodes_data, optimization_model, energy_system):
-    """Plots model results.
+def charts(nodes_data: dict, optimization_model: solph.Model,
+           energy_system: solph.EnergySystem):
+    """
+        Plots model results.
     
-    Plots the in- and outgoing flows of every bus of a given, optimized energy
-    system
-    
-    ----
-    
-    Keyword arguments:
-    
-        nodes_data : obj:'dict'
-            -- dictionary containing data from excel scenario file
-        
-        optimization_model
-            -- optimized energy system
-        
-        energy_system : obj:
-            -- original (unoptimized) energy system
-    
-    ----
-    
-    Returns:
-        plots
-            -- plots displaying in and outgoing flows of the energy
-            systems' buses.
-    
-    ----
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+        Plots the in- and outgoing flows of every bus of a given,
+        optimized energy system
+
+        :param nodes_data: dictionary containing data from excel
+                            scenario file
+        :type nodes_data: dict
+        :param optimization_model: optimized energy system
+        :type optimization_model: oemof.solph.Model
+        :param energy_system: original (unoptimized) energy system
+        :type energy_system: oemof.solph.Energysystem
+        :return: - **plots** (matplotlib.plot) plots displaying in \
+                   and outgoing flows of the energy systems' buses.
+
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
     # rename variables
     esys = energy_system
@@ -112,29 +94,28 @@ def charts(nodes_data, optimization_model, energy_system):
 
 class Results:
     """
-    Class for preparing Plotly results and logging the results of
-    Cbc-Solver
+        Class for preparing Plotly results and logging the results of
+        Cbc-Solver
     """
     results = None
     esys = None
 
-    def get_flow(self, comp_label, comp_type):
+    def get_flow(self, comp_label: str, comp_type: str):
         """
             Calculates the flow and performance of the given component,
             then logs it in the output and returns it to the statistics
             method.
-            ----
-            Keyword arguments:
-                
-                comp_label: obj:'str'
-                    -- label of component to be calculated
-                comp_type: obj:'str'
-                    -- type of component to be calculated
-            ----
-            Returns:
-                flow_sum: -- sum of the of the calculated flow
-                flow_max: -- maximum of the calculated flow
-                df_component: -- component_performance(input or output)
+
+            :param comp_label: label of component to be calculated
+            :type comp_label: str
+            :param comp_type: type of component to be calculated
+            :type comp_type: str
+            :returns: - **flow_sum** (Dataframe) - sum of the of the \
+                        calculated flow
+                      - **flow_max** (Dataframe) - maximum of the \
+                        calculated flow
+                      - **df_component** (Dataframe) - \
+                        component_performance (input or output)
         """
         logging.info('   ' + comp_label)
         # creates component by component_label
@@ -157,33 +138,39 @@ class Results:
             logging.info('   ' + 'Max. Capacity: '
                          + str(round(flow_max[[0][0]], 2)) + ' kW')
         # returns the parameters to the statistics method
-        if comp_type == 'demand' or comp_type == 'source' or comp_type == 'shortage':
+        if comp_type == 'demand' or comp_type == 'source' \
+                or comp_type == 'shortage':
             return flow_sum[[0][0]], df_component1
         elif comp_type == 'link' or comp_type == 'storage':
             return flow_sum, flow_max, component['sequences']
 
-    def get_investment(self, component, comp_type):
+    def get_investment(self, component, comp_type: str) -> [float, float]:
         """
-        Calculates the investment to be made and the resulting periodical
-        costs.
-        ----
-        Keyword arguments:
-            component: obj
-                -- one component of the energy system with
-                'max. investment' > 0
-            comp_type: obj: 'str'
-                -- type of the component to be calculated
-        ----
-        Returns:
-            component_investment: obj: 'float'
-                -- investment to be made
-            periodical_costs: obj: 'float'
-                -- periodic_costs resulting from the investment decision
+            Calculates the investment to be made and the resulting
+            periodical costs.
+
+            :param component: one component of the energy system with \
+                              'max. investment' > 0
+            :type component: Dataframe
+            :param comp_type: type of the component to be calculated
+            :type comp_type: str
+
+            :raise SystemError: comes up if the comp_type is not defined
+
+            :returns:
+                - **component_investment** (float) - investment to be \
+                                                     made
+                - **periodical_costs** (float) - periodic_costs \
+                                                 resulting from the \
+                                                 investment decision
         """
         component_node = self.esys.groups[component['label']]
         # defines bus_node for different components
         if comp_type == 'source':
             bus_node = self.esys.groups[component['output']]
+        elif comp_type == 'solar_heat':
+            label = component['label'] + '_bus'
+            bus_node = self.esys.groups[label]
         elif comp_type == 'storage':
             bus_node = None
         elif comp_type == 'link':
@@ -192,10 +179,18 @@ class Results:
             raise SystemError('Wrong type chosen!')
         # sets component investment
         component_investment = \
-            (self.results[component_node, bus_node]['scalars']['invest'])
+            (self.results[component_node, bus_node]
+             ['scalars']['invest'])
+        if comp_type == 'solar_heat':
+            # considers area conversion factor on investment for
+            # solar heat sources
+            component_investment = \
+                component_investment / \
+                component['Conversion Factor /(sqm/kW)']
+
         # returns logging info
         logging.info('   ' + 'Investment Capacity: '
-                     + str(component_investment) + ' kW')
+                     + str(round(component_investment, 2)) + ' kW')
         if comp_type == 'storage':
             # calculates the periodical costs
             periodical_costs = (component['periodical costs /(CU/(kWh a))'] *
@@ -210,42 +205,44 @@ class Results:
                      + ' cost units p.a.')
         return component_investment, periodical_costs
 
-    def statistics(self, nodes_data, optimization_model, energy_system,
-                   result_path):
+    def statistics(self, nodes_data: dict, optimization_model: solph.Model,
+                   energy_system: solph.EnergySystem, result_path: str):
         """
-        Returns a list of all defined components with the following
-        information:
-        
-        component   |   information
-        ----------------------------------------------------------------
-        sinks       |   Total Energy Demand
-        sources     |   Total Energy Input, Max. Capacity,
-                        Variable Costs, Periodical Costs
-        transformers|   Total Energy Output, Max. Capacity,
-                        Variable Costs, Investment Capacity,
-                        Periodical Costs
-        storages    |   Energy Output, Energy Input, Max. Capacity,
-                        Total variable costs, Investment Capacity,
-                        Periodical Costs
-        links       |   Total Energy Output
-        
-        Furthermore, a list of recommended investments is printed.
-        ----
-        Keyword arguments:
-        
-            nodes_data : obj:'dict'
-               -- dictionary containing data from excel scenario file
-        
-            optimization_model
-                -- optimized energy system
-        
-            energy_system : obj:
-                -- original (unoptimized) energy system
-            
-            result_path : obj: 'str'
-                -- Path where the results are saved.
-        ----
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+            Returns a list of all defined components with the following
+            information:
+
+            +------------+----------------------------------------------+
+            |component   |   information                                |
+            +------------+----------------------------------------------+
+            |sinks       |   Total Energy Demand                        |
+            +------------+----------------------------------------------+
+            |sources     |   Total Energy Input, Max. Capacity,         |
+            |            |   Variable Costs, Periodical Costs           |
+            +------------+----------------------------------------------+
+            |transformers|   Total Energy Output, Max. Capacity,        |
+            |            |   Variable Costs, Investment Capacity,       |
+            |            |   Periodical Costs                           |
+            +------------+----------------------------------------------+
+            |storages    |   Energy Output, Energy Input, Max. Capacity,|
+            |            |   Total variable costs, Investment Capacity, |
+            |            |   Periodical Costs                           |
+            +------------+----------------------------------------------+
+            |links       |   Total Energy Output                        |
+            +------------+----------------------------------------------+
+
+            Furthermore, a list of recommended investments is printed.
+
+            :param nodes_data: dictionary containing data from excel \
+                               scenario file
+            :type nodes_data: dict
+            :param optimization_model: optimized energy system
+            :type optimization_model: oemof.solph.Model
+            :param energy_system: original (unoptimized) energy system
+            :type energy_system: oemof.solph.Energysystem
+            :param result_path: Path where the results are saved.
+            :type result_path: str
+
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
 
         # renames input variables
@@ -257,6 +254,8 @@ class Results:
         columns = ['ID', 'type', 'input 1/kWh', 'input 2/kWh', 'output 1/kWh',
                    'output 2/kWh', 'capacity/kW', 'variable costs/CU',
                    'periodical costs/CU', 'investment/kW', 'constraints/CU']
+        # sets checklist for fill in variables
+        checklist = ['X', 'x', '', '0', 'None', 'none', 'nan']
 
         df_list_of_components = pd.DataFrame(columns=columns)
         df_result_table = pd.DataFrame()
@@ -329,27 +328,84 @@ class Results:
         # sources-sheet of the input spreadsheet
         for i, comp in nd['sources'].iterrows():
             if comp['active']:
-                (flow_sum, df_source) = self.get_flow(comp['label'], 'source')
-                # adds the flowsum to the total_usage variable
-                total_usage = total_usage + flow_sum
+                if str(comp['input']) in checklist:
+                    (flow_sum, df_source) = self.get_flow(comp['label'], 'source')
+                    # adds the flowsum to the total_usage variable
+                    total_usage = total_usage + flow_sum
+                    # Adds the components time series to the
+                    # df_component_flows data frame for further usage
+                    df_result_table[comp['label']] = df_source
+                # creates and returns results if source is a solar thermal
+                # collector (flat plate or concentrated)
+                elif str(comp['input']) not in checklist:
+                    # reference to transformer and solar bus component
+                    transformer = comp['label'] + '_collector'
+                    col_bus = comp['label'] + '_bus'
+                    transformer_investment = 0
+                    variable_costs = 0
+                    periodical_costs = 0
+                    # sets in- and output variables for solar heat transformer
+                    # and logs results
+                    (flow_sum_tf, flow_max, dfcomponent) = \
+                        self.get_flow(transformer, 'link')
+                    for index, value in flow_sum_tf.items():
+                        if index == ((comp['input'], transformer), 'flow'):
+                            input = value
+                            df_input1 = dfcomponent[index]
+                        elif index == ((col_bus, transformer), 'flow'):
+                            input2 = value
+                            # flow_sum = input2
+                            df_input2 = dfcomponent[index]
+                        elif index == ((transformer, comp['output']), 'flow'):
+                            output1 = value
+                            flow_sum = output1
+                            df_output1 = dfcomponent[index]
+                    logging.info('   ' + 'Input from '
+                                 + comp['input'] + ': '
+                                 + str(round(input, 2)) + ' kWh')
+                    logging.info('   ' + 'Ambient Energy Input to '
+                                 + transformer + ': '
+                                 + str(round(input2, 2)) + ' kWh')
+                    logging.info('   ' + 'Energy Output to '
+                                 + comp['output'] + ': '
+                                 + str(round(output1, 2)) + ' kWh')
+                    total_usage = total_usage + output1
+                    # Adds the components time series for solar heat sources
+                    # to the df_component_flows data frame for further usage
+                    df_result_table[comp['label'] + '_el_input'] = df_input1
+                    df_result_table[comp['label'] + '_solar_input'] = df_input2
+                    df_result_table[comp['label'] + '_heat_output'] =\
+                        df_output1
                 # continues, if the model decided to take a investment
                 # decision for this source
                 constraint_costs = \
                     flow_sum * comp['variable constraint costs /(CU/kWh)']
 
                 if comp['max. investment capacity /(kW)'] > 0:
-                    # gets the investment for the given source
-                    (component_investment, periodical_costs) = \
-                        self.get_investment(comp, 'source')
-                    # adds the investment to the investments_to_be_made
-                    # list
-                    investments_to_be_made[comp['label']] = \
-                        (str(round(component_investment, 2)) + ' kW')
+                    # sources except solar heat
+                    if str(comp['input']) in checklist:
+                        # gets the investment for the given source
+                        (component_investment, periodical_costs) = \
+                            self.get_investment(comp, 'source')
+                        # adds the investment to the investments_to_be_made
+                        # list
+                        investments_to_be_made[comp['label']] = \
+                            (str(round(component_investment, 2)) + ' kW')
+                    # solar heat sources
+                    elif str(comp['input']) not in checklist:
+                        # gets the investment for the given source
+                        (component_investment, periodical_costs) = \
+                            self.get_investment(comp, 'solar_heat')
+                        # adds the investment to the investments_to_be_made
+                        # list
+                        investments_to_be_made[comp['label']] = \
+                            (str(round(component_investment, 2)) + ' kW')
+
                     if component_investment > 0:
                         total_periodical_costs = (total_periodical_costs
                                                   + periodical_costs)
                         investments_to_be_made[comp['label']] = \
-                            (str(component_investment)
+                            (str(round(component_investment, 2))
                              + ' kW; ' + str(round(periodical_costs, 2))
                              + ' cost units (p.a.)')
                         constraint_costs += \
@@ -365,20 +421,31 @@ class Results:
                 total_costs = total_costs + variable_costs
                 logging.info('   ' + 'Variable costs: '
                              + str(round(variable_costs, 2)) + ' cost units')
-                # Adds the components time series to the
-                # df_component_flows data frame for further usage
-                df_result_table[comp['label']] = df_source
-                # adds the source to the list of components
-                df_list_of_components = \
-                    df_list_of_components.append(
-                        pd.DataFrame([[comp['label'], 'source', '---',
-                                       '---', round(df_source.sum(), 2),
-                                       '---', round(df_source.max(), 2),
-                                       round(variable_costs, 2),
-                                       round(periodical_costs, 2),
-                                       round(component_investment, 2),
-                                       round(constraint_costs, 2)]],
-                                     columns=columns))
+                # adds the source to the list of components (except solar heat)
+                if str(comp['input']) in checklist:
+                    df_list_of_components = \
+                        df_list_of_components.append(
+                            pd.DataFrame([[comp['label'], 'source', '---',
+                                           '---', round(df_source.sum(), 2),
+                                           '---', round(df_source.max(), 2),
+                                           round(variable_costs, 2),
+                                           round(periodical_costs, 2),
+                                           round(component_investment, 2),
+                                           round(constraint_costs, 2)]],
+                                         columns=columns))
+                # adds solar heat sources to the list of components
+                if str(comp['input']) not in checklist:
+                    df_list_of_components = \
+                        df_list_of_components.append(
+                            pd.DataFrame([[transformer, 'source',
+                                           round(input, 2), round(input2, 2),
+                                           round(output1, 2), '---',
+                                           round(df_input2.max(), 2),
+                                           round(variable_costs, 2),
+                                           round(periodical_costs, 2),
+                                           round(component_investment, 2),
+                                           round(constraint_costs, 2)]],
+                                         columns=columns))
                 logging.info(log_end)
         for i, comp in nd['buses'].iterrows():
             if comp['active']:
@@ -421,7 +488,11 @@ class Results:
                     if index == ((comp['input'], comp['label']), 'flow'):
                         input = value
                         df_input1 = dfcomponent[index]
-                    elif index == ((comp['label'] + '_low_temp_bus',
+                    elif index == ((comp['label'] + '_low_temp' + '_bus',
+                                    comp['label']), 'flow'):
+                        input2 = value
+                        df_input2 = dfcomponent[index]
+                    elif index == ((comp['label'] + '_high_temp' + '_bus',
                                     comp['label']), 'flow'):
                         input2 = value
                         df_input2 = dfcomponent[index]
@@ -455,18 +526,26 @@ class Results:
                     logging.info('   ' + 'WARNING: ExtractionTurbineCHP are'
                                  ' currently not a part of this model '
                                  'generator, but will be added later.')
+                # sets logging info for compression or absorption heat
+                # transformers
 
-                elif comp['transformer type'] == 'HeatPump':
+                elif str(comp['mode']) not in checklist:
                     logging.info('   ' + 'Electricity Energy Input to '
                                  + comp['label'] + ': '
                                  + str(round(input, 2)) + ' kWh')
-                    logging.info('   ' + 'Ambient Energy Input to '
-                                 + comp['label'] + ': '
-                                 + str(round(input2, 2)) + ' kWh')
+                    if comp['transformer type'] == \
+                            'absorption_heat_transformer':
+                        logging.info('   ' + 'Heat Input to '
+                                     + comp['label'] + ': '
+                                     + str(round(input2, 2)) + ' kWh')
+                    if comp['transformer type'] == \
+                            'compression_heat_transformer':
+                        logging.info('   ' + 'Ambient Energy Input to '
+                                     + comp['label'] + ': '
+                                     + str(round(input2, 2)) + ' kWh')
                     logging.info('   ' + 'Total Energy Output to '
                                  + comp['output'] + ': '
                                  + str(round(output1, 2)) + ' kWh')
-
 
                 elif comp['transformer type'] == 'OffsetTransformer':
                     logging.info('   ' + 'WARNING: OffsetTransformer are '
@@ -539,8 +618,8 @@ class Results:
                                                round(df_input1.max(), 2),
                                                round(variable_costs, 2),
                                                round(periodical_costs, 2),
-                                               round(transformer_investment, 2)
-                                               ,round(constraint_costs, 2)]],
+                                               round(transformer_investment, 2),
+                                               round(constraint_costs, 2)]],
                                                columns=columns))
                     else:
                         # adds Generic transformer with two given
@@ -556,13 +635,30 @@ class Results:
                                                round(df_input1.max(), 2),
                                                round(variable_costs, 2),
                                                round(periodical_costs, 2),
-                                               round(transformer_investment, 2)
-                                               ,round(constraint_costs, 2)]],
+                                               round(transformer_investment, 2),
+                                               round(constraint_costs, 2)]],
                                                columns=columns))
-                elif comp['transformer type'] == 'HeatPump':
-                    df_result_table[comp['label'] + '_input2'] = df_input2
-                    # adds heatpump transformer to the list of
-                    # components
+                # adds compression or absorption heat transformer to the
+                # list of results
+
+                elif str(comp['mode']) not in checklist:
+                    df_result_table[comp['label'] + '_el_input'] = df_input1
+                    if comp['transformer type'] ==\
+                            'absorption_heat_transformer':
+                        df_result_table[comp['label'] + '_heat_input'] =\
+                            df_input2
+                    if comp['transformer type'] ==\
+                            'compression_heat_transformer':
+                        df_result_table[comp['label'] + '_ambient_input'] =\
+                            df_input2
+                    if comp['mode'] == 'chiller':
+                        df_result_table[comp['label'] + '_cooling_output'] =\
+                            df_output1
+                    if comp['mode'] == 'heat_pump':
+                        df_result_table[comp['label'] + '_heat_output'] =\
+                            df_output1
+                    # adds compression or absorption heat transformer to the
+                    # list of components
                     df_list_of_components = \
                         df_list_of_components.append(
                             pd.DataFrame([[comp['label'], 'transformer',
@@ -571,7 +667,7 @@ class Results:
                                            round(df_output1.max(), 2),
                                            round(variable_costs, 2),
                                            round(periodical_costs, 2),
-                                           round(transformer_investment, 2) ,
+                                           round(transformer_investment, 2),
                                            round(constraint_costs, 2)]],
                                            columns=columns))
 
@@ -590,8 +686,8 @@ class Results:
                                            round(df_output1.max(), 2),
                                            round(variable_costs, 2),
                                            round(periodical_costs, 2),
-                                           round(transformer_investment, 2)
-                                           ,round(constraint_costs, 2)]],
+                                           round(transformer_investment, 2),
+                                           round(constraint_costs, 2)]],
                                            columns=columns))
                 logging.info(log_end)
         # logs the next type of components
@@ -845,35 +941,23 @@ class Results:
 
         logging.info('   ' + 'Successfully prepared results...')
 
-    def __init__(self, nodes_data, optimization_model, energy_system,
-                 result_path):
+    def __init__(self, nodes_data: dict, optimization_model: solph.Model,
+                 energy_system: solph.EnergySystem, result_path: str):
         """
             Inits the Results class for preparing Plotly results and
             logging the results of Cbc-Solver.
-            
-            ----
-            Keyword arguments:
-                
-                nodes_data: obj:'dict'
-                    -- dictionary containing data from excel scenario
-                    file.
-                optimization_model: -- optimized energy system
-                energy_system: obj:
-                    -- original (unoptimized) energy system
-                result_path:
-                    -- Path where the results are saved.
         """
         self.statistics(nodes_data, optimization_model, energy_system,
                         result_path)
 
 
-def log(component):
+def log(component: str):
     """
-    Returns logging info for type of given components.
-    ----
-    Keyword arguments:
-         component: obj: 'str'
-         -- component type
+        Returns logging info for type of given components.
+
+        :param component: component type
+        :type component: str
+
     """
     # returns logging infos
     logging.info(
