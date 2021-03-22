@@ -112,7 +112,7 @@ def competition_constraint(om, nd, energy_system):
     return om
 
 def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
-                     nodes_data: dict, busd: dict) -> solph.Model:
+                     nodes_data: dict, busd: dict, solver: str) -> solph.Model:
     """
         Solves a given energy system model.
         Solves a given energy system for least costs and returns the
