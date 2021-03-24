@@ -8,6 +8,7 @@ import subprocess
 import os
 from program_files.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 from program_files.Demo_Tool import demo_tool
+from program_files.urban_district_upscaling import urban_district_upscaling_GUI
 
 
 
@@ -439,6 +440,11 @@ create_main_frame_elements(elements=analyzing_elements, sheet=main_frame,
                            first_row=row,
                            file_paths=save_paths, frame=main_frame)
 
+###################
+# Upscaling Frame #
+###################
+upscaling_frame = ttk.Frame(window)
+upscaling_frame1 = urban_district_upscaling_GUI.upscaling_frame_class(window, tab_control, upscaling_frame)
 
 ##############
 # DEMO Frame #
