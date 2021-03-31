@@ -15,7 +15,6 @@ pip install pandas==0.25.3
 pip install numpy==1.17.4
 pip install tables==3.5.2
 pip install openpyxl==3.0.0
-pip install tk 
 
 pip install https://github.com/oemof/oemof-solph/archive/master.zip
 pip install oemof.thermal==0.0.3
