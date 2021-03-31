@@ -49,18 +49,18 @@ Within this sheet, the buses of the energy system are defined. The following par
 - **active**: Specifies whether the bus shall be included to the model. 0 = inactive, 1 = active. 
 - **excess**: Specifies whether a sink is to be generated, which consumes excess energy. 0 = no excess sink will be generated; 1 = excess sink will be generated.
 - **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits or not. 0 = no shortage source will be generated; 1 = shortage source will be generated.
-- **shortage costs/(CU/kWh)**: Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "x" is used. 
-- **excess costs/(CU/kWh)**: Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "x" is used.
-- **variable shortage constraint costs /(CU/kWh)**: Only if considering constraints. Assigns a price per kWh to the purchase of energy from the shortage source referring to the constraint limit set in the "energysystem" sheet. If the shortage source was deactivated, the fill character "x" is used.
-- **variable excess constraint costs /(CU/kWh)**: Only if considering constraints. Assigns a price per kWh to the release of energy to the excess sink referring to the constraint limit set in the "energysystem" sheet. If the excess sink was deactivated, the fill character "x" is used.
+- **shortage costs/(CU/kWh)**: Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "0" is used. 
+- **excess costs/(CU/kWh)**: Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "0" is used.
+- **variable shortage constraint costs /(CU/kWh)**: Only if considering constraints. Assigns a price per kWh to the purchase of energy from the shortage source referring to the constraint limit set in the "energysystem" sheet. If the shortage source was deactivated, the fill character "0" is used.
+- **variable excess constraint costs /(CU/kWh)**: Only if considering constraints. Assigns a price per kWh to the release of energy to the excess sink referring to the constraint limit set in the "energysystem" sheet. If the excess sink was deactivated, the fill character "0" is used.
 
 .. csv-table:: Exemplary input for the buses sheet
    :header: label,comments,active,excess,shortage,shortage costs /(CU/kWh),excess costs /(CU/kWh),variable shortage constraint costs /(CU/kWh),variable excess constraint costs /(CU/kWh)
 
-   bus001_electricity_bus,,1,0,1,0.300,x,0.10,-0.10
-   bus002_electricity_bus,,1,1,0,x,-0.01,0.10,-0.10
+   bus001_electricity_bus,,1,0,1,0.300,0,0.10,-0.10
+   bus002_electricity_bus,,1,1,0,0,-0.01,0.10,-0.10
    bus001_heat_bus,,1,1,1,0.1,-0.05,0.1,-0.1
-   bus001_cooling_bus,,1,0,1,0.3,x,0.1,-0.1
+   bus001_cooling_bus,,1,0,1,0.3,0,0.1,-0.1
    
 .. figure:: ../images/BSP_Graph_Bus.png
    :width: 60 %
@@ -81,18 +81,18 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **fixed**: Indicates whether it is a fixed sink or not. 0 = not fixed; 1 = fixed.
 - **input**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **load profile**: Specifies the basis onto which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles, its acronym is used. If a time series is used, "timeseries" must be entered. If the source is not fixed, the fill character "x" has to be used.
-- **nominal value/(kW)**: Nominal performance of the sink. Required when "time series" has been entered into the "load profile". When SLP or Richardson is used, use the fill character "x" here.
-- **annual demand/(kWh/a)**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "x" is used. 
-- **occupants [RICHARDSON]**: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "x" for other load profiles.
+- **nominal value/(kW)**: Nominal performance of the sink. Required when "time series" has been entered into the "load profile". When SLP or Richardson is used, use the fill character "0" here.
+- **annual demand/(kWh/a)**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "0" is used. 
+- **occupants [RICHARDSON]**: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "0" for other load profiles.
 - **building class [HEAT SLP ONLY]**: BDEW-building class.
 - **wind class [HEAT SLP ONLY]**: wind classification for building location (0=not windy, 1=windy)
  
 .. csv-table:: Exemplary input for the sinks sheet
    :header: label,comment,active,fixed,input,load profile,nominal value /(kW),annual demand /(kWh/a),occupants [RICHARDSON],building class [HEAT SLP ONLY],wind class [HEAT SLP ONLY]
 
-   building001_electricity_sink,H0 standard load profile sink,1,1,electricity_bus,h0,x,1000.0,x,x,x
-   building001_fixed_timeseries_cooling_demand,,1,1,bus001_cooling_bus,timeseries,1,x,x,x,x
-   building001_heat_demand,EFH standard load profile sink,1,1,bus001_heat_bus,efh,x,1000,x,1,0
+   building001_electricity_sink,H0 standard load profile sink,1,1,electricity_bus,h0,0,1000.0,0,0,0
+   building001_fixed_timeseries_cooling_demand,,1,1,bus001_cooling_bus,timeseries,1,0,0,0,0
+   building001_heat_demand,EFH standard load profile sink,1,1,bus001_heat_bus,efh,0,1000,0,1,0
    
   
 
@@ -118,7 +118,7 @@ Within this sheet, the PV sources of the energy system are defined.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "concentrated_solar_power", "solar_thermal_flat_plate". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
+- **technology**: Technology type of source. For PV sources it has to be "photovoltaic" and leads to an automatically generated Time Series. 
 - **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
 - **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
 - **existing capacity/(kW)**: Existing capacity of the source before possible investments.
@@ -132,12 +132,12 @@ Within this sheet, the PV sources of the energy system are defined.
 - **inverter database**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter".
 - **Modul Model**: Module name, according to the database used.
 - **Inverter Model**: Inverter name, according to the database used.
-- **Azimuth**: Specifies the orientation of the PV or solar thermal module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
-- **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
-- **Albedo**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "x" for other technologies.
-- **Altitude**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
-- **Latitude**: Geographic latitude (decimal number) of the photovoltaic or solar thermal module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
-- **Longitude**: Geographic longitude (decimal number) of the photovoltaic or solar thermal module module. Only required for photovoltaic and solar thermal sources, use fill character "x" for other technologies.
+- **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). 
+- **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). 
+- **Albedo**: Specifies the albedo value of the reflecting floor surface. 
+- **Altitude**: Height (above mean sea level) in meters of the photovoltaic module. 
+- **Latitude**: Geographic latitude (decimal number) of the photovoltaic module. 
+- **Longitude**: Geographic longitude (decimal number) of the photovoltaic module. 
 
 .. csv-table:: Exemplary input for the PV sheet
    :header: label,Comment,active,fixed,technology,output,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),technology database,inverter database,Modul Model,Inverter Model,Azimuth,Surface Tilt,Albedo,Altitude,Latitude,Longitude
@@ -153,7 +153,7 @@ Within this sheet, the Timeseries sources of the energy system are defined.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "concentrated_solar_power", "solar_thermal_flat_plate". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
+- **technology**: Technology type of source. For Timeseries sources it has to be "timeseries", due to this decision a time series must be provided in the "time_series" sheet.
 - **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
 - **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
 - **existing capacity/(kW)**: Existing capacity of the source before possible investments.
@@ -179,7 +179,7 @@ Within this sheet, the Windpower sources of the energy system are defined.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "concentrated_solar_power", "solar_thermal_flat_plate". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
+- **technology**: Technology type of source. For Windpower sources it has to be "windpower" and leads to an automatically generated Time Series.
 - **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
 - **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
 - **existing capacity/(kW)**: Existing capacity of the source before possible investments.
@@ -206,7 +206,7 @@ Within this sheet, the Commodity sources of the energy system are defined.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "concentrated_solar_power", "solar_thermal_flat_plate". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
+- **technology**: Technology type of source. For Commodity sources it has to be "other".
 - **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
 - **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
 - **existing capacity/(kW)**: Existing capacity of the source before possible investments.
