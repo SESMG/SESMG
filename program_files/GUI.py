@@ -6,7 +6,6 @@ from tkinter import filedialog
 import subprocess
 import os
 from Spreadsheet_Energy_System_Model_Generator import sesmg_main
-from Demo_Tool import demo_tool
 
 
 
