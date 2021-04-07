@@ -1,9 +1,12 @@
 import os
 from tkinter import *
 from tkinter import filedialog
-from program_files.urban_district_upscaling import urban_district_upscaling
-
+from program_files.urban_district_upscaling.urban_district_upscaling \
+    import urban_district_upscaling_tool
+from program_files.urban_district_upscaling.urban_district_upscaling_post_processing \
+    import urban_district_upscaling_post_processing
 class upscaling_frame_class:
+
     def getFolderPath(self):
         """ opens a file dialog and sets the selected path for the variable "scenario_path" """
 
@@ -19,14 +22,53 @@ class upscaling_frame_class:
     def testcommand(self):
         print('No action executed. Will be added later.')
 
+    def getPreScenario(self):
+        """ opens a file dialog and sets the selected path for the variable "prescenario" """
 
+        path = filedialog.askopenfilename(
+            filetypes=(("Spreadsheet Files", "*.xlsx"), ("all files", "*.*")))
+        self.pre_scenario_path.set(path)
+
+        self.paths['pre_scenario'] = (self.pre_scenario_path.get())
+
+    def getStandardParameters(self):
+        """ opens a file dialog and sets the selected path for the variable "prescenario" """
+
+        path = filedialog.askopenfilename(
+            filetypes=(("Spreadsheet Files", "*.xlsx"), ("all files", "*.*")))
+        self.standard_parameters_path.set(path)
+
+        self.paths['standard_parameters'] = (self.standard_parameters_path.get())
+
+    def getComponentsCSV(self):
+        """ opens a file dialog and sets the selected path for the variable "prescenario" """
+
+        path = filedialog.askopenfilename(
+            filetypes=(("Spreadsheet Files", "*.csv"), ("all files", "*.*")))
+        self.components_path.set(path)
+
+        self.paths['componentsCSV'] = (self.components_path.get())
+
+    def getScenarioName(self):
+        """ opens a file dialog and sets the selected path for the variable "prescenario" """
+
+        path = filedialog.askopenfilename(
+            filetypes=(
+            ("Spreadsheet Files", "*.xlsx"), ("all files", "*.*")))
+        self.scenario_name.set(path)
+
+        self.paths['scenario_name'] = (self.scenario_name.get())
 
     def scenario_upscaling(self,pre_scenario,standard_param,scenario_name):
         # urban_district_upscaling
-        urban_district_upscaling.urban_district_upscaling_tool(pre_scenario=pre_scenario,
-                                                               standard_parameters=standard_param,
-                                                               output_scenario=scenario_name,
-                                                               plain_sheet=os.path.join(os.path.dirname(__file__), r'plain_scenario.xlsx'))
+        urban_district_upscaling_tool(
+            pre_scenario=pre_scenario,
+            standard_parameter_path=standard_param,
+            output_scenario=scenario_name,
+            plain_sheet=os.path.join(os.path.dirname(__file__), r'plain_scenario.xlsx'))
+
+    def create_overview(self, components, pre_scenario):
+        urban_district_upscaling_post_processing(components, pre_scenario)
 
 
     def __init__(self, window, tab_control, upscaling_frame):
@@ -42,8 +84,18 @@ class upscaling_frame_class:
 
             standard_param_text.set(path)
 
-
-
+        self.pre_scenario_path = \
+            StringVar(window,
+                      os.path.join(os.path.dirname(__file__),
+                                   r'pre_scenario.xlsx'))
+        self.standard_parameters_path = \
+            StringVar(window,
+                      os.path.join(os.path.dirname(__file__),
+                                   r'standard_parameters.xlsx'))
+        self.scenario_name = StringVar(window,
+                      os.path.join(os.path.dirname(__file__),
+                                   r'auto_generated_scenario.xlsx'))
+        self.components_path = StringVar(window, '')
         # Definition of the Frame
         self.mainpath = \
             os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -52,10 +104,11 @@ class upscaling_frame_class:
 
 
         # Paths
-        paths = {'pre_scenario':os.path.join(os.path.dirname(__file__), r'pre_scenario.xlsx'),
-                 'standard_param':os.path.join(os.path.dirname(__file__), r'standard_parameters.xlsx'),
-                 'scenario_name':os.path.join(os.path.dirname(__file__), r'upscaled_scenario.xlsx')}
-
+        self.paths = {'pre_scenario': self.pre_scenario_path.get(),
+                 'standard_parameters': self.standard_parameters_path.get(),
+                 'scenario_name': self.scenario_name.get(),
+                 'componentsCSV': self.components_path.get()}
+        self.label = {}
         # Headline
         row = 0
         Label(upscaling_frame,
@@ -81,16 +134,16 @@ class upscaling_frame_class:
               font='Helvetica 10').grid(column=0,
                                         row=row,
                                         sticky="W")
+
         Button(upscaling_frame,
-               text="Placeholder",
-               command=self.testcommand).grid(column=1,
-                                        row=row,
-                                        sticky="W")
+               text="Change",
+               command=self.getPreScenario)\
+            .grid(column=1, row=row, sticky="W")
         Label(upscaling_frame,
-              text=paths['pre_scenario'],
-              font='Helvetica 10').grid(column=2,
-                                        row=row,
-                                        sticky="W")
+          text=self.pre_scenario_path.get(),
+          font='Helvetica 10').grid(column=2,
+                                    row=row,
+                                    sticky="W")
 
         # Selection of Standard-Parameter-File
         row = row + 1
@@ -100,12 +153,12 @@ class upscaling_frame_class:
                                         row=row,
                                         sticky="W")
         Button(upscaling_frame,
-               text="Placeholder",
-               command=self.testcommand).grid(column=1,
+               text="Change",
+               command=self.getStandardParameters).grid(column=1,
                                               row=row,
                                               sticky="W")
         Label(upscaling_frame,
-              text=paths['standard_param'],
+              text=self.standard_parameters_path.get(),
               font='Helvetica 10').grid(column=2,
                                         row=row,
                                         sticky="W")
@@ -113,20 +166,21 @@ class upscaling_frame_class:
         # Name zu erstellendes Scenario
         row = row + 1
         Label(upscaling_frame,
-              text='Output File',
+              text='Scenario Name',
               font='Helvetica 10').grid(column=0,
                                         row=row,
                                         sticky="W")
         Button(upscaling_frame,
-               text="Placeholder",
-               command=self.testcommand).grid(column=1,
+               text="Change",
+               command=self.getScenarioName).grid(column=1,
                                               row=row,
                                               sticky="W")
         Label(upscaling_frame,
-              text=paths['scenario_name'],
+              text=self.scenario_name.get(),
               font='Helvetica 10').grid(column=2,
                                         row=row,
                                         sticky="W")
+
 
         # Create Scenario
         row = row + 1
@@ -137,8 +191,39 @@ class upscaling_frame_class:
                                         sticky="W")
         Button(upscaling_frame,
                text="Execute",
-               command=lambda: self.scenario_upscaling(pre_scenario=paths['pre_scenario'],
-                                                       standard_param=paths['standard_param'],
-                                                       scenario_name=paths['scenario_name'])
+               command=lambda: self.scenario_upscaling(pre_scenario=self.paths['pre_scenario'],
+                                                       standard_param=self.paths['standard_parameters'],
+                                                       scenario_name=self.paths['scenario_name'])
                                                        ).grid(column=1,
                                                               row=row)
+        # Name zu erstellendes Scenario
+        row = row + 1
+        Label(upscaling_frame,
+              text='Components CSV for post processing',
+              font='Helvetica 10').grid(column=0,
+                                        row=row,
+                                        sticky="W")
+        Button(upscaling_frame,
+               text="Change",
+               command=self.getComponentsCSV).grid(column=1,
+                                              row=row,
+                                              sticky="W")
+        Label(upscaling_frame,
+              text=self.components_path.get(),
+              font='Helvetica 10').grid(column=2,
+                                        row=row,
+                                        sticky="W")
+
+        # Create Post Scenario
+        row = row + 1
+        Label(upscaling_frame,
+              text='Create Overview',
+              font='Helvetica 10').grid(column=0,
+                                        row=row,
+                                        sticky="W")
+        Button(upscaling_frame,
+               text="Execute",
+               command=lambda: self.create_overview(
+                   components=self.paths['componentsCSV'], pre_scenario=self.paths['pre_scenario'])
+               ).grid(column=1,
+                      row=row)
