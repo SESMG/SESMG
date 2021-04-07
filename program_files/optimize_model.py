@@ -112,7 +112,7 @@ def competition_constraint(om, nd, energy_system):
     return om
 
 def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
-                     nodes_data: dict, busd: dict) -> solph.Model:
+                     nodes_data: dict, busd: dict, solver: str) -> solph.Model:
     """
         Solves a given energy system model.
         Solves a given energy system for least costs and returns the
@@ -183,9 +183,10 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
     logging.info(
         '   ' + "******************************************************"
         + "***")
-    logging.info('   ' + "Starting Optimization with CBC-Solver")
+    logging.info('   '+"Starting Optimization with "+solver+"-Solver")
 
 
     # solving the linear problem using the given solver
-    om.solve(solver='cbc', cmdline_options={"threads": num_threads})
+    om.solve(solver=solver, cmdline_options={"threads": num_threads})
+
     return om
