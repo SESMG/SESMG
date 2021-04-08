@@ -34,4 +34,4 @@ pip install Pyomo==5.7.1
 @echo Starting SESMG
 @echo ######################
 cd ..
-%~dp0Scripts\python.exe program_files/GUI.py
+Scripts\python.exe program_files/GUI.py
