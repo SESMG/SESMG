@@ -53,7 +53,8 @@ def import_scenario(filepath: str) -> dict:
               'sources': xls.parse('sources'),
               'timeseries': xls.parse('time_series'),
               'transformers': xls.parse('transformers'),
-              'storages': xls.parse('storages')
+              'storages': xls.parse('storages'),
+              'weather data': xls.parse('weather data')
               # 'constraints': xls.parse('constraints')
               }
     else:
@@ -85,6 +86,7 @@ def import_scenario(filepath: str) -> dict:
               'timeseries': xls.parse('time_series'),
               'transformers': transformer,
               'storages': storages,
+              'weather data': xls.parse('weather data'),
               'competition_constraint': xls.parse('competition_constraint')
              }
 
