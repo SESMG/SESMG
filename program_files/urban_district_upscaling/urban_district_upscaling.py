@@ -321,7 +321,7 @@ def create_sinks(id: str, building_type: str, units: int,
     # electricity demand
     if building_type != 'None':
         # residential parameters
-        if "res" in building_type:
+        if "RES" in building_type:
             electricity_demand_residential = {}
             electricity_demand_standard_param = \
                 standard_parameters.parse('ResElecDemand')
@@ -359,7 +359,7 @@ def create_sinks(id: str, building_type: str, units: int,
 
     # residential building
     if building_type != "None":
-        if "res" in building_type:
+        if "RES" in building_type:
             # read standard values from standard_parameter-dataset
             heat_demand_standard_param = \
                 standard_parameters.parse('ResHeatDemand')
@@ -381,7 +381,7 @@ def create_sinks(id: str, building_type: str, units: int,
             heat_demand_standard_parameters = \
                 standard_parameters.parse('ComHeatDemand')
             heat_demand_standard_parameters.set_index(
-                "Year of Construction", inplace=True)
+                "year of construction", inplace=True)
             demand_heat = heat_demand_standard_parameters\
             .loc[yoc][building_type]
             net_floor_area = area * 0.9  # todo: give this value with standard parameter dataset
@@ -413,8 +413,8 @@ def create_pv_source(building_id, plant_id, azimuth, tilt, area,
          'existing capacity /(kW)': 0,
          'min. investment capacity /(kW)': 0,
          'output': str(building_id) + '_pv_bus',
-         'azimuth': azimuth,
-         'surface tilt': tilt,
+         'Azimuth': azimuth,
+         'Surface Tilt': tilt,
          'Latitude': latitude,
          'Longitude': longitude}
 

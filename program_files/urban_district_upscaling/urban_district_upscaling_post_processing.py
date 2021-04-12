@@ -20,7 +20,7 @@ def create_decentral_overview(pre_scenario, data):
 
     # creating a list to reduce the number of rows
     decentral_components_list = ['_1_pv', '_2_pv', '_3_pv', '_4_pv', '_5_pv', '_gasheating_transformer',
-                                 'ashp_transformer', 'gchp_transformer', 'battery_storage']
+                                 '_ashp_transformer', '_gchp_transformer', '_battery_storage']
 
     # import investment values from components.csv
     for i, j in pre_scenario.iterrows():
@@ -46,6 +46,7 @@ def create_decentral_overview(pre_scenario, data):
                                      "PV-System 5 in kW": comps[4], "Max. PV 5 in kW": maximums[4],
                                      "Gasheating-System in kW": comps[5], "ASHP in kW": comps[6],
                                      "GCHP in kW": comps[7], "Battery-Storage in kWh": comps[8]}
+
         decentral_components = decentral_components.append(pd.Series(decentral_components_dict), ignore_index=True)
 
     return decentral_components
