@@ -232,8 +232,8 @@ def show_results():
     if save_path.get() == '':
         raise SystemError('No optimization since the last restart'
                           ' please select a result folder!')
-
-    # Determines the ID of a still running process on port 8050.
+	
+	# Determines the ID of a still running process on port 8050.
     pid = get_pid()
     # Checks if the ID is not an empty return (no process available)
     if pid != '':
@@ -245,6 +245,7 @@ def show_results():
             command = 'kill ' + pid
         # Kills the still running process on port 8050
         subprocess.call(command, shell=True)
+
     else:
         if sys.platform.startswith("win"):
             subprocess.call("start http://127.0.0.1:8050", shell=True)
@@ -252,11 +253,11 @@ def show_results():
             subprocess.call("open http://127.0.0.1:8050", shell=True)
         elif sys.platform.startswith("linux"):
             subprocess.call("xdg-open http://127.0.0.1:8050", shell=True)
-
+	
+	
     # Starts the new Plotly Dash Server for Windows
     if sys.platform.startswith("win"):
-        IR_PATH = os.path.join(os.path.dirname(__file__) + '/program_files')
-        subprocess.call(IR_PATH + "/Interactive_Results.py "
+        subprocess.call("Scripts\python.exe" + " program_files/Interactive_Results.py "
                         + 'r"'+save_path.get()+'"', timeout=10, shell=True)
     # Starts the new Plotly Dash Server for MACOS
     elif sys.platform.startswith("darwin"):
@@ -269,6 +270,8 @@ def show_results():
         IR_PATH = IR_PATH + '/program_files'
         subprocess.call("python3 " + IR_PATH + "/Interactive_Results.py "
                         + str(save_path.get()), timeout=10, shell=True)
+
+    
 
 
 # Definition of the user interface
