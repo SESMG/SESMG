@@ -281,7 +281,7 @@ window.geometry('1200x1050')
 tab_control = ttk.Notebook(window)
 tab_control.pack(expand=1, fill='both')
 tab_control.pressed_index = None
-scenario_path = StringVar(window, str(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'scenario_v0.2.0.xlsx')))
+scenario_path = StringVar(window, str(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'scenario_v0.1.1.xlsx')))
 save_path_directory = \
         StringVar(window, str(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'results')))
 save_path = StringVar(window, '')
