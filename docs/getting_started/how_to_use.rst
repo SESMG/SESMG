@@ -105,6 +105,43 @@ Within this sheet, the sinks of the energy system are defined. The following par
 
 Sources
 =================================================
+Within this sheet, the sources of the energy system are defined. Properties with the addition "PV ONLY" have only to be 
+defined if the parameter "technology" is set on "photovoltaic". The following parameters have to be entered:
+
+- **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
+- **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
+- **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
+- **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
+- **output**: Specifies which bus the source is connected to.
+- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
+Costs
+-------------------------
+- **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
+- **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
+- **existing capacity/(kW)**: Existing capacity of the source before possible investments.
+- **min. investment capacity/(kW)**: Minimum capacity to be installed in case of an investment.
+- **max. investment capacity/(kW)**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
+- **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon.
+- **periodical constraint costs/(CU/(kW a))**: Only if considering constraints. Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet.
+- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
+- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs).
+Wind
+-------------------------
+- **Turbine Model**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_. 
+- **Hub Height**: Hub height of the wind turbine. Which hub heights are possible for the selected reference turbine can be viewed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
+PV
+-------------------------
+- **technology database**: Database, from where module parameters are to be obtained. Recommended Database: "SandiaMod".
+- **inverter database**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter".
+- **Modul Model**: Module name, according to the database used.
+- **Inverter Model**: Inverter name, according to the database used.
+- **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Albedo**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Altitude**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Latitude**: Geographic latitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Longitude**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
+
 
 Within these sheets, the sources of the energy system are defined. 
 
