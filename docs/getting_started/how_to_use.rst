@@ -141,122 +141,18 @@ PV
 - **Altitude**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Latitude**: Geographic latitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
 - **Longitude**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
-
-
-Within these sheets, the sources of the energy system are defined. 
-
-PV
--------------------------
-Within this sheet, the PV sources of the energy system are defined.
-
-- **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
-- **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
-- **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
-- **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
-- **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. For PV sources it has to be "photovoltaic" and leads to an automatically generated Time Series. 
-- **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
-- **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
-- **existing capacity/(kW)**: Existing capacity of the source before possible investments.
-- **min. investment capacity/(kW)**: Minimum capacity to be installed in case of an investment.
-- **max. investment capacity/(kW)**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
-- **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon.
-- **periodical constraint costs/(CU/(kW a))**: Only if considering constraints. Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet.
-- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
-- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs).
-- **technology database**: Database, from where module parameters are to be obtained. Recommended Database: "SandiaMod".
-- **inverter database**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter".
-- **Modul Model**: Module name, according to the database used.
-- **Inverter Model**: Inverter name, according to the database used.
-- **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). 
-- **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). 
-- **Albedo**: Specifies the albedo value of the reflecting floor surface. 
-- **Altitude**: Height (above mean sea level) in meters of the photovoltaic module. 
-- **Latitude**: Geographic latitude (decimal number) of the photovoltaic module. 
-- **Longitude**: Geographic longitude (decimal number) of the photovoltaic module. 
-
-.. csv-table:: Exemplary input for the PV sheet
-   :header: label,Comment,active,fixed,technology,output,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),technology database,inverter database,Modul Model,Inverter Model,Azimuth,Surface Tilt,Albedo,Altitude,Latitude,Longitude
-
-   pv001_electricity_source,fixed photovoltaic source,1,1,photovoltaic,bus001_electricity_bus,0,0.1,10,0,10,90,0.1,0,0,SandiaMod,sandiainverter,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,180.00,35,0.18,60.000,52.13,7.36
-
 Timeseries
----------------------------
-Within this sheet, the Timeseries sources of the energy system are defined.
-
-- **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
-- **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
-- **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
-- **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
-- **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. For Timeseries sources it has to be "timeseries", due to this decision a time series must be provided in the "time_series" sheet.
-- **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
-- **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
-- **existing capacity/(kW)**: Existing capacity of the source before possible investments.
-- **min. investment capacity/(kW)**: Minimum capacity to be installed in case of an investment.
-- **max. investment capacity/(kW)**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
-- **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon.
-- **periodical constraint costs/(CU/(kW a))**: Only if considering constraints. Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet.
-- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
-- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs).
-
-.. csv-table:: Exemplary input for the Timeseries sheet (not included in the example graphic below for clarity)
-   :header: label,Comment,active,fixed,technology,output,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a)
-   
-   fixed_timeseries_electricty_source,fixed_timeseries_source,1,1,timeseries,bus001_electricity_bus,0.01,0.1,0,10,10000,100.00,0.1,0.00,0.00
-   unfixed_timeseries_electricty_source,unfixed_timeseries_source,1,0,timeseries,electricity_bus,0.01,0.1,0,10,1000,100.00,0.1,0.00,0.00
-   
-Wind
----------------------------
-Within this sheet, the Windpower sources of the energy system are defined.
-
-- **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
-- **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
-- **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
-- **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
-- **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. For Windpower sources it has to be "windpower" and leads to an automatically generated Time Series.
-- **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
-- **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
-- **existing capacity/(kW)**: Existing capacity of the source before possible investments.
-- **min. investment capacity/(kW)**: Minimum capacity to be installed in case of an investment.
-- **max. investment capacity/(kW)**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
-- **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon.
-- **periodical constraint costs/(CU/(kW a))**: Only if considering constraints. Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet.
-- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
-- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs).
-- **Turbine Model (Windpower ONLY)**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_. 
-- **Hub Height (Windpower ONLY)**: Hub height of the wind turbine. Which hub heights are possible for the selected reference turbine can be viewed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
-
-.. csv-table:: Exemplary input for the Wind sheet
-   :header: label,Comment,active,fixed,technology,output,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a), Turbine Model, Turbine Model
-   
-   windpower_electricity_source,fixed windpower source,1,windpower,1,electricity_bus,0,0.1,0,10,1000,100,0.1,0,0,E-126/4200,135
-
+-------------------------
+If you have choosen the technology "timeseries", you have to include a timeseries or use default one.
 Commodity
----------------------------
-Within this sheet, the Commodity sources of the energy system are defined.
+-------------------------
+If you have choosen the technology "other", the solver has the opportunity to continuously adjust the power.
 
-- **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
-- **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
-- **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
-- **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
-- **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. For Commodity sources it has to be "other".
-- **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
-- **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
-- **existing capacity/(kW)**: Existing capacity of the source before possible investments.
-- **min. investment capacity/(kW)**: Minimum capacity to be installed in case of an investment.
-- **max. investment capacity/(kW)**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
-- **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon.
-- **periodical constraint costs/(CU/(kW a))**: Only if considering constraints. Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet.
-- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
-- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs).
 
-.. csv-table:: Exemplary input for the Commodity sheet (not included in the example graphic below for clarity)
-   :header: label,Comment,active,fixed,output,technology,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a)
-   
-   commodity_source,commodity source,1,1,electricity_bus,other,0.01,0.1,0,10,1000,100.00,0.1,0.00,0.00
+.. csv-table:: Exemplary input for the sources sheet
+   :header: label,Comment,active,fixed,output,technology,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),Turbine Model (Windpower ONLY),Hub Height (Windpower ONLY),technology database (PV ONLY),inverter database (PV ONLY),Modul Model (PV ONLY),Inverter Model (PV ONLY),Azimuth (PV ONLY),Surface Tilt (PV ONLY),Albedo (PV ONLY),Altitude (PV ONLY),Latitude (PV ONLY),Longitude (PV ONLY)
+
+   pv001_electricity_source,fixed photovoltaic source,1,1,bus001_electricity_bus,photovoltaic,0,0.1,10,0,10,90,0.1,0,0,x,x,SandiaMod,sandiainverter,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,180.00,35,0.18,60.000,52.13,7.36
   
 	
 .. figure:: ../images/BSP_Graph_source.png
