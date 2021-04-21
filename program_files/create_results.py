@@ -557,8 +557,8 @@ class Results:
                 if comp['output2'] != 'None':
                     variable_costs = (comp['variable output costs 2 /(CU/kWh)']
                                       * df_output2.sum())
-                    constraint_costs += \
-                        output2 * comp['variable output constraint costs 2 /(CU/kWh)']
+                    constraint_costs = \
+                        (output2 * comp['variable output constraint costs 2/(CU/kWh)'])
                     total_costs = total_costs + variable_costs
                 variable_costs += (comp['variable input costs /(CU/kWh)']
                                    * df_input1.sum())
@@ -600,6 +600,7 @@ class Results:
                         * comp['periodical constraint costs /(CU/(kW a))']
                 else:
                     periodical_costs = 0
+                    
                 total_constraint_costs += constraint_costs
                 logging.info('   ' + 'Periodical costs (p.a.): '
                              + str(round(periodical_costs, 2))
@@ -901,7 +902,7 @@ class Results:
         temp_resolution = ts['temporal resolution']
         start_date = ts['start date']
         end_date = ts['end date']
-
+        
         df_summary = pd.DataFrame([[start_date,
                                     end_date,
                                     temp_resolution,
