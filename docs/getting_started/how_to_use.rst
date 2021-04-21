@@ -218,6 +218,7 @@ Within this sheet, the Commodity sources of the energy system are defined.
 - **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs).
 
 .. csv-table:: Exemplary input for the Commodity sheet (not included in the example graphic below for clarity)
+   :align: left
    :header: label,Comment,active,fixed,output,technology,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a)
    
    commodity_source,commodity source,1,1,electricity_bus,other,0.01,0.1,0,10,1000,100.00,0.1,0.00,0.00
@@ -232,6 +233,19 @@ Within this sheet, the Commodity sources of the energy system are defined.
    
 Transformers
 =================================================
+
+Generic Transformer
+---------------------------
+
+Generic CHP
+---------------------------
+
+Heat Pump & Chiller
+---------------------------
+
+Absorption Chiller
+---------------------------
+
 
 Within this sheet, the transformers of the energy system are defined. 
 
