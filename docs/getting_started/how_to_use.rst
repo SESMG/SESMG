@@ -144,6 +144,7 @@ PV
 Timeseries
 -------------------------
 If you have choosen the technology "timeseries", you have to include a timeseries or use default one.
+
 Commodity
 -------------------------
 If you have choosen the technology "other", the solver has the opportunity to continuously adjust the power.
