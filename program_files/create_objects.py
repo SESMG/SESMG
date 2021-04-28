@@ -1918,7 +1918,6 @@ class Links:
                 if link['(un)directed'] == 'directed':
                     ep_costs = link['periodical costs /(CU/(kW a))']
                     nonconvex_costs = link['Fix Investment Costs /(CU/a)']
-                    print(nonconvex_costs)
                 elif link['(un)directed'] == 'undirected':
                     ep_costs = link['periodical costs /(CU/(kW a))'] / 2
                     nonconvex_costs = link['Fix Investment Costs /(CU/a)'] / 2
