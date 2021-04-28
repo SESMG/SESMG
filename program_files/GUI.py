@@ -262,12 +262,10 @@ def show_results():
     # Starts the new Plotly Dash Server for MACOS
     elif sys.platform.startswith("darwin"):
         IR_PATH = os.path.dirname(os.path.abspath(__file__))
-        IR_PATH = IR_PATH + '/program_files'
         subprocess.call("python3 " + IR_PATH + "/Interactive_Results.py "
                         + str(save_path.get()), timeout=10, shell=True)
     elif sys.platform.startswith("linux"):
         IR_PATH = os.path.dirname(os.path.abspath(__file__))
-        IR_PATH = IR_PATH + '/program_files'
         subprocess.call("python3 " + IR_PATH + "/Interactive_Results.py "
                         + str(save_path.get()), timeout=10, shell=True)
 
@@ -760,10 +758,16 @@ row = row + 1
 if sys.platform.startswith("win"):
     img = PhotoImage(
         file='examples/v0.0.6_demo_scenario/DEMO_System.png')
+elif sys.platform.startswith("linux"):
+
+
+	img = PhotoImage(file=
+        	os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        	+'/examples/v0.0.6_demo_scenario/DEMO_System.png')
 else:
-    img = PhotoImage(
-        file=os.path.dirname(__file__)
-             + "/examples/Demo_Tool/v0.0.6_demo_scenario/Demo_System.png")
+	img = PhotoImage(file=
+        	os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        	+'/examples/v0.0.6_demo_scenario/DEMO_System.png')
 img = img.subsample(2,2)
 panel = Label(demo_frame, image = img)
 panel.grid(column=0,columnspan=4, row=row, rowspan=30)

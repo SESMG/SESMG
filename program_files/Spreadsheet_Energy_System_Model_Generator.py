@@ -72,11 +72,19 @@ import logging
 from oemof.tools import logger
 import os
 from threading import *
-from program_files import (create_objects,
-                           create_results,
-                           create_energy_system,
-                           optimize_model,
-                           create_graph)
+import sys
+if sys.platform.startswith("win"):
+	from program_files import (create_objects,
+		                   create_results,
+		                   create_energy_system,
+		                   optimize_model,
+		                   create_graph)
+else:
+	import create_objects
+	import create_results
+	import create_energy_system
+	import optimize_model
+	import create_graph
 
 
 def sesmg_main(scenario_file, result_path, num_threads, graph, results,
