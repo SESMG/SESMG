@@ -1483,7 +1483,7 @@ class Transformers:
                     variable_costs=tf[
                         'variable output costs 2 /(CU/kWh)'],
                     emission_factor=tf[
-                        'variable output constraint costs 2/(CU/kWh)']
+                        'variable output constraint costs 2 /(CU/kWh)']
                 )},
                 Beta=[tf['power loss index']
                       for p in range(0, periods)],
@@ -1945,7 +1945,7 @@ class Links:
                                     nonconvex=True if
                                     link['Non-Convex Investment'] == 1
                                     else False,
-                                    offset=10)),
+                                    offset=nonconvex_costs)),
                              self.busd[link['bus_1']]: solph.Flow(
                                  variable_costs=
                                  link['variable output costs /(CU/kWh)'],
@@ -1962,13 +1962,12 @@ class Links:
                                      existing=link[
                                          'existing capacity /(kW)'],
                                      nonconvex=True if(
-                                     link['Non-Convex Investment'] == 1)
-                                     #and link['(un)directed'] == 'undirected')
+                                     link['Non-Convex Investment'] == 1
+                                     and link['(un)directed'] == 'undirected')
                                      else False,
-                                     offset=0
-                                     #if link['(un)directed'] == 'undirected'
-                                     #else 0)
-                        )), },
+                                     offset=nonconvex_costs
+                                     if link['(un)directed'] == 'undirected'
+                                     else 0)), },
                     conversion_factors={
                         (self.busd[link['bus_1']],
                          self.busd[link['bus_2']]): link['efficiency'],
