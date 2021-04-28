@@ -3,7 +3,7 @@ Application of the Model Generator
 
 1. Fill in the spreadsheet document according to the instructions in the "Using th Scenario File" chapter.
 
-2. Execute the Run_SESMG_for_**your operating System** in the main folder.
+2. Execute the Run_SESMG_for_**your operating System** file in the main folder.
 
 
 .. note:: 
