@@ -414,6 +414,7 @@ class Results:
                         constraint_costs += \
                             component_investment \
                             * comp['periodical constraint costs /(CU/(kW a))']
+                        
                 else:
                     periodical_costs = 0
                     component_investment = 0
@@ -560,8 +561,8 @@ class Results:
                 if comp['output2'] != 'None':
                     variable_costs = (comp['variable output costs 2 /(CU/kWh)']
                                       * df_output2.sum())
-                    constraint_costs += \
-                        output2 * comp['variable output constraint costs 2 /(CU/kWh)']
+                    constraint_costs = \
+                        (output2 * comp['variable output constraint costs 2/(CU/kWh)'])
                     total_costs = total_costs + variable_costs
                 variable_costs += (comp['variable input costs /(CU/kWh)']
                                    * df_input1.sum())
@@ -593,7 +594,7 @@ class Results:
                         comp['Fix Investment Costs /(CU/a)']
                         if comp['Non-Convex Investment'] == 1 else 0)
                     # max investment capacity * periodical costs
-                    periodical_costs = (comp['periodical costs /(CU/(kW a))']
+                    periodical_costs += (comp['periodical costs /(CU/(kW a))']
                                         * transformer_investment)
                     total_periodical_costs = (total_periodical_costs
                                               + periodical_costs)
@@ -606,6 +607,7 @@ class Results:
                         * comp['periodical constraint costs /(CU/(kW a))']
                 else:
                     periodical_costs = 0
+                    
                 total_constraint_costs += constraint_costs
                 logging.info('   ' + 'Periodical costs (p.a.): '
                              + str(round(periodical_costs, 2))
@@ -683,18 +685,6 @@ class Results:
                     df_result_table[comp['label'] + '_input'] = df_input1
                     df_result_table[comp['label'] + '_output1'] = df_output1
                     df_result_table[comp['label'] + '_output2'] = df_output2
-                    # calculate the constraint costs
-                    constraint_costs = \
-                        (df_input1.sum()
-                         * comp["variable input constraint costs /(CU/kWh)"]
-                         + df_output1.sum()
-                         * comp['variable output constraint costs /(CU/kWh)']
-                         + df_output2.sum()
-                         * comp["variable output constraint costs 2/(CU/kWh)"]
-                         + transformer_investment
-                         * comp["periodical constraint costs /(CU/(kW a))"])
-                    print(constraint_costs)
-                    total_constraint_costs += constraint_costs
                     df_list_of_components = \
                         df_list_of_components.append(
                             pd.DataFrame([[comp['label'], 'transformer',
@@ -925,7 +915,7 @@ class Results:
         temp_resolution = ts['temporal resolution']
         start_date = ts['start date']
         end_date = ts['end date']
-
+        
         df_summary = pd.DataFrame([[start_date,
                                     end_date,
                                     temp_resolution,
