@@ -1917,8 +1917,11 @@ class Links:
             if link['active']:
                 if link['(un)directed'] == 'directed':
                     ep_costs = link['periodical costs /(CU/(kW a))']
+                    nonconvex_costs = link['Fix Investment Costs /(CU/a)']
+                    print(nonconvex_costs)
                 elif link['(un)directed'] == 'undirected':
                     ep_costs = link['periodical costs /(CU/(kW a))'] / 2
+                    nonconvex_costs = link['Fix Investment Costs /(CU/a)'] / 2
                 else:
                     raise SystemError('Problem with periodical costs')
                 nodes.append(solph.custom.Link(
@@ -1943,8 +1946,7 @@ class Links:
                                     nonconvex=True if
                                     link['Non-Convex Investment'] == 1
                                     else False,
-                                    offset=link[
-                                        'Fix Investment Costs /(CU/a)'])),
+                                    offset=10)),
                              self.busd[link['bus_1']]: solph.Flow(
                                  variable_costs=
                                  link['variable output costs /(CU/kWh)'],
@@ -1960,11 +1962,14 @@ class Links:
                                          'max. investment capacity /(kW)'],
                                      existing=link[
                                          'existing capacity /(kW)'],
-                                     nonconvex=True if
-                                     link['Non-Convex Investment'] == 1
+                                     nonconvex=True if(
+                                     link['Non-Convex Investment'] == 1)
+                                     #and link['(un)directed'] == 'undirected')
                                      else False,
-                                     offset=link[
-                                         'Fix Investment Costs /(CU/a)'])), },
+                                     offset=0
+                                     #if link['(un)directed'] == 'undirected'
+                                     #else 0)
+                        )), },
                     conversion_factors={
                         (self.busd[link['bus_1']],
                          self.busd[link['bus_2']]): link['efficiency'],

@@ -402,6 +402,9 @@ class Results:
                             (str(round(component_investment, 2)) + ' kW')
 
                     if component_investment > 0:
+                        periodical_costs += (
+                            comp['Fix Investment Costs /(CU/a)']
+                            if comp['Non-Convex Investment'] == 1 else 0)
                         total_periodical_costs = (total_periodical_costs
                                                   + periodical_costs)
                         investments_to_be_made[comp['label']] = \
@@ -411,6 +414,7 @@ class Results:
                         constraint_costs += \
                             component_investment \
                             * comp['periodical constraint costs /(CU/(kW a))']
+                        
                 else:
                     periodical_costs = 0
                     component_investment = 0
@@ -586,8 +590,11 @@ class Results:
 
                 # Periodical Costs
                 if transformer_investment > 0:
+                    periodical_costs = (
+                        comp['Fix Investment Costs /(CU/a)']
+                        if comp['Non-Convex Investment'] == 1 else 0)
                     # max investment capacity * periodical costs
-                    periodical_costs = (comp['periodical costs /(CU/(kW a))']
+                    periodical_costs += (comp['periodical costs /(CU/(kW a))']
                                         * transformer_investment)
                     total_periodical_costs = (total_periodical_costs
                                               + periodical_costs)
@@ -737,6 +744,9 @@ class Results:
                 # Periodical Costs
                 if storage_investment \
                         > float(comp['existing capacity /(kWh)']):
+                    periodical_costs += (
+                        comp['Fix Investment Costs /(CU/a)']
+                        if comp['Non-Convex Investment'] == 1 else 0)
                     total_periodical_costs = (total_periodical_costs
                                               + periodical_costs)
                     investments_to_be_made[comp['label']] = \
@@ -830,6 +840,9 @@ class Results:
 
                 # Periodical Costs
                 if link_investment > 0:
+                    periodical_costs += (
+                        comp['Fix Investment Costs /(CU/a)']
+                        if comp['Non-Convex Investment'] == 1 else 0)
                     constraint_costs += \
                         (comp['periodical constraint costs /(CU/(kW a))']
                          * link_investment)
