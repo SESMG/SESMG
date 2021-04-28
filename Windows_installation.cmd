@@ -3,7 +3,7 @@
 @echo File path: %~dp0
 @echo ################################
 
-python -m venv .
+py -3.7 -m venv .
 cd Scripts/
 start /b activate.bat
 
