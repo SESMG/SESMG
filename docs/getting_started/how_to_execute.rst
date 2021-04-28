@@ -3,7 +3,7 @@ Application of the Model Generator
 
 1. Fill in the spreadsheet document according to the instructions in the "Using th Scenario File" chapter.
 
-2. Execute the "SESMG_EXE.py" file (Apple/Linux) in the main folder of the program. Use Run_SESMG for Windows.
+2. Execute the Run_SESMG_for_**your operating System** in the main folder.
 
 
 .. note:: 
