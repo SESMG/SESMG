@@ -136,7 +136,6 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
 
     import logging
     import math
-    import pyomo.environ as po
 
     # add nodes and flows to energy system
     logging.info(
@@ -146,19 +145,14 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
 
     # creation of a least cost model from the energy system
     om = solph.Model(energy_system)
-    if (str(nodes_data['energysystem']['constraint costs /(CU)'][0]) != 'x' and
-          str(nodes_data['energysystem']['constraint costs /(CU)'][0]) != 'None'):
-        if str(nodes_data['energysystem']['constraint costs /(CU)'][0]) \
-                == 'inf':
-            limit = math.inf
-        else:
-            limit = float(nodes_data['energysystem']['constraint costs /(CU)'])
+    if (str(next(nodes_data["energysystem"].iterrows())[1]["constraint costs"]) != 'none' and
+          str(next(nodes_data["energysystem"].iterrows())[1]["constraint costs"]) != 'None'):
+        limit = float(next(nodes_data["energysystem"].iterrows())[1]["constraint costs"])
         om = constraint_optimization_against_two_values(om, limit)
    
     # limit for two given outflows e.g area_competition
     if "competition_constraint" in nodes_data:
         om = competition_constraint(om, nodes_data, energy_system)
-
 
     for j, z in nodes_data['links'].iterrows():
         for i, b in om.flows.keys():
@@ -172,21 +166,14 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
                     p = energy_system.groups[z['label']]
                     solph.constraints.equate_variables(
                         om,
-                        om.InvestmentFlow.invest[p, busd[z['bus_1']]],
-                        om.InvestmentFlow.invest[p, busd[z['bus_2']]]
+                        om.InvestmentFlow.invest[p, busd[z['bus1']]],
+                        om.InvestmentFlow.invest[p, busd[z['bus2']]]
                     )
                 # check if the link is directed and ensure that the
                 # solver does not invest on the second direction
                 elif z['(un)directed'] == 'directed':
                     p = energy_system.groups[z['label']]
-
-                    def input_rule(om, t):
-                        inflow = (om.flow[busd[z['bus_2']], p, t])
-                        return (inflow == 0)
-
-                    om.InvestmentFlow.invest[p, busd[z['bus_1']]] = 0
-                    setattr(om, z['label'] + "input_constraint",
-                            po.Constraint(om.TIMESTEPS, expr=input_rule))
+                    om.InvestmentFlow.invest[p, busd[z['bus2']]] = 0
 
     logging.info(
         '   ' + "******************************************************"

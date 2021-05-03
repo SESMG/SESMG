@@ -35,8 +35,8 @@ def buses(nodes_data: dict, nodes: list) -> dict:
                                 - active,
                                 - excess,
                                 - shortage,
-                                - shortage costs /(CU/kWh),
-                                - excess costs /(CU/kWh)
+                                - shortage costs,
+                                - excess costs
         :type nodes_data: dict
         :param nodes: list of components created before (can be empty)
         :type nodes: list
@@ -69,9 +69,9 @@ def buses(nodes_data: dict, nodes: list) -> dict:
                 # directly adds it to the list of components "nodes"
                 inputs = {
                     busd[b['label']]:
-                        solph.Flow(variable_costs=b['excess costs /(CU/kWh)'],
+                        solph.Flow(variable_costs=b['excess costs'],
                                    emission_factor=b[
-                                    'variable excess constraint costs /(CU/kWh)'])}
+                                    'variable excess constraint costs'])}
                 nodes.append(
                         solph.Sink(
                                 label=b['label'] + '_excess',
@@ -85,9 +85,9 @@ def buses(nodes_data: dict, nodes: list) -> dict:
                 outputs = {
                     busd[b['label']]:
                         solph.Flow(
-                            variable_costs=b['shortage costs /(CU/kWh)'],
+                            variable_costs=b['shortage costs'],
                             emission_factor=b[
-                                'variable shortage constraint costs /(CU/kWh)'])}
+                                'variable shortage constraint costs'])}
                 nodes.append(
                         solph.Source(
                                 label=b['label'] + '_shortage',
@@ -126,7 +126,7 @@ class Sources:
                                 - 'min.investment capacity / (kW)'
                                 - 'max.investment capacity / (kW)'
                                 - 'periodical costs / (CU / (kW a))'
-                                - 'Non-Convex Investment'
+                                - 'non-convex investment'
                                 - 'Fix Investment Cost / (CU/a)'
                                 - 'Turbine Model (Windpower ONLY)'
                                 - 'Hub Height (Windpower ONLY)'
@@ -174,13 +174,13 @@ class Sources:
 
                            - 'label'
                            - 'output'
-                           - 'periodical costs /(CU/(kW a))'
-                           - 'min. investment capacity /(kW)'
-                           - 'max. investment capacity /(kW)'
-                           - 'existing capacity /(kW)'
-                           - 'Non-Convex Investment'
-                           - 'Fix Investment Costs /(CU/a)'
-                           - 'variable costs /(CU/kWh)'
+                           - 'periodical costs'
+                           - 'min. investment capacity'
+                           - 'max. investment capacity'
+                           - 'existing capacity'
+                           - 'non-convex investment'
+                           - 'fix investment costs'
+                           - 'variable costs'
             :type so: dict
             :param timeseries_args: dictionary rather containing the
                                     'fix-attribute' or the 'min-' and
@@ -195,18 +195,18 @@ class Sources:
             output = self.busd[so['output']]
 
         # set variables minimum, maximum and existing
-        minimum = so['min. investment capacity /(kW)']
-        maximum = so['max. investment capacity /(kW)']
-        existing = so['existing capacity /(kW)']
+        minimum = so['min. investment capacity']
+        maximum = so['max. investment capacity']
+        existing = so['existing capacity']
         # set variables minimum, maximum and existing for solar thermal heat
         # sources
         if so['technology'] == 'CSP' or so['technology'] == 'solar_thermal_flat_plate':
-            minimum = so['min. investment capacity /(kW)'] * \
-                so['Conversion Factor /(sqm/kW)']
-            maximum = so['max. investment capacity /(kW)'] * \
-                so['Conversion Factor /(sqm/kW)']
-            existing = so['existing capacity /(kW)'] * \
-                so['Conversion Factor /(sqm/kW)']
+            minimum = so['min. investment capacity'] * \
+                so['Conversion Factor']
+            maximum = so['max. investment capacity'] * \
+                so['Conversion Factor']
+            existing = so['existing capacity'] * \
+                so['Conversion Factor']
         # Creates a oemof source and appends it to the nodes_sources
         # (variable of the create_sources-class) list
         self.nodes_sources.append(
@@ -215,21 +215,21 @@ class Sources:
                         outputs={output: solph.Flow(
                                 investment=solph.Investment(
                                         ep_costs=so[
-                                            'periodical costs /(CU/(kW a))'],
+                                            'periodical costs'],
                                         periodical_constraint_costs=so[
-                                            'periodical constraint costs /(CU/(kW a))'],
+                                            'periodical constraint costs'],
                                         minimum=minimum,
                                         maximum=maximum,
                                         existing=existing,
                                         nonconvex=True if
-                                        so['Non-Convex Investment'] == 1
+                                        so['non-convex investment'] == 1
                                         else False,
                                         offset=so[
-                                            'Fix Investment Costs /(CU/a)']),
+                                            'fix investment costs']),
                                 **timeseries_args,
-                                variable_costs=so['variable costs /(CU/kWh)'],
+                                variable_costs=so['variable costs'],
                                 emission_factor=so[
-                                    'variable constraint costs /(CU/kWh)']
+                                    'variable constraint costs']
                         )}
                 ))
     
@@ -267,13 +267,13 @@ class Sources:
 
                             - 'label'
                             - 'output'
-                            - 'periodical costs /(CU/(kW a))'
-                            - 'min. investment capacity /(kW)'
-                            - 'max. investment capacity /(kW)'
-                            - 'existing capacity /(kW)'
-                            - 'Non-Convex Investment'
-                            - 'Fix Investment Costs /(CU/a)'
-                            - 'variable costs /(CU/kWh)'
+                            - 'periodical costs'
+                            - 'min. investment capacity'
+                            - 'max. investment capacity'
+                            - 'existing capacity'
+                            - 'non-convex investment'
+                            - 'fix investment costs'
+                            - 'variable costs'
             :type so: dict
             :param filepath: path to .xlsx scenario-file containing a
                              "time_series" sheet
@@ -483,9 +483,9 @@ class Sources:
                 - 'A2'
                 - 'C1'
                 - 'C2'
-                - 'Temperature Inlet /deg C'
-                - 'Temperature Difference /deg C'
-                - 'Conversion Factor /(sqm/kW)'
+                - 'Temperature Inlet'
+                - 'Temperature Difference'
+                - 'Conversion Factor'
                 - 'Peripheral Losses'
                 - 'Electric Consumption'
             @ Yannick Wittor - yw090223@fh-muenster.de, 27.11.2020
@@ -506,9 +506,10 @@ class Sources:
         # import weather data and set datetime index with hourly frequency
         data = pd.read_csv(os.path.join(
             os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
-        data['Unnamed: 0'] = pd.to_datetime(data['Unnamed: 0'])
-        data = data.set_index(['Unnamed: 0'])
+        data['timestamp'] = pd.to_datetime(data['timestamp'])
+        data = data.set_index(['timestamp'])
         data.index.name = 'Datum'
+        # TODO
         data = data.asfreq('h')
 
         # calculates global horizontal irradiance from diffuse (dhi)
@@ -527,9 +528,9 @@ class Sources:
                 a_1=so['A1'],
                 a_2=so['A2'],
                 temp_collector_inlet=
-                so['Temperature Inlet /deg C'],
+                so['Temperature Inlet'],
                 delta_temp_n=
-                so['Temperature Difference /deg C'],
+                so['Temperature Difference'],
                 irradiance_global=(data['ghi']),
                 irradiance_diffuse=(data['dhi']),
                 temp_amb=data['temperature'])
@@ -541,8 +542,8 @@ class Sources:
         # set parameters for precalculations for concentrating solar power
         elif so['technology'] == 'CSP':
             temp_collector_outlet = \
-                so['Temperature Inlet /deg C'] + \
-                so['Temperature Difference /deg C']
+                so['Temperature Inlet'] + \
+                so['Temperature Difference']
             latitude = so['Latitude']
             longitude = so['Longitude']
             collector_tilt = so['Surface Tilt']
@@ -552,7 +553,7 @@ class Sources:
             c_1 = so['C1']
             c_2 = so['C2']
             temp_collector_inlet = \
-                so['Temperature Inlet /deg C']
+                so['Temperature Inlet']
             temp_collector_outlet = temp_collector_outlet
             a_1 = so['A1']
             a_2 = so['A2']
@@ -690,11 +691,11 @@ class Sinks:
                                 - 'fixed'
                                 - 'input'
                                 - 'load profile'
-                                - 'nominal value /(kW)'
-                                - 'annual demand /(kWh/a)'
+                                - 'nominal value'
+                                - 'annual demand'
                                 - 'occupants [Richardson]'
-                                - 'building class [HEAT SLP ONLY]'
-                                - 'wind class [HEAT SLP ONLY]'
+                                - 'building class'
+                                - 'wind class'
         :type nodes_data: dict
         :param busd: dictionary containing the buses of the energy system
         :type busd: dict
@@ -760,14 +761,14 @@ class Sinks:
                        following key-value-pairs have to be included:
 
                             - 'label'
-                            - 'nominal value /(kW)'
+                            - 'nominal value'
             :type de: dict
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
         
         # set static inflow values
-        inflow_args = {'nominal_value': de['nominal value /(kW)']}
+        inflow_args = {'nominal_value': de['nominal value']}
         # starts the create_sink method with the parameters set before
         self.create_sink(de, inflow_args)
         # returns logging info
@@ -784,7 +785,7 @@ class Sinks:
                        following key-value-pairs have to be included:
 
                             - 'label'
-                            - 'nominal value /(kW)'
+                            - 'nominal value'
             :type de: dict
             :param filepath: path to .xlsx scenario-file containing a
                              "time_series" sheet
@@ -795,7 +796,7 @@ class Sinks:
         # imports the time_series sheet of the scenario file
         time_series = pd.read_excel(filepath, sheet_name='time_series')
         # sets the nominal value
-        args = {'nominal_value': de['nominal value /(kW)']}
+        args = {'nominal_value': de['nominal value']}
         if de['fixed'] == 0:
             # sets the attributes for an unfixed time_series sink
             args.update({'min': time_series[de['label'] + '.min'].tolist(),
@@ -826,9 +827,9 @@ class Sinks:
 
                             - 'label'
                             - 'load profile'
-                            - 'annual demand /(kWh/a)'
-                            - 'building class [HEAT SLP ONLY]'
-                            - 'wind class [HEAT SLP ONLY]'
+                            - 'annual demand'
+                            - 'building class'
+                            - 'wind class'
             :type de: dict
             :param filepath: path to .xlsx scenario-file containing a
                              "energysystem" sheet
@@ -847,6 +848,7 @@ class Sinks:
             os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
         # Importing timesystem parameters from the scenario
         nd = pd.read_excel(filepath, sheet_name='energysystem')
+        nd = nd.drop(index=0)
         ts = next(nd.iterrows())[1]
         temp_resolution = ts['temporal resolution']
         periods = ts["periods"]
@@ -869,14 +871,14 @@ class Sinks:
             # sets the parameters of the heat slps
             args = {'temperature': data['temperature'],
                     'shlp_type': de['load profile'],
-                    'wind_class': de['wind class [HEAT SLP ONLY]'],
+                    'wind_class': de['wind class'],
                     'annual_heat_demand': 1,
                     'name': de['load profile']}
             if de['load profile'] in heat_slps:
                 # adds the building class which is only necessary for
                 # the non commercial slps
                 args.update(
-                    {'building_class': de['building class [HEAT SLP ONLY]']})
+                    {'building_class': de['building class']})
             demand[de['load profile']] = bdew.HeatBuilding(
                 demand.index, **args).get_bdew_profile()
         elif de['load profile'] in electricity_slps:
@@ -889,7 +891,7 @@ class Sinks:
             # creates time series based on standard load profiles
             demand = demand.resample(temp_resolution).mean()
         # sets the nominal value
-        args = {'nominal_value': de['annual demand /(kWh/a)']}
+        args = {'nominal_value': de['annual demand']}
         if de['fixed'] == 1:
             # sets the parameters for a fixed sink
             args.update({'fix': demand[de['load profile']]})
@@ -916,7 +918,7 @@ class Sinks:
 
                             - 'label'
                             - 'fixed'
-                            - 'annual demand /(kWh/a)'
+                            - 'annual demand'
                             - 'occupants [RICHARDSON]'
             :type de: dict
             :param filepath: path to .xlsx scenario-file containing a
@@ -982,7 +984,7 @@ class Sinks:
         load_profile = el_load_obj.loadcurve
         richardson_demand = (sum(el_load_obj.loadcurve)
                              * timestep / (3600 * 1000))
-        annual_demand = de['annual demand /(kWh/a)']
+        annual_demand = de['annual demand']
         
         # Disables the stochastic simulation of the total yearly demand
         # by scaling the generated time series using the total energy
@@ -1027,7 +1029,7 @@ class Sinks:
             + '/interim_data/weather_data.csv', index=None, header=True)
         
         # Create sink objects
-        for i, de in nodes_data['demand'].iterrows():
+        for i, de in nodes_data['sinks'].iterrows():
             slps = \
                 ['efh', 'mfh', 'gmf', 'gpd', 'ghd', 'gwa', 'ggb', 'gko', 'gbd',
                  'gba', 'gmk', 'gbh', 'gga', 'gha', 'h0', 'g0', 'g1', 'g2',
@@ -1073,12 +1075,12 @@ class Transformers:
                                 - output2,
                                 - efficiency,
                                 - efficiency2,
-                                - variable input costs /(CU/kWh),
-                                - variable output costs /(CU/kWh),
-                                - existing capacity /(kW),
-                                - max. investment capacity /(kW),
-                                - min. investment capacity /(kW),
-                                - periodical costs /(CU/(kW a))
+                                - variable input costs,
+                                - variable output costs,
+                                - existing capacity,
+                                - max. investment capacity,
+                                - min. investment capacity,
+                                - periodical costs
         :type nodes_data: dict
         :param busd: dictionary containing the buses of the energy system
         :type busd: dict
@@ -1120,62 +1122,62 @@ class Transformers:
                             - 'min. investment capacity / (kW)'
                             - 'max. investment capacity / (kW)'
                             - 'existing capacity / (kW)'
-                            - 'Non-Convex Investment'
-                            - 'Fix Investment Costs / (CU/a)'
+                            - 'non-convex investment'
+                            - 'fix investment costs / (CU/a)'
             :type tf: dict
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
         outputs = \
             {self.busd[tf['output']]: solph.Flow(
-                    variable_costs=tf['variable output costs /(CU/kWh)'],
+                    variable_costs=tf['variable output costs'],
                     emission_factor=tf[
-                        'variable output constraint costs /(CU/kWh)'],
+                        'variable output constraint costs'],
                     investment=solph.Investment(
-                        ep_costs=tf['periodical costs /(CU/(kW a))'],
+                        ep_costs=tf['periodical costs'],
                         periodical_constraint_costs=tf[
-                            'periodical constraint costs /(CU/(kW a))'],
-                        minimum=tf['min. investment capacity /(kW)'],
-                        maximum=tf['max. investment capacity /(kW)'],
-                        existing=tf['existing capacity /(kW)'],
+                            'periodical constraint costs'],
+                        minimum=tf['min. investment capacity'],
+                        maximum=tf['max. investment capacity'],
+                        existing=tf['existing capacity'],
                         nonconvex=True if
-                        tf['Non-Convex Investment'] == 1 else False,
-                        offset=tf['Fix Investment Costs /(CU/a)']))}
+                        tf['non-convex investment'] == 1 else False,
+                        offset=tf['fix investment costs']))}
         conversion_factors = {self.busd[tf['output']]: tf['efficiency']}
         # Defines Capacity values for the second transformer output
-        if tf['output2'] not in ['None', 'none', 'x']:
+        if tf['output2'] not in ['None', 'none', 0]:
             existing_capacity2 = \
                 ((float(tf['efficiency2']) / float(tf['efficiency']))
-                 * float(tf['existing capacity /(kW)']))
+                 * float(tf['existing capacity']))
             minimum_capacity2 = ((float(tf['efficiency2'])
                                   / float(tf['efficiency']))
-                                 * float(tf['min. investment capacity /(kW)']))
+                                 * float(tf['min. investment capacity']))
             maximum_capacity2 = ((float(tf['efficiency2'])
                                   / float(tf['efficiency']))
-                                 * float(tf['max. investment capacity /(kW)']))
+                                 * float(tf['max. investment capacity']))
             # Creates transformer object and adds it to the list of
             # components
             outputs.update(
                     {self.busd[tf['output2']]: solph.Flow(
-                        variable_costs=tf['variable output costs 2 /(CU/kWh)'],
+                        variable_costs=tf['variable output costs 2'],
                         emission_factor=tf[
-                            'variable output constraint costs 2 /(CU/kWh)'],
+                            'variable output constraint costs 2'],
                         investment=solph.Investment(
                             ep_costs=0,
                             existing=existing_capacity2,
                             minimum=minimum_capacity2,
                             maximum=maximum_capacity2,
                             nonconvex=True if
-                            tf['Non-Convex Investment'] == 1 else False,
-                            offset=tf['Fix Investment Costs /(CU/a)']))})
+                            tf['non-convex investment'] == 1 else False,
+                            offset=tf['fix investment costs']))})
             conversion_factors.update(
                     {self.busd[tf['output2']]: tf['efficiency2']})
         outputs = {"outputs": outputs}
         
         conversion_factors = {"conversion_factors": conversion_factors}
         inputs = {"inputs": {self.busd[tf['input']]: solph.Flow(
-                variable_costs=tf['variable input costs /(CU/kWh)'],
-                emission_factor=tf['variable input constraint costs /(CU/kWh)'])
+                variable_costs=tf['variable input costs'],
+                emission_factor=tf['variable input constraint costs'])
         }}
         self.create_transformer(tf, inputs, outputs, conversion_factors)
 
@@ -1200,14 +1202,14 @@ class Transformers:
                     - 'heat_pump' or
                     - 'chiller'
                 - 'heat source'
-                - 'temperature high /deg C'
-                - 'temperature low /deg C'
+                - 'temperature high'
+                - 'temperature low'
                 - 'quality grade'
-                - 'area /(sq m)'
-                - 'length of the geoth. probe /m'
-                - 'heat extraction /(kW/(m*a))'
-                - 'min. borehole area /(sq m)'
-                - 'temp threshold icing'
+                - 'area'
+                - 'length of the geoth. probe'
+                - 'heat extraction'
+                - 'min. borehole area'
+                - 'temp. threshold icing'
                 - 'factor icing'
             :type tf: dict
             :param data: Dataframe containing all temperature information \
@@ -1258,10 +1260,10 @@ class Transformers:
             
             # the capacity of a borehole is limited by the area
             heatsource_capacity = \
-                tf['area /(sq m)'] * \
-                (tf['length of the geoth. probe /m']
-                 * tf['heat extraction /(kW/(m*a))']
-                 / tf['min. borehole area /(sq m)'])
+                tf['area'] * \
+                (tf['length of the geoth. probe']
+                 * tf['heat extraction']
+                 / tf['min. borehole area'])
         # ground water as a heat source
         elif tf['heat source'] == "GroundWater":
         
@@ -1326,7 +1328,7 @@ class Transformers:
                 temp_low = data['temperature']
             elif tf['mode'] == 'chiller':
                 temp_high = data['temperature'].copy()
-                temp_low_value = tf['temperature low /deg C']
+                temp_low_value = tf['temperature low']
                 # low temperature as formula to avoid division by zero error
                 for index, value in enumerate(temp_high):
                     if value == temp_low_value:
@@ -1337,17 +1339,17 @@ class Transformers:
             elif tf['mode'] == 'chiller':
                 temp_high = data['water_temp']
         else:
-            raise SystemError(t['label'] + " Error in heat source attribute")
+            raise SystemError(tf['label'] + " Error in heat source attribute")
         
         if tf['mode'] == 'heat_pump':
-            temp_threshold_icing = tf['temp threshold icing']
+            temp_threshold_icing = tf['temp. threshold icing']
             factor_icing = tf['factor icing']
-            temp_high = [tf['temperature high /deg C']]
+            temp_high = [tf['temperature high']]
         elif tf['mode'] == 'chiller':
             # variable "icing" is not important in cooling mode
             temp_threshold_icing = None
             factor_icing = None
-            temp_low = [tf['temperature low /deg C']]
+            temp_low = [tf['temperature low']]
         # calculation of COPs with set parameters
         cops_hp = cmpr_hp_chiller.calc_cops(
                 temp_high=temp_high,
@@ -1362,22 +1364,22 @@ class Transformers:
 
         # Creates transformer object and adds it to the list of components
         inputs = {"inputs": {self.busd[tf['input']]: solph.Flow(
-                variable_costs=tf['variable input costs /(CU/kWh)'],
+                variable_costs=tf['variable input costs'],
                 emission_factor=
-                tf['variable input constraint costs /(CU/kWh)']),
+                tf['variable input constraint costs']),
                 self.busd[tf['label'] + temp + '_bus']: solph.Flow(
                 variable_costs=0)}}
         outputs = {"outputs": {self.busd[tf['output']]: solph.Flow(
-                variable_costs=tf['variable output costs /(CU/kWh)'],
+                variable_costs=tf['variable output costs'],
                 emission_factor=tf[
-                    'variable output constraint costs /(CU/kWh)'],
+                    'variable output constraint costs'],
                 investment=solph.Investment(
-                        ep_costs=tf['periodical costs /(CU/(kW a))'],
-                        minimum=tf['min. investment capacity /(kW)'],
-                        maximum=tf['max. investment capacity /(kW)'],
+                        ep_costs=tf['periodical costs'],
+                        minimum=tf['min. investment capacity'],
+                        maximum=tf['max. investment capacity'],
                         periodical_constraint_costs=tf[
-                            'periodical constraint costs /(CU/(kW a))'],
-                        existing=tf['existing capacity /(kW)']))}}
+                            'periodical constraint costs'],
+                        existing=tf['existing capacity']))}}
         conversion_factors = {
             "conversion_factors": {
                 self.busd[tf['label'] + temp + '_bus']:
@@ -1410,8 +1412,8 @@ class Transformers:
                             - 'min. investment capacity / (kW)'
                             - 'max. investment capacity / (kW)'
                             - 'existing capacity / (kW)'
-                            - 'Non-Convex Investment'
-                            - 'Fix Investment Costs / (CU/a)'
+                            - 'non-convex investment'
+                            - 'fix investment costs / (CU/a)'
             :type tf: dict
             :param nd: dictionary containing parameters of the buses
                        to be created.
@@ -1440,21 +1442,21 @@ class Transformers:
                                    'extraction']
                                 for p in range(0, periods)],
                             variable_costs=tf[
-                                'variable input costs /(CU/kWh)'],
+                                'variable input costs'],
                             emission_factor=
-                            tf['variable input constraint costs /(CU/kWh)'])},
+                            tf['variable input constraint costs'])},
                 electrical_output={
                     self.busd[tf['output']]: solph.Flow(
                             investment=solph.Investment(
                                     ep_costs=tf[
-                                        'periodical costs /(CU/(kW a))'],
+                                        'periodical costs'],
                                     periodical_constraint_costs=tf[
-                                        'periodical constraint costs /(CU/(kW a))'],
+                                        'periodical constraint costs'],
                                     minimum=tf[
-                                        'min. investment capacity /(kW)'],
+                                        'min. investment capacity'],
                                     maximum=tf[
-                                        'max. investment capacity /(kW)'],
-                                    existing=tf['existing capacity /(kW)']),
+                                        'max. investment capacity'],
+                                    existing=tf['existing capacity']),
                             P_max_woDH=[
                                 tf['max. electric power without district '
                                    'heating']
@@ -1471,9 +1473,9 @@ class Transformers:
                                    'heating']
                                 for p in range(0, periods)],
                             variable_costs=tf[
-                                'variable output costs /(CU/kWh)'],
+                                'variable output costs'],
                             emission_factor=tf[
-                                'variable output constraint costs /(CU/kWh)']
+                                'variable output constraint costs']
                             )
                         },
                 heat_output={self.busd[tf['output2']]: solph.Flow(
@@ -1481,9 +1483,9 @@ class Transformers:
                                  'cooling water']
                               for p in range(0, periods)],
                     variable_costs=tf[
-                        'variable output costs 2 /(CU/kWh)'],
+                        'variable output costs 2'],
                     emission_factor=tf[
-                        'variable output constraint costs 2 /(CU/kWh)']
+                        'variable output constraint costs 2/(CU/kWh)']
                 )},
                 Beta=[tf['power loss index']
                       for p in range(0, periods)],
@@ -1509,10 +1511,10 @@ class Transformers:
                     - name refers to models of absorption heat transformers
                       with different equation parameters. See documentation
                       for possible inputs.
-                - 'high temperature /deg C'
-                - 'chilling temperature /deg C'
+                - 'high temperature'
+                - 'chilling temperature'
                 - 'electrical input conversion factor'
-                - 'recooling temperature difference /deg C'
+                - 'recooling temperature difference'
             @ Yannick Wittor - yw090223@fh-muenster.de, 07.01.2021
         """
         # import oemof.thermal in order to calculate COP
@@ -1552,7 +1554,7 @@ class Transformers:
                          outputs={self.busd[
                              bus_label]:
                                 solph.Flow(variable_costs=
-                                           tf['variable input costs /(CU/kWh)']
+                                           tf['variable input costs']
                                            )}))
 
         # Returns logging info
@@ -1563,15 +1565,15 @@ class Transformers:
         # ambient temperature of recooling system
         data_np = np.array(data['temperature'])
         t_cool = data_np + \
-            tf['recooling temperature difference /deg C']
+            tf['recooling temperature difference']
         t_cool = list(map(int, t_cool))
 
         # Calculation of characteristic temperature difference
         chiller_name = tf['name']
         ddt = abs_hp_chiller.calc_characteristic_temp(
-            t_hot=[tf['high temperature /deg C']],
+            t_hot=[tf['high temperature']],
             t_cool=t_cool,
-            t_chill=[tf['chilling temperature /deg C']],
+            t_chill=[tf['chilling temperature']],
             coef_a=char_para[(char_para['name'] ==
                               chiller_name)]['a'].values[0],
             coef_e=char_para[(char_para['name'] ==
@@ -1604,19 +1606,19 @@ class Transformers:
         # Set in- and outputs with conversion factors and creates transformer
         # object and adds it to  the list of components
         inputs = {"inputs": {self.busd[tf['input']]: solph.Flow(
-                 variable_costs=tf['variable input costs /(CU/kWh)'],
+                 variable_costs=tf['variable input costs'],
                  emission_factor=
-                 tf['variable input constraint costs /(CU/kWh)']),
+                 tf['variable input constraint costs']),
                  self.busd[tf['label'] + temp + '_bus']: solph.Flow(
                  variable_costs=0)}}
         outputs = {"outputs": {self.busd[tf['output']]: solph.Flow(
-                variable_costs=tf['variable output costs /(CU/kWh)'],
-                emission_factor=tf['variable output constraint costs /(CU/kWh)'],
+                variable_costs=tf['variable output costs'],
+                emission_factor=tf['variable output constraint costs'],
                 investment=solph.Investment(
-                        ep_costs=tf['periodical costs /(CU/(kW a))'],
-                        minimum=tf['min. investment capacity /(kW)'],
-                        maximum=tf['max. investment capacity /(kW)'],
-                        existing=tf['existing capacity /(kW)']))}}
+                        ep_costs=tf['periodical costs'],
+                        minimum=tf['min. investment capacity'],
+                        maximum=tf['max. investment capacity'],
+                        existing=tf['existing capacity']))}}
         conversion_factors = {
             "conversion_factors": {
                 self.busd[tf['output']]:
@@ -1696,8 +1698,8 @@ class Storages:
                                 - 'existing capacity / (kWh)'
                                 - 'min.investment capacity / (kWh)'
                                 - 'max.investment capacity / (kWh)'
-                                - 'Non-Convex Investments'
-                                - 'Fix Investment Costs /(CU/a)'
+                                - 'non-convex investments'
+                                - 'fix investment costs'
                                 - 'input/capacity ratio (invest)'
                                 - 'output/capacity ratio (invest)'
                                 - 'capacity loss'
@@ -1736,15 +1738,13 @@ class Storages:
                     variable_costs=s[
                         'variable input costs'],
                     emission_factor=s[
-                        'variable input constraint costs /'
-                        '(CU/kWh)']
+                        'variable input constraint costs']
                 )},
                 outputs={self.busd[s['bus']]: solph.Flow(
                     variable_costs=s[
                         'variable output costs'],
                     emission_factor=s[
-                        'variable output constraint costs /'
-                        '(CU/kWh)']
+                        'variable output constraint costs']
                 )},
                 loss_rate=s['capacity loss'],
                 inflow_conversion_factor=s[
@@ -1752,23 +1752,23 @@ class Storages:
                 outflow_conversion_factor=s[
                     'efficiency outflow'],
                 invest_relation_input_capacity=s[
-                    'input/capacity ratio (invest)'],
+                    'input/capacity ratio'],
                 invest_relation_output_capacity=s[
-                    'output/capacity ratio (invest)'],
+                    'output/capacity ratio'],
                 investment=solph.Investment(
                     ep_costs=s[
-                        'periodical costs /(CU/(kWh a))'],
+                        'periodical costs'],
                     periodical_constraint_costs=s[
-                        'periodical constraint costs /(CU/(kWh a))'],
+                        'periodical constraint costs'],
                     existing=s[
-                        'existing capacity /(kWh)'],
+                        'existing capacity'],
                     minimum=s[
-                        'min. investment capacity /(kWh)'],
+                        'min. investment capacity'],
                     maximum=s[
-                        'max. investment capacity /(kWh)'],
+                        'max. investment capacity'],
                     nonconvex=True if
-                    s['Non-Convex Investment'] == 1 else False,
-                    offset=s['Fix Investment Costs /(CU/a)'])))
+                    s['non-convex investment'] == 1 else False,
+                    offset=s['fix investment costs'])))
 
         # returns logging info
         logging.info('   ' + 'Storage created: ' + s['label'])
@@ -1783,9 +1783,9 @@ class Storages:
             :param s: has to contain the following keyword arguments:
                 - Standard information on Storages
                 - 'storage type': 'Stratified'
-                - 'diameter /m'
-                - 'temperature high /deg C'
-                - 'temperature low /deg C'
+                - 'diameter'
+                - 'temperature high'
+                - 'temperature low'
                 - 'U value /(W/(sqm*K))'
             @ Yannick Wittor - yw090223@fh-muenster.de, 26.01.2021
         """
@@ -1798,9 +1798,9 @@ class Storages:
         loss_rate, fixed_losses_relative, fixed_losses_absolute = \
             calculate_losses(
                 s['U value /(W/(sqm*K))'],
-                s['diameter /m'],
-                s['temperature high /deg C'],
-                s['temperature low /deg C'],
+                s['diameter'],
+                s['temperature high'],
+                s['temperature low'],
                 data['temperature'])
 
         # creates storage object and adds it to the
@@ -1847,8 +1847,8 @@ class Storages:
                     maximum=s[
                         'max. investment capacity /(kWh)'],
                     nonconvex=True if
-                    s['Non-Convex Investment'] == 1 else False,
-                    offset=s['Fix Investment Costs /(CU/a)'])))
+                    s['non-convex investment'] == 1 else False,
+                    offset=s['fix investment costs'])))
         # returns logging info
         logging.info('   ' + 'Storage created: ' + s['label'])
     
@@ -1916,63 +1916,60 @@ class Links:
         for i, link in nodes_data['links'].iterrows():
             if link['active']:
                 if link['(un)directed'] == 'directed':
-                    ep_costs = link['periodical costs /(CU/(kW a))']
-                    nonconvex_costs = link['Fix Investment Costs /(CU/a)']
+                    ep_costs = link['periodical costs']
                 elif link['(un)directed'] == 'undirected':
-                    ep_costs = link['periodical costs /(CU/(kW a))'] / 2
-                    nonconvex_costs = link['Fix Investment Costs /(CU/a)'] / 2
+                    ep_costs = link['periodical costs'] / 2
                 else:
                     raise SystemError('Problem with periodical costs')
                 nodes.append(solph.custom.Link(
                     label=link['label'],
-                    inputs={self.busd[link['bus_1']]: solph.Flow(),
-                            self.busd[link['bus_2']]: solph.Flow()},
-                    outputs={self.busd[link['bus_2']]: solph.Flow(
+                    inputs={self.busd[link['bus1']]: solph.Flow(),
+                            self.busd[link['bus2']]: solph.Flow()},
+                    outputs={self.busd[link['bus2']]: solph.Flow(
                                 variable_costs=
-                                link['variable output costs /(CU/kWh)'],
+                                link['variable output costs'],
                                 emission_factor=
-                                link['variable constraint costs /(CU/kWh)'],
+                                link['variable constraint costs'],
                                 investment=solph.Investment(
                                     ep_costs=ep_costs,
                                     periodical_constraint_costs=link[
-                                        'periodical constraint costs /(CU/(kW a))'],
+                                        'periodical constraint costs'],
                                     minimum=link[
-                                        'min. investment capacity /(kW)'],
+                                        'min. investment capacity'],
                                     maximum=link[
-                                        'max. investment capacity /(kW)'],
+                                        'max. investment capacity'],
                                     existing=link[
-                                        'existing capacity /(kW)'],
+                                        'existing capacity'],
                                     nonconvex=True if
-                                    link['Non-Convex Investment'] == 1
+                                    link['non-convex investment'] == 1
                                     else False,
-                                    offset=nonconvex_costs)),
-                             self.busd[link['bus_1']]: solph.Flow(
+                                    offset=link[
+                                        'fix investment costs'])),
+                             self.busd[link['bus1']]: solph.Flow(
                                  variable_costs=
-                                 link['variable output costs /(CU/kWh)'],
+                                 link['variable output costs'],
                                  emission_factor=
-                                 link['variable constraint costs /(CU/kWh)'],
+                                 link['variable constraint costs'],
                                  investment=solph.Investment(
                                      ep_costs=ep_costs,
                                      periodical_constraint_costs=link[
-                                         'periodical constraint costs /(CU/(kW a))'],
+                                         'periodical constraint costs'],
                                      minimum=link[
-                                         'min. investment capacity /(kW)'],
+                                         'min. investment capacity'],
                                      maximum=link[
-                                         'max. investment capacity /(kW)'],
+                                         'max. investment capacity'],
                                      existing=link[
-                                         'existing capacity /(kW)'],
-                                     nonconvex=True if(
-                                     link['Non-Convex Investment'] == 1
-                                     and link['(un)directed'] == 'undirected')
+                                         'existing capacity'],
+                                     nonconvex=True if
+                                     link['non-convex investment'] == 1
                                      else False,
-                                     offset=nonconvex_costs
-                                     if link['(un)directed'] == 'undirected'
-                                     else 0)), },
+                                     offset=link[
+                                         'fix investment costs'])), },
                     conversion_factors={
-                        (self.busd[link['bus_1']],
-                         self.busd[link['bus_2']]): link['efficiency'],
-                        (self.busd[link['bus_2']],
-                         self.busd[link['bus_1']]):
+                        (self.busd[link['bus1']],
+                         self.busd[link['bus2']]): link['efficiency'],
+                        (self.busd[link['bus2']],
+                         self.busd[link['bus1']]):
                              (link['efficiency']
                               if link['(un)directed'] == 'undirected' else 0)}
                 ))

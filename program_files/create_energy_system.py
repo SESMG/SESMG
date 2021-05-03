@@ -48,15 +48,20 @@ def import_scenario(filepath: str) -> dict:
         # used for old scenarios and demo tool
         nd = {'buses': xls.parse('buses'),
               'energysystem': xls.parse('energysystem'),
-              'demand': xls.parse('sinks'),
+              'sinks': xls.parse('sinks'),
               'links': xls.parse('links'),
               'sources': xls.parse('sources'),
-              'timeseries': xls.parse('time_series'),
+              'timeseries': xls.parse('time series'),
               'transformers': xls.parse('transformers'),
               'storages': xls.parse('storages'),
-              'weather data': xls.parse('weather data')
-              # 'constraints': xls.parse('constraints')
+              'weather data': xls.parse('weather data'),
+              'competition constraints': xls.parse('competition constraints')
               }
+        # delete spreadsheet row within technology or units specific parameters
+        list = ["energysystem", "buses", "sinks", "sources", "transformers", "storages", "links", "weather data"]
+        for i in list:
+            nd[i] = nd[i].drop(index=0)
+# todo delete lines
     else:
         sources = \
             pd.concat(pd.read_excel(filepath,
@@ -83,7 +88,7 @@ def import_scenario(filepath: str) -> dict:
               'demand': xls.parse('sinks'),
               'links': xls.parse('links'),
               'sources': sources,
-              'timeseries': xls.parse('time_series'),
+              'timeseries': xls.parse('time series'),
               'transformers': transformer,
               'storages': storages,
               'weather data': xls.parse('weather data'),

@@ -59,13 +59,13 @@ def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
             dot.node(i, shape=shape[i][0], fontsize="10", fixedsize='shape',
                      width='1.1', height='0.6',
                      style='dashed' if i == 'Storage' else '')
-    components = ["buses", "sources", "demand", "transformers", "storages",
+    components = ["buses", "sources", "sinks", "transformers", "storages",
                   "links"]
-    shapes = {'sources': ['trapezium'], 'demand': ['invtrapezium'],
+    shapes = {'sources': ['trapezium'], 'sinks': ['invtrapezium'],
               'transformers': ['box'], 'storages': ['box'],
               'links': ['box']}
-    bus = {'buses': ['label'], 'sources': ['output'], 'demand': ['input'],
-           'transformers': ['input'], 'storages': ['bus'], 'links': ['bus_1']}
+    bus = {'buses': ['label'], 'sources': ['output'], 'sinks': ['input'],
+           'transformers': ['input'], 'storages': ['bus'], 'links': ['bus1']}
     for i in components:
         for j, b in nodes_data[i].iterrows():
             if b['active']:
@@ -110,9 +110,9 @@ def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
                 # creates bus nodes
                 dot.node(b[bus[i][0]], shape='ellipse', fontsize="10")
                 if i == 'links':
-                    dot.node(b['bus_2'], shape='ellipse')
+                    dot.node(b['bus2'], shape='ellipse')
                 # creates edges
-                if i == 'demand' or i == 'storages' or i == 'links' \
+                if i == 'sinks' or i == 'storages' or i == 'links' \
                         or (i == 'buses' and b['excess']
                             and not b['shortage']):
                     dot.edge(b[bus[i][0]], label)
@@ -121,15 +121,15 @@ def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
                         or i == 'storages' or (i == 'buses' and b['shortage']):
                     dot.edge(label, b[bus[i][0]])
                 if i == 'links':
-                    dot.edge(label, b['bus_2'])
+                    dot.edge(label, b['bus2'])
                     if b['(un)directed'] == 'undirected':
-                        dot.edge(b['bus_2'], label)
-                        dot.edge(label, b['bus_1'])
+                        dot.edge(b['bus2'], label)
+                        dot.edge(label, b['bus1'])
                 elif i == 'transformers':
                     dot.node(b['output'], shape='ellipse', fontsize="10")
                     dot.edge(b[bus[i][0]], label)
                     dot.edge(label, b['output'])
-                    if b['output2'] != "None":
+                    if b['output2'] not in [0, 'None', 'none']:
                         dot.node(b['output2'], shape='ellipse', fontsize="10")
                         dot.edge(label, b['output2'])
                     if b['transformer type'] == 'compression_heat_transformer':
