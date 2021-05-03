@@ -147,23 +147,21 @@ class Results:
         input1 = comp['input'] if 'input' in comp else None
         output = comp['output'] if 'output' in comp else None
         output2 = comp['output2'] if 'output2' in comp else None
-        print(component['sequences'].sum().items())
+
         for index, value in component['sequences'].sum().items():
             # inflow 1
             if index in [((input1, label), 'flow'),
-                         ((input1, label + '_collector'), 'flow'),
                          ((bus1, label), 'flow'),
                          ((label, label + '_excess'), 'flow')]:
                 self.comp_input1 = component['sequences'][index]
             # inflow2
-            elif index in [((label + '_bus', label + '_collector'), 'flow'),
-                           ((label + '_low_temp' + '_bus', label), 'flow'),
+            elif index in [((label + '_low_temp' + '_bus', label), 'flow'),
                            ((label + '_high_temp' + '_bus', label), 'flow'),
-                           ((bus2, label), 'flow')]:
+                           ((bus2, label), 'flow'),
+                           ((label[:-10] + '_bus', label), 'flow')]:
                 self.comp_input2 = component['sequences'][index]
             # outflow 1
-            elif index in [((label + '_collector', output), 'flow'),
-                           ((label, output), 'flow'),
+            elif index in [((label, output), 'flow'),
                            ((label, bus2), 'flow'),
                            ((label + '_shortage', label), 'flow')]:
                 self.comp_output1 = component['sequences'][index]
@@ -185,7 +183,8 @@ class Results:
                 if comp['input'] in [0, 'None', 'none']:
                     bus_node = self.esys.groups[comp['output']]
                 else:
-                    label = comp['label'] + '_bus'
+                    component_node = self.esys.groups[comp['label'][:-10]]
+                    label = comp['label'][:-10] + '_bus'
                     bus_node = self.esys.groups[label]
             elif comp_type == 'storage':
                 bus_node = None
@@ -238,7 +237,6 @@ class Results:
         if comp_type != 'excess' and comp_type != 'shortage':
             constraint_costs += investment \
                                 * comp['periodical constraint costs']
-        print(constraint_costs)
         return constraint_costs
 
     def calc_variable_costs(self, comp, comp_type):
@@ -330,7 +328,8 @@ class Results:
         return flow_name[1]
 
     def console_logging(self, comp_type, capacity=None, variable_costs=None,
-                        periodical_costs=None, investment=None):
+                        periodical_costs=None, investment=None,
+                        transformer_type=None):
         """
             consists of the different console logging entries and logs
             the one for the given component
@@ -369,25 +368,22 @@ class Results:
                                  + self.get_last_node_flow(outflow1) + ': '
                                  + str(round(outflow1.sum(), 2)) + ' kWh')
                     if outflow2 is not None:
-                        logging.info('   ' + 'Total Energy Output to '
+                        logging.info('   ' + 'Total Energy Output to'
                                      + self.get_last_node_flow(outflow2) + ': '
                                      + str(round(outflow2.sum(), 2)) + ' kWh')
                 else:
                     logging.info('   ' + 'Electricity Energy Input to '
                                  + self.get_first_node_flow(inflow1) + ': '
                                  + str(round(inflow1.sum(), 2)) + ' kWh')
-                    # TODO check how the buses are called
-                    # if comp['transformer type'] == \
-                    #        'absorption_heat_transformer':
-                    #    logging.info('   ' + 'Heat Input to '
-                    #                 + comp['label'] + ': '
-                    #                 + str(round(input2, 2)) + ' kWh')
-                    # if comp['transformer type'] == \
-                    #        'compression_heat_transformer':
-                    #    logging.info('   ' + 'Ambient Energy Input to '
-                    #                 + comp['label'] + ': '
-                    #                 + str(round(input2, 2)) + ' kWh')
-                    logging.info('   ' + 'Total Energy Output to '
+                    if transformer_type == 'absorption_heat_transformer':
+                        logging.info('   ' + 'Heat Input to'
+                                     + self.get_last_node_flow(inflow2) + ': '
+                                     + str(round(inflow2.sum(), 2)) + ' kWh')
+                    elif transformer_type == 'compression_heat_transformer':
+                        logging.info('   ' + 'Ambient Energy Input to'
+                                     + self.get_last_node_flow(inflow2) + ': '
+                                     + str(round(inflow2.sum(), 2)) + ' kWh')
+                    logging.info('   ' + 'Total Energy Output to'
                                  + self.get_last_node_flow(outflow1) + ': '
                                  + str(round(outflow1.sum(), 2)) + ' kWh')
                 logging.info('   ' + 'Max. Capacity: ' + str(capacity) + ' kW')
@@ -524,13 +520,18 @@ class Results:
             variable_costs = None
             periodical_costs = None
             constraint_costs = None
-            
+            transformer_type = None
            
 
             if i != 'buses_e' and i != 'buses_s':
                 self.log_category(i.upper())
             for j, comp in components_dict[i].iterrows():
                 if comp['active']:
+                    # needed due to the structure of thermal flat plate
+                    if i == 'sources' and comp[
+                            'technology'] == 'solar_thermal_flat_plate':
+                        comp['label'] = comp['label'] + '_collector'
+                        
                     if i == 'buses_e':
                         logging.info('   ' + comp['label'] + '_excess')
                     elif i == 'buses_s':
@@ -591,10 +592,6 @@ class Results:
                         self.df_result_table[comp_label] = self.comp_input1
                     # sources
                     elif i == "sources" or i == 'buses_s':
-                        print(self.comp_input1)
-                        print(self.comp_input2)
-                        print(self.comp_output1)
-                        print(self.comp_output2)
                         total_usage += self.comp_output1.sum()
                         comp_input = \
                             comp['input'] if 'input' in comp else 'None'
@@ -673,7 +670,9 @@ class Results:
 
                             self.df_result_table[
                                 comp['label'] + '_el_input'] = self.comp_input1
-
+                            
+                            transformer_type = comp['transformer type']
+                            
                             if comp['transformer type'] == \
                                     'absorption_heat_transformer':
                                 self.df_result_table[
@@ -746,7 +745,8 @@ class Results:
                         capacity=capacity,
                         variable_costs=variable_costs,
                         periodical_costs=periodical_costs,
-                        investment=investment)
+                        investment=investment,
+                        transformer_type=transformer_type)
 
                     self.insert_line_end_of_component()
         # SUMMARY
