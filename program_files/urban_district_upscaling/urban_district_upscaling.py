@@ -33,7 +33,7 @@ def create_standard_parameter_bus(label: str, bus_type: str, standard_parameters
     # extracts the bus specific standard values from the standard_parameters
     # dataset
     bus_standard_parameters = \
-        standard_parameters.parse('Buses', index_col='bus_type').loc[bus_type]
+        standard_parameters.parse('buses', index_col='bus_type').loc[bus_type]
     bus_standard_keys = bus_standard_parameters.keys().tolist()
     # addapt standard values
     for i in range(len(bus_standard_keys)):
@@ -62,13 +62,13 @@ def create_standard_parameter_link(label: str, bus_1: str, bus_2: str,
         :type link_type: str
     """
     link_house_specific_dict = {'label': label,
-                                'bus_1': bus_1,
-                                'bus_2': bus_2}
+                                'bus1': bus_1,
+                                'bus2': bus_2}
 
     # read the heat network standards from standard_parameters.xlsx and
     # append them to the link_house_specific_dict
     link_standard_parameters = \
-        standard_parameters.parse('Links', index_col='link_type') \
+        standard_parameters.parse('links', index_col='link_type') \
             .loc[link_type]
     link_standard_keys = link_standard_parameters.keys().tolist()
     for i in range(len(link_standard_keys)):
@@ -100,7 +100,7 @@ def create_standard_parameter_sink(sink_type: str, label: str,
         :type annual_demand: int
     """
     sink_standard_parameters = \
-        standard_parameters.parse('Sinks', index_col="sink_type") \
+        standard_parameters.parse('sinks', index_col="sink_type") \
             .loc[sink_type]
     sink_dict = {'label': label,
                  'input': sink_input,
@@ -182,7 +182,9 @@ def create_central_swhp(standard_parameters):
                                   standard_parameters=standard_parameters)
 
     # swhp transformer
-    swhp_standard_parameters = standard_parameters.parse('SWHP')
+    transformers_standard_parameters = standard_parameters.parse('transformers')
+    transformers_standard_parameters.set_index('comment', inplace=True)
+    swhp_standard_parameters = transformers_standard_parameters.loc['swhp_transformer']
     swhp_central_dict = {'label': 'central_swhp_transformer',
                          'comment': 'automatically_created',
                          'input': "central_swhp_elec_bus",
@@ -194,12 +196,12 @@ def create_central_swhp(standard_parameters):
     swhp_standard_keys = swhp_standard_parameters.keys().tolist()
     for i in range(len(swhp_standard_keys)):
         swhp_central_dict[swhp_standard_keys[i]] = \
-            swhp_standard_parameters[swhp_standard_keys[i]][0]
+            swhp_standard_parameters[swhp_standard_keys[i]]#[0]
 
     # produce a pandas series out of the dict above due to easier appending
     swhp_series = pd.Series(swhp_central_dict)
-    sheets["HeatPump&Chiller"] = \
-        sheets["HeatPump&Chiller"].append(swhp_series, ignore_index=True)
+    sheets["transformers"] = \
+        sheets["transformers"].append(swhp_series, ignore_index=True)
 
 
 def create_central_chp(gastype, standard_parameters):
@@ -226,14 +228,19 @@ def create_central_chp(gastype, standard_parameters):
         standard_parameters=standard_parameters)
 
     # chp transformer
-    chp_standard_parameters = standard_parameters.parse('CHP')
+    chp_standard_parameters = standard_parameters.parse(
+        'transformers')
+    # transformers_standard_parameters = standard_parameters.parse('transformers')
+    # transformers_standard_parameters.set_index('comment', inplace=True)
+    # ng_chp_standard_parameters = transformers_standard_parameters.loc['natural_gas_chp']
+    # bg_chp_standard_parameters = transformers_standard_parameters.loc['bio_gas_chp']
 
     chp_central_dict = {'label': gastype + '_chp_transformer',
                         'input': "chp_" + gastype + "_bus",
                         'output': "chp_" + gastype + "_elec_bus",
                         'output2': "district_heat_input_bus"
                         }
-    # read the gchp standards from standard_parameters.xlsx and append
+    # read the chp standards from standard_parameters.xlsx and append
     # them to the gchp_central_dict
     chp_standard_keys = chp_standard_parameters.keys().tolist()
     for i in range(len(chp_standard_keys)):
@@ -242,11 +249,11 @@ def create_central_chp(gastype, standard_parameters):
 
     # produce a pandas series out of the dict above due to easier appending
     chp_series = pd.Series(chp_central_dict)
-    sheets["GenericTransformer"] = sheets["GenericTransformer"].append(
+    sheets["transformers"] = sheets["transformers"].append(
         chp_series, ignore_index=True)
 
 
-def create_busses(id: str, pv_bus: bool, hp_elec_bus,
+def create_buses(id: str, pv_bus: bool, hp_elec_bus,
                   district_heat_bus, district_elec_bus, gchp, standard_parameters):
     """
         todo docstring
@@ -410,8 +417,8 @@ def create_pv_source(building_id, plant_id, azimuth, tilt, area,
     # technical parameters
     pv_house_specific_dict = \
         {'label': str(building_id) + '_' + str(plant_id) + '_pv_source',
-         'existing capacity /(kW)': 0,
-         'min. investment capacity /(kW)': 0,
+         'existing capacity': 0,
+         'min. investment capacity': 0,
          'output': str(building_id) + '_pv_bus',
          'Azimuth': azimuth,
          'Surface Tilt': tilt,
@@ -423,65 +430,71 @@ def create_pv_source(building_id, plant_id, azimuth, tilt, area,
     pv_standard_keys = pv_standard_parameters.keys().tolist()
     for i in range(len(pv_standard_keys)):
         pv_house_specific_dict[pv_standard_keys[i]] = \
-            pv_standard_parameters[pv_standard_keys[i]][0]
+            pv_standard_parameters[pv_standard_keys[i]]#[0]
 
-    pv_house_specific_dict['max. investment capacity /(kW)'] = \
-        pv_standard_parameters['Capacity per Area (kW/m2)'][0] * area
+    pv_house_specific_dict['max. investment capacity'] = \
+        pv_standard_parameters['Capacity per Area (kW/m2)']* area #[0] * area
 
     # produce a pandas series out of the dict above due to easier appending
     pv_series = pd.Series(pv_house_specific_dict)
-    sheets["PV"] = sheets["PV"].append(pv_series, ignore_index=True)
+    sheets["sources"] = sheets["sources"].append(pv_series, ignore_index=True)
 
 
 def create_gchp(id, area, standard_parameters):
     # gchp transformer
-    gchp_standard_parameters = standard_parameters.parse('GCHP')
+    # gchp_standard_parameters = standard_parameters.parse('GCHP')
+    transformers_standard_parameters = standard_parameters.parse('transformers')
+    transformers_standard_parameters.set_index('comment', inplace=True)
+    gchp_standard_parameters = transformers_standard_parameters.loc['gchp_transformer']
 
     gchp_house_specific_dict = {'label': str(id) + '_gchp_transformer',
                                 'comment': 'automatically_created',
                                 'input': str(id) + '_hp_elec_bus',
                                 'output': str(id) + '_heat_bus',
                                 'output2': 'None',
-                                'area /(sq m)': area,
-                                'existing capacity /(kW)': 0,
-                                'min. investment capacity /(kW)': 0}
+                                'area': area,
+                                'existing capacity': 0,
+                                'min. investment capacity': 0}
 
     # read the gchp standards from standard_parameters.xlsx and append
     # them to the gchp_house_specific_dict
     gchp_standard_keys = gchp_standard_parameters.keys().tolist()
     for i in range(len(gchp_standard_keys)):
         gchp_house_specific_dict[gchp_standard_keys[i]] = \
-            gchp_standard_parameters[gchp_standard_keys[i]][0]
+            gchp_standard_parameters[gchp_standard_keys[i]]#[0]
 
     # produce a pandas series out of the dict above due to easier appending
     gchp_series = pd.Series(gchp_house_specific_dict)
-    sheets["HeatPump&Chiller"] = \
-        sheets["HeatPump&Chiller"].append(gchp_series, ignore_index=True)
+    sheets["transformers"] = \
+        sheets["transformers"].append(gchp_series, ignore_index=True)
 
 
 def create_ashp(id, standard_parameters):
     # ashp transformer
-    ashp_standard_parameters = standard_parameters.parse('ASHP')
+    # ashp_standard_parameters = standard_parameters.parse('ASHP')
+    transformers_standard_parameters = standard_parameters.parse('transformers')
+    transformers_standard_parameters.set_index('comment', inplace=True)
+    ashp_standard_parameters = transformers_standard_parameters.loc['ashp_transformer']
 
     ashp_house_specific_dict = {'label': str(id) + '_ashp_transformer',
                                 'comment': 'automatically_created',
                                 'input': str(id) + '_hp_elec_bus',
                                 'output': str(id) + '_heat_bus',
                                 'output2': 'None',
-                                'existing capacity /(kW)': 0,
-                                'min. investment capacity /(kW)': 0}
+                                'existing capacity': 0,
+                                'min. investment capacity': 0}
 
     # read the ashp standards from standard_parameters.xlsx and append
     # them to the ashp_house_specific_dict
     ashp_standard_keys = ashp_standard_parameters.keys().tolist()
     for i in range(len(ashp_standard_keys)):
         ashp_house_specific_dict[ashp_standard_keys[i]] = \
-            ashp_standard_parameters[ashp_standard_keys[i]][0]
+            ashp_standard_parameters[ashp_standard_keys[i]]#[0]
 
     # produce a pandas series out of the dict above due to easier appending
     ashp_series = pd.Series(ashp_house_specific_dict)
-    sheets["HeatPump&Chiller"] = \
-        sheets["HeatPump&Chiller"].append(ashp_series, ignore_index=True)
+    sheets["transformers"] = \
+        sheets["transformers"].append(ashp_series, ignore_index=True)
 
 
 def create_gas_heating(id, standard_parameters):
@@ -491,7 +504,13 @@ def create_gas_heating(id, standard_parameters):
                                   standard_parameters=standard_parameters)
 
     # gas heating transformer
-    gas_heating_standard_parameters = standard_parameters.parse('Gasheating')
+    #gas_heating_standard_parameters = standard_parameters.parse('transformers')
+
+    transformers_standard_parameters = standard_parameters.parse('transformers')
+    transformers_standard_parameters.set_index('comment', inplace=True)
+    gas_heating_standard_parameters = transformers_standard_parameters.loc[
+        'gasheating_transformer']
+
 
     # define individual gas_heating_parameters
     gas_heating_house_specific_dict = \
@@ -506,12 +525,12 @@ def create_gas_heating(id, standard_parameters):
     gas_heating_standard_keys = gas_heating_standard_parameters.keys().tolist()
     for i in range(len(gas_heating_standard_keys)):
         gas_heating_house_specific_dict[gas_heating_standard_keys[i]] = \
-            gas_heating_standard_parameters[gas_heating_standard_keys[i]][0]
+            gas_heating_standard_parameters[gas_heating_standard_keys[i]]#[0]
 
     # produce a pandas series out of the dict above due to easier appending
     gas_heating_series = pd.Series(gas_heating_house_specific_dict)
-    sheets["GenericTransformer"] = \
-        sheets["GenericTransformer"] \
+    sheets["transformers"] = \
+        sheets["transformers"] \
             .append(gas_heating_series, ignore_index=True)
 
 
@@ -528,65 +547,95 @@ def create_battery(id, battery_standard_parameters):
     battery_standard_keys = battery_standard_parameters.keys().tolist()
     for i in range(len(battery_standard_keys)):
         battery_house_specific_dict[battery_standard_keys[i]] = \
-            battery_standard_parameters[battery_standard_keys[i]][0]
+            battery_standard_parameters[battery_standard_keys[i]]#[0]
 
     # produce a pandas series out of the dict above due to easier appending
     battery_series = pd.Series(battery_house_specific_dict)
-    sheets["GenericStorage"] = \
-        sheets["GenericStorage"].append(battery_series, ignore_index=True)
+    sheets["storages"] = \
+        sheets["storages"].append(battery_series, ignore_index=True)
 
 
 def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: str, output_scenario: str,
                                   plain_sheet: str):
+    # todo: docstrings
+
+    print('Creating scenario sheet...')
     xls = pd.ExcelFile(plain_sheet)
     standard_parameters = pd.ExcelFile(standard_parameter_path)
 
-    energysystem_columns = xls.parse("energysystem").keys()
-    buses_columns = xls.parse("buses").keys()
-    sinks_columns = xls.parse("sinks").keys()
-    pv_columns = xls.parse("PV").keys()
-    concentradedsolar_columns = xls.parse("ConcentratedSolar").keys()
-    flatplate_columns = xls.parse("FlatPlate").keys()
-    timeseries_columns = xls.parse("Timeseries").keys()
-    wind_columns = xls.parse("Wind").keys()
-    commodity_columns = xls.parse("Commodity").keys()
-    generictransformer_columns = xls.parse("GenericTransformer").keys()
-    genericchp_columns = xls.parse("GenericCHP").keys()
-    heatpumps_columns = xls.parse("HeatPump&Chiller").keys()
-    absorptionchiller_columns = xls.parse("AbsorptionChiller").keys()
-    genericstorage_columns = xls.parse("GenericStorage").keys()
-    stratifiedstorage_columns = xls.parse("StratifiedStorage").keys()
-    links_columns = xls.parse("links").keys()
-    weatherdata_columns = xls.parse("weather data").keys()
 
-    columns = {"energysystem": energysystem_columns,
-               "buses": buses_columns,
-               "sinks": sinks_columns,
-               "PV": pv_columns,
-               "ConcentratedSolar": concentradedsolar_columns,
-               "FlatPlate": flatplate_columns,
-               "Timeseries": timeseries_columns,
-               "Wind": wind_columns,
-               "Commodity": commodity_columns,
-               "GenericTransformer": generictransformer_columns,
-               "GenericCHP": genericchp_columns,
-               "HeatPump&Chiller": heatpumps_columns,
-               "AbsorptionChiller": absorptionchiller_columns,
-               "GenericStorage": genericstorage_columns,
-               "StratifiedStorage": stratifiedstorage_columns,
-               "links": links_columns,
-               "weather data": weatherdata_columns,
-               "time_series": [0, 1],
-               "competition_constraint": [0, 1]
-               # todo: placeholder, to be deleted
-               }
+    sheet_names = xls.sheet_names
+    columns = {}
+    for i in range(1, len(sheet_names)):
+        columns[sheet_names[i]] = xls.parse(sheet_names[i]).keys()
+
+
+    #
+    # energysystem_columns = xls.parse("energysystem").keys()
+    # competition_constraints_columns = xls.parse("competition constraints").keys()
+    # buses_columns = xls.parse("buses").keys()
+    # sinks_columns = xls.parse("sinks").keys()
+    # sources_columns = xls.parse("sources").keys()
+    # transformers_columns = xls.parse("transformers").keys()
+    # storages_columns = xls.parse("storages").keys()
+    # links_columns = xls.parse("links").keys()
+    # time_series_columns = xls.parse("time series").keys()
+    # weather_data_columns = xls.parse("weather data").keys()
+    #
+    # columns = {"energysystem": energysystem_columns,
+    #            "competition constraints": competition_constraints_columns,
+    #            "buses": buses_columns,
+    #            "sinks": sinks_columns,
+    #            "sources": sources_columns,
+    #            "PV": pv_columns,
+    #            "ConcentratedSolar": concentradedsolar_columns,
+    #            "FlatPlate": flatplate_columns,
+    #            "Timeseries": timeseries_columns,
+    #            "Wind": wind_columns,
+    #            "Commodity": commodity_columns,
+    #            "GenericTransformer": generictransformer_columns,
+    #            "GenericCHP": genericchp_columns,
+    #            "HeatPump&Chiller": heatpumps_columns,
+    #            "AbsorptionChiller": absorptionchiller_columns,
+    #            "GenericStorage": genericstorage_columns,
+    #            "StratifiedStorage": stratifiedstorage_columns,
+    #            "links": links_columns,
+    #            "weather data": weatherdata_columns,
+    #            "time series": [0, 1],
+    #            "competition_constraint": [0, 1]
+    #            # todo: placeholder, to be deleted
+    #            }
 
     worksheets = [i for i in columns.keys()]
     global sheets
     sheets = {}
     for sheet in worksheets:
         sheets.update({sheet: pd.DataFrame(columns=(columns[sheet]))})
-    sheets.update({"competition_constraint": pd.DataFrame()})
+
+    # # adding unit and description row
+    # for sheet_names in worksheets:
+    #     print(sheet_names)
+    #     # print(sheets.get(sheet_names))
+    #     # print(xls.parse(sheet_names).loc(1))
+    #     specific_sheet = xls.parse(sheet_names)
+    #     if sheet_names == 'sinks':
+    #
+    #         specific_sheet.set_index('label', inplace=True)
+    #         print(specific_sheet)
+    #         specific_row = specific_sheet['Einheiten']
+    #     else:
+    #         specific_row = specific_sheet.loc[0]
+    #     # print(specific_row)
+    #
+    #     sheets[sheet_names] = sheets[sheet_names].append(specific_row, ignore_index=True)
+
+        # pv_series = pd.Series(pv_house_specific_dict)
+        # sheets["sources"] = sheets["sources"].append(pv_series,
+        #                                              ignore_index=True)
+    print(sheets)
+
+
+    #sheets.update({"competition_constraint": pd.DataFrame()})
     # import the sheet which is filled by the user
     xls = pd.ExcelFile(pre_scenario)
     tool = xls.parse("tool")
@@ -608,7 +657,7 @@ def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: st
             central_electricity_network = True
     for i, j in tool.iterrows():
         # foreach building the three necessary buses will be created
-        create_busses(j['label'],
+        create_buses(j['label'],
                       True if j['azimuth 1 (°)'] or j['azimuth 2 (°)'] else False,
                       True if j['gchp area (m2)'] or j['ashp'] else False,
                       True if ((j['district heat'] == 'yes'
@@ -627,6 +676,11 @@ def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: st
                      area=j['living space'] * j['floors'],
                      standard_parameters=standard_parameters)
 
+        # Define PV Standard-Parameters
+        sources_standard_parameters = standard_parameters.parse('sources')
+        sources_standard_parameters.set_index('comment', inplace = True)
+        pv_standard_parameters = sources_standard_parameters.loc['fixed photovoltaic source']
+
         # create pv-sources
         if j['azimuth 1 (°)']:
             create_pv_source(building_id=j['label'],
@@ -636,8 +690,9 @@ def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: st
                              area=j['roof area 1 (m²)'],
                              latitude=j['latitude'],
                              longitude=j['longitude'],
-                             pv_standard_parameters=
-                             standard_parameters.parse('PV'))
+                             pv_standard_parameters=pv_standard_parameters)
+
+
 
         if j['azimuth 2 (°)']:
             create_pv_source(building_id=j['label'],
@@ -647,8 +702,7 @@ def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: st
                              area=j['roof area 2 (m²)'],
                              latitude=j['latitude'],
                              longitude=j['longitude'],
-                             pv_standard_parameters=
-                             standard_parameters.parse('PV'))
+                             pv_standard_parameters=pv_standard_parameters)
 
         if j['azimuth 3 (°)']:
             create_pv_source(building_id=j['label'],
@@ -658,8 +712,7 @@ def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: st
                              area=j['roof area 3 (m²)'],
                              latitude=j['latitude'],
                              longitude=j['longitude'],
-                             pv_standard_parameters=
-                             standard_parameters.parse('PV'))
+                             pv_standard_parameters=pv_standard_parameters)
 
         if j['azimuth 4 (°)']:
             create_pv_source(building_id=j['label'],
@@ -669,8 +722,7 @@ def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: st
                              area=j['roof area 4 (m²)'],
                              latitude=j['latitude'],
                              longitude=j['longitude'],
-                             pv_standard_parameters=
-                             standard_parameters.parse('PV'))
+                             pv_standard_parameters=pv_standard_parameters)
 
         if j['azimuth 5 (°)']:
             create_pv_source(building_id=j['label'],
@@ -680,8 +732,7 @@ def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: st
                              area=j['roof area 5 (m²)'],
                              latitude=j['latitude'],
                              longitude=j['longitude'],
-                             pv_standard_parameters=
-                             standard_parameters.parse('PV'))
+                             pv_standard_parameters=pv_standard_parameters)
 
         # creates heat-pumps
         if j['gchp area (m2)']:
@@ -700,12 +751,18 @@ def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: st
                                standard_parameters=standard_parameters)
 
         # battery storage
+
+        # Define battery Standard-Parameters
+        storages_standard_parameters = standard_parameters.parse('storages')
+        storages_standard_parameters.set_index('comment', inplace = True)
+        battery_standard_parameters = storages_standard_parameters.loc['battery storage']
+
+
         if j['battery storage'] == 'yes' or j['battery storage'] == 'Yes' \
                 or j['battery storage'] == 1:
             create_battery(
                 id=j['label'],
-                battery_standard_parameters=
-                standard_parameters.parse('Battery'))
+                battery_standard_parameters=battery_standard_parameters)
 
         print(str(j['label']) + ' subsystem added to scenario sheet.')
 
@@ -718,16 +775,17 @@ def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: st
                                   standard_parameters=standard_parameters)
 
     # adds weather data to "weather data"-sheet
-    copy_standard_parameter_sheet(sheet_tbc='time_series',
+    copy_standard_parameter_sheet(sheet_tbc='time series',
                                   standard_parameters=standard_parameters)
     # open the new excel file and add all the created components
     j = 0
     writer = pd.ExcelWriter(output_scenario,
                             engine='xlsxwriter')
+
     for i in sheets:
         sheets[i].to_excel(writer, worksheets[j], index=False)
         j = j + 1
-    print("All subsystems added. Now you can execute the SESMG.")
+    print("Scenario created. It can now be executed.")
     writer.save()
 
 
