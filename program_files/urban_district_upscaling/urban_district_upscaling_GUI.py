@@ -1,9 +1,9 @@
 import os
 from tkinter import *
 from tkinter import filedialog
-from program_files.urban_district_upscaling.urban_district_upscaling \
+from urban_district_upscaling.urban_district_upscaling \
     import urban_district_upscaling_tool
-from program_files.urban_district_upscaling.urban_district_upscaling_post_processing \
+from urban_district_upscaling.urban_district_upscaling_post_processing \
     import urban_district_upscaling_post_processing
 
 
