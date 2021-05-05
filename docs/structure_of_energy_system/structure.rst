@@ -387,7 +387,7 @@ Links can be used to connect two buses or to display transport losses of
 networks. Links are not represented by a separate oemof class, they are
 rather represented by transformers. In order to map a loss-free
 connection between two buses, an efficiency of 1 is used. If a link is
-undirected, a separate transformer must be used for each direction. 
+undirected, a separate transformer is used for each direction. 
 In an energy system, links can represent, for
 example, electrical powerlines, gas pipelines, district heating
 distribution networks or similar.
