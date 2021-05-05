@@ -551,12 +551,6 @@ class Results:
                     # create class intern dataframes consisting the flows
                     # of given component
                     self.create_flow_dataframes(comp, component)
-
-                    print(self.comp_input1)
-                    print(self.comp_input2)
-                    print(self.comp_output1)
-                    print(self.comp_output2)
-                    print(self.comp_capacity)
                     
                     if i != 'buses_s' and i != 'buses_e' and i != "sinks":
                         # get the investment on component out of results
