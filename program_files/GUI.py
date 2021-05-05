@@ -123,7 +123,6 @@ def getFolderPath():
     """ opens a file dialog and sets the selected path for the variable "scenario_path" """
 
     path = filedialog.askopenfilename(filetypes=(("Spreadsheet Files", "*.xlsx"), ("all files", "*.*")))
-    print(path)
 
     scenario_path.set(path)
     print(scenario_path.get())
