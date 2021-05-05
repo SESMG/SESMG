@@ -2,7 +2,7 @@ Structure of Energy Systems
 *************************************************
 
 Energy systems in the sense of the Spreadseet Energy System Model Generator are designed according to the 
-specifications of the `oemof <https://oemof.readthedocs.io/en/stable/index.html>`_ library. Accordingly, 
+specifications of the `oemof <https://oemof.org>`_ library. Accordingly, 
 energy systems can be represented with the help of mathematical graph theory. Thus, energy systems are 
 exemplified as "graphs" consisting of sets of "vertices" and "edges". In more specific terms, vertices 
 stand for components and buses while directed edges connect them. The status variable of the energy flow 
@@ -48,7 +48,7 @@ Sources
 =================================================
 
 Sources represent the provision of energy. This can either 
-be the exploitation of of an energy source (e.g. 
+be the exploitation of an energy source (e.g. 
 gas storage reservoir or solar energy, no energy source in 
 physical sense), or the simplified energy import from 
 adjacent energy systems. While some sources may have 
