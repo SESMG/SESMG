@@ -451,15 +451,10 @@ demo_frame1 = demo_tool.demo_frame_class(window, tab_control, demo_frame)
 # add picture
 if sys.platform.startswith("win"):
     img = PhotoImage(
-        file='examples/v0.0.6_demo_scenario/DEMO_System.png')
-elif sys.platform.startswith("linux"):
-    img = PhotoImage(file=
-                     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                     +'/examples/v0.0.6_demo_scenario/DEMO_System.png')
+        file='program_files/Demo_Tool/v0.0.6_demo_scenario/DEMO_System.png')
 else:
-    img = PhotoImage(file=
-                     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                     +'/examples/v0.0.6_demo_scenario/DEMO_System.png')
+    img = PhotoImage(file=os.path.dirname(os.path.abspath(__file__))
+                     + '/Demo_Tool/v0.0.6_demo_scenario/DEMO_System.png')
 img = img.subsample(2, 2)
 lab = Label(master=demo_frame,image=img)\
         .grid(column=0, columnspan=4, row=19, rowspan=40)
