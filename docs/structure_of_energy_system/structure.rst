@@ -91,27 +91,27 @@ the reflected part depends on the magnitude of the albedo of the ground material
 listed in the following table.
 
 +---------------------------+--------------------------------+
-| Material 					| Consumer Group                 |
+| Material 					| Consumer Group                         |
 +===========================+================================+
 |   herbage (july, august)	| 0.25                           |
 +---------------------------+--------------------------------+
-|   pasture		   			| 0.18 - 0.23                    |
+|   pasture		   			      | 0.18 - 0.23                    |
 +---------------------------+--------------------------------+
-|   uncoppied fields	   	| 0.26            		         |
+|   uncoppied fields	   	  | 0.26            		           |
 +---------------------------+--------------------------------+
-|   woods   				| 0.05 - 0.18 					 |
+|   woods   				        | 0.05 - 0.18 					         |
 +---------------------------+--------------------------------+
-|   heath area 		  		| 0.10 - 0.25                    |
+|   heath area 		  	    	| 0.10 - 0.25                    |
 +---------------------------+--------------------------------+
-|   asphalt   				| 0.15                           |
+|   asphalt   			      	| 0.15                           |
 +---------------------------+--------------------------------+
-|   concrete, clean   		| 0.30                           |
+|   concrete, clean     		| 0.30                           |
 +---------------------------+--------------------------------+
-|   concrete, weathered		| 0.20                           |
+|   concrete, weathered	  	| 0.20                           |
 +---------------------------+--------------------------------+
-|   snow cover, fresh   	| 0.80 - 0.90                    |
+|   snow cover, fresh      	| 0.80 - 0.90                    |
 +---------------------------+--------------------------------+
-|   snow cover, old     	| 0.45 - 0.70                    |
+|   snow cover, old       	| 0.45 - 0.70                    |
 +---------------------------+--------------------------------+
 
 **Wind Turbines**
@@ -284,17 +284,17 @@ of heat standard load profiles. The following location classes may be considered
 
 
 +----------+--------------------------------------------------------------------------------+
-| Category | Building Location                                             					|
+| Category | Building Location                                             			        		|
 +==========+================================================================================+
-| 11       | Germany, nationwide                                           					|
+| 11       | Germany, nationwide                                           		        			|
 +----------+--------------------------------------------------------------------------------+
-| 1        | Bremen                                                       					|
+| 1        | Bremen                                                       		        			|
 +----------+--------------------------------------------------------------------------------+
-| 2        | Hamburg, Saarland                                            					|
+| 2        | Hamburg, Saarland                                            		        			|
 +----------+--------------------------------------------------------------------------------+
-| 3        | Berlin , Hessen, Lower Saxony, North Rhine-Westphalia         					|
+| 3        | Berlin , Hessen, Lower Saxony, North Rhine-Westphalia         		        			|
 +----------+--------------------------------------------------------------------------------+
-| 4        | Baden-Württemberg, Rhineland-Paatinate, Schleswig-Holstein, Saxony 			|
+| 4        | Baden-Württemberg, Rhineland-Paatinate, Schleswig-Holstein, Saxony 	      		|
 +----------+--------------------------------------------------------------------------------+
 | 5        | Brandenburg, Bavaria, Mecklenburg-Western Pomerania, Saxony-Anhalt, Thuringia 	|
 +----------+--------------------------------------------------------------------------------+
