@@ -848,7 +848,6 @@ class Sinks:
             os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
         # Importing timesystem parameters from the scenario
         nd = pd.read_excel(filepath, sheet_name='energysystem')
-        nd = nd.drop(index=0)
         ts = next(nd.iterrows())[1]
         temp_resolution = ts['temporal resolution']
         periods = ts["periods"]
