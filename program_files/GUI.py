@@ -266,18 +266,16 @@ def show_results():
 
     # Starts the new Plotly Dash Server for Windows
     if sys.platform.startswith("win"):
-        IR_PATH = os.path.join(os.path.dirname(__file__) + '/program_files')
-        subprocess.call(IR_PATH + "/Interactive_Results.py "
-                        + 'r"'+save_path.get()+'"', timeout=10, shell=True)
+        subprocess.call(
+                "Scripts\python.exe" + " program_files/Interactive_Results.py "
+                + 'r"' + save_path.get() + '"', timeout=10, shell=True)
     # Starts the new Plotly Dash Server for MACOS
     elif sys.platform.startswith("darwin"):
         IR_PATH = os.path.dirname(os.path.abspath(__file__))
-        IR_PATH = IR_PATH + '/program_files'
         subprocess.call("python3 " + IR_PATH + "/Interactive_Results.py "
                         + str(save_path.get()), timeout=10, shell=True)
     elif sys.platform.startswith("linux"):
         IR_PATH = os.path.dirname(os.path.abspath(__file__))
-        IR_PATH = IR_PATH + '/program_files'
         subprocess.call("python3 " + IR_PATH + "/Interactive_Results.py "
                         + str(save_path.get()), timeout=10, shell=True)
 
