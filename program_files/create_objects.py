@@ -448,7 +448,7 @@ class Sources:
             :param data: weather data
             :type data: dict
 
-            Yannick Wittor - yw090223@fh-muenster.de, 27.11.2020
+            Yannick Wittor - yw090223@fh-muenster.de
         """
 
         # import oemof.thermal in order to calculate collector heat output
@@ -1238,8 +1238,8 @@ class Transformers:
             :param data: weather data
             :type data: dict
 
-            Janik Budde - Janik.Budde@fh-muenster.de, 30.07.2020
-            Yannick Wittor - yw090223@fh-muenster.de, 07.01.2021
+            Janik Budde - Janik.Budde@fh-muenster.de
+            Yannick Wittor - yw090223@fh-muenster.de
         """
         
         # import oemof.thermal in order to calculate the cop
@@ -1547,7 +1547,7 @@ class Transformers:
             :param data: weather data
             :type data: dict
 
-            Yannick Wittor - yw090223@fh-muenster.de, 07.01.2021
+            Yannick Wittor - yw090223@fh-muenster.de
         """
         # import oemof.thermal in order to calculate COP
         import oemof.thermal.absorption_heatpumps_and_chillers \
@@ -1846,7 +1846,7 @@ class Storages:
 
             :type s: dict
 
-            Yannick Wittor - yw090223@fh-muenster.de, 26.01.2021
+            Yannick Wittor - yw090223@fh-muenster.de
         """
         # import functions for stratified thermal storages from oemof thermal
         from oemof.thermal.stratified_thermal_storage import calculate_losses
