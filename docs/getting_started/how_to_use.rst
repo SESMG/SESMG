@@ -191,7 +191,7 @@ The following parameters have to be entered:
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the transformer shall be included to the model. 0 = inactive, 1 = active.
 - **transformer type**: Indicates what kind of transformer it is. Possible entries: "GenericTransformer" for linear transformers with constant efficiencies; "GenericCHP" for transformers with varying efficiencies.
-- **mode**: Specifies, if a compression or absorption heat transformer is working as "chiller" or "heat_pump". Only required if "transformer type" is set to "compression_heat_transformer" or "absorption_heat_transformer". Otherwise has to be set to "x", "X", "None", "none", "0" or just blank.
+- **mode**: Specifies, if a compression or absorption heat transformer is working as "chiller" or "heat_pump". Only required if "transformer type" is set to "CompressionHeatTransformer" or "AbsorptionHeatTransformer". Otherwise has to be set to "x", "X", "None", "none", "0" or just blank.
 - **input**: Specifies the bus from which the input to the transformer comes from.
 - **output**: Specifies bus to which the output of the transformer is forwarded to.
 - **output2**: Specifies the bus to which the output of the transformer is forwarded to, if there are several outputs. If there is no second output, the fill character "x" must be entered here.
@@ -211,7 +211,7 @@ The following parameters have to be entered:
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
 - **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
 
-**The following parameters are only required, if "transformer type" is set to "compression_heat_transformer"**:
+**The following parameters are only required, if "transformer type" is set to "CompressionHeatTransformer"**:
 
 - **heat source (CHT)**: Specifies the heat source. Possible heat sources are "GroundWater", "Ground", "Air" and "Water" possible.
 - **temperature high /deg C (CHT)**: Temperature of the high temperature heat reservoir. Only required if "mode" is set to "heat_pump".
@@ -224,21 +224,21 @@ The following parameters have to be entered:
 - **temp threshold icing (CHT)**: Temperature below which icing occurs (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
 - **factor icing (CHT)**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
 
-**The following parameters are only required, if "transformer type" is set to "absorption_heat_transformer"**:
+**The following parameters are only required, if "transformer type" is set to "AbsorptionHeatTransformer"**:
 
-- **name (AbsCH)**: Defines the way of calculating the efficiency of the absorption heat transformer. Possible inputs are: "Rotartica", "Safarik", "Broad_01", "Broad_02", and "Kuehn". "Broad_02" refers to a double-effect absorption chiller model, whereas the other keys refer to single-effect absorption chiller models.
+- **name (AbsCH)**: Defines the way of calculating the efficiency of the absorption heat transformer. Possible inputs are: "Rotartica", "Safarik", "Broad_01", "Broad_02", and "Kuehn". More information can be found in the documentation about the structure of an energy system.
 - **high temperature /deg C (AbsCH)**: Temperature of the heat source, that drives the absorption heat transformer.
 - **chilling temperature /deg C (AbsCH)**: Output temperature which is needed for the cooling demand.
 - **electrical input conversion factor (AbsCH)**: Specifies the relation of electricity consumption to energy input. Example: A value of 0,05 means, that the system comsumes 5 % of the input energy as electric energy.
 - **recooling temperature difference /deg C (AbsCH)**: Defines the temperature difference between temperature source for recooling and recooling cycle.
+- **heat capacity of source /kW (AbsCH)**: Defines the heat capacity of the connected heat source e.g. extracted waste heat.
 
-  
 .. csv-table:: Exemplary input for the transformers sheet
-   :header: label,comment,active,transformer type,mode,input,output,output2,efficiency,efficiency2,variable input costs /(CU/kWh),variable output costs /(CU/kWh),variable output costs 2 /(CU/kWh),variable input constraint costs /(CU/kWh),variable output constraint costs /(CU/kWh),variable output constraint costs 2 /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),heat source (CHT),temperature high /deg C (CHT),temperature low /deg C (CHT),quality grade (CHT),area /(sq m) (CHT),length of the geoth. probe /m (CHT),heat extraction /(kW/(m*a)) (CHT),min. borehole area /(sq m) (CHT),temp threshold icing (CHT),factor icing (CHT),name (AbsCH),high temperature /deg C (AbsCH),chilling temperature /deg C (AbsCH),electrical input conversion factor (AbsCH),recooling temperature difference /deg C (AbsCH)
+   :header: label,comment,active,transformer type,mode,input,output,output2,efficiency,efficiency2,variable input costs /(CU/kWh),variable output costs /(CU/kWh),variable output costs 2 /(CU/kWh),variable input constraint costs /(CU/kWh),variable output constraint costs /(CU/kWh),variable output constraint costs 2 /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),heat source (CHT),temperature high /deg C (CHT),temperature low /deg C (CHT),quality grade (CHT),area /(sq m) (CHT),length of the geoth. probe /m (CHT),heat extraction /(kW/(m*a)) (CHT),min. borehole area /(sq m) (CHT),temp threshold icing (CHT),factor icing (CHT),name (AbsCH),high temperature /deg C (AbsCH),chilling temperature /deg C (AbsCH),electrical input conversion factor (AbsCH),recooling temperature difference /deg C (AbsCH),heat capacity of source /kW (AbsCH)
 
-   tr0001_electricity_transformer,,1,GenericTransformer,,bus002_electricity_bus,bus001_electricity_bus,x,0.85,x,0.01,0,0,0.1,0.2,0,1000,0,1000,60,0.1,0,0,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x
-   tr0002_airsource_heat_pump,,1,compression_heat_transformer,heat_pump,bus001_electricity_bus,bus001_heat_bus,None,0.95,x,10,0,x,0.1,0.1,x,10,10,100,50,0.1,0,0,Air,40,x,0.4,0,0,0,0,3,0.8,x,x,x,x,x
-   tr0003_absorption_chiller,,1,absorption_heat_transformer,chiller,bus001_electricity_bus,bus001_cooling_bus,None,0.95,x,5,0,x,0.1,0.1,x,10,10,100,50,0.1,0,0,x,x,x,x,x,x,x,x,x,x,Kuehn,85,10,0.05,6
+   tr0001_electricity_transformer,,1,GenericTransformer,,bus002_electricity_bus,bus001_electricity_bus,x,0.85,x,0.01,0,0,0.1,0.2,0,1000,0,1000,60,0.1,0,0,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x
+   tr0002_airsource_heat_pump,,1,CompressionHeatTransformer,heat_pump,bus001_electricity_bus,bus001_heat_bus,None,0.95,x,10,0,x,0.1,0.1,x,10,10,100,50,0.1,0,0,Air,40,x,0.4,0,0,0,0,3,0.8,x,x,x,x,x,x
+   tr0003_absorption_chiller,,1,AbsorptionHeatTransformer,chiller,bus001_electricity_bus,bus001_cooling_bus,None,0.95,x,5,0,x,0.1,0.1,x,10,10,100,50,0.1,0,0,x,x,x,x,x,x,x,x,x,x,Kuehn,85,10,0.05,6,100
  
 
 	
@@ -259,11 +259,11 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **active**: Specifies whether the storage shall be included to the model. 0 = inactive, 1 = active.
 - **storage type**: Defines whether the storage is a "Generic" or a "Stratified" sorage. These two inputs are possible.
 - **bus**: Specifies which bus the storage is connected to.
-- **existing capacity/(kW)**: Previously installed capacity of the storage.
-- **min. investment capacity/(kW)**: Minimum storage capacity to be installed.
-- **max. investment capacity/(kW)**: Maximum in addition to existing capacity, installable storage capacity.
-- **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
-- **periodical constraint costs /(CU/a)**: Only if considering constraints. Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet.
+- **existing capacity /(kWh)**: Previously installed capacity of the storage.
+- **min. investment capacity /(kWh)**: Minimum storage capacity to be installed.
+- **max. investment capacity /(kWh)**: Maximum in addition to existing capacity, installable storage capacity.
+- **periodical costs /(CU/(kWh a))**: Costs incurred per kW for investments within the time horizon.
+- **periodical constraint costs /(CU/(kWh a))**: Only if considering constraints. Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet.
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
 - **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
 - **input/capacity ratio (invest)**: Indicates the performance with which the memory can be charged.
@@ -276,19 +276,12 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **capacity max**: Specifies the maximum amount of memory that can be loaded at any given time. Value must be between 0 and 1.
 - **variable input costs**: Indicates how many costs arise for charging with one kWh.
 - **variable output costs**: Indicates how many costs arise for charging with one kWh.
-- **variable input constraint costs**: Only if considering constraints. Indicates how many costs arise for charging with one kWh referring to the constraint limit set in the "energysystem" sheet.
-- **variable output constraint costs**: Only if considering constraints. Indicates how many costs arise for charging with one kWh referring to the constraint limit set in the "energysystem" sheet.
+- **variable input constraint costs /(CU/kWh)**: Only if considering constraints. Indicates how many costs arise for charging with one kWh referring to the constraint limit set in the "energysystem" sheet.
+- **variable output constraint costs /(CU/kWh)**: Only if considering constraints. Indicates how many costs arise for charging with one kWh referring to the constraint limit set in the "energysystem" sheet.
 - **diameter /m (Stratified Storage)**: Defines the diameter of a stratified thermal storage, which is necessary for the calculation of thermal losses.
 - **temperature high /deg C (Stratified Storage)**: Outlet temperature of the stratified thermal storage.
 - **temperature low /deg C (Stratified Storage)**: Inlet temperature of the stratified thermal storage.
 - **U value /(W/(sqm*K)) (Stratified Storage)**: Thermal transmittance coefficient
-- **existing capacity/(kW)**: Previously installed capacity of the storage.
-- **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
-- **max. investment capacity/(kW)**: Maximum in addition to existing capacity, installable storage capacity.
-- **min. investment capacity/(kW)**: Minimum storage capacity to be installed.
-- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
-- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
-
 
 .. csv-table:: Exemplary input for the storages sheet
    :header: label,comment,active,storage type,bus,existing capacity /(kWh),min. investment capacity /(kWh),max. investment capacity /(kWh),periodical costs /(CU/(kWh a)),periodical constraint costs /(CU/(kWh a)),Non-Convex Investment,Fix Investment Costs /(CU/a),input/capacity ratio (invest),output/capacity ratio (invest),capacity loss (Generic only),efficiency inflow,efficiency outflow,initial capacity,capacity min,capacity max,variable input costs,variable output costs,variable input constraint costs /(CU/kWh),variable output constraint costs /(CU/kWh),diameter /(m) (Stratified Storage),temperature high /(deg C) (Stratified Storage),temperature low /(deg C) (Stratified Storage),U value /(W/(sqm*K)) (Stratified Storage)
@@ -352,7 +345,7 @@ with the "technology" property "timeseries". The following parameters have to be
  
  
 .. csv-table:: Exemplary input for time series sheet
-   :header: timestamp,residential_electricity_demand.actual_value,fixed_timeseries_electricty_source.fix, unfixed_timeseries_electricty_source.min,unfixed_timeseries_electricty_source.max,fixed_timeseries_electricity_sink.fix,unfixed_timeseries_electricity_sink.min,unfixed_timeseries_electricity_sink.max,fixed_timeseries_cooling_demand_sink.fix
+   :header: timestamp,residential_electricity_demand.actual_value,fixed_timeseries_electricty_source.fix, unfixed_timeseries_electricty_source.min,unfixed_timeseries_electricty_source.max,fixed_timeseries_electricity_sink.fix,unfixed_timeseries_electricity_sink.min,unfixed_timeseries_electricity_sink.max,building001_fixed_timeseries_cooling_demand.fix
 
    2012-01-01 00:00:00,0.559061982,0.000000,0.000000,1.000000,0.000000,0.000000,1.000000,100
    2012-01-01 01:00:00,0.533606486,0.041667,0.000000,0.500000,0.041667,0.000000,0.500000,100
