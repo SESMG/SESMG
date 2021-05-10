@@ -84,8 +84,6 @@ def create_graph(filepath, nodes_data, legend=False):
             if b['active']:
                 # sets component label
                 label = b['label']
-                #print(label) TODO löschen wenn geklärt warum
-                #print(type(label))
                 if i == 'buses':
                     if b['shortage']:
                         label = b['label'] + '_shortage'

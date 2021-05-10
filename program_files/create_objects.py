@@ -1552,9 +1552,7 @@ class Transformers:
         # import oemof.thermal in order to calculate COP
         import oemof.thermal.absorption_heatpumps_and_chillers \
             as abs_hp_chiller
-        from math import inf
         import numpy as np
-        import math # TODO test
 
         # Import characteristic equation parameters
         char_para = pd.read_csv(os.path.join(
@@ -1662,7 +1660,7 @@ class Transformers:
                 self.busd[tf['output']]:
                     [cop for cop in cops_abs],
                 self.busd[tf['input']]:
-                    tf['electrical input conversion factor (AbsCH)'],
+                    tf['electrical input conversion factor (AbsCH)']
                 }}
 
         self.create_transformer(tf, inputs, outputs, conversion_factors)
