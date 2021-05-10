@@ -344,7 +344,8 @@ class Results:
         for i, comp in nd['sources'].iterrows():
             if comp['active']:
                 if str(comp['input']) in checklist:
-                    (flow_sum, df_source) = self.get_flow(comp['label'], 'source')
+                    (flow_sum, df_source) =\
+                        self.get_flow(comp['label'], 'source')
                     # adds the flowsum to the total_usage variable
                     total_usage = total_usage + flow_sum
                     # Adds the components time series to the
@@ -452,7 +453,7 @@ class Results:
                 if str(comp['input']) not in checklist:
                     df_list_of_components = \
                         df_list_of_components.append(
-                            pd.DataFrame([[transformer, 'source',
+                            pd.DataFrame([[comp['label'], 'source',
                                            round(input, 2), round(input2, 2),
                                            round(output1, 2), '---',
                                            round(df_input2.max(), 2),
@@ -548,12 +549,12 @@ class Results:
                                  + comp['label'] + ': '
                                  + str(round(input, 2)) + ' kWh')
                     if comp['transformer type'] == \
-                            'absorption_heat_transformer':
+                            'AbsorptionHeatTransformer':
                         logging.info('   ' + 'Heat Input to '
                                      + comp['label'] + ': '
                                      + str(round(input2, 2)) + ' kWh')
                     if comp['transformer type'] == \
-                            'compression_heat_transformer':
+                            'CompressionHeatTransformer':
                         logging.info('   ' + 'Ambient Energy Input to '
                                      + comp['label'] + ': '
                                      + str(round(input2, 2)) + ' kWh')
@@ -657,11 +658,11 @@ class Results:
                 elif str(comp['mode']) not in checklist:
                     df_result_table[comp['label'] + '_el_input'] = df_input1
                     if comp['transformer type'] ==\
-                            'absorption_heat_transformer':
+                            'AbsorptionHeatTransformer':
                         df_result_table[comp['label'] + '_heat_input'] =\
                             df_input2
                     if comp['transformer type'] ==\
-                            'compression_heat_transformer':
+                            'CompressionHeatTransformer':
                         df_result_table[comp['label'] + '_ambient_input'] =\
                             df_input2
                     if comp['mode'] == 'chiller':

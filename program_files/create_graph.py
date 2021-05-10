@@ -84,6 +84,8 @@ def create_graph(filepath, nodes_data, legend=False):
             if b['active']:
                 # sets component label
                 label = b['label']
+                #print(label) TODO löschen wenn geklärt warum
+                #print(type(label))
                 if i == 'buses':
                     if b['shortage']:
                         label = b['label'] + '_shortage'
@@ -101,12 +103,14 @@ def create_graph(filepath, nodes_data, legend=False):
                             transformer = b['label'] + '_collector'
                             transformer = linebreaks(transformer)
                             dot.node(transformer, shape='box', fontsize="10",
-                                     fixedsize='shape', width='1.1', height='0.6')
+                                     fixedsize='shape', width='1.1',
+                                     height='0.6')
                             # creates additional bus
                             c_bus = b['label'] + '_bus'
                             c_bus = linebreaks(c_bus)
                             dot.node(c_bus, shape='ellipse', fontsize="10")
-                            # Adds edge for transformer, source and bus to the graph
+                            # Adds edge for transformer, source and bus to the
+                            # graph
                             dot.edge(b['input'], transformer)
                             dot.edge(c_bus, transformer)
                             dot.edge(transformer, b['output'])
@@ -156,7 +160,7 @@ def create_graph(filepath, nodes_data, legend=False):
                         cmpr_abs_source = linebreaks(cmpr_abs_source)
                         cmpr_abs_bus = linebreaks(cmpr_abs_bus)
                         # Adds a second input and a heat source (node and edge)
-                        # for compressionand absorption heat transformers
+                        # for compression and absorption heat transformers
                         dot.node(cmpr_abs_bus,
                                  shape='ellipse',
                                  fontsize="10")

@@ -97,7 +97,6 @@ def buses(nodes_data, nodes):
                         solph.Source(
                                 label=b['label'] + '_shortage',
                                 outputs=outputs))
-        
     # Returns the list of buses as result of the function
     return busd
 
@@ -493,23 +492,21 @@ class Sources:
 
         # set parameters for precalculations for concentrating solar power
         elif so['technology'] == 'concentrated_solar_power':
-            temp_collector_outlet = \
-                so['Temperature Inlet /deg C (Solar Heat)'] + \
-                so['Temperature Difference /deg C (Solar Heat)']
             latitude = so['Latitude (Solar Heat)']
             longitude = so['Longitude (Solar Heat)']
             collector_tilt = so['Surface Tilt (Solar Heat)']
             collector_azimuth = so['Azimuth (Solar Heat)']
             cleanliness = so['Cleanliness (Solar Heat)']
+            a_1 = so['A1 (Solar Heat)']
+            a_2 = so['A2 (Solar Heat)']
             eta_0 = so['ETA 0 (Solar Heat)']
             c_1 = so['C1 (Solar Heat)']
             c_2 = so['C2 (Solar Heat)']
             temp_collector_inlet = \
                 so['Temperature Inlet /deg C (Solar Heat)']
-            temp_collector_outlet = temp_collector_outlet
-            a_1 = so['A1 (Solar Heat)']
-            a_2 = so['A2 (Solar Heat)']
-            e_dir_hor = data['dirhi']
+            temp_collector_outlet = \
+                (so['Temperature Inlet /deg C (Solar Heat)'] +
+                 so['Temperature Difference /deg C (Solar Heat)'])
 
             # precalculation with parameter set, ambient temperature and
             # direct horizontal irradiance. Calculates total irradiance on
@@ -520,7 +517,8 @@ class Sources:
                                           temp_collector_inlet,
                                           temp_collector_outlet,
                                           data['temperature'], a_1, a_2,
-                                          E_dir_hor=e_dir_hor)
+                                          E_dir_hor=data['dirhi'])
+
             # set variables collectors_heat and irradiance and conversion
             # from W/sqm to kW/sqm
             collectors_heat = precalc_results.collector_heat/1000
@@ -786,7 +784,7 @@ class Sinks:
         
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
-    
+
     def slp_sink(self, de, filepath):
         """ Creates a sink with a residential or commercial
         SLP time series.
@@ -1206,7 +1204,7 @@ class Transformers:
 
                 - 'label'
                 - 'active'
-                - 'transformer type': 'compression_heat_transformer'
+                - 'transformer type': 'CompressionHeatTransformer'
                 - 'mode':
                     - 'heat_pump' or
                     - 'chiller'
@@ -1518,7 +1516,7 @@ class Transformers:
 
                 - 'label'
                 - 'active'
-                - 'transformer type': 'absorption_heat_transformer'
+                - 'transformer type': 'AbsorptionHeatTransformer'
                 - 'mode': 'chiller'
                 - 'input'
                 - 'output'
@@ -1542,6 +1540,7 @@ class Transformers:
                 - 'chilling temperature /deg C (AbsCH)'
                 - 'electrical input conversion factor (AbsCH)'
                 - 'recooling temperature difference /deg C (AbsCH)'
+                - 'heat capacity of source /kW (AbsCH)'
 
             :type tf: dict
 
@@ -1555,6 +1554,7 @@ class Transformers:
             as abs_hp_chiller
         from math import inf
         import numpy as np
+        import math # TODO test
 
         # Import characteristic equation parameters
         char_para = pd.read_csv(os.path.join(
@@ -1579,32 +1579,20 @@ class Transformers:
         # returns logging info
         logging.info('   ' + 'Bus created: ' + bus_label)
 
-        # creates a source object as high temperature heat source
-        self.nodes_transformer.append(
-            solph.Source(label=source_label,
-                         outputs={self.busd[
-                             bus_label]:
-                                solph.Flow(variable_costs=
-                                           tf['variable input costs /(CU/kWh)']
-                                           )}))
-
-        # Returns logging info
-        logging.info(
-            '   ' + 'Heat Source created:' + source_label)
-
         # Calculates cooling temperature in absorber/evaporator depending on
-        # ambient temperature of recooling system
+        # ambient air temperature of recooling system
         data_np = np.array(data['temperature'])
         t_cool = data_np + \
             tf['recooling temperature difference /deg C (AbsCH)']
         t_cool = list(map(int, t_cool))
+        n = len(t_cool)
 
         # Calculation of characteristic temperature difference
         chiller_name = tf['name (AbsCH)']
         ddt = abs_hp_chiller.calc_characteristic_temp(
             t_hot=[tf['high temperature /deg C (AbsCH)']],
             t_cool=t_cool,
-            t_chill=[tf['chilling temperature /deg C (AbsCH)']],
+            t_chill=[tf['chilling temperature /deg C (AbsCH)']]*n,
             coef_a=char_para[(char_para['name'] ==
                               chiller_name)]['a'].values[0],
             coef_e=char_para[(char_para['name'] ==
@@ -1634,6 +1622,23 @@ class Transformers:
                      + ", Average Coefficient of Performance (COP): {:2.2f}"
                      .format(numpy.mean(cops_abs)))
 
+        # creates a source object as high temperature heat source and sets
+        # heat capacity for this source
+        maximum = tf['heat capacity of source /kW (AbsCH)']
+        self.nodes_transformer.append(
+            solph.Source(label=source_label,
+                         outputs={self.busd[
+                             tf['label'] + temp + '_bus']: solph.Flow(
+                                investment=solph.Investment(ep_costs=0,
+                                                            minimum=0,
+                                                            maximum=maximum,
+                                                            existing=0),
+                                variable_costs=0)}))
+
+        # Returns logging info
+        logging.info(
+            '   ' + 'Heat Source created:' + source_label)
+
         # Set in- and outputs with conversion factors and creates transformer
         # object and adds it to  the list of components
         inputs = {"inputs": {self.busd[tf['input']]: solph.Flow(
@@ -1641,10 +1646,12 @@ class Transformers:
                  emission_factor=
                  tf['variable input constraint costs /(CU/kWh)']),
                  self.busd[tf['label'] + temp + '_bus']: solph.Flow(
-                 variable_costs=0)}}
+                 variable_costs=0,
+                 )}}
         outputs = {"outputs": {self.busd[tf['output']]: solph.Flow(
                 variable_costs=tf['variable output costs /(CU/kWh)'],
-                emission_factor=tf['variable output constraint costs /(CU/kWh)'],
+                emission_factor=
+                tf['variable output constraint costs /(CU/kWh)'],
                 investment=solph.Investment(
                         ep_costs=tf['periodical costs /(CU/(kW a))'],
                         minimum=tf['min. investment capacity /(kW)'],
@@ -1655,8 +1662,9 @@ class Transformers:
                 self.busd[tf['output']]:
                     [cop for cop in cops_abs],
                 self.busd[tf['input']]:
-                    tf['electrical input conversion factor (AbsCH)']
+                    tf['electrical input conversion factor (AbsCH)'],
                 }}
+
         self.create_transformer(tf, inputs, outputs, conversion_factors)
 
     def __init__(self, nodes_data, nodes, busd):
@@ -1678,7 +1686,7 @@ class Transformers:
                     self.generic_transformer(t)
                 
                 # Create Compression Heat Transformer
-                elif t['transformer type'] == 'compression_heat_transformer':
+                elif t['transformer type'] == 'CompressionHeatTransformer':
                     self.compression_heat_transformer(t, data)
                 
                 # Create Extraction Turbine CHPs
@@ -1699,7 +1707,7 @@ class Transformers:
                         + ' be added later.')
 
                 # Create Absorption Chiller
-                elif t['transformer type'] == 'absorption_heat_transformer':
+                elif t['transformer type'] == 'AbsorptionHeatTransformer':
                     self.absorption_heat_transformer(t, data)
 
                 # Error Message for invalid Transformers
