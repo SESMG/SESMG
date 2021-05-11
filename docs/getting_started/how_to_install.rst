@@ -113,4 +113,4 @@ Linux
 8. Execute the "Linux_installtion.sh" file.
 
 9. The Spreadsheet Energy System Model Generator has been installed.
- 
+
