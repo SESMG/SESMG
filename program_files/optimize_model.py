@@ -73,7 +73,6 @@ def least_cost_model(energy_system, num_threads, nodes_data, busd):
     om = oemof.solph.Model(energy_system)
     if (str(nodes_data['energysystem']['constraint costs /(CU)'][0]) != 'x' and
           str(nodes_data['energysystem']['constraint costs /(CU)'][0]) != 'None'):
-        print("test")
         om = constraint(om, int(nodes_data['energysystem']
                                 ['constraint costs /(CU)']))
 
