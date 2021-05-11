@@ -1,19 +1,11 @@
 @echo ################################
-@echo Installation started
-@echo File path: %~dp0program_files
+@echo Building the Virtual Enviroment 
+@echo File path: %~dp0
 @echo ################################
 
-@echo #################################
-@echo download the python pip installer
-@echo #################################
-
-curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-
-@echo ################################
-@echo install the python pip installer
-@echo ################################
-
-python get-py.py
+py -3.7 -m venv .
+cd Scripts/
+start /b activate.bat
 
 @echo #############################################
 @echo download and install required python packages
@@ -35,9 +27,11 @@ pip install dash_canvas==0.1.0
 pip install pydot==1.4.1
 pip install graphviz==0.13.2
 pip install xlrd==1.2.0
+pip install Pyomo==5.7.1
 
 @echo ######################
 @echo Installation completed
+@echo Starting SESMG
 @echo ######################
-
-@pause
+cd ..
+Scripts\python.exe program_files/GUI.py
