@@ -141,8 +141,12 @@ def show_graph():
     """ creates and shows a graph of the energy system given by a Spreadsheet
         - the created graphs are saved in /results/graphs"""
     import os
-    from program_files import (create_energy_system,
-                               create_graph)
+    if sys.platform.startswith("win"):
+        from program_files import (create_energy_system,
+                                   create_graph)
+    else:
+        import create_graph
+        import create_energy_system
 
     # DEFINES PATH OF INPUT DATA
     scenario_file = scenario_path.get()

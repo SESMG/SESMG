@@ -848,6 +848,7 @@ class Sinks:
             os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
         # Importing timesystem parameters from the scenario
         nd = pd.read_excel(filepath, sheet_name='energysystem')
+        nd = nd.drop(0)
         ts = next(nd.iterrows())[1]
         temp_resolution = ts['temporal resolution']
         periods = ts["periods"]
@@ -1425,7 +1426,7 @@ class Transformers:
         # (number of periods is required for creating generic chp transformers)
         # Importing timesystem parameters from the scenario
         ts = next(nd['energysystem'].iterrows())[1]
-        periods = ts['periods']
+        periods = int(ts['periods'])
         # creates genericCHP transformer object and adds it to the
         # list of components
         self.nodes_transformer.append(solph.components.GenericCHP(
@@ -1455,7 +1456,11 @@ class Transformers:
                                         'min. investment capacity'],
                                     maximum=tf[
                                         'max. investment capacity'],
-                                    existing=tf['existing capacity']),
+                                    existing=tf['existing capacity'],
+                                    nonconvex=True if
+                                    tf['non-convex investment'] == 1 else False,
+                                    offset=tf['fix investment costs']
+                                ),
                             P_max_woDH=[
                                 tf['max. electric power without district '
                                    'heating']
@@ -1484,12 +1489,12 @@ class Transformers:
                     variable_costs=tf[
                         'variable output costs 2'],
                     emission_factor=tf[
-                        'variable output constraint costs 2/(CU/kWh)']
+                        'variable output constraint costs 2']
                 )},
                 Beta=[tf['power loss index']
                       for p in range(0, periods)],
                 # fixed_costs=0,
-                back_pressure=tf['back pressure'],
+                back_pressure=True if tf['back pressure'] == 1 else False,
                 ))
 
         # returns logging info
