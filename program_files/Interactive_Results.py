@@ -145,7 +145,9 @@ demo_app.layout = html.Div(
                             'textOverflow': 'ellipsis', }),
         # Creates the Sub-Headline
         html.Div(
-                children=[html.Div("-"),
+                children=[html.Div("capacity/kW - means the ouput capacity of "
+                                   "output1 for all components except "
+                                   "storages"),
                           html.Div("-"),
                           html.Div("-"), ]),
         # Defines a field, where all selected elements of the following
