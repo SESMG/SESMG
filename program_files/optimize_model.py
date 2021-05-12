@@ -173,7 +173,14 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
                 # solver does not invest on the second direction
                 elif z['(un)directed'] == 'directed':
                     p = energy_system.groups[z['label']]
-                    om.InvestmentFlow.invest[p, busd[z['bus2']]] = 0
+
+                    def input_rule(om, t):
+                        inflow = (om.flow[busd[z['bus_2']], p, t])
+                        return inflow == 0
+
+                    om.InvestmentFlow.invest[p, busd[z['bus_1']]] = 0
+                    setattr(om, z['label'] + "input_constraint",
+                            po.Constraint(om.TIMESTEPS, expr=input_rule))
 
     logging.info(
         '   ' + "******************************************************"
