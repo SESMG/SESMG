@@ -75,6 +75,10 @@ MacOS
 
 3. Extract the .zip folder into any directory on the computer.
 
+.. note:: 
+
+	If your device does not have homebrew installed, install it by typing ``/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`` in your terminal.
+	
 4. Excecute the "MacOS_installation.command" file.
 
 5. The Spreadsheet Energy System Model Generator has been installed.
