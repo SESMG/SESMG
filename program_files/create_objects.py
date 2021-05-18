@@ -810,7 +810,7 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-    def slp_sink(self, de: dict, filepath: str):
+    def slp_sink(self, de: dict, nodes_data: dict):
         """
             Creates a sink with a residential or commercial
             SLP time series.
@@ -847,9 +847,8 @@ class Sinks:
         data = pd.read_csv(os.path.join(
             os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
         # Importing timesystem parameters from the scenario
-        nd = pd.read_excel(filepath, sheet_name='energysystem')
-        nd = nd.drop(0)
-        ts = next(nd.iterrows())[1]
+        ts = next(nodes_data['energysystem'].iterrows())[1]
+        print(ts)
         temp_resolution = ts['temporal resolution']
         periods = ts["periods"]
         start_date = str(ts['start date'])
@@ -1047,7 +1046,7 @@ class Sinks:
                 
                 # Create Sinks with SLP's
                 elif de['load profile'] in slps:
-                    self.slp_sink(de, filepath)
+                    self.slp_sink(de, nodes_data)
                 
                 # Richardson
                 elif de['load profile'] == 'richardson':
