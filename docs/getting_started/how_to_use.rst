@@ -55,12 +55,18 @@ Within this sheet, the buses of the energy system are defined. The following par
 - **variable excess constraint costs** in (CU/kWh): Only if considering constraints. Assigns a price per kWh to the release of energy to the excess sink referring to the constraint limit set in the "energysystem" sheet. If the excess sink was deactivated, the fill character "0" is used.
 
 .. csv-table:: Exemplary input for the buses sheet
-   :header: label,comments,active,excess,shortage,shortage costs /(CU/kWh),excess costs /(CU/kWh),variable shortage constraint costs /(CU/kWh),variable excess constraint costs /(CU/kWh)
+   :header: label,comments,active,excess,shortage,excess costs,shortage costs,variable excess constraint costs,variable shortage constraint costs
 
-   bus001_electricity_bus,,1,0,1,0.300,0,0.10,-0.10
-   bus002_electricity_bus,,1,1,0,0,-0.01,0.10,-0.10
-   bus001_heat_bus,,1,1,1,0.1,-0.05,0.1,-0.1
-   bus001_cooling_bus,,1,0,1,0.3,0,0.1,-0.1
+   ,,,,,(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh)
+   bus001_electricity_bus,,1,0,1,0,0.300,0,474.000
+   bus001_heat_bus,,1,1,0,0,0,0,0
+   bus001_gas_bus,,1,0,1,0,0.07,0,0
+   bus001_cooling_bus,chiller,1,1,0,0,0,0,0
+   bus001_pv_bus,,1,1,0,-0.068,0,-56,0
+   bus001_hp_electricity_bus,heat pumps,1,1,1,0,0.22,0,474
+   district_electricity_bus,delivering electr. to neighb. subsystems,1,0,0,0,0,0,0
+   district_heat_bus,delivering heat to neighb. subsystems,1,0,0,0,0,0,0
+   chp_electricity_bus,,1,0,1,0,0,-375,0
    
 .. figure:: ../images/BSP_Graph_Bus.png
    :width: 100 %
