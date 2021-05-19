@@ -136,7 +136,7 @@ Wind
 PV
 -------------------------
 - **technology database**: Database, from where module parameters are to be obtained. Recommended Database: "SandiaMod".
-- **inverter database**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter". For other databases `click here <https://sam.nrel.gov/photovoltaic/pv-cost-component.html>`
+- **inverter database**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter". For other databases `click here <https://sam.nrel.gov/photovoltaic/pv-cost-component.html>`_
 - **Modul Model**: Module name, according to the database used.
 - **Inverter Model**: Inverter name, according to the database used.
 - **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic sources, use fill character "x" for other technologies.
@@ -154,12 +154,14 @@ Commodity
 If you have choosen the technology "other", the solver has the opportunity to continuously adjust the power.
 
 .. csv-table:: Exemplary input for the sources sheet
-   :header: label,Comment,active,fixed,technology,output,input,existing capacity,min. investment capacity,max. investment capapcity,non-convex investment,fix investment costs,variable costs,periodical costs,variable constraint costs,periodical constraint costs,Turbine Model,Hub Height,technology database,inverter database,Modul Model,Inverter Model,Albedo,Altitude,Azimuth,Surface Tilt,Latitude,Longitude,ETA 0,A1,A2,C1,C2,Temperature Inlet,Temperature Difference,Conversion Factor,Peripheral Losses,Electric Consumption,Cleanliness
+   :header: label,comment,active,fixed,technology,output,input,existing capacity,min. investment capacity,max. investment capapcity,non-convex investment,fix investment costs,variable costs,periodical costs,variable constraint costs,periodical constraint costs,Turbine Model,Hub Height,technology database,inverter database,Modul Model,Inverter Model,Albedo,Altitude,Azimuth,Surface Tilt,Latitude,Longitude,ETA 0,A1,A2,C1,C2,Temperature Inlet,Temperature Difference,Conversion Factor,Peripheral Losses,Electric Consumption,Cleanliness
    
    ,,,,,,solar heat,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/(kW a)),windpower,windpower,PV,PV,PV,PV,PV,(m)| PV,(°),(°),(°),(°),solar heat,solar heat,solar heat,solar heat,solar heat,(°C) | solar heat,(°C)|solar heat,(sqm/kW) | solar heat,solar heat,solar heat,solar heat
    ID_photovoltaic_electricity_source,,1,1,photovoltaic,ID_pv_bus,None,0,0,20,0,0,0,90,56,0,0,0,SandiaMod,sandiainverter,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,0.18,60,180,35,52.13,7.36,0,0,0,0,0,0,0,0,0,0,0
-  ID_solar_thermal_source,,0,1,solar_thermal_flat_plate,ID_heat_bus,ID_electricity_bus,0,0,20,0,0,0,40,25,0,0,0,0,0,0,0,0,0,20,10,52.13,7.36,0.719,1.063,0.005,0,0,40,15,1.89941306,0.05,0.06,0	
-	
+   ID_solar_thermal_source,,0,1,solar_thermal_flat_plate,ID_heat_bus,ID_electricity_bus,0,0,20,0,0,0,40,25,0,0,0,0,0,0,0,0,0,20,10,52.13,7.36,0.719,1.063,0.005,0,0,40,15,1.89941306,0.05,0.06,0
+   wind_turbine,,0,1,windpower,electricity_bus,None,0,0,30,0,0,0,100,9,0,E-126/4200,135,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+   
+
 .. figure:: ../images/BSP_Graph_source.png
    :width: 100 %
    :alt: Source_Graph
@@ -222,6 +224,7 @@ The following parameters have to be entered:
 
   
 .. csv-table:: Exemplary input for the transformers sheet
+
    :header: label,comment,active,transformer type,mode,input,output,output2,efficiency,efficiency2,variable input costs /(CU/kWh),variable output costs /(CU/kWh),variable output costs 2 /(CU/kWh),variable input constraint costs /(CU/kWh),variable output constraint costs /(CU/kWh),variable output constraint costs 2 /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),heat source (CHT),temperature high /deg C (CHT),temperature low /deg C (CHT),quality grade (CHT),area /(sq m) (CHT),length of the geoth. probe /m (CHT),heat extraction /(kW/(m*a)) (CHT),min. borehole area /(sq m) (CHT),temp threshold icing (CHT),factor icing (CHT),name (AbsCH),high temperature /deg C (AbsCH),chilling temperature /deg C (AbsCH),electrical input conversion factor (AbsCH),recooling temperature difference /deg C (AbsCH)
 
    tr0001_electricity_transformer,,1,GenericTransformer,,bus002_electricity_bus,bus001_electricity_bus,x,0.85,x,0.01,0,0,0.1,0.2,0,1000,0,1000,60,0.1,0,0,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x
