@@ -73,7 +73,7 @@ def competition_constraint(om, nd, energy_system):
                                                 the constraints
     """
     import pyomo.environ as po
-    for k, j in nd['competition_constraint'].iterrows():
+    for k, j in nd['competition constraints'].iterrows():
         limit_timerow = []
         flows = {}
         # Create a list in which the limit value for each time step of
@@ -152,7 +152,7 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
         om = constraint_optimization_against_two_values(om, limit)
    
     # limit for two given outflows e.g area_competition
-    if "competition_constraint" in nodes_data:
+    if "competition constraints" in nodes_data:
         om = competition_constraint(om, nodes_data, energy_system)
 
     for j, z in nodes_data['links'].iterrows():
