@@ -80,7 +80,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **active**: Specifies whether the sink shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed sink or not. 0 = not fixed; 1 = fixed.
 - **input**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
-- **load profile**: Specifies the basis onto which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles, its acronym is used. If a time series is used, "timeseries" must be entered. If the source is not fixed, the fill character "x" has to be used.
+- **load profile**: Specifies the basis onto which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles, its acronym is used. If a time series is used, "timeseries" must be entered and must be provided in the "time series" sheet_. If the source is not fixed, the fill character "x" has to be used.
 - **nominal value/(kW)**: Nominal performance of the sink. Required when "time series" has been entered into the "load profile". When SLP or Richardson is used, use the fill character "0" here.
 - **annual demand/(kWh/a)**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "0" is used. 
 - **occupants [RICHARDSON]**: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "0" for other load profiles.
@@ -323,7 +323,9 @@ to be entered:
    :align: center
 
    Graph of the energy system, which is created by entering the example components. One link has been created by the addition of the links sheet
-   
+
+.._sheet:
+
 Time Series
 =================================================
 
