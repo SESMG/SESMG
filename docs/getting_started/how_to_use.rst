@@ -80,7 +80,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **active**: Specifies whether the sink shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed sink or not. 0 = not fixed; 1 = fixed.
 - **input**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
-- **load profile**: Specifies the basis onto which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles, its acronym is used. If a time series is used, "timeseries" must be entered and must be provided in the `Time series sheet`_. If the source is not fixed, the fill character "x" has to be used.
+- **load profile**: Specifies the basis onto which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles, its acronym is used. If a time series is used, "timeseries" must be entered and must be provided in the `Time series sheet`_. If the sink is not fixed, the fill character "x" has to be used.
 - **nominal value/(kW)**: Nominal performance of the sink. Required when "time series" has been entered into the "load profile". When SLP or Richardson is used, use the fill character "0" here.
 - **annual demand/(kWh/a)**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "0" is used. 
 - **occupants [RICHARDSON]**: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "0" for other load profiles.
@@ -88,21 +88,19 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **wind class [HEAT SLP ONLY]**: wind classification for building location (0=not windy, 1=windy)
  
 .. csv-table:: Exemplary input for the sinks sheet
-   :header: label,comment,active,fixed,input,load profile,nominal value /(kW),annual demand /(kWh/a),occupants [RICHARDSON],building class [HEAT SLP ONLY],wind class [HEAT SLP ONLY]
+   :header: label,comment,active,fixed,input,load profile,nominal value,annual demand,occupants,building class,wind class
 
-   building001_electricity_sink,H0 standard load profile sink,1,1,electricity_bus,h0,0,1000.0,0,0,0
-   building001_fixed_timeseries_cooling_demand,,1,1,bus001_cooling_bus,timeseries,1,0,0,0,0
-   building001_heat_demand,EFH standard load profile sink,1,1,bus001_heat_bus,efh,0,1000,0,1,0
+   ,,,,,,(kW),(kWh/a),(richardson),(heat slp),(heat slp)
+   electricity_demand,H0 standard load profile sink,1,1,electricity_bus,h0,0,5000.0,0,0,0
+   bheat_demand,EFH standard load profile sink,1,1,heat_bus,efh,0,30000.0,0,3,0
+   cooling_demand,fixed timeseries cooling demand,0,1,cooling_bus,timeseries,1,0,0,0,0
    
-  
-
-	
 .. figure:: ../images/BSP_Graph_sink.png
    :width: 100 %
    :alt: Sink_Graph
    :align: center
 
-   Graph of the energy system, which is created by entering the example components. By the input in the sinks sheet, a photovoltaic source has been created.
+   Graph of the energy system, which is created by entering the example components. The non-active components are not included in the graph above.
 
 Sources
 =================================================
