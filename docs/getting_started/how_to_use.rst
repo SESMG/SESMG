@@ -58,22 +58,22 @@ Within this sheet, the buses of the energy system are defined. The following par
    :header: label,comments,active,excess,shortage,excess costs,shortage costs,variable excess constraint costs,variable shortage constraint costs
 
    ,,,,,(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh)
-   ID_electricity_bus,,1,0,1,0,0.300,0,474.000
-   ID_heat_bus,,1,1,0,0,0,0,0
-   ID_gas_bus,,1,0,1,0,0.07,0,0
-   ID_cooling_bus,chiller,1,1,0,0,0,0,0
-   ID_pv_bus,,1,1,0,-0.068,0,-56,0
-   ID_hp_electricity_bus,heat pumps,1,1,1,0,0.22,0,474
-   district_electricity_bus,delivering electr. to neighb. subsystems,1,0,0,0,0,0,0
-   district_heat_bus,delivering heat to neighb. subsystems,1,0,0,0,0,0,0
-   chp_electricity_bus,,1,0,1,0,0,-375,0
+   ID_electricity_bus,,1,0,1,0.000,0.300,0.00,474.00
+   ID_heat_bus,,1,1,0,0.000,0.000,0.00,0.00
+   ID_gas_bus,,1,0,1,0.000,0.07,0.00,0.00
+   ID_cooling_bus,chiller,0,1,0,0.000,0.000,0.00,0.00
+   ID_pv_bus,,1,1,0,-0.068,0.000,-56.00,0.00
+   ID_hp_electricity_bus,heat pumps,1,1,1,0.000,0.220,0.00,474.00
+   district_electricity_bus,delivering electr. to neighb. subsystems,1,0,0,0.000,0.000,0.00,0.00
+   district_heat_bus,delivering heat to neighb. subsystems,1,0,0,0.000,0.000,0.00,0.00
+   district_chp_electricity_bus,,1,0,1,0.000,0.000,-375.00,0.00
    
 .. figure:: ../images/BSP_Graph_Bus.png
    :width: 100 %
    :alt: Bus_Graph
    :align: center
 
-   Graph of the energy system, which is created by entering the example components. Two buses, a shortage source, and an excess sink were created by the input.
+   Graph of the energy system, which is created by entering the example components. Two buses, a shortage source, and an excess sink were created by the input.The non-active components are not included in the graph above.
 
 
 Sinks
@@ -97,9 +97,9 @@ Within this sheet, the sinks of the energy system are defined. The following par
    :header: label,comment,active,fixed,input,load profile,nominal value,annual demand,occupants,building class,wind class
 
    ,,,,,,(kW),(kWh/a),(richardson),(heat slp),(heat slp)
-   001_electricity_sink,H0 standard load profile sink,1,1,electricity_bus,h0,0,5000.0,0,0,0
-   001_heat_sink,EFH standard load profile sink,1,1,heat_bus,efh,0,30000.0,0,3,0
-   001_cooling_sink,fixed timeseries cooling demand,0,1,cooling_bus,timeseries,1,0,0,0,0
+   ID_electricity_sink,H0 standard load profile sink,1,1,electricity_bus,h0,0,5000.0,0,0,0
+   ID_heat_sink,EFH standard load profile sink,1,1,heat_bus,efh,0,30000.0,0,3,0
+   ID_cooling_sink,fixed timeseries cooling demand,0,1,cooling_bus,timeseries,1,0,0,0,0
    
 .. figure:: ../images/BSP_Graph_sink.png
    :width: 100 %
@@ -153,19 +153,19 @@ Commodity
 -------------------------
 If you have choosen the technology "other", the solver has the opportunity to continuously adjust the power.
 
-
 .. csv-table:: Exemplary input for the sources sheet
-   :header: label,Comment,active,fixed,output,technology,variable costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),Turbine Model (Windpower ONLY),Hub Height (Windpower ONLY),technology database (PV ONLY),inverter database (PV ONLY),Modul Model (PV ONLY),Inverter Model (PV ONLY),Azimuth (PV ONLY),Surface Tilt (PV ONLY),Albedo (PV ONLY),Altitude (PV ONLY),Latitude (PV ONLY),Longitude (PV ONLY)
-
-   pv001_electricity_source,fixed photovoltaic source,1,1,bus001_electricity_bus,photovoltaic,0,0.1,10,0,10,90,0.1,0,0,x,x,SandiaMod,sandiainverter,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,180.00,35,0.18,60.000,52.13,7.36
-  
+   :header: label,Comment,active,fixed,technology,output,input,existing capacity,min. investment capacity,max. investment capapcity,non-convex investment,fix investment costs,variable costs,periodical costs,variable constraint costs,periodical constraint costs,Turbine Model,Hub Height,technology database,inverter database,Modul Model,Inverter Model,Albedo,Altitude,Azimuth,Surface Tilt,Latitude,Longitude,ETA 0,A1,A2,C1,C2,Temperature Inlet,Temperature Difference,Conversion Factor,Peripheral Losses,Electric Consumption,Cleanliness
+   
+   ,,,,,,solar heat,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/(kW a)),windpower,windpower,PV,PV,PV,PV,PV,(m)| PV,(°),(°),(°),(°),solar heat,solar heat,solar heat,solar heat,solar heat,(°C) | solar heat,(°C)|solar heat,(sqm/kW) | solar heat,solar heat,solar heat,solar heat
+   ID_photovoltaic_electricity_source,,1,1,photovoltaic,ID_pv_bus,None,0,0,20,0,0,0,90,56,0,0,0,SandiaMod,sandiainverter,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,0.18,60,180,35,52.13,7.36,0,0,0,0,0,0,0,0,0,0,0
+  ID_solar_thermal_source,,0,1,solar_thermal_flat_plate,ID_heat_bus,ID_electricity_bus,0,0,20,0,0,0,40,25,0,0,0,0,0,0,0,0,0,20,10,52.13,7.36,0.719,1.063,0.005,0,0,40,15,1.89941306,0.05,0.06,0	
 	
 .. figure:: ../images/BSP_Graph_source.png
    :width: 100 %
    :alt: Source_Graph
    :align: center
 
-   Graph of the energy system, which is created by entering the example components of PV sheet. By the input in the sources sheets one sink has been created.
+   Graph of the energy system, which is created by entering the example components of sources sheet. The non-active components are not included in the graph above.
    
 Transformers
 =================================================
