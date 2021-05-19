@@ -282,6 +282,8 @@ In addition, the location of the building and whether the building is located
 in a "windy" or "non-windy" area are taken into account for the application 
 of heat standard load profiles. The following location classes may be considered:
 
+.. _`building classes`:
+
 +-----------+-------------------------------------------------------------------------------+
 | Category  | Building Location                                                             |
 +===========+===============================================================================+
