@@ -148,7 +148,7 @@ PV
 - **Longitude**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
 Timeseries
 -------------------------
-If you have choosen the technology "timeseries", you have to include a  :ref:`timeseries <Time Series>` or use default one. 
+If you have choosen the technology "timeseries", you have to include a timeseries in the  `Time series sheet`_ or use default one. 
 
 Commodity
 -------------------------
