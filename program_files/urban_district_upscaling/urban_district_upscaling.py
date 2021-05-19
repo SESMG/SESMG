@@ -118,15 +118,61 @@ def create_standard_parameter_sink(sink_type: str, label: str,
     sheets["sinks"] = sheets["sinks"].append(sink_series,
                                              ignore_index=True)
 
+def create_standard_parameter_transformer(specific_param, standard_parameters, standard_param_name):
+    """
+
+    :param specific_param:
+    :param standard_param:
+    :return:
+    """
+
+    # read the standards from standard_param and append
+    # them to the dict
+    transformers_standard_parameters = standard_parameters.parse('transformers')
+    transformers_standard_parameters.set_index('comment', inplace=True)
+    standard_param = transformers_standard_parameters.loc[standard_param_name]
+
+    standard_keys = standard_param.keys().tolist()
+    for i in range(len(standard_keys)):
+        specific_param[standard_keys[i]] = \
+            standard_param[standard_keys[i]]
+
+    # produce a pandas series out of the dict above due to easier appending
+    transformer_series = pd.Series(specific_param)
+    sheets["transformers"] = \
+        sheets["transformers"].append(transformer_series, ignore_index=True)
+
+def create_standard_parameter_storage(specific_param, standard_parameters, standard_param_name):
+    """
+
+    :param specific_param:
+    :param standard_param_name:
+    :return:
+    """
+
+    # read the standards from standard_param and append
+    # them to the dict
+    storage_standard_parameters = standard_parameters.parse('storages')
+    storage_standard_parameters.set_index('comment', inplace=True)
+    standard_param = storage_standard_parameters.loc[standard_param_name]
+
+    standard_keys = standard_param.keys().tolist()
+    for i in range(len(standard_keys)):
+        specific_param[standard_keys[i]] = \
+            standard_param[standard_keys[i]]
+
+    # produce a pandas series out of the dict above due to easier appending
+    transformer_series = pd.Series(specific_param)
+    sheets["storages"] = \
+        sheets["storages"].append(transformer_series, ignore_index=True)
+
 
 def central_comp(central, standard_parameters):
     """
         todo docstring
     """
     for i, j in central.iterrows():
-        if j['district_electricity_bus'] == 'yes' \
-                or j['district_electricity_bus'] == 'Yes' \
-                or j['district_electricity_bus'] == 1:
+        if j['district_electricity_bus'] in ['Yes', 'yes', 1]:
             create_standard_parameter_bus(
                 label='district_electricity_bus',
                 bus_type="district_electricity_bus",
@@ -134,9 +180,7 @@ def central_comp(central, standard_parameters):
 
         # create required central components fpr a district heating
         # network
-        if j['district_heat_link'] == 'yes' \
-                or j['district_heat_link'] == 'Yes' \
-                or j['district_heat_link'] == 1:
+        if j['district_heat_link'] in ['yes', 'Yes', 1]:
             # input bus
             create_standard_parameter_bus(label='district_heat_input_bus',
                                           bus_type="district_heat_input_bus",
@@ -154,22 +198,140 @@ def central_comp(central, standard_parameters):
                                            link_type="district_heat_link",
                                            standard_parameters=standard_parameters)
             # central natural gas
-            if j['naturalgas_chp'] == 'yes' or j['naturalgas_chp'] == 'Yes' or \
-                    j['naturalgas_chp'] == 1:
+            if j['naturalgas_chp'] in ['yes', 'Yes', 1]:
                 create_central_chp(gastype='naturalgas',
                                    standard_parameters=standard_parameters)
 
             # central bio gas
-            if j['biogas_chp'] == 'yes' or j['biogas_chp'] == 'Yes' or \
-                    j['biogas_chp'] == 1:
+            if j['biogas_chp'] in ['yes', 'Yes', 1]:
                 create_central_chp(gastype='biogas',
                                    standard_parameters=standard_parameters)
 
             # central swhp todo simplify
-            if j['central_swhp_transformer'] == 'yes' \
-                    or j['central_swhp_transformer'] == 'Yes' \
-                    or j['central_swhp_transformer'] == 1:
+            if j['central_swhp_transformer'] in ['yes', 'Yes', 1]:
                 create_central_swhp(standard_parameters=standard_parameters)
+
+            # central biomass plant
+            if j['biomass_plant'] in ['yes', 'Yes', 1]:
+                create_central_biomas_plant(standard_parameters=standard_parameters)
+
+            # power to gas system
+            if j['power_to_gas'] in ['yes', 'Yes', 1]:
+                create_power_to_gas_system(standard_parameters=standard_parameters)
+
+
+def create_power_to_gas_system(standard_parameters):
+    """
+        todo: docstrings
+
+    :param standard_parameters:
+    :return:
+    """
+
+    # h2 bus
+    create_standard_parameter_bus(label="central_h2_bus",
+                                  bus_type="central_h2_bus",
+                                  standard_parameters=standard_parameters)
+
+    # natural gas bus
+    create_standard_parameter_bus(label="central_ng_bus",
+                                  bus_type="central_ng_bus",
+                                  standard_parameters=standard_parameters)
+
+    # electrolysis transformer
+    electrolysis_transformer_param = \
+        {'label': 'central_electrolysis_transformer',
+         'comment': 'automatically_created',
+         'input': 'district_electricity_bus',
+         'output': 'central_h2_bus',
+         'output2': 'None'}
+
+    create_standard_parameter_transformer(specific_param=electrolysis_transformer_param,
+                                          standard_parameters=standard_parameters,
+                                          standard_param_name='electrolysis_transformer')
+
+    # methanization transformer
+    methanization_transformer_param = \
+        {'label': 'central_methanization_transformer',
+         'comment': 'automatically_created',
+         'input': 'central_h2_bus',
+         'output': 'central_ng_bus',
+         'output2': 'None'}
+
+    create_standard_parameter_transformer(specific_param=methanization_transformer_param,
+                                          standard_parameters=standard_parameters,
+                                          standard_param_name='methanization_transformer')
+
+    # fuel cell transformer
+    fuelcell_transformer_param = \
+        {'label': 'central_fuelcell_transformer',
+         'comment': 'automatically_created',
+         'input': 'central_h2_bus',
+         'output': 'district_electricity_bus',
+         'output2': 'district_heat_input_bus'}
+
+    create_standard_parameter_transformer(specific_param=fuelcell_transformer_param,
+                                          standard_parameters=standard_parameters,
+                                          standard_param_name='fuelcell_transformer')
+
+    # h2 storage
+    h2_storage_param = {'label': 'central_h2_storage',
+                        'comment': 'automatically_created',
+                        'bus': 'central_h2_bus'}
+
+    create_standard_parameter_storage(specific_param=h2_storage_param,
+                                      standard_parameters=standard_parameters,
+                                      standard_param_name='h2_storage')
+
+    # natural gas storage
+    ng_storage_param = {'label': 'central_ng_storage',
+                        'comment': 'automatically_created',
+                        'bus': 'central_ng_bus'}
+
+    create_standard_parameter_storage(specific_param=ng_storage_param,
+                                      standard_parameters=standard_parameters,
+                                      standard_param_name='naturalgas_storage')
+
+    # link to chp_ng_bus
+    create_standard_parameter_link(label='central_ng_chp_ng_link',
+                                   bus_1='central_ng_bus',
+                                   bus_2='chp_naturalgas_bus',
+                                   link_type='central_ng_chp_link',
+                                   standard_parameters=standard_parameters)
+
+
+def create_central_biomas_plant(standard_parameters):
+    """
+            todo docstring
+    """
+    # biomas bus
+    create_standard_parameter_bus(label="central_biomass_bus",
+                                  bus_type="central_biomass_bus",
+                                  standard_parameters=standard_parameters)
+
+    # biomass transformer
+    transformers_standard_parameters = standard_parameters.parse(
+        'transformers')
+    transformers_standard_parameters.set_index('comment', inplace=True)
+    biomass_standard_parameters = transformers_standard_parameters.loc[
+        'biomass_transformer']
+    biomass_central_dict = {'label': 'central_biomass_transformer',
+                         'comment': 'automatically_created',
+                         'input': "central_biomass_bus",
+                         'output': 'district_heat_input_bus',
+                         'output2': 'None'}
+
+    # read the biomass standards from standard_parameters.xlsx and append
+    # them to the biomass_central_dict
+    biomass_standard_keys = biomass_standard_parameters.keys().tolist()
+    for i in range(len(biomass_standard_keys)):
+        biomass_central_dict[biomass_standard_keys[i]] = \
+            biomass_standard_parameters[biomass_standard_keys[i]]  # [0]
+
+    # produce a pandas series out of the dict above due to easier appending
+    biomass_series = pd.Series(biomass_central_dict)
+    sheets["transformers"] = \
+        sheets["transformers"].append(biomass_series, ignore_index=True)
 
 
 def create_central_swhp(standard_parameters):
@@ -423,7 +585,8 @@ def create_pv_source(building_id, plant_id, azimuth, tilt, area,
          'Azimuth': azimuth,
          'Surface Tilt': tilt,
          'Latitude': latitude,
-         'Longitude': longitude}
+         'Longitude': longitude,
+         'input': 0}
 
     # read the pv standards from standard_parameters.xlsx and append
     # them to the pv_house_specific_dict
@@ -439,6 +602,60 @@ def create_pv_source(building_id, plant_id, azimuth, tilt, area,
     pv_series = pd.Series(pv_house_specific_dict)
     sheets["sources"] = sheets["sources"].append(pv_series, ignore_index=True)
 
+
+def create_solarthermal_source(building_id, plant_id, azimuth, tilt, area,
+                     solarthermal_standard_parameters, latitude, longitude):
+    """
+
+    :return:
+    """
+
+    # technical parameters
+    solarthermal_house_specific_dict = \
+        {'label': str(building_id) + '_' + str(plant_id) + '_solarthermal_source',
+         'existing capacity': 0,
+         'min. investment capacity': 0,
+         'output': str(building_id) + '_heat_bus',
+         'Azimuth': azimuth,
+         'Surface Tilt': tilt,
+         'Latitude': latitude,
+         'Longitude': longitude,
+         'input': str(building_id)+'_electricity_bus'}
+
+    # read the pv standards from standard_parameters.xlsx and append
+    # them to the pv_house_specific_dict
+    solarthermal_standard_keys = solarthermal_standard_parameters.keys().tolist()
+    for i in range(len(solarthermal_standard_keys)):
+        solarthermal_house_specific_dict[solarthermal_standard_keys[i]] = \
+            solarthermal_standard_parameters[solarthermal_standard_keys[i]]  # [0]
+
+    solarthermal_house_specific_dict['max. investment capacity'] = \
+        solarthermal_standard_parameters[
+            'Capacity per Area (kW/m2)'] * area
+
+    # produce a pandas series out of the dict above due to easier appending
+    solarthermal_series = pd.Series(solarthermal_house_specific_dict)
+    sheets["sources"] = sheets["sources"].append(solarthermal_series, ignore_index=True)
+
+
+def create_competition_constraint(component1, factor1, component2, factor2, limit):
+    """
+
+    :param component1:
+    :param factor1:
+    :param component2:
+    :param factor2:
+    :return:
+    """
+    # define individual values
+    constraint_dict = {'component 1': component1,
+                       'factor 1': factor1,
+                       'component 2':component2,
+                       'factor 2': factor2,
+                       'limit': limit}
+
+    sheets["competition constraints"] = \
+        sheets["competition constraints"].append(pd.Series(constraint_dict), ignore_index=True)
 
 def create_gchp(id, area, standard_parameters):
     # gchp transformer
@@ -503,15 +720,6 @@ def create_gas_heating(id, standard_parameters):
                                   bus_type='building_gas_bus',
                                   standard_parameters=standard_parameters)
 
-    # gas heating transformer
-    #gas_heating_standard_parameters = standard_parameters.parse('transformers')
-
-    transformers_standard_parameters = standard_parameters.parse('transformers')
-    transformers_standard_parameters.set_index('comment', inplace=True)
-    gas_heating_standard_parameters = transformers_standard_parameters.loc[
-        'gasheating_transformer']
-
-
     # define individual gas_heating_parameters
     gas_heating_house_specific_dict = \
         {'label': str(id) + '_gasheating_transformer',
@@ -520,21 +728,48 @@ def create_gas_heating(id, standard_parameters):
          'output': str(id) + '_heat_bus',
          'output2': 'None'}
 
-    # read the gasheating standards from standard_parameters.xlsx and append
-    # them to the  gas_heating_house_specific_dict
-    gas_heating_standard_keys = gas_heating_standard_parameters.keys().tolist()
-    for i in range(len(gas_heating_standard_keys)):
-        gas_heating_house_specific_dict[gas_heating_standard_keys[i]] = \
-            gas_heating_standard_parameters[gas_heating_standard_keys[i]]#[0]
+    create_standard_parameter_transformer(specific_param=gas_heating_house_specific_dict,
+                                          standard_parameters=standard_parameters,
+                                          standard_param_name='gasheating_transformer')
+
+
+def create_electric_heating(id, standard_parameters):
+    # # building gas bus
+    # create_standard_parameter_bus(label=str(id) + "_gas_bus",
+    #                               bus_type='building_gas_bus',
+    #                               standard_parameters=standard_parameters)
+
+    # gas heating transformer
+    #gas_heating_standard_parameters = standard_parameters.parse('transformers')
+
+    transformers_standard_parameters = standard_parameters.parse('transformers')
+    transformers_standard_parameters.set_index('comment', inplace=True)
+    electric_heating_standard_parameters = transformers_standard_parameters.loc[
+        'electricheating_transformer']
+
+
+    # define individual electric_heating_parameters
+    electric_heating_house_specific_dict = \
+        {'label': str(id) + '_electricheating_transformer',
+         'comment': 'automatically_created',
+         'input': str(id) + '_electricity_bus',
+         'output': str(id) + '_heat_bus',
+         'output2': 'None'}
+
+    # read the electricheating standards from standard_parameters.xlsx and append
+    # them to the  electric_heating_house_specific_dict
+    electric_heating_standard_keys = electric_heating_standard_parameters.keys().tolist()
+    for i in range(len(electric_heating_standard_keys)):
+        electric_heating_house_specific_dict[electric_heating_standard_keys[i]] = \
+            electric_heating_standard_parameters[electric_heating_standard_keys[i]]#[0]
 
     # produce a pandas series out of the dict above due to easier appending
-    gas_heating_series = pd.Series(gas_heating_house_specific_dict)
+    electric_heating_series = pd.Series(electric_heating_house_specific_dict)
     sheets["transformers"] = \
         sheets["transformers"] \
-            .append(gas_heating_series, ignore_index=True)
+            .append(electric_heating_series, ignore_index=True)
 
-
-def create_battery(id, battery_standard_parameters):
+def create_battery(id, standard_parameters):
     """
         todo docstring
     """
@@ -542,17 +777,10 @@ def create_battery(id, battery_standard_parameters):
                                    'comment': 'automatically_created',
                                    'bus': str(id) + '_electricity_bus'}
 
-    # read the battery standards from standard_parameters.xlsx and append
-    # them to the battery_house_specific_dict
-    battery_standard_keys = battery_standard_parameters.keys().tolist()
-    for i in range(len(battery_standard_keys)):
-        battery_house_specific_dict[battery_standard_keys[i]] = \
-            battery_standard_parameters[battery_standard_keys[i]]#[0]
+    create_standard_parameter_storage(specific_param=battery_house_specific_dict,
+                                      standard_parameters=standard_parameters,
+                                      standard_param_name='battery_storage')
 
-    # produce a pandas series out of the dict above due to easier appending
-    battery_series = pd.Series(battery_house_specific_dict)
-    sheets["storages"] = \
-        sheets["storages"].append(battery_series, ignore_index=True)
 
 
 def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: str, output_scenario: str,
@@ -594,14 +822,15 @@ def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: st
     central_electricity_network = False
 
     for i, j in central.iterrows():
-        if j['district_heat_link'] == 'yes' \
-                or j['district_heat_link'] == 'Yes' \
-                or j['district_heat_link'] == 1:
+        if j['district_heat_link'] in ['Yes', 'yes', 1]:
             central_heating_network = True
-        if j['district_electricity_bus'] == 'yes' \
-                or j['district_electricity_bus'] == 'Yes' \
-                or j['district_electricity_bus'] == 1:
+        if j['district_electricity_bus'] in ['Yes', 'yes', 1]:
             central_electricity_network = True
+        if j['power_to_gas'] in ['Yes', 'yes', 1]:
+            p2g_link = True
+        else:
+            p2g_link = False
+
     for i, j in tool.iterrows():
         # foreach building the three necessary buses will be created
         create_buses(j['label'],
@@ -628,48 +857,111 @@ def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: st
         sources_standard_parameters.set_index('comment', inplace = True)
         pv_standard_parameters = sources_standard_parameters.loc['fixed photovoltaic source']
 
-        # create pv-sources
+        # Define solar thermal Standard-Parameters
+        solarthermal_standard_parameters = sources_standard_parameters.loc['solar_thermal_collector']
+
+        # create pv-sources and solar thermal-sources including area competition
         if j['azimuth 1 (°)']:
+            plant_id = '1'
+
             create_pv_source(building_id=j['label'],
-                             plant_id='1',
+                             plant_id=plant_id,
                              azimuth=j['azimuth 1 (°)'],
                              tilt=j['surface tilt 1 (°)'],
                              area=j['roof area 1 (m²)'],
                              latitude=j['latitude'],
                              longitude=j['longitude'],
                              pv_standard_parameters=pv_standard_parameters)
+            create_solarthermal_source(building_id=j['label'],
+                             plant_id=plant_id,
+                             azimuth=j['azimuth 1 (°)'],
+                             tilt=j['surface tilt 1 (°)'],
+                             area=j['roof area 1 (m²)'],
+                             latitude=j['latitude'],
+                             longitude=j['longitude'],
+                             solarthermal_standard_parameters=solarthermal_standard_parameters)
+            create_competition_constraint(component1=j['label'] + '_' + plant_id + '_pv_source',
+                                          factor1=1/pv_standard_parameters['Capacity per Area (kW/m2)'],
+                                          component2=j['label'] + '_' + plant_id + '_solarthermal_source',
+                                          factor2=1/solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
+                                          limit=j['roof area 1 (m²)'])
 
 
 
         if j['azimuth 2 (°)']:
+            plant_id = '2'
+
             create_pv_source(building_id=j['label'],
-                             plant_id='2',
+                             plant_id=plant_id,
                              azimuth=j['azimuth 2 (°)'],
                              tilt=j['surface tilt 2 (°)'],
                              area=j['roof area 2 (m²)'],
                              latitude=j['latitude'],
                              longitude=j['longitude'],
                              pv_standard_parameters=pv_standard_parameters)
+            create_solarthermal_source(building_id=j['label'],
+                             plant_id=plant_id,
+                             azimuth=j['azimuth 2 (°)'],
+                             tilt=j['surface tilt 2 (°)'],
+                             area=j['roof area 2 (m²)'],
+                             latitude=j['latitude'],
+                             longitude=j['longitude'],
+                             solarthermal_standard_parameters=solarthermal_standard_parameters)
+            create_competition_constraint(component1=j['label'] + '_' + plant_id + '_pv_source',
+                                          factor1=pv_standard_parameters['Capacity per Area (kW/m2)'],
+                                          component2=j['label'] + '_' + plant_id + '_solarthermal_source',
+                                          factor2=solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
+                                          limit=j['roof area 2 (m²)'])
 
         if j['azimuth 3 (°)']:
+            plant_id = '3'
+
             create_pv_source(building_id=j['label'],
-                             plant_id='3',
+                             plant_id=plant_id,
                              azimuth=j['azimuth 3 (°)'],
                              tilt=j['surface tilt 3 (°)'],
                              area=j['roof area 3 (m²)'],
                              latitude=j['latitude'],
                              longitude=j['longitude'],
                              pv_standard_parameters=pv_standard_parameters)
+            create_solarthermal_source(building_id=j['label'],
+                             plant_id=plant_id,
+                             azimuth=j['azimuth 3 (°)'],
+                             tilt=j['surface tilt 1 (°)'],
+                             area=j['roof area 3 (m²)'],
+                             latitude=j['latitude'],
+                             longitude=j['longitude'],
+                             solarthermal_standard_parameters=solarthermal_standard_parameters)
+            create_competition_constraint(component1=j['label'] + '_' + plant_id + '_pv_source',
+                                          factor1=pv_standard_parameters['Capacity per Area (kW/m2)'],
+                                          component2=j['label'] + '_' + plant_id + '_solarthermal_source',
+                                          factor2=solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
+                                          limit=j['roof area 3 (m²)'])
 
         if j['azimuth 4 (°)']:
+            plant_id = '4'
+
             create_pv_source(building_id=j['label'],
-                             plant_id='4',
+                             plant_id=plant_id,
                              azimuth=j['azimuth 4 (°)'],
                              tilt=j['surface tilt 4 (°)'],
                              area=j['roof area 4 (m²)'],
                              latitude=j['latitude'],
                              longitude=j['longitude'],
                              pv_standard_parameters=pv_standard_parameters)
+            create_solarthermal_source(building_id=j['label'],
+                             plant_id=plant_id,
+                             azimuth=j['azimuth 4 (°)'],
+                             tilt=j['surface tilt 4 (°)'],
+                             area=j['roof area 4 (m²)'],
+                             latitude=j['latitude'],
+                             longitude=j['longitude'],
+                             solarthermal_standard_parameters=solarthermal_standard_parameters)
+            create_competition_constraint(component1=j['label'] + '_' + plant_id + '_pv_source',
+                                          factor1=pv_standard_parameters['Capacity per Area (kW/m2)'],
+                                          component2=j['label'] + '_' + plant_id + '_solarthermal_source',
+                                          factor2=solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
+                                          limit=j['roof area 4 (m²)'])
 
         # creates heat-pumps
         if j['gchp area (m2)']:
@@ -682,24 +974,29 @@ def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: st
                         standard_parameters=standard_parameters)
 
         # creates gasheating-system
-        if j['gas heating'] == 'yes' or j['gas heating'] == 'Yes' \
-                or j['gas heating'] == 1:
+        if j['gas heating'] in ['Yes', 'yes', 1]:
             create_gas_heating(id=j['label'],
                                standard_parameters=standard_parameters)
 
+            # natural gas connection link to p2g-ng-bus
+            if p2g_link == True:
+                create_standard_parameter_link(label='central_ng_' + j['label'] + 'link',
+                                               bus_1='central_ng_bus',
+                                               bus_2=j['label']+'_gas_bus',
+                                               link_type='central_ng_building_link',
+                                               standard_parameters=standard_parameters)
+
+        # creates electric heating-system
+        if j['electric heating'] in ['yes', 'Yes', 1]:
+            create_electric_heating(id=j['label'],
+                               standard_parameters=standard_parameters)
+
         # battery storage
-
-        # Define battery Standard-Parameters
-        storages_standard_parameters = standard_parameters.parse('storages')
-        storages_standard_parameters.set_index('comment', inplace = True)
-        battery_standard_parameters = storages_standard_parameters.loc['battery storage']
+        if j['battery storage'] in ['Yes', 'yes', 1]:
+            create_battery(id=j['label'],
+                           standard_parameters=standard_parameters)
 
 
-        if j['battery storage'] == 'yes' or j['battery storage'] == 'Yes' \
-                or j['battery storage'] == 1:
-            create_battery(
-                id=j['label'],
-                battery_standard_parameters=battery_standard_parameters)
 
         print(str(j['label']) + ' subsystem added to scenario sheet.')
 
