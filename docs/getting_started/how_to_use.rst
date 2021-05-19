@@ -81,7 +81,7 @@ Sinks
 
 Within this sheet, the sinks of the energy system are defined. The following parameters need to be entered:
 
-- **label**: Unique designation of the sink. The following format is recommended: "ID_energy sector_sinks".
+- **label**: Unique designation of the sink. The following format is recommended: "ID_energy sector_sink".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the sink shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed sink or not. 0 = not fixed; 1 = fixed.
@@ -97,9 +97,9 @@ Within this sheet, the sinks of the energy system are defined. The following par
    :header: label,comment,active,fixed,input,load profile,nominal value,annual demand,occupants,building class,wind class
 
    ,,,,,,(kW),(kWh/a),(richardson),(heat slp),(heat slp)
-   electricity_demand,H0 standard load profile sink,1,1,electricity_bus,h0,0,5000.0,0,0,0
-   bheat_demand,EFH standard load profile sink,1,1,heat_bus,efh,0,30000.0,0,3,0
-   cooling_demand,fixed timeseries cooling demand,0,1,cooling_bus,timeseries,1,0,0,0,0
+   001_electricity_sink,H0 standard load profile sink,1,1,electricity_bus,h0,0,5000.0,0,0,0
+   001_heat_sink,EFH standard load profile sink,1,1,heat_bus,efh,0,30000.0,0,3,0
+   001_cooling_sink,fixed timeseries cooling demand,0,1,cooling_bus,timeseries,1,0,0,0,0
    
 .. figure:: ../images/BSP_Graph_sink.png
    :width: 100 %
@@ -110,8 +110,8 @@ Within this sheet, the sinks of the energy system are defined. The following par
 
 Sources
 =================================================
-Within this sheet, the sources of the energy system are defined. Properties with the addition "PV ONLY" have only to be 
-defined if the parameter "technology" is set on "photovoltaic". The following parameters have to be entered:
+Within this sheet, the sources of the energy system are defined. Properties with the addition of their technology in the units line have only to be 
+defined if the parameter "technology" is set on the mentioned technology else enter the value "0". The following parameters have to be entered:
 
 - **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
@@ -138,6 +138,7 @@ PV
 -------------------------
 - **technology database**: Database, from where module parameters are to be obtained. Recommended Database: "SandiaMod".
 - **inverter database**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter".
+For other databases `click here <https://sam.nrel.gov/photovoltaic/pv-cost-component.html>`
 - **Modul Model**: Module name, according to the database used.
 - **Inverter Model**: Inverter name, according to the database used.
 - **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic sources, use fill character "x" for other technologies.
