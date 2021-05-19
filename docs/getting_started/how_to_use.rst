@@ -90,7 +90,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **nominal value/(kW)**: Nominal performance of the sink. Required when "time series" has been entered into the "load profile". When SLP or Richardson is used, use the fill character "0" here.
 - **annual demand/(kWh/a)**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "0" is used. 
 - **occupants [RICHARDSON]**: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "0" for other load profiles.
-- **building class [HEAT SLP ONLY]**: BDEW-building class. Explained here `building classes`_.
+- **building class [HEAT SLP ONLY]**: BDEW-building class. Explained here :ref:`building classes`_.
 - **wind class [HEAT SLP ONLY]**: wind classification for building location (0=not windy, 1=windy)
  
 .. csv-table:: Exemplary input for the sinks sheet
