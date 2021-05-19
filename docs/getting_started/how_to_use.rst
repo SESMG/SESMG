@@ -110,15 +110,14 @@ Within this sheet, the sinks of the energy system are defined. The following par
 
 Sources
 =================================================
-Within this sheet, the sources of the energy system are defined. Properties with the addition of their technology in the units line have only to be 
-defined if the parameter "technology" is set on the mentioned technology else enter the value "0". The following parameters have to be entered:
+Within this sheet, the sources of the energy system are defined. Technology specific data (see 2nd line), must be filled in only if the respective technology is selected otherwise use 0. The following parameters have to be entered:
 
 - **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the "time_series" sheet.
+- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the `Time series sheet`_.
 Costs
 -------------------------
 - **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
