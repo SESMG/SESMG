@@ -58,12 +58,12 @@ Within this sheet, the buses of the energy system are defined. The following par
    :header: label,comments,active,excess,shortage,excess costs,shortage costs,variable excess constraint costs,variable shortage constraint costs
 
    ,,,,,(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh)
-   bus001_electricity_bus,,1,0,1,0,0.300,0,474.000
-   bus001_heat_bus,,1,1,0,0,0,0,0
-   bus001_gas_bus,,1,0,1,0,0.07,0,0
-   bus001_cooling_bus,chiller,1,1,0,0,0,0,0
-   bus001_pv_bus,,1,1,0,-0.068,0,-56,0
-   bus001_hp_electricity_bus,heat pumps,1,1,1,0,0.22,0,474
+   ID_electricity_bus,,1,0,1,0,0.300,0,474.000
+   ID_heat_bus,,1,1,0,0,0,0,0
+   ID_gas_bus,,1,0,1,0,0.07,0,0
+   ID_cooling_bus,chiller,1,1,0,0,0,0,0
+   ID_pv_bus,,1,1,0,-0.068,0,-56,0
+   ID_hp_electricity_bus,heat pumps,1,1,1,0,0.22,0,474
    district_electricity_bus,delivering electr. to neighb. subsystems,1,0,0,0,0,0,0
    district_heat_bus,delivering heat to neighb. subsystems,1,0,0,0,0,0,0
    chp_electricity_bus,,1,0,1,0,0,-375,0
