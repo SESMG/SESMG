@@ -278,43 +278,45 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **active**: Specifies whether the storage shall be included to the model. 0 = inactive, 1 = active.
 - **storage type**: Defines whether the storage is a "Generic" or a "Stratified" sorage. These two inputs are possible.
 - **bus**: Specifies which bus the storage is connected to.
-- **existing capacity/(kW)**: Previously installed capacity of the storage.
-- **min. investment capacity/(kW)**: Minimum storage capacity to be installed.
-- **max. investment capacity/(kW)**: Maximum in addition to existing capacity, installable storage capacity.
-- **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
-- **periodical constraint costs /(CU/a)**: Only if considering constraints. Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet.
-- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
-- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
-- **input/capacity ratio (invest)**: Indicates the performance with which the memory can be charged.
-- **output/capacity ratio (invest)**: Indicates the performance with which the memory can be discharged.
-- **capacity loss (Generic only)**: Indicates the storage loss per time unit. Only required, if the "storage type" is set to "Generic". 
+- **input/capacity ratio** (invest): Indicates the performance with which the memory can be charged.
+- **output/capacity ratio** (invest): Indicates the performance with which the memory can be discharged.
 - **efficiency inflow**: Specifies the charging efficiency.
 - **efficiency outflow**: Specifies the discharging efficiency.
 - **initial capacity**: Specifies how far the memory is loaded at time 0 of the simulation. Value must be between 0 and 1.
 - **capacity min**: Specifies the minimum amount of memory that must be loaded at any given time. Value must be between 0 and 1.
 - **capacity max**: Specifies the maximum amount of memory that can be loaded at any given time. Value must be between 0 and 1.
+
+Costs
+--------------------
+- **existing capacity** in (kW): Previously installed capacity of the storage.
+- **min. investment capacity** in (kW): Minimum storage capacity to be installed.
+- **max. investment capacity** in (kW): Maximum in addition to existing capacity, installable storage capacity.
+- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.  Explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#investment>`_.
+- **Fix Investment Costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs)
 - **variable input costs**: Indicates how many costs arise for charging with one kWh.
 - **variable output costs**: Indicates how many costs arise for charging with one kWh.
-- **variable input constraint costs**: Only if considering constraints. Indicates how many costs arise for charging with one kWh referring to the constraint limit set in the "energysystem" sheet.
-- **variable output constraint costs**: Only if considering constraints. Indicates how many costs arise for charging with one kWh referring to the constraint limit set in the "energysystem" sheet.
-- **diameter /m (Stratified Storage)**: Defines the diameter of a stratified thermal storage, which is necessary for the calculation of thermal losses.
-- **temperature high /deg C (Stratified Storage)**: Outlet temperature of the stratified thermal storage.
-- **temperature low /deg C (Stratified Storage)**: Inlet temperature of the stratified thermal storage.
-- **U value /(W/(sqm*K)) (Stratified Storage)**: Thermal transmittance coefficient
-- **existing capacity/(kW)**: Previously installed capacity of the storage.
-- **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
-- **max. investment capacity/(kW)**: Maximum in addition to existing capacity, installable storage capacity.
-- **min. investment capacity/(kW)**: Minimum storage capacity to be installed.
-- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
-- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
-
+- **periodical costs** in (CU/a): Costs incurred per kW for investments within the time horizon.
+- **variable input constraint costs**: Indicates how many costs arise for charging with one kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **variable output constraint costs**: Indicates how many costs arise for charging with one kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **periodical constraint costs** in (CU/a): Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+Generic Storage
+---------------------
+- **capacity loss** (Generic only): Indicates the storage loss per time unit. Only required, if the "storage type" is set to "Generic". 
+Stratified Storage
+---------------------
+- **diameter** in (m) | (Stratified Storage): Defines the diameter of a stratified thermal storage, which is necessary for the calculation of thermal losses.
+- **temperature high** in (°C) | (Stratified Storage): Outlet temperature of the stratified thermal storage.
+- **temperature low** in (°C) | (Stratified Storage): Inlet temperature of the stratified thermal storage.
+- **U value** in (W/(sqm*K)) | (Stratified Storage): Thermal transmittance coefficient
 
 .. csv-table:: Exemplary input for the storages sheet
-   :header: label,comment,active,storage type,bus,existing capacity /(kWh),min. investment capacity /(kWh),max. investment capacity /(kWh),periodical costs /(CU/(kWh a)),periodical constraint costs /(CU/(kWh a)),Non-Convex Investment,Fix Investment Costs /(CU/a),input/capacity ratio (invest),output/capacity ratio (invest),capacity loss (Generic only),efficiency inflow,efficiency outflow,initial capacity,capacity min,capacity max,variable input costs,variable output costs,variable input constraint costs /(CU/kWh),variable output constraint costs /(CU/kWh),diameter /(m) (Stratified Storage),temperature high /(deg C) (Stratified Storage),temperature low /(deg C) (Stratified Storage),U value /(W/(sqm*K)) (Stratified Storage)
+   :header: label,comment,active,storage type,bus,input/capacity ratio,output/capacity ratio,efficiency inflow,efficiency outflow,initial capacity,capacity min,capacity max,existing capacity,min. investment capacity,max. investment capacity,non-convex investment,fix investment costs,variable input costs,variable output costs,periodical costs,variable input constraint costs,variable output constraint costs,periodical constraint costs,capacity loss,diameter,temperature high,temperature low,U value
 
-   battery001_electricity_storage,,1,Generic,bus001_electricity_bus,1000,0,1000,70,0.1,0,0,0.17,0.17,0,1,0.98,0,0.1,1,0,0,0.1,0.1,x,x,x,x
-   stratified_thermal_storage001,,1,Stratified,bus001_heat_bus,100,0,500,40,0.1,0,0,0.2,0.2,x,1,0.98,0,0.05,0.95,0,0,0.1,0.1,1,60,45,0.04
-
+	,,,,,(invest),(invest),,,,,,(kWh),(kWh),(kWh),,(CU/a),(CU/kWh),(CU/kWh),(CU/(kWh a)),(CU/kWh),(CU/kWh),(CU/(kWh a)),Generic Storage,(`m`) | Stratified Storage,(°C) | Stratified Storage,Stratified Storage,(W/(m²*K)) | Stratified Storage
+	ID_battery_storage,,1,Generic,electricity_bus,0.17,0.17,1,0.98,0,0.1,1,0,0,100,0,0,0,0,70,0,0,400,0,0,0,0,0
+	ID_thermal_storage,,1,Generic,heat_bus,0.17,0.17,1,0.98,0,0.1,0.9,0,0,100,0,0,0,20,35,0,0,100,0,0,0,0,0
+	ID_stratified_thermal_storage,,1,Generic,heat_bus,0.2,0.2,1,0.98,0,0.05,0.95,0,0,100,0,0,0,20,35,0,0,100,0,0.8,60,40,0.04
+	district_battery_storage,,1,Generic,district_electricity_bus,0.17,0.17,1,0.98,0,0.1,1,0,0,1000,0,0,0,0,10,0,0,10,0,0,0,0,0
 	
 .. figure:: ../images/BSP_Graph_Storage.png
    :width: 100 %
