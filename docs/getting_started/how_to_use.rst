@@ -60,13 +60,14 @@ Within this sheet, the buses of the energy system are defined. The following par
    ,,,,,(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh)
    ID_electricity_bus,,1,0,1,0.000,0.300,0.00,474.00
    ID_heat_bus,,1,1,0,0.000,0.000,0.00,0.00
-   ID_gas_bus,,1,0,1,0.000,0.07,0.00,0.00
+   ID_gas_bus,,1,0,1,0.000,0.070,0.00,0.00
    ID_cooling_bus,chiller,0,1,0,0.000,0.000,0.00,0.00
    ID_pv_bus,,1,1,0,-0.068,0.000,-56.00,0.00
    ID_hp_electricity_bus,heat pumps,1,1,1,0.000,0.220,0.00,474.00
    district_electricity_bus,delivering electr. to neighb. subsystems,1,0,0,0.000,0.000,0.00,0.00
    district_heat_bus,delivering heat to neighb. subsystems,1,0,0,0.000,0.000,0.00,0.00
    district_chp_electricity_bus,,1,0,1,0.000,0.000,-375.00,0.00
+   district_gas_bus,,1,0,1,0.000,0.070,0.00,0.00
    
 .. figure:: ../images/BSP_Graph_Bus.png
    :width: 100 %
@@ -315,7 +316,7 @@ Stratified Storage
 	,,,,,(invest),(invest),,,,,,(kWh),(kWh),(kWh),,(CU/a),(CU/kWh),(CU/kWh),(CU/(kWh a)),(CU/kWh),(CU/kWh),(CU/(kWh a)),Generic Storage,(`m`) | Stratified Storage,(°C) | Stratified Storage,Stratified Storage,(W/(m²*K)) | Stratified Storage
 	ID_battery_storage,,1,Generic,ID_electricity_bus,0.17,0.17,1,0.98,0,0.1,1,0,0,100,0,0,0,0,70,0,0,400,0,0,0,0,0
 	ID_thermal_storage,,1,Generic,ID_heat_bus,0.17,0.17,1,0.98,0,0.1,0.9,0,0,100,0,0,0,20,35,0,0,100,0,0,0,0,0
-	ID_stratified_thermal_storage,,1,Generic,ID_heat_bus,0.2,0.2,1,0.98,0,0.05,0.95,0,0,100,0,0,0,20,35,0,0,100,0,0.8,60,40,0.04
+	ID_stratified_thermal_storage,,1,Stratified,ID_heat_bus,0.2,0.2,1,0.98,0,0.05,0.95,0,0,100,0,0,0,20,35,0,0,100,0,0.8,60,40,0.04
 	district_battery_storage,,1,Generic,district_electricity_bus,0.17,0.17,1,0.98,0,0.1,1,0,0,1000,0,0,0,0,10,0,0,10,0,0,0,0,0
 	
 .. figure:: ../images/BSP_Graph_Storage.png
