@@ -61,7 +61,7 @@ Within this sheet, the buses of the energy system are defined. The following par
    ID_electricity_bus,,1,0,1,0.000,0.300,0.00,474.00
    ID_heat_bus,,1,1,0,0.000,0.000,0.00,0.00
    ID_gas_bus,,1,0,1,0.000,0.070,0.00,0.00
-   ID_cooling_bus,chiller,0,1,0,0.000,0.000,0.00,0.00
+   ID_cooling_bus,chiller,1,1,0,0.000,0.000,0.00,0.00
    ID_pv_bus,,1,1,0,-0.068,0.000,-56.00,0.00
    ID_hp_electricity_bus,heat pumps,1,1,1,0.000,0.220,0.00,474.00
    district_electricity_bus,delivering electr. to neighb. subsystems,0,0,0,0.000,0.000,0.00,0.00
