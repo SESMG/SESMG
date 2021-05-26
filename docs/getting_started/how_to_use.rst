@@ -73,7 +73,7 @@ Within this sheet, the buses of the energy system are defined. The following par
    :alt: Bus_Graph
    :align: center
 
-   Graph of the energy system, which is created by entering the example components. Two buses, a shortage source, and an excess sink were created by the input.The non-active components are not included in the graph above.
+   Graph of the energy system, which is created by entering the example components. Two buses, a shortage source, and an excess sink were created by the input. The non-active components are not included in the graph above.
 
 
 Sinks
