@@ -579,7 +579,6 @@ class Results:
                         # excess sink
                         if i == 'buses_e':
                             comp_label = comp['label'] + '_excess'
-                            total_usage += self.comp_input1.sum()
                             # calculation of excess costs
                             variable_costs = \
                                 self.calc_variable_costs(comp, 'excess')
