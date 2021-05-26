@@ -64,10 +64,10 @@ Within this sheet, the buses of the energy system are defined. The following par
    ID_cooling_bus,chiller,0,1,0,0.000,0.000,0.00,0.00
    ID_pv_bus,,1,1,0,-0.068,0.000,-56.00,0.00
    ID_hp_electricity_bus,heat pumps,1,1,1,0.000,0.220,0.00,474.00
-   district_electricity_bus,delivering electr. to neighb. subsystems,1,0,0,0.000,0.000,0.00,0.00
-   district_heat_bus,delivering heat to neighb. subsystems,1,0,0,0.000,0.000,0.00,0.00
-   district_chp_electricity_bus,,1,0,1,0.000,0.000,-375.00,0.00
-   district_gas_bus,,1,0,1,0.000,0.070,0.00,0.00
+   district_electricity_bus,delivering electr. to neighb. subsystems,0,0,0,0.000,0.000,0.00,0.00
+   district_heat_bus,delivering heat to neighb. subsystems,0,0,0,0.000,0.000,0.00,0.00
+   district_chp_electricity_bus,,0,0,1,0.000,0.000,-375.00,0.00
+   district_gas_bus,,0,0,1,0.000,0.070,0.00,0.00
    
 .. figure:: ../images/BSP_Graph_Bus.png
    :width: 100 %
@@ -100,7 +100,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
    ,,,,,,(kW),(kWh/a),(richardson),(heat slp),(heat slp)
    ID_electricity_sink,H0 standard load profile sink,1,1,ID_electricity_bus,h0,0,5000.0,0,0,0
    ID_heat_sink,EFH standard load profile sink,1,1,ID_heat_bus,efh,0,30000.0,0,3,0
-   ID_cooling_sink,fixed timeseries cooling demand,0,1,ID_cooling_bus,timeseries,1,0,0,0,0
+   ID_cooling_sink,fixed timeseries cooling demand,1,1,ID_cooling_bus,timeseries,1,0,0,0,0
    
 .. figure:: ../images/BSP_Graph_sink.png
    :width: 100 %
@@ -255,12 +255,11 @@ The following parameters are only required, if "transformer type" is set to "abs
    
 	,,,,,,,,,,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),,(°C),(°C),,(m²),(`m`),(kW/(m*a)),(m²),(°C),,,(°C),(°C),,(°C),,,(kW),(kW),,,(kW)		   
  	ID_gasheating_transformer,,1,GenericTransformer,0,ID_gas_bus,ID_heat_bus,None,0.85,0,10,0,20,0,0,0,0,0,70,0,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0  
-	ID_chp_transformer,,1,GenericTransformer,0,district_gas_bus,district_chp_electricity_bus,district_heat_bus,0.35,0.55,0,0,20,0,0,0,0,0,50,130,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0   
 	ID_GCHP_transformer,ground-coupled heat pump,1,compression_heat_transformer,heat_pump,ID_hp_electricity_bus,ID_heat_bus,None,1,0,0,0,20,0,0,0,0,0,115.57,0,0,0,0,Ground,60,0,0.6,1000,100,0.05,100,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	ID_ASCH_transformer,air source chiller,0,compression_heat_transformer,chiller,ID_hp_electricity_bus,ID_cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,Air,0,-10,0.4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	ID_AbsCH_transformer,absorption chiller,0,absorption_heat_transformer,chiller,ID_hp_electricity_bus,ID_cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Kuehn,85,10,0.05,6,0,0,0,0,0,0,0,0,0
 	ID_ASHP_transformer,air source heat pump,1,compression_heat_transformer,heat_pump,ID_hp_electricity_bus,ID_heat_bus,None,1,0,0,0,20,0,0,0,0,0,112.78,0,0,0,0,Air,60,0,0.4,0,0,0,0,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-    
+	ID_chp_transformer,,0,GenericTransformer,0,district_gas_bus,district_chp_electricity_bus,district_heat_bus,0.35,0.55,0,0,20,0,0,0,0,0,50,130,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0   
 	
 .. figure:: ../images/BSP_Graph_transformer.png
    :width: 100 %
@@ -316,8 +315,8 @@ Stratified Storage
 	,,,,,(invest),(invest),,,,,,(kWh),(kWh),(kWh),,(CU/a),(CU/kWh),(CU/kWh),(CU/(kWh a)),(CU/kWh),(CU/kWh),(CU/(kWh a)),Generic Storage,(`m`) | Stratified Storage,(°C) | Stratified Storage,Stratified Storage,(W/(m²*K)) | Stratified Storage
 	ID_battery_storage,,1,Generic,ID_electricity_bus,0.17,0.17,1,0.98,0,0.1,1,0,0,100,0,0,0,0,70,0,0,400,0,0,0,0,0
 	ID_thermal_storage,,1,Generic,ID_heat_bus,0.17,0.17,1,0.98,0,0.1,0.9,0,0,100,0,0,0,20,35,0,0,100,0,0,0,0,0
-	ID_stratified_thermal_storage,,1,Stratified,ID_heat_bus,0.2,0.2,1,0.98,0,0.05,0.95,0,0,100,0,0,0,20,35,0,0,100,0,0.8,60,40,0.04
-	district_battery_storage,,1,Generic,district_electricity_bus,0.17,0.17,1,0.98,0,0.1,1,0,0,1000,0,0,0,0,10,0,0,10,0,0,0,0,0
+	ID_stratified_thermal_storage,,0,Stratified,ID_heat_bus,0.2,0.2,1,0.98,0,0.05,0.95,0,0,100,0,0,0,20,35,0,0,100,0,0.8,60,40,0.04
+	district_battery_storage,,0,Generic,district_electricity_bus,0.17,0.17,1,0.98,0,0.1,1,0,0,1000,0,0,0,0,10,0,0,10,0,0,0,0,0
 	
 .. figure:: ../images/BSP_Graph_Storage.png
    :width: 100 %
@@ -354,13 +353,13 @@ Costs
    :header: label,comment,active,(un)directed,bus1,bus2,efficiency,existing capacity,min. investment capacity,max. investment capacity,non-convex investment,fix investment costs,variable output costs,periodical costs,variable constraint costs,periodical constraint costs
 
 	,,,,,,,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/(kW a))
-	districtheat_directed_link,,1,directed,district_heat_bus,ID_heat_bus,0.85,0,0,0,0,0,0,0,0,0
-	districtheat_undirected_link,,1,undirected,district_heat_bus,ID_heat_bus,0.85,0,0,0,0,0,0,0,0,0
 	ID_pv_to_ID_electricity_link,,1,directed,ID_pv_bus,ID_electricity_bus,1,0,0,0,0,0,0,0,0,0
-	district_electricity_link,,1,directed,district_electricity_bus,ID_electricity_bus,1,0,0,0,0,0,0.1438,0,0,0
-	district_chp_to_district_electricity_bus,,1,directed,district_chp_electricity_bus,district_electricity_bus,1,0,0,0,0,0,0.1438,0,0,0
 	ID_electricity_to_ID_hp_electricity_bus,,1,directed,ID_electricity_bus,ID_hp_electricity_bus,1,0,0,0,0,0,0,0,0,0
-	ID_pv_to_district_electricity_link,,1,directed,ID_pv_bus,ID_electricity_bus,1,0,0,0,0,0,0.1438,0,0,0
+	districtheat_directed_link,,0,directed,district_heat_bus,ID_heat_bus,0.85,0,0,0,0,0,0,0,0,0
+	districtheat_undirected_link,,0,undirected,district_heat_bus,ID_heat_bus,0.85,0,0,0,0,0,0,0,0,0
+	district_electricity_link,,0,directed,district_electricity_bus,ID_electricity_bus,1,0,0,0,0,0,0.1438,0,0,0
+	district_chp_to_district_electricity_bus,,0,directed,district_chp_electricity_bus,district_electricity_bus,1,0,0,0,0,0,0.1438,0,0,0
+	ID_pv_to_district_electricity_link,,0,directed,ID_pv_bus,ID_electricity_bus,1,0,0,0,0,0,0.1438,0,0,0
 	
 .. figure:: ../images/BSP_Graph_link.png
    :width: 100 %
