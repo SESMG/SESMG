@@ -1433,12 +1433,10 @@ class Transformers:
                 fuel_input={
                     self.busd[tf['input']]: solph.Flow(
                             H_L_FG_share_max=[
-                                tf['share of flue gas loss at max heat '
-                                   'extraction']
+                                tf['min. share of flue gas loss']
                                 for p in range(0, periods)],
                             H_L_FG_share_min=[
-                                tf['share of flue gas loss at min heat '
-                                   'extraction']
+                                tf['max. share of flue gas loss']
                                 for p in range(0, periods)],
                             variable_costs=tf[
                                 'variable input costs'],
@@ -1461,19 +1459,15 @@ class Transformers:
                                     offset=tf['fix investment costs']
                                 ),
                             P_max_woDH=[
-                                tf['max. electric power without district '
-                                   'heating']
+                                tf['max. electric power']
                                 for p in range(0, periods)],
-                            P_min_woDH=[tf['min. electric power without '
-                                           'district heating']
+                            P_min_woDH=[tf['min. electric power']
                                         for p in range(0, periods)],
                             Eta_el_max_woDH=[
-                                tf['el. eff. at max. fuel flow w/o distr. '
-                                   'heating']
+                                tf['max. electric efficiency']
                                 for p in range(0, periods)],
                             Eta_el_min_woDH=[
-                                tf['el. eff. at min. fuel flow w/o distr. '
-                                   'heating']
+                                tf['min. electric efficiency']
                                 for p in range(0, periods)],
                             variable_costs=tf[
                                 'variable output costs'],
@@ -1482,15 +1476,14 @@ class Transformers:
                             )
                         },
                 heat_output={self.busd[tf['output2']]: solph.Flow(
-                    Q_CW_min=[tf['minimal therm. condenser load to '
-                                 'cooling water']
+                    Q_CW_min=[tf['minimal therml output power']
                               for p in range(0, periods)],
                     variable_costs=tf[
                         'variable output costs 2'],
                     emission_factor=tf[
                         'variable output constraint costs 2']
                 )},
-                Beta=[tf['power loss index']
+                Beta=[tf['elec. power loss index']
                       for p in range(0, periods)],
                 # fixed_costs=0,
                 back_pressure=True if tf['back pressure'] == 1 else False,
