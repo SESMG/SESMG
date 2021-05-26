@@ -40,7 +40,7 @@ Within this sheet, the time horizon and the temporal resolution of the model is 
 Competition Constraints
 =================================================
 The spreadsheet "Competition Constraints" allows you to match two components against a predefined limit. 
-Here, one could imagine an area competition, for example. If you do not want to use this spreadsheet, it simply remains empty. To use this worksheet, the following values must be filled in:
+For example, an area competition. If you do not want to use this spreadsheet, it simply remains empty. To use this worksheet, the following values must be filled in:
 
 - **component 1**: First component that lays claim to the parameter which size set as the limit.
 - **factor 1**: Factor that defines how many units of the target unit component 1 needs to provide 1 kW of power.
