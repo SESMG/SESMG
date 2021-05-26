@@ -1842,11 +1842,11 @@ class Storages:
                     periodical_constraint_costs=s[
                         'periodical constraint costs'],
                     existing=s[
-                        'existing capacity],
+                        'existing capacity'],
                     minimum=s[
-                        'min. investment capacity],
+                        'min. investment capacity'],
                     maximum=s[
-                        'max. investment capacity],
+                        'max. investment capacity'],
                     nonconvex=True if
                     s['non-convex investment'] == 1 else False,
                     offset=s['fix investment costs'])))
