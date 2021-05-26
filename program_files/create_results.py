@@ -298,7 +298,6 @@ class Results:
                 if comp['excess']:
                     (flow_sum, df_excess) = \
                         self.get_flow(comp['label'] + '_excess', 'demand')
-                    total_usage = total_usage + flow_sum
                     # calculates the total variable costs of the sink
                     variable_costs = comp['excess costs /(CU/kWh)'] * flow_sum
                     # adds the variable costs to the total_costs variable
