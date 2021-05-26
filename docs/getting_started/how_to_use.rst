@@ -188,27 +188,42 @@ The following parameters have to be entered:
 - **label**: Unique designation of the transformer. The following format is recommended: "ID_energy sector_transformer".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the transformer shall be included to the model. 0 = inactive, 1 = active.
-- **transformer type**: Indicates what kind of transformer it is. Possible entries: "GenericTransformer" for linear transformers with constant efficiencies; "GenericCHP" for transformers with varying efficiencies.
-- **mode**: Specifies, if a compression or absorption heat transformer is working as "chiller" or "heat_pump". Only required if "transformer type" is set to "compression_heat_transformer" or "absorption_heat_transformer". Otherwise has to be set to "x", "X", "None", "none", "0" or just blank.
+- **transformer type**: Indicates what kind of transformer it is. Possible entries: "GenericTransformer" for linear transformers with constant efficiencies; "GenericCHP" for transformers with varying efficiencies; "compression_heat_transformer"; "absorption_heat_transformer".
+- **mode**: Specifies, if a compression or absorption heat transformer is working as "chiller" or "heat_pump". Only required if "transformer type" is set to "compression_heat_transformer" or "absorption_heat_transformer". Otherwise has to be set to "None", "none", "0".
 - **input**: Specifies the bus from which the input to the transformer comes from.
-- **output**: Specifies bus to which the output of the transformer is forwarded to.
-- **output2**: Specifies the bus to which the output of the transformer is forwarded to, if there are several outputs. If there is no second output, the fill character "x" must be entered here.
-- **efficiency**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
-- **efficiency2**: Specifies the efficiency of the second output, if there is one. Values  between 0 and 1 are entered. If there is no second output, the fill character "x" must be entered here.
-- **variable input costs/(CU/kWh)**: Variable costs incurred per kWh of input energy supplied.
-- **variable output costs/(CU/kWh)**: Variable costs incurred per kWh of output energy supplied.
-- **variable output costs 2/(CU/kWh)**: Variable costs incurred per kWh of output 2 energy supplied.
-- **variable input constraint costs/(CU/kWh)**: Only if considering constraints. Variable constraint costs incurred per kWh of input energy supplied referring to the constraint limit set in the "energysystem" sheet.
-- **variable output constraint costs/(CU/kWh)**: Only if considering constraints. Variable constraint costs incurred per kWh of output energy supplied referring to the constraint limit set in the "energysystem" sheet.
-- **variable output constraint costs 2/(CU/kWh)**: Only if considering constraints. Variable constraint costs incurred per kWh of output 2 energy supplied referring to the constraint limit set in the "energysystem" sheet.
-- **existing capacity/(kW)**: Already installed capacity of the transformer.
-- **min investment capacity/(kW)**: Minimum transformer capacity to be installed.
-- **max investment capacity/(kW)**: Maximum  installable transformer capacity in addition to the previously existing one.
-- **periodical costs /(CU/a)**: Costs incurred per kW for investments within the time horizon.
-- **periodical constraint costs /(CU/(kW a))**: Only required if constraint is considered. Constraint costs incurred per kW for investments within the time horizon.
-- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
-- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
+- **output**: Specifies bus to which the output of the transformer is forwarded to. For CHP Transformers it should be the electric output.
+- **output2**: Specifies the bus to which the output of the transformer is forwarded to, if there are several outputs. If there is no second output, the fill character "0" must be entered here.
 
+Costs
+---------------------
+- **variable input costs** in (CU/kWh): Variable costs incurred per kWh of input energy supplied.
+- **variable output costs** in (CU/kWh): Variable costs incurred per kWh of output energy supplied.
+- **variable output costs 2** in (CU/kWh): Variable costs incurred per kWh of output 2 energy supplied.
+- **variable input constraint costs** in (CU/kWh): Variable constraint costs incurred per kWh of input energy supplied referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **variable output constraint costs** in (CU/kWh): Variable constraint costs incurred per kWh of output energy supplied referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **variable output constraint costs 2** in (CU/kWh): Variable constraint costs incurred per kWh of output 2 energy supplied referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **existing capacity** in (kW): Already installed capacity of the transformer.
+- **min investment capacity** in (kW): Minimum transformer capacity to be installed.
+- **max investment capacity** in (kW): Maximum  installable transformer capacity in addition to the previously existing one.
+- **periodical costs** in (CU/a): Costs incurred per kW for investments within the time horizon.
+- **periodical constraint costs** in (CU/(kW a)): Constraint costs incurred per kW for investments within the time horizon. If not considering constraints fill character "0" is used.
+- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#investment>`_.
+- **Fix Investment Costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs)
+Generic Transformer
+------------------------
+- **efficiency**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
+- **efficiency2**: Specifies the efficiency of the second output, if there is one. Values between 0 and 1 are entered. If there is no second output, the fill character "0" must be entered here.
+GenericCHP
+------------------------
+- **min. share of flue gas loss**: 
+- **max. share of flue gas loss**:
+- **min. electric power** in (kW):
+- **max. electric power** in (kW):
+- **min. electric efficiency**:
+- **max. electric efficiency**:
+- **minimal thermal output power**:
+- **electric power loss index**:
+- **back pressure**
 **The following parameters are only required, if "transformer type" is set to "compression_heat_transformer"**:
 
 - **heat source (CHT)**: Specifies the heat source. Possible heat sources are "GroundWater", "Ground", "Air" and "Water" possible.
