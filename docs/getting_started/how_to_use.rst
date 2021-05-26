@@ -136,7 +136,7 @@ Wind
 PV
 -------------------------
 - **technology database**: Database, from where module parameters are to be obtained. Recommended Database: "SandiaMod".
-- **inverter database**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter". For other databases `click here <https://sam.nrel.gov/photovoltaic/pv-cost-component.html>`_
+- **inverter database**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter". For other databases `click here <https://sam.nrel.gov/photovoltaic/pv-cost-component.html>`_.
 - **Modul Model**: Module name, according to the database used.
 - **Inverter Model**: Inverter name, according to the database used.
 - **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic sources, use fill character "0" for other technologies.
