@@ -417,7 +417,7 @@ the maximum installable capacity needs to be known. Further, the periodic costs 
 costs. The periodic costs refer to the defined time horizon. If the time horizon is one year, the periodical costs
 correspond to the annualized capital costs of an investment.
 
-Non-Convex-Investments:
+Non-Convex-Investments
 ---------------------------
 While a linear programming approach is used for normal investment decisions, a mixed
 integer variable is defined for non-convex investment decisions. The model can thus decide, for example, whether
