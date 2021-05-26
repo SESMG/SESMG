@@ -1800,7 +1800,7 @@ class Storages:
         # calculations for stratified thermal storage
         loss_rate, fixed_losses_relative, fixed_losses_absolute = \
             calculate_losses(
-                s['U value /(W/(sqm*K))'],
+                s['U value'],
                 s['diameter'],
                 s['temperature high'],
                 s['temperature low'],
@@ -1815,15 +1815,13 @@ class Storages:
                     variable_costs=s[
                         'variable input costs'],
                     emission_factor=s[
-                        'variable input constraint costs /'
-                        '(CU/kWh)']
+                        'variable input constraint costs']
                 )},
                 outputs={self.busd[s['bus']]: solph.Flow(
                     variable_costs=s[
                         'variable output costs'],
                     emission_factor=s[
-                        'variable output constraint costs /'
-                        '(CU/kWh)']
+                        'variable output constraint costs']
                 )},
                 min_storage_level=s['capacity min'],
                 max_storage_level=s['capacity max'],
@@ -1835,20 +1833,20 @@ class Storages:
                 outflow_conversion_factor=s[
                     'efficiency outflow'],
                 invest_relation_input_capacity=s[
-                    'input/capacity ratio (invest)'],
+                    'input/capacity ratio'],
                 invest_relation_output_capacity=s[
-                    'output/capacity ratio (invest)'],
+                    'output/capacity ratio'],
                 investment=solph.Investment(
                     ep_costs=s[
-                        'periodical costs /(CU/(kWh a))'],
+                        'periodical costs'],
                     periodical_constraint_costs=s[
-                        'periodical constraint costs /(CU/(kWh a))'],
+                        'periodical constraint costs'],
                     existing=s[
-                        'existing capacity /(kWh)'],
+                        'existing capacity],
                     minimum=s[
-                        'min. investment capacity /(kWh)'],
+                        'min. investment capacity],
                     maximum=s[
-                        'max. investment capacity /(kWh)'],
+                        'max. investment capacity],
                     nonconvex=True if
                     s['non-convex investment'] == 1 else False,
                     offset=s['fix investment costs'])))
