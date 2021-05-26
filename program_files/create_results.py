@@ -125,7 +125,8 @@ class Results:
         logging.info('   ' + 56 * "*")
         logging.info('   ' + 56 * "-")
 
-    def create_flow_dataframes(self, comp, component):
+    def create_flow_dataframes(self, comp, component,
+                               excess_or_shortage=None):
         """
             creates up to 5 pandas series consisting the flows of the
             given component
@@ -180,6 +181,10 @@ class Results:
             # capacity
             elif index == ((label, 'None'), 'storage_content'):
                 self.comp_capacity = component['sequences'][index]
+        if excess_or_shortage == "excess":
+            self.comp_output1 = None
+        elif excess_or_shortage == "shortage":
+            self.comp_input1 = None
 
     def get_comp_investment(self, comp, comp_type):
         component_investment = 0
@@ -542,15 +547,19 @@ class Results:
                         
                     if i == 'buses_e':
                         logging.info('   ' + comp['label'] + '_excess')
+                        excess_or_shortage = "excess"
                     elif i == 'buses_s':
                         logging.info('   ' + comp['label'] + '_shortage')
+                        excess_or_shortage = "shortage"
                     else:
                         logging.info('   ' + comp['label'])
+                        excess_or_shortage = None
                     component = solph.views.node(self.results, comp['label'])
-                    
+
                     # create class intern dataframes consisting the flows
                     # of given component
-                    self.create_flow_dataframes(comp, component)
+                    self.create_flow_dataframes(comp, component,
+                                                excess_or_shortage)
                     
                     if i != 'buses_s' and i != 'buses_e' and i != "sinks":
                         # get the investment on component out of results
