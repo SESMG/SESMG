@@ -226,45 +226,47 @@ GenericCHP
 - **back pressure**: Defines rather the end pressure of "Turbine CHP" is higher than ambient pressure (input value has to be "1") or not (input value has to be "0"). For "Motoric CHP" it has to be "0".
 Compression Heat Transformer
 ---------------------------------
+The following parameters are only required, if "transformer type" is set to "compression_heat_transformer":
 
-**The following parameters are only required, if "transformer type" is set to "compression_heat_transformer"**:
+- **heat source**: Specifies the heat source. Possible heat sources are "GroundWater", "Ground", "Air" and "Water" possible.
+- **temperature high** in (°C): Temperature of the high temperature heat reservoir. Only required if "mode" is set to "heat_pump".
+- **temperature low** in (°C): Cooling temperature needed for cooling demand. Only required if "mode" is set to "chiller".
+- **quality grade**: To determine the COP of a real machine a scale-down factor (the quality grade) is applied on the Carnot efficiency (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
+- **area** in (sqm): Open spaces for ground-coupled compression heat transformers (GC-CHT).
+- **length of the geoth. probe** in (m): Length of the vertical heat exchanger, only for GC-CHT.
+- **heat extraction** in (kW/(m*a)): Heat extraction for the heat exchanger referring to the location, only for GC-CHT.
+- **min. borehole area** in (sqm): Limited space due to the regeneation of the ground source, only for GC-CHT.
+- **temp threshold icing**: Temperature below which icing occurs (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
+- **factor icing**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
+Absorption Heat Transformer
+--------------------------------
+The following parameters are only required, if "transformer type" is set to "absorption_heat_transformer":
 
-- **heat source (CHT)**: Specifies the heat source. Possible heat sources are "GroundWater", "Ground", "Air" and "Water" possible.
-- **temperature high /deg C (CHT)**: Temperature of the high temperature heat reservoir. Only required if "mode" is set to "heat_pump".
-- **temperature low /(deg C) (CHT)**: Cooling temperature needed for cooling demand. Only required if "mode" is set to "chiller".
-- **quality grade (CHT)**: To determine the COP of a real machine a scale-down factor (the quality grade) is applied on the Carnot efficiency (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
-- **area /(sq m) (CHT)**: Open spaces for ground-coupled compression heat transformers (GC-CHT).
-- **length of the geoth. probe /m (CHT)**: Length of the vertical heat exchanger, only for GC-CHT.
-- **heat extraction /(kW/(m*a)) (CHT)**: Heat extraction for the heat exchanger referring to the location, only for GC-CHT.
-- **min. borehole area /(sq m) (CHT)**: Limited space due to the regeneation of the ground source, only for GC-CHT.
-- **temp threshold icing (CHT)**: Temperature below which icing occurs (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
-- **factor icing (CHT)**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
-
-**The following parameters are only required, if "transformer type" is set to "absorption_heat_transformer"**:
-
-- **name (AbsCH)**: Defines the way of calculating the efficiency of the absorption heat transformer. Possible inputs are: "Rotartica", "Safarik", "Broad_01", "Broad_02", and "Kuehn". "Broad_02" refers to a double-effect absorption chiller model, whereas the other keys refer to single-effect absorption chiller models.
-- **high temperature /deg C (AbsCH)**: Temperature of the heat source, that drives the absorption heat transformer.
-- **chilling temperature /deg C (AbsCH)**: Output temperature which is needed for the cooling demand.
-- **electrical input conversion factor (AbsCH)**: Specifies the relation of electricity consumption to energy input. Example: A value of 0,05 means, that the system comsumes 5 % of the input energy as electric energy.
-- **recooling temperature difference /deg C (AbsCH)**: Defines the temperature difference between temperature source for recooling and recooling cycle.
+- **name**: Defines the way of calculating the efficiency of the absorption heat transformer. Possible inputs are: "Rotartica", "Safarik", "Broad_01", "Broad_02", and "Kuehn". "Broad_02" refers to a double-effect absorption chiller model, whereas the other keys refer to single-effect absorption chiller models.
+- **high temperature** in (°C): Temperature of the heat source, that drives the absorption heat transformer.
+- **chilling temperature** in (°C): Output temperature which is needed for the cooling demand.
+- **electrical input conversion factor**: Specifies the relation of electricity consumption to energy input. Example: A value of 0,05 means, that the system comsumes 5 % of the input energy as electric energy.
+- **recooling temperature difference** in (°C): Defines the temperature difference between temperature source for recooling and recooling cycle.
 
   
 .. csv-table:: Exemplary input for the transformers sheet
-
-   :header: label,comment,active,transformer type,mode,input,output,output2,efficiency,efficiency2,variable input costs /(CU/kWh),variable output costs /(CU/kWh),variable output costs 2 /(CU/kWh),variable input constraint costs /(CU/kWh),variable output constraint costs /(CU/kWh),variable output constraint costs 2 /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a),heat source (CHT),temperature high /deg C (CHT),temperature low /deg C (CHT),quality grade (CHT),area /(sq m) (CHT),length of the geoth. probe /m (CHT),heat extraction /(kW/(m*a)) (CHT),min. borehole area /(sq m) (CHT),temp threshold icing (CHT),factor icing (CHT),name (AbsCH),high temperature /deg C (AbsCH),chilling temperature /deg C (AbsCH),electrical input conversion factor (AbsCH),recooling temperature difference /deg C (AbsCH)
-
-   tr0001_electricity_transformer,,1,GenericTransformer,,bus002_electricity_bus,bus001_electricity_bus,x,0.85,x,0.01,0,0,0.1,0.2,0,1000,0,1000,60,0.1,0,0,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x
-   tr0002_airsource_heat_pump,,1,compression_heat_transformer,heat_pump,bus001_electricity_bus,bus001_heat_bus,None,0.95,x,10,0,x,0.1,0.1,x,10,10,100,50,0.1,0,0,Air,40,x,0.4,0,0,0,0,3,0.8,x,x,x,x,x
-   tr0003_absorption_chiller,,1,absorption_heat_transformer,chiller,bus001_electricity_bus,bus001_cooling_bus,None,0.95,x,5,0,x,0.1,0.1,x,10,10,100,50,0.1,0,0,x,x,x,x,x,x,x,x,x,x,Kuehn,85,10,0.05,6
- 
-
+   :header: label,comment,active,transformer type,mode,input,output,output2,efficiency,efficiency2,existing capacity,min. investment capacity,max. investment capacity,non-convex investment,fix investment costs,variable input costs,variable output costs,variable output costs 2,periodical costs,variable input constraint costs,variable output constraint costs,variable output constraint costs 2,periodical constraint costs,heat source,temperature high,temperature low,quality grade,area,length of the geoth. probe,heat extraction,min. borehole area,temp. threshold icing,factor icing,name,high temperature,chilling temperature,electrical input conversion factor,recooling temperature difference,min. share of flue gas loss,max. share of flue gas loss,min. electric power,max. electric power,min. electric efficiency, max. electric efficiency,minimal thermal output power,elec. power loss index,back pressure
+   
+	,,,,,,,,,,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),,(°C),(°C),,(m²),(`m`),(kW/(m*a)),(m²),(°C),,,(°C),(°C),,(°C),,,(kW),(kW),,,(kW)		   
+ 	ID_gasheating_transformer,,1,GenericTransformer,0,gas_bus,heat_bus,None,0.85,0,10,0,20,0,0,0,0,0,70,0,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0  
+	ID_chp_transformer,,1,GenericTransformer,0,gas_bus,chp_electricity_bus,district_heat_bus,0.35,0.55,0,0,20,0,0,0,0,0,50,130,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0   
+	ID_GCHP_transformer,,1,compression_heat_transformer,heat_pump,hp_electricity_bus,heat_bus,None,1,0,0,0,20,0,0,0,0,0,115.57,0,0,0,0,Ground,60,0,0.6,1000,100,0.05,100,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_ASCH_transformer,,0,compression_heat_transformer,chiller,hp_electricity_bus,cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,Air,0,-10,0.4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_AbsCH_transformer,,0,absorption_heat_transformer,chiller,hp_electricity_bus,cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Kuehn,85,10,0.05,6,0,0,0,0,0,0,0,0,0
+	ID_ASHP_transformer,,1,,compression_heat_transformer,heat_pump,hp_electricity_bus,heat_bus,None,1,0,0,0,20,0,0,0,0,0,112.78,0,0,0,0,Air,60,0,0.4,0,0,0,0,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    
 	
 .. figure:: ../images/BSP_Graph_transformer.png
    :width: 100 %
    :alt: Transformer_Graph
    :align: center
 
-   Graph of the energy system, which is created by entering the example components. One transformer has been created by including the transformers sheet 
+   Graph of the energy system, which is created by entering the example components. The non-active components are not included in the graph above.
 
 Storages
 =================================================
@@ -319,7 +321,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
    :alt: Transformer_Graph
    :align: center
 
-   Graph of the energy system, which is created after entering the example components. One storage has been created by the storage sheet.
+   Graph of the energy system, which is created after entering the example components. One storage has been created by the storage sheet.The non-active components are not included in the graph above.
    
 Links
 =================================================
