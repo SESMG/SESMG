@@ -255,10 +255,10 @@ The following parameters are only required, if "transformer type" is set to "abs
 	,,,,,,,,,,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),,(°C),(°C),,(m²),(`m`),(kW/(m*a)),(m²),(°C),,,(°C),(°C),,(°C),,,(kW),(kW),,,(kW)		   
  	ID_gasheating_transformer,,1,GenericTransformer,0,gas_bus,heat_bus,None,0.85,0,10,0,20,0,0,0,0,0,70,0,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0  
 	ID_chp_transformer,,1,GenericTransformer,0,gas_bus,chp_electricity_bus,district_heat_bus,0.35,0.55,0,0,20,0,0,0,0,0,50,130,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0   
-	ID_GCHP_transformer,,1,compression_heat_transformer,heat_pump,hp_electricity_bus,heat_bus,None,1,0,0,0,20,0,0,0,0,0,115.57,0,0,0,0,Ground,60,0,0.6,1000,100,0.05,100,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_ASCH_transformer,,0,compression_heat_transformer,chiller,hp_electricity_bus,cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,Air,0,-10,0.4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_AbsCH_transformer,,0,absorption_heat_transformer,chiller,hp_electricity_bus,cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Kuehn,85,10,0.05,6,0,0,0,0,0,0,0,0,0
-	ID_ASHP_transformer,,1,,compression_heat_transformer,heat_pump,hp_electricity_bus,heat_bus,None,1,0,0,0,20,0,0,0,0,0,112.78,0,0,0,0,Air,60,0,0.4,0,0,0,0,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_GCHP_transformer,ground-coupled heat pump,1,compression_heat_transformer,heat_pump,hp_electricity_bus,heat_bus,None,1,0,0,0,20,0,0,0,0,0,115.57,0,0,0,0,Ground,60,0,0.6,1000,100,0.05,100,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_ASCH_transformer,air source chiller,0,compression_heat_transformer,chiller,hp_electricity_bus,cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,Air,0,-10,0.4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_AbsCH_transformer,absorption chiller,0,absorption_heat_transformer,chiller,hp_electricity_bus,cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Kuehn,85,10,0.05,6,0,0,0,0,0,0,0,0,0
+	ID_ASHP_transformer,air source heat pump,1,compression_heat_transformer,heat_pump,hp_electricity_bus,heat_bus,None,1,0,0,0,20,0,0,0,0,0,112.78,0,0,0,0,Air,60,0,0.4,0,0,0,0,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
     
 	
 .. figure:: ../images/BSP_Graph_transformer.png
