@@ -37,7 +37,22 @@ Within this sheet, the time horizon and the temporal resolution of the model is 
    ,,,,(CU)
    2012-01-01 00:00:00,2012-12-30 23:00:00,h,8760,None
    
- 
+Competition Constraints
+=================================================
+The spreadsheet "Competition Constraints" allows you to match two components against a predefined limit. 
+Here, one could imagine an area competition, for example. If you do not want to use this spreadsheet, it simply remains empty. To use this worksheet, the following values must be filled in:
+
+- **component 1**: First component that lays claim to the parameter which size set as the limit.
+- **factor 1**: Factor that defines how many units of the target unit component 1 needs to provide 1 kW of power.
+- **component 2**: Second component that lays claim to the parameter which size set as the limit.
+- **factor 2**: Factor that defines how many units of the target unit component 2 needs to provide 1 kW of power.
+- **limit**: Maximum size suitable for providing power (e.g. **roof area** for providing electricity and heat).
+
+.. csv-table:: Exemplary input for the competition constraints sheet
+   :header: component 1,factor 1,component 2,factor 2,limit
+
+	,unit/KW,,unit/kW,unit
+	ID_photovoltaic_elecitricity_source,5.26,ID_solar_thermal_source,11.05,168
 
 Buses
 =================================================
