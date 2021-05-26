@@ -215,15 +215,18 @@ Generic Transformer
 - **efficiency2**: Specifies the efficiency of the second output, if there is one. Values between 0 and 1 are entered. If there is no second output, the fill character "0" must be entered here.
 GenericCHP
 ------------------------
-- **min. share of flue gas loss**: 
-- **max. share of flue gas loss**:
-- **min. electric power** in (kW):
-- **max. electric power** in (kW):
-- **min. electric efficiency**:
-- **max. electric efficiency**:
-- **minimal thermal output power**:
-- **electric power loss index**:
-- **back pressure**
+- **min. share of flue gas loss**: Percentage flue gas losses of the operating point with maximum heat extraction.
+- **max. share of flue gas loss**:  Percentage flue gas losses of the operating point with minimum heat extraction.
+- **min. electric power** in (kW): Minimum electrical power supply without heat extraction (district heating).
+- **max. electric power** in (kW): Maximum electrical power supply without heat extraction (district heating).
+- **min. electric efficiency**: Specifies the minimum electric efficiency without heat extraction (district heating). Values between 0 and 1 are allowed entries.
+- **max. electric efficiency**: Specifies the minimum electric efficiency without heat extraction (district heating). Values between 0 and 1 are allowed entries.
+- **minimal thermal output power** in (kW): Heat output taken from the exhaust gas via a condenser even in purely electric operation.
+- **electric power loss index**: Reduction of the electrical power by "electric power loss index * extracted thermal power".
+- **back pressure**: Defines rather the end pressure of "Turbine CHP" is higher than ambient pressure (input value has to be "1") or not (input value has to be "0"). For "Motoric CHP" it has to be "0".
+Compression Heat Transformer
+---------------------------------
+
 **The following parameters are only required, if "transformer type" is set to "compression_heat_transformer"**:
 
 - **heat source (CHT)**: Specifies the heat source. Possible heat sources are "GroundWater", "Ground", "Air" and "Water" possible.
