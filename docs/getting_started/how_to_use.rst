@@ -339,20 +339,28 @@ to be entered:
 - **bus_2**: Second bus to which the link is connected. If it is a directed link, this is the output bus.
 - **(un)directed**: Specifies whether it is a directed or an undirected link. Input options: "directed", "undirected".
 - **efficiency**: Specifies the efficiency of the link. Values between 0 and 1 are allowed entries.
-- **variable output costs/(CU/kWh)**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
-- **variable constraint costs/(CU/kWh)**: Only if considering constraints. Costs incurred per kWh referring to the constraint limit set in the "energysystem" sheet.
-- **existing capacity/(kW)**: Already installed capacity of the link.
-- **min. investment capacity/(kW)**: Minimum, in addition to existing capacity, installable capacity.
-- **max. investment capacity/(kW)**: Maximum capacity to be installed.
-- **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon.
-- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented.
-- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs)
+Costs
+-------------------
+- **variable output costs** in (CU/kWh): Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
+- **variable constraint costs** in (CU/kWh): Costs incurred per kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **existing capacity** in (kW): Already installed capacity of the link.
+- **min. investment capacity** in (kW): Minimum, in addition to existing capacity, installable capacity.
+- **max. investment capacity** in (kW): Maximum capacity to be installed.
+- **periodical costs** in (CU/(kW a)): Costs incurred per kW for investments within the time horizon.
+- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#investment>`_.
+- **Fix Investment Costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs)
 
 .. csv-table:: Exemplary input for the link sheet
-   :header: label,Comment,active,bus_1,bus_2,(un)directed,efficiency,variable output costs /(CU/kWh),variable constraint costs /(CU/kWh),existing capacity /(kW),min. investment capacity /(kW),max. investment capacity /(kW),periodical costs /(CU/(kW a)),periodical constraint costs /(CU/(kW a)),Non-Convex Investment,Fix Investment Costs /(CU/a)
+   :header: label,comment,active,(un)directed,bus1,bus2,efficiency,existing capacity,min. investment capacity,max. investment capacity,non-convex investment,fix investment costs,variable output costs,periodical costs,variable constraint costs,periodical constraint costs
 
-   pl001_electricity_link,,1,bus001_electricity_bus,bus002_electricity_bus,directed,0.85,0,0.1,0,0,1000,1,0.1,0,0  
-
+	,,,,,,,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/(kW a))
+	districtheat_directed_link,,1,directed,district_heat_bus,ID_heat_bus,0.85,0,0,0,0,0,0,0,0,0
+	districtheat_undirected_link,,1,undirected,district_heat_bus,ID_heat_bus,0.85,0,0,0,0,0,0,0,0,0
+	ID_pv_to_ID_electricity_link,,1,directed,ID_pv_bus,ID_electricity_bus,1,0,0,0,0,0,0,0,0,0
+	district_electricity_link,,1,directed,district_electricity_bus,ID_electricity_bus,1,0,0,0,0,0,0.1438,0,0,0
+	district_chp_to_district_electricity_bus,,1,directed,district_chp_electricity_bus,district_electricity_bus,1,0,0,0,0,0,0.1438,0,0,0
+	ID_electricity_to_ID_hp_electricity_bus,,1,directed,ID_electricity_bus,ID_hp_electricity_bus,1,0,0,0,0,0,0,0,0,0
+	ID_pv_to_district_electricity_link,,1,directed,ID_pv_bus,ID_electricity_bus,1,0,0,0,0,0,0.1438,0,0,0
 	
 .. figure:: ../images/BSP_Graph_link.png
    :width: 100 %
@@ -412,7 +420,7 @@ data time system should be in conformity with the model’s time system, defined
 - **groundwater_temp**: constant temperatur of the ground water at 6 - 10 m depth in North Rhine-Westphalia
 
 .. csv-table:: Exemplary input for weather data
-   :header: ,dhi,dirhi,pressure,temperature,windspeed,z0,ground_temp,water_temp,groundwater_temp
+   :header: timestamp,dhi,dirhi,pressure,temperature,windspeed,z0,ground_temp,water_temp,groundwater_temp
 
    2012-01-01 00:00:00,0.00,0.00,98405.70,10.33,7.2,0.15,13.7,14.62,13.06
    2012-01-01 01:00:00,0.00,0.00,98405.70,10.33,7.8,0.15,13.7,14.62,13.06
