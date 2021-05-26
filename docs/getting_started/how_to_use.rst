@@ -117,7 +117,7 @@ Within this sheet, the sources of the energy system are defined. Technology spec
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "other", "solar_thermal_flat_plate", "CSP". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the `Time series sheet`_.
+- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "other", "solar_thermal_flat_plate", "concentrated_solar_power". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the `Time series sheet`_.
 Costs
 -------------------------
 - **variable costs** in (CU/kWh): Defines the variable costs incurred for a kWh of energy drawn from the source.
