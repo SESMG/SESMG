@@ -145,7 +145,7 @@ PV
 - **Altitude**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
 - **Latitude**: Geographic latitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
 - **Longitude**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
-Concentrated Solar Power (CSP)
+Concentrated Solar Power
 ------------------------------
 .. note::
 	upcoming feature
