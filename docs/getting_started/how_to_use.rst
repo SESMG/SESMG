@@ -115,7 +115,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
    ,,,,,,(kW),(kWh/a),(richardson),(heat slp),(heat slp)
    ID_electricity_sink,H0 standard load profile sink,1,1,ID_electricity_bus,h0,0,5000.0,0,0,0
    ID_heat_sink,EFH standard load profile sink,1,1,ID_heat_bus,efh,0,30000.0,0,3,0
-   ID_cooling_sink,fixed timeseries cooling demand,1,1,ID_cooling_bus,timeseries,1,0,0,0,0
+   ID_cooling_sink,fixed timeseries cooling demand,0,1,ID_cooling_bus,timeseries,1,0,0,0,0
    
 .. figure:: ../images/BSP_Graph_sink.png
    :width: 100 %
