@@ -51,8 +51,8 @@ Within this sheet, the buses of the energy system are defined. The following par
 - **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits or not. 0 = no shortage source will be generated; 1 = shortage source will be generated.
 - **shortage costs** in (CU/kWh): Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "0" is used. 
 - **excess costs** in (CU/kWh): Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "0" is used.
-- **variable shortage constraint costs** in (CU/kWh): Only if considering constraints. Assigns a price per kWh to the purchase of energy from the shortage source referring to the constraint limit set in the "energysystem" sheet. If the shortage source was deactivated, the fill character "0" is used.
-- **variable excess constraint costs** in (CU/kWh): Only if considering constraints. Assigns a price per kWh to the release of energy to the excess sink referring to the constraint limit set in the "energysystem" sheet. If the excess sink was deactivated, the fill character "0" is used.
+- **variable shortage constraint costs** in (CU/kWh): Assigns a price per kWh to the purchase of energy from the shortage source referring to the constraint limit set in the "energysystem" sheet. If the shortage source was deactivated, the fill character "0" is used. If not considering constraints fill character "0" is used.
+- **variable excess constraint costs** in (CU/kWh): Assigns a price per kWh to the release of energy to the excess sink referring to the constraint limit set in the "energysystem" sheet. If the excess sink was deactivated, the fill character "0" is used. If not considering constraints fill character "0" is used.
 
 .. csv-table:: Exemplary input for the buses sheet
    :header: label,comments,active,excess,shortage,excess costs,shortage costs,variable excess constraint costs,variable shortage constraint costs
@@ -87,11 +87,11 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **fixed**: Indicates whether it is a fixed sink or not. 0 = not fixed; 1 = fixed.
 - **input**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **load profile**: Specifies the basis onto which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles, its acronym is used. If a time series is used, "timeseries" must be entered and must be provided in the `Time series sheet`_. If the sink is not fixed, the fill character "x" has to be used.
-- **nominal value/(kW)**: Nominal performance of the sink. Required when "time series" has been entered into the "load profile". When SLP or Richardson is used, use the fill character "0" here.
-- **annual demand/(kWh/a)**: Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "0" is used. 
-- **occupants [RICHARDSON]**: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "0" for other load profiles.
-- **building class [HEAT SLP ONLY]**: BDEW-building class. Explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#sinks>`_.
-- **wind class [HEAT SLP ONLY]**: wind classification for building location (0=not windy, 1=windy)
+- **nominal value** in (kW): Nominal performance of the sink. Required when "time series" has been entered into the "load profile". When SLP or Richardson is used, use the fill character "0" here.
+- **annual demand** in (kWh/a): Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "0" is used. 
+- **occupants** [RICHARDSON]: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "0" for other load profiles.
+- **building class** [HEAT SLP ONLY]: BDEW building classes that coincide with the building locations are explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#sinks>`_.
+- **wind class** [HEAT SLP ONLY]: wind classification for building location (0=not windy, 1=windy)
  
 .. csv-table:: Exemplary input for the sinks sheet
    :header: label,comment,active,fixed,input,load profile,nominal value,annual demand,occupants,building class,wind class
@@ -117,18 +117,18 @@ Within this sheet, the sources of the energy system are defined. Technology spec
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the source is connected to.
-- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the `Time series sheet`_.
+- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "other", "solar_thermal_flat_plate", "CSP". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the `Time series sheet`_.
 Costs
 -------------------------
-- **variable costs/(CU/kWh)**: Defines the variable costs incurred for a kWh of energy drawn from the source.
-- **variable constraint costs /(CU/kWh)**: Only if considering constraints. Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet.
-- **existing capacity/(kW)**: Existing capacity of the source before possible investments.
-- **min. investment capacity/(kW)**: Minimum capacity to be installed in case of an investment.
-- **max. investment capacity/(kW)**: Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
-- **periodical costs/(CU/(kW a))**: Costs incurred per kW for investments within the time horizon.
-- **periodical constraint costs/(CU/(kW a))**: Only if considering constraints. Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet.
+- **variable costs** in (CU/kWh): Defines the variable costs incurred for a kWh of energy drawn from the source.
+- **variable constraint costs** in (CU/kWh): Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **existing capacity** in (kW): Existing capacity of the source before possible investments.
+- **min. investment capacity** in (kW): Minimum capacity to be installed in case of an investment.
+- **max. investment capacity** in (kW): Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
+- **periodical costs** in (CU/(kW a)): Costs incurred per kW for investments within the time horizon.
+- **periodical constraint costs** in (CU/(kW a)): Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#investment>`_
-- **Fix Investment Costs /(CU/a)**: Fixed costs of non-convex investments (in addition to the periodic costs).
+- **Fix Investment Costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs).
 Wind
 -------------------------
 - **Turbine Model**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_. 
@@ -139,12 +139,20 @@ PV
 - **inverter database**: Database, from where inverter parameters are to be obtained. Recommended Database: "sandiainverter". For other databases `click here <https://sam.nrel.gov/photovoltaic/pv-cost-component.html>`_
 - **Modul Model**: Module name, according to the database used.
 - **Inverter Model**: Inverter name, according to the database used.
-- **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic sources, use fill character "x" for other technologies.
-- **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic sources, use fill character "x" for other technologies.
-- **Albedo**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "x" for other technologies.
-- **Altitude**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
-- **Latitude**: Geographic latitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
-- **Longitude**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "x" for other technologies.
+- **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic sources, use fill character "0" for other technologies.
+- **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic sources, use fill character "0" for other technologies.
+- **Albedo**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "0" for other technologies.
+- **Altitude**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
+- **Latitude**: Geographic latitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
+- **Longitude**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
+Concentrated Solar Power (CSP)
+------------------------------
+.. note::
+	upcoming feature
+Solar Thermal Flatplate
+------------------------------
+.. note:: 
+	upcoming feature 
 Timeseries
 -------------------------
 If you have choosen the technology "timeseries", you have to include a timeseries in the  `Time series sheet`_ or use default one. 
