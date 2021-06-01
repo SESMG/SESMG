@@ -101,7 +101,8 @@ else:
 
 
 def sesmg_main(scenario_file: str, result_path: str, num_threads: int, 
-               graph: bool, results: bool, plotly: bool, timeseries_prep: list, solver: str):
+               graph: bool, criterion_switch: bool, results: bool,
+               plotly: bool, timeseries_prep: list, solver: str):
     """
         Main function of the Spreadsheet System Model Generator
 
@@ -128,6 +129,11 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     logger.define_logging(logpath=result_path)
     # IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
     nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
+
+    # CRITERION SWITCH
+    print(criterion_switch)
+    if criterion_switch == True:
+        data_preparation.change_optimization_criterion(nodes_data)
 
     # Timeseries Preprocessing
     data_preparation.timeseries_preparation(timeseries_prep_param=timeseries_prep,

@@ -196,6 +196,7 @@ def execute_sesmg():
                    timeseries_prep = timeseries_prep_param, #time_prep.get(),
                    # timeseries_value = 1 if timeseries_entry.get() == 'aggregation quote' else timeseries_entry.get(),
                    graph=True if graph_state.get() == 1 else False,
+                   criterion_switch=True if criterion_state.get() == 1 else False,
                    results=True,
                    plotly=True,
                    solver=solver_select.get())
@@ -290,7 +291,7 @@ window.geometry('1200x1050')
 tab_control = ttk.Notebook(window)
 tab_control.pack(expand=1, fill='both')
 tab_control.pressed_index = None
-scenario_path = StringVar(window, str(os.path.join(os.path.dirname(__file__), 'scenario_v0.2.0.xlsx')))
+scenario_path = StringVar(window, 'scenario_v0.2.0.xlsx')
 save_path_directory = \
         StringVar(window, str(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'results')))
 save_path = StringVar(window, '')
@@ -391,6 +392,15 @@ Label(main_frame, text='Show Graph', font='Helvetica 10').grid(column=0, row=row
 graph_state = IntVar()
 graph_checkbox = Checkbutton(main_frame, variable=graph_state)
 graph_checkbox.grid(column=3, row=row)
+
+# Criterion Switch Checkbox
+row = row +1
+Label(main_frame, text='Switch Criteria', font='Helvetica 10').grid(column=0, row=row,
+                                                   sticky="W")
+criterion_state = IntVar()
+criterion_checkbox = Checkbutton(main_frame, variable=criterion_state)
+criterion_checkbox.grid(column=3, row=row)
+
 
 # Solver Selection
 row = row + 1
