@@ -559,6 +559,8 @@ class Results:
                                                ,round(constraint_costs, 2)]],
                                                columns=columns))
                 elif comp['transformer type'] == 'HeatPump':
+                    df_result_table[comp['label'] + '_input1'] = df_input1
+                    df_result_table[comp['label'] + '_output1'] = df_output1
                     df_result_table[comp['label'] + '_input2'] = df_input2
                     # adds heatpump transformer to the list of
                     # components
