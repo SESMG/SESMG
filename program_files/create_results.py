@@ -108,7 +108,7 @@ class Results:
     # columns_of_plotly_table
     copt = ['ID', 'type', 'input 1/kWh', 'input 2/kWh', 'output 1/kWh',
             'output 2/kWh', 'capacity/kW', 'variable costs/CU',
-            'periodical costs/CU', 'investment/kW', 'constraints/CU']
+            'periodical costs/CU', 'investment/kW','max. invest./kW', 'constraints/CU']
 
     @staticmethod
     def log_category(component: str):
@@ -125,8 +125,7 @@ class Results:
         logging.info('   ' + 56 * "*")
         logging.info('   ' + 56 * "-")
 
-    def create_flow_dataframes(self, comp, component,
-                               excess_or_shortage=None):
+    def create_flow_dataframes(self, comp, component):
         """
             creates up to 5 pandas series consisting the flows of the
             given component
@@ -181,10 +180,6 @@ class Results:
             # capacity
             elif index == ((label, 'None'), 'storage_content'):
                 self.comp_capacity = component['sequences'][index]
-        if excess_or_shortage == "excess":
-            self.comp_output1 = None
-        elif excess_or_shortage == "shortage":
-            self.comp_input1 = None
 
     def get_comp_investment(self, comp, comp_type):
         component_investment = 0
@@ -291,7 +286,7 @@ class Results:
 
     def add_component_to_loc(self, label, comp_type,
                              capacity=None, variable_costs=None,
-                             periodical_costs=None, investment=None,
+                             periodical_costs=None, investment=None,maxinvest='---',
                              constraints=None):
         """
             adds the given component with its parameters to
@@ -321,7 +316,7 @@ class Results:
             self.df_list_of_components.append(
                 pd.DataFrame(
                     [[label, comp_type, inflow1, inflow2, outflow1, outflow2,
-                      capacity, variable_costs, periodical_costs, investment,
+                      capacity, variable_costs, periodical_costs, investment,maxinvest,
                       constraints]], columns=self.copt))
 
     @staticmethod
@@ -547,19 +542,15 @@ class Results:
                         
                     if i == 'buses_e':
                         logging.info('   ' + comp['label'] + '_excess')
-                        excess_or_shortage = "excess"
                     elif i == 'buses_s':
                         logging.info('   ' + comp['label'] + '_shortage')
-                        excess_or_shortage = "shortage"
                     else:
                         logging.info('   ' + comp['label'])
-                        excess_or_shortage = None
                     component = solph.views.node(self.results, comp['label'])
-
+                    
                     # create class intern dataframes consisting the flows
                     # of given component
-                    self.create_flow_dataframes(comp, component,
-                                                excess_or_shortage)
+                    self.create_flow_dataframes(comp, component)
                     
                     if i != 'buses_s' and i != 'buses_e' and i != "sinks":
                         # get the investment on component out of results
@@ -750,6 +741,7 @@ class Results:
                         variable_costs=variable_costs,
                         periodical_costs=periodical_costs,
                         investment=investment,
+                        maxinvest=comp['max. investment capacity'] if 'max. investment capacity' in comp else '---',
                         constraints=constraint_costs)
 
                     self.console_logging(
