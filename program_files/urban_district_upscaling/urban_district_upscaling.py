@@ -172,30 +172,30 @@ def central_comp(central, standard_parameters):
         todo docstring
     """
     for i, j in central.iterrows():
-        if j['district_electricity_bus'] in ['Yes', 'yes', 1]:
+        if j['electricity_bus'] in ['Yes', 'yes', 1]:
             create_standard_parameter_bus(
-                label='district_electricity_bus',
-                bus_type="district_electricity_bus",
+                label='central_electricity_bus',
+                bus_type="central_electricity_bus",
                 standard_parameters=standard_parameters)
 
-        # create required central components fpr a district heating
+        # create required central components for a central heating
         # network
-        if j['district_heat_link'] in ['yes', 'Yes', 1]:
+        if j['heat_link'] in ['yes', 'Yes', 1]:
             # input bus
-            create_standard_parameter_bus(label='district_heat_input_bus',
-                                          bus_type="district_heat_input_bus",
+            create_standard_parameter_bus(label='central_heat_input_bus',
+                                          bus_type="central_heat_input_bus",
                                           standard_parameters=standard_parameters)
 
             # output bus
-            create_standard_parameter_bus(label='district_heat_output_bus',
-                                          bus_type="district_heat_output_bus",
+            create_standard_parameter_bus(label='central_heat_output_bus',
+                                          bus_type="central_heat_output_bus",
                                           standard_parameters=standard_parameters)
 
             # link considering losses
-            create_standard_parameter_link(label="district_heat_link",
-                                           bus_1="district_heat_input_bus",
-                                           bus_2="district_heat_output_bus",
-                                           link_type="district_heat_link",
+            create_standard_parameter_link(label="central_heat_link",
+                                           bus_1="central_heat_input_bus",
+                                           bus_2="central_heat_output_bus",
+                                           link_type="central_heat_link",
                                            standard_parameters=standard_parameters)
             # central natural gas
             if j['naturalgas_chp'] in ['yes', 'Yes', 1]:
@@ -208,17 +208,19 @@ def central_comp(central, standard_parameters):
                                    standard_parameters=standard_parameters)
 
             # central swhp todo simplify
-            if j['central_swhp_transformer'] in ['yes', 'Yes', 1]:
+            if j['swhp_transformer'] in ['yes', 'Yes', 1]:
                 create_central_swhp(standard_parameters=standard_parameters)
 
             # central biomass plant
             if j['biomass_plant'] in ['yes', 'Yes', 1]:
-                create_central_biomas_plant(standard_parameters=standard_parameters)
+                create_central_biomass_plant(standard_parameters=standard_parameters)
 
             # power to gas system
             if j['power_to_gas'] in ['yes', 'Yes', 1]:
                 create_power_to_gas_system(standard_parameters=standard_parameters)
 
+            if j['battery_storage'] in ['yes', 'Yes', 1]:
+                create_battery(id="central", standard_parameters=standard_parameters, storage_type="central")
 
 def create_power_to_gas_system(standard_parameters):
     """
@@ -242,13 +244,13 @@ def create_power_to_gas_system(standard_parameters):
     electrolysis_transformer_param = \
         {'label': 'central_electrolysis_transformer',
          'comment': 'automatically_created',
-         'input': 'district_electricity_bus',
+         'input': 'central_electricity_bus',
          'output': 'central_h2_bus',
          'output2': 'None'}
 
     create_standard_parameter_transformer(specific_param=electrolysis_transformer_param,
                                           standard_parameters=standard_parameters,
-                                          standard_param_name='electrolysis_transformer')
+                                          standard_param_name='central_electrolysis_transformer')
 
     # methanization transformer
     methanization_transformer_param = \
@@ -260,19 +262,19 @@ def create_power_to_gas_system(standard_parameters):
 
     create_standard_parameter_transformer(specific_param=methanization_transformer_param,
                                           standard_parameters=standard_parameters,
-                                          standard_param_name='methanization_transformer')
+                                          standard_param_name='central_methanization_transformer')
 
     # fuel cell transformer
     fuelcell_transformer_param = \
         {'label': 'central_fuelcell_transformer',
          'comment': 'automatically_created',
          'input': 'central_h2_bus',
-         'output': 'district_electricity_bus',
-         'output2': 'district_heat_input_bus'}
+         'output': 'central_electricity_bus',
+         'output2': 'central_heat_input_bus'}
 
     create_standard_parameter_transformer(specific_param=fuelcell_transformer_param,
                                           standard_parameters=standard_parameters,
-                                          standard_param_name='fuelcell_transformer')
+                                          standard_param_name='central_fuelcell_transformer')
 
     # h2 storage
     h2_storage_param = {'label': 'central_h2_storage',
@@ -281,7 +283,7 @@ def create_power_to_gas_system(standard_parameters):
 
     create_standard_parameter_storage(specific_param=h2_storage_param,
                                       standard_parameters=standard_parameters,
-                                      standard_param_name='h2_storage')
+                                      standard_param_name='central_h2_storage')
 
     # natural gas storage
     ng_storage_param = {'label': 'central_ng_storage',
@@ -290,7 +292,7 @@ def create_power_to_gas_system(standard_parameters):
 
     create_standard_parameter_storage(specific_param=ng_storage_param,
                                       standard_parameters=standard_parameters,
-                                      standard_param_name='naturalgas_storage')
+                                      standard_param_name='central_naturalgas_storage')
 
     # link to chp_ng_bus
     create_standard_parameter_link(label='central_ng_chp_ng_link',
@@ -300,11 +302,11 @@ def create_power_to_gas_system(standard_parameters):
                                    standard_parameters=standard_parameters)
 
 
-def create_central_biomas_plant(standard_parameters):
+def create_central_biomass_plant(standard_parameters):
     """
             todo docstring
     """
-    # biomas bus
+    # biomass bus
     create_standard_parameter_bus(label="central_biomass_bus",
                                   bus_type="central_biomass_bus",
                                   standard_parameters=standard_parameters)
@@ -314,11 +316,11 @@ def create_central_biomas_plant(standard_parameters):
         'transformers')
     transformers_standard_parameters.set_index('comment', inplace=True)
     biomass_standard_parameters = transformers_standard_parameters.loc[
-        'biomass_transformer']
+        'central_biomass_transformer']
     biomass_central_dict = {'label': 'central_biomass_transformer',
                          'comment': 'automatically_created',
                          'input': "central_biomass_bus",
-                         'output': 'district_heat_input_bus',
+                         'output': 'central_heat_input_bus',
                          'output2': 'None'}
 
     # read the biomass standards from standard_parameters.xlsx and append
@@ -346,11 +348,11 @@ def create_central_swhp(standard_parameters):
     # swhp transformer
     transformers_standard_parameters = standard_parameters.parse('transformers')
     transformers_standard_parameters.set_index('comment', inplace=True)
-    swhp_standard_parameters = transformers_standard_parameters.loc['swhp_transformer']
+    swhp_standard_parameters = transformers_standard_parameters.loc['central_swhp_transformer']
     swhp_central_dict = {'label': 'central_swhp_transformer',
                          'comment': 'automatically_created',
                          'input': "central_swhp_elec_bus",
-                         'output': 'district_heat_input_bus',
+                         'output': 'central_heat_input_bus',
                          'output2': 'None'}
 
     # read the swhp standards from standard_parameters.xlsx and append
@@ -381,12 +383,12 @@ def create_central_chp(gastype, standard_parameters):
         bus_type="central_chp_" + gastype + "_electricity_bus",
         standard_parameters=standard_parameters)
 
-    # connection to district electricity bus
+    # connection to central electricity bus
     create_standard_parameter_link(
-        label="central_chp_" + gastype + "_elec_district_link",
+        label="central_chp_" + gastype + "_elec_central_link",
         bus_1="chp_" + gastype + "_elec_bus",
-        bus_2="district_electricity_bus",
-        link_type="central_chp_elec_district_link",
+        bus_2="central_electricity_bus",
+        link_type="central_chp_elec_central_link",
         standard_parameters=standard_parameters)
 
     # chp transformer
@@ -397,10 +399,10 @@ def create_central_chp(gastype, standard_parameters):
     # ng_chp_standard_parameters = transformers_standard_parameters.loc['natural_gas_chp']
     # bg_chp_standard_parameters = transformers_standard_parameters.loc['bio_gas_chp']
 
-    chp_central_dict = {'label': gastype + '_chp_transformer',
+    chp_central_dict = {'label': 'central_' + gastype + '_chp_transformer',
                         'input': "chp_" + gastype + "_bus",
                         'output': "chp_" + gastype + "_elec_bus",
-                        'output2': "district_heat_input_bus"
+                        'output2': "central_heat_input_bus"
                         }
     # read the chp standards from standard_parameters.xlsx and append
     # them to the gchp_central_dict
@@ -416,7 +418,7 @@ def create_central_chp(gastype, standard_parameters):
 
 
 def create_buses(id: str, pv_bus: bool, hp_elec_bus,
-                  district_heat_bus, district_elec_bus, gchp, standard_parameters):
+                  central_heat_bus, central_elec_bus, gchp, standard_parameters):
     """
         todo docstring
     """
@@ -444,12 +446,12 @@ def create_buses(id: str, pv_bus: bool, hp_elec_bus,
                                            link_type="building_hp_elec_link",
                                            standard_parameters=standard_parameters)
 
-    if district_heat_bus:
-        # heat link from district heat network to building heat bus
-        create_standard_parameter_link(label=str(id) + "_district_heat_link",
-                                       bus_1="district_heat_output_bus",
+    if central_heat_bus:
+        # heat link from central heat network to building heat bus
+        create_standard_parameter_link(label=str(id) + "_central_heat_link",
+                                       bus_1="central_heat_output_bus",
                                        bus_2=str(id) + "_heat_bus",
-                                       link_type="building_district_heat_link",
+                                       link_type="building_central_heat_link",
                                        standard_parameters=standard_parameters)
 
     # todo excess constraint costs
@@ -463,22 +465,22 @@ def create_buses(id: str, pv_bus: bool, hp_elec_bus,
         create_standard_parameter_link(
             label=str(id) + "pv_" + str(id) + "_electricity_link",
             bus_1=str(id) + "_pv_bus", bus_2=str(id) + "_electricity_bus",
-            link_type="building_pv_district_link",
+            link_type="building_pv_central_link",
             standard_parameters=standard_parameters)
-        if district_elec_bus:
-            # link from pv bus to district electricity bus
+        if central_elec_bus:
+            # link from pv bus to central electricity bus
             create_standard_parameter_link(
-                label=str(id) + "pv_district_electricity_link",
-                bus_1=str(id) + "_pv_bus", bus_2="district_electricity_bus",
-                link_type="building_pv_district_link",
+                label=str(id) + "pv_central_electricity_link",
+                bus_1=str(id) + "_pv_bus", bus_2="central_electricity_bus",
+                link_type="building_pv_central_link",
                 standard_parameters=standard_parameters)
 
-            # link from district elec bus to building electricity bus
+            # link from central elec bus to building electricity bus
             create_standard_parameter_link(
-                label=str(id) + "district_electricity_link",
-                bus_1="district_electricity_bus",
+                label=str(id) + "central_electricity_link",
+                bus_1="central_electricity_bus",
                 bus_2=str(id) + "_electricity_bus",
-                link_type="building_district_building_link",
+                link_type="building_central_building_link",
                 standard_parameters=standard_parameters)
 
 
@@ -488,7 +490,7 @@ def create_sinks(id: str, building_type: str, units: int,
         TODO DOCSTRING
     """
     # electricity demand
-    if building_type != 'None':
+    if building_type not in ['None', '0', 0]: # TODO
         # residential parameters
         if "RES" in building_type:
             electricity_demand_residential = {}
@@ -514,7 +516,7 @@ def create_sinks(id: str, building_type: str, units: int,
             electricity_demand_standard_param.set_index(
                 "commercial type", inplace=True)
             demand_el = electricity_demand_standard_param \
-                .loc[building_type]['specific demand (kWh/m2/a)']
+                .loc[building_type]['specific demand (kWh/(sqm a))']
             net_floor_area = area * 0.9  # todo: give this value with standard parameter dataset
             demand_el = demand_el * net_floor_area
 
@@ -527,23 +529,23 @@ def create_sinks(id: str, building_type: str, units: int,
     # heat demand
 
     # residential building
-    if building_type != "None":
+    if building_type not in ['None', '0', 0]: # TODO
         if "RES" in building_type:
             # read standard values from standard_parameter-dataset
             heat_demand_standard_param = \
                 standard_parameters.parse('ResHeatDemand')
             heat_demand_standard_param.set_index(
                 "year of construction", inplace=True)
+            if int(yoc) <= 1918: #TODO
+                yoc = "<1918"
+            if units > 12:
+                units = "> 12"
             specific_heat_demand = \
                 heat_demand_standard_param \
-                    .loc[yoc][str(int(units)) + ' unit(s)']
-
+                    .loc[yoc][str(units) + ' unit(s)']
             net_floor_area = area * 0.9  # todo: give this value with standard parameter dataset
 
-            if units <= 12:
-                demand_heat = specific_heat_demand * net_floor_area
-            if units > 12:
-                demand_heat = specific_heat_demand * net_floor_area
+            demand_heat = specific_heat_demand * net_floor_area
 
         # commercial building
         elif "COM" in building_type:
@@ -551,6 +553,8 @@ def create_sinks(id: str, building_type: str, units: int,
                 standard_parameters.parse('ComHeatDemand')
             heat_demand_standard_parameters.set_index(
                 "year of construction", inplace=True)
+            if int(yoc) <= 1918: #TODO
+                yoc = "<1918"
             demand_heat = heat_demand_standard_parameters \
                 .loc[yoc][building_type]
             net_floor_area = area * 0.9  # todo: give this value with standard parameter dataset
@@ -662,7 +666,7 @@ def create_gchp(id, area, standard_parameters):
     # gchp_standard_parameters = standard_parameters.parse('GCHP')
     transformers_standard_parameters = standard_parameters.parse('transformers')
     transformers_standard_parameters.set_index('comment', inplace=True)
-    gchp_standard_parameters = transformers_standard_parameters.loc['gchp_transformer']
+    gchp_standard_parameters = transformers_standard_parameters.loc['building_gchp_transformer']
 
     gchp_house_specific_dict = {'label': str(id) + '_gchp_transformer',
                                 'comment': 'automatically_created',
@@ -691,7 +695,7 @@ def create_ashp(id, standard_parameters):
     # ashp_standard_parameters = standard_parameters.parse('ASHP')
     transformers_standard_parameters = standard_parameters.parse('transformers')
     transformers_standard_parameters.set_index('comment', inplace=True)
-    ashp_standard_parameters = transformers_standard_parameters.loc['ashp_transformer']
+    ashp_standard_parameters = transformers_standard_parameters.loc['building_ashp_transformer']
 
     ashp_house_specific_dict = {'label': str(id) + '_ashp_transformer',
                                 'comment': 'automatically_created',
@@ -730,7 +734,7 @@ def create_gas_heating(id, standard_parameters):
 
     create_standard_parameter_transformer(specific_param=gas_heating_house_specific_dict,
                                           standard_parameters=standard_parameters,
-                                          standard_param_name='gasheating_transformer')
+                                          standard_param_name='building_gasheating_transformer')
 
 
 def create_electric_heating(id, standard_parameters):
@@ -745,7 +749,7 @@ def create_electric_heating(id, standard_parameters):
     transformers_standard_parameters = standard_parameters.parse('transformers')
     transformers_standard_parameters.set_index('comment', inplace=True)
     electric_heating_standard_parameters = transformers_standard_parameters.loc[
-        'electricheating_transformer']
+        'building_electricheating_transformer']
 
 
     # define individual electric_heating_parameters
@@ -769,7 +773,7 @@ def create_electric_heating(id, standard_parameters):
         sheets["transformers"] \
             .append(electric_heating_series, ignore_index=True)
 
-def create_battery(id, standard_parameters):
+def create_battery(id, standard_parameters, storage_type: str):
     """
         todo docstring
     """
@@ -779,7 +783,7 @@ def create_battery(id, standard_parameters):
 
     create_standard_parameter_storage(specific_param=battery_house_specific_dict,
                                       standard_parameters=standard_parameters,
-                                      standard_param_name='battery_storage')
+                                      standard_param_name=storage_type + '_battery_storage')
 
 
 
@@ -817,14 +821,14 @@ def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: st
     central = xls.parse("central")
     central_comp(central, standard_parameters)
     # set variable for central heating if activated to decide rather a house
-    # can be connected to the district heat network or not
+    # can be connected to the central heat network or not
     central_heating_network = False
     central_electricity_network = False
 
     for i, j in central.iterrows():
-        if j['district_heat_link'] in ['Yes', 'yes', 1]:
+        if j['heat_link'] in ['Yes', 'yes', 1]:
             central_heating_network = True
-        if j['district_electricity_bus'] in ['Yes', 'yes', 1]:
+        if j['electricity_bus'] in ['Yes', 'yes', 1]:
             central_electricity_network = True
         if j['power_to_gas'] in ['Yes', 'yes', 1]:
             p2g_link = True
@@ -836,9 +840,9 @@ def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: st
         create_buses(j['label'],
                       True if j['azimuth 1 (°)'] or j['azimuth 2 (°)'] else False,
                       True if j['gchp area (m2)'] or j['ashp'] else False,
-                      True if ((j['district heat'] == 'yes'
-                                or j['district heat'] == 'Yes'
-                                or j['district heat'] == 1)
+                      True if ((j['central heat'] == 'yes'
+                                or j['central heat'] == 'Yes'
+                                or j['central heat'] == 1)
                                and
                                central_heating_network) else False,
                       central_electricity_network,
@@ -994,7 +998,7 @@ def urban_district_upscaling_tool(pre_scenario: str, standard_parameter_path: st
         # battery storage
         if j['battery storage'] in ['Yes', 'yes', 1]:
             create_battery(id=j['label'],
-                           standard_parameters=standard_parameters)
+                           standard_parameters=standard_parameters, storage_type="building")
 
 
 
