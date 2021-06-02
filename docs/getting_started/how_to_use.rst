@@ -337,7 +337,7 @@ Stratified Storage
    :alt: Transformer_Graph
    :align: center
 
-   Graph of the energy system, which is created after entering the example components. One storage has been created by the storage sheet.The non-active components are not included in the graph above.
+   Graph of the energy system, which is created after entering the example components. The non-active components are not included in the graph above.
    
 Links
 =================================================
@@ -380,7 +380,7 @@ Costs
    :alt: bsp-graph-link
    :align: center
 
-   Graph of the energy system, which is created by entering the example components. One link has been created by the addition of the links sheet
+   Graph of the energy system, which is created by entering the example components. The non-active components are not included in the graph above. 
 
 .. _`Time series sheet`:
 
