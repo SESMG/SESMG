@@ -74,14 +74,11 @@ def competition_constraint(om, nd, energy_system):
     """
     import pyomo.environ as po
     for k, j in nd['competition constraints'].iterrows():
-        limit_timerow = []
         flows = {}
         # Create a list in which the limit value for each time step of
         # the energy_system is defined, since the constraints are applied
         # to the flow, and here the system is to be dimensioned for the
         # time step with the maximum added space/energy requirement
-        for t in om.TIMESTEPS:
-            limit_timerow.append(j['limit'])
         # get the two outflows which are competitive
         for i, o in om.flows:
             if i == energy_system.groups[j['component 1']]:
@@ -98,11 +95,12 @@ def competition_constraint(om, nd, energy_system):
         # rule which is used for the constraint
         # rule : (outflow(comp1) * factor1 + outflow(comp2) * factor2) <= limit
         
-        def competition_rule(om, t):
+        def competition_rule(om):
             competition_flow = \
-                sum(om.flow[i, o, t] * om.flows[i, o].competition_factor *
-                    om.timeincrement[t] for (i, o) in flows)
-            limit = limit_timerow[t]
+                sum(om.InvestmentFlow.invest[i, o] * om.flows[i, o].competition_factor
+                    for (i, o) in flows)
+            limit = j['limit']
+            limit = limit - (sum(om.flows[i, o].investment.existing for (i, o) in flows))
             return (limit >= competition_flow)
 
         setattr(om, j['component 1'] + '_' + j['component 2']
