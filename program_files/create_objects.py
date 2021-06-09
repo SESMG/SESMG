@@ -509,7 +509,7 @@ class Sources:
         data['timestamp'] = pd.to_datetime(data['timestamp'])
         data = data.set_index(['timestamp'])
         data.index.name = 'Datum'
-        # TODO
+        # TODO get frequency from energysystem sheet
         data = data.asfreq('h')
 
         # calculates global horizontal irradiance from diffuse (dhi)
@@ -848,7 +848,6 @@ class Sinks:
             os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
         # Importing timesystem parameters from the scenario
         ts = next(nodes_data['energysystem'].iterrows())[1]
-        print(ts)
         temp_resolution = ts['temporal resolution']
         periods = ts["periods"]
         start_date = str(ts['start date'])
@@ -885,7 +884,7 @@ class Sinks:
                                               '%Y-%m-%d %H:%M:%S').year
             # Imports standard load profiles
             e_slp = bdew.ElecSlp(year)
-            # TODO Discuss if this is right !!! ( dyn_function_h0 )
+            # TODO Discuss if this is right !!!1111 ( dyn_function_h0 )
             demand = e_slp.get_profile({de['load profile']: 1})
             # creates time series based on standard load profiles
             demand = demand.resample(temp_resolution).mean()
@@ -902,7 +901,7 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-    def richardson_sink(self, de: dict, filepath: str):
+    def richardson_sink(self, de: dict, nodes_data: dict):
         """
             Creates a sink with stochastically timeseries.
         
@@ -918,11 +917,10 @@ class Sinks:
                             - 'label'
                             - 'fixed'
                             - 'annual demand'
-                            - 'occupants [RICHARDSON]'
+                            - 'occupants'
             :type de: dict
-            :param filepath: path to .xlsx scenario-file containing a
-                             "energysystem" sheet
-            :type filepath: str
+            :param nodes_data: dictionary containing excel sheets
+            :type nodes_data: dict
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
@@ -944,12 +942,11 @@ class Sinks:
         dirhi = dirhi / 1000
         
         # Reads the temporal resolution from the scenario file
-        nd = pd.read_excel(filepath, sheet_name='energysystem')
-        ts = next(nd.iterrows())[1]
-        temp_resolution = ts['temporal resolution']
+        ts = nodes_data['energysystem']
+        temp_resolution = ts['temporal resolution'][1]
         
         # sets the occupancy rates
-        nb_occ = de['occupants [RICHARDSON]']
+        nb_occ = de['occupants']
         
         # Workaround, because richardson.py only allows a maximum
         # of 5 occupants
@@ -1050,7 +1047,7 @@ class Sinks:
                 
                 # Richardson
                 elif de['load profile'] == 'richardson':
-                    self.richardson_sink(de, filepath)
+                    self.richardson_sink(de, filepath, nodes_data)
         
         # appends created sinks on the list of nodes
         for i in range(len(self.nodes_sinks)):
@@ -1179,8 +1176,6 @@ class Transformers:
                 emission_factor=tf['variable input constraint costs'])
         }}
         self.create_transformer(tf, inputs, outputs, conversion_factors)
-
-        
 
     def compression_heat_transformer(self, tf: dict, data):
         """
@@ -1433,10 +1428,12 @@ class Transformers:
                 fuel_input={
                     self.busd[tf['input']]: solph.Flow(
                             H_L_FG_share_max=[
-                                tf['min. share of flue gas loss']
+                                tf['share of flue gas loss at max heat '
+                                   'extraction']
                                 for p in range(0, periods)],
                             H_L_FG_share_min=[
-                                tf['max. share of flue gas loss']
+                                tf['share of flue gas loss at min heat '
+                                   'extraction']
                                 for p in range(0, periods)],
                             variable_costs=tf[
                                 'variable input costs'],
@@ -1459,15 +1456,19 @@ class Transformers:
                                     offset=tf['fix investment costs']
                                 ),
                             P_max_woDH=[
-                                tf['max. electric power']
+                                tf['max. electric power without district '
+                                   'heating']
                                 for p in range(0, periods)],
-                            P_min_woDH=[tf['min. electric power']
+                            P_min_woDH=[tf['min. electric power without '
+                                           'district heating']
                                         for p in range(0, periods)],
                             Eta_el_max_woDH=[
-                                tf['max. electric efficiency']
+                                tf['el. eff. at max. fuel flow w/o distr. '
+                                   'heating']
                                 for p in range(0, periods)],
                             Eta_el_min_woDH=[
-                                tf['min. electric efficiency']
+                                tf['el. eff. at min. fuel flow w/o distr. '
+                                   'heating']
                                 for p in range(0, periods)],
                             variable_costs=tf[
                                 'variable output costs'],
@@ -1476,14 +1477,15 @@ class Transformers:
                             )
                         },
                 heat_output={self.busd[tf['output2']]: solph.Flow(
-                    Q_CW_min=[tf['minimal therml output power']
+                    Q_CW_min=[tf['minimal therm. condenser load to '
+                                 'cooling water']
                               for p in range(0, periods)],
                     variable_costs=tf[
                         'variable output costs 2'],
                     emission_factor=tf[
                         'variable output constraint costs 2']
                 )},
-                Beta=[tf['elec. power loss index']
+                Beta=[tf['power loss index']
                       for p in range(0, periods)],
                 # fixed_costs=0,
                 back_pressure=True if tf['back pressure'] == 1 else False,
