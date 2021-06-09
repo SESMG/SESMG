@@ -1,28 +1,13 @@
 import os
 from tkinter import *
 from tkinter import filedialog
-from urban_district_upscaling.urban_district_upscaling \
-    import urban_district_upscaling_tool
+from urban_district_upscaling.urban_district_upscaling_pre_processing \
+    import urban_district_upscaling_pre_processing
 from urban_district_upscaling.urban_district_upscaling_post_processing \
     import urban_district_upscaling_post_processing
-
+import subprocess
 
 class upscaling_frame_class:
-
-    #def getFolderPath(self):
-    #    """ opens a file dialog and sets the selected path for the variable "scenario_path" """#
-
-    #    path = filedialog.askopenfilename(
-    #        filetypes=(("Spreadsheet Files", "*.xlsx"), ("all files", "*.*")))
-    #    print(path)
-
-    #    self.pre_scenario_path.set(path)
-    #    print(pre_scenario_path.get())
-
-    #    file_paths[0].configure(text=pre_scenario_path.get())
-
-    #def testcommand(self):
-    #    print('No action executed. Will be added later.')
 
     def getPreScenario(self):
         """
@@ -77,32 +62,20 @@ class upscaling_frame_class:
         self.paths['scenario_name'] = (self.scenario_name.get())
         self.scenario_name_label.configure(text=self.scenario_name.get())
 
-    def scenario_upscaling(self,pre_scenario,standard_param,scenario_name):
+    def scenario_upscaling(self, pre_scenario, standard_param, scenario_name):
         # urban_district_upscaling
-        urban_district_upscaling_tool(
+        urban_district_upscaling_pre_processing(
             pre_scenario=pre_scenario,
             standard_parameter_path=standard_param,
             output_scenario=scenario_name,
             plain_sheet=os.path.join(os.path.dirname(__file__),
                                      r'plain_scenario.xlsx'))
 
-    def create_overview(self, components, pre_scenario):
-        urban_district_upscaling_post_processing(components, pre_scenario)
-
+    def create_overview(self, components):
+        urban_district_upscaling_post_processing(components)
+        subprocess.call(os.path.dirname(__file__) + "/overview.xlsx", shell=True)
 
     def __init__(self, window, tab_control, upscaling_frame):
-
-        #def get_path(value):
-        #    global path
-        #    path = filedialog.askopenfilename(filetypes=(
-        #    ("Spreadsheet Files", "*.xlsx"), ("all files", "*.*")))
-        #    paths[value] = path
-        #    print(path)
-        #    print(paths)
-
-            # standard_param_label.config(text=path)
-
-        #    standard_param_text.set(path)
 
         self.pre_scenario_path = \
             StringVar(window, os.path.join(os.path.dirname(__file__),
@@ -140,8 +113,12 @@ class upscaling_frame_class:
               font='Helvetica 10')\
             .grid(column=0, columnspan=7, row=row, sticky="W")
 
+        row += 1
+        # Headline
+        main_head1 = Label(upscaling_frame, text='Preprocessing', font='Helvetica 10 bold')\
+            .grid(column=0, row=row, sticky="w")
+        row += 1
         # Selection of the Pre-Scenario-File
-        row = row + 1
         Label(upscaling_frame, text='Pre-Scenario', font='Helvetica 10')\
             .grid(column=0, row=row, sticky="W")
         Button(upscaling_frame, text="Change", command=self.getPreScenario)\
@@ -185,7 +162,11 @@ class upscaling_frame_class:
                    scenario_name=self.paths['scenario_name']))\
             .grid(column=1, row=row)
         # Path to components csv
-        row = row + 1
+        row += 1
+        # Headline
+        main_head2 = Label(upscaling_frame, text='Postprocessing', font='Helvetica 10 bold')\
+            .grid(column=0, row=row, sticky="w")
+        row += 1
         Label(upscaling_frame, text='Components CSV for post processing',
               font='Helvetica 10').grid(column=0, row=row, sticky="W")
         Button(upscaling_frame, text="Change", command=self.getComponentsCSV)\
@@ -201,6 +182,4 @@ class upscaling_frame_class:
             .grid(column=0, row=row, sticky="W")
         Button(upscaling_frame, text="Execute",
                command=lambda: self.create_overview(
-                   components=self.paths['componentsCSV'],
-                   pre_scenario=self.paths['pre_scenario']))\
-            .grid(column=1, row=row)
+                   components=self.paths['componentsCSV'])).grid(column=1, row=row)
