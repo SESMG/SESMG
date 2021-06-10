@@ -234,10 +234,10 @@ class Results:
                 comp['variable constraint costs'] * (outflow1 + outflow2)
         elif comp_type == 'excess':
             constraint_costs += \
-                inflow1 * comp['variable excess constraint costs']
+                inflow1 * comp['excess constraint costs']
         elif comp_type == 'shortage':
             constraint_costs += \
-                outflow1 * comp['variable shortage constraint costs']
+                outflow1 * comp['shortage constraint costs']
         else:
             constraint_costs += outflow1 \
                                 * comp['variable output constraint costs']

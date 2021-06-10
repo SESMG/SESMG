@@ -144,9 +144,9 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
 
     # creation of a least cost model from the energy system
     om = solph.Model(energy_system)
-    if (str(next(nodes_data["energysystem"].iterrows())[1]["constraint costs"]) != 'none' and
-          str(next(nodes_data["energysystem"].iterrows())[1]["constraint costs"]) != 'None'):
-        limit = float(next(nodes_data["energysystem"].iterrows())[1]["constraint costs"])
+    if (str(next(nodes_data["energysystem"].iterrows())[1]["constraint cost limit"]) != 'none' and
+          str(next(nodes_data["energysystem"].iterrows())[1]["constraint cost limit"]) != 'None'):
+        limit = float(next(nodes_data["energysystem"].iterrows())[1]["constraint cost limit"])
         om = constraint_optimization_against_two_values(om, limit)
    
     # limit for two given outflows e.g area_competition
