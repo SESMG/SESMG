@@ -908,9 +908,9 @@ def urban_district_upscaling_pre_processing(pre_scenario: str, standard_paramete
                              longitude=j['longitude'],
                              solarthermal_standard_parameters=solarthermal_standard_parameters)
             create_competition_constraint(component1=j['label'] + '_' + plant_id + '_pv_source',
-                                          factor1=pv_standard_parameters['Capacity per Area (kW/m2)'],
+                                          factor1=1/pv_standard_parameters['Capacity per Area (kW/m2)'],
                                           component2=j['label'] + '_' + plant_id + '_solarthermal_source',
-                                          factor2=solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
+                                          factor2=1/solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
                                           limit=j['roof area 2 (m²)'])
 
         if j['azimuth 3 (°)']:
@@ -933,9 +933,9 @@ def urban_district_upscaling_pre_processing(pre_scenario: str, standard_paramete
                              longitude=j['longitude'],
                              solarthermal_standard_parameters=solarthermal_standard_parameters)
             create_competition_constraint(component1=j['label'] + '_' + plant_id + '_pv_source',
-                                          factor1=pv_standard_parameters['Capacity per Area (kW/m2)'],
+                                          factor1=1/pv_standard_parameters['Capacity per Area (kW/m2)'],
                                           component2=j['label'] + '_' + plant_id + '_solarthermal_source',
-                                          factor2=solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
+                                          factor2=1/solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
                                           limit=j['roof area 3 (m²)'])
 
         if j['azimuth 4 (°)']:
@@ -958,9 +958,9 @@ def urban_district_upscaling_pre_processing(pre_scenario: str, standard_paramete
                              longitude=j['longitude'],
                              solarthermal_standard_parameters=solarthermal_standard_parameters)
             create_competition_constraint(component1=j['label'] + '_' + plant_id + '_pv_source',
-                                          factor1=pv_standard_parameters['Capacity per Area (kW/m2)'],
+                                          factor1=1/pv_standard_parameters['Capacity per Area (kW/m2)'],
                                           component2=j['label'] + '_' + plant_id + '_solarthermal_source',
-                                          factor2=solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
+                                          factor2=1/solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
                                           limit=j['roof area 4 (m²)'])
 
         # creates heat-pumps
