@@ -118,21 +118,17 @@ def create_standard_parameter_sink(sink_type: str, label: str,
     sheets["sinks"] = sheets["sinks"].append(sink_series,
                                              ignore_index=True)
 
-
-def create_standard_parameter_transformer(specific_param, standard_parameters,
-                                          standard_param_name):
+def create_standard_parameter_transformer(specific_param, standard_parameters, standard_param_name):
     """
 
     :param specific_param:
-    :param standard_parameters:
-    :param standard_param_name:
+    :param standard_param:
     :return:
     """
 
     # read the standards from standard_param and append
     # them to the dict
-    transformers_standard_parameters = \
-        standard_parameters.parse('transformers')
+    transformers_standard_parameters = standard_parameters.parse('transformers')
     transformers_standard_parameters.set_index('comment', inplace=True)
     standard_param = transformers_standard_parameters.loc[standard_param_name]
 
@@ -146,13 +142,10 @@ def create_standard_parameter_transformer(specific_param, standard_parameters,
     sheets["transformers"] = \
         sheets["transformers"].append(transformer_series, ignore_index=True)
 
-
-def create_standard_parameter_storage(specific_param, standard_parameters,
-                                      standard_param_name):
+def create_standard_parameter_storage(specific_param, standard_parameters, standard_param_name):
     """
 
     :param specific_param:
-    :param standard_parameters:
     :param standard_param_name:
     :return:
     """
@@ -191,22 +184,19 @@ def central_comp(central, standard_parameters):
             # input bus
             create_standard_parameter_bus(label='central_heat_input_bus',
                                           bus_type="central_heat_input_bus",
-                                          standard_parameters=
-                                          standard_parameters)
+                                          standard_parameters=standard_parameters)
 
             # output bus
             create_standard_parameter_bus(label='central_heat_output_bus',
                                           bus_type="central_heat_output_bus",
-                                          standard_parameters=
-                                          standard_parameters)
+                                          standard_parameters=standard_parameters)
 
             # link considering losses
             create_standard_parameter_link(label="central_heat_link",
                                            bus_1="central_heat_input_bus",
                                            bus_2="central_heat_output_bus",
                                            link_type="central_heat_link",
-                                           standard_parameters=
-                                           standard_parameters)
+                                           standard_parameters=standard_parameters)
             # central natural gas
             if j['naturalgas_chp'] in ['yes', 'Yes', 1]:
                 create_central_chp(gastype='naturalgas',
@@ -223,18 +213,14 @@ def central_comp(central, standard_parameters):
 
             # central biomass plant
             if j['biomass_plant'] in ['yes', 'Yes', 1]:
-                create_central_biomass_plant(standard_parameters=
-                                             standard_parameters)
+                create_central_biomass_plant(standard_parameters=standard_parameters)
 
             # power to gas system
             if j['power_to_gas'] in ['yes', 'Yes', 1]:
-                create_power_to_gas_system(standard_parameters=
-                                           standard_parameters)
+                create_power_to_gas_system(standard_parameters=standard_parameters)
 
             if j['battery_storage'] in ['yes', 'Yes', 1]:
-                create_battery(id="central", standard_parameters=
-                standard_parameters, storage_type="central")
-
+                create_battery(id="central", standard_parameters=standard_parameters, storage_type="central")
 
 def create_power_to_gas_system(standard_parameters):
     """
@@ -262,12 +248,9 @@ def create_power_to_gas_system(standard_parameters):
          'output': 'central_h2_bus',
          'output2': 'None'}
 
-    create_standard_parameter_transformer(specific_param=
-                                          electrolysis_transformer_param,
-                                          standard_parameters=
-                                          standard_parameters,
-                                          standard_param_name=
-                                          'central_electrolysis_transformer')
+    create_standard_parameter_transformer(specific_param=electrolysis_transformer_param,
+                                          standard_parameters=standard_parameters,
+                                          standard_param_name='central_electrolysis_transformer')
 
     # methanization transformer
     methanization_transformer_param = \
@@ -277,12 +260,9 @@ def create_power_to_gas_system(standard_parameters):
          'output': 'central_naturalgas_bus',
          'output2': 'None'}
 
-    create_standard_parameter_transformer(specific_param=
-                                          methanization_transformer_param,
-                                          standard_parameters=
-                                          standard_parameters,
-                                          standard_param_name=
-                                          'central_methanization_transformer')
+    create_standard_parameter_transformer(specific_param=methanization_transformer_param,
+                                          standard_parameters=standard_parameters,
+                                          standard_param_name='central_methanization_transformer')
 
     # fuel cell transformer
     fuelcell_transformer_param = \
@@ -292,12 +272,9 @@ def create_power_to_gas_system(standard_parameters):
          'output': 'central_electricity_bus',
          'output2': 'central_heat_input_bus'}
 
-    create_standard_parameter_transformer(specific_param=
-                                          fuelcell_transformer_param,
-                                          standard_parameters=
-                                          standard_parameters,
-                                          standard_param_name=
-                                          'central_fuelcell_transformer')
+    create_standard_parameter_transformer(specific_param=fuelcell_transformer_param,
+                                          standard_parameters=standard_parameters,
+                                          standard_param_name='central_fuelcell_transformer')
 
     # h2 storage
     h2_storage_param = {'label': 'central_h2_storage',
@@ -315,12 +292,10 @@ def create_power_to_gas_system(standard_parameters):
 
     create_standard_parameter_storage(specific_param=ng_storage_param,
                                       standard_parameters=standard_parameters,
-                                      standard_param_name=
-                                      'central_naturalgas_storage')
+                                      standard_param_name='central_naturalgas_storage')
 
     # link to chp_naturalgas_bus
-    create_standard_parameter_link(label=
-                                   'central_naturalgas_chp_naturalgas_link',
+    create_standard_parameter_link(label='central_naturalgas_chp_naturalgas_link',
                                    bus_1='central_naturalgas_bus',
                                    bus_2='central_chp_naturalgas_bus',
                                    link_type='central_naturalgas_chp_link',
@@ -933,9 +908,9 @@ def urban_district_upscaling_pre_processing(pre_scenario: str, standard_paramete
                              longitude=j['longitude'],
                              solarthermal_standard_parameters=solarthermal_standard_parameters)
             create_competition_constraint(component1=j['label'] + '_' + plant_id + '_pv_source',
-                                          factor1=pv_standard_parameters['Capacity per Area (kW/m2)'],
+                                          factor1=1/pv_standard_parameters['Capacity per Area (kW/m2)'],
                                           component2=j['label'] + '_' + plant_id + '_solarthermal_source',
-                                          factor2=solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
+                                          factor2=1/solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
                                           limit=j['roof area 2 (m²)'])
 
         if j['azimuth 3 (°)']:
@@ -958,9 +933,9 @@ def urban_district_upscaling_pre_processing(pre_scenario: str, standard_paramete
                              longitude=j['longitude'],
                              solarthermal_standard_parameters=solarthermal_standard_parameters)
             create_competition_constraint(component1=j['label'] + '_' + plant_id + '_pv_source',
-                                          factor1=pv_standard_parameters['Capacity per Area (kW/m2)'],
+                                          factor1=1/pv_standard_parameters['Capacity per Area (kW/m2)'],
                                           component2=j['label'] + '_' + plant_id + '_solarthermal_source',
-                                          factor2=solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
+                                          factor2=1/solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
                                           limit=j['roof area 3 (m²)'])
 
         if j['azimuth 4 (°)']:
@@ -983,9 +958,9 @@ def urban_district_upscaling_pre_processing(pre_scenario: str, standard_paramete
                              longitude=j['longitude'],
                              solarthermal_standard_parameters=solarthermal_standard_parameters)
             create_competition_constraint(component1=j['label'] + '_' + plant_id + '_pv_source',
-                                          factor1=pv_standard_parameters['Capacity per Area (kW/m2)'],
+                                          factor1=1/pv_standard_parameters['Capacity per Area (kW/m2)'],
                                           component2=j['label'] + '_' + plant_id + '_solarthermal_source',
-                                          factor2=solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
+                                          factor2=1/solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
                                           limit=j['roof area 4 (m²)'])
 
         # creates heat-pumps
