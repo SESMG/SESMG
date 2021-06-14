@@ -22,7 +22,7 @@ Make sure that the displayed system can stay in balance.
 Installation
 ===============================
 .. csv-table:: Table Title
-   :file: CSV file path and name
+   :file: ../troubleshooting/troubleshooting.csv
    :widths: 30, 70
    :header-rows: 1
 
