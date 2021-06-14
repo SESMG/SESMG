@@ -41,6 +41,7 @@ setup(
         "openpyxl==3.0.0",
         "oemof.solph==0.4",
         "oemof.thermal==0.0.3",
+        "pandas==0.25",
         "demandlib==0.1.6",
         "pvlib==0.7.1",
         "feedinlib==0.0.12",
