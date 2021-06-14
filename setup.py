@@ -40,7 +40,7 @@ setup(
         "tables==3.5.2",
         "openpyxl==3.0.0",
         "oemof.solph==0.4",
-        "oemof.thermal==0.0.3",
+        "oemof.thermal==0.0.4",
         "demandlib==0.1.8",
         "pvlib==0.7.1",
         "feedinlib==0.0.12",
