@@ -467,7 +467,7 @@ class Sources:
         # and direct irradiance (dirhi) and adds it to the weather data frame
         # todo dirhi durch ["dirhi"] ersetzt
         data['ghi'] = (data["dirhi"] + data["dhi"])
-        print(data["ghi"])
+
         # precalculations for flat plate collectors, calculates total
         # irradiance on collector, efficiency and heat output
         if so['technology'] == 'solar_thermal_flat_plate':
