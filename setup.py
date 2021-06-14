@@ -35,7 +35,7 @@ setup(
 
     install_requires=[
         "pillow>=6.2.0",
-        "pandas==0.24.2",
+        "pandas==1.1",
         "numpy==1.16.6",
         "tables==3.5.2",
         "openpyxl==3.0.0",
