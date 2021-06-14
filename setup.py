@@ -35,6 +35,7 @@ setup(
 
     install_requires=[
         "pillow>=6.2.0",
+        "oemof.thermal==0.0.4",
         "pandas==1.1",
         "numpy==1.17",
         "tables==3.5.2",
