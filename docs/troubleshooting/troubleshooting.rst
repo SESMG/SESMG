@@ -22,7 +22,10 @@ Make sure that the displayed system can stay in balance.
 Installation
 ===============================
 
-
+.. csv-table:: Known Errors
+   :file: troubleshooting.csv
+   :widths: 30, 30, 30
+   :header-rows: 1
 
 
 Modeling
