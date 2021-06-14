@@ -196,8 +196,7 @@ class Results:
             raise SystemError('Wrong type chosen!')
         # sets component investment
         component_investment = \
-            (self.results[component_node, bus_node]
-             ['scalars']['invest'])
+            (self.results[component_node, bus_node]['scalars']['invest'])
         if comp_type == 'solar_heat':
             # considers area conversion factor on investment for
             # solar heat sources
@@ -312,14 +311,14 @@ class Results:
                 if comp['excess']:
                     (flow_sum, df_excess) = \
                         self.get_flow(comp['label'] + '_excess', 'demand')
-                    total_usage = total_usage + flow_sum
                     # calculates the total variable costs of the sink
                     variable_costs = comp['excess costs /(CU/kWh)'] * flow_sum
                     # adds the variable costs to the total_costs variable
                     total_costs = total_costs + variable_costs
                     # calculates the constraint costs
                     constraint_costs = \
-                        flow_sum * comp['variable excess constraint costs /(CU/kWh)']
+                        flow_sum * comp['variable excess constraint costs'
+                                        ' /(CU/kWh)']
                     total_constraint_costs += constraint_costs
                     df_result_table[comp['label'] + '_excess'] = df_excess
                     # adds the bus to the list of components
@@ -403,19 +402,15 @@ class Results:
                         # gets the investment for the given source
                         (component_investment, periodical_costs) = \
                             self.get_investment(comp, 'source')
-                        # adds the investment to the investments_to_be_made
-                        # list
-                        investments_to_be_made[comp['label']] = \
-                            (str(round(component_investment, 2)) + ' kW')
                     # solar heat sources
                     elif str(comp['input']) not in checklist:
                         # gets the investment for the given source
                         (component_investment, periodical_costs) = \
                             self.get_investment(comp, 'solar_heat')
-                        # adds the investment to the investments_to_be_made
-                        # list
-                        investments_to_be_made[comp['label']] = \
-                            (str(round(component_investment, 2)) + ' kW')
+                    # adds the investment to the investments_to_be_made
+                    # list
+                    investments_to_be_made[comp['label']] = \
+                        (str(round(component_investment, 2)) + ' kW')
 
                     if component_investment > 0:
                         total_periodical_costs = (total_periodical_costs

@@ -141,8 +141,13 @@ def show_graph():
     """ creates and shows a graph of the energy system given by a Spreadsheet
         - the created graphs are saved in /results/graphs"""
     import os
-    from program_files import (create_energy_system,
-                               create_graph)
+    if sys.platform.startswith("win"):
+        from program_files import (create_energy_system,
+                                   create_graph)
+    else:
+        import create_energy_system
+        import create_graph
+
 
     # DEFINES PATH OF INPUT DATA
     scenario_file = scenario_path.get()
@@ -165,7 +170,6 @@ def show_graph():
     create_graph.create_graph(filepath=result_path,
                               nodes_data=nodes_data,
                               legend=False)
-
 
 
 def execute_sesmg():
@@ -759,16 +763,14 @@ if sys.platform.startswith("win"):
     img = PhotoImage(
         file='examples/v0.0.6_demo_scenario/DEMO_System.png')
 elif sys.platform.startswith("linux"):
-
-
-	img = PhotoImage(file=
-        	os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        	+'/examples/v0.0.6_demo_scenario/DEMO_System.png')
+    img = PhotoImage(file=
+                     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                     + '/examples/v0.0.6_demo_scenario/DEMO_System.png')
 else:
-	img = PhotoImage(file=
-        	os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        	+'/examples/v0.0.6_demo_scenario/DEMO_System.png')
-img = img.subsample(2,2)
+    img = PhotoImage(file=
+                     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                     + '/examples/v0.0.6_demo_scenario/DEMO_System.png')
+img = img.subsample(2, 2)
 panel = Label(demo_frame, image = img)
 panel.grid(column=0,columnspan=4, row=row, rowspan=30)
 
@@ -800,13 +802,10 @@ for i in range(len(demo_assumptions)):
     label = Label(demo_frame, text=assumption_keys[i], font=('Helvetica 10 bold'))
     label.grid(column=column, row=row, sticky="W")
 
-
-
     label = Label(demo_frame, text=assumption_values[i], font=('Helvetica 10'))
     label.grid(column=column+1, columnspan=2, row=row, sticky="W")
 
     row = row + 1
-
 
 
 window.mainloop()

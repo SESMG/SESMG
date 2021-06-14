@@ -148,10 +148,8 @@ class Sources:
         # output default
         if output is None:
             output = self.busd[so['output']]
-        # sets checklist for fill in variables
-        checklist = ['X', 'x', '', '0', 'None', 'none', 'nan']
         # set variables minimum, maximum and existing
-        if str(so['input']) in checklist:
+        if str(so['input']) in ['X', 'x', '', '0', 'None', 'none', 'nan']:
             minimum = so['min. investment capacity /(kW)']
             maximum = so['max. investment capacity /(kW)']
             existing = so['existing capacity /(kW)']
@@ -191,18 +189,19 @@ class Sources:
                 ))
     
     def commodity_source(self, so):
-        """ Creates an oemof source object with flexible time series
-        (no maximum or minimum) with the use of the
-        create_source method.
-        
-        ----
-        Keyword arguments:
-        
-            so : obj:'dict'
-                -- dictionary containing all information for the
-                    creation of an oemof source. At least the
-                    following key-value-pairs have to be included:
-                        'label'
+        """
+            Creates an oemof source object with flexible time series
+            (no maximum or minimum) with the use of the
+            create_source method.
+
+            ----
+            Keyword arguments:
+
+                so : obj:'dict'
+                    -- dictionary containing all information for the
+                        creation of an oemof source. At least the
+                        following key-value-pairs have to be included:
+                            'label'
         """
         # starts the create_source method with the parameters
         # min = 0 and max = 1
@@ -212,30 +211,31 @@ class Sources:
         logging.info('   ' + 'Commodity Source created: ' + so['label'])
     
     def timeseries_source(self, so, filepath):
-        """Creates an oemof source object from a pre-defined
-        timeseries with the use of the create_source
-        method.
-        
-        ---
-        Keyword arguments:
-        
-        so : obj:'dict'
-        --  dictionary containing all information for the
-        creation of an oemof source. At least the following
-        key-value-pairs have to be included:
-           'label'
-           'output'
-           'periodical costs /(CU/(kW a))'
-           'min. investment capacity /(kW)'
-           'max. investment capacity /(kW)'
-           'existing capacity /(kW)'
-           'Non-Convex Investment'
-           'Fix Investment Costs /(CU/a)'
-           'variable costs /(CU/kWh)'
-        
-        filepath: String
-        --  path to .xlsx scenario-file containing a
-        "time_series" sheet
+        """
+            Creates an oemof source object from a pre-defined
+            timeseries with the use of the create_source
+            method.
+
+            ---
+            Keyword arguments:
+
+            so : obj:'dict'
+            --  dictionary containing all information for the
+            creation of an oemof source. At least the following
+            key-value-pairs have to be included:
+               'label'
+               'output'
+               'periodical costs /(CU/(kW a))'
+               'min. investment capacity /(kW)'
+               'max. investment capacity /(kW)'
+               'existing capacity /(kW)'
+               'Non-Convex Investment'
+               'Fix Investment Costs /(CU/a)'
+               'variable costs /(CU/kWh)'
+
+            filepath: String
+            --  path to .xlsx scenario-file containing a
+            "time_series" sheet
         """
         # reads the timeseries sheet of the scenario file
         time_series = pd.read_excel(filepath, sheet_name='time_series')
@@ -465,8 +465,9 @@ class Sources:
 
         # calculates global horizontal irradiance from diffuse (dhi)
         # and direct irradiance (dirhi) and adds it to the weather data frame
-        data['ghi'] = (data.dirhi + data.dhi)
-
+        # todo dirhi durch ["dirhi"] ersetzt
+        data['ghi'] = (data["dirhi"] + data["dhi"])
+        print(data["ghi"])
         # precalculations for flat plate collectors, calculates total
         # irradiance on collector, efficiency and heat output
         if so['technology'] == 'solar_thermal_flat_plate':
@@ -490,34 +491,28 @@ class Sources:
             collectors_heat = precalc_results.collectors_heat/1000
             irradiance = precalc_results.col_ira/1000
 
-        # set parameters for precalculations for concentrating solar power
+        # precalculation with parameter set, ambient temperature and
+        # direct horizontal irradiance. Calculates total irradiance on
+        # collector, efficiency and heat output
         elif so['technology'] == 'concentrated_solar_power':
-            latitude = so['Latitude (Solar Heat)']
-            longitude = so['Longitude (Solar Heat)']
-            collector_tilt = so['Surface Tilt (Solar Heat)']
-            collector_azimuth = so['Azimuth (Solar Heat)']
-            cleanliness = so['Cleanliness (Solar Heat)']
-            a_1 = so['A1 (Solar Heat)']
-            a_2 = so['A2 (Solar Heat)']
-            eta_0 = so['ETA 0 (Solar Heat)']
-            c_1 = so['C1 (Solar Heat)']
-            c_2 = so['C2 (Solar Heat)']
-            temp_collector_inlet = \
-                so['Temperature Inlet /deg C (Solar Heat)']
-            temp_collector_outlet = \
-                (so['Temperature Inlet /deg C (Solar Heat)'] +
-                 so['Temperature Difference /deg C (Solar Heat)'])
-
-            # precalculation with parameter set, ambient temperature and
-            # direct horizontal irradiance. Calculates total irradiance on
-            # collector, efficiency and heat output
-            precalc_results = csp_precalc(latitude, longitude,
-                                          collector_tilt, collector_azimuth,
-                                          cleanliness, eta_0, c_1, c_2,
-                                          temp_collector_inlet,
-                                          temp_collector_outlet,
-                                          data['temperature'], a_1, a_2,
-                                          E_dir_hor=data['dirhi'])
+            precalc_results = csp_precalc(
+                lat=so['Latitude (Solar Heat)'],
+                long=so['Longitude (Solar Heat)'],
+                collector_tilt=so['Surface Tilt (Solar Heat)'],
+                collector_azimuth=so['Azimuth (Solar Heat)'],
+                cleanliness=so['Cleanliness (Solar Heat)'],
+                a_1=so['A1 (Solar Heat)'],
+                a_2=so['A2 (Solar Heat)'],
+                eta_0=so['ETA 0 (Solar Heat)'],
+                c_1=so['C1 (Solar Heat)'],
+                c_2=so['C2 (Solar Heat)'],
+                temp_collector_inlet=
+                so['Temperature Inlet /deg C (Solar Heat)'],
+                temp_collector_outlet=
+                (so['Temperature Inlet /deg C (Solar Heat)']
+                 + so['Temperature Difference /deg C (Solar Heat)']),
+                temp_amb=data['temperature'],
+                E_dir_hor=data['dirhi'])
 
             # set variables collectors_heat and irradiance and conversion
             # from W/sqm to kW/sqm
@@ -672,8 +667,8 @@ class Sources:
                     self.timeseries_source(so, filepath)
 
                 # Create flat plate solar thermal Sources
-                elif so['technology'] == 'solar_thermal_flat_plate' or \
-                        'concentrated_solar_power':
+                elif so['technology'] in ['solar_thermal_flat_plate',
+                                          'concentrated_solar_power']:
                     self.solar_heat_source(so, data)
             
         # appends created sources and other objects to the list of nodes
@@ -682,15 +677,16 @@ class Sources:
 
 
 class Sinks:
-    """Creates sink objects.
+    """
+        Creates sink objects.
     
-    There are four options for labeling source objects to be
-    created:
-    - 'unfixed' : a source with flexible time series
-    - 'timeseries' : a source with predefined time series
-    -  SLP : a VDEW standard load profile component
-    - 'richardson' : a component with stochastically generated
-    timeseries
+        There are four options for labeling source objects to be
+        created:
+        - 'unfixed' : a source with flexible time series
+        - 'timeseries' : a source with predefined time series
+        -  SLP : a VDEW standard load profile component
+        - 'richardson' : a component with stochastically generated
+        timeseries
     """
     # intern variables
     busd = None
@@ -1253,6 +1249,9 @@ class Transformers:
             temp = '_low_temp'
         elif tf['mode'] == 'chiller':
             temp = '_high_temp'
+        else:
+            raise ValueError("Mode of " + tf['label']
+                             + "contains a typo")
         bus = solph.Bus(label=tf['label'] + temp + '_bus')
         
         # adds the bus object to the list of components "nodes"
@@ -1306,7 +1305,7 @@ class Transformers:
             # the capacity of ambient water is not limited
             heatsource_capacity = math.inf
         else:
-            raise SystemError(tf['label'] + " Error in heat source attribute")
+            raise ValueError(tf['label'] + " Error in heat source attribute")
         maximum = heatsource_capacity
         # Creates heat source for transformer. The heat source costs are
         # considered by the transformer.
@@ -1364,6 +1363,9 @@ class Transformers:
             temp_threshold_icing = None
             factor_icing = None
             temp_low = [tf['temperature low /deg C (CHT)']]
+        else:
+            raise ValueError("Mode of " + tf['label']
+                             + "contains a typo")
         # calculation of COPs with set parameters
         cops_hp = cmpr_hp_chiller.calc_cops(
                 temp_high=temp_high,
@@ -1495,7 +1497,7 @@ class Transformers:
                     variable_costs=tf[
                         'variable output costs 2 /(CU/kWh)'],
                     emission_factor=tf[
-                        'variable output constraint costs 2/(CU/kWh)']
+                        'variable output constraint costs 2 /(CU/kWh)']
                 )},
                 Beta=[tf['power loss index [GenericCHP]']
                       for p in range(0, periods)],
@@ -1565,6 +1567,9 @@ class Transformers:
             temp = '_low_temp'
         elif tf['mode'] == 'chiller':
             temp = '_high_temp'
+        else:
+            raise ValueError("Mode of " + tf['label']
+                             + "contains a typo")
 
         bus_label = tf['label'] + temp + '_bus'
         source_label = tf['label'] + temp + '_source'
@@ -2031,7 +2036,8 @@ class Links:
                                 investment=solph.Investment(
                                     ep_costs=ep_costs,
                                     periodical_constraint_costs=link[
-                                        'periodical constraint costs /(CU/(kW a))'],
+                                        'periodical constraint costs'
+                                        ' /(CU/(kW a))'],
                                     minimum=link[
                                         'min. investment capacity /(kW)'],
                                     maximum=link[
@@ -2051,7 +2057,8 @@ class Links:
                                  investment=solph.Investment(
                                      ep_costs=ep_costs,
                                      periodical_constraint_costs=link[
-                                         'periodical constraint costs /(CU/(kW a))'],
+                                         'periodical constraint costs'
+                                         ' /(CU/(kW a))'],
                                      minimum=link[
                                          'min. investment capacity /(kW)'],
                                      maximum=link[
