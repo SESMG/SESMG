@@ -24,7 +24,6 @@ Installation
 
 .. csv-table:: Known Errors
    :file: ../troubleshooting/troubleshooting.csv
-   :widths: 30, 30, 30
    :header-rows: 1
 
 
