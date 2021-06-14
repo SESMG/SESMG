@@ -35,7 +35,6 @@ setup(
 
     install_requires=[
         "pillow>=6.2.0",
-        "oemof.thermal==0.0.4",
         "pandas==1.1",
         "numpy==1.17",
         "tables==3.5.2",
@@ -53,7 +52,7 @@ setup(
         "Pyomo==5.7.1"
         ],
     extras_require={
-        "dev": ["pytest", "sphinx", "sphinx_rtd_theme"],
+        "dev": ["pytest", "sphinx", "sphinx_rtd_theme","oemof.thermal"],
     },  
 )
 
