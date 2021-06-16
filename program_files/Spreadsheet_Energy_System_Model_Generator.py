@@ -138,11 +138,11 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     # Timeseries Preprocessing
     data_preparation.timeseries_preparation(timeseries_prep_param=timeseries_prep,
                                             nodes_data=nodes_data,
-                                            scheme_path=os.path.join(os.path.dirname(__file__) + r'\technical_data\hierarchical_selection_schemes.xlsx'))
+                                            scheme_path=os.path.join(os.path.dirname(__file__) + r'\technical_data\hierarchical_selection_schemes.xlsx'),
+                                            result_path=result_path)
 
     if timeseries_prep[0] != 'none':
-        scenario_file = os.path.join(os.path.dirname(
-            __file__) + r"\interim_data\modified_scenario.xlsx")
+        scenario_file = result_path + "/modified_scenario.xlsx"
 
     # CREATES AN ENERGYSYSTEM AS DEFINED IN THE SCENARIO FILE
     esys = create_energy_system.define_energy_system(nodes_data=nodes_data)
