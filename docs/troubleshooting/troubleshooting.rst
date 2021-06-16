@@ -21,13 +21,16 @@ Make sure that the displayed system can stay in balance.
 
 Installation
 ===============================
-
+.. csv-table:: 
+   :file: ../troubleshooting/troubleshooting-installation.csv
+   :widths: 20,20,20
+   :header-rows: 1
 
 
 Modeling
 ===============================
 .. csv-table:: 
-   :file: ../troubleshooting/troubleshooting.csv
+   :file: ../troubleshooting/troubleshooting-modelling.csv
    :widths: 20,20,20
    :header-rows: 1
           
