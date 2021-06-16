@@ -156,7 +156,6 @@ PV
 - **Inverter Model**: Inverter name, according to the database used.
 .. csv-table:: 
    :file: ../getting_started/inverter_names.csv
-   :heigth: 100
    :header-rows: 1
 - **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic sources, use fill character "0" for other technologies.
 - **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic sources, use fill character "0" for other technologies.
