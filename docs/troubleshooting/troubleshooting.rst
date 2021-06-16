@@ -23,7 +23,7 @@ Installation
 ===============================
 .. csv-table:: Table Title
    :file: ../troubleshooting/troubleshooting.csv
-   :widths: 30, 30, 40
+   :widths: 20,20,20
    :header-rows: 1
 
 
