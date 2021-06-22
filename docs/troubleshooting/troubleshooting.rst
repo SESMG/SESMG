@@ -33,3 +33,25 @@ Modeling
    :widths: 20,20,20
    :header-rows: 1
           
+Contributing to the troubleshooting
+===============================
+
+Were you able to solve a bug that was not listed here yet? Help other users and report it by following these simple steps:
+
+1. Open https://github.com/chrklemm/SESMG/tree/master/docs/troubleshooting
+
+2. Open "troubleshooting-installation.csv" or "troubleshooting-modelling.csv", depending on whether your error concerns the installation or the modeling process.
+
+3. Click on the pencil icon in the upper right corner to edit the file.
+
+4. Add a line to the csv file describing your problem. The line consists of three columns "Error Message", "Possible Error Cause" and "Debugging". The columns are separated by commas. Do not use any other commas in your error description.
+
+5. Describe below what you have changed and click "propse changes".
+
+6. Click "Create pull request"
+
+7. Name your pull request and click "create pull request".
+
+8. That's it, thanks for your contribution!
+
+
