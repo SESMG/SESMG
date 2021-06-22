@@ -16,23 +16,8 @@ Make sure that the displayed system can stay in balance.
 - The use of excess-sinks and shortage-sources can help to keep the system in balance.
 
 
-**Your error message is not included? Help us and all users by reporting your error message - with or without a solution! You can do this either via `GitHub <https://github.com/chrklemm/SESMG>`_ (preferred) or by mail (christian.klemm@fh-muenster.de). Thank you!**
+**Your error message is not included? Help us and all users by reporting your error message - with or without a solution!. Thank you!**
 
-
-Installation
-===============================
-.. csv-table:: 
-   :file: ../troubleshooting/troubleshooting-installation.csv
-   :header-rows: 1
-
-
-Modeling
-===============================
-.. csv-table:: 
-   :file: ../troubleshooting/troubleshooting-modelling.csv
-   :widths: 20,20,20
-   :header-rows: 1
-          
 Contributing to the troubleshooting
 ===============================
 
@@ -54,4 +39,20 @@ Were you able to solve a bug that was not listed here yet? Help other users and 
 
 8. That's it, thanks for your contribution!
 
+
+
+Installation
+===============================
+.. csv-table:: 
+   :file: ../troubleshooting/troubleshooting-installation.csv
+   :header-rows: 1
+
+
+Modeling
+===============================
+.. csv-table:: 
+   :file: ../troubleshooting/troubleshooting-modelling.csv
+   :widths: 20,20,20
+   :header-rows: 1
+          
 
