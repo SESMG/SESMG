@@ -10,7 +10,7 @@ The HTML-Page consists the following elements:
     - table (1) summarizing the modelling results
     - table (2) summarizing every component of the model
     - drop down menu, where the user can select which timeseries should
-        be displayed in the following graph.
+      be displayed in the following graph.
     - graph, where the timeseries' of all components can be displayed
     
 """
@@ -43,13 +43,10 @@ def return_component_value(componentid, table):
     depending from which components have been selected within the
     drop-down menu.
     
-    ----
-    Keyword arguments:
-        componentid: obj:'str'
-            -- id of selected component to be shown
-            
-        table: ob:'DataFrame'
-            -- table of optimised timeseries
+    :param componentid: 
+    :type componentid: str
+    :param table:
+    :type table: pandas Dataframe
     """
         
     values = table[componentid].tolist()
