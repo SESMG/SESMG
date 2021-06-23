@@ -769,7 +769,7 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-        def timeseries_sink(self, de, nodes_data):
+    def timeseries_sink(self, de, nodes_data):
         """
             Creates a sink object with a fixed input. The input must be
             given as a time series in the scenario file.
