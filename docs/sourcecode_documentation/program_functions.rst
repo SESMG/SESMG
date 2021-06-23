@@ -105,7 +105,7 @@ create\_results module
 Interactive\_Results module
 -------------------------------------
 
-.. automodule:: program_files.Interactive_Results
+.. automodule:: program_files.Interactive_Results results/
    :members:
    :undoc-members:
    :show-inheritance:
