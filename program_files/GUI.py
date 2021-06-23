@@ -171,7 +171,6 @@ def show_graph():
                               legend=False)
 
 
-
 def execute_sesmg():
     """ 1. Creates the folder where the results will be saved
         2. Excecutes the optimization algorithm """
@@ -764,15 +763,14 @@ if sys.platform.startswith("win"):
         file='examples/v0.0.6_demo_scenario/DEMO_System.png')
 elif sys.platform.startswith("linux"):
 
-
-	img = PhotoImage(file=
-        	os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        	+'/examples/v0.0.6_demo_scenario/DEMO_System.png')
+    img = PhotoImage(file=
+                     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                     + '/examples/v0.0.6_demo_scenario/DEMO_System.png')
 else:
-	img = PhotoImage(file=
-        	os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        	+'/examples/v0.0.6_demo_scenario/DEMO_System.png')
-img = img.subsample(2,2)
+    img = PhotoImage(file=
+                     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                     + '/examples/v0.0.6_demo_scenario/DEMO_System.png')
+img = img.subsample(2, 2)
 panel = Label(demo_frame, image = img)
 panel.grid(column=0,columnspan=4, row=row, rowspan=30)
 
@@ -804,13 +802,9 @@ for i in range(len(demo_assumptions)):
     label = Label(demo_frame, text=assumption_keys[i], font=('Helvetica 10 bold'))
     label.grid(column=column, row=row, sticky="W")
 
-
-
     label = Label(demo_frame, text=assumption_values[i], font=('Helvetica 10'))
     label.grid(column=column+1, columnspan=2, row=row, sticky="W")
 
     row = row + 1
-
-
 
 window.mainloop()
