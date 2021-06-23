@@ -32,7 +32,7 @@ if sys.argv[1] != "-T":
     if sys.platform.startswith("win"):
         result_path_import = result_path_import[1:]
 else: 
-    result_path_import = "results/"
+    result_path_import = "results"
 
     
 def return_component_value(componentid, table):
