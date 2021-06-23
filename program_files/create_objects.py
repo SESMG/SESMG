@@ -769,7 +769,7 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-    def timeseries_sink(self, de: dict, filepath: str):
+        def timeseries_sink(self, de, nodes_data):
         """
             Creates a sink object with a fixed input. The input must be
             given as a time series in the scenario file.
@@ -789,16 +789,16 @@ class Sinks:
             Christian Klemm - christian.klemm@fh-muenster.de
         """
         # imports the time_series sheet of the scenario file
-        time_series = pd.read_excel(filepath, sheet_name='time_series')
+
         # sets the nominal value
         args = {'nominal_value': de['nominal value']}
         if de['fixed'] == 0:
             # sets the attributes for an unfixed time_series sink
-            args.update({'min': time_series[de['label'] + '.min'].tolist(),
-                         'max': time_series[de['label'] + '.max'].tolist()})
+            args.update({'min': nodes_data[de['label'] + '.min'].tolist(),
+                         'max': nodes_data[de['label'] + '.max'].tolist()})
         elif de['fixed'] == 1:
             # sets the attributes for a fixed time_series sink
-            args.update({'fix': time_series[de['label'] + '.fix'].tolist()})
+            args.update({'fix': nodes_data[de['label'] + '.fix'].tolist()})
         # starts the create_sink method with the parameters set before
         self.create_sink(de, args)
         
