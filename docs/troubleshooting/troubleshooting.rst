@@ -52,7 +52,7 @@ Modeling
 ===============================
 .. csv-table:: 
    :file: ../troubleshooting/troubleshooting-modelling.csv
-   :widths: 20,20,20
+   :widths: 50 25 25
    :header-rows: 1
           
 
