@@ -28,12 +28,10 @@ import io
 from PIL import Image
 import sys
 
-if sys.argv[1] != None:
-    result_path_import = sys.argv[1]
-    if sys.platform.startswith("win"):
-        result_path_import = result_path_import[1:]
-else:
-    raise SystemError
+result_path_import = sys.argv[1]
+if sys.platform.startswith("win"):
+    result_path_import = result_path_import[1:]
+
     
 def return_component_value(componentid, table):
     """Returns data for the graph.
