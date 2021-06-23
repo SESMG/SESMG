@@ -138,15 +138,11 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     # Timeseries Preprocessing
     data_preparation.timeseries_preparation(timeseries_prep_param=timeseries_prep,
                                             nodes_data=nodes_data,
-                                            scheme_path=os.path.join(os.path.dirname(__file__) + r'\technical_data\hierarchical_selection_schemes.xlsx'))
+                                            scheme_path=os.path.join(os.path.dirname(__file__) + r'\technical_data\hierarchical_selection_schemes.xlsx'),
+                                            result_path=result_path)
 
     if timeseries_prep[0] != 'none':
-        scenario_file = os.path.join(os.path.dirname(
-            __file__) + r"\interim_data\modified_scenario.xlsx")
-
-    # formatting of the weather data record according to the
-    # requirements of the classes used
-    create_energy_system.format_weather_dataset(filepath=scenario_file)
+        scenario_file = result_path + "/modified_scenario.xlsx"
 
     # CREATES AN ENERGYSYSTEM AS DEFINED IN THE SCENARIO FILE
     esys = create_energy_system.define_energy_system(nodes_data=nodes_data)
@@ -168,7 +164,7 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     # CREATES SINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
     t2 = Thread(target=create_objects.Sinks, args=(nodes_data, busd,
-                                                   nodes, scenario_file,))
+                                                   nodes,))
     t2.start()
     # CREATES TRANSFORMER OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM
     # TO THE lIST OF COMPONENTS

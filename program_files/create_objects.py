@@ -71,7 +71,7 @@ def buses(nodes_data: dict, nodes: list) -> dict:
                     busd[b['label']]:
                         solph.Flow(variable_costs=b['excess costs'],
                                    emission_factor=b[
-                                    'variable excess constraint costs'])}
+                                    'excess constraint costs'])}
                 nodes.append(
                         solph.Sink(
                                 label=b['label'] + '_excess',
@@ -87,7 +87,7 @@ def buses(nodes_data: dict, nodes: list) -> dict:
                         solph.Flow(
                             variable_costs=b['shortage costs'],
                             emission_factor=b[
-                                'variable shortage constraint costs'])}
+                                'shortage constraint costs'])}
                 nodes.append(
                         solph.Source(
                                 label=b['label'] + '_shortage',
@@ -455,7 +455,7 @@ class Sources:
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
 
-    def solar_heat_source(self, so):
+    def solar_heat_source(self, so, data):
         """
             Creates a solar thermal collector source object.
 
@@ -504,10 +504,6 @@ class Sources:
         output = col_bus
 
         # import weather data and set datetime index with hourly frequency
-        data = pd.read_csv(os.path.join(
-            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
-        data['timestamp'] = pd.to_datetime(data['timestamp'])
-        data = data.set_index(['timestamp'])
         data.index.name = 'Datum'
         # TODO get frequency from energysystem sheet
         data = data.asfreq('h')
@@ -628,10 +624,9 @@ class Sources:
         self.nodes = []
 
         # Import weather Data
-        data = pd.read_csv(
-                os.path.join(os.path.dirname(__file__))
-                + '/interim_data/weather_data.csv', index_col=0,
-                date_parser=lambda idx: pd.to_datetime(idx, utc=True))
+        data = nodes_data['weather data']
+        data.index = pd.to_datetime(data["timestamp"].values, utc=True)
+        data.index = pd.to_datetime(data.index).tz_convert("Europe/Berlin")
 
         # Create Source from "Sources" Table
         for i, so in nodes_data['sources'].iterrows():
@@ -656,11 +651,11 @@ class Sources:
 
                 # Create flat plate solar thermal collector Sources
                 elif so['technology'] == 'solar_thermal_flat_plate':
-                    self.solar_heat_source(so)
+                    self.solar_heat_source(so, data)
 
                 # Create concentrated solar heat Sources
                 elif so['technology'] == 'CSP':
-                    self.solar_heat_source(so)
+                    self.solar_heat_source(so, data)
             
         # appends created sources to the list of nodes
         for i in range(len(self.nodes_sources)):
@@ -774,7 +769,7 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-    def timeseries_sink(self, de: dict, filepath: str):
+    def timeseries_sink(self, de, nodes_data):
         """
             Creates a sink object with a fixed input. The input must be
             given as a time series in the scenario file.
@@ -794,16 +789,16 @@ class Sinks:
             Christian Klemm - christian.klemm@fh-muenster.de
         """
         # imports the time_series sheet of the scenario file
-        time_series = pd.read_excel(filepath, sheet_name='time_series')
+
         # sets the nominal value
         args = {'nominal_value': de['nominal value']}
         if de['fixed'] == 0:
             # sets the attributes for an unfixed time_series sink
-            args.update({'min': time_series[de['label'] + '.min'].tolist(),
-                         'max': time_series[de['label'] + '.max'].tolist()})
+            args.update({'min': nodes_data[de['label'] + '.min'].tolist(),
+                         'max': nodes_data[de['label'] + '.max'].tolist()})
         elif de['fixed'] == 1:
             # sets the attributes for a fixed time_series sink
-            args.update({'fix': time_series[de['label'] + '.fix'].tolist()})
+            args.update({'fix': nodes_data[de['label'] + '.fix'].tolist()})
         # starts the create_sink method with the parameters set before
         self.create_sink(de, args)
         
@@ -844,8 +839,7 @@ class Sinks:
         electricity_slps = \
             ['h0', 'g0', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'l0', 'l1', 'l2']
         # Import weather Data
-        data = pd.read_csv(os.path.join(
-            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
+        data = nodes_data["weather data"]
         # Importing timesystem parameters from the scenario
         ts = next(nodes_data['energysystem'].iterrows())[1]
         temp_resolution = ts['temporal resolution']
@@ -884,7 +878,7 @@ class Sinks:
                                               '%Y-%m-%d %H:%M:%S').year
             # Imports standard load profiles
             e_slp = bdew.ElecSlp(year)
-            # TODO Discuss if this is right !!!1111 ( dyn_function_h0 )
+            # TODO Discuss if this is right !!! ( dyn_function_h0 )
             demand = e_slp.get_profile({de['load profile']: 1})
             # creates time series based on standard load profiles
             demand = demand.resample(temp_resolution).mean()
@@ -928,14 +922,8 @@ class Sinks:
         import richardsonpy.classes.occupancy as occ
         import richardsonpy.classes.electric_load as eload
         # Import Weather Data
-        dirhi_csv = pd.read_csv(
-            os.path.join(os.path.dirname(__file__))
-            + '/interim_data/weather_data.csv', usecols=['dirhi'], dtype=float)
-        dirhi = dirhi_csv.values.flatten()
-        dhi_csv = pd.read_csv(
-            os.path.join(os.path.dirname(__file__))
-            + '/interim_data/weather_data.csv', usecols=['dhi'], dtype=float)
-        dhi = dhi_csv.values.flatten()
+        dirhi = nodes_data["weather data"]["dirhi"].values.flatten()
+        dhi = nodes_data["weather data"]["dhi"].values.flatten()
         
         # Conversion of irradiation from W/m^2 to kW/m^2
         dhi = dhi / 1000
@@ -999,8 +987,7 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-    def __init__(self, nodes_data: dict, busd: dict, nodes: list,
-                 filepath: str):
+    def __init__(self, nodes_data: dict, busd: dict, nodes: list):
         """ Inits the sink class.
         ---
         Other variables:
@@ -1015,14 +1002,6 @@ class Sinks:
         self.nodes_sinks = []
         # Initialise a class intern copy of the bus dictionary
         self.busd = busd.copy()
-        
-        # richardson.py and demandlib can only read .csv data sets,
-        # so the weather data from the .xlsx scenario file have to be
-        # converted into a .csv data set and saved
-        read_file = pd.read_excel(filepath, sheet_name='weather data')
-        read_file.to_csv(
-            os.path.join(os.path.dirname(__file__))
-            + '/interim_data/weather_data.csv', index=None, header=True)
         
         # Create sink objects
         for i, de in nodes_data['sinks'].iterrows():
@@ -1039,7 +1018,7 @@ class Sinks:
                 
                 # Create Sinks with Time-series
                 elif de['load profile'] == 'timeseries':
-                    self.timeseries_sink(de, filepath)
+                    self.timeseries_sink(de, nodes_data['timeseries'])
                 
                 # Create Sinks with SLP's
                 elif de['load profile'] in slps:
@@ -1047,7 +1026,7 @@ class Sinks:
                 
                 # Richardson
                 elif de['load profile'] == 'richardson':
-                    self.richardson_sink(de, filepath, nodes_data)
+                    self.richardson_sink(de, nodes_data)
         
         # appends created sinks on the list of nodes
         for i in range(len(self.nodes_sinks)):
@@ -1494,7 +1473,7 @@ class Transformers:
         # returns logging info
         logging.info('   ' + 'Transformer created: ' + tf['label'])
 
-    def absorption_heat_transformer(self, tf):
+    def absorption_heat_transformer(self, tf, data):
         """
             Creates an absorption heat transformer object with the parameters
             given in 'nodes_data' and adds it to the list of components 'nodes'
@@ -1521,9 +1500,7 @@ class Transformers:
         from math import inf
         import numpy as np
 
-        # Import weather Data and characteristic equation parameters
-        data = pd.read_csv(os.path.join(
-            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
+        # Import characteristic equation parameters
         char_para = pd.read_csv(os.path.join(
             os.path.dirname(__file__)) +
                             '/technical_data/characteristic_parameters.csv')
@@ -1633,8 +1610,9 @@ class Transformers:
         self.nodes_transformer = []
 
         # Import weather Data
-        data = pd.read_csv(os.path.join(
-            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
+        data = nodes_data['weather data']
+        data.index = pd.to_datetime(data["timestamp"].values, utc=True)
+        data.index = pd.to_datetime(data.index).tz_convert("Europe/Berlin")
 
         # creates a transformer object for every transformer item within nd
         for i, t in nodes_data['transformers'].iterrows():
@@ -1666,7 +1644,7 @@ class Transformers:
 
                 # Create Absorption Chiller
                 elif t['transformer type'] == 'absorption_heat_transformer':
-                    self.absorption_heat_transformer(t)
+                    self.absorption_heat_transformer(t, data)
 
                 # Error Message for invalid Transformers
                 else:
@@ -1771,7 +1749,7 @@ class Storages:
         # returns logging info
         logging.info('   ' + 'Storage created: ' + s['label'])
 
-    def stratified_thermal_storage(self, s):
+    def stratified_thermal_storage(self, s, data):
         """
             Creates a stratified thermal storage object with the parameters
             given in 'nodes_data' and adds it to the list of components 'nodes'
@@ -1790,8 +1768,8 @@ class Storages:
         # import functions for stratified thermal storages from oemof thermal
         from oemof.thermal.stratified_thermal_storage import calculate_losses
         # Import weather Data
-        data = pd.read_csv(os.path.join(
-            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
+        data.index = pd.to_datetime(data["timestamp"].values, utc=True)
+        data.index = pd.to_datetime(data.index).tz_convert("Europe/Berlin")
         # calculations for stratified thermal storage
         loss_rate, fixed_losses_relative, fixed_losses_absolute = \
             calculate_losses(
@@ -1868,7 +1846,8 @@ class Storages:
 
                 # Create Generic Storage
                 if s['storage type'] == 'Stratified':
-                    self.stratified_thermal_storage(s)
+                    self.stratified_thermal_storage(s,
+                                                    nodes_data['weather data'])
 
         # appends created storages to the list of nodes
         for i in range(len(self.nodes)):
