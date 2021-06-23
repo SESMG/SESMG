@@ -14,3 +14,4 @@ KeyError: 'Index \'(''<oemof.solph.network.source.Source: \'ID_phtovoltaic_elect
 KeyError: 'ID_photovoltaik_electricity_source', In this case - PV sources were deactivated although they were still addressed in the area competition, Make sure that if you have disabled pv sources - you do the same for the competition constraint.
 UserWarning: Optimization ended with status warning and termination condition infeasible, the model is not solvable - probably because not enough energy is inserted to sattisfy the energy demand, make sure that the sources are able to insert enough energy to the system
 Flow: ID_electricity_to_ID_hp_electricity_bus-ID_electricity_bus. This could be caused by NaN-values in your input data.,,
+FutureWarning: Current default for 'dyn_function_h0' is 'False'. This is about to change to 'True'. Set 'False' explicitly to retain the current behaviour.,  the wrong version of the feedinlib is used, make sure you are using feedinlib==0.0.12
