@@ -148,7 +148,6 @@ def show_graph():
         import create_energy_system
         import create_graph
 
-
     # DEFINES PATH OF INPUT DATA
     scenario_file = scenario_path.get()
 
@@ -763,6 +762,7 @@ if sys.platform.startswith("win"):
     img = PhotoImage(
         file='examples/v0.0.6_demo_scenario/DEMO_System.png')
 elif sys.platform.startswith("linux"):
+
     img = PhotoImage(file=
                      os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                      + '/examples/v0.0.6_demo_scenario/DEMO_System.png')
@@ -806,6 +806,5 @@ for i in range(len(demo_assumptions)):
     label.grid(column=column+1, columnspan=2, row=row, sticky="W")
 
     row = row + 1
-
 
 window.mainloop()
