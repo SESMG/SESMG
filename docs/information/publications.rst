@@ -7,7 +7,7 @@ Your publication/thesis/project is missing? Contact us!
 
 **Publications**
 
-- Klemm, Christian and Vennemann, Peter: "Modellierung und Optimierung urbaner Energiesysteme im Projekt R2Q", 4. Regenerative Energietechnik Konferenz in Nordhausen 18. - 19. Februar 2021, `Available here <https://www.hs-nordhausen.de/fileadmin/daten/fb_ing/inret/PDFs/tagungsband_retcon21_web_aa3__1_.pdf>`_.
+- Klemm, Christian and Vennemann, Peter: "Modellierung und Optimierung urbaner Energiesysteme im Projekt R2Q", 4. Regenerative Energietechnik Konferenz in Nordhausen 18. - 19. Februar 2021, `Available here (Page 177-188) <https://www.hs-nordhausen.de/fileadmin/daten/fb_ing/inret/PDFs/tagungsband_retcon21_web_aa3__1_.pdf>`_.
 
 **Theses**
 
