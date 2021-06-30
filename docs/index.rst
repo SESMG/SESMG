@@ -77,6 +77,7 @@ Sourcecode
 	
 Further Information
 -------------------------------------------------
+* :doc:`information/publications`
 * :doc:`information/links`
 * :doc:`information/license`
 * :doc:`information/contact`
