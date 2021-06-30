@@ -11,9 +11,9 @@ Klemm, Christian and Vennemann, Peter: "Modellierung und Optimierung urbaner Ene
 
 **Theses**
 
-Klemm, Christian: "Modelling and Optimization of Multi-Energy Systems in Mixed-Use Districts: An Exemplary Application" (Master Thesis, 2020)
+Klemm, Christian: "Modelling and Optimization of Multi-Energy Systems in Mixed-Use Districts: An Exemplary Application" (Master Thesis, FH Münster, 2020)
 
-Budde, Janik: "Wärmepumpen in Stadtquartieren - Untersuchung anhand eines Quartiers in Herne" (Bachelor Thesis, 2020)
+Budde, Janik: "Wärmepumpen in Stadtquartieren - Untersuchung anhand eines Quartiers in Herne" (Bachelor Thesis, FH Münster, 2020)
 
 
 
