@@ -19,4 +19,4 @@ Budde, Janik: "Wärmepumpen in Stadtquartieren - Untersuchung anhand eines Quart
 
 **Projects**
 
-`RessourcenPlan im Quartier (R2Q) <http://fh-muenster.de/r2q>`_. (2019 - 2022)
+`RessourcenPlan im Quartier (R2Q) <http://fh-muenster.de/r2q>`_, FH Münster (2019 - 2022)
