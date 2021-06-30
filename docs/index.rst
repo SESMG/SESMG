@@ -88,7 +88,7 @@ Further Information
 	:hidden:
 	:caption: Further Information 
 	
-	inform/publications
+	information/publications
 	information/links
 	information/license
 	information/contact
