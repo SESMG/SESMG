@@ -190,8 +190,7 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     esys.add(*nodes)
 
     # PRINTS A GRAPH OF THE ENERGY SYSTEM
-    if graph:
-        create_graph.create_graph(filepath=result_path, nodes_data=nodes_data)
+    create_graph.create_graph(filepath=result_path, nodes_data=nodes_data)
 
     # OPTIMIZES THE ENERGYSYSTEM AND RETURNS THE OPTIMIZED ENERGY SYSTEM
     om = optimize_model.least_cost_model(esys, num_threads, nodes_data, busd, solver)
