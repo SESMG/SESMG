@@ -19,6 +19,12 @@ Interactive_Results.py file.
 The results interface has the following elements:
 
 - **Table with a summary of the modelling (1).**
+   - Total System Costs: Total costs of the primary optimization criterion (in the example: total monetary costs).
+   - Total Constraint Costs: Total costs of the secondary optimization criterion (in the example: total carbon dioxide emissions).
+   - Total Variable Costs: Costs per kWh transformed/used/supplied energy
+   - Total Periodical Costs: Annual costs per kW(h) of invested plant capacity (only applied for invested capacity, not for existing capacity)
+   - Total Energy Demand: Total energy demand of the systems' sinks.
+   - Total Energy Usage: Total energy inserted to the energy system (via sources).
 
 - **Graph of the energy system (2).**
 
