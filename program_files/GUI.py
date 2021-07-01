@@ -6,6 +6,8 @@ from tkinter import filedialog
 import subprocess
 import os
 from Spreadsheet_Energy_System_Model_Generator import sesmg_main
+from Demo_Tool import demo_tool
+from urban_district_upscaling import urban_district_upscaling_GUI
 
 
 
@@ -101,7 +103,7 @@ def create_main_frame_elements(elements, sheet, first_row, file_paths, frame):
 
         label_comment = Label(sheet, text=elements[element_keys[i]][3], font='Helvetica 10')
         file_paths.append(label_comment)
-        file_paths[i].grid(column=4, row=row, sticky="W")
+        file_paths[i].grid(column=4, row=row, columnspan=7, sticky="W")
 
 
 def update_values(texts_input, rows, input_elements, input_values):
@@ -113,16 +115,13 @@ def update_values(texts_input, rows, input_elements, input_values):
             input_elements[input_element_keys[j]][1] = input_text.get()
             input_values[j].configure(text=input_text.get())
 
-
 def data_path():
     print('placeholder')
-
 
 def getFolderPath():
     """ opens a file dialog and sets the selected path for the variable "scenario_path" """
 
     path = filedialog.askopenfilename(filetypes=(("Spreadsheet Files", "*.xlsx"), ("all files", "*.*")))
-    print(path)
 
     scenario_path.set(path)
     print(scenario_path.get())
@@ -145,15 +144,16 @@ def show_graph():
         from program_files import (create_energy_system,
                                    create_graph)
     else:
-        import create_energy_system
         import create_graph
+        import create_energy_system
 
     # DEFINES PATH OF INPUT DATA
     scenario_file = scenario_path.get()
 
     # DEFINES PATH OF OUTPUT DATA
     if sys.platform.startswith("win"):
-        result_path = os.path.join(os.path.dirname(__file__) + '/results/graphs')
+        result_path = os.path.join(os.path.dirname(__file__)
+                                   + '/results/graphs')
     elif sys.platform.startswith('darwin'):
         result_path = os.path.dirname(os.path.abspath(__file__))
         result_path = result_path + '/results/graphs'
@@ -168,6 +168,7 @@ def show_graph():
     # PRINTS A GRAPH OF THE ENERGY SYSTEM
     create_graph.create_graph(filepath=result_path,
                               nodes_data=nodes_data,
+                              show=True, # TODO: to be replaced by variable
                               legend=False)
 
 
@@ -181,13 +182,26 @@ def execute_sesmg():
                           + str(datetime.now().strftime(
                             '_%Y-%m-%d--%H-%M-%S'))))
         os.mkdir(save_path.get())
+
+        timeseries_prep_param = [timeseries_algorithm.get(),
+                                 timeseries_cluster.get(),
+                                 timeseries_criterion.get(),
+                                 timeseries_period.get(),
+                                 0 if timeseries_season.get() == 'none'
+                                 else timeseries_season.get()]
+
         sesmg_main(scenario_file=scenario_path.get(),
                    result_path=save_path.get(),
                    num_threads=1,
-                   graph=True,
-                   results=True,
-                   plotly=True)
-        show_results()
+                   timeseries_prep=timeseries_prep_param, #time_prep.get(),
+                   # timeseries_value = 1 if timeseries_entry.get() == 'aggregation quote' else timeseries_entry.get(),
+                   graph=True if graph_state.get() == 1 else False,
+                   criterion_switch=criterion_state.get(),
+                   xlsx_results=xlsx_select_state.get(),
+                   console_results=console_select_state.get(),
+                   solver=solver_select.get())
+        if plotly_select_state.get():
+            show_results()
     else:
         print('Please select scenario first!')
         comments[2].configure(text='Please select scenario first!')
@@ -231,12 +245,15 @@ def get_pid():
 
 
 def show_results():
-    """ executes the external program, which executes a plotl.dash app for displaying interactive results."""
+    """
+        executes the external program, which executes a plotl.
+        dash app for displaying interactive results.
+    """
     if save_path.get() == '':
         raise SystemError('No optimization since the last restart'
                           ' please select a result folder!')
-	
-	# Determines the ID of a still running process on port 8050.
+
+    # Determines the ID of a still running process on port 8050.
     pid = get_pid()
     # Checks if the ID is not an empty return (no process available)
     if pid != '':
@@ -248,7 +265,6 @@ def show_results():
             command = 'kill ' + pid
         # Kills the still running process on port 8050
         subprocess.call(command, shell=True)
-
     else:
         if sys.platform.startswith("win"):
             subprocess.call("start http://127.0.0.1:8050", shell=True)
@@ -256,12 +272,12 @@ def show_results():
             subprocess.call("open http://127.0.0.1:8050", shell=True)
         elif sys.platform.startswith("linux"):
             subprocess.call("xdg-open http://127.0.0.1:8050", shell=True)
-	
-	
+
     # Starts the new Plotly Dash Server for Windows
     if sys.platform.startswith("win"):
-        subprocess.call("Scripts\python.exe" + " program_files/Interactive_Results.py "
-                        + 'r"'+save_path.get()+'"', timeout=10, shell=True)
+        subprocess.call(
+                "Scripts\python.exe" + " program_files/Interactive_Results.py "
+                + 'r"' + save_path.get() + '"', timeout=10, shell=True)
     # Starts the new Plotly Dash Server for MACOS
     elif sys.platform.startswith("darwin"):
         IR_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -272,9 +288,6 @@ def show_results():
         subprocess.call("python3 " + IR_PATH + "/Interactive_Results.py "
                         + str(save_path.get()), timeout=10, shell=True)
 
-    
-
-
 # Definition of the user interface
 window = Tk()
 window.title("SESMG - Spreadsheet Energy System Model Generator")
@@ -282,9 +295,10 @@ window.geometry('1200x1050')
 tab_control = ttk.Notebook(window)
 tab_control.pack(expand=1, fill='both')
 tab_control.pressed_index = None
-scenario_path = StringVar(window, str(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'scenario_v0.1.1.xlsx')))
+scenario_path = StringVar(window, 'scenario_v0.2.0.xlsx')
 save_path_directory = \
-        StringVar(window, str(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'results')))
+        StringVar(window, str(os.path.join(os.path.dirname(
+                os.path.dirname(__file__)), 'results')))
 save_path = StringVar(window, '')
 num_threads = 2
 
@@ -297,7 +311,7 @@ main_frame = ttk.Frame(window)
 tab_control.add(main_frame, text='Home')
 
 # Headline
-main_head1 = Label(main_frame, text='Selection Options', font='Helvetica 10 bold')
+main_head1 = Label(main_frame, text='Modeling', font='Helvetica 10 bold')
 main_head1.grid(column=0, row=0, sticky="w")
 
 # Erstellung des ersten Element-Blocks
@@ -307,11 +321,144 @@ file_paths = []
 create_main_frame_elements(elements=selection_elements, sheet=main_frame, first_row=1, file_paths=file_paths,
                            frame=main_frame)
 
+
+## TimeSeries Prep Menu
+row = 3
+
+timeseries_algorithm_list = ["none",
+                             "k_means",
+                             "averaging",
+                             "slicing n>=2",
+                             "slicing n<2",
+                             "downsampling n>=2",
+                             "downsampling n<2",
+                             "heuristic selection",
+                             "random sampling"]
+
+timeseries_cluster_values = list(range(1,365))
+
+timeseries_cluster_criteria = ["temperature",
+                               "dhi",
+                               "el_demand_sum",
+                               "heat_demand_sum",]
+
+timeseries_cluster_periods = ["hours",
+                              "days",
+                              "weeks"]
+
+timeseries_cluster_seasons = [4, 12]
+
+column = 0
+Label(main_frame, text='Timeseries Preparation', font='Helvetica 10').grid(column=column, row=row+1,
+                                                   sticky="W")
+
+column = 3
+Label(main_frame, text='Algorithm', font='Helvetica 10').grid(column=column, row=row,sticky="n")
+timeseries_algorithm = StringVar(main_frame)
+timeseries_algorithm.set('none')
+DMenu = OptionMenu(main_frame, timeseries_algorithm, *timeseries_algorithm_list)
+DMenu.grid(column=column, row=row+1)
+
+column = column + 1
+Label(main_frame, text='Index', font='Helvetica 10').grid(column=column, row=row,sticky="n")
+timeseries_cluster = StringVar(main_frame)
+timeseries_cluster.set('none')
+DMenu = OptionMenu(main_frame, timeseries_cluster, *timeseries_cluster_values)
+DMenu.grid(column=column, row=row+1)
+
+column = column + 1
+Label(main_frame, text='Criterion', font='Helvetica 10').grid(column=column, row=row,sticky="n")
+timeseries_criterion = StringVar(main_frame)
+timeseries_criterion.set('none')
+DMenu = OptionMenu(main_frame, timeseries_criterion, *timeseries_cluster_criteria)
+DMenu.grid(column=column, row=row+1)
+
+column = column + 1
+Label(main_frame, text='Period', font='Helvetica 10').grid(column=column, row=row,sticky="n")
+timeseries_period = StringVar(main_frame)
+timeseries_period.set('none')
+DMenu = OptionMenu(main_frame, timeseries_period, *timeseries_cluster_periods)
+DMenu.grid(column=column, row=row+1)
+
+column = column + 1
+Label(main_frame, text='Season', font='Helvetica 10').grid(column=column, row=row,sticky="n")
+timeseries_season = StringVar(main_frame)
+timeseries_season.set('none')
+DMenu = OptionMenu(main_frame, timeseries_season, *timeseries_cluster_seasons)
+DMenu.grid(column=column, row=row+1)
+
+
+############################
+
+# Graph Checkbox
+row = row + 2
+Label(main_frame, text='Show Graph', font='Helvetica 10').grid(column=0, row=row,
+                                                   sticky="W")
+graph_state = IntVar()
+graph_checkbox = Checkbutton(main_frame, variable=graph_state)
+graph_checkbox.grid(column=3, row=row)
+
+# Criterion Switch Checkbox
+row = row +1
+Label(main_frame, text='Switch Criteria', font='Helvetica 10')\
+    .grid(column=0, row=row, sticky="W")
+criterion_state = BooleanVar()
+criterion_checkbox = Checkbutton(main_frame, variable=criterion_state,
+                                 onvalue=True, offvalue=False)
+criterion_checkbox.grid(column=3, row=row)
+
+
+# Solver Selection
+row = row + 1
+solvers = [
+    "cbc",
+    "gurobi",
+]
+Label(main_frame, text='Optimization Solver', font='Helvetica 10')\
+    .grid(column=0, row=row, sticky="W")
+
+solver_select = StringVar(main_frame)
+solver_select.set('gurobi')
+SolverMenu = OptionMenu(main_frame, solver_select, *solvers)
+SolverMenu.grid(column=3, row=row)
+row = row + 1
+
+# result checkboxes
+Label(main_frame, text='Result processing parameters',
+      font='Helvetica 10 bold').grid(column=0, row=row, sticky="W")
+
+# xlsx_checkbox
+row = row + 1
+Label(main_frame, text='Create xlsx-files', font='Helvetica 10')\
+    .grid(column=0, row=row, sticky="W")
+xlsx_select_state = BooleanVar()
+xlsx_checkbox = Checkbutton(main_frame, variable=xlsx_select_state,
+                             onvalue=True, offvalue=False)
+xlsx_checkbox.grid(column=3, row=row)
+# console_checkbox
+row = row + 1
+Label(main_frame, text='Create console-log', font='Helvetica 10')\
+      .grid(column=0, row=row, sticky="W")
+console_select_state = BooleanVar()
+console_checkbox = Checkbutton(main_frame, variable=console_select_state,
+                               onvalue=True, offvalue=False)
+console_checkbox.grid(column=3, row=row)
+# plotly_checkbox
+row = row + 1
+Label(main_frame, text='Create plotly-dash', font='Helvetica 10')\
+      .grid(column=0, row=row, sticky="W")
+plotly_select_state = BooleanVar()
+plotly_checkbox = Checkbutton(main_frame, variable=plotly_select_state,
+                              onvalue=True, offvalue=False)
+plotly_checkbox.grid(column=3, row=row)
+
 # Headline 2
-main_head2 = Label(main_frame, text='Execution Options', font='Helvetica 10 bold')
-main_head2.grid(column=0, row=3 + len(selection_elements), sticky="w")
+row = row + 1
+main_head2 = Label(main_frame, text='Execution', font='Helvetica 10 bold')
+main_head2.grid(column=0, row=row, sticky="w")
 
 # ERstellung des zweiten Element-Blocks
+row = row + 1
 # [Label, function to be executed, name of the button, comment]
 test = StringVar(window)
 execution_elements = {'row2': ['Show Graph', show_graph, 'Execute', ''],
@@ -320,491 +467,46 @@ execution_elements = {'row2': ['Show Graph', show_graph, 'Execute', ''],
                       # 'row7':['End Program',end_program,'End',' '],
                       }
 comments = []
-create_main_frame_elements(elements=execution_elements, sheet=main_frame,
-                           first_row=3 + len(selection_elements),
-                           file_paths=comments, frame=main_frame)
-main_head3 = Label(main_frame, text='Analyzing Options',
+
+create_main_frame_elements(elements=execution_elements, 
+                           sheet=main_frame, 
+                           first_row=row,
+                           file_paths=comments, 
+                           frame=main_frame)
+
+row = row + len(execution_elements)
+main_head3 = Label(main_frame, text='Results',
                        font='Helvetica 10 bold')
-main_head3.grid(column=0, row=7 + len(execution_elements), sticky="w")
+row = row + 1
+main_head3.grid(column=0, row=row, sticky="w")
 analyzing_elements = {'row5': ['Select scenario result folder',
                                getSavePath, 'Change', save_path.get()],
                       'row6': ['Start Plotly', show_results, 'Execute', '']}
 save_paths = []
 create_main_frame_elements(elements=analyzing_elements, sheet=main_frame,
-                           first_row=7 + len(execution_elements),
+                           first_row=row,
                            file_paths=save_paths, frame=main_frame)
 
-############
-# DEMO FRAME
-############
-import pandas as pd
-import openpyxl
-import matplotlib as mlp
-import matplotlib.pyplot as plt
-import numpy as np
-from threading import *
-#from program_files.Spreadsheet_Energy_System_Model_Generator import SESMG_DEMO
+###################
+# Upscaling Frame #
+###################
+upscaling_frame = ttk.Frame(window)
+upscaling_frame1 = urban_district_upscaling_GUI.upscaling_frame_class(window, tab_control, upscaling_frame)
 
-
-monetary_costs = StringVar()
-monetary_costs.set('--')
-
-emission_costs = StringVar()
-emission_costs.set('--')
-
-results_dict = {}
-
-def execute_sesmg_DEMO(demo_file, demo_results):
-    """ Excecutes the optimization algorithm """
-    print(demo_file)
-    print(demo_results)
-
-    # if scenario_path.get() != "No scenario selected.":
-    #    scenario_file = scenario_path.get()
-    if sys.platform.startswith("win"):
-        result_path = os.path.join(os.path.dirname(__file__) + demo_results)
-        demo_path = os.path.join(os.path.dirname(__file__) + demo_file)
-    elif sys.platform.startswith('darwin'):
-        result_path = os.path.dirname(os.path.abspath(__file__))
-        result_path = result_path + demo_results
-    elif sys.platform.startswith("linux"):
-        result_path = os.path.dirname(os.path.abspath(__file__))
-        result_path = result_path + demo_results
-        subprocess.call("chmod +x " + result_path, shell=True)
-    # scenario_file = 'scenario.xlsx'
-    # SESMG_DEMO(scenario_file=scenario_file, result_path=result_path)
-    sesmg_main(scenario_file=demo_path,
-          result_path=result_path,
-          graph=False,
-          results=False,
-          plotly=True)
-    # show_results()
-    # else:
-    #     print('Please select scenario first!')
-    #     comments[2].configure(text='Please select scenario first!')
-
-def monetary_demo_scenario():
-    '''modifies financial demo scenario'''
-
-
-    xfile = openpyxl.load_workbook('examples/v0.0.6_demo_scenario/demo_scenario_monetaer.xlsx')
-
-    # WINDPOWER
-    sheet = xfile["sources"]
-    sheet['H2'] = (int(entry_values['windpower'].get()))
-    sheet['I2'] = (int(entry_values['windpower'].get()))
-    # PHOTOVOLTAICS
-    sheet = xfile["sources"]
-    sheet['H3'] = (int(entry_values['photovoltaics'].get()))
-    sheet['I3'] = (int(entry_values['photovoltaics'].get()))
-    # BATTERY
-    sheet = xfile["storages"]
-    sheet['F2'] = (int(entry_values['battery'].get()))
-    sheet['G2'] = (int(entry_values['battery'].get()))
-    # CHP
-    sheet = xfile["transformers"]
-    sheet['N3'] = (int(entry_values['chp'].get()))
-    sheet['O3'] = (int(entry_values['chp'].get()))
-    # THERMAL STORAGE
-    sheet = xfile["storages"]
-    sheet['F3'] = (int(entry_values['thermal storage'].get()))
-    sheet['G3'] = (int(entry_values['thermal storage'].get()))
-    # District Heating
-    sheet = xfile["links"]
-    sheet['C2'] = (int(entry_values['district heating'].get()))
-
-    xfile.save('results/demo/financial/scenario.xlsx')
-    execute_sesmg_DEMO(demo_file=r"/results/demo/financial/scenario.xlsx",
-                       demo_results=r"/results/demo/financial")
-
-    df_summary = pd.read_csv(r"results/demo/financial/summary.csv")
-    # monetary_costs = float(df_summary['Total System Costs'])
-    monetary_costs.set(str(round(float(df_summary['Total System Costs']/1000000),2)))
-    window.update_idletasks()
-
-def emission_demo_scenario():
-    '''modifies financial demo scenario'''
-
-    xfile = openpyxl.load_workbook('examples/v0.0.6_demo_scenario/demo_scenario_emissionen.xlsx')
-
-    # WINDPOWER
-    sheet = xfile["sources"]
-    sheet['H2'] = (int(entry_values['windpower'].get()))
-    sheet['I2'] = (int(entry_values['windpower'].get()))
-    # PHOTOVOLTAICS
-    sheet = xfile["sources"]
-    sheet['H3'] = (int(entry_values['photovoltaics'].get()))
-    sheet['I3'] = (int(entry_values['photovoltaics'].get()))
-    # BATTERY
-    sheet = xfile["storages"]
-    sheet['F2'] = (int(entry_values['battery'].get()))
-    sheet['G2'] = (int(entry_values['battery'].get()))
-    # CHP
-    sheet = xfile["transformers"]
-    sheet['N3'] = (int(entry_values['chp'].get()))
-    sheet['O3'] = (int(entry_values['chp'].get()))
-    # THERMAL STORAGE
-    sheet = xfile["storages"]
-    sheet['F3'] = (int(entry_values['thermal storage'].get()))
-    sheet['G3'] = (int(entry_values['thermal storage'].get()))
-    # District Heating
-    sheet = xfile["links"]
-    sheet['C2'] = (int(entry_values['district heating'].get()))
-
-    xfile.save('results/demo/emissions/scenario.xlsx')
-    execute_sesmg_DEMO(demo_file='/results/demo/emissions/scenario.xlsx',
-                       demo_results='/results/demo/emissions')
-
-    df_summary = pd.read_csv(r"results/demo/emissions/summary.csv")
-
-    emission_costs.set(str(round(float(df_summary['Total System Costs'])/1000000,0)))
-    window.update_idletasks()
-
-def simulate_scenario():
-
-    for i in range(len(entry_values)):
-        print(demo_names[i] + ': ' + entry_values[demo_names[i]].get() + ' ' + demo_unit[demo_names[i]])
-
-    t_monetary = Thread(target=monetary_demo_scenario(), args=())
-    t_emission = Thread(target=emission_demo_scenario(), args=())
-
-    t_monetary.start()
-    t_emission.start()
-
-    t_monetary.join()
-    t_emission.join()
-
-    # monetary_demo_scenario()
-    # emission_demo_scenario()
-
-def include_optimized_scenarios():
-    results_dict['Status Quo'] = [8.2594606, 18521.2, 0, 0, 0, 0, 0, 0]
-    results_dict['Financial Minimum'] = [1.310668, 14400.430112, 29700, 10000, 0, 0, 0, 0]
-    results_dict['Emission Minimum'] = [9.825963, 12574.7, 5526, 644, 29680, 2769, 0, 10000]
-
-def save_results():
-
-    interim_results = [float(monetary_costs.get()),
-                       float(emission_costs.get()),]
-
-    for i in range(1, len(entry_values)):
-        interim_results.append(int(entry_values[demo_names[i]].get()))
-
-    results_dict[entry_values[demo_names[0]].get()] = interim_results
-    print(results_dict)
-
-
-
-def save_manual_results():
-    interim_results2 = [float(entry_monetary_costs_value.get()),
-                        float(entry_emission_costs_value.get()),]
-
-    for i in range(1, len(entry_values)):
-        interim_results2.append(int(entry_values2[demo_names2[i]].get()))
-
-    results_dict[entry_values2[demo_names2[0]].get()] = interim_results2
-    print(results_dict)
-
-def plot_results_scatter():
-
-    plt.xlabel('Mio. EUR/a')
-    plt.ylabel('t/a')
-
-    keys = list(results_dict.keys())
-    print(keys)
-    values = list(results_dict.values())
-    print(values)
-
-    for i in range(len(results_dict)):
-        plt.scatter(values[i][0],values[i][1],label=keys[i])
-
-    plt.legend()
-    # fig2.tight_layout()
-    plt.show()
-
-def plot_results_bar():
-    import matplotlib
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    from matplotlib.figure import Figure
-    from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
-                                                   NavigationToolbar2Tk)
-
-
-    # the figure that will contain the plot
-    fig = Figure(figsize=(5, 5),dpi=100)
-
-
-    labels = list(demo_components.keys())
-    labels.pop(0)
-
-    scenario_names = list(results_dict.keys())
-    print(scenario_names)
-
-    scenarios = []
-    scenario_data = list(results_dict.values())
-    print(scenario_data)
-
-    for i in range(len(scenario_data)):
-        test_list = scenario_data[i][:]
-        test_list.pop(0)
-        test_list.pop(0)
-        scenarios.append(test_list)
-
-
-
-    print(scenarios)
-
-    x = np.arange(len(labels))  # the label locations
-    width = 0.5/len(scenarios)  # the width of the bars
-
-    fig, ax = plt.subplots()
-
-    bars = []
-    for i in range(len(scenarios)):
-        bars.append(ax.bar(x + width*i, scenarios[i], width, label=scenario_names[i]))
-
-    # Add some text for labels, title and custom x-axis tick labels, etc.
-    ax.set_ylabel('Capacity')
-    ax.set_title('Scenarios')
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels)
-    ax.legend()
-
-    fig.tight_layout()
-
-    plt.show()
-
-
-# Definition of the DEMO-Frames
-# main_frame = ttk.Frame(tab_control)
+##############
+# DEMO Frame #
+##############
 demo_frame = ttk.Frame(window)
-tab_control.add(demo_frame, text='DEMO')
-
-
-
-# DEMO explanation
-
-row = 0
-explanation = '''DEMO-Energy System: In this DEMO the financial costs and carbon dioxide emissions of a residential area are simulated. For improvement, the technologies 
-                 listed below are available with the parameters below. The simulated scenarios can be compared with the status quo, the financial minimum and the emission minimum.          
-                 '''
-
-label_explanation = Label(demo_frame, text=explanation, font=('Helvetica 10 bold'))
-label_explanation.grid(column=0, columnspan=7, row=row)
-
-row = row + 1
-label_monetary_costs = Label(demo_frame, text='Simulation Input', font=('Helvetica 10 bold'))
-label_monetary_costs.grid(column=1, row=row)
-label_monetary_costs = Label(demo_frame, text='Manual Result Input', font=('Helvetica 10 bold'))
-label_monetary_costs.grid(column=5, row=row)
-
-
-demo_components = {"name":'name',
-                   "windpower":'0',
-                   "photovoltaics":'0',
-                   "battery":'0',
-                   "chp":'0',
-                   "thermal storage":'0',
-                   "district heating":'0'}
-
-demo_unit = {"name":'',
-               "windpower":'kW',
-               "photovoltaics":'kW',
-               "battery":'kWh',
-               "chp":'kW (el.)',
-               "thermal storage":'kWh',
-               "district heating":'True (1) / False (0)'}
-
-row = row + 1
-demo_names = list(demo_components.keys())
-demo_values = list(demo_components.values())
-entry_values = {}
-
-# Erstellt Eingabefelder für alle variierbaren componenten.
-for i in range(len(demo_components)):
-    column = 0
-
-    # Defines Label
-    label_name = Label(demo_frame, text=demo_names[i], font=('Helvetica 10'))
-    label_name.grid(column=column, row=row, sticky="W")
-    column = column + 1
-
-    # Defines Entry Field
-    entry_values[demo_names[i]] = StringVar()
-    entry_values[demo_names[i]].set(demo_values[i])
-    entry_values[demo_names[i]] = Entry(demo_frame, text=str(entry_values[demo_names[i]]))
-    entry_values[demo_names[i]].grid(column=column, row=row)
-    column = column + 1
-
-    # Defines Unit
-    label_name = Label(demo_frame, text=demo_unit[demo_names[i]], font=('Helvetica 10'))
-    label_name.grid(column=column, row=row, sticky="W")
-
-    row = row + 1
-
-
-# EXECUTION BUTTONS
-# row = row + 1
-Button(demo_frame, text='SIMULATE', command=simulate_scenario).grid(column=1, row=row, pady=4)
-
-# RESULTS
-row = row + 2
-label_monetary_costs = Label(demo_frame, text='RESULTS', font=('Helvetica 10'))
-label_monetary_costs.grid(column=0, row=row, sticky="W")
-
-row = row + 1
-label_monetary_costs = Label(demo_frame, text='Monetary Costs: ', font=('Helvetica 10'))
-label_monetary_costs.grid(column=0, row=row, sticky="W")
-
-label_monetary_costs_value = Label(demo_frame, textvariable=monetary_costs, font=('Helvetica 10'))
-label_monetary_costs_value.grid(column=1, row=row, sticky="W")
-
-label_monetary_unit = Label(demo_frame, text=' Mio. EUR/a', font=('Helvetica 10'))
-label_monetary_unit.grid(column=2, row=row, sticky="W")
-
-row = row + 1
-label_emission_costs = Label(demo_frame, text='CO2 Emissions: ', font=('Helvetica 10'))
-label_emission_costs.grid(column=0, row=row, sticky="W")
-label_emission_costs_value = Label(demo_frame, textvariable=emission_costs, font=('Helvetica 10'))
-label_emission_costs_value.grid(column=1, row=row, sticky="W")
-label_emission_unit = Label(demo_frame, text=' t/a', font=('Helvetica 10'))
-label_emission_unit.grid(column=2, row=row, sticky="W")
-
-# EXECUTION BUTTONS
-row = row + 1
-Button(demo_frame, text='SAVE', command=save_results).grid(column=1, row=row, sticky=W, pady=4)
-
-for i in range(15):
-    label_placeholder = Label(demo_frame, text=' || ', font=('Helvetica 10'))
-    label_placeholder.grid(column=3, row=i+1)
-
-
-row = 2
-demo_names2 = list(demo_components.keys())
-demo_values2 = list(demo_components.values())
-entry_values2 = {}
-
-# Erstellt Eingabefelder für alle variierbaren componenten.
-for i in range(len(demo_components)):
-    column = 4
-
-    # Defines Label
-    label_name = Label(demo_frame, text=demo_names2[i], font=('Helvetica 10'))
-    label_name.grid(column=column, row=row, sticky="W")
-    column = column + 1
-
-    # Defines Entry Field
-    entry_values2[demo_names2[i]] = StringVar()
-    entry_values2[demo_names2[i]].set(demo_values2[i])
-    entry_values2[demo_names2[i]] = Entry(demo_frame, text=str(entry_values2[demo_names2[i]]))
-    entry_values2[demo_names2[i]].grid(column=column, row=row)
-    column = column + 1
-
-    # Defines Unit
-    label_name = Label(demo_frame, text=demo_unit[demo_names2[i]], font=('Helvetica 10'))
-    label_name.grid(column=column, row=row, sticky="W")
-
-    row = row + 1
-
-# RESULTS
-
-
-
-row = row + 2
-label_monetary_costs = Label(demo_frame, text='RESULTS', font=('Helvetica 10'))
-label_monetary_costs.grid(column=4, row=row, sticky="W")
-
-row = row + 1
-label_monetary_costs_2 = Label(demo_frame, text='Monetary Costs', font=('Helvetica 10'))
-label_monetary_costs_2.grid(column=0+4, row=row, sticky="W")
-
-entry_monetary_costs_value= IntVar()
-entry_monetary_costs_value.set(0)
-entry_monetary_costs_value = Entry(demo_frame, text=str(entry_monetary_costs_value))
-entry_monetary_costs_value.grid(column=1+4, row=row)
-
-label_monetary_unit_2 = Label(demo_frame, text=' Mio. EUR/a', font=('Helvetica 10'))
-label_monetary_unit_2.grid(column=2+4, row=row, sticky="W")
-
-row = row + 1
-
-label_emission_costs_2 = Label(demo_frame, text='CO2 Emissions', font=('Helvetica 10'))
-label_emission_costs_2.grid(column=0+4, row=row, sticky="W")
-
-entry_emission_costs_value= IntVar()
-entry_emission_costs_value.set(0)
-entry_emission_costs_value = Entry(demo_frame, text=str(entry_emission_costs_value))
-entry_emission_costs_value.grid(column=1+4, row=row)
-
-label_emission_unit_2 = Label(demo_frame, text=' t/a', font=('Helvetica 10'))
-label_emission_unit_2.grid(column=2+4, row=row, sticky="W")
-
-#
-#
-# EXECUTION BUTTONS
-row = 14
-Button(demo_frame, text='SAVE', command=save_manual_results).grid(column=1+4, row=row, pady=4)
-row = row + 1
-label_line = Label(demo_frame, text=14*'===========', font=('Helvetica 10'))
-label_line.grid(column=0, row=row, columnspan=7)
-row = row + 1
-Button(demo_frame, text='SCATTER PLOT', command=plot_results_scatter).grid(column=2, row=row, pady=4)
-Button(demo_frame, text='BAR PLOT', command=plot_results_bar).grid(column=4, row=row, pady=4)
-Button(demo_frame, text='Include Optimized Scenarios', command=include_optimized_scenarios).grid(column=3, row=row, pady=4)
-row = row + 1
-label_line = Label(demo_frame, text=14*'===========', font=('Helvetica 10'))
-label_line.grid(column=0, row=row, columnspan=7)
-
-row = row + 1
+demo_frame1 = demo_tool.demo_frame_class(window, tab_control, demo_frame)
+# add picture
 if sys.platform.startswith("win"):
     img = PhotoImage(
-        file='examples/v0.0.6_demo_scenario/DEMO_System.png')
-elif sys.platform.startswith("linux"):
-
-    img = PhotoImage(file=
-                     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                     + '/examples/v0.0.6_demo_scenario/DEMO_System.png')
+        file='program_files/Demo_Tool/v0.0.6_demo_scenario/DEMO_System.png')
 else:
-    img = PhotoImage(file=
-                     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                     + '/examples/v0.0.6_demo_scenario/DEMO_System.png')
+    img = PhotoImage(file=os.path.dirname(os.path.abspath(__file__))
+                     + '/Demo_Tool/v0.0.6_demo_scenario/DEMO_System.png')
 img = img.subsample(2, 2)
-panel = Label(demo_frame, image = img)
-panel.grid(column=0,columnspan=4, row=row, rowspan=30)
-
-# panel.pack(side = "bottom", fill = "both", expand = "yes")
-
-
-demo_assumptions = {'Electricity Demand':'14 000 000 kWh/a, h0 Load Profile',
-                    'Heaty Demand':'52 203 000 kWh/a, EFH Load Profile',
-                    'Windturbines':'2 000 000 €/MW, 8 g/kWh, 20 a, max. 29.7 MW',
-                    'Photovoltaics':'1 140 000 €/MW, 56 g/kWh, 20 a, max. 10 MW',
-                    'Battery':'1 000 000 €/MWh, 155 t/MWh (Invest!), 20 a',
-                    'CHP':'190 000 €/MWh (el.), 375 g/kWh (el), 165 g/kWh (th.), 20 a',
-                    'Thermal Storage':'35 000 €/MWh, 46 g/kWh, 20 a, 3 % loss /d',
-                    'district heating':'86 000 000 €, 15 % loss, 40 a',
-                    'Gas Import/Heating':'6.4 ct/kWh (gas), 85 % efficiency, 45.62 g/kWh',
-                    'Electricity Import':'30.5 ct/kWh, 474 g/kWh'
-                    }
-
-
-assumption_keys = list(demo_assumptions.keys())
-assumption_values = list(demo_assumptions.values())
-
-# row = row + 1
-rowcount = 0
-column = 4
-
-for i in range(len(demo_assumptions)):
-
-    label = Label(demo_frame, text=assumption_keys[i], font=('Helvetica 10 bold'))
-    label.grid(column=column, row=row, sticky="W")
-
-    label = Label(demo_frame, text=assumption_values[i], font=('Helvetica 10'))
-    label.grid(column=column+1, columnspan=2, row=row, sticky="W")
-
-    row = row + 1
+lab = Label(master=demo_frame,image=img)\
+        .grid(column=0, columnspan=4, row=19, rowspan=40)
 
 window.mainloop()

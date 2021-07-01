@@ -1,49 +1,38 @@
 from graphviz import Digraph
 import os
 
+def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
+    """
+        Visualizes the energy system as graph.
 
-def create_graph(filepath, nodes_data, legend=False):
-    """Visualizes the energy system as graph.
+        Creates, using the library Graphviz, a graph containing all
+        components and connections from "nodes_data" and returns this as
+        a PNG file.
 
-    Creates, using the library Graphviz, a graph containing all
-    components and connections from "nodes_data" and returns this as a
-    PNG file.
+        :param filepath: path where the PNG-result shall be saved
+        :type filepath: str
+        :param nodes_data: dictionary containing data from excel
+                           scenario file.
+        :type nodes_data: dict
+        :param legend: specifies, whether a legend will be added to the
+                       graph or not
+        :type legend: bool
 
-    ----
-
-    Keyword arguments:
-
-        filepath : obj:'str'
-          -- path, where the PNG-result shall be saved
-
-        nodes_data : obj:'dict'
-           -- dictionary containing data from excel scenario file.
-
-        legend : obj:'bool'
-          -- specifies, whether a legend will be added to the graph or
-             not
-
-    ----
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 14.04.2020
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
     
-    def linebreaks(text):
-        """Adds linebreaks a given string.
+    def linebreaks(text: str):
+        """
+            Adds linebreaks a given string.
 
-         Function which adds a line break to strings every ten
-         characters. Up to four strings are added.
+            Function which adds a line break to strings every ten
+            characters. Up to four strings are added.
 
-         ----
+            :param text: string to which line breaks will be added
+            :type text: str
 
-        Keyword arguments:
-
-            text : obj:'str'
-              -- string to which line breaks will be added
-
-        ----
-        @ Christian Klemm - christian.klemm@fh-muenster.de, 14.04.2020
-
-         """
+            Christian Klemm - christian.klemm@fh-muenster.de
+        """
         text_length = len(text)
         if text_length > 10:
             text = str(text[0:9] + "-\n" + text[9:])
@@ -62,24 +51,19 @@ def create_graph(filepath, nodes_data, legend=False):
     dot = Digraph(format='png')
     # Creates a Legend if Legend = True
     if legend:
-        component = ['Bus', 'Source', 'Sink', 'Transformer\nLinks', 'Storage']
         shape = {'Bus': ['ellipse'], 'Source': ['trapezium'],
                  'Sink': ['invtrapezium'], 'Transformer\nLinks': ['box'],
                  'Storage': ['box']}
-        for i in component:
+        for i in shape.keys():
             dot.node(i, shape=shape[i][0], fontsize="10", fixedsize='shape',
                      width='1.1', height='0.6',
                      style='dashed' if i == 'Storage' else '')
-    components = ["buses", "sources", "demand", "transformers", "storages",
-                  "links"]
-    shapes = {'sources': ['trapezium'], 'demand': ['invtrapezium'],
+    shapes = {'sources': ['trapezium'], 'sinks': ['invtrapezium'],
               'transformers': ['box'], 'storages': ['box'],
               'links': ['box']}
-    bus = {'buses': ['label'], 'sources': ['output'], 'demand': ['input'],
-           'transformers': ['input'], 'storages': ['bus'], 'links': ['bus_1']}
-    # sets checklist for fill in variables
-    checklist = ['X', 'x', '', '0', 'None', 'none', 'nan']
-    for i in components:
+    bus = {'buses': ['label'], 'sources': ['output'], 'sinks': ['input'],
+           'transformers': ['input'], 'storages': ['bus'], 'links': ['bus1']}
+    for i in bus.keys():
         for j, b in nodes_data[i].iterrows():
             if b['active']:
                 # sets component label
@@ -96,7 +80,8 @@ def create_graph(filepath, nodes_data, legend=False):
                              style='dashed' if i == 'storages' else '')
                     if i == 'sources':
                         # Creates graph elements for solar heat
-                        if str(b['input']) not in checklist:
+                        if b['technology'] == "solar_thermal_flat_plate" or \
+                                b['technology'] == "CSP":
                             # creates additional transformer
                             transformer = b['label'] + '_collector'
                             transformer = linebreaks(transformer)
@@ -105,10 +90,9 @@ def create_graph(filepath, nodes_data, legend=False):
                                      height='0.6')
                             # creates additional bus
                             c_bus = b['label'] + '_bus'
-                            c_bus = linebreaks(c_bus)
+                            c_bus=linebreaks(c_bus)
                             dot.node(c_bus, shape='ellipse', fontsize="10")
-                            # Adds edge for transformer, source and bus to the
-                            # graph
+                            # Adds edge for transformer, source and bus to the graph
                             dot.edge(b['input'], transformer)
                             dot.edge(c_bus, transformer)
                             dot.edge(transformer, b['output'])
@@ -124,28 +108,29 @@ def create_graph(filepath, nodes_data, legend=False):
                 # creates bus nodes
                 dot.node(b[bus[i][0]], shape='ellipse', fontsize="10")
                 if i == 'links':
-                    dot.node(b['bus_2'], shape='ellipse')
+                    dot.node(b['bus2'], shape='ellipse')
                 # creates edges
-                if i == 'demand' or i == 'storages' or i == 'links' \
+                if i == 'sinks' or i == 'storages' or i == 'links' \
                         or (i == 'buses' and b['excess']
                             and not b['shortage']):
                     dot.edge(b[bus[i][0]], label)
-                if (i == 'sources' and str(b['input']) in checklist) \
+                if (i == 'sources' and (b['technology'] not in
+                                        ["solar_thermal_flat_plate", "CSP"])) \
                         or i == 'storages' or (i == 'buses' and b['shortage']):
                     dot.edge(label, b[bus[i][0]])
                 if i == 'links':
-                    dot.edge(label, b['bus_2'])
+                    dot.edge(label, b['bus2'])
                     if b['(un)directed'] == 'undirected':
-                        dot.edge(b['bus_2'], label)
-                        dot.edge(label, b['bus_1'])
+                        dot.edge(b['bus2'], label)
+                        dot.edge(label, b['bus1'])
                 elif i == 'transformers':
                     dot.node(b['output'], shape='ellipse', fontsize="10")
                     dot.edge(b[bus[i][0]], label)
                     dot.edge(label, b['output'])
-                    if b['output2'] != "None":
+                    if b['output2'] not in [0, 'None', 'none']:
                         dot.node(b['output2'], shape='ellipse', fontsize="10")
                         dot.edge(label, b['output2'])
-                    if str(b['mode']) not in checklist:
+                    if b['transformer type'] == 'compression_heat_transformer':
                         # consideration of mode of operation
                         if b['mode'] == 'heat_pump':
                             temp = '_low_temp'
@@ -158,7 +143,7 @@ def create_graph(filepath, nodes_data, legend=False):
                         cmpr_abs_source = linebreaks(cmpr_abs_source)
                         cmpr_abs_bus = linebreaks(cmpr_abs_bus)
                         # Adds a second input and a heat source (node and edge)
-                        # for compression and absorption heat transformers
+                        # for compressionand absorption heat transformers
                         dot.node(cmpr_abs_bus,
                                  shape='ellipse',
                                  fontsize="10")
@@ -175,4 +160,4 @@ def create_graph(filepath, nodes_data, legend=False):
                                  fixedsize='shape', width='1.1', height='0.6')
                         dot.node(b[bus[i][0]], shape='ellipse', fontsize="10")
                         dot.edge(b[bus[i][0]], label)
-    dot.render(filepath + '/graph.gv', view=True)
+    dot.render(filepath + '/graph.gv', view=show)

@@ -2,7 +2,7 @@ Structure of Energy Systems
 *************************************************
 
 Energy systems in the sense of the Spreadseet Energy System Model Generator are designed according to the 
-specifications of the `oemof <https://oemof.readthedocs.io/en/stable/index.html>`_ library. Accordingly, 
+specifications of the `oemof <https://oemof.org>`_ library. Accordingly, 
 energy systems can be represented with the help of mathematical graph theory. Thus, energy systems are 
 exemplified as "graphs" consisting of sets of "vertices" and "edges". In more specific terms, vertices 
 stand for components and buses while directed edges connect them. The status variable of the energy flow 
@@ -48,7 +48,7 @@ Sources
 =================================================
 
 Sources represent the provision of energy. This can either 
-be the exploitation of of an energy source (e.g. 
+be the exploitation of an energy source (e.g. 
 gas storage reservoir or solar energy, no energy source in 
 physical sense), or the simplified energy import from 
 adjacent energy systems. While some sources may have 
@@ -90,29 +90,29 @@ module. The amount of
 the reflected part depends on the magnitude of the albedo of the ground material. Exemplary albedo values are
 listed in the following table.
 
-+---------------------------+--------------------------------+
-| Material 					| Consumer Group                 |
-+===========================+================================+
-|   herbage (july, august)	| 0.25                           |
-+---------------------------+--------------------------------+
-|   pasture		   			| 0.18 - 0.23                    |
-+---------------------------+--------------------------------+
-|   uncoppied fields	   	| 0.26            		         |
-+---------------------------+--------------------------------+
-|   woods   				| 0.05 - 0.18 					 |
-+---------------------------+--------------------------------+
-|   heath area 		  		| 0.10 - 0.25                    |
-+---------------------------+--------------------------------+
-|   asphalt   				| 0.15                           |
-+---------------------------+--------------------------------+
-|   concrete, clean   		| 0.30                           |
-+---------------------------+--------------------------------+
-|   concrete, weathered		| 0.20                           |
-+---------------------------+--------------------------------+
-|   snow cover, fresh   	| 0.80 - 0.90                    |
-+---------------------------+--------------------------------+
-|   snow cover, old     	| 0.45 - 0.70                    |
-+---------------------------+--------------------------------+
++----------------------------+------------------+
+| Material                   | Consumer Group   |
++============================+==================+
+| herbage (july, august)     | 0.25             |
++----------------------------+------------------+
+| pasture                    | 0.18 - 0.23      |
++----------------------------+------------------+
+| uncoppied fields           | 0.26             |
++----------------------------+------------------+
+| woods                      | 0.05 - 0.18      |
++----------------------------+------------------+
+| heath area                 | 0.10 - 0.25      |
++----------------------------+------------------+
+| asphalt                    | 0.15             |
++----------------------------+------------------+
+| concrete, clean            | 0.30             |
++----------------------------+------------------+
+| concrete, weathered        | 0.2              |
++----------------------------+------------------+
+| snow cover, fresh          | 0.80 - 0.90      |
++----------------------------+------------------+
+| snow cover, old            | 0.45 - 0.70      |
++----------------------------+------------------+
 
 **Wind Turbines**
 
@@ -292,23 +292,23 @@ In addition, the location of the building and whether the building is located
 in a "windy" or "non-windy" area are taken into account for the application 
 of heat standard load profiles. The following location classes may be considered:
 
+.. _`building classes`:
 
-+----------+--------------------------------------------------------------------------------+
-| Category | Building Location                                             					|
-+==========+================================================================================+
-| 11       | Germany, nationwide                                           					|
-+----------+--------------------------------------------------------------------------------+
-| 1        | Bremen                                                       					|
-+----------+--------------------------------------------------------------------------------+
-| 2        | Hamburg, Saarland                                            					|
-+----------+--------------------------------------------------------------------------------+
-| 3        | Berlin , Hessen, Lower Saxony, North Rhine-Westphalia         					|
-+----------+--------------------------------------------------------------------------------+
-| 4        | Baden-Württemberg, Rhineland-Paatinate, Schleswig-Holstein, Saxony 			|
-+----------+--------------------------------------------------------------------------------+
-| 5        | Brandenburg, Bavaria, Mecklenburg-Western Pomerania, Saxony-Anhalt, Thuringia 	|
-+----------+--------------------------------------------------------------------------------+
-
++-----------+-------------------------------------------------------------------------------+
+| Category  | Building Location                                                             |
++===========+===============================================================================+
+| 11        | Germany, nationwide                                                           |
++-----------+-------------------------------------------------------------------------------+
+| 1         | Bremen                                                                        |
++-----------+-------------------------------------------------------------------------------+
+| 2         | Hamburg, Saarland                                                             |
++-----------+-------------------------------------------------------------------------------+
+| 3         | Berlin , Hessen, Lower Saxony, North Rhine-Westphalia                         |
++-----------+-------------------------------------------------------------------------------+
+| 4         | Baden-Württemberg, Rhineland-Paatinate, Schleswig-Holstein, Saxony            |
++-----------+-------------------------------------------------------------------------------+
+| 5         | Brandenburg, Bavaria, Mecklenburg-Western Pomerania, Saxony-Anhalt, Thuringia |
++-----------+-------------------------------------------------------------------------------+
 
 **Stochastic Load Profiles (Richardson Tool)**
 
@@ -408,7 +408,7 @@ Links can be used to connect two buses or to display transport losses of
 networks. Links are not represented by a separate oemof class, they are
 rather represented by transformers. In order to map a loss-free
 connection between two buses, an efficiency of 1 is used. If a link is
-undirected, a separate transformer must be used for each direction. 
+undirected, a separate transformer is used for each direction. 
 In an energy system, links can represent, for
 example, electrical powerlines, gas pipelines, district heating
 distribution networks or similar.
@@ -435,7 +435,10 @@ The investment method can be applied to any new component to be built. In additi
 the maximum installable capacity needs to be known. Further, the periodic costs need to be assigned to the investment
 costs. The periodic costs refer to the defined time horizon. If the time horizon is one year, the periodical costs
 correspond to the annualized capital costs of an investment.
-**Non-Convex-Investments:** While a linear programming approach is used for normal investment decisions, a mixed
+
+Non-Convex-Investments
+---------------------------
+While a linear programming approach is used for normal investment decisions, a mixed
 integer variable is defined for non-convex investment decisions. The model can thus decide, for example, whether
 a component should be implemented FULL or NOT. Mixed-integer variables increase the computational effort
 significantly and should be used with caution.

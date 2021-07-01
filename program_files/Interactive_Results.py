@@ -10,7 +10,7 @@ The HTML-Page consists the following elements:
     - table (1) summarizing the modelling results
     - table (2) summarizing every component of the model
     - drop down menu, where the user can select which timeseries should
-        be displayed in the following graph.
+      be displayed in the following graph.
     - graph, where the timeseries' of all components can be displayed
     
 """
@@ -27,10 +27,15 @@ from dash_canvas import DashCanvas
 import io
 from PIL import Image
 import sys
-result_path_import = sys.argv[1]
-if sys.platform.startswith("win"):
-    result_path_import = result_path_import[1:]
+if sys.argv[1] != "-T":
+    result_path_import = sys.argv[1]
+    if sys.platform.startswith("win"):
+        result_path_import = result_path_import[1:]
+# necessary for Sphinx documentation
+else: 
+    result_path_import = "../results"
 
+    
 def return_component_value(componentid, table):
     """Returns data for the graph.
     
@@ -38,13 +43,10 @@ def return_component_value(componentid, table):
     depending from which components have been selected within the
     drop-down menu.
     
-    ----
-    Keyword arguments:
-        componentid: obj:'str'
-            -- id of selected component to be shown
-            
-        table: ob:'DataFrame'
-            -- table of optimised timeseries
+    :param componentid: 
+    :type componentid: str
+    :param table:
+    :type table: pandas Dataframe
     """
         
     values = table[componentid].tolist()
@@ -145,7 +147,9 @@ demo_app.layout = html.Div(
                             'textOverflow': 'ellipsis', }),
         # Creates the Sub-Headline
         html.Div(
-                children=[html.Div("-"),
+                children=[html.Div("capacity/kW - means the ouput capacity of "
+                                   "output1 for all components except "
+                                   "storages"),
                           html.Div("-"),
                           html.Div("-"), ]),
         # Defines a field, where all selected elements of the following

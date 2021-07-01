@@ -3,7 +3,7 @@ Installation
 
 .. warning:: 
 
-	Warning! The installation has only been tested using Python 3.7.6 (64 bit)! Python 3.8 is currently not supported.
+	Warning! The installation has only been tested using Python 3.7.6 (64 bit)! Python 3.8 or newer is currently not supported.
 
 Windows
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -75,6 +75,10 @@ MacOS
 
 3. Extract the .zip folder into any directory on the computer.
 
+.. note:: 
+
+	If your device does not have homebrew installed, install it by typing ``/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`` in your terminal.
+	
 4. Excecute the "MacOS_installation.command" file.
 
 5. The Spreadsheet Energy System Model Generator has been installed.
@@ -88,7 +92,15 @@ Linux
 .. note:: 
 	
 	Make sure that the alias python3 is set to Python3.7.x.
-	If not use update-alternatives to change it.
+	If not use update-alternatives to change it and test ist afterwards.
+	
+1.1 Update alternatives:
+
+``$ sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 2``
+
+1.2 Testing:
+
+``$ python3 --version``
 	 
 2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/chrklemm/SESMG/tree/master>`_ as .zip folder.
 
@@ -110,7 +122,9 @@ Linux
 
 ``$ sudo apt-get install coinor-cbc``
 	
-8. Execute the "Linux_installtion.sh" file.
+8. Execute the "Linux_installtion.sh" file. By first going to the path of the SESMG directory and then running the following:
+
+``$ sudo sh Linux_installation.sh``
 
 9. The Spreadsheet Energy System Model Generator has been installed.
 

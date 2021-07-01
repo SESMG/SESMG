@@ -1,5 +1,5 @@
 @echo ################################
-@echo Building the Virtual Enviroment 
+@echo Building the Virtual Enviroment
 @echo File path: %~dp0
 @echo ################################
 
@@ -28,6 +28,7 @@ pip install pydot==1.4.1
 pip install graphviz==0.13.2
 pip install xlrd==1.2.0
 pip install Pyomo==5.7.1
+pip install xlsxwriter
 
 @echo ######################
 @echo Installation completed

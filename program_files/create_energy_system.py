@@ -1,42 +1,40 @@
 # -*- coding: utf-8 -*-
-"""Functions for creating an oemof energy system.
----
-@ Christian Klemm - christian.klemm@fh-muenster.de, 27.01.2020
+"""
+    Functions for creating an oemof energy system.
+
+    Christian Klemm - christian.klemm@fh-muenster.de
 """
 import os
 import pandas as pd
 import logging
 
 
-def import_scenario(filepath):
-    """Imports data from a spreadsheet scenario file. 
-    
-    The excel sheet has to contain the following sheets:
-        - energysystem
-        - buses
-        - transformers
-        - sinks
-        - sources
-        - storages
-        - powerlines
-        - time_series
-
-    ----    
-        
-    Keyword arguments:
-        filepath : obj:'str'
-            -- path to excel scenario file
-
-    ----
-    
-    Returns:
-       nodes_data : obj:'dict'
-           -- dictionary containing data from excel scenario file
-
-    ----   
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+def import_scenario(filepath: str) -> dict:
     """
+        Imports data from a spreadsheet scenario file.
 
+        The excel sheet has to contain the following sheets:
+
+            - energysystem
+            - buses
+            - transformers
+            - sinks
+            - sources
+            - storages
+            - powerlines
+            - time_series
+
+        :param filepath: path to excel scenario file
+        :type filepath: str
+
+        :raises FileNotFoundError: excel spreadsheet not found
+        :raises ValueError: content of excel spreadsheet not
+                            readable or empty
+
+        :return: - **nd** (dict) - dictionary containing excel sheets
+
+        Christian Klemm - christian.klemm@fh-muenster.de
+    """
     from oemof.tools import logger
     # reads node data from Excel sheet
     if not filepath or not os.path.isfile(filepath):
@@ -45,53 +43,55 @@ def import_scenario(filepath):
 
     # creates nodes from excel sheet
     xls = pd.ExcelFile(filepath)
-    nd = {'buses': xls.parse('buses'),
-          'transformers': xls.parse('transformers'),
-          'demand': xls.parse('sinks'),
-          'storages': xls.parse('storages'),
-          'links': xls.parse('links'),
-          'timeseries': xls.parse('time_series'),
-          'energysystem': xls.parse('energysystem'),
-          'sources': xls.parse('sources')
-          #'constraints': xls.parse('constraints')
-         }
+
+    if 'sources' in xls.sheet_names:
+        nd = {'buses': xls.parse('buses'),
+              'energysystem': xls.parse('energysystem'),
+              'sinks': xls.parse('sinks'),
+              'links': xls.parse('links'),
+              'sources': xls.parse('sources'),
+              'timeseries': xls.parse('time series'),
+              'transformers': xls.parse('transformers'),
+              'storages': xls.parse('storages'),
+              'weather data': xls.parse('weather data'),
+              'competition constraints': xls.parse('competition constraints')
+              }
+        # delete spreadsheet row within technology or units specific parameters
+        list = ["energysystem", "buses", "sinks", "sources", "transformers",
+                "storages", "links", "competition constraints"]
+        for i in list:
+            nd[i] = nd[i].drop(index=0)
 
     # error message, if no nodes are provided
     if not nd:
         raise ValueError('No nodes data provided.')
 
     # returns logging info
-    logger.define_logging()
     logging.info('Spreadsheet scenario successfully imported.')
     # returns nodes
     return nd
 
 
-def define_energy_system(nodes_data):
-    """Creates an energy system.
-    
-    Creates an energy system with the parameters defined in the given
-    .xlsx-file. The file has to contain a sheet called "energysystem",
-    which has to be structured as follows:
-        
-    |start_date         |end_date           |temporal resolution|
-    |-------------------|-------------------|-------------------|
-    |YYYY-MM-DD hh:mm:ss|YYYY-MM-DD hh:mm:ss|h                  |
+def define_energy_system(nodes_data: dict):
+    """
+        Creates an energy system.
 
-    ----    
-        
-    Keyword arguments:
-        nodes_data : obj:'dict'
-            -- dictionary containing data from excel scenario file
+        Creates an energy system with the parameters defined in the given
+        .xlsx-file. The file has to contain a sheet called "energysystem",
+        which has to be structured as follows:
 
-    ----
-    
-    Returns:
-       esys : obj:'dict'
-           -- oemof energy system
+        +-------------------+-------------------+-------------------+
+        |start_date         |end_date           |temporal resolution|
+        +-------------------+-------------------+-------------------+
+        |YYYY-MM-DD hh:mm:ss|YYYY-MM-DD hh:mm:ss|h                  |
+        +-------------------+-------------------+-------------------+
 
-    ----
-    @ Christian Klemm - christian.klemm@fh-muenster.de, 05.03.2020
+        :param nodes_data: dictionary containing data from excel scenario
+                           file
+        :type nodes_data: dict
+        :return: - **esys** (oemof.Energysystem) - oemof energy system
+
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
 
     from oemof import solph
@@ -123,23 +123,3 @@ def define_energy_system(nodes_data):
 
     # returns oemof energy system as result of this function
     return esys
-
-
-def format_weather_dataset(filepath):
-    """
-    The feedinlib can only read .csv data sets, so the weather data from
-    the .xlsx scenario file have to be converted into a .csv data set
-    and saved
-    ----
-    Keyword arguments:
-        filepath: obj:'str'
-        -- -- path to excel scenario file
-    """
-
-    # The feedinlib can only read .csv data sets, so the weather data
-    # from the .xlsx scenario file have to be converted into a
-    # .csv data set and saved
-    read_file = pd.read_excel(filepath, sheet_name='weather data')
-    read_file.to_csv(os.path.join(os.path.dirname(__file__))
-                     + '/interim_data/weather_data.csv', index=None,
-                     header=True)

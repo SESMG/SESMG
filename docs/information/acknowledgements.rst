@@ -1,3 +1,16 @@
+Contributors
+*************************************************
+
+- Christian Klemm, christian.klemm@fh-muenster.de
+
+- Janik Budde, janik.budde@fh-muenster.de
+
+- Gregor Becker, gregor.becker@fh-muenster.de
+
+- Yannick Wittor, yw090223@fh-muenster.de
+
+- Peter Vennemann, vennemann@fh-muenster.de
+
 Acknowledgements
 *************************************************
 

@@ -29,6 +29,7 @@ bin/pip3 install pydot==1.4.1
 bin/pip3 install graphviz==0.13.2
 bin/pip3 install xlrd==1.2.0
 bin/pip3 install Pyomo==5.7.1
+bin/pip3 install xlsxwriter
 brew install graphviz
 mv feedinlib lib/python3.7/site-packages
 mv windpowerlib lib/python3.7/site-packages
@@ -37,5 +38,5 @@ echo Installation completed
 echo Starting SESMG
 echo ----------------------
 
-bin/python3 program_files/GUI.py
+bin/python3.7 program_files/GUI.py
 osascript -e 'tell application "Terminal" to quit'
