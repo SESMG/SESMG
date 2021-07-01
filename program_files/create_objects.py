@@ -193,9 +193,9 @@ class Sources:
             output = self.busd[so['output']]
         # set variables minimum, maximum and existing
         if str(so['input']) in ['0', 'None', 'none', 'nan']:
-            minimum = so['min. investment capacity /(kW)']
-            maximum = so['max. investment capacity /(kW)']
-            existing = so['existing capacity /(kW)']
+            minimum = so['min. investment capacity']
+            maximum = so['max. investment capacity']
+            existing = so['existing capacity']
         # set variables minimum, maximum and existing for solar thermal heat
         # sources
         else:
@@ -1516,19 +1516,6 @@ class Transformers:
         # returns logging info
         logging.info('   ' + 'Bus created: ' + bus_label)
 
-        # creates a source object as high temperature heat source
-        self.nodes_transformer.append(
-            solph.Source(label=source_label,
-                         outputs={self.busd[
-                             bus_label]:
-                                solph.Flow(variable_costs=
-                                           tf['variable input costs']
-                                           )}))
-
-        # Returns logging info
-        logging.info(
-            '   ' + 'Heat Source created:' + source_label)
-
         # Calculates cooling temperature in absorber/evaporator depending on
         # ambient air temperature of recooling system
         data_np = np.array(data['temperature'])
@@ -1574,7 +1561,7 @@ class Transformers:
 
         # creates a source object as high temperature heat source and sets
         # heat capacity for this source
-        maximum = tf['heat capacity of source /kW (AbsCH)']
+        maximum = tf['heat capacity of source']
         self.nodes_transformer.append(
             solph.Source(label=source_label,
                          outputs={self.busd[
