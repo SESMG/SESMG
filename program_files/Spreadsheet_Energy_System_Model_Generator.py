@@ -99,10 +99,9 @@ else:
     import data_preparation
 
 
-
 def sesmg_main(scenario_file: str, result_path: str, num_threads: int, 
-               graph: bool, criterion_switch: bool, results: bool,
-               plotly: bool, timeseries_prep: list, solver: str):
+               graph: bool, criterion_switch: bool, xlsx_results: bool,
+               console_results: bool, timeseries_prep: list, solver: str):
     """
         Main function of the Spreadsheet System Model Generator
 
@@ -197,13 +196,12 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     om = optimize_model.least_cost_model(esys, num_threads, nodes_data, busd, solver)
 
     # SHOWS AND SAVES RESULTS OF THE OPTIMIZED MODEL / POST-PROCESSING
-    if results:
-        create_results.xlsx(nodes_data=nodes_data,
-                            optimization_model=om,
+    if xlsx_results:
+        create_results.xlsx(nodes_data=nodes_data, optimization_model=om,
                             filepath=result_path)
     # CREATES PLOTLY RESULTS AND LOGS RESULTS OF CBC SOLVER
-    if plotly:
-        create_results.Results(nodes_data, om, esys, result_path)
+    create_results.Results(nodes_data, om, esys, result_path,
+                           console_log=console_results)
 
     logging.info('   ' + '----------------------------------------------'
                          '----------')

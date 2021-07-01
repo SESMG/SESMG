@@ -139,7 +139,6 @@ class Results:
         self.comp_capacity = None
 
         label = comp['label']
-
         # because of not every sheet consisting the same columns these
         # tests are necessary
         bus1 = comp['bus1'] if 'bus1' in comp else None
@@ -447,7 +446,8 @@ class Results:
             '   ' + '--------------------------------------------------------')
 
     def __init__(self, nodes_data: dict, optimization_model: solph.Model,
-                 energy_system: solph.EnergySystem, result_path: str):
+                 energy_system: solph.EnergySystem, result_path: str,
+                 console_log: bool):
         """
             Returns a list of all defined components with the following
             information:
@@ -536,7 +536,7 @@ class Results:
             constraint_costs = None
             transformer_type = None
            
-            if i != 'buses_e' and i != 'buses_s':
+            if i != 'buses_e' and i != 'buses_s' and console_log:
                 self.log_category(i.upper())
             for j, comp in components_dict[i].iterrows():
                 if comp['active']:
@@ -546,13 +546,16 @@ class Results:
                         comp['label'] = comp['label'] + '_collector'
 
                     if i == 'buses_e':
-                        logging.info('   ' + comp['label'] + '_excess')
+                        if console_log:
+                            logging.info('   ' + comp['label'] + '_excess')
                         excess_or_shortage = "excess"
                     elif i == 'buses_s':
-                        logging.info('   ' + comp['label'] + '_shortage')
+                        if console_log:
+                            logging.info('   ' + comp['label'] + '_shortage')
                         excess_or_shortage = "shortage"
                     else:
-                        logging.info('   ' + comp['label'])
+                        if console_log:
+                            logging.info('   ' + comp['label'])
                         excess_or_shortage = None
                     component = solph.views.node(self.results, comp['label'])
                     
@@ -751,42 +754,43 @@ class Results:
                         maxinvest=round(comp['max. investment capacity'], 2) if 'max. investment capacity' in comp
                         else '---',
                         constraints=constraint_costs)
+                    if console_log:
+                        self.console_logging(
+                            comp_type=comp_type,
+                            capacity=capacity,
+                            variable_costs=variable_costs,
+                            periodical_costs=periodical_costs,
+                            investment=investment,
+                            transformer_type=transformer_type)
 
-                    self.console_logging(
-                        comp_type=comp_type,
-                        capacity=capacity,
-                        variable_costs=variable_costs,
-                        periodical_costs=periodical_costs,
-                        investment=investment,
-                        transformer_type=transformer_type)
-
-                    self.insert_line_end_of_component()
+                        self.insert_line_end_of_component()
         # SUMMARY
-        self.log_category("SUMMARY")
         meta_results = solph.processing.meta_results(optimization_model)
         meta_results_objective = meta_results['objective']
-        logging.info('   ' + 'Total System Costs:             '
-                     + str(round(meta_results_objective, 1))
-                     + ' cost units')
-        logging.info('   ' + 'Total Constraint Costs:         '
-                     + str(round(total_constraint_costs)) + ' cost units')
-        logging.info('   ' + 'Total Variable Costs:           '
-                     + str(round(total_variable_costs)) + ' cost units')
-        logging.info('   ' + 'Total Periodical Costs (p.a.):  '
-                     + str(round(total_periodical_costs))
-                     + ' cost units p.a.')
-        logging.info('   ' + 'Total Energy Demand:            '
-                     + str(round(total_demand)) + ' kWh')
-        logging.info('   ' + 'Total Energy Usage:             '
-                     + str(round(total_usage)) + ' kWh')
-        # creating the list of investments to be made
-        self.insert_line_end_of_component()
-        logging.info('   ' + 'Investments to be made:')
-        investment_objects = list(investments_to_be_made.keys())
-        for i in range(len(investment_objects)):
-            logging.info('   - ' + investment_objects[i] + ': '
-                         + investments_to_be_made[investment_objects[i]])
-        logging.info('   ' + 56 * "*" + "\n")
+        if console_log:
+            self.log_category("SUMMARY")
+            logging.info('   ' + 'Total System Costs:             '
+                         + str(round(meta_results_objective, 1))
+                         + ' cost units')
+            logging.info('   ' + 'Total Constraint Costs:         '
+                         + str(round(total_constraint_costs)) + ' cost units')
+            logging.info('   ' + 'Total Variable Costs:           '
+                         + str(round(total_variable_costs)) + ' cost units')
+            logging.info('   ' + 'Total Periodical Costs (p.a.):  '
+                         + str(round(total_periodical_costs))
+                         + ' cost units p.a.')
+            logging.info('   ' + 'Total Energy Demand:            '
+                         + str(round(total_demand)) + ' kWh')
+            logging.info('   ' + 'Total Energy Usage:             '
+                         + str(round(total_usage)) + ' kWh')
+            # creating the list of investments to be made
+            self.insert_line_end_of_component()
+            logging.info('   ' + 'Investments to be made:')
+            investment_objects = list(investments_to_be_made.keys())
+            for i in range(len(investment_objects)):
+                logging.info('   - ' + investment_objects[i] + ': '
+                             + investments_to_be_made[investment_objects[i]])
+            logging.info('   ' + 56 * "*" + "\n")
 
         # Importing time system parameters from the scenario
         ts = next(nodes_data['energysystem'].iterrows())[1]

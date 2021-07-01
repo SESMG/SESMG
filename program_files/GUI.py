@@ -153,7 +153,8 @@ def show_graph():
 
     # DEFINES PATH OF OUTPUT DATA
     if sys.platform.startswith("win"):
-        result_path = os.path.join(os.path.dirname(__file__) + '/results/graphs')
+        result_path = os.path.join(os.path.dirname(__file__)
+                                   + '/results/graphs')
     elif sys.platform.startswith('darwin'):
         result_path = os.path.dirname(os.path.abspath(__file__))
         result_path = result_path + '/results/graphs'
@@ -172,7 +173,6 @@ def show_graph():
                               legend=False)
 
 
-
 def execute_sesmg():
     """ 1. Creates the folder where the results will be saved
         2. Excecutes the optimization algorithm """
@@ -188,19 +188,21 @@ def execute_sesmg():
                                  timeseries_cluster.get(),
                                  timeseries_criterion.get(),
                                  timeseries_period.get(),
-                                 0 if timeseries_season.get() == 'none' else timeseries_season.get()]
+                                 0 if timeseries_season.get() == 'none'
+                                 else timeseries_season.get()]
 
         sesmg_main(scenario_file=scenario_path.get(),
                    result_path=save_path.get(),
                    num_threads=1,
-                   timeseries_prep = timeseries_prep_param, #time_prep.get(),
+                   timeseries_prep=timeseries_prep_param, #time_prep.get(),
                    # timeseries_value = 1 if timeseries_entry.get() == 'aggregation quote' else timeseries_entry.get(),
                    graph=True if graph_state.get() == 1 else False,
-                   criterion_switch=True if criterion_state.get() == 1 else False,
-                   results=True,
-                   plotly=True,
+                   criterion_switch=criterion_state.get(),
+                   xlsx_results=xlsx_select_state.get(),
+                   console_results=console_select_state.get(),
                    solver=solver_select.get())
-        show_results()
+        if plotly_select_state.get():
+            show_results()
     else:
         print('Please select scenario first!')
         comments[2].configure(text='Please select scenario first!')
@@ -244,7 +246,10 @@ def get_pid():
 
 
 def show_results():
-    """ executes the external program, which executes a plotl.dash app for displaying interactive results."""
+    """
+        executes the external program, which executes a plotl.
+        dash app for displaying interactive results.
+    """
     if save_path.get() == '':
         raise SystemError('No optimization since the last restart'
                           ' please select a result folder!')
@@ -293,7 +298,8 @@ tab_control.pack(expand=1, fill='both')
 tab_control.pressed_index = None
 scenario_path = StringVar(window, 'scenario_v0.2.0.xlsx')
 save_path_directory = \
-        StringVar(window, str(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'results')))
+        StringVar(window, str(os.path.join(os.path.dirname(
+                os.path.dirname(__file__)), 'results')))
 save_path = StringVar(window, '')
 num_threads = 2
 
@@ -395,10 +401,11 @@ graph_checkbox.grid(column=3, row=row)
 
 # Criterion Switch Checkbox
 row = row +1
-Label(main_frame, text='Switch Criteria', font='Helvetica 10').grid(column=0, row=row,
-                                                   sticky="W")
-criterion_state = IntVar()
-criterion_checkbox = Checkbutton(main_frame, variable=criterion_state)
+Label(main_frame, text='Switch Criteria', font='Helvetica 10')\
+    .grid(column=0, row=row, sticky="W")
+criterion_state = BooleanVar()
+criterion_checkbox = Checkbutton(main_frame, variable=criterion_state,
+                                 onvalue=True, offvalue=False)
 criterion_checkbox.grid(column=3, row=row)
 
 
@@ -408,13 +415,43 @@ solvers = [
     "cbc",
     "gurobi",
 ]
-Label(main_frame, text='Optimization Solver', font='Helvetica 10').grid(column=0, row=row,
-                                                   sticky="W")
+Label(main_frame, text='Optimization Solver', font='Helvetica 10')\
+    .grid(column=0, row=row, sticky="W")
 
 solver_select = StringVar(main_frame)
 solver_select.set('gurobi')
 SolverMenu = OptionMenu(main_frame, solver_select, *solvers)
 SolverMenu.grid(column=3, row=row)
+row = row + 1
+
+# result checkboxes
+Label(main_frame, text='Result processing parameters',
+      font='Helvetica 10 bold').grid(column=0, row=row, sticky="W")
+
+# xlsx_checkbox
+row = row + 1
+Label(main_frame, text='Create xlsx-files', font='Helvetica 10')\
+    .grid(column=0, row=row, sticky="W")
+xlsx_select_state = BooleanVar()
+xlsx_checkbox = Checkbutton(main_frame, variable=xlsx_select_state,
+                             onvalue=True, offvalue=False)
+xlsx_checkbox.grid(column=3, row=row)
+# console_checkbox
+row = row + 1
+Label(main_frame, text='Create console-log', font='Helvetica 10')\
+      .grid(column=0, row=row, sticky="W")
+console_select_state = BooleanVar()
+console_checkbox = Checkbutton(main_frame, variable=console_select_state,
+                               onvalue=True, offvalue=False)
+console_checkbox.grid(column=3, row=row)
+# plotly_checkbox
+row = row + 1
+Label(main_frame, text='Create plotly-dash', font='Helvetica 10')\
+      .grid(column=0, row=row, sticky="W")
+plotly_select_state = BooleanVar()
+plotly_checkbox = Checkbutton(main_frame, variable=plotly_select_state,
+                              onvalue=True, offvalue=False)
+plotly_checkbox.grid(column=3, row=row)
 
 # Headline 2
 row = row + 1
