@@ -17,7 +17,6 @@ Application of the Model Generator
    
    The display may vary depending on the operating system.
 
-.. note:: Red bordered parts are not included in the master branch yet and will come up in the next version
 
 Description of the GUI functions
 
