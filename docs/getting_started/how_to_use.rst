@@ -28,11 +28,11 @@ Within this sheet, the time horizon and the temporal resolution of the model is 
 - **end date**: End date of the modelling time horizon. Format: "YYYY-MM-DD hh:mm:ss"; and
 - **temporal resolution**: For the modelling considered temporal resolution. Possible inputs: "a" (years), "d" (days), "h" (hours) "min" (minutes), "s" (seconds), "ms" (milliseconds).
 - **periods**: Number of periods within the time horizon (one year with hourly resolution equals 8760 periods).
-- **constraint costs** in (CU): Value in order to set a limit for the whole energysystem, e.g. carbon dioxide emissions. Set this field to "None" in order to ignore the limit. If you want to set a limit, you have to set specific values for each components seen below.
+- **constraint cost limit** in (CU): Value in order to set a limit for the whole energysystem, e.g. carbon dioxide emissions. Set this field to "None" in order to ignore the limit. If you want to set a limit, you have to set specific values for each components seen below.
 
    
 .. csv-table:: Exemplary input for the energy system
-   :header: start date,end date,temporal resolution,periods,constraint costs 
+   :header: start date,end date,temporal resolution,periods,constraint cost limit 
 
    ,,,,(CU)
    2012-01-01 00:00:00,2012-12-30 23:00:00,h,8760,None
@@ -63,14 +63,15 @@ Within this sheet, the buses of the energy system are defined. The following par
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the bus shall be included to the model. 0 = inactive, 1 = active. 
 - **excess**: Specifies whether a sink is to be generated, which consumes excess energy. 0 = no excess sink will be generated; 1 = excess sink will be generated.
-- **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits or not. 0 = no shortage source will be generated; 1 = shortage source will be generated.
-- **shortage costs** in (CU/kWh): Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "0" is used. 
+- **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits or not. 0 = no shortage source will be generated; 1 = shortage source will be generated. 
 - **excess costs** in (CU/kWh): Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "0" is used.
-- **variable shortage constraint costs** in (CU/kWh): Assigns a price per kWh to the purchase of energy from the shortage source referring to the constraint limit set in the "energysystem" sheet. If the shortage source was deactivated, the fill character "0" is used. If not considering constraints fill character "0" is used.
-- **variable excess constraint costs** in (CU/kWh): Assigns a price per kWh to the release of energy to the excess sink referring to the constraint limit set in the "energysystem" sheet. If the excess sink was deactivated, the fill character "0" is used. If not considering constraints fill character "0" is used.
+- **shortage costs** in (CU/kWh): Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "0" is used.
+- **excess constraint costs** in (CU/kWh): Assigns a price per kWh to the release of energy to the excess sink referring to the constraint limit set in the "energysystem" sheet. If the excess sink was deactivated, the fill character "0" is used. If not considering constraints fill character "0" is used.
+- **shortage constraint costs** in (CU/kWh): Assigns a price per kWh to the purchase of energy from the shortage source referring to the constraint limit set in the "energysystem" sheet. If the shortage source was deactivated, the fill character "0" is used. If not considering constraints fill character "0" is used.
+
 
 .. csv-table:: Exemplary input for the buses sheet
-   :header: label,comments,active,excess,shortage,excess costs,shortage costs,variable excess constraint costs,variable shortage constraint costs
+   :header: label,comments,active,excess,shortage,excess costs,shortage costs,excess constraint costs,shortage constraint costs
 
    ,,,,,(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh)
    ID_electricity_bus,,1,0,1,0.000,0.300,0.00,474.00
