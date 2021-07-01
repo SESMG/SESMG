@@ -92,8 +92,7 @@ def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
                             c_bus = b['label'] + '_bus'
                             c_bus=linebreaks(c_bus)
                             dot.node(c_bus, shape='ellipse', fontsize="10")
-                            # Adds edge for transformer, source and bus
-                            # to the graph
+                            # Adds edge for transformer, source and bus to the graph
                             dot.edge(b['input'], transformer)
                             dot.edge(c_bus, transformer)
                             dot.edge(transformer, b['output'])
@@ -144,7 +143,7 @@ def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
                         cmpr_abs_source = linebreaks(cmpr_abs_source)
                         cmpr_abs_bus = linebreaks(cmpr_abs_bus)
                         # Adds a second input and a heat source (node and edge)
-                        # for compression heat transformers
+                        # for compressionand absorption heat transformers
                         dot.node(cmpr_abs_bus,
                                  shape='ellipse',
                                  fontsize="10")

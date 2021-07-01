@@ -92,7 +92,6 @@ def buses(nodes_data: dict, nodes: list) -> dict:
                         solph.Source(
                                 label=b['label'] + '_shortage',
                                 outputs=outputs))
-        
     # Returns the list of buses as result of the function
     return busd
 
@@ -189,18 +188,17 @@ class Sources:
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
-
         # output default
         if output is None:
             output = self.busd[so['output']]
-
         # set variables minimum, maximum and existing
-        minimum = so['min. investment capacity']
-        maximum = so['max. investment capacity']
-        existing = so['existing capacity']
+        if str(so['input']) in ['0', 'None', 'none', 'nan']:
+            minimum = so['min. investment capacity /(kW)']
+            maximum = so['max. investment capacity /(kW)']
+            existing = so['existing capacity /(kW)']
         # set variables minimum, maximum and existing for solar thermal heat
         # sources
-        if so['technology'] == 'CSP' or so['technology'] == 'solar_thermal_flat_plate':
+        else:
             minimum = so['min. investment capacity'] * \
                 so['Conversion Factor']
             maximum = so['max. investment capacity'] * \
@@ -472,7 +470,7 @@ class Sources:
                 - 'input'
                 - 'technology':
                     - 'solar_thermal_flat_plate' or
-                    - 'CSP'
+                    - 'concentrated_solar_power'
                 - 'Latitude'
                 - 'Longitude'
                 - 'Surface Tilt'
@@ -499,7 +497,7 @@ class Sources:
         # creates an oemof-bus object for solar thermal collector
         col_bus = solph.Bus(label=so['label'] + '_bus')
         # adds the bus object to the list of components "nodes"
-        self.nodes.append(col_bus)
+        self.nodes_sources.append(col_bus)
         self.busd[so['label'] + '_bus'] = col_bus
         output = col_bus
 
@@ -510,7 +508,7 @@ class Sources:
 
         # calculates global horizontal irradiance from diffuse (dhi)
         # and direct irradiance (dirhi) and adds it to the weather data frame
-        data['ghi'] = (data.dirhi + data.dhi)
+        data['ghi'] = (data["dirhi"] + data["dhi"])
 
         # precalculations for flat plate collectors, calculates total
         # irradiance on collector, efficiency and heat output
@@ -536,35 +534,27 @@ class Sources:
             irradiance = precalc_results.col_ira/1000
 
         # set parameters for precalculations for concentrating solar power
-        elif so['technology'] == 'CSP':
-            temp_collector_outlet = \
-                so['Temperature Inlet'] + \
-                so['Temperature Difference']
-            latitude = so['Latitude']
-            longitude = so['Longitude']
-            collector_tilt = so['Surface Tilt']
-            collector_azimuth = so['Azimuth']
-            cleanliness = so['Cleanliness']
-            eta_0 = so['ETA 0']
-            c_1 = so['C1']
-            c_2 = so['C2']
-            temp_collector_inlet = \
-                so['Temperature Inlet']
-            temp_collector_outlet = temp_collector_outlet
-            a_1 = so['A1']
-            a_2 = so['A2']
-            e_dir_hor = data['dirhi']
-
+        elif so['technology'] == 'concentrated_solar_power':
             # precalculation with parameter set, ambient temperature and
             # direct horizontal irradiance. Calculates total irradiance on
             # collector, efficiency and heat output
-            precalc_results = csp_precalc(latitude, longitude,
-                                          collector_tilt, collector_azimuth,
-                                          cleanliness, eta_0, c_1, c_2,
-                                          temp_collector_inlet,
-                                          temp_collector_outlet,
-                                          data['temperature'], a_1, a_2,
-                                          E_dir_hor=e_dir_hor)
+            precalc_results = csp_precalc(
+                lat=so['Latitude'],
+                long=so['Longitude'],
+                collector_tilt=so['Surface Tilt'],
+                collector_azimuth=so['Azimuth'],
+                cleanliness = so['Cleanliness'],
+                a_1=so['A1'],
+                a_2 = so['A2'],
+                eta_0=so['ETA 0'],
+                c_1 = so['C1'],
+                c_2 = so['C2'],
+                temp_collector_inlet = so['Temperature Inlet'],
+                temp_collector_outlet = so['Temperature Inlet']
+                                        + so['Temperature Difference'],
+                temp_amb=data['temperature'],
+                e_dir_hor=data['dirhi'])
+            
             # set variables collectors_heat and irradiance and conversion
             # from W/sqm to kW/sqm
             collectors_heat = precalc_results.collector_heat/1000
@@ -601,9 +591,9 @@ class Sources:
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label']
                      + ", Max Heat power output per year and m²: {:2.2f}".
-                     format(numpy.sum(collectors_heat)) + ' kW/m²'
+                     format(numpy.sum(collectors_heat)) + ' kWh/(m²a)'
                      + ", Irradiance on collector per year and m²: "
-                       "{:2.2f}".format(numpy.sum(irradiance)) + ' kW/m²')
+                       "{:2.2f}".format(numpy.sum(irradiance)) + ' kWh/(m²a)')
 
     def __init__(self, nodes_data: dict, nodes: list, busd: dict,
                  filepath: str):
@@ -620,8 +610,6 @@ class Sources:
         self.nodes_sources = []
         # Initialise a class intern copy of the bus dictionary
         self.busd = busd.copy()
-        # internal list nodes
-        self.nodes = []
 
         # Import weather Data
         data = nodes_data['weather data']
@@ -649,20 +637,14 @@ class Sources:
                 elif so['technology'] == 'timeseries':
                     self.timeseries_source(so, filepath)
 
-                # Create flat plate solar thermal collector Sources
-                elif so['technology'] == 'solar_thermal_flat_plate':
-                    self.solar_heat_source(so, data)
-
-                # Create concentrated solar heat Sources
-                elif so['technology'] == 'CSP':
+                # Create flat plate solar thermal Sources
+                elif so['technology'] in ['solar_thermal_flat_plate',
+                                          'concentrated_solar_power']:
                     self.solar_heat_source(so, data)
             
-        # appends created sources to the list of nodes
+        # appends created sources and other objects to the list of nodes
         for i in range(len(self.nodes_sources)):
             nodes.append(self.nodes_sources[i])
-        # appends created buses to the list of nodes
-        for i in range(len(self.nodes)):
-            nodes.append(self.nodes[i])
 
 
 class Sinks:
@@ -714,7 +696,6 @@ class Sinks:
             - Christian Klemm - christian.klemm@fh-muenster.de
             - Gregor Becker - gregor.becker@fh-muenster.de
     """
-
     # intern variables
     busd = None
     nodes_sinks = []
@@ -1212,6 +1193,9 @@ class Transformers:
             temp = '_low_temp'
         elif tf['mode'] == 'chiller':
             temp = '_high_temp'
+        else:
+            raise ValueError("Mode of " + tf['label']
+                             + "contains a typo")
         bus = solph.Bus(label=tf['label'] + temp + '_bus')
         
         # adds the bus object to the list of components "nodes"
@@ -1265,7 +1249,7 @@ class Transformers:
             # the capacity of ambient water is not limited
             heatsource_capacity = math.inf
         else:
-            raise SystemError(tf['label'] + " Error in heat source attribute")
+            raise ValueError(tf['label'] + " Error in heat source attribute")
         maximum = heatsource_capacity
         # Creates heat source for transformer. The heat source costs are
         # considered by the transformer.
@@ -1323,6 +1307,9 @@ class Transformers:
             temp_threshold_icing = None
             factor_icing = None
             temp_low = [tf['temperature low']]
+        else:
+            raise ValueError("Mode of " + tf['label']
+                             + "contains a typo")
         # calculation of COPs with set parameters
         cops_hp = cmpr_hp_chiller.calc_cops(
                 temp_high=temp_high,
@@ -1492,7 +1479,10 @@ class Transformers:
                 - 'chilling temperature'
                 - 'electrical input conversion factor'
                 - 'recooling temperature difference'
-            @ Yannick Wittor - yw090223@fh-muenster.de, 07.01.2021
+            :param data: weather data
+            :type data: dict
+
+            Yannick Wittor - yw090223@fh-muenster.de
         """
         # import oemof.thermal in order to calculate COP
         import oemof.thermal.absorption_heatpumps_and_chillers \
@@ -1511,6 +1501,9 @@ class Transformers:
             temp = '_low_temp'
         elif tf['mode'] == 'chiller':
             temp = '_high_temp'
+        else:
+            raise ValueError("Mode of " + tf['label']
+                             + "contains a typo")
 
         bus_label = tf['label'] + temp + '_bus'
         source_label = tf['label'] + temp + '_source'
@@ -1537,11 +1530,12 @@ class Transformers:
             '   ' + 'Heat Source created:' + source_label)
 
         # Calculates cooling temperature in absorber/evaporator depending on
-        # ambient temperature of recooling system
+        # ambient air temperature of recooling system
         data_np = np.array(data['temperature'])
         t_cool = data_np + \
             tf['recooling temperature difference']
         t_cool = list(map(int, t_cool))
+        n = len(t_cool)
 
         # Calculation of characteristic temperature difference
         chiller_name = tf['name']
@@ -1577,6 +1571,23 @@ class Transformers:
         logging.info('   ' + tf['label']
                      + ", Average Coefficient of Performance (COP): {:2.2f}"
                      .format(numpy.mean(cops_abs)))
+
+        # creates a source object as high temperature heat source and sets
+        # heat capacity for this source
+        maximum = tf['heat capacity of source /kW (AbsCH)']
+        self.nodes_transformer.append(
+            solph.Source(label=source_label,
+                         outputs={self.busd[
+                             tf['label'] + temp + '_bus']: solph.Flow(
+                                investment=solph.Investment(ep_costs=0,
+                                                            minimum=0,
+                                                            maximum=maximum,
+                                                            existing=0),
+                                variable_costs=0)}))
+
+        # Returns logging info
+        logging.info(
+            '   ' + 'Heat Source created:' + source_label)
 
         # Set in- and outputs with conversion factors and creates transformer
         # object and adds it to  the list of components
@@ -1622,7 +1633,7 @@ class Transformers:
                     self.generic_transformer(t)
                 
                 # Create Compression Heat Transformer
-                elif t['transformer type'] == 'compression_heat_transformer':
+                elif t['transformer type'] == 'CompressionHeatTransformer':
                     self.compression_heat_transformer(t, data)
                 
                 # Create Extraction Turbine CHPs
@@ -1643,7 +1654,7 @@ class Transformers:
                         + ' be added later.')
 
                 # Create Absorption Chiller
-                elif t['transformer type'] == 'absorption_heat_transformer':
+                elif t['transformer type'] == 'AbsorptionHeatTransformer':
                     self.absorption_heat_transformer(t, data)
 
                 # Error Message for invalid Transformers
@@ -1828,9 +1839,9 @@ class Storages:
     
     def __init__(self, nodes_data: dict, nodes: list, busd: dict):
         """
-        Inits the storage class.
+            Inits the storage class.
 
-        Christian Klemm - christian.klemm@fh-muenster.de
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
         # renames variables
         self.busd = busd

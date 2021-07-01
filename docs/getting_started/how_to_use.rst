@@ -32,14 +32,14 @@ Within this sheet, the time horizon and the temporal resolution of the model is 
 
    
 .. csv-table:: Exemplary input for the energy system
-   :header: start date,end date,temporal resolution,periods,constraint cost limit 
+   :header: start date,end date,temporal resolution,periods,constraint cost limit
 
    ,,,,(CU)
    2012-01-01 00:00:00,2012-12-30 23:00:00,h,8760,None
    
 Competition Constraints
 =================================================
-The spreadsheet "Competition Constraints" allows you to match two components against a predefined limit. 
+The spreadsheet "Competition Constraints" allows you to match two components against a predefined limit.
 For example, an area competition. If you do not want to use this spreadsheet, it simply remains empty. To use this worksheet, the following values must be filled in:
 
 - **component 1**: First component that lays claim to the parameter which size set as the limit.
@@ -63,7 +63,7 @@ Within this sheet, the buses of the energy system are defined. The following par
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the bus shall be included to the model. 0 = inactive, 1 = active. 
 - **excess**: Specifies whether a sink is to be generated, which consumes excess energy. 0 = no excess sink will be generated; 1 = excess sink will be generated.
-- **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits or not. 0 = no shortage source will be generated; 1 = shortage source will be generated. 
+- **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits or not. 0 = no shortage source will be generated; 1 = shortage source will be generated.
 - **excess costs** in (CU/kWh): Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was deactivated, the fill character "0" is used.
 - **shortage costs** in (CU/kWh): Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "0" is used.
 - **excess constraint costs** in (CU/kWh): Assigns a price per kWh to the release of energy to the excess sink referring to the constraint limit set in the "energysystem" sheet. If the excess sink was deactivated, the fill character "0" is used. If not considering constraints fill character "0" is used.
@@ -104,7 +104,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **input**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **load profile**: Specifies the basis onto which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles, its acronym is used. If a time series is used, "timeseries" must be entered and must be provided in the `Time series sheet`_. If the sink is not fixed, the fill character "x" has to be used.
 - **nominal value** in (kW): Nominal performance of the sink. Required when "time series" has been entered into the "load profile". When SLP or Richardson is used, use the fill character "0" here.
-- **annual demand** in (kWh/a): Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "0" is used. 
+- **annual demand** in (kWh/a): Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "0" is used.
 - **occupants** [RICHARDSON]: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "0" for other load profiles.
 - **building class** [HEAT SLP ONLY]: BDEW building classes that coincide with the building locations are explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#sinks>`_.
 - **wind class** [HEAT SLP ONLY]: wind classification for building location (0=not windy, 1=windy)
@@ -116,7 +116,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
    ID_electricity_sink,H0 standard load profile sink,1,1,ID_electricity_bus,h0,0,5000.0,0,0,0
    ID_heat_sink,EFH standard load profile sink,1,1,ID_heat_bus,efh,0,30000.0,0,3,0
    ID_cooling_sink,fixed timeseries cooling demand,0,1,ID_cooling_bus,timeseries,1,0,0,0,0
-   
+
 .. figure:: ../images/BSP_Graph_sink.png
    :width: 100 %
    :alt: Sink_Graph
@@ -147,7 +147,7 @@ Costs
 - **Fix Investment Costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs).
 Wind
 -------------------------
-- **Turbine Model**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_. 
+- **Turbine Model**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
 - **Hub Height**: Hub height of the wind turbine. Which hub heights are possible for the selected reference turbine can be viewed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
 PV
 -------------------------
@@ -165,11 +165,11 @@ Concentrated Solar Power
 	upcoming feature
 Solar Thermal Flatplate
 ------------------------------
-.. note:: 
-	upcoming feature 
+.. note::
+	upcoming feature
 Timeseries
 -------------------------
-If you have choosen the technology "timeseries", you have to include a timeseries in the  `Time series sheet`_ or use default one. 
+If you have choosen the technology "timeseries", you have to include a timeseries in the  `Time series sheet`_ or use default one.
 
 Commodity
 -------------------------
@@ -177,12 +177,12 @@ If you have choosen the technology "other", the solver has the opportunity to co
 
 .. csv-table:: Exemplary input for the sources sheet
    :header: label,comment,active,fixed,technology,output,input,existing capacity,min. investment capacity,max. investment capapcity,non-convex investment,fix investment costs,variable costs,periodical costs,variable constraint costs,periodical constraint costs,Turbine Model,Hub Height,technology database,inverter database,Modul Model,Inverter Model,Albedo,Altitude,Azimuth,Surface Tilt,Latitude,Longitude,ETA 0,A1,A2,C1,C2,Temperature Inlet,Temperature Difference,Conversion Factor,Peripheral Losses,Electric Consumption,Cleanliness
-   
+
    ,,,,,,solar heat,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/(kW a)),windpower,windpower,PV,PV,PV,PV,PV,(m)| PV,(°),(°),(°),(°),solar heat,solar heat,solar heat,solar heat,solar heat,(°C) | solar heat,(°C)|solar heat,(sqm/kW) | solar heat,solar heat,solar heat,solar heat
    ID_photovoltaic_electricity_source,,1,1,photovoltaic,ID_pv_bus,None,0,0,20,0,0,0,90,56,0,0,0,SandiaMod,sandiainverter,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,0.18,60,180,35,52.13,7.36,0,0,0,0,0,0,0,0,0,0,0
    ID_solar_thermal_source,,1,1,solar_thermal_flat_plate,ID_heat_bus,ID_electricity_bus,0,0,20,0,0,0,40,25,0,0,0,0,0,0,0,0,0,20,10,52.13,7.36,0.719,1.063,0.005,0,0,40,15,1.89941306,0.05,0.06,0
    wind_turbine,,0,1,windpower,electricity_bus,None,0,0,30,0,0,0,100,9,0,E-126/4200,135,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-   
+
 
 .. figure:: ../images/BSP_Graph_source.png
    :width: 100 %
@@ -240,7 +240,7 @@ GenericCHP
 - **back pressure**: Defines rather the end pressure of "Turbine CHP" is higher than ambient pressure (input value has to be "1") or not (input value has to be "0"). For "Motoric CHP" it has to be "0".
 Compression Heat Transformer
 ---------------------------------
-The following parameters are only required, if "transformer type" is set to "compression_heat_transformer":
+The following parameters are only required, if "transformer type" is set to "CompressionHeatTransformer":
 
 - **heat source**: Specifies the heat source. Possible heat sources are "GroundWater", "Ground", "Air" and "Water" possible.
 - **temperature high** in (°C): Temperature of the high temperature heat reservoir. Only required if "mode" is set to "heat_pump".
@@ -254,7 +254,7 @@ The following parameters are only required, if "transformer type" is set to "com
 - **factor icing**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
 Absorption Heat Transformer
 --------------------------------
-The following parameters are only required, if "transformer type" is set to "absorption_heat_transformer":
+The following parameters are only required, if "transformer type" is set to "AbsorptionHeatTransformer":
 
 - **name**: Defines the way of calculating the efficiency of the absorption heat transformer. Possible inputs are: "Rotartica", "Safarik", "Broad_01", "Broad_02", and "Kuehn". "Broad_02" refers to a double-effect absorption chiller model, whereas the other keys refer to single-effect absorption chiller models.
 - **high temperature** in (°C): Temperature of the heat source, that drives the absorption heat transformer.
@@ -265,14 +265,14 @@ The following parameters are only required, if "transformer type" is set to "abs
   
 .. csv-table:: Exemplary input for the transformers sheet
    :header: label,comment,active,transformer type,mode,input,output,output2,efficiency,efficiency2,existing capacity,min. investment capacity,max. investment capacity,non-convex investment,fix investment costs,variable input costs,variable output costs,variable output costs 2,periodical costs,variable input constraint costs,variable output constraint costs,variable output constraint costs 2,periodical constraint costs,heat source,temperature high,temperature low,quality grade,area,length of the geoth. probe,heat extraction,min. borehole area,temp. threshold icing,factor icing,name,high temperature,chilling temperature,electrical input conversion factor,recooling temperature difference,min. share of flue gas loss,max. share of flue gas loss,min. electric power,max. electric power,min. electric efficiency, max. electric efficiency,minimal thermal output power,elec. power loss index,back pressure
-   
-	,,,,,,,,,,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),,(°C),(°C),,(m²),(`m`),(kW/(m*a)),(m²),(°C),,,(°C),(°C),,(°C),,,(kW),(kW),,,(kW)		   
- 	ID_gasheating_transformer,,1,GenericTransformer,0,ID_gas_bus,ID_heat_bus,None,0.85,0,10,0,20,0,0,0,0,0,70,0,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0  
+
+	,,,,,,,,,,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),,(°C),(°C),,(m²),(`m`),(kW/(m*a)),(m²),(°C),,,(°C),(°C),,(°C),,,(kW),(kW),,,(kW)
+ 	ID_gasheating_transformer,,1,GenericTransformer,0,ID_gas_bus,ID_heat_bus,None,0.85,0,10,0,20,0,0,0,0,0,70,0,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	ID_GCHP_transformer,ground-coupled heat pump,1,compression_heat_transformer,heat_pump,ID_hp_electricity_bus,ID_heat_bus,None,1,0,0,0,20,0,0,0,0,0,115.57,0,0,0,0,Ground,60,0,0.6,1000,100,0.05,100,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	ID_ASCH_transformer,air source chiller,1,compression_heat_transformer,chiller,ID_hp_electricity_bus,ID_cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,Air,0,-10,0.4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	ID_AbsCH_transformer,absorption chiller,1,absorption_heat_transformer,chiller,ID_hp_electricity_bus,ID_cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Kuehn,85,10,0.05,6,0,0,0,0,0,0,0,0,0
 	ID_ASHP_transformer,air source heat pump,1,compression_heat_transformer,heat_pump,ID_hp_electricity_bus,ID_heat_bus,None,1,0,0,0,20,0,0,0,0,0,112.78,0,0,0,0,Air,60,0,0.4,0,0,0,0,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_chp_transformer,,0,GenericTransformer,0,district_gas_bus,district_chp_electricity_bus,district_heat_bus,0.35,0.55,0,0,20,0,0,0,0,0,50,130,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0   
+	ID_chp_transformer,,0,GenericTransformer,0,district_gas_bus,district_chp_electricity_bus,district_heat_bus,0.35,0.55,0,0,20,0,0,0,0,0,50,130,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	
 .. figure:: ../images/BSP_Graph_transformer.png
    :width: 100 %
@@ -314,7 +314,7 @@ Costs
 - **periodical constraint costs** in (CU/a): Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 Generic Storage
 ---------------------
-- **capacity loss** (Generic only): Indicates the storage loss per time unit. Only required, if the "storage type" is set to "Generic". 
+- **capacity loss** (Generic only): Indicates the storage loss per time unit. Only required, if the "storage type" is set to "Generic".
 Stratified Storage
 ---------------------
 - **diameter** in (m) | (Stratified Storage): Defines the diameter of a stratified thermal storage, which is necessary for the calculation of thermal losses.
@@ -379,7 +379,7 @@ Costs
    :alt: bsp-graph-link
    :align: center
 
-   Graph of the energy system, which is created by entering the example components. The non-active components are not included in the graph above. 
+   Graph of the energy system, which is created by entering the example components. The non-active components are not included in the graph above.
 
 .. _`Time series sheet`:
 

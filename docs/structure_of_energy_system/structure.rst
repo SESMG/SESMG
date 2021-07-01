@@ -137,7 +137,7 @@ albedo are not a part of the calculation for flat plate collectors.
 For visualization you can take a look at the graph above. 
 
 The heat output of a parabolic through collector is based on the direct
-horizontal irradiance.
+horizontal irradiance, the diffuse irradiance is not absorbed.
 
 The solar thermal collector function automatically creates a heat
 source, a collector bus object and a transformer object. The output 
@@ -190,6 +190,16 @@ output is 1,504 kW and the conversion factor roundabout 1,68 (sqm/kW).
    :align: center
 
    Example for calculation of conversion factor.
+
+If you are calculating a system with the concentrated solar power
+module, you need to be careful. Depending on the azimuth of the system
+some tests have shown, that for some hours of the considered period the
+calculated power output of the concentrated solar power module peaks
+by a factor of e.g. 100 compared to the rest of the period. This was
+observed with increasing azimuth e.g. an azimuth of 270 degrees.
+These peaks in power output are not possible, so the final results
+have to be evaluated carefully. The interactive results in the end
+can help to identify possible peaks very well.
 
 Sinks
 =================================================
@@ -357,7 +367,7 @@ object, that describes the absorption chiller. The heat source can be waste heat
 The efficiency of the absorption chiller is described by the coefficient of Performance (COP).
 
 The necessary parameters for the characteristic equation method are found in the
-"characteristic_parameters.csv"in the folder "technical_parameters". According to the oemof.thermal
+"characteristic_parameters.csv" in the folder "technical_parameters". According to the oemof.thermal
 documentation the parameters for the absorption chillers ‘Rotartica’, ‘Safarik’, ‘Broad_01’ and
 ‘Broad_02’ are published by `"Puig-Arnavat et al" <https://www.sciencedirect.com/science/article/pii/S0140700709001947?casa_token=WPjcotFne6UAAAAA:ytQ9vrYSHR98goYWIFc-vElyZo98FCXk-DgvdE4mxxBvR2QLNT3y2-p2QQ08t5Cd3Txqmfw1NTs>`_.
 The parameters for the machine named "Kuehn" is published by `"Kühn and Ziegler" <https://heatpumpingtechnologies.org/publications/operational-results-of-a-10-kw-absorption-chillerin-heat-pump-mode/>`_.
@@ -377,7 +387,16 @@ The labels refer to the following machine types:
 | Kuehn     | Single-effect hot-water-fired H2O/LiBr 10 kW absorption chiller    |
 +-----------+--------------------------------------------------------------------+
 
-If data is availible, new
+If data for other specific machines are available, they can be added to the
+"characteristic_parameters.csv" mentioned above. Please note, that the values
+in the "characteristic_parameters.csv" are measured by tests. Therefore the
+values for the label "Kuehn" were measured for a machine with 10 kW nominal
+cooling capacity. If you calculate a system with a maximum investment of e.g.
+100 kW cooling capacity, you should consider that the model assumes, that
+these values are linear and scalable. This is not yet proven, so the results
+of such a model have to be validated further. Additionally the ambient
+temperature dependence of the cooling capacity (cooling output) is not
+considered by the model.
 
 The absorption heat transformers are implemented by using  `"oemof.thermal" <https://github.com/oemof/oemof-thermal>`_ .
 

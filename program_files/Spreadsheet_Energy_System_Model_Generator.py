@@ -34,11 +34,11 @@ The scenario.xlsx-file must contain the following elements:
 |             | Albedo (PV ONLY), Altitude (PV ONLY),                  |
 |             | Latitude (PV ONLY), Longitude (PV ONLY)                |
 +-------------+--------------------------------------------------------+
-|transformers | label, active, transformer type, input, output,        | 
-|             | output2, efficiency, efficiency2,                      | 
+|transformers | label, active, transformer type, input, output,        |
+|             | output2, efficiency, efficiency2,                      |
 |             | variable input costs /(CU/kWh),                        |
 |             | variable output costs /(CU/kWh),                       |
-|             | existing capacity /(kW),                               | 
+|             | existing capacity /(kW),                               |
 |             | max. investment capacity /(kW),                        |
 |             | min. investment capacity /(kW),                        |
 |             | periodical costs /(CU/(kW a))                          |
@@ -53,7 +53,7 @@ The scenario.xlsx-file must contain the following elements:
 |             | variable output costs                                  |
 +-------------+--------------------------------------------------------+
 |powerlines   | label, active, bus_1, bus_2, (un)directed, efficiency, |
-|             | existing capacity /(kW),                               | 
+|             | existing capacity /(kW),                               |
 |             | min. investment capacity /(kW),                        |
 |             | max. investment capacity /(kW),                        |
 |             | variable costs /(CU/kWh), periodical costs /(CU/(kW a))|
@@ -99,7 +99,7 @@ else:
     import data_preparation
 
 
-def sesmg_main(scenario_file: str, result_path: str, num_threads: int, 
+def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
                graph: bool, criterion_switch: bool, xlsx_results: bool,
                console_results: bool, timeseries_prep: list, solver: str):
     """
@@ -190,7 +190,8 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     esys.add(*nodes)
 
     # PRINTS A GRAPH OF THE ENERGY SYSTEM
-    create_graph.create_graph(filepath=result_path, nodes_data=nodes_data, show=graph)
+    if graph:
+        create_graph.create_graph(filepath=result_path, nodes_data=nodes_data)
 
     # OPTIMIZES THE ENERGYSYSTEM AND RETURNS THE OPTIMIZED ENERGY SYSTEM
     om = optimize_model.least_cost_model(esys, num_threads, nodes_data, busd, solver)
