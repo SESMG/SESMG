@@ -15,6 +15,8 @@ Your publication/thesis/project is missing? Contact us!
 
 - Budde, Janik: "Wärmepumpen in Stadtquartieren - Untersuchung anhand eines Quartiers in Herne" (Bachelor Thesis, FH Münster, 2020)
 
+- Sivabalasingam, Piriyanha: “Fortschreibung des Energiekonzeptes für ein Quartier mit Hilfe des Open Energy Modelling Frameworks” (Master Thesis, FH Münster, 2021)
+
 
 
 **Projects**
