@@ -153,16 +153,17 @@ PV
 -------------------------
 - **Modul Model**: Module name, according to the database used. Possible Modul Models are presented `here <https://github.com/chrklemm/SESMG/blob/v0.2/docs/getting_started/modul_name.csv>`_.
 - **Inverter Model**: Inverter name, according to the database used. Possible Inverter Models are presented `here <https://github.com/chrklemm/SESMG/blob/v0.2/docs/getting_started/inverter_names.csv>`_.
-- **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Only required for photovoltaic sources, use fill character "0" for other technologies.
-- **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). Only required for photovoltaic sources, use fill character "0" for other technologies.
+- **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Use fill character "0" for other technologies.
+- **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). Use fill character "0" for other technologies.
 - **Albedo**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "0" for other technologies.
 - **Altitude**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
 - **Latitude**: Geographic latitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
 - **Longitude**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
 Concentrated Solar Power
 ------------------------------
-.. note::
-	upcoming feature
+- **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Use fill character "0" for other technologies.
+- **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). Use fill character "0" for other technologies.
+- **Cleanliness**: Cleanliness of a parabolic through collector. Only required for Concentrated Solar Power source, use fill character "0" for other technologies.
 Solar Thermal Flatplate
 ------------------------------
 .. note::
