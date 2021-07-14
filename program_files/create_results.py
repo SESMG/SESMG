@@ -245,6 +245,9 @@ class Results:
                     += outflow2 * comp['variable output constraint costs 2']
                 constraint_costs \
                     += inflow1 * comp['variable input constraint costs']
+            if comp_type == 'storage':
+                constraint_costs \
+                    += inflow1 * comp['variable input constraint costs']
 
         if comp_type != 'excess' and comp_type != 'shortage':
             constraint_costs += investment \
@@ -542,7 +545,8 @@ class Results:
                 if comp['active']:
                     # needed due to the structure of thermal flat plate
                     if i == 'sources' and comp[
-                            'technology'] == 'solar_thermal_flat_plate':
+                            'technology'] in ['solar_thermal_flat_plate',
+                                              'concentrated_solar_power']:
                         comp['label'] = comp['label'] + '_collector'
 
                     if i == 'buses_e':
