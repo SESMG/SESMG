@@ -553,7 +553,7 @@ class Sources:
                 temp_collector_outlet = so['Temperature Inlet']
                                         + so['Temperature Difference'],
                 temp_amb=data['temperature'],
-                e_dir_hor=data['dirhi'])
+                E_dir_hor=data['dirhi'])
             
             # set variables collectors_heat and irradiance and conversion
             # from W/sqm to kW/sqm
