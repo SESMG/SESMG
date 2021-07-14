@@ -531,7 +531,7 @@ class Results:
         self.esys = energy_system
         self.results = solph.processing.results(optimization_model)
         self.df_list_of_components = pd.DataFrame(columns=self.copt)
-
+        self.df_result_table = pd.DataFrame()
         for i in components_dict:
             investment = None
             variable_costs = None
