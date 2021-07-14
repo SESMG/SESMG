@@ -861,115 +861,41 @@ def urban_district_upscaling_pre_processing(pre_scenario: str, standard_paramete
         solarthermal_standard_parameters = sources_standard_parameters.loc['solar_thermal_collector']
 
         # create pv-sources and solar thermal-sources including area competition
-        if j['azimuth 1 (°)']:
-            plant_id = '1'
-
-            create_pv_source(building_id=j['label'],
-                             plant_id=plant_id,
-                             azimuth=j['azimuth 1 (°)'],
-                             tilt=j['surface tilt 1 (°)'],
-                             area=j['roof area 1 (m²)'],
-                             latitude=j['latitude'],
-                             longitude=j['longitude'],
-                             pv_standard_parameters=pv_standard_parameters)
-            create_solarthermal_source(building_id=j['label'],
-                             plant_id=plant_id,
-                             azimuth=j['azimuth 1 (°)'],
-                             tilt=j['surface tilt 1 (°)'],
-                             area=j['roof area 1 (m²)'],
-                             latitude=j['latitude'],
-                             longitude=j['longitude'],
-                             solarthermal_standard_parameters=solarthermal_standard_parameters)
-            create_competition_constraint(component1=j['label'] + '_' + plant_id + '_pv_source',
-                                          factor1=1/pv_standard_parameters['Capacity per Area (kW/m2)'],
-                                          component2=j['label'] + '_' + plant_id + '_solarthermal_source',
-                                          factor2=1/solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
-                                          limit=j['roof area 1 (m²)'])
-
-
-
-        if j['azimuth 2 (°)']:
-            plant_id = '2'
-
-            create_pv_source(building_id=j['label'],
-                             plant_id=plant_id,
-                             azimuth=j['azimuth 2 (°)'],
-                             tilt=j['surface tilt 2 (°)'],
-                             area=j['roof area 2 (m²)'],
-                             latitude=j['latitude'],
-                             longitude=j['longitude'],
-                             pv_standard_parameters=pv_standard_parameters)
-            create_solarthermal_source(building_id=j['label'],
-                             plant_id=plant_id,
-                             azimuth=j['azimuth 2 (°)'],
-                             tilt=j['surface tilt 2 (°)'],
-                             area=j['roof area 2 (m²)'],
-                             latitude=j['latitude'],
-                             longitude=j['longitude'],
-                             solarthermal_standard_parameters=solarthermal_standard_parameters)
-            create_competition_constraint(component1=j['label'] + '_' + plant_id + '_pv_source',
-                                          factor1=1/pv_standard_parameters['Capacity per Area (kW/m2)'],
-                                          component2=j['label'] + '_' + plant_id + '_solarthermal_source',
-                                          factor2=1/solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
-                                          limit=j['roof area 2 (m²)'])
-
-        if j['azimuth 3 (°)']:
-            plant_id = '3'
-
-            create_pv_source(building_id=j['label'],
-                             plant_id=plant_id,
-                             azimuth=j['azimuth 3 (°)'],
-                             tilt=j['surface tilt 3 (°)'],
-                             area=j['roof area 3 (m²)'],
-                             latitude=j['latitude'],
-                             longitude=j['longitude'],
-                             pv_standard_parameters=pv_standard_parameters)
-            create_solarthermal_source(building_id=j['label'],
-                             plant_id=plant_id,
-                             azimuth=j['azimuth 3 (°)'],
-                             tilt=j['surface tilt 1 (°)'],
-                             area=j['roof area 3 (m²)'],
-                             latitude=j['latitude'],
-                             longitude=j['longitude'],
-                             solarthermal_standard_parameters=solarthermal_standard_parameters)
-            create_competition_constraint(component1=j['label'] + '_' + plant_id + '_pv_source',
-                                          factor1=1/pv_standard_parameters['Capacity per Area (kW/m2)'],
-                                          component2=j['label'] + '_' + plant_id + '_solarthermal_source',
-                                          factor2=1/solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
-                                          limit=j['roof area 3 (m²)'])
-
-        if j['azimuth 4 (°)']:
-            plant_id = '4'
-
-            create_pv_source(building_id=j['label'],
-                             plant_id=plant_id,
-                             azimuth=j['azimuth 4 (°)'],
-                             tilt=j['surface tilt 4 (°)'],
-                             area=j['roof area 4 (m²)'],
-                             latitude=j['latitude'],
-                             longitude=j['longitude'],
-                             pv_standard_parameters=pv_standard_parameters)
-            create_solarthermal_source(building_id=j['label'],
-                             plant_id=plant_id,
-                             azimuth=j['azimuth 4 (°)'],
-                             tilt=j['surface tilt 4 (°)'],
-                             area=j['roof area 4 (m²)'],
-                             latitude=j['latitude'],
-                             longitude=j['longitude'],
-                             solarthermal_standard_parameters=solarthermal_standard_parameters)
-            create_competition_constraint(component1=j['label'] + '_' + plant_id + '_pv_source',
-                                          factor1=1/pv_standard_parameters['Capacity per Area (kW/m2)'],
-                                          component2=j['label'] + '_' + plant_id + '_solarthermal_source',
-                                          factor2=1/solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
-                                          limit=j['roof area 4 (m²)'])
+        for i in range(1, 5):
+            if j['azimuth %1d (°)' % i]:
+                plant_id = str(i)
+                if j['photovoltaic'] in ['yes', 'Yes', 1]:
+                    create_pv_source(building_id=j['label'],
+                                     plant_id=plant_id,
+                                     azimuth=j['azimuth %1d (°)' % i],
+                                     tilt=j['surface tilt %1d (°)' % i],
+                                     area=j['roof area %1d (m²)' % i],
+                                     latitude=j['latitude'],
+                                     longitude=j['longitude'],
+                                     pv_standard_parameters=pv_standard_parameters)
+                if j['solarthermal'] in ['yes', 'Yes', 1]:
+                    create_solarthermal_source(building_id=j['label'],
+                                     plant_id=plant_id,
+                                     azimuth=j['azimuth %1d (°)' % i],
+                                     tilt=j['surface tilt %1d (°)' % i],
+                                     area=j['roof area %1d (m²)' % i],
+                                     latitude=j['latitude'],
+                                     longitude=j['longitude'],
+                                     solarthermal_standard_parameters=solarthermal_standard_parameters)
+                if j['photovoltaic'] in ['yes', 'Yes', 1] and j['solarthermal'] in ['yes', 'Yes', 1]:
+                    create_competition_constraint(component1=j['label'] + '_' + plant_id + '_pv_source',
+                                                  factor1=1/pv_standard_parameters['Capacity per Area (kW/m2)'],
+                                                  component2=j['label'] + '_' + plant_id + '_solarthermal_source',
+                                                  factor2=1/solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
+                                                  limit=j['roof area %1d (m²)' % i])
 
         # creates heat-pumps
-        if j['gchp area (m2)']:
+        if j['gchp'] in ['Yes', 'yes', 1] and j['gchp area (m2)']:
             create_gchp(id=j['label'], area=j['gchp area (m2)'],
                         standard_parameters=standard_parameters)
 
         # creates heat-pumps
-        if j['ashp'] == 'yes' or j['ashp'] == 'Yes' or j['ashp'] == 1:
+        if j['ashp'] in ['Yes', 'yes', 1]:
             create_ashp(id=j['label'],
                         standard_parameters=standard_parameters)
 
