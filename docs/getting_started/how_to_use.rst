@@ -163,11 +163,36 @@ Concentrated Solar Power
 ------------------------------
 - **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Use fill character "0" for other technologies.
 - **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). Use fill character "0" for other technologies.
+- **ETA 0**: Optical efficiency of the collector. Use fill character "0" for other technologies.
+- **A1**: Collector specific linear heat loss coefficient. Use fill character "0" for other technologies.
+- **A2**: Collector specific quadratic heat loss coefficient. Use fill character "0" for other technologies.
+- **C1**: Collector specific thermal loss parameter. Only required for Concentrated Solar Power source, use fill character "0" for other technologies.
+- **C2**: Collector specific thermal loss parameter. Only required for Concentrated Solar Power source, use fill character "0" for other technologies.
+- **Temperature Inlet** in (°C): Inlet temperature of the solar heat collector module. Use fill character "0" for other technologies.
+- **Temperature Difference** in (°C): Temperature Difference between in- and outlet temperature of the solar heat collector module. Use fill character "0" for other technologies.
 - **Cleanliness**: Cleanliness of a parabolic through collector. Only required for Concentrated Solar Power source, use fill character "0" for other technologies.
+- **Electric Consumption**: Electric consumption of the collector system. Example: If value is set to 0,05, the electric consumption is 5 % of the energy output. Use fill character "0" for other technologies.
+- **Peripheral Losses**: Heat loss coefficient for losses in the collector's peripheral system. Use fill character "0" for other technologies.
+**Exemplary values for concentrated_solar_power technology**:
+
+.. csv-table:: Exemplary values for concentrated_solar_power technology (The parameters refer to `Janotte, N; et al <https://www.sciencedirect.com/science/article/pii/S1876610214004664>`_)
+   :header: Cleanliness,ETA 0,A1,A2,C1,C2
+   
+   solar heat,solar heat,solar heat,solar heat,solar heat,solar heat
+   0.9,0.816,-0.00159,0.0000977,0.0622,0.00023
+
+
 Solar Thermal Flatplate
 ------------------------------
-.. note::
-	upcoming feature
+- **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Use fill character "0" for other technologies.
+- **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). Use fill character "0" for other technologies.
+- **ETA 0**: Optical efficiency of the collector. Use fill character "0" for other technologies.
+- **A1**: Collector specific linear heat loss coefficient. Use fill character "0" for other technologies.
+- **A2**: Collector specific quadratic heat loss coefficient. Use fill character "0" for other technologies.
+- **Temperature Inlet** in (°C): Inlet temperature of the solar heat collector module. Use fill character "0" for other technologies.
+- **Temperature Difference** in (°C): Temperature Difference between in- and outlet temperature of the solar heat collector module. Use fill character "0" for other technologies.
+- **Electric Consumption**: Electric consumption of the collector system. Example: If value is set to 0,05, the electric consumption is 5 % of the energy output. Use fill character "0" for other technologies.
+- **Peripheral Losses**: Heat loss coefficient for losses in the collector's peripheral system. Use fill character "0" for other technologies.
 Timeseries
 -------------------------
 If you have choosen the technology "timeseries", you have to include a timeseries in the  `Time series sheet`_ or use default one.
@@ -262,6 +287,7 @@ The following parameters are only required, if "transformer type" is set to "Abs
 - **chilling temperature** in (°C): Output temperature which is needed for the cooling demand.
 - **electrical input conversion factor**: Specifies the relation of electricity consumption to energy input. Example: A value of 0,05 means, that the system comsumes 5 % of the input energy as electric energy.
 - **recooling temperature difference** in (°C): Defines the temperature difference between temperature source for recooling and recooling cycle.
+- **heat capacity of source**: Defines the heat capacity of the connected heat source e.g. extracted waste heat.
 
   
 .. csv-table:: Exemplary input for the transformers sheet
