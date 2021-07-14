@@ -280,7 +280,7 @@ class Sources:
             Christian Klemm - christian.klemm@fh-muenster.de
         """
         # reads the timeseries sheet of the scenario file
-        time_series = pd.read_excel(filepath, sheet_name='time_series')
+        time_series = pd.read_excel(filepath, sheet_name='time series')
         
         if so['fixed'] == 1:
             # sets the timeseries attribute for a fixed source
