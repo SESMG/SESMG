@@ -36,4 +36,7 @@ The functions under the topic **Results** are used to analyze results older then
 	The detailed modelling results are also stored within the "results" folder.
 
 Timeseries preperation 
-----------------------
+======================
+.. csv-table:: 
+	:file: ../getting_started/timeseries_preperation.csv
+	:header-rows: 1
