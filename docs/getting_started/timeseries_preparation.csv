@@ -1,8 +1,8 @@
-method;description;columns to be filled
-k_means;n.n.;n.n.
-averaging;n.n.;n.n.
-slicing A;use every n-th period;n.n.
-slicing B;delet every n-th period;n.n.
-downsampling A;use every n-th period;n.n.
-downsampling B;delet every n-th period;n.n.
-heuristic selection;n.n.;n.n.
+method,description,columns to be filled
+k_means,n.n.,n.n.
+averaging,n.n.,n.n.
+slicing A,use every n-th period,n.n.
+slicing B,delet every n-th period,n.n.
+downsampling A,use every n-th period,n.n.
+downsampling B,delet every n-th period,n.n.
+heuristic selection,n.n.,n.n.
