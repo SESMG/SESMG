@@ -38,5 +38,5 @@ The functions under the topic **Results** are used to analyze results older then
 Timeseries preperation 
 ======================
 .. csv-table:: 
-	:file: ../getting_started/timeseries_preperation.csv
+	:file: ../getting_started/timeseries_preparation.csv
 	:header-rows: 1
