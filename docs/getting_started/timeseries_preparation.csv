@@ -6,3 +6,4 @@ slicing B,delet every n-th period,n.n.
 downsampling A,use every n-th period,n.n.
 downsampling B,delet every n-th period,n.n.
 heuristic selection,n.n.,n.n.
+random sampling,n.n.,n.n.
