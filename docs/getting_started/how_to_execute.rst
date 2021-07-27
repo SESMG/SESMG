@@ -22,6 +22,12 @@ Description of the GUI functions
 
 Select the xlsx-scenario to be executed.
 
+**With the result processing parameters one has the possibility to decide,**
+
+	- whether xlsx files should be created or not (1) 
+	- whether a console log should be created or not (2)
+	- whether the Plotly Dash should be created or not (3)
+
 Now there are three functions for eventing with the scenario choosen:
  1. Displays the currently selected xlsx-scenario as graph.
  2. Modeling and optimization of the selected xlsx-scenario with subsequent output of results.  
