@@ -374,8 +374,8 @@ to be entered:
 - **label**: Unique designation of the link. The following format is recommended: "ID_energy sector_transformer"
 - **comment**: Space for an individual comment, e.g. an indication of  which measure this component belongs to.
 - **active**: Specifies whether the link shall be included to the model. 0 = inactive, 1 = active. 
-- **bus_1**: First bus to which the link is connected. If it is a directed link, this is the input bus.
-- **bus_2**: Second bus to which the link is connected. If it is a directed link, this is the output bus.
+- **bus1**: First bus to which the link is connected. If it is a directed link, this is the input bus.
+- **bus2**: Second bus to which the link is connected. If it is a directed link, this is the output bus.
 - **(un)directed**: Specifies whether it is a directed or an undirected link. Input options: "directed", "undirected".
 - **efficiency**: Specifies the efficiency of the link. Values between 0 and 1 are allowed entries.
 Costs
