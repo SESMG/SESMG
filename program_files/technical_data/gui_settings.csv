@@ -1,0 +1,15 @@
+scenario_path,C:/Users/klemm/Documents/PythonScripts/00_SESMG_v0.2/scenario_v0.2.0.xlsx
+save_path_directory,results
+save_path,
+num_threads,2
+timeseries_algorithm,random sampling
+timeseries_cluster,10
+timeseries_criterion,none
+timeseries_period,days
+timeseries_season,none
+graph_state,0
+criterion_state,0
+solver_select,cbc
+xlsx_select_state,1
+console_select_state,1
+plotly_select_state,1
