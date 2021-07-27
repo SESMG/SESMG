@@ -63,7 +63,10 @@ Spreadsheet\_Energy\_System\_Model\_Generator module
    
 data\_preparation module 
 --------------------------------------------
-in Progress 
+.. automodule:: program_files.data_preparation
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 create\_energy\_system module
 --------------------------------------------
