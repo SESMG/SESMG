@@ -184,12 +184,21 @@ of 40 °C and an outside average temperature of 10°C result in a
 temperature difference of 30 K. So, in this case the heat power
 output is 1,504 kW and the conversion factor roundabout 1,68 (sqm/kW).
 
-.. figure:: ../images/example_conversion_factor_flat_plate.png
-   :width: 50%
-   :alt: solar_thermal_conversion_factor_example
-   :align: center
++---------------------------+--------+------+-----+------+-----+------+------+------+------+------+
+|                                                              |Power output per collector module |
++---------------------------+--------+------+-----+------+-----+------+------+------+------+------+
+|                                                              |G=1000W/sqm                       |
++---------------------------+--------+------+-----+------+-----+------+------+------+------+------+   
+|                           |Aperture|      |     |      |Gross|Tm-Ta                             |
++---------------------------+area    |Gross |Gross|Gross |area +------+------+------+------+------+
+|                           |(Aa)    |length|width|heigth|(AG) |0K    |10K   |30K   |50K   |70K   |
++===========================+========+======+=====+======+=====+======+======+======+======+======+
+|Collector name.            |sqm     |mm    |mm   |mm    |sqm  |W     |W     |W     |W     |W     |
++---------------------------+--------+------+-----+------+-----+------+------+------+------+------+
+|Flachkollektor FK 253 HA-4A|2.34    |2104  |1204 |80    |2.53 |1808  |1712  |1504  |1278  |1032  |
++---------------------------+--------+------+-----+------+-----+------+------+------+------+------+
 
-   Example for calculation of conversion factor.
+Example for calculation of conversion factor.
 
 If you are calculating a system with the concentrated solar power
 module, you need to be careful. Depending on the azimuth of the system
