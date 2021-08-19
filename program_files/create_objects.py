@@ -614,7 +614,8 @@ class Sources:
         # Import weather Data
         data = nodes_data['weather data']
 
-        data.index = pd.to_datetime(data.index.values, utc=True)
+        # data.index = pd.to_datetime(data.index.values, utc=True)
+        data.index = pd.to_datetime(data["timestamp"].values, utc=True)
         data.index = pd.to_datetime(data.index).tz_convert("Europe/Berlin")
 
         # Create Source from "Sources" Table
@@ -1610,7 +1611,8 @@ class Transformers:
 
         # Import weather Data
         data = nodes_data['weather data']
-        data.index = pd.to_datetime(data.index.values, utc=True)
+        # data.index = pd.to_datetime(data.index.values, utc=True)
+        data.index = pd.to_datetime(data["timestamp"].values, utc=True)
         data.index = pd.to_datetime(data.index).tz_convert("Europe/Berlin")
 
         # creates a transformer object for every transformer item within nd
