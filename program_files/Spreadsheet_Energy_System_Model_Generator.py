@@ -83,20 +83,13 @@ import os
 import pandas as pd
 from threading import *
 import sys
-if sys.platform.startswith("win"):
-    from program_files import (create_objects,
-                               create_results,
-                               create_energy_system,
-                               optimize_model,
-                               create_graph,
-                               data_preparation)
-else:
-    import create_objects
-    import create_results
-    import create_energy_system
-    import optimize_model
-    import create_graph
-    import data_preparation
+from program_files import (create_objects,
+                           create_results,
+                           create_energy_system,
+                           optimize_model,
+                           create_graph,
+                           data_preparation)
+
 
 
 def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
@@ -130,14 +123,23 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
 
     # CRITERION SWITCH
-    print(criterion_switch)
-    if criterion_switch == True:
+    if criterion_switch:
         data_preparation.change_optimization_criterion(nodes_data)
 
+    if sys.platform.startswith("win"):
+        scheme_path = \
+            os.path.join(os.path.dirname(__file__)
+                         + r'\technical_data\hierarchical_selection'
+                           r'_schemes.xlsx')
+    else:
+        scheme_path = \
+            os.path.join(os.path.dirname(__file__)
+                         + r'/technical_data/hierarchical_selection'
+                           r'_schemes.xlsx')
     # Timeseries Preprocessing
     data_preparation.timeseries_preparation(timeseries_prep_param=timeseries_prep,
                                             nodes_data=nodes_data,
-                                            scheme_path=os.path.join(os.path.dirname(__file__) + r'\technical_data\hierarchical_selection_schemes.xlsx'),
+                                            scheme_path=scheme_path,
                                             result_path=result_path)
 
     if timeseries_prep[0] != 'none':
@@ -145,6 +147,10 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
 
     # CREATES AN ENERGYSYSTEM AS DEFINED IN THE SCENARIO FILE
     esys = create_energy_system.define_energy_system(nodes_data=nodes_data)
+
+    weather_data = nodes_data['weather data']
+    time_series = nodes_data['timeseries']
+
     # CREATES AN LIST OF COMPONENTS
     nodes = []
 
@@ -158,17 +164,18 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     # CREATES SOURCE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
     t1 = Thread(target=create_objects.Sources,
-                args=(nodes_data, nodes, busd, scenario_file,))
+                args=(nodes_data, nodes, busd, time_series, weather_data))
     t1.start()
     # CREATES SINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
     t2 = Thread(target=create_objects.Sinks, args=(nodes_data, busd,
-                                                   nodes,))
+                                                   nodes, time_series,
+                                                   weather_data))
     t2.start()
     # CREATES TRANSFORMER OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM
     # TO THE lIST OF COMPONENTS
     t3 = Thread(target=create_objects.Transformers, args=(nodes_data, nodes,
-                                                          busd,))
+                                                          busd, weather_data))
     t3.start()
     # CREATES STORAGE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS

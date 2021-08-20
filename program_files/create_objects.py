@@ -99,10 +99,10 @@ def buses(nodes_data: dict, nodes: list) -> dict:
 class Sources:
     """
         Creates source objects.
-    """
-    
-    def create_source(self, so, timeseries_args, output):
-        """Creates an oemof source with fixed or unfixed timeseries
+
+
+    #def create_source(self, so, timeseries_args, output):
+        Creates an oemof source with fixed or unfixed timeseries
 
         There are four options for labeling source objects to be created:
 
@@ -254,7 +254,7 @@ class Sources:
         # Returns logging info
         logging.info('   ' + 'Commodity Source created: ' + so['label'])
     
-    def timeseries_source(self, so: dict, filepath: str):
+    def timeseries_source(self, so: dict, time_series):
         """
             Creates an oemof source object from a pre-defined
             timeseries with the use of the create_source method.
@@ -279,8 +279,6 @@ class Sources:
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
-        # reads the timeseries sheet of the scenario file
-        time_series = pd.read_excel(filepath, sheet_name='time series')
         
         if so['fixed'] == 1:
             # sets the timeseries attribute for a fixed source
@@ -422,9 +420,6 @@ class Sources:
             'hub_height': so['Hub Height']}
         wind_turbine = WindPowerPlant(**turbine_data)
 
-        # change type of index to datetime and set time zone
-        weather_df_wind.index = \
-            pd.to_datetime(weather_df_wind.index).tz_convert('Europe/Berlin')
         data_height = {'pressure': 0, 'temperature': 2, 'wind_speed': 10,
                        'roughness_length': 0}
         weather_df_wind = \
@@ -596,7 +591,7 @@ class Sources:
                        "{:2.2f}".format(numpy.sum(irradiance)) + ' kWh/(m²a)')
 
     def __init__(self, nodes_data: dict, nodes: list, busd: dict,
-                 filepath: str):
+                 time_series, weather_data):
         """
             Inits the source class
             ---
@@ -611,13 +606,6 @@ class Sources:
         # Initialise a class intern copy of the bus dictionary
         self.busd = busd.copy()
 
-        # Import weather Data
-        data = nodes_data['weather data']
-
-        # data.index = pd.to_datetime(data.index.values, utc=True)
-        data.index = pd.to_datetime(data["timestamp"].values, utc=True)
-        data.index = pd.to_datetime(data.index).tz_convert("Europe/Berlin")
-
         # Create Source from "Sources" Table
         for i, so in nodes_data['sources'].iterrows():
             # Create a source object for every source,
@@ -629,20 +617,20 @@ class Sources:
                 
                 # Create Photovoltaic Sources
                 elif so['technology'] == 'photovoltaic':
-                    self.pv_source(so, data)
+                    self.pv_source(so, weather_data)
                 
                 # Create Windpower Sources
                 elif so['technology'] == 'windpower':
-                    self.windpower_source(so, data)
+                    self.windpower_source(so, weather_data)
                 
                 # Create Time-series Sources
                 elif so['technology'] == 'timeseries':
-                    self.timeseries_source(so, filepath)
+                    self.timeseries_source(so, time_series)
 
                 # Create flat plate solar thermal Sources
                 elif so['technology'] in ['solar_thermal_flat_plate',
                                           'concentrated_solar_power']:
-                    self.solar_heat_source(so, data)
+                    self.solar_heat_source(so, weather_data)
             
         # appends created sources and other objects to the list of nodes
         for i in range(len(self.nodes_sources)):
@@ -788,7 +776,7 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-    def slp_sink(self, de: dict, nodes_data: dict):
+    def slp_sink(self, de: dict, nodes_data: dict, weather_data):
         """
             Creates a sink with a residential or commercial
             SLP time series.
@@ -822,7 +810,6 @@ class Sinks:
         electricity_slps = \
             ['h0', 'g0', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'l0', 'l1', 'l2']
         # Import weather Data
-        data = nodes_data["weather data"]
         # Importing timesystem parameters from the scenario
         ts = next(nodes_data['energysystem'].iterrows())[1]
         temp_resolution = ts['temporal resolution']
@@ -844,7 +831,7 @@ class Sinks:
         if de['load profile'] in heat_slps_commercial \
                 or de['load profile'] in heat_slps:
             # sets the parameters of the heat slps
-            args = {'temperature': data['temperature'],
+            args = {'temperature': weather_data['temperature'],
                     'shlp_type': de['load profile'],
                     'wind_class': de['wind class'],
                     'annual_heat_demand': 1,
@@ -878,7 +865,7 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-    def richardson_sink(self, de: dict, nodes_data: dict):
+    def richardson_sink(self, de: dict, nodes_data: dict, weather_data):
         """
             Creates a sink with stochastically timeseries.
         
@@ -905,8 +892,8 @@ class Sinks:
         import richardsonpy.classes.occupancy as occ
         import richardsonpy.classes.electric_load as eload
         # Import Weather Data
-        dirhi = nodes_data["weather data"]["dirhi"].values.flatten()
-        dhi = nodes_data["weather data"]["dhi"].values.flatten()
+        dirhi = weather_data["dirhi"].values.flatten()
+        dhi = weather_data["dhi"].values.flatten()
         
         # Conversion of irradiation from W/m^2 to kW/m^2
         dhi = dhi / 1000
@@ -970,7 +957,8 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-    def __init__(self, nodes_data: dict, busd: dict, nodes: list):
+    def __init__(self, nodes_data: dict, busd: dict, nodes: list, time_series,
+                 weather_data):
         """ Inits the sink class.
         ---
         Other variables:
@@ -1001,15 +989,15 @@ class Sinks:
                 
                 # Create Sinks with Time-series
                 elif de['load profile'] == 'timeseries':
-                    self.timeseries_sink(de, nodes_data['timeseries'])
+                    self.timeseries_sink(de, time_series)
                 
                 # Create Sinks with SLP's
                 elif de['load profile'] in slps:
-                    self.slp_sink(de, nodes_data)
+                    self.slp_sink(de, nodes_data, weather_data)
                 
                 # Richardson
                 elif de['load profile'] == 'richardson':
-                    self.richardson_sink(de, nodes_data)
+                    self.richardson_sink(de, nodes_data, weather_data)
         
         # appends created sinks on the list of nodes
         for i in range(len(self.nodes_sinks)):
@@ -1603,17 +1591,11 @@ class Transformers:
                 }}
         self.create_transformer(tf, inputs, outputs, conversion_factors)
 
-    def __init__(self, nodes_data, nodes, busd):
+    def __init__(self, nodes_data, nodes, busd, weather_data):
         """ TODO Docstring missing """
         # renames variables
         self.busd = busd
         self.nodes_transformer = []
-
-        # Import weather Data
-        data = nodes_data['weather data']
-        # data.index = pd.to_datetime(data.index.values, utc=True)
-        data.index = pd.to_datetime(data["timestamp"].values, utc=True)
-        data.index = pd.to_datetime(data.index).tz_convert("Europe/Berlin")
 
         # creates a transformer object for every transformer item within nd
         for i, t in nodes_data['transformers'].iterrows():
@@ -1624,7 +1606,7 @@ class Transformers:
                 
                 # Create Compression Heat Transformer
                 elif t['transformer type'] == 'CompressionHeatTransformer':
-                    self.compression_heat_transformer(t, data)
+                    self.compression_heat_transformer(t, weather_data)
                 
                 # Create Extraction Turbine CHPs
                 elif t['transformer type'] == 'ExtractionTurbineCHP':
@@ -1645,7 +1627,7 @@ class Transformers:
 
                 # Create Absorption Chiller
                 elif t['transformer type'] == 'AbsorptionHeatTransformer':
-                    self.absorption_heat_transformer(t, data)
+                    self.absorption_heat_transformer(t, weather_data)
 
                 # Error Message for invalid Transformers
                 else:

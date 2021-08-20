@@ -6,9 +6,9 @@ from tkinter import filedialog
 import subprocess
 import os
 import csv
-from Spreadsheet_Energy_System_Model_Generator import sesmg_main
-from Demo_Tool import demo_tool
-from urban_district_upscaling import urban_district_upscaling_GUI
+from program_files.Spreadsheet_Energy_System_Model_Generator import sesmg_main
+from program_files.Demo_Tool import demo_tool
+from program_files.urban_district_upscaling import urban_district_upscaling_GUI
 
 
 def create_elements(sheet, elements, texts, values, first_row):
