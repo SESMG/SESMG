@@ -683,9 +683,9 @@ class Results:
                                     self.comp_output2
 
                         elif comp['transformer type'] == \
-                                'compression_heat_transformer' or \
+                                'CompressionHeatTransformer' or \
                                 comp['transformer type'] == \
-                                'absorption_heat_transformer':
+                                'AbsorptionHeatTransformer':
 
                             self.df_result_table[
                                 comp['label'] + '_el_input'] = self.comp_input1
@@ -693,7 +693,7 @@ class Results:
                             transformer_type = comp['transformer type']
                             
                             if comp['transformer type'] == \
-                                    'absorption_heat_transformer':
+                                    'AbsorptionHeatTransformer':
                                 self.df_result_table[
                                     comp['label'] + '_heat_input'] = \
                                     self.comp_input2
