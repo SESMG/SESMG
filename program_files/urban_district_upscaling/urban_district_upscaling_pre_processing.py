@@ -814,6 +814,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str, standard_paramete
     # import the sheet which is filled by the user
     xls = pd.ExcelFile(pre_scenario)
     tool = xls.parse("tool")
+    parcel = xls.parse("parcel")
     central = xls.parse("central")
     central_comp(central, standard_parameters)
     # set variable for central heating if activated to decide rather a house
@@ -834,15 +835,15 @@ def urban_district_upscaling_pre_processing(pre_scenario: str, standard_paramete
     for i, j in tool.iterrows():
         # foreach building the three necessary buses will be created
         create_buses(j['label'],
-                      True if j['azimuth 1 (°)'] or j['azimuth 2 (°)'] else False,
-                      True if j['gchp area (m2)'] or j['ashp'] else False,
+                      True if j['azimuth (°) 1'] or j['azimuth (°) 2'] else False,
+                      True if j['parcel'] or j['ashp'] else False,
                       True if ((j['central heat'] == 'yes'
                                 or j['central heat'] == 'Yes'
                                 or j['central heat'] == 1)
                                and
                                central_heating_network) else False,
                       central_electricity_network,
-                      True if j['gchp area (m2)'] != 0 else False,
+                      True if j['parcel'] != 0 else False,
                       standard_parameters=standard_parameters)
         create_sinks(id=j['label'],
                      building_type=j['building type'],
@@ -854,45 +855,51 @@ def urban_district_upscaling_pre_processing(pre_scenario: str, standard_paramete
 
         # Define PV Standard-Parameters
         sources_standard_parameters = standard_parameters.parse('sources')
-        sources_standard_parameters.set_index('comment', inplace = True)
+        sources_standard_parameters.set_index('comment', inplace=True)
         pv_standard_parameters = sources_standard_parameters.loc['fixed photovoltaic source']
 
         # Define solar thermal Standard-Parameters
         solarthermal_standard_parameters = sources_standard_parameters.loc['solar_thermal_collector']
 
         # create pv-sources and solar thermal-sources including area competition
-        for i in range(1, 5):
-            if j['azimuth %1d (°)' % i]:
+        for i in range(1, 29):
+            if j['azimuth (°) %1d' % i]:
                 plant_id = str(i)
-                if j['photovoltaic'] in ['yes', 'Yes', 1]:
+                if j['st or pv %1d' % i] == "pv&st":
                     create_pv_source(building_id=j['label'],
                                      plant_id=plant_id,
-                                     azimuth=j['azimuth %1d (°)' % i],
-                                     tilt=j['surface tilt %1d (°)' % i],
-                                     area=j['roof area %1d (m²)' % i],
+                                     azimuth=j['azimuth (°) %1d' % i],
+                                     tilt=j['surface tilt (°) %1d' % i],
+                                     area=j['roof area (m²) %1d' % i],
                                      latitude=j['latitude'],
                                      longitude=j['longitude'],
                                      pv_standard_parameters=pv_standard_parameters)
-                if j['solarthermal'] in ['yes', 'Yes', 1]:
+                if j['st or pv %1d' % i] == "st" \
+                        or j['st or pv %1d' % i] == "pv&st":
                     create_solarthermal_source(building_id=j['label'],
                                      plant_id=plant_id,
-                                     azimuth=j['azimuth %1d (°)' % i],
-                                     tilt=j['surface tilt %1d (°)' % i],
-                                     area=j['roof area %1d (m²)' % i],
+                                     azimuth=j['azimuth (°) %1d' % i],
+                                     tilt=j['surface tilt (°) %1d' % i],
+                                     area=j['roof area (m²) %1d' % i],
                                      latitude=j['latitude'],
                                      longitude=j['longitude'],
                                      solarthermal_standard_parameters=solarthermal_standard_parameters)
-                if j['photovoltaic'] in ['yes', 'Yes', 1] and j['solarthermal'] in ['yes', 'Yes', 1]:
-                    create_competition_constraint(component1=j['label'] + '_' + plant_id + '_pv_source',
+                if j['st or pv %1d' % i] == "pv&st":
+                    create_competition_constraint(component1=
+                                                  j['label'] + '_'
+                                                  + plant_id + '_pv_source',
                                                   factor1=1/pv_standard_parameters['Capacity per Area (kW/m2)'],
-                                                  component2=j['label'] + '_' + plant_id + '_solarthermal_source',
+                                                  component2=
+                                                  j['label'] + '_'
+                                                  + plant_id + '_solarthermal_source',
                                                   factor2=1/solarthermal_standard_parameters['Capacity per Area (kW/m2)'],
-                                                  limit=j['roof area %1d (m²)' % i])
+                                                  limit=j['roof area (m²) %1d' % i])
 
         # creates heat-pumps
-        if j['gchp'] in ['Yes', 'yes', 1] and j['gchp area (m2)']:
-            create_gchp(id=j['label'], area=j['gchp area (m2)'],
-                        standard_parameters=standard_parameters)
+        #if j['gchp'] in ['Yes', 'yes', 1] and j['parcel']:
+        #    # TODO hier müssen wir uns noch einen Weg mit den Parzellen überlegen
+        #    create_gchp(id=j['label'], parcel=j['parcel'],
+        #                standard_parameters=standard_parameters)
 
         # creates heat-pumps
         if j['ashp'] in ['Yes', 'yes', 1]:
@@ -950,8 +957,8 @@ def urban_district_upscaling_pre_processing(pre_scenario: str, standard_paramete
 
 
 if __name__ == '__main__':
-    urban_district_upscaling_pre_processing(pre_scenario=os.path.dirname(__file__) + r"\pre_scenario.xlsx",
+    urban_district_upscaling_pre_processing(pre_scenario=os.path.dirname(__file__) + r"/pre_scenario_struenkede.xlsx",
                                             standard_parameter_path=os.path.dirname(__file__)
-                                                                    + r"\standard_parameters.xlsx",
-                                            output_scenario=os.path.dirname(__file__) + r"\test_scenario.xlsx",
-                                            plain_sheet=os.path.dirname(__file__) + r'\plain_scenario.xlsx')
+                                                                    + r"/standard_parameters.xlsx",
+                                            output_scenario=os.path.dirname(__file__) + r"/test_scenario.xlsx",
+                                            plain_sheet=os.path.dirname(__file__) + r'/plain_scenario.xlsx')
