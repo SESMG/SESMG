@@ -299,7 +299,7 @@ The following parameters are only required, if "transformer type" is set to "Abs
 	ID_ASCH_transformer,air source chiller,1,compression_heat_transformer,chiller,ID_hp_electricity_bus,ID_cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,Air,0,-10,0.4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	ID_AbsCH_transformer,absorption chiller,1,absorption_heat_transformer,chiller,ID_hp_electricity_bus,ID_cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Kuehn,85,10,0.05,6,0,0,0,0,0,0,0,0,0
 	ID_ASHP_transformer,air source heat pump,1,compression_heat_transformer,heat_pump,ID_hp_electricity_bus,ID_heat_bus,None,1,0,0,0,20,0,0,0,0,0,112.78,0,0,0,0,Air,60,0,0.4,0,0,0,0,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_chp_transformer,,0,GenericTransformer,0,district_gas_bus,district_chp_electricity_bus,district_heat_bus,0.35,0.55,0,0,20,0,0,0,0,0,50,130,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_chp_transformer,,0,GenericTransformer,0,district_gas_bus,district_chp_electricity_bus,district_heat_bus,0.35,0.55,0,0,20,0,0,0,0,0,50,0,375,130,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	
 .. figure:: ../images/BSP_Graph_transformer.png
    :width: 100 %
