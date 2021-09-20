@@ -5,4 +5,4 @@ echo File path: $(dirname "$0")
 echo --------------------------------
 cd $(dirname "$0")
 source bin/activate
-bin/python3 start_script.py
+bin/python3 program_files/GUI.py

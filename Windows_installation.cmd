@@ -1,5 +1,5 @@
 @echo ################################
-@echo Building the Virtual Enviroment
+@echo Building the Virtual Enviroment 
 @echo File path: %~dp0
 @echo ################################
 
