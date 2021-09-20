@@ -131,7 +131,7 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
 
     # CRITERION SWITCH
-    print(criterion_switch)
+    # print(criterion_switch)
     if criterion_switch == True:
         data_preparation.change_optimization_criterion(nodes_data)
 

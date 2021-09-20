@@ -848,7 +848,7 @@ class Sinks:
             os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
         # Importing timesystem parameters from the scenario
         ts = next(nodes_data['energysystem'].iterrows())[1]
-        print(ts)
+        # print(ts)
         temp_resolution = ts['temporal resolution']
         periods = ts["periods"]
         start_date = str(ts['start date'])
