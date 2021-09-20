@@ -45,6 +45,7 @@ def import_scenario(filepath: str) -> dict:
     xls = pd.ExcelFile(filepath)
 
     if 'sources' in xls.sheet_names:
+        # used for old scenarios and demo tool
         nd = {'buses': xls.parse('buses'),
               'energysystem': xls.parse('energysystem'),
               'sinks': xls.parse('sinks'),
@@ -57,10 +58,42 @@ def import_scenario(filepath: str) -> dict:
               'competition constraints': xls.parse('competition constraints')
               }
         # delete spreadsheet row within technology or units specific parameters
-        list = ["energysystem", "buses", "sinks", "sources", "transformers",
-                "storages", "links", "competition constraints"]
+        list = ["energysystem", "buses", "sinks", "sources", "transformers", "storages", "links","competition constraints"]
         for i in list:
             nd[i] = nd[i].drop(index=0)
+# todo delete lines
+    else:
+        sources = \
+            pd.concat(pd.read_excel(filepath,
+                                    sheet_name=['PV', 'ConcentratedSolar',
+                                                'FlatPlate', 'Timeseries',
+                                                'Wind', 'Commodity']),
+                      ignore_index=True, sort=True)
+        transformer = \
+            pd.concat(pd.read_excel(filepath,
+                                    sheet_name=['GenericTransformer',
+                                                'GenericCHP',
+                                                'HeatPump&Chiller',
+                                                'AbsorptionChiller']),
+                      ignore_index=True, sort=True)
+
+        storages = \
+            pd.concat(pd.read_excel(filepath,
+                                    sheet_name=['GenericStorage',
+                                                'StratifiedStorage']),
+                      ignore_index=True, sort=True)
+
+        nd = {'buses': xls.parse('buses'),
+              'energysystem': xls.parse('energysystem'),
+              'demand': xls.parse('sinks'),
+              'links': xls.parse('links'),
+              'sources': sources,
+              'timeseries': xls.parse('time series'),
+              'transformers': transformer,
+              'storages': storages,
+              'weather data': xls.parse('weather data'),
+              'competition_constraint': xls.parse('competition_constraint')
+             }
 
     # error message, if no nodes are provided
     if not nd:
@@ -106,19 +139,11 @@ def define_energy_system(nodes_data: dict):
 
     # initialisation of the energy system
     esys = solph.EnergySystem(timeindex=datetime_index)
+
     # defines a time series
     nodes_data['timeseries'].set_index('timestamp', inplace=True)
     nodes_data['timeseries'].index = pd.to_datetime(
-        nodes_data['timeseries'].index.values, utc=True)
-    nodes_data['timeseries'].index = \
-        pd.to_datetime(
-            nodes_data['timeseries'].index).tz_convert("Europe/Berlin")
-    nodes_data['weather data'].set_index('timestamp', inplace=True)
-    nodes_data['weather data'].index = pd.to_datetime(
-        nodes_data['weather data'].index.values, utc=True)
-    nodes_data['weather data'].index = \
-        pd.to_datetime(
-            nodes_data['weather data'].index).tz_convert("Europe/Berlin")
+        nodes_data['timeseries'].index)
 
     # returns logging info
     logging.info(
@@ -131,3 +156,24 @@ def define_energy_system(nodes_data: dict):
 
     # returns oemof energy system as result of this function
     return esys
+
+
+def format_weather_dataset(filepath: str):
+    """
+        The feedinlib can only read .csv data sets, so the weather data
+        from the .xlsx scenario file have to be converted into a .csv
+        data set and saved
+
+        :param filepath: path to excel file
+        :type filepath: str
+
+        Christian Klemm - christian.klemm@fh-muenster.de
+    """
+
+    # The feedinlib can only read .csv data sets, so the weather data
+    # from the .xlsx scenario file have to be converted into a
+    # .csv data set and saved
+    read_file = pd.read_excel(filepath, sheet_name='weather data')
+    read_file.to_csv(os.path.join(os.path.dirname(__file__))
+                     + '/interim_data/weather_data.csv', index=None,
+                     header=True)

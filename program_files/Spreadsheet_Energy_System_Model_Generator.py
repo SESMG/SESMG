@@ -34,11 +34,11 @@ The scenario.xlsx-file must contain the following elements:
 |             | Albedo (PV ONLY), Altitude (PV ONLY),                  |
 |             | Latitude (PV ONLY), Longitude (PV ONLY)                |
 +-------------+--------------------------------------------------------+
-|transformers | label, active, transformer type, input, output,        |
-|             | output2, efficiency, efficiency2,                      |
+|transformers | label, active, transformer type, input, output,        | 
+|             | output2, efficiency, efficiency2,                      | 
 |             | variable input costs /(CU/kWh),                        |
 |             | variable output costs /(CU/kWh),                       |
-|             | existing capacity /(kW),                               |
+|             | existing capacity /(kW),                               | 
 |             | max. investment capacity /(kW),                        |
 |             | min. investment capacity /(kW),                        |
 |             | periodical costs /(CU/(kW a))                          |
@@ -53,7 +53,7 @@ The scenario.xlsx-file must contain the following elements:
 |             | variable output costs                                  |
 +-------------+--------------------------------------------------------+
 |powerlines   | label, active, bus_1, bus_2, (un)directed, efficiency, |
-|             | existing capacity /(kW),                               |
+|             | existing capacity /(kW),                               | 
 |             | min. investment capacity /(kW),                        |
 |             | max. investment capacity /(kW),                        |
 |             | variable costs /(CU/kWh), periodical costs /(CU/(kW a))|
@@ -83,18 +83,26 @@ import os
 import pandas as pd
 from threading import *
 import sys
-from program_files import (create_objects,
-                           create_results,
-                           create_energy_system,
-                           optimize_model,
-                           create_graph,
-                           data_preparation)
+if sys.platform.startswith("win"):
+    from program_files import (create_objects,
+                               create_results,
+                               create_energy_system,
+                               optimize_model,
+                               create_graph,
+                               data_preparation)
+else:
+    import create_objects
+    import create_results
+    import create_energy_system
+    import optimize_model
+    import create_graph
+    import data_preparation
 
 
 
-def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
-               graph: bool, criterion_switch: bool, xlsx_results: bool,
-               console_results: bool, timeseries_prep: list, solver: str):
+def sesmg_main(scenario_file: str, result_path: str, num_threads: int, 
+               graph: bool, criterion_switch: bool, results: bool,
+               plotly: bool, timeseries_prep: list, solver: str):
     """
         Main function of the Spreadsheet System Model Generator
 
@@ -123,34 +131,25 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
 
     # CRITERION SWITCH
-    if criterion_switch:
+    print(criterion_switch)
+    if criterion_switch == True:
         data_preparation.change_optimization_criterion(nodes_data)
 
-    if sys.platform.startswith("win"):
-        scheme_path = \
-            os.path.join(os.path.dirname(__file__)
-                         + r'\technical_data\hierarchical_selection'
-                           r'_schemes.xlsx')
-    else:
-        scheme_path = \
-            os.path.join(os.path.dirname(__file__)
-                         + r'/technical_data/hierarchical_selection'
-                           r'_schemes.xlsx')
     # Timeseries Preprocessing
     data_preparation.timeseries_preparation(timeseries_prep_param=timeseries_prep,
                                             nodes_data=nodes_data,
-                                            scheme_path=scheme_path,
-                                            result_path=result_path)
+                                            scheme_path=os.path.join(os.path.dirname(__file__) + r'\technical_data\hierarchical_selection_schemes.xlsx'))
 
     if timeseries_prep[0] != 'none':
-        scenario_file = result_path + "/modified_scenario.xlsx"
+        scenario_file = os.path.join(os.path.dirname(
+            __file__) + r"\interim_data\modified_scenario.xlsx")
+
+    # formatting of the weather data record according to the
+    # requirements of the classes used
+    create_energy_system.format_weather_dataset(filepath=scenario_file)
 
     # CREATES AN ENERGYSYSTEM AS DEFINED IN THE SCENARIO FILE
     esys = create_energy_system.define_energy_system(nodes_data=nodes_data)
-
-    weather_data = nodes_data['weather data']
-    time_series = nodes_data['timeseries']
-
     # CREATES AN LIST OF COMPONENTS
     nodes = []
 
@@ -164,18 +163,17 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     # CREATES SOURCE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
     t1 = Thread(target=create_objects.Sources,
-                args=(nodes_data, nodes, busd, time_series, weather_data))
+                args=(nodes_data, nodes, busd, scenario_file,))
     t1.start()
     # CREATES SINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
     t2 = Thread(target=create_objects.Sinks, args=(nodes_data, busd,
-                                                   nodes, time_series,
-                                                   weather_data))
+                                                   nodes, scenario_file,))
     t2.start()
     # CREATES TRANSFORMER OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM
     # TO THE lIST OF COMPONENTS
     t3 = Thread(target=create_objects.Transformers, args=(nodes_data, nodes,
-                                                          busd, weather_data))
+                                                          busd,))
     t3.start()
     # CREATES STORAGE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
@@ -197,19 +195,19 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     esys.add(*nodes)
 
     # PRINTS A GRAPH OF THE ENERGY SYSTEM
-    create_graph.create_graph(filepath=result_path, nodes_data=nodes_data,
-                              show=graph)
+    create_graph.create_graph(filepath=result_path, nodes_data=nodes_data, show=graph)
 
     # OPTIMIZES THE ENERGYSYSTEM AND RETURNS THE OPTIMIZED ENERGY SYSTEM
     om = optimize_model.least_cost_model(esys, num_threads, nodes_data, busd, solver)
 
     # SHOWS AND SAVES RESULTS OF THE OPTIMIZED MODEL / POST-PROCESSING
-    if xlsx_results:
-        create_results.xlsx(nodes_data=nodes_data, optimization_model=om,
+    if results:
+        create_results.xlsx(nodes_data=nodes_data,
+                            optimization_model=om,
                             filepath=result_path)
     # CREATES PLOTLY RESULTS AND LOGS RESULTS OF CBC SOLVER
-    create_results.Results(nodes_data, om, esys, result_path,
-                           console_log=console_results)
+    if plotly:
+        create_results.Results(nodes_data, om, esys, result_path)
 
     logging.info('   ' + '----------------------------------------------'
                          '----------')

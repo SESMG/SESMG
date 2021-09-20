@@ -8,7 +8,7 @@ import numpy as np
 from threading import *
 import os
 import subprocess
-from program_files.Spreadsheet_Energy_System_Model_Generator import sesmg_main
+from Spreadsheet_Energy_System_Model_Generator import sesmg_main
 
 
 class demo_frame_class:

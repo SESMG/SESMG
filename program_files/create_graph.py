@@ -51,19 +51,22 @@ def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
     dot = Digraph(format='png')
     # Creates a Legend if Legend = True
     if legend:
+        component = ['Bus', 'Source', 'Sink', 'Transformer\nLinks', 'Storage']
         shape = {'Bus': ['ellipse'], 'Source': ['trapezium'],
                  'Sink': ['invtrapezium'], 'Transformer\nLinks': ['box'],
                  'Storage': ['box']}
-        for i in shape.keys():
+        for i in component:
             dot.node(i, shape=shape[i][0], fontsize="10", fixedsize='shape',
                      width='1.1', height='0.6',
                      style='dashed' if i == 'Storage' else '')
+    components = ["buses", "sources", "sinks", "transformers", "storages",
+                  "links"]
     shapes = {'sources': ['trapezium'], 'sinks': ['invtrapezium'],
               'transformers': ['box'], 'storages': ['box'],
               'links': ['box']}
     bus = {'buses': ['label'], 'sources': ['output'], 'sinks': ['input'],
            'transformers': ['input'], 'storages': ['bus'], 'links': ['bus1']}
-    for i in bus.keys():
+    for i in components:
         for j, b in nodes_data[i].iterrows():
             if b['active']:
                 # sets component label
@@ -81,13 +84,12 @@ def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
                     if i == 'sources':
                         # Creates graph elements for solar heat
                         if b['technology'] == "solar_thermal_flat_plate" or \
-                                b['technology'] == "CSP":
+                            b['technology'] == "CSP":
                             # creates additional transformer
                             transformer = b['label'] + '_collector'
                             transformer = linebreaks(transformer)
                             dot.node(transformer, shape='box', fontsize="10",
-                                     fixedsize='shape', width='1.1',
-                                     height='0.6')
+                                     fixedsize='shape', width='1.1', height='0.6')
                             # creates additional bus
                             c_bus = b['label'] + '_bus'
                             c_bus=linebreaks(c_bus)
@@ -114,8 +116,8 @@ def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
                         or (i == 'buses' and b['excess']
                             and not b['shortage']):
                     dot.edge(b[bus[i][0]], label)
-                if (i == 'sources' and (b['technology'] not in
-                                        ["solar_thermal_flat_plate", "CSP"])) \
+                if (i == 'sources' and (b['technology'] != "solar_thermal_flat_plate" or \
+                            b['technology'] != "CSP")) \
                         or i == 'storages' or (i == 'buses' and b['shortage']):
                     dot.edge(label, b[bus[i][0]])
                 if i == 'links':
@@ -143,7 +145,7 @@ def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
                         cmpr_abs_source = linebreaks(cmpr_abs_source)
                         cmpr_abs_bus = linebreaks(cmpr_abs_bus)
                         # Adds a second input and a heat source (node and edge)
-                        # for compressionand absorption heat transformers
+                        # for compression heat transformers
                         dot.node(cmpr_abs_bus,
                                  shape='ellipse',
                                  fontsize="10")

@@ -64,14 +64,14 @@ def buses(nodes_data: dict, nodes: list) -> dict:
         
             # Create an sink for every bus, which is marked with
             # "excess"
-            if b['excess']:
+            if b['excess'] == 1:
                 # creates the oemof-sink object and
                 # directly adds it to the list of components "nodes"
                 inputs = {
                     busd[b['label']]:
                         solph.Flow(variable_costs=b['excess costs'],
                                    emission_factor=b[
-                                    'excess constraint costs'])}
+                                    'variable excess constraint costs'])}
                 nodes.append(
                         solph.Sink(
                                 label=b['label'] + '_excess',
@@ -79,7 +79,7 @@ def buses(nodes_data: dict, nodes: list) -> dict:
             
             # Create a source for every bus, which is marked with
             # "shortage"
-            if b['shortage']:
+            if b['shortage'] == 1:
                 # creates the oemof-source object and
                 # directly adds it to the list of components "nodes"
                 outputs = {
@@ -87,11 +87,12 @@ def buses(nodes_data: dict, nodes: list) -> dict:
                         solph.Flow(
                             variable_costs=b['shortage costs'],
                             emission_factor=b[
-                                'shortage constraint costs'])}
+                                'variable shortage constraint costs'])}
                 nodes.append(
                         solph.Source(
                                 label=b['label'] + '_shortage',
                                 outputs=outputs))
+        
     # Returns the list of buses as result of the function
     return busd
 
@@ -99,10 +100,10 @@ def buses(nodes_data: dict, nodes: list) -> dict:
 class Sources:
     """
         Creates source objects.
-
-
-    #def create_source(self, so, timeseries_args, output):
-        Creates an oemof source with fixed or unfixed timeseries
+    """
+    
+    def create_source(self, so, timeseries_args, output):
+        """Creates an oemof source with fixed or unfixed timeseries
 
         There are four options for labeling source objects to be created:
 
@@ -188,17 +189,18 @@ class Sources:
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
+
         # output default
         if output is None:
             output = self.busd[so['output']]
+
         # set variables minimum, maximum and existing
-        if str(so['input']) in ['0', 'None', 'none', 'nan']:
-            minimum = so['min. investment capacity']
-            maximum = so['max. investment capacity']
-            existing = so['existing capacity']
+        minimum = so['min. investment capacity']
+        maximum = so['max. investment capacity']
+        existing = so['existing capacity']
         # set variables minimum, maximum and existing for solar thermal heat
         # sources
-        else:
+        if so['technology'] == 'CSP' or so['technology'] == 'solar_thermal_flat_plate':
             minimum = so['min. investment capacity'] * \
                 so['Conversion Factor']
             maximum = so['max. investment capacity'] * \
@@ -254,7 +256,7 @@ class Sources:
         # Returns logging info
         logging.info('   ' + 'Commodity Source created: ' + so['label'])
     
-    def timeseries_source(self, so: dict, time_series):
+    def timeseries_source(self, so: dict, filepath: str):
         """
             Creates an oemof source object from a pre-defined
             timeseries with the use of the create_source method.
@@ -279,6 +281,8 @@ class Sources:
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
+        # reads the timeseries sheet of the scenario file
+        time_series = pd.read_excel(filepath, sheet_name='time_series')
         
         if so['fixed'] == 1:
             # sets the timeseries attribute for a fixed source
@@ -420,6 +424,9 @@ class Sources:
             'hub_height': so['Hub Height']}
         wind_turbine = WindPowerPlant(**turbine_data)
 
+        # change type of index to datetime and set time zone
+        weather_df_wind.index = \
+            pd.to_datetime(weather_df_wind.index).tz_convert('Europe/Berlin')
         data_height = {'pressure': 0, 'temperature': 2, 'wind_speed': 10,
                        'roughness_length': 0}
         weather_df_wind = \
@@ -448,7 +455,7 @@ class Sources:
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
 
-    def solar_heat_source(self, so, data):
+    def solar_heat_source(self, so):
         """
             Creates a solar thermal collector source object.
 
@@ -465,7 +472,7 @@ class Sources:
                 - 'input'
                 - 'technology':
                     - 'solar_thermal_flat_plate' or
-                    - 'concentrated_solar_power'
+                    - 'CSP'
                 - 'Latitude'
                 - 'Longitude'
                 - 'Surface Tilt'
@@ -492,18 +499,22 @@ class Sources:
         # creates an oemof-bus object for solar thermal collector
         col_bus = solph.Bus(label=so['label'] + '_bus')
         # adds the bus object to the list of components "nodes"
-        self.nodes_sources.append(col_bus)
+        self.nodes.append(col_bus)
         self.busd[so['label'] + '_bus'] = col_bus
         output = col_bus
 
         # import weather data and set datetime index with hourly frequency
+        data = pd.read_csv(os.path.join(
+            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
+        data['timestamp'] = pd.to_datetime(data['timestamp'])
+        data = data.set_index(['timestamp'])
         data.index.name = 'Datum'
-        # TODO get frequency from energysystem sheet
+        # TODO
         data = data.asfreq('h')
 
         # calculates global horizontal irradiance from diffuse (dhi)
         # and direct irradiance (dirhi) and adds it to the weather data frame
-        data['ghi'] = (data["dirhi"] + data["dhi"])
+        data['ghi'] = (data.dirhi + data.dhi)
 
         # precalculations for flat plate collectors, calculates total
         # irradiance on collector, efficiency and heat output
@@ -529,27 +540,35 @@ class Sources:
             irradiance = precalc_results.col_ira/1000
 
         # set parameters for precalculations for concentrating solar power
-        elif so['technology'] == 'concentrated_solar_power':
+        elif so['technology'] == 'CSP':
+            temp_collector_outlet = \
+                so['Temperature Inlet'] + \
+                so['Temperature Difference']
+            latitude = so['Latitude']
+            longitude = so['Longitude']
+            collector_tilt = so['Surface Tilt']
+            collector_azimuth = so['Azimuth']
+            cleanliness = so['Cleanliness']
+            eta_0 = so['ETA 0']
+            c_1 = so['C1']
+            c_2 = so['C2']
+            temp_collector_inlet = \
+                so['Temperature Inlet']
+            temp_collector_outlet = temp_collector_outlet
+            a_1 = so['A1']
+            a_2 = so['A2']
+            e_dir_hor = data['dirhi']
+
             # precalculation with parameter set, ambient temperature and
             # direct horizontal irradiance. Calculates total irradiance on
             # collector, efficiency and heat output
-            precalc_results = csp_precalc(
-                lat=so['Latitude'],
-                long=so['Longitude'],
-                collector_tilt=so['Surface Tilt'],
-                collector_azimuth=so['Azimuth'],
-                cleanliness = so['Cleanliness'],
-                a_1=so['A1'],
-                a_2 = so['A2'],
-                eta_0=so['ETA 0'],
-                c_1 = so['C1'],
-                c_2 = so['C2'],
-                temp_collector_inlet = so['Temperature Inlet'],
-                temp_collector_outlet = so['Temperature Inlet']
-                                        + so['Temperature Difference'],
-                temp_amb=data['temperature'],
-                E_dir_hor=data['dirhi'])
-            
+            precalc_results = csp_precalc(latitude, longitude,
+                                          collector_tilt, collector_azimuth,
+                                          cleanliness, eta_0, c_1, c_2,
+                                          temp_collector_inlet,
+                                          temp_collector_outlet,
+                                          data['temperature'], a_1, a_2,
+                                          E_dir_hor=e_dir_hor)
             # set variables collectors_heat and irradiance and conversion
             # from W/sqm to kW/sqm
             collectors_heat = precalc_results.collector_heat/1000
@@ -586,12 +605,12 @@ class Sources:
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label']
                      + ", Max Heat power output per year and m²: {:2.2f}".
-                     format(numpy.sum(collectors_heat)) + ' kWh/(m²a)'
+                     format(numpy.sum(collectors_heat)) + ' kW/m²'
                      + ", Irradiance on collector per year and m²: "
-                       "{:2.2f}".format(numpy.sum(irradiance)) + ' kWh/(m²a)')
+                       "{:2.2f}".format(numpy.sum(irradiance)) + ' kW/m²')
 
     def __init__(self, nodes_data: dict, nodes: list, busd: dict,
-                 time_series, weather_data):
+                 filepath: str):
         """
             Inits the source class
             ---
@@ -605,6 +624,14 @@ class Sources:
         self.nodes_sources = []
         # Initialise a class intern copy of the bus dictionary
         self.busd = busd.copy()
+        # internal list nodes
+        self.nodes = []
+
+        # Import weather Data
+        data = pd.read_csv(
+                os.path.join(os.path.dirname(__file__))
+                + '/interim_data/weather_data.csv', index_col=0,
+                date_parser=lambda idx: pd.to_datetime(idx, utc=True))
 
         # Create Source from "Sources" Table
         for i, so in nodes_data['sources'].iterrows():
@@ -617,24 +644,30 @@ class Sources:
                 
                 # Create Photovoltaic Sources
                 elif so['technology'] == 'photovoltaic':
-                    self.pv_source(so, weather_data)
+                    self.pv_source(so, data)
                 
                 # Create Windpower Sources
                 elif so['technology'] == 'windpower':
-                    self.windpower_source(so, weather_data)
+                    self.windpower_source(so, data)
                 
                 # Create Time-series Sources
                 elif so['technology'] == 'timeseries':
-                    self.timeseries_source(so, time_series)
+                    self.timeseries_source(so, filepath)
 
-                # Create flat plate solar thermal Sources
-                elif so['technology'] in ['solar_thermal_flat_plate',
-                                          'concentrated_solar_power']:
-                    self.solar_heat_source(so, weather_data)
+                # Create flat plate solar thermal collector Sources
+                elif so['technology'] == 'solar_thermal_flat_plate':
+                    self.solar_heat_source(so)
+
+                # Create concentrated solar heat Sources
+                elif so['technology'] == 'CSP':
+                    self.solar_heat_source(so)
             
-        # appends created sources and other objects to the list of nodes
+        # appends created sources to the list of nodes
         for i in range(len(self.nodes_sources)):
             nodes.append(self.nodes_sources[i])
+        # appends created buses to the list of nodes
+        for i in range(len(self.nodes)):
+            nodes.append(self.nodes[i])
 
 
 class Sinks:
@@ -686,6 +719,7 @@ class Sinks:
             - Christian Klemm - christian.klemm@fh-muenster.de
             - Gregor Becker - gregor.becker@fh-muenster.de
     """
+
     # intern variables
     busd = None
     nodes_sinks = []
@@ -740,7 +774,7 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-    def timeseries_sink(self, de, nodes_data):
+    def timeseries_sink(self, de: dict, filepath: str):
         """
             Creates a sink object with a fixed input. The input must be
             given as a time series in the scenario file.
@@ -760,23 +794,23 @@ class Sinks:
             Christian Klemm - christian.klemm@fh-muenster.de
         """
         # imports the time_series sheet of the scenario file
-
+        time_series = pd.read_excel(filepath, sheet_name='time_series')
         # sets the nominal value
         args = {'nominal_value': de['nominal value']}
         if de['fixed'] == 0:
             # sets the attributes for an unfixed time_series sink
-            args.update({'min': nodes_data[de['label'] + '.min'].tolist(),
-                         'max': nodes_data[de['label'] + '.max'].tolist()})
+            args.update({'min': time_series[de['label'] + '.min'].tolist(),
+                         'max': time_series[de['label'] + '.max'].tolist()})
         elif de['fixed'] == 1:
             # sets the attributes for a fixed time_series sink
-            args.update({'fix': nodes_data[de['label'] + '.fix'].tolist()})
+            args.update({'fix': time_series[de['label'] + '.fix'].tolist()})
         # starts the create_sink method with the parameters set before
         self.create_sink(de, args)
         
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-    def slp_sink(self, de: dict, nodes_data: dict, weather_data):
+    def slp_sink(self, de: dict, nodes_data: dict):
         """
             Creates a sink with a residential or commercial
             SLP time series.
@@ -810,8 +844,11 @@ class Sinks:
         electricity_slps = \
             ['h0', 'g0', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'l0', 'l1', 'l2']
         # Import weather Data
+        data = pd.read_csv(os.path.join(
+            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
         # Importing timesystem parameters from the scenario
         ts = next(nodes_data['energysystem'].iterrows())[1]
+        print(ts)
         temp_resolution = ts['temporal resolution']
         periods = ts["periods"]
         start_date = str(ts['start date'])
@@ -831,7 +868,7 @@ class Sinks:
         if de['load profile'] in heat_slps_commercial \
                 or de['load profile'] in heat_slps:
             # sets the parameters of the heat slps
-            args = {'temperature': weather_data['temperature'],
+            args = {'temperature': data['temperature'],
                     'shlp_type': de['load profile'],
                     'wind_class': de['wind class'],
                     'annual_heat_demand': 1,
@@ -865,7 +902,7 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-    def richardson_sink(self, de: dict, nodes_data: dict, weather_data):
+    def richardson_sink(self, de: dict, filepath: str):
         """
             Creates a sink with stochastically timeseries.
         
@@ -881,10 +918,11 @@ class Sinks:
                             - 'label'
                             - 'fixed'
                             - 'annual demand'
-                            - 'occupants'
+                            - 'occupants [RICHARDSON]'
             :type de: dict
-            :param nodes_data: dictionary containing excel sheets
-            :type nodes_data: dict
+            :param filepath: path to .xlsx scenario-file containing a
+                             "energysystem" sheet
+            :type filepath: str
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
@@ -892,19 +930,26 @@ class Sinks:
         import richardsonpy.classes.occupancy as occ
         import richardsonpy.classes.electric_load as eload
         # Import Weather Data
-        dirhi = weather_data["dirhi"].values.flatten()
-        dhi = weather_data["dhi"].values.flatten()
+        dirhi_csv = pd.read_csv(
+            os.path.join(os.path.dirname(__file__))
+            + '/interim_data/weather_data.csv', usecols=['dirhi'], dtype=float)
+        dirhi = dirhi_csv.values.flatten()
+        dhi_csv = pd.read_csv(
+            os.path.join(os.path.dirname(__file__))
+            + '/interim_data/weather_data.csv', usecols=['dhi'], dtype=float)
+        dhi = dhi_csv.values.flatten()
         
         # Conversion of irradiation from W/m^2 to kW/m^2
         dhi = dhi / 1000
         dirhi = dirhi / 1000
         
         # Reads the temporal resolution from the scenario file
-        ts = nodes_data['energysystem']
-        temp_resolution = ts['temporal resolution'][1]
+        nd = pd.read_excel(filepath, sheet_name='energysystem')
+        ts = next(nd.iterrows())[1]
+        temp_resolution = ts['temporal resolution']
         
         # sets the occupancy rates
-        nb_occ = de['occupants']
+        nb_occ = de['occupants [RICHARDSON]']
         
         # Workaround, because richardson.py only allows a maximum
         # of 5 occupants
@@ -957,8 +1002,8 @@ class Sinks:
         # returns logging info
         logging.info('   ' + 'Sink created: ' + de['label'])
     
-    def __init__(self, nodes_data: dict, busd: dict, nodes: list, time_series,
-                 weather_data):
+    def __init__(self, nodes_data: dict, busd: dict, nodes: list,
+                 filepath: str):
         """ Inits the sink class.
         ---
         Other variables:
@@ -973,6 +1018,14 @@ class Sinks:
         self.nodes_sinks = []
         # Initialise a class intern copy of the bus dictionary
         self.busd = busd.copy()
+        
+        # richardson.py and demandlib can only read .csv data sets,
+        # so the weather data from the .xlsx scenario file have to be
+        # converted into a .csv data set and saved
+        read_file = pd.read_excel(filepath, sheet_name='weather data')
+        read_file.to_csv(
+            os.path.join(os.path.dirname(__file__))
+            + '/interim_data/weather_data.csv', index=None, header=True)
         
         # Create sink objects
         for i, de in nodes_data['sinks'].iterrows():
@@ -989,15 +1042,15 @@ class Sinks:
                 
                 # Create Sinks with Time-series
                 elif de['load profile'] == 'timeseries':
-                    self.timeseries_sink(de, time_series)
+                    self.timeseries_sink(de, filepath)
                 
                 # Create Sinks with SLP's
                 elif de['load profile'] in slps:
-                    self.slp_sink(de, nodes_data, weather_data)
+                    self.slp_sink(de, nodes_data)
                 
                 # Richardson
                 elif de['load profile'] == 'richardson':
-                    self.richardson_sink(de, nodes_data, weather_data)
+                    self.richardson_sink(de, filepath)
         
         # appends created sinks on the list of nodes
         for i in range(len(self.nodes_sinks)):
@@ -1127,6 +1180,8 @@ class Transformers:
         }}
         self.create_transformer(tf, inputs, outputs, conversion_factors)
 
+        
+
     def compression_heat_transformer(self, tf: dict, data):
         """
             Creates a Compression Heat Pump or Compression Chiller by using
@@ -1183,9 +1238,6 @@ class Transformers:
             temp = '_low_temp'
         elif tf['mode'] == 'chiller':
             temp = '_high_temp'
-        else:
-            raise ValueError("Mode of " + tf['label']
-                             + "contains a typo")
         bus = solph.Bus(label=tf['label'] + temp + '_bus')
         
         # adds the bus object to the list of components "nodes"
@@ -1239,7 +1291,7 @@ class Transformers:
             # the capacity of ambient water is not limited
             heatsource_capacity = math.inf
         else:
-            raise ValueError(tf['label'] + " Error in heat source attribute")
+            raise SystemError(tf['label'] + " Error in heat source attribute")
         maximum = heatsource_capacity
         # Creates heat source for transformer. The heat source costs are
         # considered by the transformer.
@@ -1297,9 +1349,6 @@ class Transformers:
             temp_threshold_icing = None
             factor_icing = None
             temp_low = [tf['temperature low']]
-        else:
-            raise ValueError("Mode of " + tf['label']
-                             + "contains a typo")
         # calculation of COPs with set parameters
         cops_hp = cmpr_hp_chiller.calc_cops(
                 temp_high=temp_high,
@@ -1384,12 +1433,10 @@ class Transformers:
                 fuel_input={
                     self.busd[tf['input']]: solph.Flow(
                             H_L_FG_share_max=[
-                                tf['share of flue gas loss at max heat '
-                                   'extraction']
+                                tf['min. share of flue gas loss']
                                 for p in range(0, periods)],
                             H_L_FG_share_min=[
-                                tf['share of flue gas loss at min heat '
-                                   'extraction']
+                                tf['max. share of flue gas loss']
                                 for p in range(0, periods)],
                             variable_costs=tf[
                                 'variable input costs'],
@@ -1412,19 +1459,15 @@ class Transformers:
                                     offset=tf['fix investment costs']
                                 ),
                             P_max_woDH=[
-                                tf['max. electric power without district '
-                                   'heating']
+                                tf['max. electric power']
                                 for p in range(0, periods)],
-                            P_min_woDH=[tf['min. electric power without '
-                                           'district heating']
+                            P_min_woDH=[tf['min. electric power']
                                         for p in range(0, periods)],
                             Eta_el_max_woDH=[
-                                tf['el. eff. at max. fuel flow w/o distr. '
-                                   'heating']
+                                tf['max. electric efficiency']
                                 for p in range(0, periods)],
                             Eta_el_min_woDH=[
-                                tf['el. eff. at min. fuel flow w/o distr. '
-                                   'heating']
+                                tf['min. electric efficiency']
                                 for p in range(0, periods)],
                             variable_costs=tf[
                                 'variable output costs'],
@@ -1433,15 +1476,14 @@ class Transformers:
                             )
                         },
                 heat_output={self.busd[tf['output2']]: solph.Flow(
-                    Q_CW_min=[tf['minimal therm. condenser load to '
-                                 'cooling water']
+                    Q_CW_min=[tf['minimal therml output power']
                               for p in range(0, periods)],
                     variable_costs=tf[
                         'variable output costs 2'],
                     emission_factor=tf[
                         'variable output constraint costs 2']
                 )},
-                Beta=[tf['power loss index']
+                Beta=[tf['elec. power loss index']
                       for p in range(0, periods)],
                 # fixed_costs=0,
                 back_pressure=True if tf['back pressure'] == 1 else False,
@@ -1450,7 +1492,7 @@ class Transformers:
         # returns logging info
         logging.info('   ' + 'Transformer created: ' + tf['label'])
 
-    def absorption_heat_transformer(self, tf, data):
+    def absorption_heat_transformer(self, tf):
         """
             Creates an absorption heat transformer object with the parameters
             given in 'nodes_data' and adds it to the list of components 'nodes'
@@ -1469,10 +1511,7 @@ class Transformers:
                 - 'chilling temperature'
                 - 'electrical input conversion factor'
                 - 'recooling temperature difference'
-            :param data: weather data
-            :type data: dict
-
-            Yannick Wittor - yw090223@fh-muenster.de
+            @ Yannick Wittor - yw090223@fh-muenster.de, 07.01.2021
         """
         # import oemof.thermal in order to calculate COP
         import oemof.thermal.absorption_heatpumps_and_chillers \
@@ -1480,7 +1519,9 @@ class Transformers:
         from math import inf
         import numpy as np
 
-        # Import characteristic equation parameters
+        # Import weather Data and characteristic equation parameters
+        data = pd.read_csv(os.path.join(
+            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
         char_para = pd.read_csv(os.path.join(
             os.path.dirname(__file__)) +
                             '/technical_data/characteristic_parameters.csv')
@@ -1491,9 +1532,6 @@ class Transformers:
             temp = '_low_temp'
         elif tf['mode'] == 'chiller':
             temp = '_high_temp'
-        else:
-            raise ValueError("Mode of " + tf['label']
-                             + "contains a typo")
 
         bus_label = tf['label'] + temp + '_bus'
         source_label = tf['label'] + temp + '_source'
@@ -1506,13 +1544,25 @@ class Transformers:
         # returns logging info
         logging.info('   ' + 'Bus created: ' + bus_label)
 
+        # creates a source object as high temperature heat source
+        self.nodes_transformer.append(
+            solph.Source(label=source_label,
+                         outputs={self.busd[
+                             bus_label]:
+                                solph.Flow(variable_costs=
+                                           tf['variable input costs']
+                                           )}))
+
+        # Returns logging info
+        logging.info(
+            '   ' + 'Heat Source created:' + source_label)
+
         # Calculates cooling temperature in absorber/evaporator depending on
-        # ambient air temperature of recooling system
+        # ambient temperature of recooling system
         data_np = np.array(data['temperature'])
         t_cool = data_np + \
             tf['recooling temperature difference']
         t_cool = list(map(int, t_cool))
-        n = len(t_cool)
 
         # Calculation of characteristic temperature difference
         chiller_name = tf['name']
@@ -1549,23 +1599,6 @@ class Transformers:
                      + ", Average Coefficient of Performance (COP): {:2.2f}"
                      .format(numpy.mean(cops_abs)))
 
-        # creates a source object as high temperature heat source and sets
-        # heat capacity for this source
-        maximum = tf['heat capacity of source']
-        self.nodes_transformer.append(
-            solph.Source(label=source_label,
-                         outputs={self.busd[
-                             tf['label'] + temp + '_bus']: solph.Flow(
-                                investment=solph.Investment(ep_costs=0,
-                                                            minimum=0,
-                                                            maximum=maximum,
-                                                            existing=0),
-                                variable_costs=0)}))
-
-        # Returns logging info
-        logging.info(
-            '   ' + 'Heat Source created:' + source_label)
-
         # Set in- and outputs with conversion factors and creates transformer
         # object and adds it to  the list of components
         inputs = {"inputs": {self.busd[tf['input']]: solph.Flow(
@@ -1591,11 +1624,15 @@ class Transformers:
                 }}
         self.create_transformer(tf, inputs, outputs, conversion_factors)
 
-    def __init__(self, nodes_data, nodes, busd, weather_data):
+    def __init__(self, nodes_data, nodes, busd):
         """ TODO Docstring missing """
         # renames variables
         self.busd = busd
         self.nodes_transformer = []
+
+        # Import weather Data
+        data = pd.read_csv(os.path.join(
+            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
 
         # creates a transformer object for every transformer item within nd
         for i, t in nodes_data['transformers'].iterrows():
@@ -1605,8 +1642,8 @@ class Transformers:
                     self.generic_transformer(t)
                 
                 # Create Compression Heat Transformer
-                elif t['transformer type'] == 'CompressionHeatTransformer':
-                    self.compression_heat_transformer(t, weather_data)
+                elif t['transformer type'] == 'compression_heat_transformer':
+                    self.compression_heat_transformer(t, data)
                 
                 # Create Extraction Turbine CHPs
                 elif t['transformer type'] == 'ExtractionTurbineCHP':
@@ -1626,8 +1663,8 @@ class Transformers:
                         + ' be added later.')
 
                 # Create Absorption Chiller
-                elif t['transformer type'] == 'AbsorptionHeatTransformer':
-                    self.absorption_heat_transformer(t, weather_data)
+                elif t['transformer type'] == 'absorption_heat_transformer':
+                    self.absorption_heat_transformer(t)
 
                 # Error Message for invalid Transformers
                 else:
@@ -1732,7 +1769,7 @@ class Storages:
         # returns logging info
         logging.info('   ' + 'Storage created: ' + s['label'])
 
-    def stratified_thermal_storage(self, s, data):
+    def stratified_thermal_storage(self, s):
         """
             Creates a stratified thermal storage object with the parameters
             given in 'nodes_data' and adds it to the list of components 'nodes'
@@ -1751,8 +1788,8 @@ class Storages:
         # import functions for stratified thermal storages from oemof thermal
         from oemof.thermal.stratified_thermal_storage import calculate_losses
         # Import weather Data
-        data.index = pd.to_datetime(data["timestamp"].values, utc=True)
-        data.index = pd.to_datetime(data.index).tz_convert("Europe/Berlin")
+        data = pd.read_csv(os.path.join(
+            os.path.dirname(__file__)) + '/interim_data/weather_data.csv')
         # calculations for stratified thermal storage
         loss_rate, fixed_losses_relative, fixed_losses_absolute = \
             calculate_losses(
@@ -1811,9 +1848,9 @@ class Storages:
     
     def __init__(self, nodes_data: dict, nodes: list, busd: dict):
         """
-            Inits the storage class.
+        Inits the storage class.
 
-            Christian Klemm - christian.klemm@fh-muenster.de
+        Christian Klemm - christian.klemm@fh-muenster.de
         """
         # renames variables
         self.busd = busd
@@ -1829,8 +1866,7 @@ class Storages:
 
                 # Create Generic Storage
                 if s['storage type'] == 'Stratified':
-                    self.stratified_thermal_storage(s,
-                                                    nodes_data['weather data'])
+                    self.stratified_thermal_storage(s)
 
         # appends created storages to the list of nodes
         for i in range(len(self.nodes)):
