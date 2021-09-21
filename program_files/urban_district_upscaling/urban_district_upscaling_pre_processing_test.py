@@ -218,25 +218,25 @@ def central_comp(central, standard_parameters):
             create_central_chp(gastype='naturalgas',
                                standard_parameters=standard_parameters)
 
-            # central bio gas
-            #if j['biogas_chp'] in ['yes', 'Yes', 1]:
-            #    create_central_chp(gastype='biogas',
-            #                       standard_parameters=standard_parameters)
+        # central bio gas
+        if j['biogas_chp'] in ['yes', 'Yes', 1]:
+            create_central_chp(gastype='biogas',
+                               standard_parameters=standard_parameters)
 
-            # central swhp todo simplify
-            #if j['swhp_transformer'] in ['yes', 'Yes', 1]:
-            #    create_central_swhp(standard_parameters=standard_parameters)
+        # central swhp todo simplify
+        if j['swhp_transformer'] in ['yes', 'Yes', 1]:
+            create_central_swhp(standard_parameters=standard_parameters)
 
-            # central biomass plant
-            #if j['biomass_plant'] in ['yes', 'Yes', 1]:
-            #    create_central_biomass_plant(standard_parameters=standard_parameters)
+        # central biomass plant
+        if j['biomass_plant'] in ['yes', 'Yes', 1]:
+           create_central_biomass_plant(standard_parameters=standard_parameters)
 
-            # power to gas system
-            #if j['power_to_gas'] in ['yes', 'Yes', 1]:
-            #    create_power_to_gas_system(standard_parameters=standard_parameters)
+        # power to gas system
+        if j['power_to_gas'] in ['yes', 'Yes', 1]:
+            create_power_to_gas_system(standard_parameters=standard_parameters)
 
-            #if j['battery_storage'] in ['yes', 'Yes', 1]:
-            #    create_battery(id="central", standard_parameters=standard_parameters, storage_type="central")
+        if j['battery_storage'] in ['yes', 'Yes', 1]:
+            create_battery(id="central", standard_parameters=standard_parameters, storage_type="central")
 
 def create_power_to_gas_system(standard_parameters):
     """
@@ -435,10 +435,24 @@ def create_buses(id: str, pv_bus: bool, building_type, hp_elec_bus,
     """
         todo docstring
     """
-    # house electricity bus
-    create_standard_parameter_bus(label=str(id) + "_electricity_bus",
-                                  bus_type='building_electricity_bus',
-                                  standard_parameters=standard_parameters)
+    if building_type == "RES":
+        bus = 'building_res_electricity_bus'
+    else:
+        bus = 'building_com_electricity_bus'
+    if pv_bus or building_type != "0":
+        # house electricity bus
+        create_standard_parameter_bus(label=str(id) + "_electricity_bus",
+                                      bus_type=bus,
+                                      standard_parameters=standard_parameters)
+        if central_elec_bus:
+            # link from central elec bus to building electricity bus
+            create_standard_parameter_link(
+                label=str(id) + "central_electricity_link",
+                bus_1="central_electricity_bus",
+                bus_2=str(id) + "_electricity_bus",
+                link_type="building_central_building_link",
+                standard_parameters=standard_parameters)
+
     if building_type != "0":
         # house heat bus
         create_standard_parameter_bus(label=str(id) + "_heat_bus",
@@ -499,13 +513,6 @@ def create_buses(id: str, pv_bus: bool, building_type, hp_elec_bus,
                 link_type="building_pv_central_link",
                 standard_parameters=standard_parameters)
 
-            # link from central elec bus to building electricity bus
-            create_standard_parameter_link(
-                label=str(id) + "central_electricity_link",
-                bus_1="central_electricity_bus",
-                bus_2=str(id) + "_electricity_bus",
-                link_type="building_central_building_link",
-                standard_parameters=standard_parameters)
 
 
 def create_sinks(id: str, building_type: str, units: int,
@@ -747,10 +754,15 @@ def create_ashp(id, standard_parameters):
         sheets["transformers"].append(ashp_series, ignore_index=True)
 
 
-def create_gas_heating(id, standard_parameters):
+def create_gas_heating(id, building_type, standard_parameters):
+
+    if building_type == "RES":
+        bus = 'building_res_gas_bus'
+    else:
+        bus = 'building_com_gas_bus'
     # building gas bus
     create_standard_parameter_bus(label=str(id) + "_gas_bus",
-                                  bus_type='building_gas_bus',
+                                  bus_type=bus,
                                   standard_parameters=standard_parameters)
 
     # define individual gas_heating_parameters
@@ -892,6 +904,7 @@ def create_building_insulation(id, standard_parameters, yoc, area_window,
     
     
 def clustering_method(tool, standard_parameters):
+    # TODO differntiating com and res elec bus and gas bus with its components
     print(sheets["buses"])
     cluster_ids = {}
     for i, j in tool.iterrows():
@@ -908,16 +921,17 @@ def clustering_method(tool, standard_parameters):
             sheets["buses"] = sheets["buses"].drop(index=i)
         if "electricity" in j["label"] and not "central" in j["label"]:
             sheets["buses"] = sheets["buses"].drop(index=i)
-        if "hp_elec" in j["label"]:
+        if "hp_elec" in j["label"] and not "swhp_elec" in j["label"]:
             sheets["buses"] = sheets["buses"].drop(index=i)
     heat_buses_gchps = []
 
     for cluster in cluster_ids:
         if cluster_ids[cluster]:
             # house electricity bus
-            create_standard_parameter_bus(label=str(cluster) + "_electricity_bus",
-                                          bus_type='building_electricity_bus',
-                                          standard_parameters=standard_parameters)
+            create_standard_parameter_bus(
+                label=str(cluster) + "_electricity_bus",
+                bus_type='building_res_electricity_bus',
+                standard_parameters=standard_parameters)
             com_demand = 0
             res_demand = 0
             sinks = sheets["sinks"].copy()
@@ -1004,7 +1018,8 @@ def clustering_method(tool, standard_parameters):
                             sheets["transformers"].drop(index=i)
                     if str(building[1]) != "0":
                         if str(building[1])[-9:] in j["label"] \
-                                and "gchp" in j["label"]:
+                                and "gchp" in j["label"] \
+                                and i in sheets["transformers"].index:
                             heat_buses_gchps.append(str(building[1])[-9:])
                             efficiency_gchp += j["efficiency"]
                             efficiency_gchp2 += j["efficiency2"]
@@ -1046,13 +1061,19 @@ def clustering_method(tool, standard_parameters):
                     if str(building[0]) in j["bus2"] and \
                             "hp_elec" in j["bus2"]:
                         sheets["links"] = sheets["links"].drop(index=i)
-                    if str(building[1]) in j["bus2"] and \
-                            "hp_elec" in j["bus2"]:
+                    if str(building[1])[-9:] in j["bus2"] and \
+                            "hp_elec" in j["bus2"] \
+                            and i in sheets["links"].index:
                         sheets["links"] = sheets["links"].drop(index=i)
-                    if str(building[1]) in j["bus1"] and \
-                            "heat" in j["bus1"]:
+                    if str(building[1][-9:]) in j["bus1"] and \
+                            "heat" in j["bus1"] and i in sheets["links"].index:
                         sheets["links"] = sheets["links"].drop(index=i)
-                        
+                    if str(building[0]) in j["bus2"] and \
+                            "gas" in j["bus2"]:
+                        sheets["links"]['bus2'] = \
+                            sheets["links"]['bus2'].replace(
+                                [str(building[0]) + "_gas_bus"],
+                                str(cluster) + "_gas_bus")
                 for i, j in sources.iterrows():
                     if str(building[0]) in str(j["input"]) and \
                             "electricity" in str(j["input"]):
@@ -1078,7 +1099,7 @@ def clustering_method(tool, standard_parameters):
             # TODO
             if gasheating_counter:
                 create_standard_parameter_bus(label=str(cluster) + "_gas_bus",
-                                              bus_type='building_gas_bus',
+                                              bus_type='building_res_gas_bus',
                                               standard_parameters=standard_parameters)
         
                 # define individual gas_heating_parameters
@@ -1369,8 +1390,10 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
     for i, j in parcel.iterrows():
         for h, k in tool.iterrows():
             if k["active"]:
-                if j['ID parcel'] == k["parcel"]:
-                    gchps.update({j['ID parcel'][-9:]: j['gchp area (m²)']})
+                if k["gchp"] not in ["No", "no", 0]:
+                    if j['ID parcel'] == k["parcel"]:
+                        gchps.update({j['ID parcel'][-9:]:
+                                          j['gchp area (m²)']})
                 
     for gchp in gchps:
         create_gchp(id=gchp, area=gchps[gchp],
@@ -1392,7 +1415,8 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
             create_buses(j['label'],
                          pv_bool,
                          j["building type"],
-                         True if j['parcel'] != 0
+                         True if (j['parcel'] != 0
+                                  and j["gchp"] not in ["No", "no", 0])
                                  or j['ashp'] not in ["No", "no", 0]
                          else False,
                          True if ((j['central heat'] == 'yes'
@@ -1483,6 +1507,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
             # creates gasheating-system
             if j['gas heating'] in ['Yes', 'yes', 1]:
                 create_gas_heating(id=j['label'],
+                                   building_type=j['building type'],
                                    standard_parameters=standard_parameters)
     
                 # natural gas connection link to p2g-ng-bus
@@ -1536,7 +1561,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
 
 
 if __name__ == '__main__':
-    urban_district_upscaling_pre_processing(pre_scenario=os.path.dirname(__file__) + r"/pre_scenario_struenkede.xlsx",
+    urban_district_upscaling_pre_processing(pre_scenario=os.path.dirname(__file__) + r"/pre_scenario_struenkede_v2.xlsx",
                                             standard_parameter_path=os.path.dirname(__file__)
                                                                     + r"/standard_parameters.xlsx",
                                             output_scenario=os.path.dirname(__file__) + r"/test_scenario.xlsx",
