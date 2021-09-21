@@ -88,7 +88,8 @@ from program_files import (create_objects_egs,
                            create_energy_system,
                            optimize_model,
                            create_graph,
-                           data_preparation)
+                           data_preparation,
+                           district_heating)
 
 
 
@@ -194,6 +195,7 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     t3.join()
     t4.join()
     t5.join()
+    nodes = district_heating.district_heating(nodes_data, nodes, busd)
     # ADDS THE COMPONENTS TO THE ENERGYSYSTEM
     esys.add(*nodes)
 
