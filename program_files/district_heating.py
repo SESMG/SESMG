@@ -158,12 +158,12 @@ def create_connection_points(consumers, streets_dict, results):
                 for street in streets_dict:
                     result = ["consumers-{}".format(str(id) + "-fork")]
                     pt_lat, pt_lon, dist, t = \
-                        calc_distance([streets_dict[street]["lat-1"],
-                                       streets_dict[street]["lon-1"]],
-                                      [streets_dict[street]["lat-2"],
-                                       streets_dict[street]["lon-2"]],
-                                      [float(consumer["lat"]),
-                                       float(consumer["lon"])])
+                        calc_perp_distance_line_point([streets_dict[street]["lat-1"],
+                                                       streets_dict[street]["lon-1"]],
+                                                      [streets_dict[street]["lat-2"],
+                                                       streets_dict[street]["lon-2"]],
+                                                      [float(consumer["lat"]),
+                                                       float(consumer["lon"])])
                     result.append(pt_lat)
                     result.append(pt_lon)
                     result.append(dist)
@@ -380,7 +380,7 @@ def add_excess_shortage_to_dh(oemof_opti_model, nodes_data, intersections,
                               busd):
     busses = []
     for i, bus in nodes_data['buses'].iterrows():
-        if bus["district heating conn."] != 0 and bus["active"] == 1:
+        if bus["district heating conn."] != 0 and bus["active"] == 1 and bus["district heating conn."] != "dh-system":
             busses.append(bus)
     for bus in busses:
         conn_point = bus['district heating conn.'].split("-")
@@ -443,7 +443,7 @@ def create_producer_connection_point(streets_dict, nodes_data, pipe_num,
         results.update({bus['label']: []})
         for street in streets_dict:
             pt_lat, pt_lon, dist, t = \
-                calc_distance([streets_dict[street]["lat-1"],
+                calc_perp_distance_line_point([streets_dict[street]["lat-1"],
                                streets_dict[street]["lon-1"]],
                               [streets_dict[street]["lat-2"],
                                streets_dict[street]["lon-2"]],
