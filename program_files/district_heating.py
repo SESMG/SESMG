@@ -143,14 +143,14 @@ def create_connection_points(consumers, streets_dict, results):
         :param results:
         :type results:
     """
-    consumers = {}
+    consumers_dict = {}
     id = 0
     for num, consumer in consumers.iterrows():
         if consumer['active']:
             if consumer['district heating']:
                 # dictionary holding the combination of consumer label
                 # and id
-                consumers.update({consumer['label']: [id, consumer['input']]})
+                consumers_dict.update({consumer['label']: [id, consumer['input']]})
                 label = consumer['label'].split("_")[0]
                 logging.info("   Connected {} to district heating network"
                              .format(label))
@@ -220,7 +220,7 @@ def create_connection_points(consumers, streets_dict, results):
                         ignore_index=True)
     else:
         pipe_num = 0
-    return pipe_num, results, test
+    return pipe_num, results, consumers_dict
 
 
 def create_supply_line(streets, road_section_points, results):
