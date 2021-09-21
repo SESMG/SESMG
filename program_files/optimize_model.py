@@ -199,6 +199,7 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
     logging.info('   '+"Starting Optimization with "+solver+"-Solver")
 
     # solving the linear problem using the given solver
-    om.solve(solver=solver, cmdline_options={"threads": num_threads})
-
+    om.solve(solver=solver, cmdline_options={"threads": num_threads,
+                                             "logfile": "test"})
+ 
     return om

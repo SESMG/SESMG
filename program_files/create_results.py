@@ -187,7 +187,8 @@ class Results:
 
     def get_comp_investment(self, comp, comp_type):
         component_investment = 0
-        if comp['max. investment capacity'] > 0:
+        if comp['max. investment capacity'] == "inf" or \
+                comp['max. investment capacity'] > 0:
             component_node = self.esys.groups[comp['label']]
 
             # defines bus_node for different components
@@ -293,7 +294,8 @@ class Results:
 
     def add_component_to_loc(self, label, comp_type,
                              capacity=None, variable_costs=None,
-                             periodical_costs=None, investment=None, maxinvest='---',
+                             periodical_costs=None, investment=None,
+                             maxinvest='---',
                              constraints=None):
         """
             adds the given component with its parameters to
@@ -323,7 +325,8 @@ class Results:
             self.df_list_of_components.append(
                 pd.DataFrame(
                     [[label, comp_type, inflow1, inflow2, outflow1, outflow2,
-                      capacity, variable_costs, periodical_costs, investment,maxinvest,
+                      capacity, variable_costs, periodical_costs, investment,
+                      maxinvest,
                       constraints]], columns=self.copt))
 
     @staticmethod
@@ -748,6 +751,13 @@ class Results:
                     else:
                         comp_type = i[:-1]
 
+                    if 'max. investment capacity' in comp:
+                        if comp["max. investment capacity"] != "inf":
+                            invest = round(comp['max. investment capacity'], 2)
+                        else:
+                            invest = "inf"
+                    else:
+                        invest = "---"
                     self.add_component_to_loc(
                         label=comp_label,
                         comp_type=comp_type,
@@ -755,8 +765,7 @@ class Results:
                         variable_costs=variable_costs,
                         periodical_costs=periodical_costs,
                         investment=investment,
-                        maxinvest=round(comp['max. investment capacity'], 2) if 'max. investment capacity' in comp
-                        else '---',
+                        maxinvest=invest,
                         constraints=constraint_costs)
                     if console_log:
                         self.console_logging(
