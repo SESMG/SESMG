@@ -43,6 +43,13 @@ The functions under the topic **Results** are used to analyze results older then
 
 Timeseries preperation 
 ======================
+
+Using the Timeseries Preparation options, the modeled time system can be reduced so that not all time steps are included in the modeling. Such a simplification allows for a shorter runtime, but may lead to a reduction in the quality of the results [1].
+
 .. csv-table:: 
 	:file: ../getting_started/timeseries_preparation.csv
 	:header-rows: 1
+
+References
+==========
+[1] Klemm C. *Model-based runtime optimization for a spatially high-resolution mixed-used multi-energy system model*, unpublished at the time of publication of this documentation, 2022.
