@@ -53,15 +53,15 @@ Using the timeseries preparation-options, the modeled time system can be reduced
 
 Different possibilities of time series simplification are applicable, for this the following specifications must be deposited in the SESMG GUI:
 
-* Algorithm: Indication of the simplification algorithm to be applied.
+* **Algorithm**: Indication of the simplification algorithm to be applied.
 
-* Index: Algorithm specific configuration.
+* **Index**: Algorithm specific configuration.
 
-* Criterion: Criterion according to which cluster algorithms are applied.
+* **Criterion**: Criterion according to which cluster algorithms are applied.
 
-* Period: Time periods which are clustered together (weeks, days, hours)
+* **Period**: Time periods which are clustered together (weeks, days, hours)
 
-* Season: Time periods within which clustering takes place (year, seasons, months)
+* **Season**: Time periods within which clustering takes place (year, seasons, months)
 
 
 The following algorithms are applicable and must be specified with the following additional information:
