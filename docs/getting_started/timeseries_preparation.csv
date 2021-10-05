@@ -4,7 +4,7 @@ k_means,The k-means algorithm clusters the time periods (see period) in such a w
 
 averaging, successive time periods (e.g. two consecutive days) are averaged and combined into one segment [1].,number of periods to be averaged,--,length of periods to be averaged (hours; days; weeks),--
 
-slicing A,use every n-th period,every n-th period is selected and considered within the modeling, index = n (every n-th period is selected in the modeling),length of periods to be sliced (hours; days; weeks),--
+slicing A, every n-th period is **selected and considered** within the modeling, index = n (every n-th period is selected in the modeling),length of periods to be sliced (hours; days; weeks),--
 
 slicing B,delet every n-th period,n.n.,,,
 
