@@ -44,7 +44,27 @@ The functions under the topic **Results** are used to analyze results older then
 Timeseries preperation 
 ======================
 
-Using the Timeseries Preparation options, the modeled time system can be reduced so that not all time steps are included in the modeling. Such a simplification allows for a shorter runtime, but may lead to a reduction in the quality of the results [1].
+Using the timeseries preparation-options, the modeled time system can be reduced so that not all time steps are considered with the modeling. Such a simplification allows shorter runtimes, but may lead to a reduction in the quality of the results [1].
+
+.. warning::
+
+	All time series simplifications can currently only be applied at an output time resolution of hours with 8760 time steps (i.e. one whole year).
+	
+
+Different possibilities of time series simplification are applicable, for this the following specifications must be deposited in the SESMG GUI:
+
+*Algorithm: Indication of the simplification algorithm to be applied.
+
+*Index: Algorithm specific configuration.
+
+*Criterion: Criterion according to which cluster algorithms are applied.
+
+*Period: Time periods which are clustered together (weeks, days, hours)
+
+*Season: Time periods within which clustering takes place (year, seasons, months)
+
+
+The following algorithms are applicable and must be specified with the following additional information:
 
 .. csv-table:: 
 	:file: ../getting_started/timeseries_preparation.csv
