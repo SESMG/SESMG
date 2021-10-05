@@ -12,8 +12,8 @@ downsampling A,Adaption of the temporal *resolution*. Every n-th period (selecte
 
 downsampling B, Adaption of the temporal *resolution*. Every n-th period (selected by index column) is **deleted** for the modeling. ,index = n (determination of the time steps to be deleted),--,--,--
 
-heuristic selection,representative time periods of a time series are selected from certain selection criteria,applied selection scheme (available schemes are listed within the sesmg folder SESMG\program_files\technical_data\hierarchical_selection_schemes.xlsx,--,length of period to be selected (days or weeks),--
+heuristic selection,representative time periods of a time series are selected from certain selection criteria [1], applied selection scheme (available schemes are listed within the sesmg folder SESMG\program_files\technical_data\hierarchical_selection_schemes.xlsx,--,length of periods to be selected (days or weeks),--
 
-random sampling,n.n.,n.n.,,,
+random sampling,a given number of random periods are selected and used as representatives,number of periods to be selected [1].,--,length of periods to be selected randomly (days or weeks,--
 
 
