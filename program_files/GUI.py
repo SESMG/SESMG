@@ -157,6 +157,18 @@ def getSavePath():
     save_paths[0].configure(text=gui_variables["save_path"].get())
 
 
+def getDHPath():
+    """
+            opens a file dialog and sets the selected path for the variable
+            "dh_path"
+        """
+    
+    path = filedialog.askdirectory()
+    gui_variables["dh_path"].set(path)
+    
+    comments[1].configure(text=gui_variables["dh_path"].get())
+
+
 def show_graph():
     """ creates and shows a graph of the energy system given by a Spreadsheet
         - the created graphs are saved in /results/graphs"""
@@ -219,7 +231,7 @@ def reload_settings():
 def execute_sesmg():
     """ 1. Creates the folder where the results will be saved
         2. Excecutes the optimization algorithm """
-    if gui_variables["scenario_path"].get() != "No scenario selected.":
+    if gui_variables["scenario_path"].get():
         # save the choices made in the GUI
         save_settings()
                 
@@ -254,7 +266,9 @@ def execute_sesmg():
                    gui_variables["xlsx_select_state"].get() == 1 else False,
                    console_results=True if
                    gui_variables["console_select_state"].get() == 1 else False,
-                   solver=gui_variables["solver_select"].get())
+                   solver=gui_variables["solver_select"].get(),
+                   district_heating_path=gui_variables["dh_path"].get(),
+                   save_dh_calculations=gui_variables["save_dh_state"].get())
         if gui_variables["plotly_select_state"].get() == 1:
             show_results()
     else:
@@ -395,7 +409,9 @@ gui_variables = {
     "solver_select": StringVar(window, 'gurobi'),
     "xlsx_select_state": IntVar(),
     "console_select_state": IntVar(),
-    "plotly_select_state": IntVar()
+    "plotly_select_state": IntVar(),
+    "dh_path": StringVar(window, ''),
+    "save_dh_state": IntVar()
 }
 
 reload_settings()
@@ -467,6 +483,11 @@ row += 1
 create_heading(main_frame, 'Switch Criteria', 0, row, "w")
 create_checkbox(main_frame, gui_variables["criterion_state"], 3, row)
 
+# Save Calculations of dh system for decreasing runtime
+row += 1
+create_heading(main_frame, 'Save DH calculations', 0, row, "w")
+create_checkbox(main_frame, gui_variables["save_dh_state"], 3, row)
+
 # Solver Selection
 row += 1
 create_heading(main_frame, 'Optimization Solver', 0, row, "w")
@@ -500,12 +521,17 @@ create_heading(main_frame, 'Execution', 0, row, "w", True)
 
 # execution buttons
 row += 1
+
 # [Label, function to be executed, name of the button, comment]
 test = StringVar(window)
+
 execution_elements = {
     'row2': ['Show Graph', show_graph, 'Execute', ''],
-    'row3': ['Optimize Model', execute_sesmg, 'Execute', test.get()],
-    'row4': ['Show Latest Results', show_results, 'Execute', '']}
+    'row3': ['Select DH calculations folder', getDHPath, 'Change',
+             gui_variables["dh_path"].get()],
+    'row4': ['Optimize Model', execute_sesmg, 'Execute', test.get()],
+    'row5': ['Show Latest Results', show_results, 'Execute', '']
+}
 comments = []
 
 create_main_frame_elements(elements=execution_elements, 
@@ -518,9 +544,9 @@ row += (len(execution_elements) + 1)
 create_heading(main_frame, 'Results', 0, row, "w", True)
 
 analyzing_elements = {
-    'row5': ['Select scenario result folder', getSavePath, 'Change',
+    'row6': ['Select scenario result folder', getSavePath, 'Change',
              gui_variables["save_path"].get()],
-    'row6': ['Start Plotly', show_results, 'Execute', '']}
+    'row7': ['Start Plotly', show_results, 'Execute', '']}
 save_paths = []
 create_main_frame_elements(elements=analyzing_elements, sheet=main_frame,
                            first_row=row,
