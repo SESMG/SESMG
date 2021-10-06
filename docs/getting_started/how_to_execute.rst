@@ -50,6 +50,8 @@ Using the timeseries preparation-options, the modeled time system can be reduced
 
 	All time series simplifications can currently only be applied at an output time resolution of hours with 8760 time steps (i.e. one whole year).
 	
+GUI Settings
+------------
 
 Different possibilities of time series simplification are applicable, for this the following specifications must be deposited in the SESMG GUI:
 
@@ -63,12 +65,27 @@ Different possibilities of time series simplification are applicable, for this t
 
 * **Season**: Time periods within which clustering takes place (year, seasons, months)
 
+Available Algorithms
+--------------------
 
 The following algorithms are applicable and must be specified with the following additional information:
 
 .. csv-table:: 
 	:file: ../getting_started/timeseries_preparation.csv
 	:header-rows: 1
+
+Further Adjustments
+-------------------
+
+Depending on the simplification applied, further adjustments to the energy system must be made automatically.
+
+
+**Variable cost factor:**
+
+**Adjustment of time series of non-divisible length:**
+
+For this reason, the original dataset is truncated to such a length that even clustering/slicing/etc is possible. For example, if two clusters are to be formed from days of one year, then 
+
 
 References
 ==========
