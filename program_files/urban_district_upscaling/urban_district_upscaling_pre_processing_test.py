@@ -1320,7 +1320,7 @@ def clustering_method(tool, standard_parameters):
                 
             for i in heat_buses:
                 create_standard_parameter_link(
-                        label=str(i[0]) +"_"+ str(i[1])  + "_heat_building_link",
+                        label=str(i[0]) + "_" + str(i[1]) + "_heat_building_link",
                         bus_1=str(i[0]) + "_heat_bus",
                         bus_2=str(i[1]),
                         link_type="building_hp_elec_link",
@@ -1340,7 +1340,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
     # todo: docstrings
 
     print('Creating scenario sheet...')
-    clustering = True
+    clustering = False
     xls = pd.ExcelFile(plain_sheet)
     standard_parameters = pd.ExcelFile(standard_parameter_path)
 
@@ -1544,6 +1544,10 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
 
     # adds weather data to "weather data"-sheet
     copy_standard_parameter_sheet(sheet_tbc='time series',
+                                  standard_parameters=standard_parameters)
+
+    # adds road sections to "road sections"-sheet
+    copy_standard_parameter_sheet(sheet_tbc='road sections',
                                   standard_parameters=standard_parameters)
     
     if clustering:
