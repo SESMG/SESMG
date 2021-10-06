@@ -36,6 +36,9 @@ pip3 install xlrd==1.2.0
 pip3 install tables
 pip3 install Pyomo==5.7.1
 pip3 install xlsxwriter
+pip3 install dhnx 
+pip3 install pyproj 
+pip3 install sympy
 sudo mv feedinlib lib/python3.7/site-packages
 sudo mv windpowerlib lib/python3.7/site-packages
 echo ----------------------
