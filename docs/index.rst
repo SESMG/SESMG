@@ -44,11 +44,11 @@ Manual
 	:hidden:
 	:caption: Manual
 	
-	getting_started/how_to_install
-	getting_started/how_to_execute
-	getting_started/how_to_use
-	getting_started/analyze_results
-	getting_started/demo_feature
+	manual/installation
+	manual/GUI
+	manual/ScenarioSpreadsheet
+	manual/Results
+	manual/DemoTool
 	
 Troubleshooting 
 -------------------------------------------------
