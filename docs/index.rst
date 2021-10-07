@@ -17,7 +17,7 @@ results can be viewed and analyzed using a browser-based results output.
 
 
 
-Structure of Energy System
+Structure of Energy Systems
 -------------------------------------------------
 * :doc:`structure_of_energy_system/structure`
 	
@@ -25,11 +25,11 @@ Structure of Energy System
 ..	toctree::
 	:maxdepth: 2
 	:hidden:
-	:caption: Structure of Energy System
+	:caption: Structure of Energy Systems
 	
 	structure_of_energy_system/structure
 	
-Getting started 
+Manual
 -------------------------------------------------
 * :doc:`getting_started/how_to_install`
 * :doc:`getting_started/how_to_execute`
@@ -42,7 +42,7 @@ Getting started
 ..	toctree::
 	:maxdepth: 2
 	:hidden:
-	:caption: Getting started
+	:caption: Manual
 	
 	getting_started/how_to_install
 	getting_started/how_to_execute
@@ -62,7 +62,7 @@ Troubleshooting
 	
 	troubleshooting/troubleshooting
 
-Sourcecode
+Sourcecode Documentation
 -------------------------------------------------
 * :doc:`Python code documentation <sourcecode_documentation/program_functions>`
 	
@@ -70,7 +70,7 @@ Sourcecode
 ..	toctree::
 	:maxdepth: 3
 	:hidden:
-	:caption: Sourcecode documentation
+	:caption: Sourcecode Documentation
 	
 	sourcecode_documentation/program_functions
 	
