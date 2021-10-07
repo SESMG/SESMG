@@ -83,6 +83,9 @@ Depending on the simplification applied, further adjustments to the energy syste
 For a time series adjustment, the simplification factor should ideally be divisible by the length of the given time series without remainder. For example, out of 365 days, every fifth day can be selected via slicing without any problems (365/5=73), but every tenth day results in a remainder (365/10=36.5). In order to be able to simplify the time series correctly, in such cases the given time series is shortened so far that the calculation is correct. For slicing with every tenth day, for example, the time series would be shortened to 360 days (360/10=36) because the time series length is then divisible by the simplification factor.
 
 **Variable cost factor:**
+To ensure that the simplification of the time series correctly takes into account the relationship between periodic and variable costs over the entire simulation period, all variable costs and variable constraint costs in the model are automatically multiplied by the "variable cost factor. It is calculated as follows: 
+
+`variable cost factor = original number of timesteps / new number of timesteps`
 
 
 
