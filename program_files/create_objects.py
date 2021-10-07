@@ -188,13 +188,16 @@ class Sources:
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
+        import math
         # output default
         if output is None:
             output = self.busd[so['output']]
         # set variables minimum, maximum and existing
         if str(so['input']) in ['0', 'None', 'none', 'nan']:
             minimum = so['min. investment capacity']
-            maximum = so['max. investment capacity']
+            maximum = (so['max. investment capacity']
+                       if so['max. investment capacity'] != "inf"
+                       else float("+inf"))
             existing = so['existing capacity']
         # set variables minimum, maximum and existing for solar thermal heat
         # sources
@@ -689,6 +692,8 @@ class Sinks:
     # intern variables
     busd = None
     nodes_sinks = []
+    energetic_renovation = None
+    weatherdata = None
     
     def create_sink(self, de: dict, timeseries_args: dict):
         """
@@ -715,8 +720,57 @@ class Sinks:
                 solph.Sink(label=de['label'],
                            inputs={
                                self.busd[de['input']]:
-                                   solph.Flow(**timeseries_args)}))
-    
+                                   solph.Flow(**timeseries_args)},
+                           ))
+        for i, insul_type in self.energetic_renovation.iterrows():
+            if insul_type["active"]:
+                temp = []
+                time = 0
+                if insul_type["sink"] == de["label"]:
+                    for timestep in self.weatherdata["temperature"]:
+                        if timestep <= insul_type["heat limit temperature"]:
+                            temp.append(
+                                (insul_type["temperature indoor"] - timestep)
+                                * (insul_type["U-value old"]
+                                   - insul_type["U-value new"])
+                                * insul_type["area"] / 1000)
+                        else:
+                            temp.append(0)
+                    if max(temp) != 0:
+                        ep_costs = insul_type["periodical costs"] * insul_type["area"]\
+                                   / max(temp)
+                        self.energetic_renovation.loc[i, "ep_costs_kW"] = ep_costs
+                        self.nodes_sinks.append(
+                            solph.Source(label="egs-{}".format(insul_type["label"]),
+                                         outputs={
+                                              self.busd[de['input']]:
+                                                  solph.Flow(
+                                                      investment=solph.Investment(
+                                                          ep_costs=ep_costs,
+                                                          minimum=0,
+                                                          maximum=max(temp)
+                                                      ),
+                                                  fix=timeseries_args["fix"] / timeseries_args["fix"].max())}))
+
+
+        #self.nodes_sinks.append(
+        #    solph.custom.SinkDSM(label=de['label'],
+        #                         inputs={
+        #                             self.busd[de['input']]:
+        #                                 solph.Flow()
+        #                         },
+        #                         demand=timeseries_args["nominal_value"]
+        #                                * timeseries_args["fix"],
+        #                         approach="DLR",
+        #                         capacity_down=1,
+         #                        capacity_up=1,
+         #                        delay_time=3,
+         #                        flex_share_up=0.3,
+        #                         flex_share_down=0.3,
+        #                         shift_time=2,
+        #                         shed_eligibility=False,
+        #                         investment=solph.Investment(ep_costs=3)))
+
     def unfixed_sink(self, de: dict):
         """
             Creates a sink object with an unfixed energy input and the
@@ -958,7 +1012,7 @@ class Sinks:
         logging.info('   ' + 'Sink created: ' + de['label'])
     
     def __init__(self, nodes_data: dict, busd: dict, nodes: list, time_series,
-                 weather_data):
+                 weather_data, energetic_renovation):
         """ Inits the sink class.
         ---
         Other variables:
@@ -973,6 +1027,9 @@ class Sinks:
         self.nodes_sinks = []
         # Initialise a class intern copy of the bus dictionary
         self.busd = busd.copy()
+        self.energetic_renovation = energetic_renovation.copy()
+        self.energetic_renovation["ep_costs_kW"] = ""
+        self.weatherdata = weather_data.copy()
         
         # Create sink objects
         for i, de in nodes_data['sinks'].iterrows():
@@ -1002,6 +1059,7 @@ class Sinks:
         # appends created sinks on the list of nodes
         for i in range(len(self.nodes_sinks)):
             nodes.append(self.nodes_sinks[i])
+        nodes_data["energetic_renovation"] = self.energetic_renovation.copy()
 
 
 class Transformers:
@@ -1084,7 +1142,9 @@ class Transformers:
                         periodical_constraint_costs=tf[
                             'periodical constraint costs'],
                         minimum=tf['min. investment capacity'],
-                        maximum=tf['max. investment capacity'],
+                        maximum=tf['max. investment capacity']
+                        if tf['max. investment capacity'] != "inf"
+                        else float("+inf"),
                         existing=tf['existing capacity'],
                         nonconvex=True if
                         tf['non-convex investment'] == 1 else False,
@@ -1112,7 +1172,9 @@ class Transformers:
                             ep_costs=0,
                             existing=existing_capacity2,
                             minimum=minimum_capacity2,
-                            maximum=maximum_capacity2,
+                            maximum=maximum_capacity2
+                            if tf['max. investment capacity'] != "inf"
+                            else float("+inf"),
                             nonconvex=True if
                             tf['non-convex investment'] == 1 else False,
                             offset=tf['fix investment costs']))})
@@ -1326,7 +1388,9 @@ class Transformers:
                 investment=solph.Investment(
                         ep_costs=tf['periodical costs'],
                         minimum=tf['min. investment capacity'],
-                        maximum=tf['max. investment capacity'],
+                        maximum=tf['max. investment capacity']
+                        if tf['max. investment capacity'] != "inf"
+                        else float("+inf"),
                         periodical_constraint_costs=tf[
                             'periodical constraint costs'],
                         existing=tf['existing capacity']))}}
@@ -1402,10 +1466,11 @@ class Transformers:
                                         'periodical costs'],
                                     periodical_constraint_costs=tf[
                                         'periodical constraint costs'],
-                                    minimum=tf[
-                                        'min. investment capacity'],
-                                    maximum=tf[
-                                        'max. investment capacity'],
+                                    minimum=tf['min. investment capacity'],
+                                    maximum=tf['max. investment capacity']
+                                    if tf['max. investment capacity'] != "inf"
+                                    else float("+inf")
+                                    ,
                                     existing=tf['existing capacity'],
                                     nonconvex=True if
                                     tf['non-convex investment'] == 1 else False,
@@ -1580,7 +1645,9 @@ class Transformers:
                 investment=solph.Investment(
                         ep_costs=tf['periodical costs'],
                         minimum=tf['min. investment capacity'],
-                        maximum=tf['max. investment capacity'],
+                        maximum=tf['max. investment capacity']
+                        if tf['max. investment capacity'] != "inf"
+                        else float("+inf"),
                         existing=tf['existing capacity']))}}
         conversion_factors = {
             "conversion_factors": {
@@ -1706,25 +1773,19 @@ class Storages:
                         'variable output constraint costs']
                 )},
                 loss_rate=s['capacity loss'],
-                inflow_conversion_factor=s[
-                    'efficiency inflow'],
-                outflow_conversion_factor=s[
-                    'efficiency outflow'],
-                invest_relation_input_capacity=s[
-                    'input/capacity ratio'],
-                invest_relation_output_capacity=s[
-                    'output/capacity ratio'],
+                inflow_conversion_factor=s['efficiency inflow'],
+                outflow_conversion_factor=s['efficiency outflow'],
+                invest_relation_input_capacity=s['input/capacity ratio'],
+                invest_relation_output_capacity=s['output/capacity ratio'],
                 investment=solph.Investment(
-                    ep_costs=s[
-                        'periodical costs'],
+                    ep_costs=s['periodical costs'],
                     periodical_constraint_costs=s[
                         'periodical constraint costs'],
-                    existing=s[
-                        'existing capacity'],
-                    minimum=s[
-                        'min. investment capacity'],
-                    maximum=s[
-                        'max. investment capacity'],
+                    existing=s['existing capacity'],
+                    minimum=s['min. investment capacity'],
+                    maximum=s['max. investment capacity']
+                    if s['max. investment capacity'] != "inf"
+                    else float("+inf"),
                     nonconvex=True if
                     s['non-convex investment'] == 1 else False,
                     offset=s['fix investment costs'])))
@@ -1768,41 +1829,31 @@ class Storages:
             solph.components.GenericStorage(
                 label=s['label'],
                 inputs={self.busd[s['bus']]: solph.Flow(
-                    variable_costs=s[
-                        'variable input costs'],
-                    emission_factor=s[
-                        'variable input constraint costs']
+                    variable_costs=s['variable input costs'],
+                    emission_factor=s['variable input constraint costs']
                 )},
                 outputs={self.busd[s['bus']]: solph.Flow(
-                    variable_costs=s[
-                        'variable output costs'],
-                    emission_factor=s[
-                        'variable output constraint costs']
+                    variable_costs=s['variable output costs'],
+                    emission_factor=s['variable output constraint costs']
                 )},
                 min_storage_level=s['capacity min'],
                 max_storage_level=s['capacity max'],
                 loss_rate=loss_rate,
                 fixed_losses_relative=fixed_losses_relative,
                 fixed_losses_absolute=fixed_losses_absolute,
-                inflow_conversion_factor=s[
-                    'efficiency inflow'],
-                outflow_conversion_factor=s[
-                    'efficiency outflow'],
-                invest_relation_input_capacity=s[
-                    'input/capacity ratio'],
-                invest_relation_output_capacity=s[
-                    'output/capacity ratio'],
+                inflow_conversion_factor=s['efficiency inflow'],
+                outflow_conversion_factor=s['efficiency outflow'],
+                invest_relation_input_capacity=s['input/capacity ratio'],
+                invest_relation_output_capacity=s['output/capacity ratio'],
                 investment=solph.Investment(
-                    ep_costs=s[
-                        'periodical costs'],
+                    ep_costs=s['periodical costs'],
                     periodical_constraint_costs=s[
                         'periodical constraint costs'],
-                    existing=s[
-                        'existing capacity'],
-                    minimum=s[
-                        'min. investment capacity'],
-                    maximum=s[
-                        'max. investment capacity'],
+                    existing=s['existing capacity'],
+                    minimum=s['min. investment capacity'],
+                    maximum=s['max. investment capacity']
+                    if s['max. investment capacity'] != "inf"
+                    else float("+inf"),
                     nonconvex=True if
                     s['non-convex investment'] == 1 else False,
                     offset=s['fix investment costs'])))
@@ -1894,8 +1945,9 @@ class Links:
                                         'periodical constraint costs'],
                                     minimum=link[
                                         'min. investment capacity'],
-                                    maximum=link[
-                                        'max. investment capacity'],
+                                    maximum=link['max. investment capacity']
+                                    if link['max. investment capacity'] != "inf"
+                                    else float("+inf"),
                                     existing=link[
                                         'existing capacity'],
                                     nonconvex=True if
@@ -1914,8 +1966,9 @@ class Links:
                                          'periodical constraint costs'],
                                      minimum=link[
                                          'min. investment capacity'],
-                                     maximum=link[
-                                         'max. investment capacity'],
+                                     maximum=link['max. investment capacity']
+                                     if link['max. investment capacity'] != "inf"
+                                     else float("+inf"),
                                      existing=link[
                                          'existing capacity'],
                                      nonconvex=True if

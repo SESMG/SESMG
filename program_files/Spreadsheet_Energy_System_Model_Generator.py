@@ -83,7 +83,7 @@ import os
 import pandas as pd
 from threading import *
 import sys
-from program_files import (create_objects_egs,
+from program_files import (create_objects,
                            create_results,
                            create_energy_system,
                            optimize_model,
@@ -157,37 +157,37 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
 
     # CREATES BUS OBJECTS, EXCESS SINKS, AND SHORTAGE SOURCES AS DEFINED IN THE
     # SCENARIO FILE AND ADDS THEM TO THE lIST OF COMPONENTS
-    busd = create_objects_egs.buses(nodes_data=nodes_data,
+    busd = create_objects.buses(nodes_data=nodes_data,
                                     nodes=nodes)
     # PARALLEL CREATION OF ALL OBJECTS OF THE SCENARIO FILE
     
     # CREATES SOURCE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
-    t1 = Thread(target=create_objects_egs.Sources,
+    t1 = Thread(target=create_objects.Sources,
                 args=(nodes_data, nodes, busd, time_series, weather_data))
     t1.start()
     # CREATES SINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
-    t2 = Thread(target=create_objects_egs.Sinks, args=(nodes_data, busd,
+    t2 = Thread(target=create_objects.Sinks, args=(nodes_data, busd,
                                                    nodes, time_series,
                                                    weather_data,
                                                    nodes_data["energetic_renovation"]))
     t2.start()
     # CREATES TRANSFORMER OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM
     # TO THE lIST OF COMPONENTS
-    t3 = Thread(target=create_objects_egs.Transformers, args=(nodes_data,
+    t3 = Thread(target=create_objects.Transformers, args=(nodes_data,
                                                               nodes,
                                                               busd,
                                                               weather_data))
     t3.start()
     # CREATES STORAGE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
-    t4 = Thread(target=create_objects_egs.Storages, args=(nodes_data, nodes,
+    t4 = Thread(target=create_objects.Storages, args=(nodes_data, nodes,
                                                           busd))
     t4.start()
     # CREATES LINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
-    t5 = Thread(target=create_objects_egs.Links, args=(nodes_data, nodes, busd,))
+    t5 = Thread(target=create_objects.Links, args=(nodes_data, nodes, busd,))
     t5.start()
 
     # WAIT UNTIL THE THREADS HAVE DONE THEIR JOBS
