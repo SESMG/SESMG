@@ -1,7 +1,7 @@
-Application of the Model Generator
+Graphical User Interface
 *************************************************
 
-1. Fill in the spreadsheet document according to the instructions in the "Using th Scenario File" chapter.
+1. Fill in the spreadsheet document according to the instructions in the "Using the Scenario File" chapter.
 
 2. Execute the Run_SESMG_for_**your operating System** file in the main folder.
 
