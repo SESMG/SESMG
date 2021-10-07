@@ -1,4 +1,4 @@
-Using the Scenario File
+Scenario Spreadsheet
 *************************************************
 
 For the modeling and optimization of an energy system, parameters for all system components must be given in the model 
