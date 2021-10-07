@@ -159,7 +159,6 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     # SCENARIO FILE AND ADDS THEM TO THE lIST OF COMPONENTS
     busd = create_objects_egs.buses(nodes_data=nodes_data,
                                     nodes=nodes)
-    nodes_data = district_heating.pre_calculation_dh_systems(nodes_data)
     # PARALLEL CREATION OF ALL OBJECTS OF THE SCENARIO FILE
     
     # CREATES SOURCE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
