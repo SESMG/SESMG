@@ -588,7 +588,9 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
     global thermal_network
     thermal_network = dhnx.network.ThermalNetwork()
     # check rather saved calculation are distributed
+    dh = False
     if district_heating_path == "":
+        print(len(nodes_data["road sections"]))
         # check if the scenario includes road sections
         if len(nodes_data["road sections"]) != 0:
             # create pipes and connection point for building-streets connection
@@ -632,6 +634,7 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
                         plt.text(82, 0, 'P1', fontsize=14)
                         plt.legend()
                         plt.show()
+                    dh = True
     else:
         for i in ["consumers", "pipes", "producers", "forks"]:
             thermal_network.components[i] = \
@@ -644,10 +647,12 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
             thermal_network.components["pipes"]['id']
         thermal_network.components["prodcuers"].index = \
             thermal_network.components["prodcuers"]['id']
-    new_nodes = create_connect_dhnx(nodes_data, busd)
-
-    for i in new_nodes:
-        nodes.append(i)
+        dh = True
+    if dh:
+        new_nodes = create_connect_dhnx(nodes_data, busd)
+    
+        for i in new_nodes:
+            nodes.append(i)
     return nodes
 
     # get results
