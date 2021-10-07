@@ -31,11 +31,11 @@ Structure of Energy Systems
 	
 Manual
 -------------------------------------------------
-* :doc:`getting_started/how_to_install`
-* :doc:`getting_started/how_to_execute`
-* :doc:`getting_started/how_to_use`
-* :doc:`getting_started/analyze_results`
-* :doc:`getting_started/demo_feature`
+* :doc:`manual/installation`
+* :doc:`manual/GUI`
+* :doc:`manual/ScenarioSpreadsheet`
+* :doc:`manual/Results`
+* :doc:`manual/DemoTool`
 
 
 
