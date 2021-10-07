@@ -71,7 +71,7 @@ Available Algorithms
 The following algorithms are applicable and must be specified with the following additional information:
 
 .. csv-table:: 
-	:file: ../getting_started/timeseries_preparation.csv
+	:file: ../manual/timeseries_preparation.csv
 	:header-rows: 1
 
 Further Adjustments
