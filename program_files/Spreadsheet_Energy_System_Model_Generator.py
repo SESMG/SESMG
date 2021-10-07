@@ -92,10 +92,10 @@ from program_files import (create_objects_egs,
                            district_heating)
 
 
-
 def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
                graph: bool, criterion_switch: bool, xlsx_results: bool,
-               console_results: bool, timeseries_prep: list, solver: str):
+               console_results: bool, timeseries_prep: list, solver: str,
+               save_dh_calculations: bool, district_heating_path=None):
     """
         Main function of the Spreadsheet System Model Generator
 
@@ -158,8 +158,8 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     # CREATES BUS OBJECTS, EXCESS SINKS, AND SHORTAGE SOURCES AS DEFINED IN THE
     # SCENARIO FILE AND ADDS THEM TO THE lIST OF COMPONENTS
     busd = create_objects_egs.buses(nodes_data=nodes_data,
-                                nodes=nodes)
-
+                                    nodes=nodes)
+    nodes_data = district_heating.pre_calculation_dh_systems(nodes_data)
     # PARALLEL CREATION OF ALL OBJECTS OF THE SCENARIO FILE
     
     # CREATES SOURCE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
@@ -176,13 +176,15 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     t2.start()
     # CREATES TRANSFORMER OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM
     # TO THE lIST OF COMPONENTS
-    t3 = Thread(target=create_objects_egs.Transformers, args=(nodes_data, nodes,
-                                                          busd, weather_data))
+    t3 = Thread(target=create_objects_egs.Transformers, args=(nodes_data,
+                                                              nodes,
+                                                              busd,
+                                                              weather_data))
     t3.start()
     # CREATES STORAGE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
     t4 = Thread(target=create_objects_egs.Storages, args=(nodes_data, nodes,
-                                                      busd,))
+                                                          busd))
     t4.start()
     # CREATES LINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
@@ -195,7 +197,11 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     t3.join()
     t4.join()
     t5.join()
-    nodes = district_heating.district_heating(nodes_data, nodes, busd)
+    
+    nodes = district_heating.district_heating(nodes_data, nodes, busd,
+                                              district_heating_path,
+                                              save_dh_calculations,
+                                              result_path)
     # ADDS THE COMPONENTS TO THE ENERGYSYSTEM
     esys.add(*nodes)
 
@@ -204,7 +210,8 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
                               show=graph)
 
     # OPTIMIZES THE ENERGYSYSTEM AND RETURNS THE OPTIMIZED ENERGY SYSTEM
-    om = optimize_model.least_cost_model(esys, num_threads, nodes_data, busd, solver)
+    om = optimize_model.least_cost_model(esys, num_threads, nodes_data, busd,
+                                         solver)
 
     # SHOWS AND SAVES RESULTS OF THE OPTIMIZED MODEL / POST-PROCESSING
     if xlsx_results:
