@@ -62,14 +62,16 @@ class upscaling_frame_class:
         self.paths['scenario_name'] = (self.scenario_name.get())
         self.scenario_name_label.configure(text=self.scenario_name.get())
 
-    def scenario_upscaling(self, pre_scenario, standard_param, scenario_name):
+    def scenario_upscaling(self, pre_scenario, standard_param, scenario_name,
+                           clustering):
         # urban_district_upscaling
         urban_district_upscaling_pre_processing(
             pre_scenario=pre_scenario,
             standard_parameter_path=standard_param,
             output_scenario=scenario_name,
             plain_sheet=os.path.join(os.path.dirname(__file__),
-                                     r'plain_scenario.xlsx'))
+                                     r'plain_scenario.xlsx'),
+            clustering=clustering)
 
     def create_overview(self, components):
         urban_district_upscaling_post_processing(components)
@@ -150,7 +152,12 @@ class upscaling_frame_class:
                                          text=self.scenario_name.get(),
                                          font='Helvetica 10')
         self.scenario_name_label.grid(column=2, row=row, sticky="W")
-
+        row = row + 1
+        Label(upscaling_frame, text='Clustering', font='Helvetica 10') \
+            .grid(column=0, row=row, sticky="W")
+        clustering = BooleanVar(False)
+        checkbox = Checkbutton(upscaling_frame, variable=clustering)
+        checkbox.grid(column=1, row=row)
         # Create Scenario
         row = row + 1
         Label(upscaling_frame, text='Create Scenario', font='Helvetica 10')\
@@ -159,7 +166,8 @@ class upscaling_frame_class:
                command=lambda: self.scenario_upscaling(
                    pre_scenario=self.paths['pre_scenario'],
                    standard_param=self.paths['standard_parameters'],
-                   scenario_name=self.paths['scenario_name']))\
+                   scenario_name=self.paths['scenario_name'],
+                   clustering=clustering))\
             .grid(column=1, row=row)
         # Path to components csv
         row += 1
