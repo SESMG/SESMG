@@ -272,13 +272,13 @@ The following parameters are only required, if "transformer type" is set to "Com
 - **heat source**: Specifies the heat source. Possible heat sources are "GroundWater", "Ground", "Air" and "Water" possible.
 - **temperature high** in (°C): Temperature of the high temperature heat reservoir. Only required if "mode" is set to "heat_pump".
 - **temperature low** in (°C): Cooling temperature needed for cooling demand. Only required if "mode" is set to "chiller".
-- **quality grade**: To determine the COP of a real machine a scale-down factor (the quality grade) is applied on the Carnot efficiency (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
+- **quality grade**: To determine the COP of a real machine a scale-down factor (the quality grade) is applied on the Carnot efficiency (see `oemof.thermal <https://oemof-thermal.readthedocs.io/en/latest/>`_).
 - **area** in (sqm): Open spaces for ground-coupled compression heat transformers (GC-CHT).
 - **length of the geoth. probe** in (m): Length of the vertical heat exchanger, only for GC-CHT.
 - **heat extraction** in (kW/(m*a)): Heat extraction for the heat exchanger referring to the location, only for GC-CHT.
 - **min. borehole area** in (sqm): Limited space due to the regeneation of the ground source, only for GC-CHT.
-- **temp threshold icing**: Temperature below which icing occurs (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
-- **factor icing**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
+- **temp threshold icing**: Temperature below which icing occurs (see `oemof.thermal <https://oemof-thermal.readthedocs.io/en/latest/>`_). Only required if "mode" is set to "heat_pump".
+- **factor icing**: COP reduction caused by icing (see `oemof.thermal <https://oemof-thermal.readthedocs.io/en/latest/>`_). Only required if "mode" is set to "heat_pump".
 Absorption Heat Transformer
 --------------------------------
 The following parameters are only required, if "transformer type" is set to "AbsorptionHeatTransformer":
