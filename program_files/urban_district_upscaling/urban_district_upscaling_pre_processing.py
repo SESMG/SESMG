@@ -1153,7 +1153,54 @@ def sink_clustering(building, sink, cluster_label, sink_parameters):
             and "heat" in sink["label"]:
         sink_parameters[2].append((cluster_label, sink["input"]))
     return sink_parameters
-    
+
+def photovoltaic_clustering(building,sources,index,source_parameters, azimuth_type):
+
+    # Nach Winkelausrichtungen unterscheiden
+    # [180, 135, 90, 45, 0, -45, -90, -135, -180]
+
+    if str(building[0]) in sources["label"] \
+            and sources["technology"] == "photovoltaic":
+
+        # [counter, maxinvest, periodical costs,
+        # periodical constraint costs, variable costs, Albedo,
+        # Altitude, Azimuth, Surface Tilt, Latitude, Longitude]
+
+        #counter
+        source_parameters["photovoltaic_{}".format(azimuth_type)][0] \
+           += 1
+        #maxinvest
+        source_parameters["photovoltaic_{}".format(azimuth_type)][1] \
+            += sources["max. investment capacity"]
+        #periodical_costs
+        source_parameters["photovoltaic_{}".format(azimuth_type)][2] \
+            += sources["periodical costs"]
+        #periodical constraint costs
+        source_parameters["photovoltaic_{}".format(azimuth_type)][3] \
+            += sources["periodical constraint costs"]
+        #variable costs
+        source_parameters["photovoltaic_{}".format(azimuth_type)][4] \
+            += sources["variable costs"]
+        #albedo
+        source_parameters["photovoltaic_{}".format(azimuth_type)][5] \
+            += sources["Albedo"]
+        #altitude
+        source_parameters["photovoltaic_{}".format(azimuth_type)][6] \
+            += sources["Altitude"]
+        #azimuth
+        source_parameters["photovoltaic_{}".format(azimuth_type)][7] \
+            += sources["Azimuth"]
+        #surface tilt
+        source_parameters["photovoltaic_{}".format(azimuth_type)][8] \
+            += sources["Surface Tilt"]
+        #latitude
+        source_parameters["photovoltaic_{}".format(azimuth_type)][9] \
+            += sources["Latitude"]
+        #longitude
+        source_parameters["photovoltaic_{}".format(azimuth_type)][10] \
+            += sources["Longitude"]
+        sheets["sources"] = sheets["sources"].drop(index=sources["label"])
+    return source_parameters
     
 def transformer_clustering(building, transformer, index, building_type,
                            transformer_parameters, heat_buses_gchps):
@@ -1234,8 +1281,7 @@ def storage_clustering(building, storage, index, storage_parameter):
         storage_parameter["thermal"][4] += storage["variable output costs"]
         sheets["storages"] = sheets["storages"].drop(index=storage["label"])
     return storage_parameter
-    
-    
+
 def clustering_method(tool, standard_parameters, sheet_names):
     """
         TODO DOCSTRING TEXT
@@ -1273,12 +1319,15 @@ def clustering_method(tool, standard_parameters, sheet_names):
             sheets["buses"] = sheets["buses"].drop(index=i)
         if "hp_elec" in j["label"] and "swhp_elec" not in j["label"]:
             sheets["buses"] = sheets["buses"].drop(index=i)
+        if "pv_bus" in j["label"]:
+            sheets["buses"] = sheets["buses"].drop(index=i)
     heat_buses_gchps = []
     for cluster in cluster_ids:
         sheets["transformers"].set_index("label", inplace=True, drop=False)
         sheets["storages"].set_index("label", inplace=True, drop=False)
         sheets["links"].set_index("label", inplace=True, drop=False)
         sheets["sinks"].set_index("label", inplace=True, drop=False)
+        sheets["sources"].set_index("label", inplace=True, drop=False)
         if cluster_ids[cluster]:
             if "RES" in cluster:
                 bus = "res"
@@ -1307,6 +1356,28 @@ def clustering_method(tool, standard_parameters, sheet_names):
             # periodical constraint costs, variable output costs]
             storage_parameters = {"battery": [0, 0, 0, 0, "x"],
                                   "thermal": [0, 0, 0, 0, 0]}
+
+            # storage param technology: [counter, maxinvest, periodical costs,
+            # periodical constraint costs, variable costs, Albedo,
+            # Altitude, Azimuth, Surface Tilt, Latitude, Longitude]
+            source_parameters = {
+                 "photovoltaic_north":[0 for i in range(11)],
+                 "photovoltaic_north_east": [0 for i in range(11)],
+                 "photovoltaic_east": [0 for i in range(11)],
+                 "photovoltaic_south_east": [0 for i in range(11)],
+                 "photovoltaic_south": [0 for i in range(11)],
+                 "photovoltaic_south_west": [0 for i in range(11)],
+                 "photovoltaic_west": [0 for i in range(11)],
+                 "photovoltaic_north_west": [0 for i in range(11)],
+                 "solar_thermal_north":[0 for i in range(11)],
+                 "solar_thermal_north_east": [0 for i in range(11)],
+                 "solar_thermal_east": [0 for i in range(11)],
+                 "solar_thermal_south_east": [0 for i in range(11)],
+                 "solar_thermal_south": [0 for i in range(11)],
+                 "solar_thermal_south_west": [0 for i in range(11)],
+                 "solar_thermal_west": [0 for i in range(11)],
+                 "solar_thermal_north_west": [0 for i in range(11)],
+                 }
             
             for building in cluster_ids[cluster]:
                 for index, sink in sheets_clustering["sinks"].iterrows():
@@ -1314,6 +1385,35 @@ def clustering_method(tool, standard_parameters, sheet_names):
                     sink_parameters = \
                         sink_clustering(building, sink, cluster,
                                         sink_parameters)
+
+                for index, sources in sheets_clustering["sources"].iterrows():
+                    # collecting information for bundled photovoltaic systems
+
+                    if sources["technology"] in ["photovoltaic","solar_thermal_flat_plate"]:
+                        if -22.5 <= sources["Azimuth"] < 22.5:
+                            azimuth_type = "north"
+                        elif 22.5 <= sources["Azimuth"] < 67.5:
+                            azimuth_type = "north_east"
+                        elif 67.5 <= sources["Azimuth"] < 112.5:
+                            azimuth_type = "east"
+                        elif 112.5 <= sources["Azimuth"] < 157.5:
+                            azimuth_type = "south_east"
+                        elif sources["Azimuth"]>=157.5 or sources["Azimuth"]<-157.5:
+                            azimuth_type = "south"
+                        elif -157.5 <= sources["Azimuth"] < -112.5:
+                            azimuth_type = "south_west"
+                        elif -112.5 <= sources["Azimuth"] < -67.5:
+                            azimuth_type = "west"
+                        elif -67.5 <= sources["Azimuth"] < -22.5:
+                            azimuth_type = "north_west"
+
+                        source_parameters = \
+                            photovoltaic_clustering(building,
+                                                    sources,
+                                                    index,
+                                                    source_parameters,
+                                                    azimuth_type)
+
                 for index, transformer in sheets_clustering[
                         "transformers"].iterrows():
                     # collecting information for bundled transformer
@@ -1401,6 +1501,7 @@ def clustering_method(tool, standard_parameters, sheet_names):
                         sink_parameters[1], standard_parameters, 0)
             # create res or com gasheating
             if bus != "0":
+
                 if transformer_parameters["gasheating_{}".format(bus)][0] > 0:
                     create_standard_parameter_bus(
                             label=str(cluster) + "_gas_bus",
@@ -1448,6 +1549,40 @@ def clustering_method(tool, standard_parameters, sheet_names):
                     sheets["transformers"] = \
                         sheets["transformers"].append(transformer_series,
                                                       ignore_index=True)
+            # Define PV Standard-Parameters
+            sources_standard_parameters = standard_parameters.parse(
+                'sources')
+            sources_standard_parameters.set_index('comment',
+                                                  inplace=True)
+            pv_standard_parameters = \
+                sources_standard_parameters.loc[
+                    'fixed photovoltaic source']
+            for azimuth in ["north_000","north_east_045", "east_090", "south_east_135", "south_180", "south_west_225", "west_270", "north_west_315"]:
+                if source_parameters["photovoltaic_{}".format(azimuth[:-4])][0] > 0:
+                    print('ping1')
+                    if str(cluster[0:3]) + "_pv_bus" not in sheets["buses"]:
+                        create_standard_parameter_bus(
+                            label=str(cluster[0:3]) + "_pv_bus",
+                            bus_type='building_pv_bus',
+                            standard_parameters=standard_parameters)
+                    # TODO 1 durch
+                    create_pv_source(
+                        cluster[0:3], azimuth[:-4],
+                        area=source_parameters["photovoltaic_{}".format(azimuth[:-4])][1]
+                        / 0.19, # ToDo relativen wert einfügen!!!1!!!!!1!!!111! @Gregor
+                        tilt=source_parameters["photovoltaic_{}".format(azimuth[:-4])][8]
+                        / source_parameters["photovoltaic_{}".format(azimuth[:-4])][0],
+                        azimuth=int(azimuth[-3:]),
+                        latitude=source_parameters["photovoltaic_{}".format(azimuth[:-4])][9]
+                        / source_parameters["photovoltaic_{}".format(azimuth[:-4])][0],
+                        longitude=source_parameters["photovoltaic_{}".format(azimuth[:-4])][10]
+                        / source_parameters["photovoltaic_{}".format(azimuth[:-4])][0],
+                        pv_standard_parameters=pv_standard_parameters)
+
+                    # [counter, maxinvest, periodical costs,
+                    # periodical constraint costs, variable costs, Albedo,
+                    # Altitude, Azimuth, Surface Tilt, Latitude, Longitude]
+
             # TODO do we have to diiferntiate res and com
             if transformer_parameters["electric_heating"][0] > 0:
                 # define individual gas_heating_parameters
@@ -1759,7 +1894,10 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
     
     # create GCHPs parcel wise
     gchps = {}
+    ping = 0
     for num, parcel in parcel.iterrows():
+        ping += 1
+        print("ping"+str(ping))
         for num_inner, building in tool.iterrows():
             if building["active"]:
                 if building["gchp"] not in ["No", "no", 0]:
@@ -1768,6 +1906,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
                             parcel['ID parcel'][-9:]:
                                 parcel['gchp area (m²)']})
     # create gchp relevant components
+    print("ping2")
     for gchp in gchps:
         create_gchp(parcel_id=gchp, area=gchps[gchp],
                     standard_parameters=standard_parameters)
