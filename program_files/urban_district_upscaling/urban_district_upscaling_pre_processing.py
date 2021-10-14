@@ -1154,10 +1154,7 @@ def sink_clustering(building, sink, cluster_label, sink_parameters):
         sink_parameters[2].append((cluster_label, sink["input"]))
     return sink_parameters
 
-def photovoltaic_clustering(building,sources,index,source_parameters, azimuth_type):
-
-    # Nach Winkelausrichtungen unterscheiden
-    # [180, 135, 90, 45, 0, -45, -90, -135, -180]
+def sources_clustering(building,sources,index,source_parameters, azimuth_type):
 
     if str(building[0]) in sources["label"] \
             and sources["technology"] == "photovoltaic":
@@ -1200,6 +1197,45 @@ def photovoltaic_clustering(building,sources,index,source_parameters, azimuth_ty
         source_parameters["photovoltaic_{}".format(azimuth_type)][10] \
             += sources["Longitude"]
         sheets["sources"] = sheets["sources"].drop(index=sources["label"])
+
+    if str(building[0]) in sources["label"] \
+            and sources["technology"] == "solar_thermal_flat_plate":
+
+        # counter
+        source_parameters["solar_thermal_{}".format(azimuth_type)][0] \
+            += 1
+        # maxinvest
+        source_parameters["solar_thermal_{}".format(azimuth_type)][1] \
+            += sources["max. investment capacity"]
+        # periodical_costs
+        source_parameters["solar_thermal_{}".format(azimuth_type)][2] \
+            += sources["periodical costs"]
+        # periodical constraint costs
+        source_parameters["solar_thermal_{}".format(azimuth_type)][3] \
+            += sources["periodical constraint costs"]
+        # variable costs
+        source_parameters["solar_thermal_{}".format(azimuth_type)][4] \
+            += sources["variable costs"]
+        # albedo
+        source_parameters["solar_thermal_{}".format(azimuth_type)][5] \
+            += sources["Albedo"]
+        # altitude
+        source_parameters["solar_thermal_{}".format(azimuth_type)][6] \
+            += sources["Altitude"]
+        # azimuth
+        source_parameters["solar_thermal_{}".format(azimuth_type)][7] \
+            += sources["Azimuth"]
+        # surface tilt
+        source_parameters["solar_thermal_{}".format(azimuth_type)][8] \
+            += sources["Surface Tilt"]
+        # latitude
+        source_parameters["solar_thermal_{}".format(azimuth_type)][9] \
+            += sources["Latitude"]
+        # longitude
+        source_parameters["solar_thermal_{}".format(azimuth_type)][10] \
+            += sources["Longitude"]
+        sheets["sources"] = sheets["sources"].drop(index=sources["label"])
+
     return source_parameters
     
 def transformer_clustering(building, transformer, index, building_type,
@@ -1408,11 +1444,13 @@ def clustering_method(tool, standard_parameters, sheet_names):
                             azimuth_type = "north_west"
 
                         source_parameters = \
-                            photovoltaic_clustering(building,
+                            sources_clustering(building,
                                                     sources,
                                                     index,
                                                     source_parameters,
                                                     azimuth_type)
+
+
 
                 for index, transformer in sheets_clustering[
                         "transformers"].iterrows():
@@ -1557,9 +1595,13 @@ def clustering_method(tool, standard_parameters, sheet_names):
             pv_standard_parameters = \
                 sources_standard_parameters.loc[
                     'fixed photovoltaic source']
+
+            st_stan_param = \
+                sources_standard_parameters.loc[
+                    'solar_thermal_collector']
+
             for azimuth in ["north_000","north_east_045", "east_090", "south_east_135", "south_180", "south_west_225", "west_270", "north_west_315"]:
                 if source_parameters["photovoltaic_{}".format(azimuth[:-4])][0] > 0:
-                    print('ping1')
                     if str(cluster[0:3]) + "_pv_bus" not in sheets["buses"]:
                         create_standard_parameter_bus(
                             label=str(cluster[0:3]) + "_pv_bus",
@@ -1578,6 +1620,23 @@ def clustering_method(tool, standard_parameters, sheet_names):
                         longitude=source_parameters["photovoltaic_{}".format(azimuth[:-4])][10]
                         / source_parameters["photovoltaic_{}".format(azimuth[:-4])][0],
                         pv_standard_parameters=pv_standard_parameters)
+
+                ## SOLAR THERMAL
+                if source_parameters["solar_thermal_{}".format(azimuth[:-4])][0] > 0:
+                    create_solarthermal_source(
+                        building_id=cluster[0:3],
+                        plant_id=azimuth[:-4],
+                        azimuth=int(azimuth[-3:]),
+                        tilt=source_parameters["solar_thermal_{}".format(azimuth[:-4])][8]
+                            / source_parameters["solar_thermal_{}".format(azimuth[:-4])][0],
+                        area=source_parameters["solar_thermal_{}".format(azimuth[:-4])][1]
+                            / 0.78,
+                        solarthermal_standard_parameters=st_stan_param,
+                        latitude=source_parameters["solar_thermal_{}".format(azimuth[:-4])][9]
+                            / source_parameters["solar_thermal_{}".format(azimuth[:-4])][0],
+                        longitude=source_parameters["solar_thermal_{}".format(azimuth[:-4])][10]
+                            / source_parameters["solar_thermal_{}".format(azimuth[:-4])][0],)
+
 
                     # [counter, maxinvest, periodical costs,
                     # periodical constraint costs, variable costs, Albedo,
@@ -1967,7 +2026,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
             sources_standard_parameters.set_index('comment', inplace=True)
             pv_standard_parameters = \
                 sources_standard_parameters.loc['fixed photovoltaic source']
-    
+
             # Define solar thermal Standard-Parameters
             st_stan_param = \
                 sources_standard_parameters.loc['solar_thermal_collector']
