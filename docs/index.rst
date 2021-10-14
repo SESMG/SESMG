@@ -35,6 +35,7 @@ Manual
 * :doc:`manual/GUI`
 * :doc:`manual/ScenarioSpreadsheet`
 * :doc:`manual/Results`
+* :doc:`manual/UpscalingTool`
 * :doc:`manual/DemoTool`
 
 
@@ -48,6 +49,7 @@ Manual
 	manual/GUI
 	manual/ScenarioSpreadsheet
 	manual/Results
+	manual/UpscalingTool
 	manual/DemoTool
 	
 Troubleshooting 
