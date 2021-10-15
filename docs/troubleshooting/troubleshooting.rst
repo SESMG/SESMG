@@ -53,5 +53,12 @@ Modeling
 .. csv-table:: 
    :file: ../troubleshooting/troubleshooting-modelling.csv
    :header-rows: 1
+   
+   
+Upscaling Tool
+===============================
+.. csv-table:: 
+   :file: ../troubleshooting/troubleshooting-upscaling.csv
+   :header-rows: 1 
           
 
