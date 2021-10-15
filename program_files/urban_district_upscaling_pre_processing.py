@@ -1136,40 +1136,129 @@ def create_building_insulation(building_id, standard_parameters, yoc,
                                                            ignore_index=True)
     
     
-def sink_clustering(building, sink, cluster_label, sink_parameters):
+def sink_clustering(building, sink, sink_parameters):
     """
 
     """
     
     if str(building[0]) in sink["label"] \
             and "electricity" in sink["label"]:
-        if sink["load profile"] == "h0" and "RES" in cluster_label:
+        if sink["load profile"] == "h0" and "RES" in building[2]:
             sink_parameters[0] += sink["annual demand"]
             sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
-        elif "COM" in cluster_label:
+        elif "COM" in building[2]:
             sink_parameters[1] += sink["annual demand"]
             sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
     elif str(building[0]) in sink["label"] \
             and "heat" in sink["label"]:
-        sink_parameters[2].append((cluster_label, sink["input"]))
+        sink_parameters[2].append((building[2], sink["input"]))
     return sink_parameters
+
+
+def sources_clustering(building,sources,source_parameters, azimuth_type):
+
+    if str(building[0]) in sources["label"] \
+            and sources["technology"] == "photovoltaic"\
+            and sources["label"] in sheets["sources"].index:
+
+        # [counter, maxinvest, periodical costs,
+        # periodical constraint costs, variable costs, Albedo,
+        # Altitude, Azimuth, Surface Tilt, Latitude, Longitude]
+
+        # counter
+        source_parameters["photovoltaic_{}".format(azimuth_type)][0] \
+           += 1
+        # maxinvest
+        source_parameters["photovoltaic_{}".format(azimuth_type)][1] \
+            += sources["max. investment capacity"]
+        # periodical_costs
+        source_parameters["photovoltaic_{}".format(azimuth_type)][2] \
+            += sources["periodical costs"]
+        # periodical constraint costs
+        source_parameters["photovoltaic_{}".format(azimuth_type)][3] \
+            += sources["periodical constraint costs"]
+        # variable costs
+        source_parameters["photovoltaic_{}".format(azimuth_type)][4] \
+            += sources["variable costs"]
+        # albedo
+        source_parameters["photovoltaic_{}".format(azimuth_type)][5] \
+            += sources["Albedo"]
+        # altitude
+        source_parameters["photovoltaic_{}".format(azimuth_type)][6] \
+            += sources["Altitude"]
+        # azimuth
+        source_parameters["photovoltaic_{}".format(azimuth_type)][7] \
+            += sources["Azimuth"]
+        # surface tilt
+        source_parameters["photovoltaic_{}".format(azimuth_type)][8] \
+            += sources["Surface Tilt"]
+        # latitude
+        source_parameters["photovoltaic_{}".format(azimuth_type)][9] \
+            += sources["Latitude"]
+        # longitude
+        source_parameters["photovoltaic_{}".format(azimuth_type)][10] \
+            += sources["Longitude"]
+        sheets["sources"] = sheets["sources"].drop(index=sources["label"])
+
+    if str(building[0]) in sources["label"] \
+            and sources["technology"] == "solar_thermal_flat_plate" \
+            and sources["label"] in sheets["sources"].index:
+
+        # counter
+        source_parameters["solar_thermal_{}".format(azimuth_type)][0] \
+            += 1
+        # maxinvest
+        source_parameters["solar_thermal_{}".format(azimuth_type)][1] \
+            += sources["max. investment capacity"]
+        # periodical_costs
+        source_parameters["solar_thermal_{}".format(azimuth_type)][2] \
+            += sources["periodical costs"]
+        # periodical constraint costs
+        source_parameters["solar_thermal_{}".format(azimuth_type)][3] \
+            += sources["periodical constraint costs"]
+        # variable costs
+        source_parameters["solar_thermal_{}".format(azimuth_type)][4] \
+            += sources["variable costs"]
+        # albedo
+        source_parameters["solar_thermal_{}".format(azimuth_type)][5] \
+            += sources["Albedo"]
+        # altitude
+        source_parameters["solar_thermal_{}".format(azimuth_type)][6] \
+            += sources["Altitude"]
+        # azimuth
+        source_parameters["solar_thermal_{}".format(azimuth_type)][7] \
+            += sources["Azimuth"]
+        # surface tilt
+        source_parameters["solar_thermal_{}".format(azimuth_type)][8] \
+            += sources["Surface Tilt"]
+        # latitude
+        source_parameters["solar_thermal_{}".format(azimuth_type)][9] \
+            += sources["Latitude"]
+        # longitude
+        source_parameters["solar_thermal_{}".format(azimuth_type)][10] \
+            += sources["Longitude"]
+        sheets["sources"] = sheets["sources"].drop(index=sources["label"])
+
+    return source_parameters
     
     
-def transformer_clustering(building, transformer, index, building_type,
+def transformer_clustering(building, transformer,
                            transformer_parameters, heat_buses_gchps):
     if str(building[0]) in transformer["label"] \
-            and "gasheating" in transformer["label"]:
-        transformer_parameters["gasheating_{}".format(building_type)][0] += 1
-        transformer_parameters["gasheating_{}".format(building_type)][1] \
+            and "gasheating" in transformer["label"]\
+            and transformer["label"] in sheets["transformers"].index:
+        transformer_parameters["gasheating"][0] += 1
+        transformer_parameters["gasheating"][1] \
             += transformer["efficiency"]
-        transformer_parameters["gasheating_{}".format(building_type)][3] \
+        transformer_parameters["gasheating"][3] \
             += transformer["periodical costs"]
-        transformer_parameters["gasheating_{}".format(building_type)][4] += \
+        transformer_parameters["gasheating"][4] += \
             transformer["variable output constraint costs"]
         sheets["transformers"] = \
             sheets["transformers"].drop(index=transformer["label"])
     if str(building[0]) in transformer["label"] \
-            and "electric" in transformer["label"]:
+            and "electric" in transformer["label"] \
+            and transformer["label"] in sheets["transformers"].index:
         transformer_parameters["electric_heating"][0] += 1
         transformer_parameters["electric_heating"][1] \
             += transformer["efficiency"]
@@ -1180,7 +1269,8 @@ def transformer_clustering(building, transformer, index, building_type,
         sheets["transformers"] = \
             sheets["transformers"].drop(index=transformer["label"])
     if str(building[0]) in transformer["label"] \
-            and "ashp" in transformer["label"]:
+            and "ashp" in transformer["label"] \
+            and transformer["label"] in sheets["transformers"].index:
         transformer_parameters["ashp"][0] += 1
         transformer_parameters["ashp"][1] \
             += transformer["efficiency"]
@@ -1215,9 +1305,10 @@ def transformer_clustering(building, transformer, index, building_type,
     return heat_buses_gchps, transformer_parameters
 
 
-def storage_clustering(building, storage, index, storage_parameter):
+def storage_clustering(building, storage, storage_parameter):
     if str(building[0]) in storage["label"] \
-            and "battery" in storage["label"]:
+            and "battery" in storage["label"]\
+            and storage["label"] in sheets["storages"].index:
         storage_parameter["battery"][0] += 1
         storage_parameter["battery"][1] += storage["max. investment capacity"]
         storage_parameter["battery"][2] += storage["periodical costs"]
@@ -1225,7 +1316,8 @@ def storage_clustering(building, storage, index, storage_parameter):
             "periodical constraint costs"]
         sheets["storages"] = sheets["storages"].drop(index=storage["label"])
     if str(building[0]) in storage["label"] \
-            and "thermal" in storage["label"]:
+            and "thermal" in storage["label"] \
+            and storage["label"] in sheets["storages"].index:
         storage_parameter["thermal"][0] += 1
         storage_parameter["thermal"][1] += storage["max. investment capacity"]
         storage_parameter["thermal"][2] += storage["periodical costs"]
@@ -1234,8 +1326,96 @@ def storage_clustering(building, storage, index, storage_parameter):
         storage_parameter["thermal"][4] += storage["variable output costs"]
         sheets["storages"] = sheets["storages"].drop(index=storage["label"])
     return storage_parameter
-    
-    
+
+
+def restructuring_links(sheets_clustering, building, cluster,
+                        standard_parameters):
+    # TODO comments
+    for i, j in sheets_clustering["links"].iterrows():
+        
+        if j["label"] in sheets["links"].index:
+            # remove heatpump links
+            if str(building[0]) in j["bus2"] and "hp_elec" in j["bus2"]:
+                sheets["links"] = sheets["links"].drop(index=j["label"])
+            if str(building[1])[-9:] in j["bus2"] and "hp_elec" in j["bus2"]\
+                    and j["label"] in sheets["links"].index:
+                sheets["links"] = sheets["links"].drop(index=j["label"])
+            # delete pvbus -> central elec
+            if str(building[0]) in j["bus1"] and \
+                    "central_electricity" in j["bus2"] and \
+                    "pv_bus" in j["bus1"]:
+                sheets["links"] = sheets["links"].drop(index=j["label"])
+                if not (str(cluster) + "_pv_bus" in j["bus1"]
+                        and "central_electricity" in j["bus2"])\
+                        and cluster + "pv_central_electricity_link" \
+                        not in sheets["links"].index:
+                    create_standard_parameter_link(
+                        cluster + "pv_central_electricity_link",
+                        bus_1=cluster + "_pv_bus",
+                        bus_2="central_electricity_bus",
+                        link_type="building_pv_central_link",
+                        standard_parameters=standard_parameters)
+                    sheets["links"].set_index("label", inplace=True,
+                                              drop=False)
+            # delete pvbus ->  elec bus of building
+            if str(building[0]) in j["bus1"] and \
+                    str(building[0]) in j["bus2"] and \
+                    "pv_bus" in j["bus1"]:
+                sheets["links"] = sheets["links"].drop(
+                    index=j["label"])
+                if (cluster + "pv_" + cluster + "_electricity_link") \
+                        not in sheets["links"].index:
+                    create_standard_parameter_link(
+                            cluster + "pv_" + cluster + "_electricity_link",
+                            bus_1=cluster + "_pv_bus",
+                            bus_2=cluster + "_electricity_bus",
+                            link_type="building_pv_central_link",
+                            standard_parameters=standard_parameters)
+                    sheets["links"].set_index("label", inplace=True,
+                                              drop=False)
+            if str(building[1][-9:]) in j["bus1"] and \
+                    "heat" in j["bus1"]:
+                sheets["links"] = sheets["links"].drop(index=j["label"])
+            if "central_naturalgas" in j["bus1"] and "gas_bus" in j["bus2"]:
+                sheets["links"] = sheets["links"].drop(index=j["label"])
+                if "central_naturalgas" + cluster not in sheets["links"].index:
+                    create_standard_parameter_link(
+                            "central_naturalgas" + cluster,
+                            bus_1="central_naturalgas_bus",
+                            bus_2=cluster + "_gas_bus",
+                            link_type="central_naturalgas_building_link",
+                            standard_parameters=standard_parameters)
+                    sheets["links"].set_index("label", inplace=True,
+                                              drop=False)
+        if str(building[0]) in j["bus2"] and "electricity" in j["bus2"]:
+            sheets["links"]['bus2'] = \
+                sheets["links"]['bus2'].replace(
+                        [str(building[0]) + "_electricity_bus"],
+                        str(cluster) + "_electricity_bus")
+        # delete and replace central elec -> building elec
+        if str(building[0]) in j["bus2"] and \
+                "central_electricity" in j["bus1"] and \
+                "electricity_bus" in j["bus2"]:
+            sheets["links"] = sheets["links"].drop(index=j["label"])
+            if (cluster + "central_electricity_link")\
+                    not in sheets["links"].index:
+                create_standard_parameter_link(
+                        cluster + "central_electricity_link",
+                        bus_1="central_electricity_bus",
+                        bus_2= cluster + "_electricity_bus",
+                        link_type="building_central_building_link",
+                        standard_parameters=standard_parameters)
+                sheets["links"].set_index("label", inplace=True,
+                                          drop=False)
+       
+        if str(building[0]) in j["bus2"] and \
+                "gas" in j["bus2"]:
+            sheets["links"]['bus2'] = \
+                sheets["links"]['bus2'].replace(
+                        [str(building[0]) + "_gas_bus"],
+                        str(cluster) + "_gas_bus")
+
+
 def clustering_method(tool, standard_parameters, sheet_names):
     """
         TODO DOCSTRING TEXT
@@ -1246,26 +1426,32 @@ def clustering_method(tool, standard_parameters, sheet_names):
         :param sheet_names:
         :type sheet_names:
     """
+    # TODO kosten für gas strom etc mittlen
+    
     # create a dictionary holding the combination of cluster ID the included
     # building labels and its parcels
     cluster_ids = {}
     for num, building in tool.iterrows():
         if building["active"]:
-            if str(str(building["cluster_ID"])
-                    + "_" + str(building["building type"][0:3])) in cluster_ids:
-                cluster_ids[(str(building["cluster_ID"])
-                             + "_" + str(building["building type"][0:3]))]\
-                    .append((building['label'], building['parcel']))
+            if str(building["cluster_ID"]) in cluster_ids:
+                cluster_ids[str(building["cluster_ID"])].append(
+                    [building['label'],
+                     building['parcel'],
+                     str(building["building type"][0:3])])
             else:
-                cluster_ids.update({(str(building["cluster_ID"])
-                                     + "_"
-                                     + str(building["building type"][0:3])):
-                                    [(building['label'], building['parcel'])]})
+                cluster_ids.update({str(building["cluster_ID"]):
+                                    [[building['label'],
+                                     building['parcel'],
+                                     str(building["building type"][0:3])]]})
+    print(cluster_ids)
+    # lokal copy of status of scenario components
     sheets_clustering = {}
     for sheet in sheet_names:
         sheet_edited = sheets[sheet].copy()
         sheet_edited = sheet_edited.drop(index=0)
         sheets_clustering.update({sheet: sheet_edited})
+    # start clustering
+    # remove not longer used buses
     for i, j in sheets_clustering["buses"].iterrows():
         if "gas" in j["label"] and "central" not in j["label"]:
             sheets["buses"] = sheets["buses"].drop(index=i)
@@ -1273,33 +1459,24 @@ def clustering_method(tool, standard_parameters, sheet_names):
             sheets["buses"] = sheets["buses"].drop(index=i)
         if "hp_elec" in j["label"] and "swhp_elec" not in j["label"]:
             sheets["buses"] = sheets["buses"].drop(index=i)
+        if "pv_bus" in j["label"]:
+            sheets["buses"] = sheets["buses"].drop(index=i)
     heat_buses_gchps = []
     for cluster in cluster_ids:
         sheets["transformers"].set_index("label", inplace=True, drop=False)
         sheets["storages"].set_index("label", inplace=True, drop=False)
         sheets["links"].set_index("label", inplace=True, drop=False)
         sheets["sinks"].set_index("label", inplace=True, drop=False)
+        sheets["sources"].set_index("label", inplace=True, drop=False)
+        sheets["buses"].set_index("label", inplace=True, drop=False)
         if cluster_ids[cluster]:
-            if "RES" in cluster:
-                bus = "res"
-            elif "COM" in cluster:
-                bus = "com"
-            else:
-                bus = "res"
-                print("TODO")
-            # house electricity bus
-            create_standard_parameter_bus(
-                label=str(cluster) + "_electricity_bus",
-                bus_type='building_' + bus + '_electricity_bus',
-                standard_parameters=standard_parameters)
             
             # cluster sinks parameter [res_demand, com_demand, heat_buses]
             sink_parameters = [0, 0, []]
             # transformer_param technology: [counter, efficiency, efficiency2,
             # periodical_costs, variable_constraint_costs]
             transformer_parameters = \
-                {"gasheating_res": [0, 0, "x", 0, 0],
-                 "gasheating_com": [0, 0, "x", 0, 0],
+                {"gasheating": [0, 0, "x", 0, 0],
                  "electric_heating": [0, 0, "x", 0, 0],
                  "ashp": [0, 0, 0, 0, 0],
                  "gchp": [0, 0, 0, 0, 0]}
@@ -1307,71 +1484,136 @@ def clustering_method(tool, standard_parameters, sheet_names):
             # periodical constraint costs, variable output costs]
             storage_parameters = {"battery": [0, 0, 0, 0, "x"],
                                   "thermal": [0, 0, 0, 0, 0]}
+
+            # storage param technology: [counter, maxinvest, periodical costs,
+            # periodical constraint costs, variable costs, Albedo,
+            # Altitude, Azimuth, Surface Tilt, Latitude, Longitude]
+            source_parameters = {
+                 "photovoltaic_north":[0 for i in range(11)],
+                 "photovoltaic_north_east": [0 for i in range(11)],
+                 "photovoltaic_east": [0 for i in range(11)],
+                 "photovoltaic_south_east": [0 for i in range(11)],
+                 "photovoltaic_south": [0 for i in range(11)],
+                 "photovoltaic_south_west": [0 for i in range(11)],
+                 "photovoltaic_west": [0 for i in range(11)],
+                 "photovoltaic_north_west": [0 for i in range(11)],
+                 "solar_thermal_north":[0 for i in range(11)],
+                 "solar_thermal_north_east": [0 for i in range(11)],
+                 "solar_thermal_east": [0 for i in range(11)],
+                 "solar_thermal_south_east": [0 for i in range(11)],
+                 "solar_thermal_south": [0 for i in range(11)],
+                 "solar_thermal_south_west": [0 for i in range(11)],
+                 "solar_thermal_west": [0 for i in range(11)],
+                 "solar_thermal_north_west": [0 for i in range(11)],
+                 }
             
             for building in cluster_ids[cluster]:
+                if "RES" in building[2] \
+                        and str(cluster) + "_res_electricity_bus" \
+                        not in sheets["buses"].index:
+                    if cluster + "_electricity_bus" \
+                        not in sheets["buses"].index:
+                        create_standard_parameter_bus(
+                                label=str(cluster) + "_electricity_bus",
+                                bus_type='building_res_electricity_bus', # TODO building_electricity_bus in standard_param
+                                standard_parameters=standard_parameters)
+                    # cluster electricity bus if cluster type is res / com
+                    create_standard_parameter_bus(
+                            label=str(cluster) + "_res_electricity_bus",
+                            bus_type='building_res_electricity_bus',
+                            standard_parameters=standard_parameters)
+                    sheets["buses"].set_index("label", inplace=True,
+                                              drop=False)
+
+                    # Creates a Bus connecting the cluster electricity bus with
+                    # the res electricity bus
+                    create_standard_parameter_link(
+                        label=str(cluster) + "_res_electricity_link",
+                        bus_1=str(cluster) + "_electricity_bus",
+                        bus_2=str(cluster) + "_res_electricity_bus",
+                        link_type='building_pv_building_link',
+                        standard_parameters=standard_parameters)
+                    sheets["links"].set_index("label", inplace = True, drop = False)
+                    
+                elif "COM" in building[2] \
+                        and str(cluster) + "_com_electricity_bus" \
+                        not in sheets["buses"].index:
+                    if cluster + "_electricity_bus" \
+                        not in sheets["buses"].index:
+                        create_standard_parameter_bus(
+                                label=str(cluster) + "_electricity_bus",
+                                bus_type='building_res_electricity_bus', # TODO building_electricity_bus in standard_param
+                                standard_parameters=standard_parameters)
+                    # cluster electricity bus if cluster type is res / com
+                    create_standard_parameter_bus(
+                            label=str(cluster) + "_com_electricity_bus",
+                            bus_type='building_com_electricity_bus',
+                            standard_parameters=standard_parameters)
+                    sheets["buses"].set_index("label", inplace=True,
+                                              drop=False)
+
+                    # Creates a Bus connecting the cluster electricity bus with
+                    # the com electricity bus
+                    create_standard_parameter_link(
+                        label=str(cluster) + "_com_electricity_link",
+                        bus_1=str(cluster) + "_electricity_bus",
+                        bus_2=str(cluster) + "_com_electricity_bus",
+                        link_type='building_pv_building_link',
+                        standard_parameters=standard_parameters)
+                    sheets["links"].set_index("label", inplace = True, drop = False)
+
+
                 for index, sink in sheets_clustering["sinks"].iterrows():
                     # collecting information for bundled elec sinks
                     sink_parameters = \
-                        sink_clustering(building, sink, cluster,
+                        sink_clustering(building, sink,
                                         sink_parameters)
+
+                for index, sources in sheets_clustering["sources"].iterrows():
+                    # collecting information for bundled photovoltaic systems
+
+                    if sources["technology"] in ["photovoltaic",
+                                                 "solar_thermal_flat_plate"]:
+                        if -22.5 <= sources["Azimuth"] < 22.5:
+                            azimuth_type = "north"
+                        elif 22.5 <= sources["Azimuth"] < 67.5:
+                            azimuth_type = "north_east"
+                        elif 67.5 <= sources["Azimuth"] < 112.5:
+                            azimuth_type = "east"
+                        elif 112.5 <= sources["Azimuth"] < 157.5:
+                            azimuth_type = "south_east"
+                        elif sources["Azimuth"]>=157.5 \
+                                or sources["Azimuth"]<-157.5:
+                            azimuth_type = "south"
+                        elif -157.5 <= sources["Azimuth"] < -112.5:
+                            azimuth_type = "south_west"
+                        elif -112.5 <= sources["Azimuth"] < -67.5:
+                            azimuth_type = "west"
+                        elif -67.5 <= sources["Azimuth"] < -22.5:
+                            azimuth_type = "north_west"
+
+                        source_parameters = \
+                            sources_clustering(building,
+                                               sources,
+                                               source_parameters,
+                                               azimuth_type)
+
                 for index, transformer in sheets_clustering[
                         "transformers"].iterrows():
                     # collecting information for bundled transformer
                     heat_buses_gchps, transformer_parameters = \
-                        transformer_clustering(building, transformer, index,
-                                               bus,
+                        transformer_clustering(building, transformer,
                                                transformer_parameters,
                                                heat_buses_gchps)
+                print(heat_buses_gchps)
                 for index, storage in sheets_clustering["storages"].iterrows():
                     # collecting information for bundled storages
                     storage_parameters = \
-                        storage_clustering(building, storage, index,
+                        storage_clustering(building, storage,
                                            storage_parameters)
-                # TODO comments
-                for i, j in sheets_clustering["links"].iterrows():
-                    if str(building[0]) in j["bus2"] and \
-                            "electricity" in j["bus2"]:
-                        sheets["links"]['bus2'] = \
-                            sheets["links"]['bus2'].replace(
-                                [str(building[0]) + "_electricity_bus"],
-                                str(cluster) + "_electricity_bus")
-                    # remove heatpump links
-                    if str(building[0]) in j["bus2"] and \
-                            "hp_elec" in j["bus2"] and j['label'] in sheets['links'].index:
-                        sheets["links"] = sheets["links"].drop(index=j["label"])
-                    if str(building[1])[-9:] in j["bus2"] and \
-                            "hp_elec" in j["bus2"] and j['label'] in sheets['links'].index:
-                        sheets["links"] = sheets["links"].drop(index=j["label"])
-                    # delete pvbus -> central elec of building type 0
-                    if str(building[0]) in j["bus1"] and \
-                            "central_electricity" in j["bus2"] and \
-                            "_0" in cluster and j['label'] in sheets['links'].index:
-                        sheets["links"] = sheets["links"].drop(index=j["label"])
-                    # TODO
-                    #print("central_electricity" in j["bus1"], "_0" in cluster)
-                    #if "central_electricity" in j["bus1"] and \
-                    #        "_0" in cluster and \
-                    #        j["label"] in sheets["links"].index \
-                    #        and "_0" in j["bus2"]:
-                    #    print("test")
-                    #    bus1 = j["bus1"]
-                    #    bus2 = j["bus2"]
-                    #    sheets["links"] = sheets["links"].drop(index=j["label"])
-                    #    #create_standard_parameter_link(
-                    #    #    label=j["label"],
-                    #    #    bus_1=str(cluster) + "_electricity_bus",
-                    #    #    bus_2="central_electricity_bus",
-                    #    #    link_type="building_pv_central_link",
-                    #    #    standard_parameters=standard_parameters)
-                    if str(building[1][-9:]) in j["bus1"] and \
-                            "heat" in j["bus1"] and j['label'] in sheets['links'].index:
-                        sheets["links"] = sheets["links"].drop(index=j["label"])
-                    if str(building[0]) in j["bus2"] and \
-                            "gas" in j["bus2"]:
-                        sheets["links"]['bus2'] = \
-                            sheets["links"]['bus2'].replace(
-                                [str(building[0]) + "_gas_bus"],
-                                str(cluster) + "_gas_bus")
+                    
+                restructuring_links(sheets_clustering, building, cluster,
+                                    standard_parameters)
                 # change sources output bus
                 for i, j in sheets_clustering["sources"].iterrows():
                     if str(building[0]) in str(j["input"]) and \
@@ -1385,77 +1627,128 @@ def clustering_method(tool, standard_parameters, sheet_names):
                         sheets["sources"]["output"] = \
                             sheets["sources"]["output"].replace(
                                     [str(building[0]) + "_heat_bus"],
-                                    str(cluster[0:3]) + "_heat_bus")
+                                    str(cluster) + "_heat_bus")
                         
             if sink_parameters[0] > 0:
                 create_standard_parameter_sink(
                         "RES_electricity_sink",
                         str(cluster) + "_res_electricity_demand",
-                        str(cluster) + "_electricity_bus",
+                        str(cluster) + "_res_electricity_bus",
                         sink_parameters[0], standard_parameters, 0)
             if sink_parameters[1] > 0:
                 create_standard_parameter_sink(
                         "COM_electricity_sink",
                         str(cluster) + "_com_electricity_demand",
-                        str(cluster) + "_electricity_bus",
+                        str(cluster) + "_com_electricity_bus",
                         sink_parameters[1], standard_parameters, 0)
             # create res or com gasheating
-            if bus != "0":
-                if transformer_parameters["gasheating_{}".format(bus)][0] > 0:
-                    create_standard_parameter_bus(
-                            label=str(cluster) + "_gas_bus",
-                            bus_type='building_' + bus + '_gas_bus',
+            if transformer_parameters["gasheating"][0] > 0:
+                create_standard_parameter_bus(
+                        label=str(cluster) + "_gas_bus",
+                        bus_type='building_res_gas_bus', # TOD
+                        standard_parameters=standard_parameters)
+        
+                # define individual gas_heating_parameters
+                gas_heating_house_specific_dict = \
+                    {'label': str(cluster) + '_gasheating_transformer',
+                     'comment': 'automatically_created',
+                     'input': str(cluster) + '_gas_bus',
+                     'output': str(cluster) + '_heat_bus',
+                     'output2': 'None'}
+                transformers_standard_parameters = \
+                    standard_parameters.parse('transformers')
+                transformers_standard_parameters.set_index(
+                        'comment', inplace=True)
+                standard_param = transformers_standard_parameters.loc[
+                    'building_gasheating_transformer']
+        
+                standard_keys = standard_param.keys().tolist()
+                for i in range(len(standard_keys)):
+                    gas_heating_house_specific_dict[standard_keys[i]] = \
+                        standard_param[standard_keys[i]]
+                gas_heating_house_specific_dict["efficiency"] = \
+                    transformer_parameters["gasheating"][1] \
+                    / transformer_parameters["gasheating"][0]
+                gas_heating_house_specific_dict["periodical costs"] = \
+                    transformer_parameters["gasheating"][3] \
+                    / transformer_parameters["gasheating"][0]
+                gas_heating_house_specific_dict[
+                    "variable output constraint costs"] = \
+                    transformer_parameters["gasheating"][4] \
+                    / transformer_parameters["gasheating"][0]
+                # produce a pandas series out of the dict above due to
+                # easier appending
+                transformer_series = \
+                    pd.Series(gas_heating_house_specific_dict)
+                sheets["transformers"] = \
+                    sheets["transformers"].append(transformer_series,
+                                                  ignore_index=True)
+            # Define PV Standard-Parameters
+            sources_standard_parameters = standard_parameters.parse(
+                'sources')
+            sources_standard_parameters.set_index('comment',
+                                                  inplace=True)
+            pv_standard_parameters = \
+                sources_standard_parameters.loc[
+                    'fixed photovoltaic source']
+
+            st_stan_param = \
+                sources_standard_parameters.loc[
+                    'solar_thermal_collector']
+
+            for azimuth in ["north_000", "north_east_045", "east_090",
+                            "south_east_135", "south_180",
+                            "south_west_225", "west_270", "north_west_315"]:
+                if source_parameters["photovoltaic_{}".format(azimuth[:-4])][0] > 0:
+                    if (str(cluster) + "_pv_bus") not in sheets["buses"].index:
+                        create_standard_parameter_bus(
+                            label=str(cluster) + "_pv_bus",
+                            bus_type='building_pv_bus',
                             standard_parameters=standard_parameters)
-            
-                    # define individual gas_heating_parameters
-                    gas_heating_house_specific_dict = \
-                        {'label': str(cluster) + '_gasheating_transformer',
-                         'comment': 'automatically_created',
-                         'input': str(cluster) + '_gas_bus',
-                         'output': str(cluster) + '_heat_bus',
-                         'output2': 'None'}
-                    transformers_standard_parameters = \
-                        standard_parameters.parse('transformers')
-                    transformers_standard_parameters.set_index(
-                            'comment', inplace=True)
-                    standard_param = transformers_standard_parameters.loc[
-                        'building_gasheating_transformer']
-            
-                    standard_keys = standard_param.keys().tolist()
-                    for i in range(len(standard_keys)):
-                        gas_heating_house_specific_dict[standard_keys[i]] = \
-                            standard_param[standard_keys[i]]
-                    gas_heating_house_specific_dict["efficiency"] = \
-                        transformer_parameters["gasheating_{}"
-                                               .format(bus)][1] \
-                        / transformer_parameters["gasheating_{}"
-                            .format(bus)][0]
-                    gas_heating_house_specific_dict["periodical costs"] = \
-                        transformer_parameters["gasheating_{}"
-                                               .format(bus)][3] \
-                        / transformer_parameters["gasheating_{}"
-                                                 .format(bus)][0]
-                    gas_heating_house_specific_dict[
-                        "variable output constraint costs"] = \
-                        transformer_parameters["gasheating_{}"
-                                               .format(bus)][4] \
-                        / transformer_parameters["gasheating_{}"
-                                                 .format(bus)][0]
-                    # produce a pandas series out of the dict above due to
-                    # easier appending
-                    transformer_series = \
-                        pd.Series(gas_heating_house_specific_dict)
-                    sheets["transformers"] = \
-                        sheets["transformers"].append(transformer_series,
-                                                      ignore_index=True)
+                        sheets["buses"].set_index("label", inplace=True,
+                                                    drop=False)
+                    create_pv_source(
+                        cluster, azimuth[:-4],
+                        area=source_parameters["photovoltaic_{}".format(azimuth[:-4])][1]
+                        / pv_standard_parameters["Capacity per Area (kW/m2)"],
+                        tilt=source_parameters["photovoltaic_{}".format(azimuth[:-4])][8]
+                        / source_parameters["photovoltaic_{}".format(azimuth[:-4])][0],
+                        azimuth=int(azimuth[-3:]),
+                        latitude=source_parameters["photovoltaic_{}".format(azimuth[:-4])][9]
+                        / source_parameters["photovoltaic_{}".format(azimuth[:-4])][0],
+                        longitude=source_parameters["photovoltaic_{}".format(azimuth[:-4])][10]
+                        / source_parameters["photovoltaic_{}".format(azimuth[:-4])][0],
+                        pv_standard_parameters=pv_standard_parameters)
+
+                # SOLAR THERMAL
+                if source_parameters["solar_thermal_{}".format(azimuth[:-4])][0] > 0:
+                    create_solarthermal_source(
+                        building_id=cluster,
+                        plant_id=azimuth[:-4],
+                        azimuth=int(azimuth[-3:]),
+                        tilt=source_parameters["solar_thermal_{}".format(azimuth[:-4])][8]
+                            / source_parameters["solar_thermal_{}".format(azimuth[:-4])][0],
+                        area=source_parameters["solar_thermal_{}".format(azimuth[:-4])][1]
+                            / st_stan_param["Capacity per Area (kW/m2)"],
+                        solarthermal_standard_parameters=st_stan_param,
+                        latitude=source_parameters["solar_thermal_{}".format(azimuth[:-4])][9]
+                            / source_parameters["solar_thermal_{}".format(azimuth[:-4])][0],
+                        longitude=source_parameters["solar_thermal_{}".format(azimuth[:-4])][10]
+                            / source_parameters["solar_thermal_{}".format(azimuth[:-4])][0],)
+
+
+                    # [counter, maxinvest, periodical costs,
+                    # periodical constraint costs, variable costs, Albedo,
+                    # Altitude, Azimuth, Surface Tilt, Latitude, Longitude]
+
             # TODO do we have to diiferntiate res and com
             if transformer_parameters["electric_heating"][0] > 0:
                 # define individual gas_heating_parameters
                 electricheating_heating_house_specific_dict = \
-                    {'label': str(cluster[0:3]) + '_electricheating_transformer',
+                    {'label': str(cluster) + '_electricheating_transformer',
                      'comment': 'automatically_created',
                      'input': str(cluster) + '_electricity_bus', # TODO welchen elec bus nehmen wir
-                     'output': str(cluster[0:3]) + '_heat_bus',
+                     'output': str(cluster) + '_heat_bus',
                      'output2': 'None'}
                 transformers_standard_parameters = standard_parameters.parse(
                         'transformers')
@@ -1486,26 +1779,25 @@ def clustering_method(tool, standard_parameters, sheet_names):
                 sheets["transformers"] = \
                     sheets["transformers"].append(transformer_series,
                                                   ignore_index=True)
-            # TODO do we have to diiferntiate res and com
             if transformer_parameters["ashp"][0] > 0:
                 # building hp electricity bus
                 create_standard_parameter_bus(
-                        label=str(cluster[0:3]) + "_hp_elec_bus",# TODO einen zentralen hp elec bus oder auch abghängig von Nutzungsart ?
+                        label=str(cluster) + "_hp_elec_bus",# TODO kosten errechnen
                         bus_type='building_hp_electricity_bus',
                         standard_parameters=standard_parameters)
                 # electricity link from building electricity bus to hp elec bus
                 create_standard_parameter_link(
                         label=str(cluster) + "_gchp_building_link",
                         bus_1=str(cluster) + "_electricity_bus",
-                        bus_2=str(cluster[0:3]) + "_hp_elec_bus",
+                        bus_2=str(cluster) + "_hp_elec_bus",
                         link_type="building_hp_elec_link",
                         standard_parameters=standard_parameters)
                 # define individual gas_heating_parameters
                 ashp_house_specific_dict = {
                     'label': str(cluster) + '_ashp_transformer',
                     'comment': 'automatically_created',
-                    'input': str(cluster[0:3]) + '_hp_elec_bus',
-                    'output': str(cluster[0:3]) + '_heat_bus',
+                    'input': str(cluster) + '_hp_elec_bus',
+                    'output': str(cluster) + '_heat_bus',
                     'output2': 'None',
                     'existing capacity': 0,
                     'min. investment capacity': 0}
@@ -1540,14 +1832,13 @@ def clustering_method(tool, standard_parameters, sheet_names):
                 sheets["transformers"] = \
                     sheets["transformers"].append(transformer_series,
                                                   ignore_index=True)
-            # TODO do we have to diiferntiate res and com
             if transformer_parameters["gchp"][0] > 0:
                 # define individual gas_heating_parameters
                 gchp_house_specific_dict = {
                     'label': str(cluster) + '_gchp_transformer',
                     'comment': 'automatically_created',
-                    'input': str(cluster[0:3]) + '_hp_elec_bus',
-                    'output': str(cluster[0:3]) + '_heat_bus',
+                    'input': str(cluster) + '_hp_elec_bus',
+                    'output': str(cluster) + '_heat_bus',
                     'output2': 'None',
                     'existing capacity': 0,
                     'min. investment capacity': 0}
@@ -1583,7 +1874,6 @@ def clustering_method(tool, standard_parameters, sheet_names):
                 sheets["transformers"] = \
                     sheets["transformers"].append(transformer_series,
                                                   ignore_index=True)
-            # TODO do we have to diiferntiate res and com
             if storage_parameters["battery"][0] > 0:
                 # read the standards from standard_param and append
                 # them to the dict
@@ -1616,7 +1906,6 @@ def clustering_method(tool, standard_parameters, sheet_names):
                 sheets["storages"] = \
                     sheets["storages"].append(storage_series,
                                               ignore_index=True)
-            # TODO do we have to diiferntiate res and com
             if storage_parameters["thermal"][0] > 0:
                 # read the standards from standard_param and append
                 # them to the dict
@@ -1626,9 +1915,9 @@ def clustering_method(tool, standard_parameters, sheet_names):
                 standard_param = storage_standard_parameters.loc[
                     'building_thermal_storage']
         
-                specific_param = {'label': str(cluster[0:3]) + '_thermal_storage',
+                specific_param = {'label': str(cluster) + '_thermal_storage',
                                   'comment': 'automatically_created',
-                                  'bus': str(cluster[0:3]) + '_heat_bus'}
+                                  'bus': str(cluster) + '_heat_bus'}
         
                 standard_keys = standard_param.keys().tolist()
                 for i in range(len(standard_keys)):
@@ -1652,44 +1941,43 @@ def clustering_method(tool, standard_parameters, sheet_names):
                 sheets["storages"] = \
                     sheets["storages"].append(storage_series,
                                               ignore_index=True)
-            
-            if transformer_parameters["gasheating_{}".format(bus)][0] > 0:
-                create_standard_parameter_bus(
-                        label=str(cluster) + "_heat_bus",
-                        bus_type='building_heat_bus',
-                        standard_parameters=standard_parameters)
-                if transformer_parameters["electric_heating"][0] > 0 \
-                        or transformer_parameters["ashp"][0] > 0 \
-                        or transformer_parameters["gchp"][0] > 0:
-                    create_standard_parameter_link(
-                            label=cluster + "_heat",
-                            bus_1=(str(cluster[0:3]) + "_heat_bus"),
-                            bus_2=(str(cluster) + "_heat_bus"),
-                            link_type="building_hp_elec_link",  # TODO replace with building heat link
+            if transformer_parameters["gasheating"][0] > 0:
+                if str(cluster) + "_heat_bus" not in sheets["buses"].index:
+                    create_standard_parameter_bus(
+                            label=str(cluster) + "_heat_bus",
+                            bus_type='building_heat_bus',
                             standard_parameters=standard_parameters)
+                    sheets["buses"].set_index("label", inplace=True,
+                                              drop=False)
             if transformer_parameters["electric_heating"][0] > 0 \
                     or transformer_parameters["ashp"][0] > 0 \
                     or transformer_parameters["gchp"][0] > 0:
-                # building heat bus
-                create_standard_parameter_bus(
-                    label=str(cluster[0:3]) + "_heat_bus",
-                    bus_type='building_heat_bus',
-                    standard_parameters=standard_parameters)
+                if str(cluster) + "_heat_bus" not in sheets["buses"].index:
+                    # building heat bus
+                    create_standard_parameter_bus(
+                        label=str(cluster) + "_heat_bus",
+                        bus_type='building_heat_bus',
+                        standard_parameters=standard_parameters)
+                    sheets["buses"].set_index("label", inplace=True,
+                                              drop=False)
                 
             for i in sink_parameters[2]:
                 create_standard_parameter_link(
                         label=str(i[0]) + "_" + str(i[1])
                               + "_heat_building_link",
-                        bus_1=str(i[0]) + "_heat_bus",
+                        bus_1=str(cluster) + "_heat_bus",
                         bus_2=str(i[1]),
                         link_type="building_hp_elec_link",
                         standard_parameters=standard_parameters)
+
     buses = sheets["buses"].copy()
-    buses = buses.drop(index=0)
     print(buses)
+    #buses = buses.drop(index="")
+    #buses.set_index("label", inplace=True, drop=False)
     for i, j in buses.iterrows():
-        if str(j["label"][:9]) in heat_buses_gchps:
-            sheets["buses"] = sheets["buses"].drop(index=i)
+        if heat_buses_gchps:
+            if str(j["label"][:9]) in heat_buses_gchps:
+                sheets["buses"] = sheets["buses"].drop(index=j["label"])
             
             
 def urban_district_upscaling_pre_processing(pre_scenario: str,
@@ -1759,7 +2047,10 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
     
     # create GCHPs parcel wise
     gchps = {}
+    ping = 0
     for num, parcel in parcel.iterrows():
+        ping += 1
+        print("ping"+str(ping))
         for num_inner, building in tool.iterrows():
             if building["active"]:
                 if building["gchp"] not in ["No", "no", 0]:
@@ -1768,6 +2059,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
                             parcel['ID parcel'][-9:]:
                                 parcel['gchp area (m²)']})
     # create gchp relevant components
+    print("ping2")
     for gchp in gchps:
         create_gchp(parcel_id=gchp, area=gchps[gchp],
                     standard_parameters=standard_parameters)
@@ -1828,7 +2120,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
             sources_standard_parameters.set_index('comment', inplace=True)
             pv_standard_parameters = \
                 sources_standard_parameters.loc['fixed photovoltaic source']
-    
+
             # Define solar thermal Standard-Parameters
             st_stan_param = \
                 sources_standard_parameters.loc['solar_thermal_collector']
@@ -1949,7 +2241,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
 if __name__ == '__main__':
     urban_district_upscaling_pre_processing(
             pre_scenario=(os.path.dirname(__file__)
-                          + r"/pre_scenario_struenkede_v2.xlsx"),
+                          + r"/pre_scenario_struenkede_v2_districts--1559693416.xlsx"),
             standard_parameter_path=(os.path.dirname(__file__)
                                      + r"/standard_parameters.xlsx"),
             output_scenario=os.path.dirname(__file__) + r"/test_scenario.xlsx",
