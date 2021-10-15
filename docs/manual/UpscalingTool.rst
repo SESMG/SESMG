@@ -12,6 +12,21 @@ Upscaling Model
    :alt: Upscaling_Model
    :align: center
 
+
+.. list-table:: Components
+   :widths: 25 25 50
+   :header-rows: 1
+
+   * - component
+     - system
+     - description
+   * - heat demand
+     - every sub-system
+     - n.n.
+   * - electricity demand
+     - every sub-system
+     - n.n.
+
 Standard Parameters
 -------------------
 
