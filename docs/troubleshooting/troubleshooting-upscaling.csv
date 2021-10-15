@@ -1,0 +1,2 @@
+Error Message,Possible Error Cause,Debugging
+[Errno 13] Permission denied, you are probably to write a scenario sheet which is still opened, close the scenario sheet you are trying to overwrite
