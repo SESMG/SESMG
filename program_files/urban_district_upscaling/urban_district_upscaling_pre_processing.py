@@ -1511,6 +1511,12 @@ def clustering_method(tool, standard_parameters, sheet_names):
                 if "RES" in building[2] \
                         and str(cluster) + "_res_electricity_bus" \
                         not in sheets["buses"].index:
+                    if cluster + "_electricity_bus" \
+                        not in sheets["buses"].index:
+                        create_standard_parameter_bus(
+                                label=str(cluster) + "_electricity_bus",
+                                bus_type='building_res_electricity_bus', # TODO building_electricity_bus in standard_param
+                                standard_parameters=standard_parameters)
                     # cluster electricity bus if cluster type is res / com
                     create_standard_parameter_bus(
                             label=str(cluster) + "_res_electricity_bus",
@@ -1518,9 +1524,16 @@ def clustering_method(tool, standard_parameters, sheet_names):
                             standard_parameters=standard_parameters)
                     sheets["buses"].set_index("label", inplace=True,
                                               drop=False)
+                    
                 elif "COM" in building[2] \
                         and str(cluster) + "_com_electricity_bus" \
                         not in sheets["buses"].index:
+                    if cluster + "_electricity_bus" \
+                        not in sheets["buses"].index:
+                        create_standard_parameter_bus(
+                                label=str(cluster) + "_electricity_bus",
+                                bus_type='building_res_electricity_bus', # TODO building_electricity_bus in standard_param
+                                standard_parameters=standard_parameters)
                     # cluster electricity bus if cluster type is res / com
                     create_standard_parameter_bus(
                             label=str(cluster) + "_com_electricity_bus",
@@ -2206,7 +2219,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
 if __name__ == '__main__':
     urban_district_upscaling_pre_processing(
             pre_scenario=(os.path.dirname(__file__)
-                          + r"/pre_scenario_struenkede_v2_ez.xlsx"),
+                          + r"/pre_scenario_struenkede_v2_districts--1559693416.xlsx"),
             standard_parameter_path=(os.path.dirname(__file__)
                                      + r"/standard_parameters.xlsx"),
             output_scenario=os.path.dirname(__file__) + r"/test_scenario.xlsx",
