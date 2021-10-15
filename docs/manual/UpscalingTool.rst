@@ -16,6 +16,7 @@ Upscaling Model
 .. list-table:: Components
    :widths: 25 25 50
    :header-rows: 1
+   :align: center
 
    * - component
      - system
