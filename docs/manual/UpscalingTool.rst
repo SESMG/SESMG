@@ -1,7 +1,7 @@
 Urban District Upscaling Tool
 =============================
 
-Documentation to be added soon.
+Documentation to be completed soon.
 
 
 Upscaling Model
@@ -28,11 +28,28 @@ Upscaling Model
      - every sub-system
      - n.n.
 
-Standard Parameters
--------------------
-
 Pre-Scenario
 ------------
+
+.. list-table:: pre-scenario input columns
+   :widths: 100 100
+   :header-rows: 1
+   :align: center
+
+   * - column
+     - description
+   * - label
+     - n.n
+   * - comment
+     - n.n
+   * - ashp
+     - n.n
+   * - ...
+     - ...
+
+     
+Standard Parameters
+-------------------
 
 Clustering
 ----------
