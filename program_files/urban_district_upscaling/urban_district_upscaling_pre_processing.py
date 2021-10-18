@@ -1157,7 +1157,6 @@ def sink_clustering(building, sink, sink_parameters):
 
 def sources_clustering(building,sources,source_parameters, azimuth_type):
 
-    # CLUSTERING OF PV SOURCES
     if str(building[0]) in sources["label"] \
             and sources["technology"] == "photovoltaic"\
             and sources["label"] in sheets["sources"].index:
@@ -1201,7 +1200,6 @@ def sources_clustering(building,sources,source_parameters, azimuth_type):
             += sources["Longitude"]
         sheets["sources"] = sheets["sources"].drop(index=sources["label"])
 
-    # CLUSTERING OF SOLAR THERMAL SOURCES
     if str(building[0]) in sources["label"] \
             and sources["technology"] == "solar_thermal_flat_plate" \
             and sources["label"] in sheets["sources"].index:
@@ -1242,9 +1240,7 @@ def sources_clustering(building,sources,source_parameters, azimuth_type):
         sheets["sources"] = sheets["sources"].drop(index=sources["label"])
 
     return source_parameters
-
-def competition_constraint_clustering():
-    print('placeholder')
+    
     
 def transformer_clustering(building, transformer,
                            transformer_parameters, heat_buses_gchps):
@@ -1377,20 +1373,27 @@ def restructuring_links(sheets_clustering, building, cluster,
                             standard_parameters=standard_parameters)
                     sheets["links"].set_index("label", inplace=True,
                                               drop=False)
-            if str(building[1][-9:]) in j["bus1"] and \
-                    "heat" in j["bus1"]:
+
+            if str(building[1][-9:]) in j["bus1"] and "heat" in j["bus1"]:
                 sheets["links"] = sheets["links"].drop(index=j["label"])
-            if "central_naturalgas" in j["bus1"] and "gas_bus" in j["bus2"]:
-                sheets["links"] = sheets["links"].drop(index=j["label"])
-                if "central_naturalgas" + cluster not in sheets["links"].index:
-                    create_standard_parameter_link(
-                            "central_naturalgas" + cluster,
-                            bus_1="central_naturalgas_bus",
-                            bus_2=cluster + "_gas_bus",
-                            link_type="central_naturalgas_building_link",
-                            standard_parameters=standard_parameters)
-                    sheets["links"].set_index("label", inplace=True,
-                                              drop=False)
+
+            print(j["label"]+'...'+j["bus1"]+'...'+j["bus2"])
+
+            # connecting the clusters to the central gas bus
+            if str(building[0]) in j["label"]:
+                if "central_naturalgas" in j["bus1"] and "_gas_bus" in j["bus2"]:
+                    sheets["links"] = sheets["links"].drop(index=j["label"])
+                    print("ping, cluster: "+cluster)
+
+                    if "central_naturalgas" + cluster not in sheets["links"].index:
+                        create_standard_parameter_link(
+                                "central_naturalgas" + cluster,
+                                bus_1="central_naturalgas_bus",
+                                bus_2=cluster + "_gas_bus",
+                                link_type="central_naturalgas_building_link",
+                                standard_parameters=standard_parameters)
+                        sheets["links"].set_index("label", inplace=True,
+                                                  drop=False)
         if str(building[0]) in j["bus2"] and "electricity" in j["bus2"]:
             sheets["links"]['bus2'] = \
                 sheets["links"]['bus2'].replace(
@@ -1602,8 +1605,6 @@ def clustering_method(tool, standard_parameters, sheet_names):
                                                source_parameters,
                                                azimuth_type)
 
-
-
                 for index, transformer in sheets_clustering[
                         "transformers"].iterrows():
                     # collecting information for bundled transformer
@@ -1702,7 +1703,6 @@ def clustering_method(tool, standard_parameters, sheet_names):
                 sources_standard_parameters.loc[
                     'solar_thermal_collector']
 
-
             for azimuth in ["north_000", "north_east_045", "east_090",
                             "south_east_135", "south_180",
                             "south_west_225", "west_270", "north_west_315"]:
@@ -1714,13 +1714,6 @@ def clustering_method(tool, standard_parameters, sheet_names):
                             standard_parameters=standard_parameters)
                         sheets["buses"].set_index("label", inplace=True,
                                                     drop=False)
-                        print(sheets["competition constraints"])
-                        sheets["competition constraints"].drop(labels=[i for i in range(len(sheets["competition constraints"]))],axis=0)
-
-                        # print(sheets["competition constraints"])
-                        # sheets["competition constraints"].set_index(inplace=True,
-                        #                           drop=False)
-
                     create_pv_source(
                         cluster, azimuth[:-4],
                         area=source_parameters["photovoltaic_{}".format(azimuth[:-4])][1]
@@ -1750,12 +1743,6 @@ def clustering_method(tool, standard_parameters, sheet_names):
                         longitude=source_parameters["solar_thermal_{}".format(azimuth[:-4])][10]
                             / source_parameters["solar_thermal_{}".format(azimuth[:-4])][0],)
 
-                    if source_parameters["photovoltaic_{}".format(azimuth_type)][0]:
-                        create_competition_constraint(component1=str(cluster)+"_"+azimuth[:-4]+"_solarthermal_source",
-                                                      factor1=1/st_stan_param['Capacity per Area (kW/m2)'],
-                                                      component2=str(cluster)+"_"+azimuth[:-4]+"_pv_source",
-                                                      factor2=1/pv_standard_parameters["Capacity per Area (kW/m2)"],
-                                                      limit=source_parameters["solar_thermal_{}".format(azimuth[:-4])][1]/st_stan_param['Capacity per Area (kW/m2)'])
 
                     # [counter, maxinvest, periodical costs,
                     # periodical constraint costs, variable costs, Albedo,
@@ -2175,8 +2162,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
                                 longitude=building['longitude'],
                                 solarthermal_standard_parameters=st_stan_param)
                     if building['st or pv %1d' % roof_num] == "pv&st"\
-                            and building["building type"] != "0"\
-                            and clustering == False:
+                            and building["building type"] != "0":
                         create_competition_constraint(
                                 component1=(building['label'] + '_'
                                             + plant_id + '_pv_source'),
