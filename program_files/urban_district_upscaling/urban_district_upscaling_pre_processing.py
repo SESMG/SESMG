@@ -1744,11 +1744,15 @@ def clustering_method(tool, standard_parameters, sheet_names):
                             / source_parameters["solar_thermal_{}".format(azimuth[:-4])][0],)
 
                     if source_parameters["photovoltaic_{}".format(azimuth[:-4])][0] > 0:
+
+                        area_st = source_parameters["solar_thermal_{}".format(azimuth[:-4])][1] / st_stan_param['Capacity per Area (kW/m2)']
+                        area_pv = source_parameters["solar_thermal_{}".format(azimuth[:-4])][1] / st_stan_param['Capacity per Area (kW/m2)']
+
                         create_competition_constraint(component1=str(cluster)+"_"+azimuth[:-4]+"_solarthermal_source",
                                                       factor1=1/st_stan_param['Capacity per Area (kW/m2)'],
                                                       component2=str(cluster)+"_"+azimuth[:-4]+"_pv_source",
                                                       factor2=1/pv_standard_parameters["Capacity per Area (kW/m2)"],
-                                                      limit=source_parameters["solar_thermal_{}".format(azimuth[:-4])][1]/st_stan_param['Capacity per Area (kW/m2)'])
+                                                      limit=area_st if area_st >= area_pv else area_pv)
 
 
 
