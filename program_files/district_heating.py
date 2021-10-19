@@ -25,14 +25,15 @@ def calc_perp_distance_line_point(p1, p2, p3):
         street as the crow flies and p3 represents the house under
         consideration.
         The points consist an array e.g [51.5553878, 7.21026385] which
-        nothern latitude and eastern longitude.
+        northern latitude and eastern longitude.
         distance = sqrt(dx * dx + dy * dy)
 
         distance:
         dx = 111.3 * cos(lat) * (lon1 - lon2)
         lat = (lat1 + lat2) / 2 * 0.01745
         dy = 111.3 * (lat1 - lat2)
-        lat1, lat2, lon1, lon2: northern latitude, eastern longitude in degree
+        lat1, lat2, lon1, lon2: northern latitude, eastern longitude in
+        degree
     """
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:31466")
     (p1[0], p1[1]) = transformer.transform(p1[0], p1[1])
@@ -43,7 +44,7 @@ def calc_perp_distance_line_point(p1, p2, p3):
     endstreet = numpy.array(p2)
     # Determining the distance via the orthogonality condition
     # Direction vector of the straight line
-    vecvg = endstreet-startstreet
+    vecvg = endstreet - startstreet
     t = Symbol("t")
     vec_l = startstreet + vecvg * t
     # Determining the distance via the orthogonality condition;
@@ -129,7 +130,8 @@ def create_connection_points(consumers, road_sections):
                                 "component_type": "Consumer",
                                 "P_heat_max": 1,
                                 "input": consumer["input"],
-                                "label": consumer["label"]}),
+                                "label": consumer["label"],
+                                "street": foot_point[5]}),
                             ignore_index=True)
                 # create consumers forks pandas Dataframe for thermal network
                 thermal_network.components["forks"] = \
@@ -312,10 +314,11 @@ def create_supply_line(streets):
                                      street["lat. 2nd intersection"],
                                      street["lon. 2nd intersection"],
                                      0, 1.0, street['street section name']])
-            if point["street"] == street["street section name"]:
-                road_section.append([point["id"], point["lat"], point["lon"],
-                                     0, point["t"],
-                                     street["street section name"]])
+            if "street" in point:
+                if point["street"] == street["street section name"]:
+                    road_section.append([point["id"], point["lat"],
+                                         point["lon"], 0, point["t"],
+                                         street["street section name"]])
                 
         # Order Connection points on the currently considered road section
         pipes.update({street['street section name']:
@@ -346,10 +349,12 @@ def adapt_dhnx_style():
         Brings the created dicts to the dhnx style
     """
     for i, p in thermal_network.components["consumers"].iterrows():
-        thermal_network.components["consumers"].replace(
+        if "consumers" in p ["id"]:
+            thermal_network.components["consumers"].replace(
                 to_replace=p['id'], value=p['id'][10:], inplace=True)
     for i, p in thermal_network.components["pipes"].iterrows():
-        thermal_network.components["pipes"].replace(
+        if type(p["id"]) != int:
+            thermal_network.components["pipes"].replace(
                 to_replace=p['id'], value=p['id'][5:], inplace=True)
     thermal_network.components["consumers"].index = \
         thermal_network.components["consumers"]['id']
@@ -449,6 +454,83 @@ def connect_dh_to_system(oemof_opti_model, busd):
                                  'consumers', 'heat', 'bus',
                                  'consumers-{}'.format(consumer["id"]))]
                      ): 0}))
+    return oemof_opti_model
+
+
+def connect_clustered_dh_to_system(oemof_opti_model, busd):
+    """
+        method which creates links to connect the scenario based
+        created sinks to the thermal network components created before
+        :param oemof_opti_model: Oemof model holing thermal network
+        :type oemof_opti_model:
+        :param busd: dictionary containing scenario buses
+        :type busd: dict
+    """
+    sinks = []
+    for i in range(len(oemof_opti_model.nodes)):
+        # get demand created bei dhnx and add them to the list "sinks"
+        if "demand" in str(oemof_opti_model.nodes[i]):
+            sinks.append(i)
+    already_deleted = 0
+    for sink in sinks:
+        oemof_opti_model.nodes.pop(sink - already_deleted)
+        already_deleted += 1
+    # create link to connect consumers heat bus to the dh-system
+    for num, consumer in thermal_network.components["consumers"].iterrows():
+        
+        bus = solph.Bus(label="dh-{}".format(consumer["id"]))
+        oemof_opti_model.nodes.append(bus)
+        busd["dh-{}".format(consumer["id"])] = bus
+        # TODO constraint costs
+        oemof_opti_model.nodes.append(solph.custom.Link(
+                label=("link-dhnx-c{}-".format(consumer["id"])),
+                inputs={
+                    oemof_opti_model.buses[
+                        dhnx.optimization_oemof_heatpipe.Label(
+                                'consumers', 'heat', 'bus',
+                                'consumers-{}'.format(consumer["id"]))]:
+                    solph.Flow(),
+                    busd["dh-{}".format(consumer["id"])]: solph.Flow()},
+                outputs={
+                    busd["dh-{}".format(consumer["id"])]: solph.Flow(
+                            investment=solph.Investment(
+                                ep_costs=(65*consumer["length"]
+                                          / (24.42*len(consumer["input"]))), # TODO 65€/(m*a) 24.42kW bie DN25
+                                minimum=0,
+                                maximum=24.42*len(consumer["input"]),
+                                existing=0,
+                                nonconvex=False)),
+                    oemof_opti_model.buses[
+                        dhnx.optimization_oemof_heatpipe.Label(
+                                'consumers', 'heat', 'bus',
+                                'consumers-{}'.format(consumer["id"]))]:
+                    solph.Flow()},
+                # TODO Verlust der Hausübergabe Station
+                conversion_factors={
+                    (oemof_opti_model.buses[
+                         dhnx.optimization_oemof_heatpipe.Label(
+                                 'consumers', 'heat', 'bus',
+                                 'consumers-{}'.format(consumer["id"]))],
+                     busd["dh-{}".format(consumer["id"])]): 1,
+                    (busd["dh-{}".format(consumer["id"])],
+                     oemof_opti_model.buses[
+                         dhnx.optimization_oemof_heatpipe.Label(
+                                 'consumers', 'heat', 'bus',
+                                 'consumers-{}'.format(consumer["id"]))]
+                     ): 0}))
+        for input in consumer["input"]:
+            oemof_opti_model.nodes.append(solph.custom.Link(
+                label=("link-dhnx-c{}-".format(consumer["id"]) + input),
+                inputs={busd["dh-{}".format(consumer["id"])]: solph.Flow(),
+                        busd[input]: solph.Flow()},
+                outputs={busd[input]: solph.Flow(),
+                         busd["dh-{}".format(consumer["id"])]:solph.Flow()},
+            # TODO Verlust der Hausübergabe Station
+                conversion_factors={(busd["dh-{}".format(consumer["id"])],
+                                     busd[input]): 1-((15.8689/1500)/24.42), # TODO 15.8689kWh/(m*a) bei 1500 Vollaststunden/a
+                                    (busd[input],
+                                     busd["dh-{}".format(consumer["id"])]): 0
+                                    }))
     return oemof_opti_model
     
     
@@ -552,7 +634,7 @@ def create_producer_connection(oemof_opti_model, busd):
     return oemof_opti_model
 
 
-def create_connect_dhnx(nodes_data, busd):
+def create_connect_dhnx(nodes_data, busd, clustering=False):
     """
 
     """
@@ -560,8 +642,11 @@ def create_connect_dhnx(nodes_data, busd):
     thermal_network.set_timeindex()
     # create components of district heating system
     oemof_opti_model = create_components(nodes_data)
-    # connect non dh and dh system using links to represent losses
-    connect_dh_to_system(oemof_opti_model, busd)
+    if clustering:
+        connect_clustered_dh_to_system(oemof_opti_model, busd)
+    else:
+        # connect non dh and dh system using links to represent losses
+        connect_dh_to_system(oemof_opti_model, busd)
     # remove dhnx flows that are not used due to deletion of sinks
     for i in range(len(oemof_opti_model.nodes)):
         outputs = oemof_opti_model.nodes[i].outputs.copy()
@@ -575,6 +660,7 @@ def create_connect_dhnx(nodes_data, busd):
                                   busd)
     oemof_opti_model = \
         create_producer_connection(oemof_opti_model, busd)
+    
     return oemof_opti_model.nodes
 
 
@@ -587,10 +673,9 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
     # variables
     global thermal_network
     thermal_network = dhnx.network.ThermalNetwork()
-    # check rather saved calculation are distributed
     dh = False
+    # check rather saved calculation are distributed
     if district_heating_path == "":
-        print(len(nodes_data["road sections"]))
         # check if the scenario includes road sections
         if len(nodes_data["road sections"]) != 0:
             # create pipes and connection point for building-streets connection
@@ -612,7 +697,6 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
                         thermal_network.components[i].to_csv(
                                 result_path + "/" + i + ".csv")
 
-                        # TODO Diskutieren plot network
                         static_map = dhnx.plotting.StaticMap(thermal_network)
                         static_map.draw(background_map=False)
                         plt.title('Given network')
@@ -633,8 +717,8 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
                         plt.text(-2, 32, 'P0', fontsize=14)
                         plt.text(82, 0, 'P1', fontsize=14)
                         plt.legend()
-                        plt.show()
-                    dh = True
+                        plt.savefig(result_path + "/district_heating.jpeg")
+                        dh = True
     else:
         for i in ["consumers", "pipes", "producers", "forks"]:
             thermal_network.components[i] = \
@@ -647,14 +731,57 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
             thermal_network.components["pipes"]['id']
         thermal_network.components["prodcuers"].index = \
             thermal_network.components["prodcuers"]['id']
+        static_map = dhnx.plotting.StaticMap(thermal_network)
+        static_map.draw(background_map=False)
+        plt.title('Given network')
+        plt.scatter(
+                thermal_network.components.consumers['lon'],
+                thermal_network.components.consumers['lat'],
+                color='tab:green', label='consumers',
+                zorder=2.5, s=5)
+        plt.scatter(
+                thermal_network.components.producers['lon'],
+                thermal_network.components.producers['lat'],
+                color='tab:red', label='producers', zorder=2.5,
+                s=5)
+        plt.scatter(thermal_network.components.forks['lon'],
+                    thermal_network.components.forks['lat'],
+                    color='tab:grey', label='forks',
+                    zorder=2.5, s=5)
+        plt.text(-2, 32, 'P0', fontsize=14)
+        plt.text(82, 0, 'P1', fontsize=14)
+        plt.legend()
+        plt.savefig(result_path + "/district_heating_vor_clustering.jpeg")
         dh = True
+        # TODO implement an oppurtunity for choosing rather dh is clustered or not
+        clustering_dh_network(nodes_data, result_path)
     if dh:
-        new_nodes = create_connect_dhnx(nodes_data, busd)
+        new_nodes = create_connect_dhnx(nodes_data, busd, True)
     
         for i in new_nodes:
             nodes.append(i)
     return nodes
 
+
+def pre_calculation_dh_systems(nodes_data):
+    # TODO not in use yet
+    buses = []
+    for num, link in nodes_data["links"].iterrows():
+        nodes_data["links"].loc[num, "active"] = 0
+    for num, source in nodes_data["sources"].iterrows():
+        nodes_data["sources"].loc[num, "active"] = 0
+    for num, storage in nodes_data["storages"].iterrows():
+        nodes_data["storages"].loc[num, "active"] = 0
+    for num, constraint in nodes_data["competition constraints"].iterrows():
+        nodes_data["competition constraints"].loc[num, "active"] = 0
+    for num, bus in nodes_data["buses"].iterrows():
+        if bus["district heating conn."] == "dh-system":
+            buses.append(bus["label"])
+    for num, transformer in nodes_data["transformers"].iterrows():
+        if not(transformer["output"] in buses
+               or transformer["output2"] in buses):
+            nodes_data["transformers"].loc[num, "active"] = 0
+    return nodes_data
     # get results
     # results_edges = thermal_network.results.optimization['components']
     # ['pipes']
@@ -689,3 +816,163 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
     # plt.text(82, 0, 'P1', fontsize=14)
     # plt.legend()
     # plt.show()
+
+
+def clustering_dh_network(nodes_data, result_path):# TODO remove resultpath
+    """
+    
+    """
+    forks = thermal_network.components["forks"].copy()
+    pipes = thermal_network.components["pipes"].copy()
+    consumers = thermal_network.components["consumers"].copy()
+    forks_street = {}
+    # put all forks of a given street part to forks_street dict
+    for index, street in nodes_data["road sections"].iterrows():
+        street_forks = []
+        for num, fork in forks.iterrows():
+            if fork["street"] == street["street section name"]:
+                street_forks.append(fork["id"])
+        forks_street.update({street["street section name"]: street_forks})
+    streets_pipe_length = {}
+    # get the length of all pipes connecting street part to consumer of
+    # a given street part and put them to streets_pipe_length
+    for street in forks_street:
+        if forks_street[street]:
+            num = 0
+            for fork in forks_street[street]:
+                forks_street[street][num] = "forks-{}".format(fork)
+                num += 1
+            for num, pipe in pipes.iterrows():
+                if pipe["from_node"] in forks_street[street]:
+                    if "consumers" in pipe["to_node"]:
+                        if street not in streets_pipe_length:
+                            streets_pipe_length.update(
+                                    {street: [[pipe["id"],
+                                               pipe["from_node"],
+                                               pipe["to_node"],
+                                               pipe["length"]]]})
+                        else:
+                            streets_pipe_length[street].append(
+                                    [pipe["id"],
+                                     pipe["from_node"],
+                                     pipe["to_node"],
+                                     pipe["length"]])
+                        thermal_network.components["pipes"] = \
+                            thermal_network.components["pipes"].drop(
+                                index=pipe["id"])
+    streets_consumer = {}
+    
+    # get comnsumer information of a given street part
+    for street in streets_pipe_length:
+        counter = 0
+        lat = 0
+        lon = 0
+        inputs = []
+        for street_consumer in streets_pipe_length[street]:
+            for num, consumer in consumers.iterrows():
+                if street_consumer[2] == \
+                        "consumers-{}".format(consumer["id"]):
+                    counter += 1
+                    lat += consumer["lat"]
+                    lon += consumer["lon"]
+                    inputs.append(consumer["input"])
+                    thermal_network.components["consumers"] = \
+                        thermal_network.components["consumers"].drop(
+                                index=consumer["id"])
+        streets_consumer.update({street: [counter, lat, lon, inputs]})
+    counter = 0
+    # clear pipes Dataframe
+    for num, pipe in thermal_network.components["pipes"].iterrows():
+        thermal_network.components["pipes"] = \
+            thermal_network.components["pipes"].drop(index=num)
+    # clear forks Dataframe
+    for num, fork in thermal_network.components["forks"].iterrows():
+            thermal_network.components["forks"] = \
+                thermal_network.components["forks"].drop(index=num)
+    thermal_network.components["forks"] = \
+        thermal_network.components["forks"].reset_index(drop=True)
+    # calc the summed length of consumer pipes of a given street path
+    for street in streets_pipe_length:
+        length = 0
+        for i in streets_pipe_length[street]:
+            length += i[3]
+        streets_pipe_length.update({street: length})
+    # create the clustered consumer and its fork and pipe
+    for street in streets_consumer:
+        # add consumer to thermal network components (dummy
+        # because cut from system after creating dhnx components
+        thermal_network.components["consumers"] = \
+            thermal_network.components["consumers"].append(
+                    pd.Series(data={
+                        "id": "consumers-{}".format(counter),
+                        "lat": float(streets_consumer[street][1]
+                                     / streets_consumer[street][0]),
+                        "lon": float(streets_consumer[street][2]
+                                     / streets_consumer[street][0]),
+                        "component_type": "Consumer",
+                        "P_heat_max": 1,
+                        "input": streets_consumer[street][3],
+                        "label": "",
+                        "street": street,
+                        "length": streets_pipe_length[street]}),
+                    ignore_index=True)
+        foot_point = \
+            get_nearest_perp_foot_point(
+                    {"lat": float(streets_consumer[street][1]
+                                  / streets_consumer[street][0]),
+                     "lon": float(streets_consumer[street][2]
+                                  / streets_consumer[street][0])},
+                    nodes_data["road sections"], counter, "consumers")
+        thermal_network.components["pipes"] = \
+            thermal_network.components["pipes"].append(
+                    pd.Series(data={
+                        "id": "pipe-{}".format(len(
+                                thermal_network.components["pipes"])),
+                        "from_node":
+                            "forks-{}".format(foot_point[0][10:-5]),
+                        "to_node": "consumers-{}".format(counter),
+                        "length": foot_point[3],
+                        "component_type": "Pipe"}),
+                    ignore_index=True)
+        thermal_network.components["forks"] = \
+            thermal_network.components["forks"].append(
+                    pd.Series(data={"id": foot_point[0][10:-5],
+                                    "lat": foot_point[1],
+                                    "lon": foot_point[2],
+                                    "component_type": "Fork",
+                                    "street": foot_point[5],
+                                    "t": foot_point[4]}),
+                    ignore_index=True)
+        
+        counter += 1
+    
+    create_intersection_forks(nodes_data['road sections'])
+    create_producer_connection_point(nodes_data)
+    create_supply_line(nodes_data['road sections'])
+    adapt_dhnx_style()
+    print(thermal_network.components["consumers"])
+    for i in ["consumers", "pipes", "producers", "forks"]:
+        thermal_network.components[i].to_csv(
+                result_path + "/" + i + ".csv")
+    static_map = dhnx.plotting.StaticMap(thermal_network)
+    static_map.draw(background_map=False)
+    plt.title('Given network')
+    plt.scatter(
+            thermal_network.components.consumers['lon'],
+            thermal_network.components.consumers['lat'],
+            color='tab:green', label='consumers',
+            zorder=2.5, s=50)
+    plt.scatter(
+            thermal_network.components.producers['lon'],
+            thermal_network.components.producers['lat'],
+            color='tab:red', label='producers', zorder=2.5,
+            s=50)
+    plt.scatter(thermal_network.components.forks['lon'],
+                thermal_network.components.forks['lat'],
+                color='tab:grey', label='forks',
+                zorder=2.5, s=50)
+    plt.text(-2, 32, 'P0', fontsize=14)
+    plt.text(82, 0, 'P1', fontsize=14)
+    plt.legend()
+    plt.savefig(result_path + "/district_heating.jpeg")
+    
