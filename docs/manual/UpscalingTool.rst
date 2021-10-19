@@ -21,12 +21,13 @@ Upscaling Model
    * - component
      - system
      - description
-   * - heat demand
+   * - sub-system electricity bus
      - every sub-system
-     - n.n.
-   * - electricity demand
+     - The electric distribution within sub-systems is considered to be loss free. Therefore, the sub-system electricity bus represents the entire distribution system of a sub-system [1].
+   * - sub-system electricity demand
      - every sub-system
-     - n.n.
+     - The **sub-system electricity demand**-sink is directly connected to the **sub-system electricity bus** [1].
+
 
 Pre-Scenario
 ------------
@@ -53,3 +54,7 @@ Standard Parameters
 
 Clustering
 ----------
+
+References
+==========
+[1] Klemm, C., Budde J., Vennemann P., *Model Structure forurban energy system optimization models*, unpublished at the time of publication of this documentation, 2021.
