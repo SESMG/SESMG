@@ -27,6 +27,9 @@ Upscaling Model
    * - sub-system electricity demand
      - every sub-system
      - The **sub-system electricity demand**-sink is directly connected to the **sub-system electricity bus** [1].
+   * - sub-system electricity import
+     - every sub-system
+     - Due to different prices for electricity import, a shortage/import source is connected to every sub-systemssub-system electricity bus [1].
 
 
 Pre-Scenario
