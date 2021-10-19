@@ -1743,6 +1743,14 @@ def clustering_method(tool, standard_parameters, sheet_names):
                         longitude=source_parameters["solar_thermal_{}".format(azimuth[:-4])][10]
                             / source_parameters["solar_thermal_{}".format(azimuth[:-4])][0],)
 
+                    if source_parameters["photovoltaic_{}".format(azimuth[:-4])][0] > 0:
+                        create_competition_constraint(component1=str(cluster)+"_"+azimuth[:-4]+"_solarthermal_source",
+                                                      factor1=1/st_stan_param['Capacity per Area (kW/m2)'],
+                                                      component2=str(cluster)+"_"+azimuth[:-4]+"_pv_source",
+                                                      factor2=1/pv_standard_parameters["Capacity per Area (kW/m2)"],
+                                                      limit=source_parameters["solar_thermal_{}".format(azimuth[:-4])][1]/st_stan_param['Capacity per Area (kW/m2)'])
+
+
 
                     # [counter, maxinvest, periodical costs,
                     # periodical constraint costs, variable costs, Albedo,
@@ -2162,7 +2170,8 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
                                 longitude=building['longitude'],
                                 solarthermal_standard_parameters=st_stan_param)
                     if building['st or pv %1d' % roof_num] == "pv&st"\
-                            and building["building type"] != "0":
+                            and building["building type"] != "0"\
+                            and clustering == False:
                         create_competition_constraint(
                                 component1=(building['label'] + '_'
                                             + plant_id + '_pv_source'),
