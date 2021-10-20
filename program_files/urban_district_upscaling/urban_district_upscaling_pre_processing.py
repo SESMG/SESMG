@@ -249,31 +249,39 @@ def central_comp(central, standard_parameters):
                     standard_parameters=standard_parameters)
         
         # central natural gas
-        if j['naturalgas_chp'] in ['yes', 'Yes', 1]:
+        if j['naturalgas_chp'] in ['yes', 'Yes', 1] \
+                or j["biogas_chp"] in ['yes', 'Yes', 1] \
+                or j['swhp_transformer'] in ['yes', 'Yes', 1] \
+                or j['biomass_plant'] in ['yes', 'Yes', 1] \
+                or j['thermal_storage'] in ['yes', 'Yes', 1]:
+            # TODO only one central input implemented yet
             create_standard_parameter_bus(
-                    label='central_heat_input_bus',
-                    bus_type="central_heat_input_bus",
-                    standard_parameters=standard_parameters,
-                    dh="dh-system",
-                    lat=j["lat.-chp"],
-                    lon=j["lon.-chp"])
-            
-            create_central_chp(gastype='naturalgas',
-                               standard_parameters=standard_parameters)
+                label='central_heat_input_bus',
+                bus_type="central_heat_input_bus",
+                standard_parameters=standard_parameters,
+                dh="dh-system",
+                lat=j["lat.-chp"],
+                lon=j["lon.-chp"])
+            if j['naturalgas_chp'] in ['yes', 'Yes', 1]:
+                create_central_chp(gastype='naturalgas',
+                                   standard_parameters=standard_parameters)
+            if j['biogas_chp'] in ['yes', 'Yes', 1]:
+                create_central_chp(gastype='biogas',
+                                   standard_parameters=standard_parameters)
         
-        # central bio gas
-        if j['biogas_chp'] in ['yes', 'Yes', 1]:
-            create_central_chp(gastype='biogas',
-                               standard_parameters=standard_parameters)
+            # central swhp todo simplify
+            if j['swhp_transformer'] in ['yes', 'Yes', 1]:
+                create_central_swhp(standard_parameters=standard_parameters)
         
-        # central swhp todo simplify
-        if j['swhp_transformer'] in ['yes', 'Yes', 1]:
-            create_central_swhp(standard_parameters=standard_parameters)
-        
-        # central biomass plant
-        if j['biomass_plant'] in ['yes', 'Yes', 1]:
-            create_central_biomass_plant(
-                    standard_parameters=standard_parameters)
+            # central biomass plant
+            if j['biomass_plant'] in ['yes', 'Yes', 1]:
+                create_central_biomass_plant(
+                        standard_parameters=standard_parameters)
+            if j['thermal_storage'] in ['yes', 'Yes', 1]:
+                create_thermal_storage(building_id="central",
+                                       standard_parameters=standard_parameters,
+                                       storage_type="central",
+                                       bus="central_heat_input_bus")
         
         # power to gas system
         if j['power_to_gas'] in ['yes', 'Yes', 1]:
@@ -283,6 +291,7 @@ def central_comp(central, standard_parameters):
             create_battery(building_id="central",
                            standard_parameters=standard_parameters,
                            storage_type="central")
+        
 
 
 def create_power_to_gas_system(standard_parameters):
@@ -1052,7 +1061,7 @@ def create_battery(building_id, standard_parameters, storage_type: str):
 
 
 def create_thermal_storage(building_id, standard_parameters,
-                           storage_type: str):
+                           storage_type: str, bus=None):
     """
         TODO DOCSTRING TEXT
         :param building_id: building label
@@ -1067,6 +1076,8 @@ def create_thermal_storage(building_id, standard_parameters,
         {'label': str(building_id) + '_thermal_storage',
          'comment': 'automatically_created',
          'bus': str(building_id) + '_heat_bus'}
+    if bus:
+        thermal_storage_house_specific_dict["bus"] = bus
     
     create_standard_parameter_storage(
             specific_param=thermal_storage_house_specific_dict,
@@ -1318,7 +1329,6 @@ def transformer_clustering(building, transformer,
             transformer["variable output constraint costs"]
         sheets["transformers"] = \
             sheets["transformers"].drop(index=transformer["label"])
-    # TODO Do we have to decide between com and res
     if str(building[1]) != "0":
         if str(building[1])[-9:] in transformer["label"] \
                 and "gchp" in transformer["label"] \
@@ -1413,14 +1423,12 @@ def restructuring_links(sheets_clustering, building, cluster,
             if str(building[1][-9:]) in j["bus1"] and "heat" in j["bus1"]:
                 sheets["links"] = sheets["links"].drop(index=j["label"])
             
-            print(j["label"] + '...' + j["bus1"] + '...' + j["bus2"])
             
             # connecting the clusters to the central gas bus
             if str(building[0]) in j["label"]:
                 if "central_naturalgas" in j["bus1"] and \
                         "_gas_bus" in j["bus2"]:
                     sheets["links"] = sheets["links"].drop(index=j["label"])
-                    print("ping, cluster: " + cluster)
                     
                     if "central_naturalgas" + cluster \
                             not in sheets["links"].index:
@@ -1471,7 +1479,6 @@ def clustering_method(tool, standard_parameters, sheet_names):
         :param sheet_names:
         :type sheet_names:
     """
-    # TODO kosten für gas strom etc mittlen
     
     # create a dictionary holding the combination of cluster ID the included
     # building labels and its parcels
@@ -1489,7 +1496,6 @@ def clustering_method(tool, standard_parameters, sheet_names):
                                           building['parcel'],
                                           str(building["building type"][
                                               0:3])]]})
-    print(cluster_ids)
     # lokal copy of status of scenario components
     sheets_clustering = {}
     for sheet in sheet_names:
@@ -1516,9 +1522,10 @@ def clustering_method(tool, standard_parameters, sheet_names):
         sheets["sources"].set_index("label", inplace=True, drop=False)
         sheets["buses"].set_index("label", inplace=True, drop=False)
         if cluster_ids[cluster]:
-            
-            # cluster sinks parameter [res_elec_demand, com_elec_demand, ind_elec_demand, heat_buses,
-            #                          res_heat_demand, com_heat_demand, ind_heat_demand]
+            # cluster sinks parameter [res_elec_demand, com_elec_demand,
+            #                          ind_elec_demand, heat_buses,
+            #                          res_heat_demand, com_heat_demand,
+            #                          ind_heat_demand]
             sink_parameters = [0, 0, 0, [], 0, 0, 0]
             # transformer_param technology: [counter, efficiency, efficiency2,
             # periodical_costs, variable_constraint_costs]
@@ -1625,10 +1632,8 @@ def clustering_method(tool, standard_parameters, sheet_names):
                             standard_parameters=standard_parameters)
                     sheets["links"].set_index("label", inplace=True,
                                               drop=False)
-                
                 for index, sources in sheets_clustering["sources"].iterrows():
                     # collecting information for bundled photovoltaic systems
-                    
                     if sources["technology"] in ["photovoltaic",
                                                  "solar_thermal_flat_plate"]:
                         if -22.5 <= sources["Azimuth"] < 22.5:
@@ -1715,7 +1720,7 @@ def clustering_method(tool, standard_parameters, sheet_names):
                          + (sink_parameters[2] / total_annual_elec_demand)
                          * bus_parameters.loc["building_ind_electricity_bus"][
                             "shortage costs"])
-                    
+
             if sink_parameters[0] > 0:
                 create_standard_parameter_sink(
                         "RES_electricity_sink",
@@ -1740,7 +1745,6 @@ def clustering_method(tool, standard_parameters, sheet_names):
                         label=str(cluster) + "_gas_bus",
                         bus_type='building_res_gas_bus',
                         standard_parameters=standard_parameters)
-                sheets["buses"] = sheets["buses"].drop(index=0)
                 sheets["buses"].set_index("label", inplace=True,
                                           drop=False)
                 sheets["buses"].loc[(str(cluster) + "_gas_bus"),
@@ -1952,7 +1956,6 @@ def clustering_method(tool, standard_parameters, sheet_names):
                         label=str(cluster) + "_hp_elec_bus",
                         bus_type='building_hp_electricity_bus',
                         standard_parameters=standard_parameters)
-                sheets["buses"] = sheets["buses"].drop(index=0)
                 sheets["buses"].set_index("label", inplace=True,
                                           drop=False)
                 sheets["buses"].loc[(str(cluster) + "_hp_elec_bus"),
@@ -2153,7 +2156,6 @@ def clustering_method(tool, standard_parameters, sheet_names):
                         standard_parameters=standard_parameters)
     
     buses = sheets["buses"].copy()
-    print(buses)
     # buses = buses.drop(index="")
     # buses.set_index("label", inplace=True, drop=False)
     for i, j in buses.iterrows():
@@ -2232,7 +2234,6 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
     ping = 0
     for num, parcel in parcel.iterrows():
         ping += 1
-        print("ping" + str(ping))
         for num_inner, building in tool.iterrows():
             if building["active"]:
                 if building["gchp"] not in ["No", "no", 0]:
@@ -2241,7 +2242,6 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
                             parcel['ID parcel'][-9:]:
                                 parcel['gchp area (m²)']})
     # create gchp relevant components
-    print("ping2")
     for gchp in gchps:
         create_gchp(parcel_id=gchp, area=gchps[gchp],
                     standard_parameters=standard_parameters)
