@@ -441,19 +441,19 @@ def connect_dh_to_system(oemof_opti_model, busd):
                                 'consumers', 'heat', 'bus',
                                 'consumers-{}'.format(consumer["id"]))]:
                     solph.Flow()},
-                # TODO Verlust der Hausübergabe Station
+                # TODO Verlust der Hausübergabe Station 0.98 nach Kaltschmitt
                 conversion_factors={
                     (oemof_opti_model.buses[
                          dhnx.optimization_oemof_heatpipe.Label(
                                  'consumers', 'heat', 'bus',
                                  'consumers-{}'.format(consumer["id"]))],
-                     busd[consumer["input"]]): 1,
+                     busd[consumer["input"]]): 0.98,
                     (busd[consumer["input"]],
                      oemof_opti_model.buses[
                          dhnx.optimization_oemof_heatpipe.Label(
                                  'consumers', 'heat', 'bus',
                                  'consumers-{}'.format(consumer["id"]))]
-                     ): 0}))
+                     ): 1}))
     return oemof_opti_model
 
 
@@ -511,13 +511,15 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
                          dhnx.optimization_oemof_heatpipe.Label(
                                  'consumers', 'heat', 'bus',
                                  'consumers-{}'.format(consumer["id"]))],
-                     busd["dh-{}".format(consumer["id"])]): 1,
+                     busd["dh-{}".format(consumer["id"])]):
+                        1-(((15.8689/1500) *consumer["length"])
+                           / (24.42*len(consumer["input"]))),  # TODO 15.8689kWh/(m*a) bei 1500 Vollaststunden/a
                     (busd["dh-{}".format(consumer["id"])],
                      oemof_opti_model.buses[
                          dhnx.optimization_oemof_heatpipe.Label(
                                  'consumers', 'heat', 'bus',
                                  'consumers-{}'.format(consumer["id"]))]
-                     ): 0}))
+                     ): 1}))
         for input in consumer["input"]:
             oemof_opti_model.nodes.append(solph.custom.Link(
                 label=("link-dhnx-c{}-".format(consumer["id"]) + input),
@@ -525,11 +527,11 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
                         busd[input]: solph.Flow()},
                 outputs={busd[input]: solph.Flow(),
                          busd["dh-{}".format(consumer["id"])]:solph.Flow()},
-            # TODO Verlust der Hausübergabe Station
+            # TODO Verlust der Hausübergabe Station 0.98 nach Kaltschmitt
                 conversion_factors={(busd["dh-{}".format(consumer["id"])],
-                                     busd[input]): 1-((15.8689/1500)/24.42), # TODO 15.8689kWh/(m*a) bei 1500 Vollaststunden/a
+                                     busd[input]): 0.98,
                                     (busd[input],
-                                     busd["dh-{}".format(consumer["id"])]): 0
+                                     busd["dh-{}".format(consumer["id"])]): 1
                                     }))
     return oemof_opti_model
     
@@ -616,19 +618,19 @@ def create_producer_connection(oemof_opti_model, busd):
                                 'heat', 'bus',
                                 str("forks-{}".format(producer["id"])))]:
                          solph.Flow()},
-                # TODO Zirkulationspumpenwirjkungsgrad
+                # TODO Zirkulationspumpenwirjkungsgrad nach repositorium wien
                 conversion_factors={
                     (oemof_opti_model.buses[
                      dhnx.optimization_oemof_heatpipe
                      .Label('infrastructure', 'heat', 'bus',
                             str("forks-{}".format(producer["id"])))],
-                     busd[producer["bus"]]): 0,
+                     busd[producer["bus"]]): 1,
                     (busd[producer["bus"]],
                      oemof_opti_model.buses[
                      dhnx.optimization_oemof_heatpipe
                      .Label('infrastructure', 'heat',
                             'bus',
-                            str("forks-{}".format(producer["id"])))]): 1}
+                            str("forks-{}".format(producer["id"])))]): 0.85}
             ))
             
     return oemof_opti_model
@@ -818,7 +820,7 @@ def pre_calculation_dh_systems(nodes_data):
     # plt.show()
 
 
-def clustering_dh_network(nodes_data, result_path):# TODO remove resultpath
+def clustering_dh_network(nodes_data, result_path):
     """
     
     """
