@@ -1705,7 +1705,6 @@ def clustering_method(tool, standard_parameters, sheet_names):
                             label=str(cluster) + "_electricity_bus",
                             bus_type='building_res_electricity_bus',
                             standard_parameters=standard_parameters)
-                    sheets["buses"] = sheets["buses"].drop(index=0)
                     sheets["buses"].set_index("label", inplace=True,
                                               drop=False)
                     sheets["buses"].loc[(str(cluster) + "_electricity_bus"),
