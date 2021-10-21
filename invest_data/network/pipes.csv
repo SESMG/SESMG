@@ -1,7 +1,6 @@
 label_3,active,nonconvex,l_factor,l_factor_fix,cap_max,cap_min,capex_pipes,fix_costs
-heatpipe-milp,0,0,0.0000021,0,9,0,0.00959,0
-heatpipe-milpp,0,0,0.0000022,0,50,0,0.011,0
-heatpipe-milppp,0,0,0.0000029,0,5000,0,0.05,0
-heatpipe-milp,1,1,0.0000021,0.0069226,9,0,0.00959,236
-heatpipe-milpp,1,1,0.0000022,0.0069227,50,0,0.011,236
-heatpipe-milppp,1,1,0.0000029,0.0069228,5000,0,0.05,236
+Diameter-1000,0,1,0,57.4082,410770,0,0,5046
+Diameter-50,0,1,0,23.6742,261.12,0,0,611
+Diameter-200,1,1,0,39.2848,8220,0,0,1174
+Diameter-32,1,1,0,18.6487,83.44,0,0,562
+Diameter-100,1,1,0,31.4795,1490,0,0,774
