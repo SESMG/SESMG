@@ -3,6 +3,16 @@ Urban District Upscaling Tool
 
 Documentation to be completed soon.
 
+Using the Upscaling Tool
+------------------------
+
+The upscaling tool can be used with the following steps:
+
+1. Fill the "pre-scenario"-xlsx-sheet as described below.
+2. Fill the "standard-parameters"-xlsx-sheet as described below.
+3. Execute the upscaling tool to generate a model with the structure described below.
+4. Execute the automatically generated scenario-xlsx-sheet using the main SESMG application.
+
 
 Upscaling Model
 ---------------
