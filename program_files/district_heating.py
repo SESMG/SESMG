@@ -432,7 +432,12 @@ def connect_dh_to_system(oemof_opti_model, busd):
                         dhnx.optimization_oemof_heatpipe.Label(
                                 'consumers', 'heat', 'bus',
                                 'consumers-{}'.format(consumer["id"]))]:
-                    solph.Flow(),
+                    solph.Flow(investment=solph.Investment(
+                                ep_costs=85,  # TODO nach AGFW 704 -> CO2 fehlt
+                                minimum=0,
+                                maximum=999*len(consumer["input"]),
+                                existing=0,
+                                nonconvex=False)),
                     busd[consumer["input"]]: solph.Flow()},
                 outputs={
                     busd[consumer["input"]]: solph.Flow(),
@@ -523,7 +528,13 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
         for input in consumer["input"]:
             oemof_opti_model.nodes.append(solph.custom.Link(
                 label=("link-dhnx-c{}-".format(consumer["id"]) + input),
-                inputs={busd["dh-{}".format(consumer["id"])]: solph.Flow(),
+                inputs={busd["dh-{}".format(consumer["id"])]: solph.Flow(
+                        investment=solph.Investment(
+                                ep_costs=85,  # TODO nach AGFW 704 -> CO2 fehlt
+                                minimum=0,
+                                maximum=999 * len(consumer["input"]),
+                                existing=0,
+                                nonconvex=False)),
                         busd[input]: solph.Flow()},
                 outputs={busd[input]: solph.Flow(),
                          busd["dh-{}".format(consumer["id"])]:solph.Flow()},
