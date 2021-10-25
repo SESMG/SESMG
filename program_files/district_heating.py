@@ -501,8 +501,9 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
                             investment=solph.Investment(
                                 ep_costs=(65*consumer["length"]
                                           / (24.42*len(consumer["input"]))), # TODO 65€/(m*a) 24.42kW bie DN25
+                                periodical_constraint_costs=244 * consumer["length"],
                                 minimum=0,
-                                maximum=24.42*len(consumer["input"]),
+                                maximum=200*len(consumer["input"]),  #TODO
                                 existing=0,
                                 nonconvex=False)),
                     oemof_opti_model.buses[
@@ -617,31 +618,31 @@ def create_producer_connection(oemof_opti_model, busd):
                 label=(str(key) + "-dhnx-source-link"),
                 inputs={oemof_opti_model.buses[
                         dhnx.optimization_oemof_heatpipe
-                        .Label('infrastructure',
+                        .Label('producers',
                                'heat', 'bus',
-                               str("forks-{}".format(producer["id"])))]:
-                        solph.Flow(),
+                               str("producers-{}".format("0")))]:
+                        solph.Flow(), #producer["id"]
                         busd[producer["bus"]]: solph.Flow()},
                 outputs={busd[producer["bus"]]: solph.Flow(),
                          oemof_opti_model.buses[
                          dhnx.optimization_oemof_heatpipe
-                         .Label('infrastructure',
+                         .Label('producers',
                                 'heat', 'bus',
-                                str("forks-{}".format(producer["id"])))]:
-                         solph.Flow()},
+                                str("producers-{}".format("0")))]:
+                         solph.Flow()}, #producer["id"]
                 # TODO Zirkulationspumpenwirjkungsgrad nach repositorium wien
                 conversion_factors={
                     (oemof_opti_model.buses[
                      dhnx.optimization_oemof_heatpipe
-                     .Label('infrastructure', 'heat', 'bus',
-                            str("forks-{}".format(producer["id"])))],
+                     .Label('producers', 'heat', 'bus',
+                            str("producers-{}".format("0")))], #producer["id"]
                      busd[producer["bus"]]): 1,
                     (busd[producer["bus"]],
                      oemof_opti_model.buses[
                      dhnx.optimization_oemof_heatpipe
-                     .Label('infrastructure', 'heat',
+                     .Label('producers', 'heat',
                             'bus',
-                            str("forks-{}".format(producer["id"])))]): 0.85}
+                            str("producers-{}".format("0")))]): 0.85} #producer["id"]
             ))
             
     return oemof_opti_model
@@ -744,30 +745,33 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
             thermal_network.components["pipes"]['id']
         thermal_network.components["prodcuers"].index = \
             thermal_network.components["prodcuers"]['id']
-        static_map = dhnx.plotting.StaticMap(thermal_network)
-        static_map.draw(background_map=False)
-        plt.title('Given network')
-        plt.scatter(
-                thermal_network.components.consumers['lon'],
-                thermal_network.components.consumers['lat'],
-                color='tab:green', label='consumers',
-                zorder=2.5, s=5)
-        plt.scatter(
-                thermal_network.components.producers['lon'],
-                thermal_network.components.producers['lat'],
-                color='tab:red', label='producers', zorder=2.5,
-                s=5)
-        plt.scatter(thermal_network.components.forks['lon'],
-                    thermal_network.components.forks['lat'],
-                    color='tab:grey', label='forks',
-                    zorder=2.5, s=5)
-        plt.text(-2, 32, 'P0', fontsize=14)
-        plt.text(82, 0, 'P1', fontsize=14)
-        plt.legend()
-        plt.savefig(result_path + "/district_heating_vor_clustering.jpeg")
+        #static_map = dhnx.plotting.StaticMap(thermal_network)
+        #static_map.draw(background_map=False)
+        #plt.title('Given network')
+        #plt.scatter(
+        #        thermal_network.components.consumers['lon'],
+        #        thermal_network.components.consumers['lat'],
+        #        color='tab:green', label='consumers',
+        #        zorder=2.5, s=5)
+        #plt.scatter(
+        #        thermal_network.components.producers['lon'],
+        #        thermal_network.components.producers['lat'],
+        #        color='tab:red', label='producers', zorder=2.5,
+        #        s=5)
+        #plt.scatter(thermal_network.components.forks['lon'],
+        #            thermal_network.components.forks['lat'],
+        #            color='tab:grey', label='forks',
+        #            zorder=2.5, s=5)
+        #plt.text(-2, 32, 'P0', fontsize=14)
+        #plt.text(82, 0, 'P1', fontsize=14)
+        #plt.legend()
+        #plt.savefig(result_path + "/district_heating_vor_clustering.jpeg")
         dh = True
         # TODO implement an oppurtunity for choosing rather dh is clustered or not
         clustering_dh_network(nodes_data, result_path)
+        for i in ["consumers", "pipes", "producers", "forks"]:
+                        thermal_network.components[i].to_csv(
+                                result_path + "/" + i + "_clustered.csv")
     if dh:
         new_nodes = create_connect_dhnx(nodes_data, busd, True)
     
@@ -964,28 +968,28 @@ def clustering_dh_network(nodes_data, result_path):
     create_supply_line(nodes_data['road sections'])
     adapt_dhnx_style()
     print(thermal_network.components["consumers"])
-    for i in ["consumers", "pipes", "producers", "forks"]:
-        thermal_network.components[i].to_csv(
-                result_path + "/" + i + ".csv")
-    static_map = dhnx.plotting.StaticMap(thermal_network)
-    static_map.draw(background_map=False)
-    plt.title('Given network')
-    plt.scatter(
-            thermal_network.components.consumers['lon'],
-            thermal_network.components.consumers['lat'],
-            color='tab:green', label='consumers',
-            zorder=2.5, s=50)
-    plt.scatter(
-            thermal_network.components.producers['lon'],
-            thermal_network.components.producers['lat'],
-            color='tab:red', label='producers', zorder=2.5,
-            s=50)
-    plt.scatter(thermal_network.components.forks['lon'],
-                thermal_network.components.forks['lat'],
-                color='tab:grey', label='forks',
-                zorder=2.5, s=50)
-    plt.text(-2, 32, 'P0', fontsize=14)
-    plt.text(82, 0, 'P1', fontsize=14)
-    plt.legend()
-    plt.savefig(result_path + "/district_heating.jpeg")
+    #for i in ["consumers", "pipes", "producers", "forks"]:
+    #    thermal_network.components[i].to_csv(
+    #            result_path + "/" + i + ".csv")
+    #static_map = dhnx.plotting.StaticMap(thermal_network)
+    #static_map.draw(background_map=False)
+    #plt.title('Given network')
+    #plt.scatter(
+    #        thermal_network.components.consumers['lon'],
+    #        thermal_network.components.consumers['lat'],
+    #        color='tab:green', label='consumers',
+    #        zorder=2.5, s=50)
+    #plt.scatter(
+    #        thermal_network.components.producers['lon'],
+    #        thermal_network.components.producers['lat'],
+    #        color='tab:red', label='producers', zorder=2.5,
+    #        s=50)
+    #plt.scatter(thermal_network.components.forks['lon'],
+    #            thermal_network.components.forks['lat'],
+    #            color='tab:grey', label='forks',
+    #            zorder=2.5, s=50)
+    #plt.text(-2, 32, 'P0', fontsize=14)
+    #plt.text(82, 0, 'P1', fontsize=14)
+    #plt.legend()
+    #plt.savefig(result_path + "/district_heating.jpeg")
     
