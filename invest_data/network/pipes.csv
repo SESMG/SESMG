@@ -1,6 +1,8 @@
-label_3,active,nonconvex,l_factor,l_factor_fix,cap_max,cap_min,capex_pipes,fix_costs
-Diameter-1000,0,1,0,57.4082,410770,0,0,5046
-Diameter-50,0,1,0,23.6742,261.12,0,0,611
-Diameter-200,1,1,0,39.2848,8220,0,0,1174
-Diameter-32,1,1,0,18.6487,83.44,0,0,562
-Diameter-100,1,1,0,31.4795,1490,0,0,774
+label_3,active,nonconvex,l_factor,l_factor_fix_old,cap_max,cap_min,capex_pipes,fix_costs,l_factor_fix,periodical_constraint_costs
+Diameter-1000,0,1,0.000000,57.4082,410770,0,0,5046,57,0
+Diameter-50,0,1,0.000000,23.6742,26112,0,0,611,24,0
+Diameter-200,0,1,0.000000,39.2848,8220,0,0,1174,39,0
+Diameter-32,0,1,0.000000,18.6487,8344,0,0,562,19,0
+Diameter-100,0,1,0.000000,31.4795,1490,0,0,774,31,0
+Diameter-500,0,1,0.000000,49.6029,76830,0,0,2719,50,0
+Diameter-100,1,0,0.000014,31.4795,99999,0,0.02254,0,0,1056
