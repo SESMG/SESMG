@@ -275,9 +275,22 @@ def central_comp(central, standard_parameters):
                                                        standard_parameters=standard_parameters)
 
             # central swhp todo simplify
+            central_heatpump_indicator = 0
             if j['swhp_transformer'] in ['yes', 'Yes', 1]:
-                create_central_swhp(standard_parameters=standard_parameters)
-        
+            #     create_central_swhp(standard_parameters=standard_parameters)
+                create_central_heatpump(standard_parameters=standard_parameters,
+                                        specification='swhp',
+                                        create_bus=True if central_heatpump_indicator==0 else False)
+
+                central_heatpump_indicator += 1
+
+            # central ashp
+            if j['ashp_transformer'] in ['yes', 'Yes', 1]:
+                create_central_heatpump(standard_parameters=standard_parameters,
+                                        specification='ashp',
+                                        create_bus = True if central_heatpump_indicator==0 else False)
+                central_heatpump_indicator += 1
+
             # central biomass plant
             if j['biomass_plant'] in ['yes', 'Yes', 1]:
                 create_central_biomass_plant(
@@ -420,6 +433,54 @@ def create_central_biomass_plant(standard_parameters):
     sheets["transformers"] = \
         sheets["transformers"].append(biomass_series, ignore_index=True)
 
+
+def create_central_heatpump(standard_parameters, specification, create_bus):
+    '''
+    :param standard_parameters: pandas Dataframe holding the
+                   information imported from the standard parameter file
+    :param specification: string giving the information which type of heatpump
+                    shall be added.
+    :param create_bus: indicates whether a central heatpump electricity bus and
+                    further parameters shall be created or not.
+    :return:
+    '''
+
+    if create_bus:
+        create_standard_parameter_bus(label="central_heatpump_elec_bus",
+                                      bus_type="central_heatpump_electricity_bus",
+                                      standard_parameters=standard_parameters)
+        # connection to central electricity bus
+        create_standard_parameter_link(
+            label="central_heatpump_electricity_link",
+            bus_1="central_electricity_bus",
+            bus_2="central_heatpump_elec_bus",
+            link_type="building_central_building_link",
+            standard_parameters=standard_parameters)
+
+    # transformer standard parameters
+    transformers_standard_parameters = \
+        standard_parameters.parse('transformers')
+    transformers_standard_parameters.set_index('comment', inplace=True)
+
+    heatpump_standard_parameters = \
+        transformers_standard_parameters.loc['central_'+specification+'_transformer']
+    heatpump_central_dict = {'label': 'central_'+specification+'_transformer',
+                         'comment': 'automatically_created',
+                         'input': "central_heatpump_elec_bus",
+                         'output': 'central_heat_input_bus',
+                         'output2': 'None'}
+
+    # read the heatpump standards from standard_parameters.xlsx and append
+    # them to the heatpump_central_dict
+    heatpump_standard_keys = heatpump_standard_parameters.keys().tolist()
+    for i in range(len(heatpump_standard_keys)):
+        heatpump_central_dict[heatpump_standard_keys[i]] = \
+            heatpump_standard_parameters[heatpump_standard_keys[i]]
+
+    # produce a pandas series out of the dict above due to easier appending
+    heatpump_series = pd.Series(heatpump_central_dict)
+    sheets["transformers"] = \
+        sheets["transformers"].append(heatpump_series, ignore_index=True)
 
 def create_central_swhp(standard_parameters):
     """
