@@ -15,7 +15,7 @@ Graphical User Interface
    :alt: GUI
    :align: center
    
-   The display may vary depending on the operating system.
+   The display may vary depending on the operating system. The function "Switch Criteria" is not completely implemented.
 
 
 Description of the GUI functions
