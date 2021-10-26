@@ -1007,6 +1007,12 @@ def create_gchp(parcel_id, area, standard_parameters):
     transformers_standard_parameters.set_index('comment', inplace=True)
     gchp_standard_parameters = \
         transformers_standard_parameters.loc['building_gchp_transformer']
+
+    probe_length = transformers_standard_parameters.loc['building_gchp_transformer']['length of the geoth. probe']
+    heat_extraction = \
+    transformers_standard_parameters.loc['building_gchp_transformer'][
+        'heat extraction']
+    min_bore_hole_area = transformers_standard_parameters.loc['building_gchp_transformer']['min. borehole area']
     
     gchp_house_specific_dict = {'label': str(parcel_id) + '_gchp_transformer',
                                 'comment': 'automatically_created',
@@ -1015,7 +1021,9 @@ def create_gchp(parcel_id, area, standard_parameters):
                                 'output2': 'None',
                                 'area': area,
                                 'existing capacity': 0,
-                                'min. investment capacity': 0}
+                                'min. investment capacity': 0,
+                                #'max. investment capacity' : area*probe_length*heat_extraction/min_bore_hole_area
+                                }
     
     # read the gchp standards from standard_parameters.xlsx and append
     # them to the gchp_house_specific_dict
