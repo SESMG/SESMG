@@ -253,6 +253,7 @@ def central_comp(central, standard_parameters):
                 or j["biogas_chp"] in ['yes', 'Yes', 1] \
                 or j['swhp_transformer'] in ['yes', 'Yes', 1] \
                 or j['biomass_plant'] in ['yes', 'Yes', 1] \
+                or j['naturalgas_heating_plant'] in ['yes', 'Yes', 1]\
                 or j['thermal_storage'] in ['yes', 'Yes', 1]:
             # TODO only one central input implemented yet
             create_standard_parameter_bus(
@@ -268,7 +269,11 @@ def central_comp(central, standard_parameters):
             if j['biogas_chp'] in ['yes', 'Yes', 1]:
                 create_central_chp(gastype='biogas',
                                    standard_parameters=standard_parameters)
-        
+            # central natural gas heating plant
+            if j['naturalgas_heating_plant'] in ['yes', 'Yes', 1]:
+                create_central_gas_heating_transformer(gastype='naturalgas',
+                                                       standard_parameters=standard_parameters)
+
             # central swhp todo simplify
             if j['swhp_transformer'] in ['yes', 'Yes', 1]:
                 create_central_swhp(standard_parameters=standard_parameters)
@@ -291,8 +296,6 @@ def central_comp(central, standard_parameters):
             create_battery(building_id="central",
                            standard_parameters=standard_parameters,
                            storage_type="central")
-        
-
 
 def create_power_to_gas_system(standard_parameters):
     """
@@ -455,6 +458,51 @@ def create_central_swhp(standard_parameters):
     sheets["transformers"] = \
         sheets["transformers"].append(swhp_series, ignore_index=True)
 
+def create_central_gas_heating_transformer(gastype, standard_parameters):
+    """
+        TODO DOCSTRING TEXT
+
+        :param gastype: string which defines rather naturalgas or biogas
+                        is used
+        :type gastype: str
+        :param standard_parameters: pandas Dataframe holding the
+                   information imported from the standard parameter file
+        :type standard_parameters: pd.Dataframe
+    """
+
+    # plant gas bus
+    create_standard_parameter_bus(label="central_" + gastype + "_plant_bus",
+                                  bus_type="central_chp_naturalgas_bus",
+                                  standard_parameters=standard_parameters)
+
+    # connection to central electricity bus
+    create_standard_parameter_link(
+            label="heating_plant_" + gastype + "_link",
+            bus_1="central_" + gastype + "_bus",
+            bus_2="central_" + gastype + "_plant_bus",
+            link_type="central_naturalgas_building_link",
+            standard_parameters=standard_parameters)
+
+    # transformer parameters
+    heating_plant_standard_parameters = standard_parameters.parse('transformers')
+
+    heating_plant_dict = {'label': gastype + '_heating_plant_transformer',
+                        'input': "central_" + gastype + "_plant_bus",
+                        'output': "central_heat_input_bus",
+                        'output2': 'None'
+                        }
+
+    # read the chp standards from standard_parameters.xlsx and append
+    # them to the gchp_central_dict
+    heating_plant_standard_keys = heating_plant_standard_parameters.keys().tolist()
+    for i in range(len(heating_plant_standard_keys)):
+        heating_plant_dict[heating_plant_standard_keys[i]] = \
+            heating_plant_standard_parameters[heating_plant_standard_keys[i]][0]
+
+    # produce a pandas series out of the dict above due to easier appending
+    heating_plant_series = pd.Series(heating_plant_dict)
+    sheets["transformers"] = sheets["transformers"].append(
+        heating_plant_series, ignore_index=True)
 
 def create_central_chp(gastype, standard_parameters):
     """
@@ -2405,9 +2453,10 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
     # adds road sections to "road sections"-sheet
     copy_standard_parameter_sheet(sheet_tbc='road sections',
                                   standard_parameters=standard_parameters)
-    
+
     if clustering:
         clustering_method(tool, standard_parameters, worksheets)
+
     # open the new excel file and add all the created components
     j = 0
     writer = pd.ExcelWriter(output_scenario,
