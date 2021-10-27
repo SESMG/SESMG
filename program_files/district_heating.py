@@ -425,22 +425,25 @@ def connect_dh_to_system(oemof_opti_model, busd):
     # create link to connect consumers heat bus to the dh-system
     for num, consumer in thermal_network.components["consumers"].iterrows():
         oemof_opti_model.nodes.append(solph.custom.Link(
-                label=("link-dhnx-c{}-".format(consumer["id"])
+                label=("consumers_connection_dh-c{}-".format(consumer["id"])
                        + consumer["label"][:-12]),
                 inputs={
                     oemof_opti_model.buses[
                         dhnx.optimization_oemof_heatpipe.Label(
                                 'consumers', 'heat', 'bus',
                                 'consumers-{}'.format(consumer["id"]))]:
-                    solph.Flow(investment=solph.Investment(
-                                ep_costs=85,  # TODO nach AGFW 704 -> CO2 fehlt
-                                minimum=0,
-                                maximum=999*len(consumer["input"]),
-                                existing=0,
-                                nonconvex=False)),
+                    solph.Flow(),
                     busd[consumer["input"]]: solph.Flow()},
                 outputs={
-                    busd[consumer["input"]]: solph.Flow(),
+                    busd[consumer["input"]]: solph.Flow(
+                            investment=solph.Investment(
+                                ep_costs=85,
+                                # TODO nach AGFW 704 -> CO2 fehlt
+                                minimum=0,
+                                maximum=999 * len(consumer["input"]),
+                                existing=0,
+                                nonconvex=False)
+                    ),
                     oemof_opti_model.buses[
                         dhnx.optimization_oemof_heatpipe.Label(
                                 'consumers', 'heat', 'bus',
@@ -482,22 +485,24 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
         already_deleted += 1
     # create link to connect consumers heat bus to the dh-system
     for num, consumer in thermal_network.components["consumers"].iterrows():
-        
-        bus = solph.Bus(label="dh-{}".format(consumer["id"]))
+        bus = solph.Bus(label="clustered_consumers-{}".format(consumer["id"]))
         oemof_opti_model.nodes.append(bus)
-        busd["dh-{}".format(consumer["id"])] = bus
-        # TODO constraint costs
+        busd["clustered_consumers-{}".format(consumer["id"])] = bus
         oemof_opti_model.nodes.append(solph.custom.Link(
-                label=("link-dhnx-c{}-".format(consumer["id"])),
+                label=("link-dhnx-c{}-".format(consumer["id"])
+                       + "clustered_consumers-{}-".format(consumer["id"])
+                       + str(consumer["length"])),
                 inputs={
                     oemof_opti_model.buses[
                         dhnx.optimization_oemof_heatpipe.Label(
                                 'consumers', 'heat', 'bus',
                                 'consumers-{}'.format(consumer["id"]))]:
                     solph.Flow(),
-                    busd["dh-{}".format(consumer["id"])]: solph.Flow()},
+                    busd["clustered_consumers-{}".format(consumer["id"])]:
+                        solph.Flow()},
                 outputs={
-                    busd["dh-{}".format(consumer["id"])]: solph.Flow(
+                    busd["clustered_consumers-{}".format(consumer["id"])]:
+                        solph.Flow(
                             investment=solph.Investment(
                                 ep_costs=(65*consumer["length"]
                                           / (24.42*len(consumer["input"]))), # TODO 65€/(m*a) 24.42kW bie DN25
@@ -517,34 +522,39 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
                          dhnx.optimization_oemof_heatpipe.Label(
                                  'consumers', 'heat', 'bus',
                                  'consumers-{}'.format(consumer["id"]))],
-                     busd["dh-{}".format(consumer["id"])]):
-                        1-(((15.8689/1500) *consumer["length"])
+                     busd["clustered_consumers-{}".format(consumer["id"])]):
+                        1-(((15.8689/1500) * consumer["length"])
                            / (24.42*len(consumer["input"]))),  # TODO 15.8689kWh/(m*a) bei 1500 Vollaststunden/a
-                    (busd["dh-{}".format(consumer["id"])],
+                    (busd["clustered_consumers-{}".format(consumer["id"])],
                      oemof_opti_model.buses[
                          dhnx.optimization_oemof_heatpipe.Label(
                                  'consumers', 'heat', 'bus',
                                  'consumers-{}'.format(consumer["id"]))]
                      ): 1}))
+        counter = 1
         for input in consumer["input"]:
             oemof_opti_model.nodes.append(solph.custom.Link(
-                label=("link-dhnx-c{}-".format(consumer["id"]) + input),
-                inputs={busd["dh-{}".format(consumer["id"])]: solph.Flow(
+                label="clustered_consumers_{}".format(consumer["id"])
+                      + "-" + str(input),
+                inputs={busd["clustered_consumers-{}".format(consumer["id"])]:
+                        solph.Flow(),
+                        busd[input]: solph.Flow()},
+                outputs={busd[input]: solph.Flow(
                         investment=solph.Investment(
                                 ep_costs=85,  # TODO nach AGFW 704 -> CO2 fehlt
                                 minimum=0,
                                 maximum=999 * len(consumer["input"]),
                                 existing=0,
                                 nonconvex=False)),
-                        busd[input]: solph.Flow()},
-                outputs={busd[input]: solph.Flow(),
-                         busd["dh-{}".format(consumer["id"])]:solph.Flow()},
+                         busd["clustered_consumers-{}".format(consumer["id"])]:
+                             solph.Flow()},
             # TODO Verlust der Hausübergabe Station 0.98 nach Kaltschmitt
-                conversion_factors={(busd["dh-{}".format(consumer["id"])],
+                conversion_factors={(busd["clustered_consumers-{}".format(consumer["id"])],
                                      busd[input]): 0.98,
                                     (busd[input],
-                                     busd["dh-{}".format(consumer["id"])]): 1
+                                     busd["clustered_consumers-{}".format(consumer["id"])]): 1
                                     }))
+            counter += 1
     return oemof_opti_model
     
     
@@ -777,7 +787,7 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
     
         for i in new_nodes:
             nodes.append(i)
-    return nodes
+    return nodes, thermal_network
 
 
 def pre_calculation_dh_systems(nodes_data):
