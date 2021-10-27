@@ -10,7 +10,6 @@ import pandas as pd
 from oemof import solph
 from matplotlib import pyplot as plt
 import os
-import dhnx
 
 
 def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str):
@@ -234,7 +233,8 @@ class Results:
                         and output_one:
                     self.comp_output2 = component['sequences'][index]
 
-    def get_comp_investment(self, comp=None, comp_type=None):
+    def get_comp_investment(self, comp=None, comp_type=None,
+                            district_heating=None):
         component_investment = 0
         if comp is not None:
             if comp['max. investment capacity'] > 0:
@@ -265,55 +265,13 @@ class Results:
                         # solar heat sources
                         component_investment = \
                             component_investment / comp['Conversion Factor']
-        
+        else:
+            component_node = self.esys.groups[district_heating['label']]
+            bus_node = self.esys.groups[district_heating['output']]
+            component_investment += (self.results[component_node, bus_node]
+            ['scalars']['invest'])
+    
         return component_investment
-
-    def get_dh_investment(self, label):
-        component_invest = 0
-        print(type(label))
-        if "bus" not in str(type(label)):
-            for i in self.results.keys():
-                node_1 = self.esys.groups[str(i[0])]
-                if "link-dhnx-" in str(i[0]):
-                    if str(label) in str(i[0]):
-                        if "clustered_consumers" in str(i[1]):
-                            node_2 = self.esys.groups[str(i[1])]
-                            component_invest += (self.results[node_1, node_2]
-                                                 ["scalars"]["invest"])
-                elif "clustered_consumers" in str(i[0]):
-                    if str(label) in str(i[0]):
-                        if "heat_bus" in str(i[1]):
-                            node_2 = self.esys.groups[str(i[1])]
-                            component_invest += (self.results[node_1, node_2]
-                            ["scalars"]["invest"])
-                elif "infrastructure" in str(i[0]) \
-                        and "infrastructure" in str(i[1]):
-                    if str(label) in str(i[0]):
-                        if "forks" in str(i[0]) and "forks" in str(i[1]):
-                            node_2 = self.esys.groups[str(i[1])]
-                            component_invest += (self.results[node_1, node_2]
-                                                 ["scalars"]["invest"])
-                            #print(self.results[node_1, node_2])
-                        if "forks" in str(i[0]) and "consumers" in str(i[1]):
-                            node_2 = self.esys.groups[str(i[1])]
-                            component_invest += (self.results[node_1, node_2]
-                                                 ["scalars"]["invest"])
-                        if "producers" in str(i[0]) and "forks" in str(i[1]):
-                            node_2 = self.esys.groups[str(i[1])]
-                            component_invest += (self.results[node_1, node_2]
-                                                 ["scalars"]["invest"])
-            print(component_invest)
-        return component_invest
-        #else:
-        #    if not "source" in district_heating['label'] \
-        #            and not "heat_bus" in district_heating['label'] \
-        #            and not district_heating['label'][-1] == "-" \
-        #            and not "dh-" in district_heating['label']:
-        #        print(self.results.keys())
-        #        component_node = self.esys.groups[district_heating['label']]
-        #        bus_node = self.esys.groups[district_heating['output']]
-        #        component_investment += (self.results[component_node, bus_node]
-        #        ['scalars']['invest'])
 
     def calc_constraint_costs(self, comp, investment=None, comp_type=None):
         # get flow values
@@ -708,29 +666,6 @@ class Results:
                             comp_label = comp['label']
                             variable_costs = None
                             constraint_costs = None
-                            input1 = self.comp_input1.copy()
-                            self.comp_input1 = None
-                            input = comp["input"]
-                            for num, insulation in \
-                                    nodes_data["energetic_renovation"].iterrows():
-                                if insulation["sink"] == comp["label"]:
-                                    comp_type = "insulation"
-                                    investment = \
-                                        self.results[self.esys.groups["egs-" + str(insulation["label"])],
-                                                     self.esys.groups[str(input)]]["scalars"]["invest"]
-                                    capacity = investment
-                                    periodical_costs = investment * insulation["ep_costs_kW"]
-                                    #investment = self.get_comp_investment(insulation, "source")
-                                    self.add_component_to_loc(
-                                            label=str(insulation["label"]),
-                                            comp_type=comp_type,
-                                            capacity=capacity,
-                                            variable_costs=variable_costs,
-                                            periodical_costs=periodical_costs,
-                                            investment=investment,
-                                            maxinvest="---",
-                                            constraints=constraint_costs)
-                            self.comp_input1 = input1.copy()
                         capacity = round(self.comp_input1.max(), 2)
                         self.df_result_table[comp_label] = self.comp_input1
                     # sources
@@ -902,9 +837,7 @@ class Results:
         results = self.results.copy()
         components = []
         for i in self.results.keys():
-            if 'link-dhnx' not in str(i) and "tag1=" not in str(i) \
-                    and "consumers_connection_dh" not in str(i) \
-                    and "clustered_consumers" not in str(i):
+            if 'link-dhnx' not in str(i) and "tag1=" not in str(i):
                 results.pop(i)
         for i in results.keys():
             if i[0] not in components:
@@ -914,124 +847,104 @@ class Results:
             if i[1] not in components:
                 if i[1] is not None:
                     if "bus" not in str(i[1]) \
-                            or str(type(i[1])) == "<class " \
+                            or str(type(i[
+                                            1])) == "<class " \
                                                     "'oemof.solph.custom.link.Link'>":
                         components.append(i[1])
         for i in range(len(components)):
-            if "clustered_consumer" in str(components[i]) \
-                    and "-" not in str(components[i]):
-                print("dummy")
-            else:
-                variable_costs = None
-                constraint_costs = None
-                transformer_type = None
-                if console_log:
-                    logging.info('   ' + str(components[i]))
-                component = solph.views.node(self.results,
-                                             str(components[i]))
-                # create class intern dataframes consisting the flows
-                # of given component
-                self.create_flow_dataframes(component,
-                                            district_heating=
-                                            {"label": str(components[i])})
-                investment = self.get_dh_investment(components[i])
-                if investment > 0:
-                    investments_to_be_made[str(components[i])] = \
-                        (str(round(investment, 2)) + ' kW')
-                if investment == 0 and type(investment) == int:
-                    investment = None
-                # get length of pipes
-                length_list = []
-                if self.comp_input1 is not None:
-                    if "forks" in str(components[i]):
-                        list = str(components[i]).split("-")
-                        if "consumers" in str(components[i])[-11:]:
-                            name = ("heatp.-"
-                                    + str(list[1])
-                                    + "-f{}".format(list[-3]) + "-to"
-                                    + "-c{}".format(list[-1]))
-                            length_list = ["forks-{}".format(list[-3]),
-                                           "consumers-{}".format(list[-1])]
-                        elif "producer" in str(components[i])[-19:-11]:
-                            name = ("heatp.-"
-                                    + str(list[1])
-                                    + "-p{}".format(list[-3]) + "-to"
-                                    + "-f{}".format(list[-1]))
-                            length_list = ["producers-{}".format(list[-3]),
-                                           "forks-{}".format(list[-1])]
-                        else:
-                            name = ("heatp.-"
-                                    + str(list[1])
-                                    + "-f{}".format(list[-3]) + "-to"
-                                    + "-f{}".format(list[-1]))
-                            length_list = ["forks-{}".format(list[-3]),
-                                           "forks-{}".format(list[-1])]
+            investment = None
+            variable_costs = None
+            periodical_costs = None
+            constraint_costs = None
+            transformer_type = None
+            if console_log:
+                logging.info('   ' + str(components[i]))
+            component = solph.views.node(self.results,
+                                         str(components[i]))
+            # create class intern dataframes consisting the flows
+            # of given component
+            self.create_flow_dataframes(component,
+                                        district_heating=
+                                        {"label": str(components[i])})
+            output = str(self.comp_output1.name).split(",")[1][2:-2]
+            if self.comp_input1 is not None:
+                input1 = str(self.comp_input1.name).split(",")[0][3:-1]
+            # investment = self.get_comp_investment(district_heating=
+            #                                       {"label": str(
+            #                                       components[i]),
+            #                                       "output": output})
+            investment = 0
+            if investment > 0:
+                investments_to_be_made[str(components[i])] = \
+                    (str(round(investment, 2)) + ' kW')
+            # calculate periodical costs
+            # periodical_costs = \
+            #    self.calc_periodical_costs(comp, investment)
+            periodical_costs = 0
+            total_periodical_costs += periodical_costs
+            # calculate variable costs
+            # variable_costs = self.calc_variable_costs(comp, i)
+            variable_costs = 0
+            total_variable_costs += variable_costs
+            # calculate constraint costs
+            # constraint_costs = self.calc_constraint_costs(
+            #        comp, comp_type=i[:-1], investment=investment)
+            # total_constraint_costs += constraint_costs
+            if self.comp_input1 is not None:
+                if "forks" in str(components[i]):
+                    list = str(components[i]).split("-")
+                    if "consumers" in str(components[i])[-11:]:
+                        name = ("heatp.-"
+                                + str(list[1])
+                                + "-f{}".format(list[-3]) + "-to"
+                                + "-c{}".format(list[-1]))
+                    elif "producer" in str(components[i])[-19:-11]:
+                        name = ("heatp.-"
+                                + str(list[1])
+                                + "-p{}".format(list[-3]) + "-to"
+                                + "-f{}".format(list[-1]))
                     else:
-                        name = str(components[i])
-                    self.df_result_table[
-                        name + "-input"] = self.comp_input1
+                        name = ("heatp.-"
+                                + str(list[1])
+                                + "-f{}".format(list[-3]) + "-to"
+                                + "-f{}".format(list[-1]))
                 else:
                     name = str(components[i])
-                print(result_path)
-                if length_list:
-                    pipes = pd.read_csv(result_path + "/pipes_clustered.csv")  # TODO
-                    for num, pipe in pipes.iterrows():
-                        if pipe["from_node"] == length_list[0] \
-                                and pipe["to_node"] == length_list[1]:
-                            length = pipe["length"]
-
-                # TODO linearisierter Kostenfaktor
-                if "infrastructure" in str(components[i]) \
-                        or "link-dhnx-c" in str(components[i]):
-                    if investment == 0.0 and type(investment) != int:
-                        if "link-dhnx-c" in str(components[i]):
-                            #length = float(str(components[i]).split("-")[-1])
-                            periodical_costs = investment * 2.6618 
-                            constraint_costs = investment * 9.9918 
-                        else:
-                            periodical_costs = investment * 0.3103 * length
-                            constraint_costs = investment * 1.8084 * length
-                        total_periodical_costs += periodical_costs
-                        total_constraint_costs += constraint_costs
-                else:
-                    periodical_costs = None
-                
-                if self.comp_output2 is not None:
-                    self.df_result_table[
-                        name + "-output"] = self.comp_output2
-                if self.comp_input2 is not None:
-                    self.df_result_table[
-                        name + "-input2"] = self.comp_input2
-                if "infrastructure" in str(components[i]):
-                    self.comp_output1 = self.comp_output2.copy()
-                    self.comp_output2 = None
-                if self.comp_input1 is not None and self.comp_output1 is not None:
-                    if self.comp_input1.sum() + self.comp_output1.sum() == 0.0:
-                        capacity = None
-                    else:
-                        capacity = round(self.comp_input1.max(), 2)
-                else:
-                    capacity = None
-                   
-                self.add_component_to_loc(
-                        label=name,
-                        comp_type="d.-h.",
-                        capacity=capacity,
+                self.df_result_table[
+                    name + "-input"] = self.comp_input1
+            else:
+                name = str(components[i])
+            self.df_result_table[name + "-output"] = \
+                self.comp_output1
+            if self.comp_output2 is not None:
+                output2 = self.comp_output2.max()
+                self.df_result_table[
+                    name + "-output2"] = self.comp_output2
+            else:
+                output2 = 0.0
+            if self.comp_input2 is not None:
+                self.df_result_table[
+                    name + "-input2"] = self.comp_input2
+            self.add_component_to_loc(
+                    label=name,
+                    comp_type="d.-h.",
+                    capacity=round(max(self.comp_output1.max(),
+                                       output2), 2),
+                    variable_costs=variable_costs,
+                    periodical_costs=periodical_costs,
+                    investment=investment,
+                    maxinvest='---',
+                    constraints=0)
+            if console_log:
+                self.console_logging(
+                        comp_type="district_heating",
+                        capacity=round(self.comp_output1.max(), 2),
                         variable_costs=variable_costs,
                         periodical_costs=periodical_costs,
                         investment=investment,
-                        maxinvest='---',
-                        constraints=constraint_costs)
-                if console_log:
-                    self.console_logging(
-                            comp_type="district_heating",
-                            capacity=round(self.comp_output1.max(), 2),
-                            variable_costs=variable_costs,
-                            periodical_costs=periodical_costs,
-                            investment=investment,
-                            transformer_type=transformer_type)
-    
-                    self.insert_line_end_of_component()
+                        transformer_type=transformer_type)
+
+                self.insert_line_end_of_component()
         # SUMMARY
         meta_results = solph.processing.meta_results(optimization_model)
         meta_results_objective = meta_results['objective']
