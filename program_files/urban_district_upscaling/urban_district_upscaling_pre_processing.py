@@ -1459,6 +1459,8 @@ def transformer_clustering(building, transformer,
                 "periodical costs"]
             transformer_parameters["gchp"][4] += \
                 transformer["variable output constraint costs"]
+            transformer_parameters["gchp"][5] += \
+                transformer["area"]
             sheets["buses"].set_index("label", inplace=True, drop=False)
             if transformer["output"] in sheets["buses"].index:
                 sheets["buses"] = \
@@ -1650,7 +1652,7 @@ def clustering_method(tool, standard_parameters, sheet_names):
                 {"gasheating": [0, 0, "x", 0, 0],
                  "electric_heating": [0, 0, "x", 0, 0],
                  "ashp": [0, 0, 0, 0, 0],
-                 "gchp": [0, 0, 0, 0, 0]}
+                 "gchp": [0, 0, 0, 0, 0, 0]}
             # storage param technology: [counter, maxinvest, periodical costs,
             # periodical constraint costs, variable output costs]
             storage_parameters = {"battery": [0, 0, 0, 0, "x"],
@@ -2168,6 +2170,7 @@ def clustering_method(tool, standard_parameters, sheet_names):
                 gchp_house_specific_dict["max. investment capacity"] = \
                     transformer_parameters["gchp"][0] \
                     * gchp_house_specific_dict["max. investment capacity"]
+                gchp_house_specific_dict["area"] = transformer_parameters["gchp"][5]
                 # produce a pandas series out of the dict above due to easier
                 # appending
                 
