@@ -521,7 +521,7 @@ def create_central_gas_heating_transformer(gastype, standard_parameters):
     heating_plant_standard_parameters = standard_parameters.parse(
         'transformers')
     
-    heating_plant_dict = {'label': gastype + '_heating_plant_transformer',
+    heating_plant_dict = {'label':"central_" + gastype + '_heating_plant_transformer',
                           'input': "central_" + gastype + "_plant_bus",
                           'output': "central_heat_input_bus",
                           'output2': 'None'
