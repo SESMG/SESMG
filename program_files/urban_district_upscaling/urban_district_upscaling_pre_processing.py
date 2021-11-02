@@ -253,6 +253,7 @@ def central_comp(central, standard_parameters):
                 or j["biogas_chp"] in ['yes', 'Yes', 1] \
                 or j['swhp_transformer'] in ['yes', 'Yes', 1] \
                 or j['biomass_plant'] in ['yes', 'Yes', 1] \
+                or j['naturalgas_heating_plant'] in ['yes', 'Yes', 1] \
                 or j['thermal_storage'] in ['yes', 'Yes', 1]:
             # TODO only one central input implemented yet
             create_standard_parameter_bus(
@@ -268,10 +269,32 @@ def central_comp(central, standard_parameters):
             if j['biogas_chp'] in ['yes', 'Yes', 1]:
                 create_central_chp(gastype='biogas',
                                    standard_parameters=standard_parameters)
-        
+            # central natural gas heating plant
+            if j['naturalgas_heating_plant'] in ['yes', 'Yes', 1]:
+                create_central_gas_heating_transformer(
+                    gastype='naturalgas',
+                    standard_parameters=standard_parameters)
             # central swhp todo simplify
+            central_heatpump_indicator = 0
             if j['swhp_transformer'] in ['yes', 'Yes', 1]:
-                create_central_swhp(standard_parameters=standard_parameters)
+                #     create_central_swhp(
+                #     standard_parameters=standard_parameters)
+                create_central_heatpump(
+                    standard_parameters=standard_parameters,
+                    specification='swhp',
+                    create_bus=True if central_heatpump_indicator == 0 else
+                    False)
+    
+                central_heatpump_indicator += 1
+    
+                # central ashp
+            if j['ashp_transformer'] in ['yes', 'Yes', 1]:
+                create_central_heatpump(
+                    standard_parameters=standard_parameters,
+                    specification='ashp',
+                    create_bus=True if central_heatpump_indicator == 0 else
+                    False)
+                central_heatpump_indicator += 1
         
             # central biomass plant
             if j['biomass_plant'] in ['yes', 'Yes', 1]:
@@ -418,43 +441,107 @@ def create_central_biomass_plant(standard_parameters):
         sheets["transformers"].append(biomass_series, ignore_index=True)
 
 
-def create_central_swhp(standard_parameters):
+def create_central_heatpump(standard_parameters, specification, create_bus):
+    '''
+    :param standard_parameters: pandas Dataframe holding the
+                   information imported from the standard parameter file
+    :param specification: string giving the information which type of heatpump
+                    shall be added.
+    :param create_bus: indicates whether a central heatpump electricity bus and
+                    further parameters shall be created or not.
+    :return:
+    '''
+    
+    if create_bus:
+        create_standard_parameter_bus(label="central_heatpump_elec_bus",
+                                      bus_type="central_heatpump_electricity_bus",
+                                      standard_parameters=standard_parameters)
+        # connection to central electricity bus
+        create_standard_parameter_link(
+                label="central_heatpump_electricity_link",
+                bus_1="central_electricity_bus",
+                bus_2="central_heatpump_elec_bus",
+                link_type="building_central_building_link",
+                standard_parameters=standard_parameters)
+    
+    # transformer standard parameters
+    transformers_standard_parameters = \
+        standard_parameters.parse('transformers')
+    transformers_standard_parameters.set_index('comment', inplace=True)
+    
+    heatpump_standard_parameters = \
+        transformers_standard_parameters.loc[
+            'central_' + specification + '_transformer']
+    heatpump_central_dict = {
+        'label': 'central_' + specification + '_transformer',
+        'comment': 'automatically_created',
+        'input': "central_heatpump_elec_bus",
+        'output': 'central_heat_input_bus',
+        'output2': 'None'}
+    
+    # read the heatpump standards from standard_parameters.xlsx and append
+    # them to the heatpump_central_dict
+    heatpump_standard_keys = heatpump_standard_parameters.keys().tolist()
+    for i in range(len(heatpump_standard_keys)):
+        heatpump_central_dict[heatpump_standard_keys[i]] = \
+            heatpump_standard_parameters[heatpump_standard_keys[i]]
+    
+    # produce a pandas series out of the dict above due to easier appending
+    heatpump_series = pd.Series(heatpump_central_dict)
+    sheets["transformers"] = \
+        sheets["transformers"].append(heatpump_series, ignore_index=True)
+
+
+def create_central_gas_heating_transformer(gastype, standard_parameters):
     """
         TODO DOCSTRING TEXT
 
+        :param gastype: string which defines rather naturalgas or biogas
+                        is used
+        :type gastype: str
         :param standard_parameters: pandas Dataframe holding the
                    information imported from the standard parameter file
         :type standard_parameters: pd.Dataframe
     """
-    # swhp electricity bus
-    create_standard_parameter_bus(label="central_swhp_elec_bus",
-                                  bus_type="central_swhp_electricity_bus",
+    
+    # plant gas bus
+    create_standard_parameter_bus(label="central_" + gastype + "_plant_bus",
+                                  bus_type="central_chp_naturalgas_bus",
                                   standard_parameters=standard_parameters)
     
-    # swhp transformer
-    transformers_standard_parameters = \
-        standard_parameters.parse('transformers')
-    transformers_standard_parameters.set_index('comment', inplace=True)
-    swhp_standard_parameters = \
-        transformers_standard_parameters.loc['central_swhp_transformer']
-    swhp_central_dict = {'label': 'central_swhp_transformer',
-                         'comment': 'automatically_created',
-                         'input': "central_swhp_elec_bus",
-                         'output': 'central_heat_input_bus',
-                         'output2': 'None'}
+    # connection to central electricity bus
+    create_standard_parameter_link(
+            label="heating_plant_" + gastype + "_link",
+            bus_1="central_" + gastype + "_bus",
+            bus_2="central_" + gastype + "_plant_bus",
+            link_type="central_naturalgas_building_link",
+            standard_parameters=standard_parameters)
     
-    # read the swhp standards from standard_parameters.xlsx and append
-    # them to the swhp_central_dict
-    swhp_standard_keys = swhp_standard_parameters.keys().tolist()
-    for i in range(len(swhp_standard_keys)):
-        swhp_central_dict[swhp_standard_keys[i]] = \
-            swhp_standard_parameters[swhp_standard_keys[i]]
+    # transformer parameters
+    heating_plant_standard_parameters = standard_parameters.parse(
+        'transformers')
+    
+    heating_plant_dict = {'label': gastype + '_heating_plant_transformer',
+                          'input': "central_" + gastype + "_plant_bus",
+                          'output': "central_heat_input_bus",
+                          'output2': 'None'
+                          }
+    
+    # read the chp standards from standard_parameters.xlsx and append
+    # them to the gchp_central_dict
+    heating_plant_standard_keys = heating_plant_standard_parameters.keys(
+    
+    ).tolist()
+    for i in range(len(heating_plant_standard_keys)):
+        heating_plant_dict[heating_plant_standard_keys[i]] = \
+            heating_plant_standard_parameters[heating_plant_standard_keys[i]][
+                0]
     
     # produce a pandas series out of the dict above due to easier appending
-    swhp_series = pd.Series(swhp_central_dict)
-    sheets["transformers"] = \
-        sheets["transformers"].append(swhp_series, ignore_index=True)
-
+    heating_plant_series = pd.Series(heating_plant_dict)
+    sheets["transformers"] = sheets["transformers"].append(
+            heating_plant_series, ignore_index=True)
+    
 
 def create_central_chp(gastype, standard_parameters):
     """
@@ -898,7 +985,17 @@ def create_gchp(parcel_id, area, standard_parameters):
     transformers_standard_parameters.set_index('comment', inplace=True)
     gchp_standard_parameters = \
         transformers_standard_parameters.loc['building_gchp_transformer']
-    
+
+    probe_length = \
+    transformers_standard_parameters.loc['building_gchp_transformer'][
+        'length of the geoth. probe']
+    heat_extraction = \
+        transformers_standard_parameters.loc['building_gchp_transformer'][
+            'heat extraction']
+    min_bore_hole_area = \
+    transformers_standard_parameters.loc['building_gchp_transformer'][
+        'min. borehole area']
+
     gchp_house_specific_dict = {'label': str(parcel_id) + '_gchp_transformer',
                                 'comment': 'automatically_created',
                                 'input': str(parcel_id) + '_hp_elec_bus',
@@ -1345,6 +1442,8 @@ def transformer_clustering(building, transformer,
                 "periodical costs"]
             transformer_parameters["gchp"][4] += \
                 transformer["variable output constraint costs"]
+            transformer_parameters["gchp"][5] += \
+                transformer["area"]
             sheets["buses"].set_index("label", inplace=True, drop=False)
             if transformer["output"] in sheets["buses"].index:
                 sheets["buses"] = \
@@ -1536,7 +1635,7 @@ def clustering_method(tool, standard_parameters, sheet_names):
                 {"gasheating": [0, 0, "x", 0, 0],
                  "electric_heating": [0, 0, "x", 0, 0],
                  "ashp": [0, 0, 0, 0, 0],
-                 "gchp": [0, 0, 0, 0, 0]}
+                 "gchp": [0, 0, 0, 0, 0, 0]}
             # storage param technology: [counter, maxinvest, periodical costs,
             # periodical constraint costs, variable output costs]
             storage_parameters = {"battery": [0, 0, 0, 0, "x"],
@@ -2054,6 +2153,8 @@ def clustering_method(tool, standard_parameters, sheet_names):
                 gchp_house_specific_dict["max. investment capacity"] = \
                     transformer_parameters["gchp"][0] \
                     * gchp_house_specific_dict["max. investment capacity"]
+                gchp_house_specific_dict["area"] = \
+                transformer_parameters["gchp"][5]
                 # produce a pandas series out of the dict above due to easier
                 # appending
                 
