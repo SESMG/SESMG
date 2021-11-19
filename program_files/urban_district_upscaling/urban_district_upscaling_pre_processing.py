@@ -274,20 +274,16 @@ def central_comp(central, standard_parameters):
                 create_central_gas_heating_transformer(
                     gastype='naturalgas',
                     standard_parameters=standard_parameters)
-            # central swhp todo simplify
+            # central swhp
             central_heatpump_indicator = 0
             if j['swhp_transformer'] in ['yes', 'Yes', 1]:
-                #     create_central_swhp(
-                #     standard_parameters=standard_parameters)
                 create_central_heatpump(
                     standard_parameters=standard_parameters,
                     specification='swhp',
                     create_bus=True if central_heatpump_indicator == 0 else
                     False)
-
                 central_heatpump_indicator += 1
-
-                # central ashp
+            # central ashp
             if j['ashp_transformer'] in ['yes', 'Yes', 1]:
                 create_central_heatpump(
                     standard_parameters=standard_parameters,
@@ -295,7 +291,6 @@ def central_comp(central, standard_parameters):
                     create_bus=True if central_heatpump_indicator == 0 else
                     False)
                 central_heatpump_indicator += 1
-
             # central biomass plant
             if j['biomass_plant'] in ['yes', 'Yes', 1]:
                 create_central_biomass_plant(
@@ -305,7 +300,6 @@ def central_comp(central, standard_parameters):
                                        standard_parameters=standard_parameters,
                                        storage_type="central",
                                        bus="central_heat_input_bus")
-
         # power to gas system
         if j['power_to_gas'] in ['yes', 'Yes', 1]:
             create_power_to_gas_system(standard_parameters=standard_parameters)
@@ -441,20 +435,24 @@ def create_central_biomass_plant(standard_parameters):
 
 
 def create_central_heatpump(standard_parameters, specification, create_bus):
-    '''
-    :param standard_parameters: pandas Dataframe holding the
-                   information imported from the standard parameter file
-    :param specification: string giving the information which type of heatpump
-                    shall be added.
-    :param create_bus: indicates whether a central heatpump electricity bus and
-                    further parameters shall be created or not.
-    :return:
-    '''
+    """
+        TODO DOCSTRING
+        :param standard_parameters: pandas Dataframe holding the
+                                    information imported from the
+                                    standard parameter file
+        :param specification: string giving the information which type
+                              of heatpump shall be added.
+        :param create_bus: indicates whether a central heatpump
+                           electricity bus and further parameters shall
+                           be created or not.
+        :return:
+    """
 
     if create_bus:
-        create_standard_parameter_bus(label="central_heatpump_elec_bus",
-                                      bus_type="central_heatpump_electricity_bus",
-                                      standard_parameters=standard_parameters)
+        create_standard_parameter_bus(
+                label="central_heatpump_elec_bus",
+                bus_type="central_heatpump_electricity_bus",
+                standard_parameters=standard_parameters)
         # connection to central electricity bus
         create_standard_parameter_link(
             label="central_heatpump_electricity_link",
@@ -517,24 +515,23 @@ def create_central_gas_heating_transformer(gastype, standard_parameters):
         standard_parameters=standard_parameters)
 
     # transformer parameters
-    heating_plant_standard_parameters = standard_parameters.parse(
-        'transformers')
+    heating_plant_standard_parameters = \
+        standard_parameters.parse('transformers')
 
-    heating_plant_dict = {'label': "central_" + gastype + '_heating_plant_transformer',
-                          'input': "central_" + gastype + "_plant_bus",
-                          'output': "central_heat_input_bus",
-                          'output2': 'None'
-                          }
+    heating_plant_dict = \
+        {'label': "central_" + gastype + '_heating_plant_transformer',
+         'input': "central_" + gastype + "_plant_bus",
+         'output': "central_heat_input_bus",
+         'output2': 'None'}
 
     # read the chp standards from standard_parameters.xlsx and append
     # them to the gchp_central_dict
-    heating_plant_standard_keys = heating_plant_standard_parameters.keys(
-
-    ).tolist()
+    heating_plant_standard_keys = \
+        heating_plant_standard_parameters.keys().tolist()
     for i in range(len(heating_plant_standard_keys)):
         heating_plant_dict[heating_plant_standard_keys[i]] = \
-            heating_plant_standard_parameters[heating_plant_standard_keys[i]][
-                0]
+            heating_plant_standard_parameters[
+                heating_plant_standard_keys[i]][0]
 
     # produce a pandas series out of the dict above due to easier appending
     heating_plant_series = pd.Series(heating_plant_dict)
@@ -596,8 +593,7 @@ def create_central_chp(gastype, standard_parameters):
 
 def create_buses(building_id: str, pv_bus: bool, building_type: str,
                  hp_elec_bus: bool, central_elec_bus: bool, gchp: bool,
-                 standard_parameters,
-                 gchp_heat_bus=None, gchp_elec_bus=None):
+                 standard_parameters, gchp_heat_bus=None, gchp_elec_bus=None):
     """
         todo docstring
         :param building_id: building identification
@@ -690,7 +686,7 @@ def create_buses(building_id: str, pv_bus: bool, building_type: str,
         # link from pv bus to building electricity bus
         create_standard_parameter_link(
             label=str(building_id) + "pv_" + str(building_id)
-                  + "_electricity_link",
+                                   + "_electricity_link",
             bus_1=str(building_id) + "_pv_bus",
             bus_2=str(building_id) + "_electricity_bus",
             link_type="building_pv_central_link",
@@ -719,6 +715,9 @@ def create_sinks(sink_id: str, building_type: str, units: int,
     if building_type not in ['None', '0', 0]:
         # residential parameters
         demand_el = 0
+        sinks_standard_param = standard_parameters.parse('sinks')
+        sinks_standard_param.set_index(
+                "sink_type", inplace=True)
         if "RES" in building_type:
             electricity_demand_residential = {}
             electricity_demand_standard_param = \
@@ -736,32 +735,26 @@ def create_sinks(sink_id: str, building_type: str, units: int,
                 demand_el = \
                     (electricity_demand_residential[5][0]) / 5 * occupants
                 demand_el = demand_el * units
-
-        # commercial parameters
-        elif "COM" in building_type:
-            electricity_demand_standard_param = \
-                standard_parameters.parse('ComElecDemand')
-            electricity_demand_standard_param.set_index(
-                "commercial type", inplace=True)
-            demand_el = electricity_demand_standard_param \
-                .loc[building_type]['specific demand (kWh/(sqm a))']
-            # todo: give this value with standard parameter dataset
-            net_floor_area = area * 0.9
-            demand_el = demand_el * net_floor_area
-
-        # industrial parameters
-        elif "IND" in building_type:
-            electricity_demand_standard_param = \
-                standard_parameters.parse('IndElecDemand')
-            electricity_demand_standard_param.set_index(
-                "commercial type", inplace=True)
-            demand_el = electricity_demand_standard_param \
-                .loc[building_type]['specific demand (kWh/(sqm a))']
-            # todo: give this value with standard parameter dataset
-            net_floor_area = area * 0.9
-            demand_el = demand_el * net_floor_area
         else:
-            raise ValueError("building type: " + building_type + "not allowed")
+            # commercial parameters
+            if "COM" in building_type:
+                electricity_demand_standard_param = \
+                    standard_parameters.parse('ComElecDemand')
+            # industrial parameters
+            elif "IND" in building_type:
+                electricity_demand_standard_param = \
+                    standard_parameters.parse('IndElecDemand')
+            else:
+                raise ValueError(
+                    "building type: " + building_type + "not allowed")
+            electricity_demand_standard_param.set_index(
+                "commercial type", inplace=True)
+            demand_el = electricity_demand_standard_param \
+                .loc[building_type]['specific demand (kWh/(sqm a))']
+            net_floor_area = area * sinks_standard_param \
+                .loc[building_type + "_electricity_sink"][
+                     'net_floor_area / area']
+            demand_el = demand_el * net_floor_area
 
         create_standard_parameter_sink(
             sink_type=building_type + "_electricity_sink",
@@ -772,55 +765,33 @@ def create_sinks(sink_id: str, building_type: str, units: int,
             dh=0)
 
     # heat demand
-
-    # residential building
-    if building_type not in ['None', '0', 0]:
         if "RES" in building_type:
             # read standard values from standard_parameter-dataset
             heat_demand_standard_param = \
                 standard_parameters.parse('ResHeatDemand')
-            heat_demand_standard_param.set_index(
-                "year of construction", inplace=True)
-            if int(yoc) <= 1918:  # TODO
-                yoc = "<1918"
-            if units > 12:
-                units = "> 12"
-            specific_heat_demand = \
-                heat_demand_standard_param.loc[yoc][str(units) + ' unit(s)']
-            # todo: give this value with standard parameter dataset
-            net_floor_area = area * 0.9
-
-            demand_heat = specific_heat_demand * net_floor_area
-
-        # commercial building
         elif "COM" in building_type:
-            heat_demand_standard_parameters = \
+            heat_demand_standard_param = \
                 standard_parameters.parse('ComHeatDemand')
-            heat_demand_standard_parameters.set_index(
-                "year of construction", inplace=True)
-            if int(yoc) <= 1918:  # TODO
-                yoc = "<1918"
-            demand_heat = \
-                heat_demand_standard_parameters.loc[yoc][building_type]
-            # todo: give this value with standard parameter dataset
-            net_floor_area = area * 0.9
-            demand_heat = demand_heat * net_floor_area
-
-        # industrial building
         elif "IND" in building_type:
-            heat_demand_standard_parameters = \
+            heat_demand_standard_param = \
                 standard_parameters.parse('IndHeatDemand')
-            heat_demand_standard_parameters.set_index(
-                "year of construction", inplace=True)
-            if int(yoc) <= 1918:  # TODO
-                yoc = "<1918"
-            demand_heat = \
-                heat_demand_standard_parameters.loc[yoc][building_type]
-            # todo: give this value with standard parameter dataset
-            net_floor_area = area * 0.9
-            demand_heat = demand_heat * net_floor_area
         else:
             raise ValueError("building_type does not exist")
+        heat_demand_standard_param.set_index(
+                "year of construction", inplace=True)
+        if int(yoc) <= 1918:  # TODO
+            yoc = "<1918"
+        if units > 12:
+            units = "> 12"
+        if "RES" in building_type:
+            specific_heat_demand = \
+                heat_demand_standard_param.loc[yoc][str(units) + ' unit(s)']
+        else:
+            specific_heat_demand = \
+                heat_demand_standard_param.loc[yoc][building_type]
+        net_floor_area = area * sinks_standard_param \
+                .loc[building_type + "_heat_sink"]['net_floor_area / area']
+        demand_heat = specific_heat_demand * net_floor_area
 
         create_standard_parameter_sink(sink_type=building_type + "_heat_sink",
                                        label=str(sink_id) + "_heat_demand",
@@ -1206,8 +1177,7 @@ def create_building_insulation(building_id, standard_parameters, yoc,
     """
     insul_standard_parameters = \
         standard_parameters.parse('insulation')
-    insul_standard_parameters.set_index(
-        "year of construction", inplace=True)
+    insul_standard_parameters.set_index("year of construction", inplace=True)
     if int(yoc) <= 1918:  # TODO
         yoc = "<1918"
     u_value_roof = insul_standard_parameters.loc[yoc]["roof"]
@@ -1220,6 +1190,21 @@ def create_building_insulation(building_id, standard_parameters, yoc,
         insul_standard_parameters.loc["potential"]["outer wall"]
     u_value_window_potential = \
         insul_standard_parameters.loc["potential"]["window"]
+    periodical_costs_roof = \
+        insul_standard_parameters.loc["periodical_costs"]["roof"]
+    periodical_costs_flat_roof = \
+        insul_standard_parameters.loc["periodical_costs_flat"]["roof"]
+    periodical_costs_wall = \
+        insul_standard_parameters.loc["periodical_costs"]["outer wall"]
+    periodical_costs_window = \
+        insul_standard_parameters.loc["periodical_costs"]["window"]
+    periodical__constraint_costs_roof = \
+        insul_standard_parameters.loc["periodical_constraint_costs"]["roof"]
+    periodical__constraint_costs_wall = \
+        insul_standard_parameters.loc["periodical_constraint_costs"]["outer wall"]
+    periodical__constraint_costs_window = \
+        insul_standard_parameters.loc["periodical_constraint_costs"]["window"]
+
     if area_window:
         window_dict = {'label': str(building_id) + "_window",
                        'comment': 'automatically_created',
@@ -1230,8 +1215,9 @@ def create_building_insulation(building_id, standard_parameters, yoc,
                        'U-value old': u_value_window,
                        'U-value new': u_value_window_potential,
                        'area': area_window,
-                       'periodical costs': 21.9,
-                       'periodical_constraint_costs': 2400}  # TODO
+                       'periodical costs': periodical_costs_window,
+                       'periodical_constraint_costs':
+                           periodical__constraint_costs_window}
         window_series = pd.Series(window_dict)
         sheets["energetic renovation measures"] = \
             sheets["energetic renovation measures"].append(window_series,
@@ -1246,8 +1232,9 @@ def create_building_insulation(building_id, standard_parameters, yoc,
                      'U-value old': u_value_outer_wall,
                      'U-value new': u_value_outer_wall_potential,
                      'area': area_wall,
-                     'periodical costs': 6.08,
-                     'periodical_constraint_costs': 216}  # TODO
+                     'periodical costs': periodical_costs_wall,
+                     'periodical_constraint_costs':
+                         periodical__constraint_costs_wall}
         wall_series = pd.Series(wall_dict)
         sheets["energetic renovation measures"] = \
             sheets["energetic renovation measures"].append(wall_series,
@@ -1255,10 +1242,10 @@ def create_building_insulation(building_id, standard_parameters, yoc,
     if area_roof:
         if roof_type == "flachdach":
             u_value_new = u_value_flat_roof_potential
-            periodical_costs = 7.14  # TODO
+            periodical_costs = periodical_costs_flat_roof
         else:
             u_value_new = u_value_roof_potential
-            periodical_costs = 9.35  # TODO
+            periodical_costs = periodical_costs_roof
         roof_dict = {'label': str(building_id) + "_roof",
                      'comment': 'automatically_created',
                      'active': 1,
@@ -1269,7 +1256,8 @@ def create_building_insulation(building_id, standard_parameters, yoc,
                      'U-value new': u_value_new,
                      'area': area_roof,
                      'periodical costs': periodical_costs,
-                     'periodical_constraint_costs': 286}
+                     'periodical_constraint_costs':
+                         periodical__constraint_costs_roof}
         roof_series = pd.Series(roof_dict)
         sheets["energetic renovation measures"] = \
             sheets["energetic renovation measures"].append(roof_series,
@@ -1278,7 +1266,7 @@ def create_building_insulation(building_id, standard_parameters, yoc,
 
 def sink_clustering(building, sink, sink_parameters):
     """
-
+        TODO DOCSTRING
     """
 
     if str(building[0]) in sink["label"] \
@@ -1510,17 +1498,7 @@ def restructuring_links(sheets_clustering, building, cluster,
                     "pv_bus" in j["bus1"]:
                 sheets["links"] = sheets["links"].drop(
                     index=j["label"])
-                if (cluster + "pv_" + cluster + "_electricity_link") \
-                        not in sheets["links"].index:
-                    create_standard_parameter_link(
-                        cluster + "pv_" + cluster + "_electricity_link",
-                        bus_1=cluster + "_pv_bus",
-                        bus_2=cluster + "_electricity_bus",
-                        link_type="building_pv_central_link",
-                        standard_parameters=standard_parameters)
-                    sheets["links"].set_index("label", inplace=True,
-                                              drop=False)
-
+                
             if str(building[1][-9:]) in j["bus1"] and "heat" in j["bus1"]:
                 sheets["links"] = sheets["links"].drop(index=j["label"])
 
@@ -1550,16 +1528,6 @@ def restructuring_links(sheets_clustering, building, cluster,
                 "central_electricity" in j["bus1"] and \
                 "electricity_bus" in j["bus2"]:
             sheets["links"] = sheets["links"].drop(index=j["label"])
-            if (cluster + "central_electricity_link") \
-                    not in sheets["links"].index:
-                create_standard_parameter_link(
-                    cluster + "central_electricity_link",
-                    bus_1="central_electricity_bus",
-                    bus_2=cluster + "_electricity_bus",
-                    link_type="building_central_building_link",
-                    standard_parameters=standard_parameters)
-                sheets["links"].set_index("label", inplace=True,
-                                          drop=False)
 
         if str(building[0]) in j["bus2"] and \
                 "gas" in j["bus2"]:
@@ -1568,6 +1536,28 @@ def restructuring_links(sheets_clustering, building, cluster,
                     [str(building[0]) + "_gas_bus"],
                     str(cluster) + "_gas_bus")
 
+
+def create_central_elec_bus_connection(cluster, standard_parameters):
+    if (cluster + "central_electricity_link") \
+            not in sheets["links"].index:
+        create_standard_parameter_link(
+                cluster + "central_electricity_link",
+                bus_1="central_electricity_bus",
+                bus_2=cluster + "_electricity_bus",
+                link_type="building_central_building_link",
+                standard_parameters=standard_parameters)
+        sheets["links"].set_index("label", inplace=True,
+                                  drop=False)
+    if (cluster + "pv_" + cluster + "_electricity_link") \
+            not in sheets["links"].index:
+        create_standard_parameter_link(
+                cluster + "pv_" + cluster + "_electricity_link",
+                bus_1=cluster + "_pv_bus",
+                bus_2=cluster + "_electricity_bus",
+                link_type="building_pv_central_link",
+                standard_parameters=standard_parameters)
+        sheets["links"].set_index("label", inplace=True,
+                                  drop=False)
 
 def clustering_method(tool, standard_parameters, sheet_names):
     """
@@ -1772,7 +1762,6 @@ def clustering_method(tool, standard_parameters, sheet_names):
                     storage_parameters = \
                         storage_clustering(building, storage,
                                            storage_parameters)
-
                 restructuring_links(sheets_clustering, building, cluster,
                                     standard_parameters)
                 # change sources output bus
@@ -1819,7 +1808,8 @@ def clustering_method(tool, standard_parameters, sheet_names):
                          + (sink_parameters[2] / total_annual_elec_demand)
                          * bus_parameters.loc["building_ind_electricity_bus"][
                              "shortage costs"])
-
+                create_central_elec_bus_connection(cluster,
+                                                   standard_parameters)
             if sink_parameters[0] > 0:
                 create_standard_parameter_sink(
                     "RES_electricity_sink",
@@ -2293,7 +2283,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
     global sheets
     sheets = {}
     columns = {}
-    clustering = False
+    clustering = True
     plain_sheet_pd = pd.ExcelFile(plain_sheet)
     sheet_names = plain_sheet_pd.sheet_names
     for i in range(1, len(sheet_names)):
@@ -2526,7 +2516,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
 if __name__ == '__main__':
     urban_district_upscaling_pre_processing(
         pre_scenario=(os.path.dirname(__file__)
-                      + r"/pre_scenario_struenkede_v2_districts--1559693416.xlsx"),
+                      + r"/pre_scenario_struenkede_districtsP_20211105.xlsx"),
         standard_parameter_path=(os.path.dirname(__file__)
                                  + r"/standard_parameters.xlsx"),
         output_scenario=os.path.dirname(__file__) + r"/test_scenario.xlsx",
