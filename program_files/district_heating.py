@@ -489,48 +489,53 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
         oemof_opti_model.nodes.append(bus)
         busd["clustered_consumers_{}".format(consumer["id"])] = bus
         oemof_opti_model.nodes.append(solph.Transformer(
-            label=("link-dhnx-c{}-".format(consumer["id"])
-                   + "clustered_consumers-{}-".format(consumer["id"])
-                   + str(consumer["length"])),
-            inputs={
-                oemof_opti_model.buses[
-                    dhnx.optimization_oemof_heatpipe.Label(
-                        'consumers', 'heat', 'bus',
-                        'consumers-{}'.format(consumer["id"]))]:
-                    solph.Flow()},
-            outputs={
-                busd["clustered_consumers_{}".format(consumer["id"])]:
-                    solph.Flow(
-                        investment=solph.Investment(
-                            ep_costs=2.629 * consumer["length"],
-                            # *len(consumer["input"]))), # TODO 17,28€/(m*a) 24.42kW bie DN25
-                            periodical_constraint_costs=8.3538 * consumer["length"],
-                            minimum=0,
-                            maximum=200 * len(consumer["input"]),  # TODO
-                            existing=0,
-                            nonconvex=False))},
-            # TODO Verlust der Hausübergabe Station
-            conversion_factors={
-                busd["clustered_consumers_{}".format(consumer["id"])]:
-                    1 - (((15.8689 / 1500) * consumer["length"])
-                         / (24.42 * len(consumer["input"])))  # TODO 15.8689kWh/(m*a) bei 1500 Vollaststunden/a
-            }))
+                label=("link-dhnx-c{}-".format(consumer["id"])
+                       + "clustered_consumers-{}-".format(consumer["id"])
+                       + str(consumer["length"])),
+                inputs={
+                    oemof_opti_model.buses[
+                        dhnx.optimization_oemof_heatpipe.Label(
+                                'consumers', 'heat', 'bus',
+                                'consumers-{}'.format(consumer["id"]))]:
+                        solph.Flow(investment=solph.Investment(
+                                ep_costs=8.3538 * consumer["length"],
+                                # *len(consumer["input"]))), # TODO 17,
+                                #  28€/(m*a) 24.42kW bie DN25
+                                periodical_constraint_costs=2.629 * consumer[
+                                    "length"],
+                                minimum=0,
+                                maximum=200 * len(consumer["input"]),  # TODO
+                                existing=0,
+                                nonconvex=False))},
+                outputs={
+                    busd["clustered_consumers_{}".format(consumer["id"])]:
+                        solph.Flow()
+                },
+                # TODO Verlust der Hausübergabe Station
+                conversion_factors={
+                    busd["clustered_consumers_{}".format(consumer["id"])]:
+                        1 - (((15.8689 / 1500) * consumer["length"])
+                             / (24.42))
+                    # TODO 15.8689kWh/(m*a) bei 1500 Vollaststunden/a
+                }))
         counter = 1
         for input in consumer["input"]:
             oemof_opti_model.nodes.append(solph.Transformer(
-                label="clustered_consumers_{}".format(consumer["id"])
-                      + "-" + str(input),
-                inputs={busd["clustered_consumers_{}".format(consumer["id"])]:
-                            solph.Flow()},
-                outputs={busd[input]: solph.Flow(
-                    investment=solph.Investment(
-                        ep_costs=85,  # TODO nach AGFW 704 85 -> CO2 fehlt
-                        minimum=0,
-                        maximum=999 * len(consumer["input"]),
-                        existing=0,
-                        nonconvex=False))},
-                # TODO Verlust der Hausübergabe Station 0.98 nach Kaltschmitt
-                conversion_factors={busd[input]: 0.98}))
+                    label="clustered_consumers_{}".format(consumer["id"])
+                          + "-" + str(input),
+                    inputs={
+                        busd["clustered_consumers_{}".format(consumer["id"])]:
+                            solph.Flow(investment=solph.Investment(
+                                    ep_costs=0.00001,
+                                    # TODO nach AGFW 704 85 -> CO2 fehlt 85
+                                    minimum=0,
+                                    maximum=999 * len(consumer["input"]),
+                                    existing=0,
+                                    nonconvex=False))},
+                    outputs={busd[input]: solph.Flow(
+                    )},
+                    # TODO Verlust der Hausübergabe Station 0.98 nach Kaltschmitt
+                    conversion_factors={busd[input]: 0.98}))
             counter += 1
     return oemof_opti_model
 
@@ -675,7 +680,6 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
     global thermal_network
     thermal_network = dhnx.network.ThermalNetwork()
     dh = False
-    print(district_heating_path)
     # check rather saved calculation are distributed
     if district_heating_path == "":
         # check if the scenario includes road sections
@@ -955,7 +959,6 @@ def clustering_dh_network(nodes_data, result_path):
     create_producer_connection_point(nodes_data)
     create_supply_line(nodes_data['road sections'])
     adapt_dhnx_style()
-    print(thermal_network.components["consumers"])
     # for i in ["consumers", "pipes", "producers", "forks"]:
     #    thermal_network.components[i].to_csv(
     #            result_path + "/" + i + ".csv")

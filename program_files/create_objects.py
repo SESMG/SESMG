@@ -728,7 +728,7 @@ class Sinks:
                            self.busd[de['input']]:
                                solph.Flow(**timeseries_args)},
                        ))
-        for i, insul_type in self.energetic_renovation.iterrows():
+        for num, insul_type in self.energetic_renovation.iterrows():
             if insul_type["active"]:
                 temp = []
                 time = 0
@@ -743,23 +743,30 @@ class Sinks:
                         else:
                             temp.append(0)
                     if max(temp) != 0:
-                        ep_costs = insul_type["periodical costs"] * insul_type["area"] \
+                        ep_costs = insul_type["periodical costs"] \
+                                   * insul_type["area"] \
                                    / max(temp)
-                        ep_constr_costs = insul_type["periodical_constraint_costs"] * insul_type["area"] \
-                                          / max(temp)
-                        self.energetic_renovation.loc[i, "ep_costs_kW"] = ep_costs
-                        self.energetic_renovation.loc[i, "ep_constr_costs_kW"] = ep_constr_costs
+                        ep_constr_costs = \
+                            insul_type["periodical_constraint_costs"] \
+                            * insul_type["area"] \
+                            / max(temp)
+                        self.energetic_renovation.loc[
+                            num, "ep_costs_kW"] = ep_costs
+                        self.energetic_renovation.loc[
+                            num, "ep_constr_costs_kW"] = ep_constr_costs
                         self.nodes_sinks.append(
-                            solph.Source(label="egs-{}".format(insul_type["label"]),
-                                         outputs={
-                                             self.busd[de['input']]:
-                                                 solph.Flow(
-                                                     investment=solph.Investment(
-                                                         ep_costs=ep_costs,
-                                                         minimum=0,
-                                                         maximum=max(temp)
-                                                     ),
-                                                     fix=timeseries_args["fix"] / timeseries_args["fix"].max())}))
+                            solph.Source(
+                                    label="insulation-{}".format(
+                                            insul_type["label"]),
+                                    outputs={
+                                        self.busd[de['input']]:
+                                            solph.Flow(
+                                                investment=solph.Investment(
+                                                    ep_costs=ep_costs,
+                                                    minimum=0,
+                                                    maximum=max(temp)),
+                                                fix=(timeseries_args["fix"]
+                                                     / timeseries_args["fix"].max()))}))
 
         # self.nodes_sinks.append(
         #    solph.custom.SinkDSM(label=de['label'],
@@ -1036,7 +1043,6 @@ class Sinks:
         # Initialise a class intern copy of the bus dictionary
         self.busd = busd.copy()
         self.energetic_renovation = energetic_renovation.copy()
-        self.energetic_renovation["ep_costs_kW"] = ""
         self.weatherdata = weather_data.copy()
 
         # Create sink objects
