@@ -450,9 +450,9 @@ def create_central_heatpump(standard_parameters, specification, create_bus):
 
     if create_bus:
         create_standard_parameter_bus(
-                label="central_heatpump_elec_bus",
-                bus_type="central_heatpump_electricity_bus",
-                standard_parameters=standard_parameters)
+            label="central_heatpump_elec_bus",
+            bus_type="central_heatpump_electricity_bus",
+            standard_parameters=standard_parameters)
         # connection to central electricity bus
         create_standard_parameter_link(
             label="central_heatpump_electricity_link",
@@ -686,7 +686,7 @@ def create_buses(building_id: str, pv_bus: bool, building_type: str,
         # link from pv bus to building electricity bus
         create_standard_parameter_link(
             label=str(building_id) + "pv_" + str(building_id)
-                                   + "_electricity_link",
+                  + "_electricity_link",
             bus_1=str(building_id) + "_pv_bus",
             bus_2=str(building_id) + "_electricity_bus",
             link_type="building_pv_central_link",
@@ -717,7 +717,7 @@ def create_sinks(sink_id: str, building_type: str, units: int,
         demand_el = 0
         sinks_standard_param = standard_parameters.parse('sinks')
         sinks_standard_param.set_index(
-                "sink_type", inplace=True)
+            "sink_type", inplace=True)
         if "RES" in building_type:
             electricity_demand_residential = {}
             electricity_demand_standard_param = \
@@ -753,7 +753,7 @@ def create_sinks(sink_id: str, building_type: str, units: int,
                 .loc[building_type]['specific demand (kWh/(sqm a))']
             net_floor_area = area * sinks_standard_param \
                 .loc[building_type + "_electricity_sink"][
-                     'net_floor_area / area']
+                'net_floor_area / area']
             demand_el = demand_el * net_floor_area
 
         create_standard_parameter_sink(
@@ -764,7 +764,7 @@ def create_sinks(sink_id: str, building_type: str, units: int,
             standard_parameters=standard_parameters,
             dh=0)
 
-    # heat demand
+        # heat demand
         if "RES" in building_type:
             # read standard values from standard_parameter-dataset
             heat_demand_standard_param = \
@@ -778,7 +778,7 @@ def create_sinks(sink_id: str, building_type: str, units: int,
         else:
             raise ValueError("building_type does not exist")
         heat_demand_standard_param.set_index(
-                "year of construction", inplace=True)
+            "year of construction", inplace=True)
         if int(yoc) <= 1918:  # TODO
             yoc = "<1918"
         if units > 12:
@@ -790,7 +790,7 @@ def create_sinks(sink_id: str, building_type: str, units: int,
             specific_heat_demand = \
                 heat_demand_standard_param.loc[yoc][building_type]
         net_floor_area = area * sinks_standard_param \
-                .loc[building_type + "_heat_sink"]['net_floor_area / area']
+            .loc[building_type + "_heat_sink"]['net_floor_area / area']
         demand_heat = specific_heat_demand * net_floor_area
 
         create_standard_parameter_sink(sink_type=building_type + "_heat_sink",
@@ -1498,7 +1498,7 @@ def restructuring_links(sheets_clustering, building, cluster,
                     "pv_bus" in j["bus1"]:
                 sheets["links"] = sheets["links"].drop(
                     index=j["label"])
-                
+
             if str(building[1][-9:]) in j["bus1"] and "heat" in j["bus1"]:
                 sheets["links"] = sheets["links"].drop(index=j["label"])
 
@@ -1541,25 +1541,26 @@ def create_central_elec_bus_connection(cluster, standard_parameters):
     if (cluster + "central_electricity_link") \
             not in sheets["links"].index:
         create_standard_parameter_link(
-                cluster + "central_electricity_link",
-                bus_1="central_electricity_bus",
-                bus_2=cluster + "_electricity_bus",
-                link_type="building_central_building_link",
-                standard_parameters=standard_parameters)
+            cluster + "central_electricity_link",
+            bus_1="central_electricity_bus",
+            bus_2=cluster + "_electricity_bus",
+            link_type="building_central_building_link",
+            standard_parameters=standard_parameters)
         sheets["links"].set_index("label", inplace=True,
                                   drop=False)
     if (cluster + "pv_" + cluster + "_electricity_link") \
             not in sheets["links"].index:
         create_standard_parameter_link(
-                cluster + "pv_" + cluster + "_electricity_link",
-                bus_1=cluster + "_pv_bus",
-                bus_2=cluster + "_electricity_bus",
-                link_type="building_pv_central_link",
-                standard_parameters=standard_parameters)
+            cluster + "pv_" + cluster + "_electricity_link",
+            bus_1=cluster + "_pv_bus",
+            bus_2=cluster + "_electricity_bus",
+            link_type="building_pv_central_link",
+            standard_parameters=standard_parameters)
         sheets["links"].set_index("label", inplace=True,
                                   drop=False)
 
-def clustering_method(tool, standard_parameters, sheet_names):
+
+def clustering_method(tool, standard_parameters, sheet_names, central_electricity_network):
     """
         TODO DOCSTRING TEXT
         :param tool:
@@ -1808,8 +1809,9 @@ def clustering_method(tool, standard_parameters, sheet_names):
                          + (sink_parameters[2] / total_annual_elec_demand)
                          * bus_parameters.loc["building_ind_electricity_bus"][
                              "shortage costs"])
-                create_central_elec_bus_connection(cluster,
-                                                   standard_parameters)
+                if central_electricity_network:
+                    create_central_elec_bus_connection(cluster,
+                                                       standard_parameters)
             if sink_parameters[0] > 0:
                 create_standard_parameter_sink(
                     "RES_electricity_sink",
@@ -2500,7 +2502,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
                                   standard_parameters=standard_parameters)
 
     if clustering:
-        clustering_method(tool, standard_parameters, worksheets)
+        clustering_method(tool, standard_parameters, worksheets, central_electricity_network)
     # open the new excel file and add all the created components
     j = 0
     writer = pd.ExcelWriter(output_scenario,
