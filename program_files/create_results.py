@@ -620,7 +620,7 @@ class Results:
             periodical_costs = None
             constraint_costs = None
             transformer_type = None
-           
+
             if i != 'buses_e' and i != 'buses_s' and console_log:
                 self.log_category(i.upper())
             for j, comp in components_dict[i].iterrows():
@@ -644,12 +644,12 @@ class Results:
                             logging.info('   ' + comp['label'])
                         excess_or_shortage = None
                     component = solph.views.node(self.results, comp['label'])
-                    
+
                     # create class intern dataframes consisting the flows
                     # of given component
                     self.create_flow_dataframes(component, comp,
                                                 excess_or_shortage)
-                    
+
                     if i != 'buses_s' and i != 'buses_e' and i != "sinks":
                         # get the investment on component out of results
                         # of the optimization
@@ -671,7 +671,7 @@ class Results:
                         total_constraint_costs += constraint_costs
                     # sinks
                     if i == "sinks" or i == 'buses_e':
-                        # the following values do not apply to sinks 
+                        # the following values do not apply to sinks
                         periodical_costs = None
                         investment = None
                         # excess sink
@@ -732,7 +732,7 @@ class Results:
                                             maxinvest="---",
                                             constraints=constraint_costs)
                             self.comp_input1 = input1.copy()
-                        investment = "---"
+                        investment = None
                         capacity = round(self.comp_input1.max(), 2)
                         self.df_result_table[comp_label] = self.comp_input1
                     # sources
@@ -752,7 +752,7 @@ class Results:
                                 comp, comp_type="shortage")
                             total_constraint_costs += constraint_costs
                             # the following values do not apply to
-                            # shortage-sources 
+                            # shortage-sources
                             periodical_costs = None
                             investment = None
                         # Non-thermal-sources and shortage sources
@@ -813,9 +813,9 @@ class Results:
 
                             self.df_result_table[
                                 comp['label'] + '_el_input'] = self.comp_input1
-                            
+
                             transformer_type = comp['transformer type']
-                            
+
                             if comp['transformer type'] == \
                                     'AbsorptionHeatTransformer':
                                 self.df_result_table[
@@ -1004,7 +1004,7 @@ class Results:
                         total_constraint_costs += constraint_costs
                 else:
                     periodical_costs = None
-                
+
                 if self.comp_output2 is not None:
                     self.df_result_table[
                         name + "-output"] = self.comp_output2
@@ -1021,7 +1021,7 @@ class Results:
                         capacity = round(self.comp_input1.max(), 2)
                 else:
                     capacity = None
-                   
+
                 self.add_component_to_loc(
                         label=name,
                         comp_type="dh",
@@ -1039,7 +1039,7 @@ class Results:
                             periodical_costs=periodical_costs,
                             investment=investment,
                             transformer_type=transformer_type)
-    
+
                     self.insert_line_end_of_component()
         # SUMMARY
         meta_results = solph.processing.meta_results(optimization_model)
