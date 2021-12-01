@@ -445,7 +445,7 @@ def connect_dh_to_system(oemof_opti_model, busd):
                 busd[consumer["input"]]: solph.Flow(
                     investment=solph.Investment(
                         ep_costs=(
-                            component_param.loc["dh_heatstation"]["costs"]),
+                            float(component_param.loc["dh_heatstation"]["costs"])),
                         minimum=0,
                         maximum=999 * len(consumer["input"]),
                         existing=0,
@@ -461,7 +461,7 @@ def connect_dh_to_system(oemof_opti_model, busd):
                          'consumers', 'heat', 'bus',
                          'consumers-{}'.format(consumer["id"]))],
                  busd[consumer["input"]]):
-                     component_param.loc["dh_heatstation"]["efficiency"],
+                     float(component_param.loc["dh_heatstation"]["efficiency"]),
                 (busd[consumer["input"]],
                  oemof_opti_model.buses[
                      dhnx.optimization_oemof_heatpipe.Label(
@@ -646,7 +646,7 @@ def create_producer_connection(oemof_opti_model, busd):
                          dhnx.optimization_oemof_heatpipe.Label(
                             'producers', 'heat', 'bus',
                             str("producers-{}".format(str(counter))))]):
-                                component_param.loc["pump"]["efficiency"]}))
+                                float(component_param.loc["pump"]["efficiency"])}))
 
     return oemof_opti_model
 
