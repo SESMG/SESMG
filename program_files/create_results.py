@@ -532,7 +532,7 @@ class Results:
 
     def __init__(self, nodes_data: dict, optimization_model: solph.Model,
                  energy_system: solph.EnergySystem, result_path: str,
-                 console_log: bool):
+                 console_log: bool, cluster_dh: bool):
         """
             Returns a list of all defined components with the following
             information:
@@ -973,7 +973,8 @@ class Results:
                 else:
                     name = str(components[i])
                 if length_list:
-                    pipes = pd.read_csv(result_path + "/pipes_clustered.csv")  # TODO Schnittstelle schaffen
+                    pipes = pd.read_csv("program_files/technical_data"
+                                        "/district_heating/pipes_save.csv")
                     for num, pipe in pipes.iterrows():
                         if pipe["from_node"] == length_list[0] \
                                 and pipe["to_node"] == length_list[1]:
@@ -988,19 +989,19 @@ class Results:
                     if type(investment) != int and investment is not None:
                         if "link-dhnx-c" in str(components[i]):
                             length = float(str(components[i]).split("-")[-1])
-                            periodical_costs = investment * 8.3538 * length
-                            constraint_costs = investment * 2.629 * length
+                            periodical_costs = investment * 2.629 * length
+                            constraint_costs = investment * 8.3538 * length
                         else:
-                            periodical_costs = investment * 1.8084 * length
-                            constraint_costs = investment * 0.3103 * length
+                            periodical_costs = investment * 0.3103 * length
+                            constraint_costs = investment * 18084 * length
                         total_periodical_costs += periodical_costs
                         total_constraint_costs += constraint_costs
                 elif "clustered_consumers" in str(components[i]) \
                         and "heat_bus" in str(components[i]):
                     if investment and type(investment) != int:
-                        periodical_costs = investment * 0.00001
+                        periodical_costs = investment * 85
                         total_periodical_costs += periodical_costs
-                        constraint_costs = 85 * investment
+                        constraint_costs = 0 * investment
                         total_constraint_costs += constraint_costs
                 else:
                     periodical_costs = None

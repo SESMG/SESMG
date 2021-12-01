@@ -7,6 +7,9 @@ from sympy import Symbol, solve
 from pyproj import Transformer
 import pandas as pd
 import dhnx
+import dhnx.plotting
+import dhnx.network
+import dhnx.optimization_oemof_heatpipe
 import matplotlib.pyplot as plt
 import dhnx.optimization as optimization
 import oemof.solph as solph
@@ -196,8 +199,7 @@ def create_intersection_forks(road_sections):
                 pd.Series({"id": point[6:],
                            "lat": road_section_points[point][0],
                            "lon": road_section_points[point][1],
-                           "component_type": "Fork"
-                           }), ignore_index=True)
+                           "component_type": "Fork"}), ignore_index=True)
 
 
 def create_producer_connection_point(nodes_data):
@@ -390,7 +392,9 @@ def create_components(nodes_data):
                       'source': pd.DataFrame({"label_2": "heat",
                                               "active": 0},
                                              index=[0])},
-        'network': {'pipes': pd.read_csv(os.path.join("invest_data", "network",
+        'network': {'pipes': pd.read_csv(os.path.join("program_files",
+                                                      "technical_data",
+                                                      "district_heating",
                                                       "pipes.csv"))}}
     oemof_opti_model = \
         optimization.setup_optimise_investment(
@@ -413,6 +417,10 @@ def connect_dh_to_system(oemof_opti_model, busd):
         :param busd: dictionary containing scenario buses
         :type busd: dict
     """
+    component_param = \
+        pd.read_csv("program_files/technical_data"
+                    "/district_heating/component_parameters.csv",
+                    index_col="label")
     sinks = []
     for i in range(len(oemof_opti_model.nodes)):
         # get demand created bei dhnx and add them to the list "sinks"
@@ -431,14 +439,13 @@ def connect_dh_to_system(oemof_opti_model, busd):
                 oemof_opti_model.buses[
                     dhnx.optimization_oemof_heatpipe.Label(
                         'consumers', 'heat', 'bus',
-                        'consumers-{}'.format(consumer["id"]))]:
-                    solph.Flow(),
+                        'consumers-{}'.format(consumer["id"]))]: solph.Flow(),
                 busd[consumer["input"]]: solph.Flow()},
             outputs={
                 busd[consumer["input"]]: solph.Flow(
                     investment=solph.Investment(
-                        ep_costs=85,
-                        # TODO nach AGFW 704 -> CO2 fehlt
+                        ep_costs=(
+                            component_param.loc["dh_heatstation"]["costs"]),
                         minimum=0,
                         maximum=999 * len(consumer["input"]),
                         existing=0,
@@ -447,15 +454,14 @@ def connect_dh_to_system(oemof_opti_model, busd):
                 oemof_opti_model.buses[
                     dhnx.optimization_oemof_heatpipe.Label(
                         'consumers', 'heat', 'bus',
-                        'consumers-{}'.format(consumer["id"]))]:
-                    solph.Flow()},
-            # TODO Verlust der Hausübergabe Station 0.98 nach Kaltschmitt
+                        'consumers-{}'.format(consumer["id"]))]: solph.Flow()},
             conversion_factors={
                 (oemof_opti_model.buses[
                      dhnx.optimization_oemof_heatpipe.Label(
                          'consumers', 'heat', 'bus',
                          'consumers-{}'.format(consumer["id"]))],
-                 busd[consumer["input"]]): 0.98,
+                 busd[consumer["input"]]):
+                     component_param.loc["dh_heatstation"]["efficiency"],
                 (busd[consumer["input"]],
                  oemof_opti_model.buses[
                      dhnx.optimization_oemof_heatpipe.Label(
@@ -474,6 +480,10 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
         :param busd: dictionary containing scenario buses
         :type busd: dict
     """
+    component_param = \
+        pd.read_csv("program_files/technical_data"
+                    "/district_heating/component_parameters.csv",
+                    index_col="label")
     sinks = []
     for i in range(len(oemof_opti_model.nodes)):
         # get demand created bei dhnx and add them to the list "sinks"
@@ -498,19 +508,21 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
                                 'consumers', 'heat', 'bus',
                                 'consumers-{}'.format(consumer["id"]))]:
                         solph.Flow(investment=solph.Investment(
-                                ep_costs=8.3538 * consumer["length"],
-                                # *len(consumer["input"]))), # TODO 17,
-                                #  28€/(m*a) 24.42kW bie DN25
-                                periodical_constraint_costs=2.629 * consumer[
-                                    "length"],
+                                ep_costs=(
+                                    component_param.loc[
+                                        "clustered_consumer_link"]["costs"]
+                                    * consumer["length"]),
+                                periodical_constraint_costs=(
+                                    component_param.loc[
+                                        "clustered_consumer_link"]
+                                    ["constraint costs"] * consumer["length"]),
                                 minimum=0,
                                 maximum=200 * len(consumer["input"]),  # TODO
                                 existing=0,
                                 nonconvex=False))},
                 outputs={
                     busd["clustered_consumers_{}".format(consumer["id"])]:
-                        solph.Flow()
-                },
+                        solph.Flow()},
                 # TODO Verlust der Hausübergabe Station
                 conversion_factors={
                     busd["clustered_consumers_{}".format(consumer["id"])]:
@@ -526,19 +538,20 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
                     inputs={
                         busd["clustered_consumers_{}".format(consumer["id"])]:
                             solph.Flow(investment=solph.Investment(
-                                    ep_costs=0.00001,
-                                    # TODO nach AGFW 704 85 -> CO2 fehlt 85
+                                    ep_costs=(
+                                        component_param.loc["dh_heatstation"]
+                                        ["costs"]),
                                     minimum=0,
                                     maximum=999 * len(consumer["input"]),
                                     existing=0,
                                     nonconvex=False))},
-                    outputs={busd[input]: solph.Flow(
-                    )},
-                    # TODO Verlust der Hausübergabe Station 0.98 nach Kaltschmitt
-                    conversion_factors={busd[input]: 0.98}))
+                    outputs={busd[input]: solph.Flow()},
+                    conversion_factors={
+                        busd[input]: component_param.loc["dh_heatstation"]
+                            ["efficiency"]}))
             counter += 1
     return oemof_opti_model
-
+    
 
 def add_excess_shortage_to_dh(oemof_opti_model, nodes_data, busd):
     """
@@ -571,31 +584,28 @@ def add_excess_shortage_to_dh(oemof_opti_model, nodes_data, busd):
                     label=("link-dhnx-" + bus['label']
                            + "-f{}".format(fork["id"])),
                     inputs={oemof_opti_model.buses[
-                                dhnx.optimization_oemof_heatpipe
-                                    .Label('infrastructure',
-                                           'heat', 'bus',
-                                           str("forks-{}".format(fork["id"])))]:
-                                solph.Flow(),
+                                dhnx.optimization_oemof_heatpipe.Label(
+                                    'infrastructure', 'heat', 'bus',
+                                    str("forks-{}".format(fork["id"])))]:
+                                    solph.Flow(),
                             busd[bus['label']]: solph.Flow()},
                     outputs={busd[bus['label']]: solph.Flow(),
                              oemof_opti_model.buses[
-                                 dhnx.optimization_oemof_heatpipe
-                                    .Label('infrastructure',
-                                           'heat', 'bus',
-                                           str("forks-{}".format(fork["id"])))]:
-                                 solph.Flow()},
+                                 dhnx.optimization_oemof_heatpipe.Label(
+                                     'infrastructure', 'heat', 'bus',
+                                     str("forks-{}".format(fork["id"])))]:
+                             solph.Flow()},
                     conversion_factors={
                         (oemof_opti_model.buses[
-                             dhnx.optimization_oemof_heatpipe
-                         .Label('infrastructure', 'heat',
-                                'bus', str("forks-{}".format(fork["id"])))],
+                             dhnx.optimization_oemof_heatpipe.Label(
+                                'infrastructure', 'heat', 'bus',
+                                str("forks-{}".format(fork["id"])))],
                          busd[bus['label']]): 1,
                         (busd[bus['label']],
                          oemof_opti_model.buses[
-                             dhnx.optimization_oemof_heatpipe
-                         .Label('infrastructure', 'heat',
-                                'bus', str("forks-{}".format(fork["id"])))]): 1
-                    }))
+                             dhnx.optimization_oemof_heatpipe.Label(
+                                'infrastructure', 'heat', 'bus',
+                                str("forks-{}".format(fork["id"])))]): 1}))
 
     return oemof_opti_model
 
@@ -604,38 +614,39 @@ def create_producer_connection(oemof_opti_model, busd):
     """
 
     """
+    counter = 0
     for key, producer in thermal_network.components["forks"].iterrows():
         if str(producer["bus"]) != "nan":
+            component_param = \
+                pd.read_csv("program_files/technical_data"
+                            "/district_heating/component_parameters.csv",
+                            index_col="label")
             oemof_opti_model.nodes.append(solph.custom.Link(
                 label=(str(key) + "-dhnx-source-link"),
                 inputs={oemof_opti_model.buses[
-                            dhnx.optimization_oemof_heatpipe
-                                .Label('producers',
-                                       'heat', 'bus',
-                                       str("producers-{}".format("0")))]:
-                            solph.Flow(),  # producer["id"]
+                            dhnx.optimization_oemof_heatpipe.Label(
+                                'producers', 'heat', 'bus',
+                                str("producers-{}".format(str(counter))))]:
+                        solph.Flow(),
                         busd[producer["bus"]]: solph.Flow()},
                 outputs={busd[producer["bus"]]: solph.Flow(),
                          oemof_opti_model.buses[
-                             dhnx.optimization_oemof_heatpipe
-                                .Label('producers',
-                                       'heat', 'bus',
-                                       str("producers-{}".format("0")))]:
-                             solph.Flow()},  # producer["id"]
-                # TODO Zirkulationspumpenwirjkungsgrad nach repositorium wien
+                             dhnx.optimization_oemof_heatpipe.Label(
+                                'producers', 'heat', 'bus',
+                                str("producers-{}".format(str(counter))))]:
+                         solph.Flow()},
                 conversion_factors={
                     (oemof_opti_model.buses[
-                         dhnx.optimization_oemof_heatpipe
-                     .Label('producers', 'heat', 'bus',
-                            str("producers-{}".format("0")))],  # producer["id"]
+                         dhnx.optimization_oemof_heatpipe.Label(
+                             'producers', 'heat', 'bus',
+                             str("producers-{}".format(str(counter))))],
                      busd[producer["bus"]]): 1,
                     (busd[producer["bus"]],
                      oemof_opti_model.buses[
-                         dhnx.optimization_oemof_heatpipe
-                     .Label('producers', 'heat',
-                            'bus',
-                            str("producers-{}".format("0")))]): 0.85}  # producer["id"]
-            ))
+                         dhnx.optimization_oemof_heatpipe.Label(
+                            'producers', 'heat', 'bus',
+                            str("producers-{}".format(str(counter))))]):
+                                component_param.loc["pump"]["efficiency"]}))
 
     return oemof_opti_model
 
@@ -671,7 +682,7 @@ def create_connect_dhnx(nodes_data, busd, clustering=False):
 
 
 def district_heating(nodes_data, nodes, busd, district_heating_path,
-                     save_dh_calculations, result_path):
+                     save_dh_calculations, result_path, cluster_dh):
     """
 
     """
@@ -737,97 +748,22 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
             thermal_network.components["pipes"]['id']
         thermal_network.components["prodcuers"].index = \
             thermal_network.components["prodcuers"]['id']
-        # static_map = dhnx.plotting.StaticMap(thermal_network)
-        # static_map.draw(background_map=False)
-        # plt.title('Given network')
-        # plt.scatter(
-        #        thermal_network.components.consumers['lon'],
-        #        thermal_network.components.consumers['lat'],
-        #        color='tab:green', label='consumers',
-        #        zorder=2.5, s=5)
-        # plt.scatter(
-        #        thermal_network.components.producers['lon'],
-        #        thermal_network.components.producers['lat'],
-        #        color='tab:red', label='producers', zorder=2.5,
-        #        s=5)
-        # plt.scatter(thermal_network.components.forks['lon'],
-        #            thermal_network.components.forks['lat'],
-        #            color='tab:grey', label='forks',
-        #            zorder=2.5, s=5)
-        # plt.text(-2, 32, 'P0', fontsize=14)
-        # plt.text(82, 0, 'P1', fontsize=14)
-        # plt.legend()
-        # plt.savefig(result_path + "/district_heating_vor_clustering.jpeg")
         dh = True
-        # TODO implement an oppurtunity for choosing rather dh is clustered or not
-        clustering_dh_network(nodes_data, result_path)
+        if cluster_dh:
+            clustering_dh_network(nodes_data)
         for i in ["consumers", "pipes", "producers", "forks"]:
             thermal_network.components[i].to_csv(
                 result_path + "/" + i + "_clustered.csv")
     if dh:
-        new_nodes = create_connect_dhnx(nodes_data, busd, True)
-
+        new_nodes = create_connect_dhnx(nodes_data, busd, cluster_dh)
+        thermal_network.components["pipes"].to_csv(
+                "program_files/technical_data/district_heating/pipes_save.csv")
         for i in new_nodes:
             nodes.append(i)
     return nodes
 
 
-def pre_calculation_dh_systems(nodes_data):
-    # TODO not in use yet
-    buses = []
-    for num, link in nodes_data["links"].iterrows():
-        nodes_data["links"].loc[num, "active"] = 0
-    for num, source in nodes_data["sources"].iterrows():
-        nodes_data["sources"].loc[num, "active"] = 0
-    for num, storage in nodes_data["storages"].iterrows():
-        nodes_data["storages"].loc[num, "active"] = 0
-    for num, constraint in nodes_data["competition constraints"].iterrows():
-        nodes_data["competition constraints"].loc[num, "active"] = 0
-    for num, bus in nodes_data["buses"].iterrows():
-        if bus["district heating conn."] == "dh-system":
-            buses.append(bus["label"])
-    for num, transformer in nodes_data["transformers"].iterrows():
-        if not (transformer["output"] in buses
-                or transformer["output2"] in buses):
-            nodes_data["transformers"].loc[num, "active"] = 0
-    return nodes_data
-    # get results
-    # results_edges = thermal_network.results.optimization['components']
-    # ['pipes']
-    # print(results_edges[['from_node', 'to_node', 'hp_type', 'capacity',
-    #                     'direction', 'costs', 'losses']])  #
-    # print("COMPONENTS")
-    # print(thermal_network.results.optimization['components'])
-    #
-    # print(results_edges[['invest_costs[€]']].sum())
-    # print('Objective value: ',
-    #      thermal_network.results.optimization['oemof_meta']['objective'])
-
-    # assign new ThermalNetwork with invested pipes
-    # twn_results = thermal_network
-    # twn_results.components['pipes'] = results_edges[
-    #    results_edges['capacity'] > 0.001]
-
-    # plot invested edges
-    # static_map_2 = dhnx.plotting.StaticMap(twn_results)
-    # static_map_2.draw(background_map=False)
-    # plt.title('Result network')
-    # plt.scatter(thermal_network.components.consumers['lon'],
-    #            thermal_network.components.consumers['lat'],
-    #            color='tab:green', label='consumers', zorder=2.5, s=50)
-    # plt.scatter(thermal_network.components.producers['lon'],
-    #            thermal_network.components.producers['lat'],
-    #            color='tab:red', label='producers', zorder=2.5, s=50)
-    # plt.scatter(thermal_network.components.forks['lon'],
-    #            thermal_network.components.forks['lat'],
-    #            color='tab:grey', label='forks', zorder=2.5, s=50)
-    # plt.text(-2, 32, 'P0', fontsize=14)
-    # plt.text(82, 0, 'P1', fontsize=14)
-    # plt.legend()
-    # plt.show()
-
-
-def clustering_dh_network(nodes_data, result_path):
+def clustering_dh_network(nodes_data):
     """
 
     """
@@ -856,22 +792,18 @@ def clustering_dh_network(nodes_data, result_path):
                     if "consumers" in pipe["to_node"]:
                         if street not in streets_pipe_length:
                             streets_pipe_length.update(
-                                {street: [[pipe["id"],
-                                           pipe["from_node"],
-                                           pipe["to_node"],
-                                           pipe["length"]]]})
+                                {street: [[pipe["id"], pipe["from_node"],
+                                           pipe["to_node"], pipe["length"]]]})
                         else:
                             streets_pipe_length[street].append(
-                                [pipe["id"],
-                                 pipe["from_node"],
-                                 pipe["to_node"],
-                                 pipe["length"]])
+                                [pipe["id"], pipe["from_node"],
+                                 pipe["to_node"], pipe["length"]])
                         thermal_network.components["pipes"] = \
                             thermal_network.components["pipes"].drop(
                                 index=pipe["id"])
     streets_consumer = {}
 
-    # get comnsumer information of a given street part
+    # get consumer information of a given street part
     for street in streets_pipe_length:
         counter = 0
         lat = 0
@@ -959,28 +891,3 @@ def clustering_dh_network(nodes_data, result_path):
     create_producer_connection_point(nodes_data)
     create_supply_line(nodes_data['road sections'])
     adapt_dhnx_style()
-    # for i in ["consumers", "pipes", "producers", "forks"]:
-    #    thermal_network.components[i].to_csv(
-    #            result_path + "/" + i + ".csv")
-    # static_map = dhnx.plotting.StaticMap(thermal_network)
-    # static_map.draw(background_map=False)
-    # plt.title('Given network')
-    # plt.scatter(
-    #        thermal_network.components.consumers['lon'],
-    #        thermal_network.components.consumers['lat'],
-    #        color='tab:green', label='consumers',
-    #        zorder=2.5, s=50)
-    # plt.scatter(
-    #        thermal_network.components.producers['lon'],
-    #        thermal_network.components.producers['lat'],
-    #        color='tab:red', label='producers', zorder=2.5,
-    #        s=50)
-    # plt.scatter(thermal_network.components.forks['lon'],
-    #            thermal_network.components.forks['lat'],
-    #            color='tab:grey', label='forks',
-    #            zorder=2.5, s=50)
-    # plt.text(-2, 32, 'P0', fontsize=14)
-    # plt.text(82, 0, 'P1', fontsize=14)
-    # plt.legend()
-    # plt.savefig(result_path + "/district_heating.jpeg")
-

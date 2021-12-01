@@ -95,7 +95,8 @@ from program_files import (create_objects,
 def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
                graph: bool, criterion_switch: bool, xlsx_results: bool,
                console_results: bool, timeseries_prep: list, solver: str,
-               save_dh_calculations: bool, district_heating_path=None):
+               save_dh_calculations: bool, cluster_dh,
+               district_heating_path=None):
     """
         Main function of the Spreadsheet System Model Generator
 
@@ -198,7 +199,7 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     nodes = district_heating.district_heating(nodes_data, nodes, busd,
                                               district_heating_path,
                                               save_dh_calculations,
-                                              result_path)
+                                              result_path, cluster_dh)
     # ADDS THE COMPONENTS TO THE ENERGYSYSTEM
     esys.add(*nodes)
 
@@ -216,7 +217,7 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
                             filepath=result_path)
     # CREATES PLOTLY RESULTS AND LOGS RESULTS OF CBC SOLVER
     create_results.Results(nodes_data, om, esys, result_path,
-                           console_log=console_results)
+                           console_log=console_results, cluster_dh=cluster_dh)
 
     logging.info('   ' + '----------------------------------------------'
                          '----------')

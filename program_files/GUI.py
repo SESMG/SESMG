@@ -264,7 +264,8 @@ def execute_sesmg():
                    gui_variables["console_select_state"].get() == 1 else False,
                    solver=gui_variables["solver_select"].get(),
                    district_heating_path=gui_variables["dh_path"].get(),
-                   save_dh_calculations=gui_variables["save_dh_state"].get())
+                   save_dh_calculations=gui_variables["save_dh_state"].get(),
+                   cluster_dh=gui_variables["cluster_dh"].get())
         if gui_variables["plotly_select_state"].get() == 1:
             show_results()
     else:
@@ -407,7 +408,8 @@ gui_variables = {
     "console_select_state": IntVar(),
     "plotly_select_state": IntVar(),
     "dh_path": StringVar(window, ''),
-    "save_dh_state": IntVar()
+    "save_dh_state": IntVar(),
+    "cluster_dh": IntVar()
 }
 
 reload_settings()
@@ -509,6 +511,11 @@ create_checkbox(main_frame, gui_variables["console_select_state"], 3, row)
 row += 1
 create_heading(main_frame, 'Create plotly-dash', 0, row, "w")
 create_checkbox(main_frame, gui_variables["plotly_select_state"], 3, row)
+
+# plotly_checkbox
+row += 1
+create_heading(main_frame, 'Clustering DH', 0, row, "w")
+create_checkbox(main_frame, gui_variables["cluster_dh"], 3, row)
 
 
 # Headline 2
