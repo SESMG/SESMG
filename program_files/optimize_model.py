@@ -56,14 +56,13 @@ def constraint_optimization_against_two_values(om: solph.Model,
             comp[num] = num.investment
     limit_name2 = "invest_limit_storage"
     setattr(om, limit_name2, po.Expression(
-            expr=sum(om.InvestmentStorage.invest[num] *
-                     getattr(comp[num],
-                             "periodical_constraint_costs")
-                     for num in comp
-                     )))
+            expr=sum(om.GenericInvestmentStorageBlock.invest[num]
+                     * getattr(comp[num], "periodical_constraint_costs")
+                     for num in comp)))
 
     setattr(om, limit_name + "_constraint", po.Constraint(
-        expr=((getattr(om, limit_name) + getattr(om, limit_name1)) <= limit)))
+            expr=((getattr(om, limit_name) + getattr(om, limit_name1)
+                   + getattr(om, limit_name2)) <= limit)))
 
     return om
 
