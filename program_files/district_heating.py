@@ -199,7 +199,8 @@ def create_intersection_forks(road_sections):
                 pd.Series({"id": point[6:],
                            "lat": road_section_points[point][0],
                            "lon": road_section_points[point][1],
-                           "component_type": "Fork"}), ignore_index=True)
+                           "component_type": "Fork"
+                           }), ignore_index=True)
 
 
 def create_producer_connection_point(nodes_data):
@@ -439,13 +440,14 @@ def connect_dh_to_system(oemof_opti_model, busd):
                 oemof_opti_model.buses[
                     dhnx.optimization_oemof_heatpipe.Label(
                         'consumers', 'heat', 'bus',
-                        'consumers-{}'.format(consumer["id"]))]: solph.Flow(),
+                        'consumers-{}'.format(consumer["id"]))]:
+                    solph.Flow(),
                 busd[consumer["input"]]: solph.Flow()},
             outputs={
                 busd[consumer["input"]]: solph.Flow(
                     investment=solph.Investment(
-                        ep_costs=(
-                            float(component_param.loc["dh_heatstation"]["costs"])),
+                        ep_costs=float(component_param.loc["dh_heatstation"]
+                                       ["costs"]),
                         minimum=0,
                         maximum=999 * len(consumer["input"]),
                         existing=0,
@@ -454,20 +456,20 @@ def connect_dh_to_system(oemof_opti_model, busd):
                 oemof_opti_model.buses[
                     dhnx.optimization_oemof_heatpipe.Label(
                         'consumers', 'heat', 'bus',
-                        'consumers-{}'.format(consumer["id"]))]: solph.Flow()},
+                        'consumers-{}'.format(consumer["id"]))]:
+                    solph.Flow()},
             conversion_factors={
                 (oemof_opti_model.buses[
                      dhnx.optimization_oemof_heatpipe.Label(
                          'consumers', 'heat', 'bus',
                          'consumers-{}'.format(consumer["id"]))],
                  busd[consumer["input"]]):
-                     float(component_param.loc["dh_heatstation"]["efficiency"]),
+                    float(component_param.loc["dh_heatstation"]["efficiency"]),
                 (busd[consumer["input"]],
                  oemof_opti_model.buses[
                      dhnx.optimization_oemof_heatpipe.Label(
                          'consumers', 'heat', 'bus',
-                         'consumers-{}'.format(consumer["id"]))]
-                 ): 1}))
+                         'consumers-{}'.format(consumer["id"]))]): 1}))
     return oemof_opti_model
 
 
@@ -508,21 +510,24 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
                                 'consumers', 'heat', 'bus',
                                 'consumers-{}'.format(consumer["id"]))]:
                         solph.Flow(investment=solph.Investment(
-                                ep_costs=(
-                                    component_param.loc[
-                                        "clustered_consumer_link"]["costs"]
-                                    * consumer["length"]),
-                                periodical_constraint_costs=(
-                                    component_param.loc[
-                                        "clustered_consumer_link"]
-                                    ["constraint costs"] * consumer["length"]),
+                                ep_costs=float(component_param.loc[
+                                                   "clustered_consumer_link"]
+                                               ["costs"] * consumer["length"]),
+                                # *len(consumer["input"]))), # TODO 17,
+                                #  28€/(m*a) 24.42kW bie DN25
+                                periodical_constraint_costs=float(
+                                        component_param.loc[
+                                            "clustered_consumer_link"]
+                                        ["constraint costs"]
+                                        * consumer["length"]),
                                 minimum=0,
                                 maximum=200 * len(consumer["input"]),  # TODO
                                 existing=0,
                                 nonconvex=False))},
                 outputs={
                     busd["clustered_consumers_{}".format(consumer["id"])]:
-                        solph.Flow()},
+                        solph.Flow()
+                },
                 # TODO Verlust der Hausübergabe Station
                 conversion_factors={
                     busd["clustered_consumers_{}".format(consumer["id"])]:
@@ -538,20 +543,22 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
                     inputs={
                         busd["clustered_consumers_{}".format(consumer["id"])]:
                             solph.Flow(investment=solph.Investment(
-                                    ep_costs=(
-                                        component_param.loc["dh_heatstation"]
-                                        ["costs"]),
+                                    ep_costs=float(component_param.loc[
+                                                       "dh_heatstation"]
+                                                   ["costs"]),
                                     minimum=0,
                                     maximum=999 * len(consumer["input"]),
                                     existing=0,
                                     nonconvex=False))},
-                    outputs={busd[input]: solph.Flow()},
-                    conversion_factors={
-                        busd[input]: component_param.loc["dh_heatstation"]
-                            ["efficiency"]}))
+                    outputs={busd[input]: solph.Flow(
+                    )},
+                    conversion_factors={busd[input]:
+                                            float(component_param.loc[
+                                                      "dh_heatstation"]
+                                                  ["efficiency"])}))
             counter += 1
     return oemof_opti_model
-    
+
 
 def add_excess_shortage_to_dh(oemof_opti_model, nodes_data, busd):
     """
@@ -584,28 +591,31 @@ def add_excess_shortage_to_dh(oemof_opti_model, nodes_data, busd):
                     label=("link-dhnx-" + bus['label']
                            + "-f{}".format(fork["id"])),
                     inputs={oemof_opti_model.buses[
-                                dhnx.optimization_oemof_heatpipe.Label(
-                                    'infrastructure', 'heat', 'bus',
-                                    str("forks-{}".format(fork["id"])))]:
-                                    solph.Flow(),
+                                dhnx.optimization_oemof_heatpipe
+                                    .Label('infrastructure',
+                                           'heat', 'bus',
+                                           str("forks-{}".format(fork["id"])))]:
+                                solph.Flow(),
                             busd[bus['label']]: solph.Flow()},
                     outputs={busd[bus['label']]: solph.Flow(),
                              oemof_opti_model.buses[
-                                 dhnx.optimization_oemof_heatpipe.Label(
-                                     'infrastructure', 'heat', 'bus',
-                                     str("forks-{}".format(fork["id"])))]:
-                             solph.Flow()},
+                                 dhnx.optimization_oemof_heatpipe
+                                    .Label('infrastructure',
+                                           'heat', 'bus',
+                                           str("forks-{}".format(fork["id"])))]:
+                                 solph.Flow()},
                     conversion_factors={
                         (oemof_opti_model.buses[
-                             dhnx.optimization_oemof_heatpipe.Label(
-                                'infrastructure', 'heat', 'bus',
-                                str("forks-{}".format(fork["id"])))],
+                             dhnx.optimization_oemof_heatpipe
+                         .Label('infrastructure', 'heat',
+                                'bus', str("forks-{}".format(fork["id"])))],
                          busd[bus['label']]): 1,
                         (busd[bus['label']],
                          oemof_opti_model.buses[
-                             dhnx.optimization_oemof_heatpipe.Label(
-                                'infrastructure', 'heat', 'bus',
-                                str("forks-{}".format(fork["id"])))]): 1}))
+                             dhnx.optimization_oemof_heatpipe
+                         .Label('infrastructure', 'heat',
+                                'bus', str("forks-{}".format(fork["id"])))]): 1
+                    }))
 
     return oemof_opti_model
 
@@ -614,39 +624,44 @@ def create_producer_connection(oemof_opti_model, busd):
     """
 
     """
+    component_param = \
+        pd.read_csv("program_files/technical_data"
+                    "/district_heating/component_parameters.csv",
+                    index_col="label")
     counter = 0
     for key, producer in thermal_network.components["forks"].iterrows():
         if str(producer["bus"]) != "nan":
-            component_param = \
-                pd.read_csv("program_files/technical_data"
-                            "/district_heating/component_parameters.csv",
-                            index_col="label")
             oemof_opti_model.nodes.append(solph.custom.Link(
                 label=(str(key) + "-dhnx-source-link"),
                 inputs={oemof_opti_model.buses[
-                            dhnx.optimization_oemof_heatpipe.Label(
-                                'producers', 'heat', 'bus',
-                                str("producers-{}".format(str(counter))))]:
-                        solph.Flow(),
+                            dhnx.optimization_oemof_heatpipe
+                                .Label('producers',
+                                       'heat', 'bus',
+                                       str("producers-{}"
+                                           .format(str(counter))))]:
+                            solph.Flow(),
                         busd[producer["bus"]]: solph.Flow()},
                 outputs={busd[producer["bus"]]: solph.Flow(),
                          oemof_opti_model.buses[
-                             dhnx.optimization_oemof_heatpipe.Label(
-                                'producers', 'heat', 'bus',
-                                str("producers-{}".format(str(counter))))]:
-                         solph.Flow()},
+                             dhnx.optimization_oemof_heatpipe
+                                .Label('producers',
+                                       'heat', 'bus',
+                                       str("producers-{}"
+                                           .format(str(counter))))]:
+                             solph.Flow()},
                 conversion_factors={
                     (oemof_opti_model.buses[
-                         dhnx.optimization_oemof_heatpipe.Label(
-                             'producers', 'heat', 'bus',
-                             str("producers-{}".format(str(counter))))],
+                         dhnx.optimization_oemof_heatpipe
+                     .Label('producers', 'heat', 'bus',
+                            str("producers-{}".format(str(counter))))],
                      busd[producer["bus"]]): 1,
                     (busd[producer["bus"]],
                      oemof_opti_model.buses[
-                         dhnx.optimization_oemof_heatpipe.Label(
-                            'producers', 'heat', 'bus',
+                         dhnx.optimization_oemof_heatpipe
+                     .Label('producers', 'heat', 'bus',
                             str("producers-{}".format(str(counter))))]):
-                                float(component_param.loc["pump"]["efficiency"])}))
+                                float(component_param.loc["pump"]
+                                      ["efficiency"])}))
 
     return oemof_opti_model
 
@@ -755,7 +770,10 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
             thermal_network.components[i].to_csv(
                 result_path + "/" + i + "_clustered.csv")
     if dh:
-        new_nodes = create_connect_dhnx(nodes_data, busd, cluster_dh)
+        if cluster_dh == 1: 
+            new_nodes = create_connect_dhnx(nodes_data, busd, True)
+        else:
+            new_nodes = create_connect_dhnx(nodes_data, busd, False)
         thermal_network.components["pipes"].to_csv(
                 "program_files/technical_data/district_heating/pipes_save.csv")
         for i in new_nodes:
