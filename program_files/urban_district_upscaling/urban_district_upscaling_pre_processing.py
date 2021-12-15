@@ -2285,7 +2285,6 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
     global sheets
     sheets = {}
     columns = {}
-    clustering = True
     plain_sheet_pd = pd.ExcelFile(plain_sheet)
     sheet_names = plain_sheet_pd.sheet_names
     for i in range(1, len(sheet_names)):
