@@ -167,7 +167,7 @@ class upscaling_frame_class:
                    pre_scenario=self.paths['pre_scenario'],
                    standard_param=self.paths['standard_parameters'],
                    scenario_name=self.paths['scenario_name'],
-                   clustering=clustering))\
+                   clustering=clustering.get()))\
             .grid(column=1, row=row)
         # Path to components csv
         row += 1
