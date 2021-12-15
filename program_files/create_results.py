@@ -983,26 +983,55 @@ class Results:
                         elif pipe["from_node"] == length_list[1] \
                                 and pipe["to_node"] == length_list[0]:
                             length = pipe["length"]
-
+                component_param = \
+                    pd.read_csv("program_files/technical_data"
+                                "/district_heating/component_parameters.csv",
+                                index_col="label")
+                pipes_param = \
+                    pd.read_csv("program_files/technical_data"
+                                "/district_heating/pipes.csv",
+                                index_col="label_3")
                 # TODO linearisierter Kostenfaktor
                 if "infrastructure" in str(components[i]) \
                         or "link-dhnx-c" in str(components[i]):
                     if type(investment) != int and investment is not None:
                         if "link-dhnx-c" in str(components[i]):
                             length = float(str(components[i]).split("-")[-1])
-                            periodical_costs = investment * 2.629 * length
-                            constraint_costs = investment * 8.3538 * length
+                            periodical_costs = (
+                                investment
+                                * float(component_param.loc[
+                                            "clustered_consumer_link"]
+                                        ["costs"])
+                                * length)
+                            constraint_costs = (
+                                investment
+                                * float(component_param.loc[
+                                            "clustered_consumer_link"]
+                                        ["constraint costs"])
+                                * length)
                         else:
-                            periodical_costs = investment * 0.3103 * length
-                            constraint_costs = investment * 18084 * length
+                            periodical_costs = (
+                                investment
+                                * float(pipes_param.loc["linearized"]
+                                        ["capex_pipes"]) * length) # TODO
+                            constraint_costs = (
+                                investment
+                                * float(pipes_param.loc["linearized"]
+                                        ["periodical_constraint_costs"]) # TODO
+                                * length)
                         total_periodical_costs += periodical_costs
                         total_constraint_costs += constraint_costs
                 elif "clustered_consumers" in str(components[i]) \
                         and "heat_bus" in str(components[i]):
                     if investment and type(investment) != int:
-                        periodical_costs = investment * 85
+                        periodical_costs = (investment
+                                            * float(component_param.loc[
+                                                        "dh_heatstation"]
+                                                    ["costs"]))
                         total_periodical_costs += periodical_costs
-                        constraint_costs = 0 * investment
+                        constraint_costs = (investment * float(
+                                component_param.loc["dh_heatstation"]
+                                ["constraint costs"]))
                         total_constraint_costs += constraint_costs
                 else:
                     periodical_costs = None
