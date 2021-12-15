@@ -67,6 +67,7 @@ def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str):
         df = node_results['sequences']
         df.head(2)
         sheet_name = str(component).replace("infrastructure", "infras.")
+        sheet_name = sheet_name.replace("consumers", "cons.")
         with pd.ExcelWriter(file_path) as writer:  # doctest: +SKIP
             df.to_excel(writer, sheet_name=sheet_name)
         # returns logging info
