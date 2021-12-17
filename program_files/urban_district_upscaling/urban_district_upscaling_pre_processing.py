@@ -1549,7 +1549,8 @@ def create_central_elec_bus_connection(cluster, standard_parameters):
         sheets["links"].set_index("label", inplace=True,
                                   drop=False)
     if (cluster + "pv_" + cluster + "_electricity_link") \
-            not in sheets["links"].index:
+            not in sheets["links"].index \
+            and (cluster + "pv_central") in sheets["links"].index:
         create_standard_parameter_link(
             cluster + "pv_" + cluster + "_electricity_link",
             bus_1=cluster + "_pv_bus",
