@@ -594,7 +594,7 @@ def hierarchical_selection(nodes_data, scheme, period, seasons, scheme_path):
     
         :param nodes_data: SESMG-nodes data, containing weather data,
                            energy system parameters and timeseries
-        :return: **nodes_data**(dict): modified SESMG-nodes data,
+        :return: **nodes_data** (dict): modified SESMG-nodes data,
                                        containing weather data, energy
                                        system parameters and timeseries
     """
