@@ -1,4 +1,4 @@
-Sourcecode documentation
+Source code documentation of the SESMG algorithm
 *************************************************
 The Spreadsheet Energy System Model Generator has a hierarchical structure and
 consists of a total of four work blocks, which in turn consist of various functions and subfunctions.
