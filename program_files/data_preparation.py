@@ -57,7 +57,7 @@ def calculate_k_means_clusters(cluster_number: int, weather_data: dict,
         :param period: defines rather days or weeks were selected
         :type period: str
 
-        :return: **model.labels_** - Chronological list, which days of the
+        :return: - **model.labels_** - Chronological list, which days of the
                                weather data set belongs to which cluster
     """
     cluster_vectors = extract_single_periods(data_set=weather_data,
@@ -85,8 +85,8 @@ def calculate_cluster_means(data_set, cluster_number: int,
         :param period: defines rather days or weeks were selected
         :type period: str
 
-        :return prep_data_set: pandas dataframe containing the prepared
-                               weather data set
+        :return: - **prep_data_set** (pd.Dataframe) - pandas dataframe 
+                 containing the prepared weather data set
     """
     column_names = [data_set.columns[i] for i in
                     range(1, len(data_set.columns))]
