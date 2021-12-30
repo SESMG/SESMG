@@ -34,6 +34,7 @@ setup(
             ],
 
     install_requires=[
+        "scipy==1.6.3",
         "pillow==8.3.2",
         "pandas==1.1.0",
         "numpy==1.19.0",
