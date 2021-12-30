@@ -486,6 +486,7 @@ class Sources:
                 - 'Conversion Factor'
                 - 'Peripheral Losses'
                 - 'Electric Consumption'
+                
             @ Yannick Wittor - yw090223@fh-muenster.de, 27.11.2020
         """
 
