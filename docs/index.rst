@@ -64,7 +64,8 @@ Troubleshooting
 
 Sourcecode
 -------------------------------------------------
-* :doc:`Python code documentation <sourcecode_documentation/program_functions>`
+* :doc:`Source code documentation of the GUI <sourcecode_documentation/gui_functions>`
+* :doc:`Source code documentation of SESMG algorithm <sourcecode_documentation/program_functions>`
 	
 	
 ..	toctree::
@@ -72,6 +73,7 @@ Sourcecode
 	:hidden:
 	:caption: Sourcecode documentation
 	
+	sourcecode_documentation/gui_functions
 	sourcecode_documentation/program_functions
 	
 	
