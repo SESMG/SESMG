@@ -232,7 +232,7 @@ def k_means_algorithm(clusters: int, criterion: str, nodes_data: dict,
         :type clusters: int
         :param criterion: criterion chosen for k_mean algorithm
         :type criterion: str
-        :param nodes_data: dictionary containing the excel worksheets from
+        :param nodes_data: dictionary containing the excel worksheets from 
                            the used scenario workbook
         :type nodes_data: dict
         :param period: defines rather days or weeks were selected
