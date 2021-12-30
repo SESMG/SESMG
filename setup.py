@@ -28,11 +28,12 @@ setup(
     license="MIT",
     author="Christian Klemm",
     author_email="christian.klemm@fh-muenster.de",
-    python_requires=='3.7.9',
     classifiers=[
         # complete classifier list:
         # http://pypi.python.org/pypi?%3Aaction=list_classifiers
-            ],
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7'],
 
     install_requires=[
         "scipy==1.6.3",
