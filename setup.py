@@ -34,7 +34,7 @@ setup(
             ],
 
     install_requires=[
-        "pillow>=6.2.0",
+        "pillow==6.2.0",
         "pandas==1.1",
         "numpy==1.19",
         "tables==3.5.2",
