@@ -54,7 +54,8 @@ setup(
         "pydot==1.4.1",
         "graphviz==0.13.2",
         "xlrd==1.2.0",
-        "Pyomo==5.7.1"
+        "Pyomo==5.7.1",
+        "sympy==1.9"
         ],
     
 )
