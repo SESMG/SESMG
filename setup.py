@@ -28,6 +28,7 @@ setup(
     license="MIT",
     author="Christian Klemm",
     author_email="christian.klemm@fh-muenster.de",
+    python_requires=='3.7.9',
     classifiers=[
         # complete classifier list:
         # http://pypi.python.org/pypi?%3Aaction=list_classifiers
