@@ -58,7 +58,8 @@ setup(
         "sympy==1.9",
         "pyproj==3.2.1",
         "folium==0.12.1.post1",
-        "addict==2.4.0"
+        "addict==2.4.0",
+        "xlsxwriter==3.0.2"
         ],
     extras_require={
         "dev": ["pytest", "sphinx", "sphinx_rtd_theme"],
