@@ -51,8 +51,6 @@ setup(
         "xlrd==1.2.0",
         "Pyomo==5.7.1"
         ],
-    extras_require={
-        "dev": ["oemof.thermal"],
-    },  
+    
 )
 
