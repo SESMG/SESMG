@@ -19,7 +19,7 @@ Make sure that the displayed system can stay in balance.
 **Your error message is not included? Help us and all users by reporting your error message - with or without a solution!. Thank you!**
 
 Contributing to the troubleshooting
-===============================
+================================================
 
 Were you able to solve a bug that was not listed here yet? Help other users and report it by following these simple steps:
 
