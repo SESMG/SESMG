@@ -90,8 +90,8 @@ class GUI(MethodsGUI):
     def show_graph(self):
         """ 
             creates and shows a graph of the energy system given by a
-            Spreadsheet
-                - the created graphs are saved in /results/graphs
+            Spreadsheet - the created graphs are saved in 
+            /results/graphs    
         """
         import os
         from program_files import (create_energy_system,
