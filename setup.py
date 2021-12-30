@@ -34,12 +34,14 @@ setup(
             ],
 
     install_requires=[
-        "pillow==6.2.0",
-        "pandas==1.1",
-        "numpy==1.19",
+        "pillow==8.3.2",
+        "pandas==1.1.0",
+        "numpy==1.19.0",
         "tables==3.5.2",
         "openpyxl==3.0.0",
         "oemof.solph==0.4",
+        "oemof.network==0.4.0rc0",
+        "oemof.thermal==0.0.5",
         "demandlib==0.1.8",
         "pvlib==0.7.1",
         "feedinlib==0.0.12",
