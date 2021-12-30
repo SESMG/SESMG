@@ -15,8 +15,9 @@ def extract_single_periods(data_set, column_name, period):
         :param period: indicates what kind of periods shall be extracted.
                        Possible arguments: "days", "weeks", "hours".
 
-        :return cluster_vectors: list, containing a list/vector for
-                                 every single day
+        :return: - **cluster_vectors** - list, containing a list/vector for
+            every single day
+            
     """
 
     if period == "days":
@@ -52,13 +53,14 @@ def calculate_k_means_clusters(cluster_number: int, weather_data: dict,
         :param weather_data: weather_data, the clusters should be applied to
         :type weather_data: dict
         :param cluster_criterion: weather_parameter/column name which
-                                  should be applied as cluster criterion
+            should be applied as cluster criterion
         :type cluster_criterion: str
         :param period: defines rather days or weeks were selected
         :type period: str
 
         :return: - **model.labels_** - Chronological list, which days of the
-                               weather data set belongs to which cluster
+            weather data set belongs to which cluster
+            
     """
     cluster_vectors = extract_single_periods(data_set=weather_data,
                                              column_name=cluster_criterion,
@@ -80,13 +82,13 @@ def calculate_cluster_means(data_set, cluster_number: int,
         :param cluster_number: Number of clusters
         :type cluster_number: int
         :param cluster_labels: Chronological list, which days of the
-                               weather data set belongs to which cluster
+            weather data set belongs to which cluster
         :type cluster_labels: np.array
         :param period: defines rather days or weeks were selected
         :type period: str
 
         :return: - **prep_data_set** (pd.Dataframe) - pandas dataframe 
-                 containing the prepared weather data set
+            containing the prepared weather data set
        
     """
     column_names = [data_set.columns[i] for i in
