@@ -52,7 +52,7 @@ setup(
         "Pyomo==5.7.1"
         ],
     extras_require={
-        "dev": ["pytest", "sphinx", "sphinx_rtd_theme","oemof.thermal"],
+        "dev": ["oemof.thermal"],
     },  
 )
 
