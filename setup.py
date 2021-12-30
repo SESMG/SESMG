@@ -56,7 +56,8 @@ setup(
         "xlrd==1.2.0",
         "Pyomo==5.7.1",
         "sympy==1.9",
-        "pyproj==3.2.1"
+        "pyproj==3.2.1",
+        "folium==0.12.1.post1"
         ],
     
 )
