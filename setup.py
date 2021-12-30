@@ -59,6 +59,8 @@ setup(
         "pyproj==3.2.1",
         "folium==0.12.1.post1"
         ],
-    
+    extras_require={
+        "dev": ["pytest", "sphinx", "sphinx_rtd_theme"],
+    },  
 )
 
