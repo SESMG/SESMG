@@ -87,6 +87,7 @@ def calculate_cluster_means(data_set, cluster_number: int,
 
         :return: - **prep_data_set** (pd.Dataframe) - pandas dataframe 
                  containing the prepared weather data set
+       
     """
     column_names = [data_set.columns[i] for i in
                     range(1, len(data_set.columns))]
@@ -195,9 +196,11 @@ def k_means_timeseries_adaption(nodes_data: dict, clusters: int,
         :type clusters: int
         :param cluster_labels: Chronological list, which days of the weather
                                data set belongs to which cluster
+                               
         :type cluster_labels: np.array
         :param period: defines rather hours, days or weeks were selected
         :type period: str
+        
     """
     prep_timeseries = \
         calculate_cluster_means(data_set=nodes_data['timeseries'].copy(),
