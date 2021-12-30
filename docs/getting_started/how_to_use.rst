@@ -134,6 +134,7 @@ Within this sheet, the sources of the energy system are defined. Technology spec
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the source is connected to.
 - **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "other", "solar_thermal_flat_plate", "concentrated_solar_power". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the `Time series sheet`_.
+
 Costs
 -------------------------
 - **variable costs** in (CU/kWh): Defines the variable costs incurred for a kWh of energy drawn from the source.
@@ -145,10 +146,12 @@ Costs
 - **periodical constraint costs** in (CU/(kW a)): Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#investment>`_.
 - **Fix Investment Costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs).
+
 Wind
 -------------------------
 - **Turbine Model**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
 - **Hub Height**: Hub height of the wind turbine. Which hub heights are possible for the selected reference turbine can be viewed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
+
 PV
 -------------------------
 - **Modul Model**: Module name, according to the database used. Possible Modul Models are presented `here <https://github.com/chrklemm/SESMG/blob/v0.2/docs/getting_started/modul_name.csv>`_.
@@ -159,6 +162,7 @@ PV
 - **Altitude**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
 - **Latitude**: Geographic latitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
 - **Longitude**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
+
 Concentrated Solar Power
 ------------------------------
 - **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Use fill character "0" for other technologies.
@@ -173,6 +177,7 @@ Concentrated Solar Power
 - **Cleanliness**: Cleanliness of a parabolic through collector. Only required for Concentrated Solar Power source, use fill character "0" for other technologies.
 - **Electric Consumption**: Electric consumption of the collector system. Example: If value is set to 0,05, the electric consumption is 5 % of the energy output. Use fill character "0" for other technologies.
 - **Peripheral Losses**: Heat loss coefficient for losses in the collector's peripheral system. Use fill character "0" for other technologies.
+
 **Exemplary values for concentrated_solar_power technology**:
 
 .. csv-table:: Exemplary values for concentrated_solar_power technology (The parameters refer to `Janotte, N; et al <https://www.sciencedirect.com/science/article/pii/S1876610214004664>`_)
@@ -193,6 +198,7 @@ Solar Thermal Flatplate
 - **Temperature Difference** in (°C): Temperature Difference between in- and outlet temperature of the solar heat collector module. Use fill character "0" for other technologies.
 - **Electric Consumption**: Electric consumption of the collector system. Example: If value is set to 0,05, the electric consumption is 5 % of the energy output. Use fill character "0" for other technologies.
 - **Peripheral Losses**: Heat loss coefficient for losses in the collector's peripheral system. Use fill character "0" for other technologies.
+
 Timeseries
 -------------------------
 If you have choosen the technology "timeseries", you have to include a timeseries in the  `Time series sheet`_ or use default one.
@@ -249,10 +255,12 @@ Costs
 - **periodical constraint costs** in (CU/(kW a)): Constraint costs incurred per kW for investments within the time horizon. If not considering constraints fill character "0" is used.
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#investment>`_.
 - **Fix Investment Costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs)
+
 Generic Transformer
 ------------------------
 - **efficiency**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
 - **efficiency2**: Specifies the efficiency of the second output, if there is one. Values between 0 and 1 are entered. If there is no second output, the fill character "0" must be entered here.
+
 GenericCHP
 ------------------------
 - **min. share of flue gas loss**: Percentage flue gas losses of the operating point with maximum heat extraction.
@@ -264,6 +272,7 @@ GenericCHP
 - **minimal thermal output power** in (kW): Heat output taken from the exhaust gas via a condenser even in purely electric operation.
 - **electric power loss index**: Reduction of the electrical power by "electric power loss index * extracted thermal power".
 - **back pressure**: Defines rather the end pressure of "Turbine CHP" is higher than ambient pressure (input value has to be "1") or not (input value has to be "0"). For "Motoric CHP" it has to be "0".
+
 Compression Heat Transformer
 ---------------------------------
 The following parameters are only required, if "transformer type" is set to "CompressionHeatTransformer":
@@ -278,6 +287,7 @@ The following parameters are only required, if "transformer type" is set to "Com
 - **min. borehole area** in (sqm): Limited space due to the regeneation of the ground source, only for GC-CHT.
 - **temp threshold icing**: Temperature below which icing occurs (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
 - **factor icing**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
+
 Absorption Heat Transformer
 --------------------------------
 The following parameters are only required, if "transformer type" is set to "AbsorptionHeatTransformer":
@@ -339,9 +349,11 @@ Costs
 - **variable input constraint costs**: Indicates how many costs arise for charging with one kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **variable output constraint costs**: Indicates how many costs arise for charging with one kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **periodical constraint costs** in (CU/a): Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+
 Generic Storage
 ---------------------
 - **capacity loss** (Generic only): Indicates the storage loss per time unit. Only required, if the "storage type" is set to "Generic".
+
 Stratified Storage
 ---------------------
 - **diameter** in (m) | (Stratified Storage): Defines the diameter of a stratified thermal storage, which is necessary for the calculation of thermal losses.
@@ -378,6 +390,7 @@ to be entered:
 - **bus2**: Second bus to which the link is connected. If it is a directed link, this is the output bus.
 - **(un)directed**: Specifies whether it is a directed or an undirected link. Input options: "directed", "undirected".
 - **efficiency**: Specifies the efficiency of the link. Values between 0 and 1 are allowed entries.
+
 Costs
 -------------------
 - **variable output costs** in (CU/kWh): Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
