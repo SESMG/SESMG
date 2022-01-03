@@ -82,7 +82,7 @@ def reload_settings(gui_variables: dict):
 
         :param gui_variables: dictionary holding the GUI settings
         :type gui_variables: dict
-        :return: - **gui_variables** (dict) - updated dictionary holding
+        :return: **gui_variables** (dict) - updated dictionary holding \
             GUI settings
     """
 
