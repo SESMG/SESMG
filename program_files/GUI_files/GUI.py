@@ -19,16 +19,16 @@ def get_pid():
     try:
         # Checks if port 8050 can be reached
         s.bind(("127.0.0.1", 8050))
-        # If Yes, the program continues in line 225
-        closeprocess = False
+        # If Yes, the program continues in line 53
+        closeProcess = False
     # If not, the ID of the running process is returned
     except socket.error as e:
         if e.errno == errno.EADDRINUSE:
-            closeprocess = True
+            closeProcess = True
         else:
-            raise ValueError("closeprocess failure")
+            raise ValueError("closeProcess failure")
     s.close()
-    if closeprocess:
+    if closeProcess:
         if sys.platform.startswith("win"):
             command = "netstat -aon| findstr :8050"
         elif sys.platform.startswith("darwin"):
@@ -37,16 +37,15 @@ def get_pid():
             command = "fuser -n tcp 8050"
         else:
             raise ValueError("unknown platform")
-        pids = subprocess.check_output(command, shell=True)
-        pids = str(pids)
-        pidslist = pids.split()
+        # list of processes running on 8050
+        p_ids_list = str(subprocess.check_output(command, shell=True)).split()
         if sys.platform.startswith("win"):
-            pid = pidslist[5]
+            pid = p_ids_list[5]
             pid = pid[:-4]
         elif sys.platform.startswith("darwin"):
-            pid = pidslist[9]
+            pid = p_ids_list[9]
         elif sys.platform.startswith("linux"):
-            pid = pidslist[1]
+            pid = p_ids_list[1]
         else:
             raise ValueError("unknown platform")
         return pid
@@ -54,10 +53,21 @@ def get_pid():
         return ''
 
 
-def save_settings(gui_variables):
+def save_settings(gui_variables: dict):
+    """
+        Method that stores the settings entered in the GUI in a csv file
+        in program_files/technical_data.
+
+        :param gui_variables: dictionary holding the settings chosen in
+            GUI
+        :type gui_variables: dict
+
+    """
     dict_to_save = {}
+    # remove variable handling from tkinter
     for key, value in gui_variables.items():
         dict_to_save.update({key: value.get()})
+    # store extracted variables to csv file
     with open('program_files/technical_data/gui_settings.csv', 'w',
               newline='') as csv_file:
         writer = csv.writer(csv_file)
@@ -65,7 +75,17 @@ def save_settings(gui_variables):
             writer.writerow([key, value])
 
 
-def reload_settings(gui_variables):
+def reload_settings(gui_variables: dict):
+    """
+        Method that loads the settings saved in the csv file and then
+        embeds them in the GUI.
+
+        :param gui_variables: dictionary holding the GUI settings
+        :type gui_variables: dict
+        :return: - **gui_variables** (dict) - updated dictionary holding
+            GUI settings
+    """
+
     with open(os.path.dirname(os.path.dirname(os.path.join(__file__)))
               + "/technical_data/" + 'gui_settings.csv') \
             as csv_file:
@@ -76,16 +96,24 @@ def reload_settings(gui_variables):
     return gui_variables
 
 
-def get_checkbox_state(checkbox):
-    if checkbox.get() == 1:
-        return True
-    else:
-        return False
-
-
 class GUI(MethodsGUI):
     frames = []
     gui_variables = {}
+
+    @staticmethod
+    def __get_checkbox_state(checkbox) -> bool:
+        """
+            removes tkinter variable handling
+
+            :param checkbox: checkbox whose boolean is to be returned
+            :type checkbox: tkinter.Variable
+            :rtype: bool
+
+        """
+        if checkbox.get() == 1:
+            return True
+        else:
+            return False
 
     def show_graph(self):
         """ 
@@ -207,8 +235,7 @@ class GUI(MethodsGUI):
             subprocess.call(r"Scripts\python.exe"
                             + " program_files/Interactive_Results.py "
                             + 'r"' + self.gui_variables["save_path"].get()
-                            + '"',
-                            timeout=10, shell=True)
+                            + '"', timeout=10, shell=True)
         # Starts the new Plotly Dash Server for MACOS
         elif sys.platform.startswith("darwin"):
             ir_path = os.path.dirname(os.path.abspath(__file__))

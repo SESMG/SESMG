@@ -39,8 +39,7 @@ def execute_sesmg():
                    solver=gui_variables["solver_select"],
                    save_dh_calculations=gui_variables["save_dh_state"],
                    district_heating_path=gui_variables["dh_path"])
-        if gui_variables["plotly_select_state"] == 1:
-            show_results()
+
     else:
         print('Please select scenario first!')
 

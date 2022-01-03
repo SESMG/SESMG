@@ -65,9 +65,7 @@ class UpscalingFrameClass:
         row = tk.create_button_lines(frame, upscaling_elements, row,
                                      gui_variables)
         tk.create_heading(frame, 'Clustering', 0, row, "w")
-        tk.create_checkbox(
-                frame,
-                gui_variables["clustering"], 1, row)
+        tk.create_checkbox(frame, gui_variables["clustering"], 1, row)
         row += 1
         upscaling_elements = {
             'Create Scenario':
