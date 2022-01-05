@@ -101,7 +101,7 @@ class GUI(MethodsGUI):
     gui_variables = {}
 
     @staticmethod
-    def __get_checkbox_state(checkbox) -> bool:
+    def __get_cb_state(checkbox) -> bool:
         """
             removes tkinter variable handling
 
@@ -153,21 +153,26 @@ class GUI(MethodsGUI):
                                   legend=False)
 
     def execute_sesmg(self):
-        """ 1. Creates the folder where the results will be saved
-            2. Excecutes the optimization algorithm """
+        """
+            1. Creates the folder where the results will be saved
+            2. Executes the optimization algorithm
+        """
+        # check rather a scenario path is set
         if self.gui_variables["scenario_path"].get():
             # save the choices made in the GUI
             save_settings(self.gui_variables)
-        
+
             scenario_name = \
                 os.path.basename(self.gui_variables["scenario_path"].get())
+            # set the save path
             self.gui_variables["save_path"].set(
                 str(os.path.join(self.gui_variables[
                                      "save_path_directory"].get())
                     + '/' + scenario_name[:-5]
                     + str(datetime.now().strftime('_%Y-%m-%d--%H-%M-%S'))))
+            # create new folder in which the results will be stored
             os.mkdir(self.gui_variables["save_path"].get())
-        
+            # set the timeseries preparation arguments
             timeseries_season = self.gui_variables["timeseries_season"].get()
             timeseries_prep_param = \
                 [self.gui_variables["timeseries_algorithm"].get(),
@@ -175,22 +180,24 @@ class GUI(MethodsGUI):
                  self.gui_variables["timeseries_criterion"].get(),
                  self.gui_variables["timeseries_period"].get(),
                  0 if timeseries_season == 'none' else timeseries_season]
+            # execute SESMG algorithm
             sesmg_main(
                 scenario_file=self.gui_variables["scenario_path"].get(),
                 result_path=self.gui_variables["save_path"].get(),
                 num_threads=self.gui_variables["num_threads"].get(),
                 timeseries_prep=timeseries_prep_param,
-                graph=get_checkbox_state(self.gui_variables["graph_state"]),
-                criterion_switch=get_checkbox_state(
+                graph=self.__get_cb_state(self.gui_variables["graph_state"]),
+                criterion_switch=self.__get_cb_state(
                     self.gui_variables["criterion_state"]),
-                xlsx_results=get_checkbox_state(
+                xlsx_results=self.__get_cb_state(
                     self.gui_variables["xlsx_select_state"]),
-                console_results=get_checkbox_state(
+                console_results=self.__get_cb_state(
                     self.gui_variables["console_select_state"]),
                 solver=self.gui_variables["solver_select"].get(),
                 district_heating_path=self.gui_variables["dh_path"].get(),
                 save_dh_calculations=self.gui_variables["save_dh_state"].get(),
                 cluster_dh=self.gui_variables["cluster_dh"].get())
+            # start algorithm for creation of plotly dash
             if self.gui_variables["plotly_select_state"].get() == 1:
                 self.show_results()
         else:
@@ -242,6 +249,7 @@ class GUI(MethodsGUI):
             subprocess.call("python3 " + ir_path + "/Interactive_Results.py "
                             + str(self.gui_variables["save_path"].get()),
                             timeout=10, shell=True)
+        # Starts the new Plotly Dash Server for Linux
         elif sys.platform.startswith("linux"):
             ir_path = os.path.dirname(os.path.abspath(__file__))
             subprocess.call("python3 " + ir_path + "/Interactive_Results.py "
@@ -249,6 +257,12 @@ class GUI(MethodsGUI):
                             timeout=10, shell=True)
     
     def __init__(self):
+        """
+            This class is used to create the Graphical User Interface
+            (GUI). In this context, it uses the methods of the
+            superclass MethodsGUI.
+        """
+        # initialize super class to create an empty tk frame
         super().__init__(
                 "SESMG - Spreadsheet Energy System Model Generator",
                 "0.x",
@@ -286,6 +300,7 @@ class GUI(MethodsGUI):
             "dh_path": StringVar(self.frames[0], ''),
             "save_dh_state": IntVar(),
             "cluster_dh": IntVar(),
+            # upscaling tool variables
             "pre_scenario_path":
                 StringVar(self.frames[1],
                           os.path.join(os.path.dirname(__file__)
@@ -304,20 +319,18 @@ class GUI(MethodsGUI):
             "clustering": BooleanVar(False),
             "components_path": StringVar()
         }
-        
+        # reload the stored variables from technical_data/gui_settings
         self.gui_variables = reload_settings(self.gui_variables)
         
         # Headline
         self.create_heading(self.frames[0], 'Modeling', 0, 0, "w", True)
-        
-        self.create_heading(self.frames[0], 'Select scenario file', 0, 1, "w")
-        self.create_button(frame=self.frames[0], text='Change',
-                           command=lambda: self.get_path(
-                               "xlsx", self.gui_variables["scenario_path"]),
-                           column=1, row=1)
-        self.create_heading(self.frames[0],
-                            self.gui_variables["scenario_path"], 2, 1, "w",
-                            columnspan=6)
+        # Scenario selection line
+        self.create_button_lines(
+            self.frames[0],
+            {'Select scenario file':
+                [lambda: self.get_path("xlsx",
+                                       self.gui_variables["scenario_path"]),
+                 'Change', 'scenario_path']}, 1, self.gui_variables)
 
         # TimeSeries Prep Menu
         timeseries_algorithm_list = \
@@ -353,15 +366,10 @@ class GUI(MethodsGUI):
             'Switch Criteria': "criterion_state",
             'Save DH calculations': "save_dh_state"}
         row += 1
-        for param in checkboxes_parameters:
-            row += 1
-            self.create_heading(self.frames[0], param, 0, row, "w")
-            self.create_checkbox(
-                    self.frames[0],
-                    self.gui_variables[checkboxes_parameters[param]], 1, row)
+        row = self.create_cb_lines(self.frames[0], checkboxes_parameters, row,
+                                   self.gui_variables) + 1
         
         # Solver Selection
-        row += 1
         self.create_heading(self.frames[0], 'Optimization Solver', 0, row, "w")
         self.create_option_menu(self.frames[0],
                                 self.gui_variables["solver_select"],
@@ -376,15 +384,9 @@ class GUI(MethodsGUI):
             'Create console-log': "console_select_state",
             'Create plotly-dash': "plotly_select_state",
             'Clustering DH': "cluster_dh"}
-        for param in checkboxes_parameters:
-            row += 1
-            self.create_heading(self.frames[0], param, 0, row, "w")
-            self.create_checkbox(
-                    self.frames[0],
-                    self.gui_variables[checkboxes_parameters[param]], 1, row)
+        row = self.create_cb_lines(self.frames[0], checkboxes_parameters, row,
+                                   self.gui_variables) + 1
 
-        # Headline 2
-        row += 1
         self.create_heading(self.frames[0], 'Execution', 0, row, "w", True)
         # execution buttons
         row += 1
@@ -399,16 +401,14 @@ class GUI(MethodsGUI):
             'Optimize Model': [self.execute_sesmg, 'Execute', ''],
             'Show Latest Results': [self.show_results, 'Execute', '']}
         row = self.create_button_lines(self.frames[0], execution_elements, row,
-                                       self.gui_variables)
-        row += 1
+                                       self.gui_variables) + 1
         self.create_heading(self.frames[0], 'Results', 0, row, "w", True)
         row += 1
-        analyzing_elements = {
-            'Select scenario result folder':
-                [lambda: self.get_path("folder",
-                                       self.gui_variables["save_path"]),
-                 'Change', "save_path"],
-            'Start Plotly': [self.show_results, 'Execute', '']}
+        analyzing_elements = \
+            {'Select scenario result folder':
+             [lambda: self.get_path("folder", self.gui_variables["save_path"]),
+              'Change', "save_path"],
+             'Start Plotly': [self.show_results, 'Execute', '']}
         self.create_button_lines(self.frames[0], analyzing_elements, row,
                                  self.gui_variables)
         

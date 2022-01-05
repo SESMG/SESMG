@@ -66,6 +66,14 @@ class MethodsGUI(tk.Tk):
                                     2, row, "w", columnspan=6)
             row += 1
         return row
+
+    def create_cb_lines(self, frame, elements, row, gui_variables):
+        for param in elements:
+            row += 1
+            self.create_heading(frame, param, 0, row, "w")
+            self.create_checkbox(
+                frame, gui_variables[elements[param]], 1, row)
+        return row
             
     def __init__(self, TITLE=None, VERSION=None, geometry=None):
         self.TITLE = TITLE
