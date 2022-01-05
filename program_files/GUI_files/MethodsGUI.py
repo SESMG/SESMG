@@ -11,7 +11,7 @@ class MethodsGUI(tk.Tk):
         :param TITLE: defines the TK Frame label
         :type TITLE: str
         :param VERSION: defines the Version of the SESMG
-        :type TITLE: str
+        :type VERSION: str
         :param geometry: defines the geometry of the GUI
         :type geometry: str
     """
