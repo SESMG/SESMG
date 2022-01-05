@@ -16,6 +16,21 @@ class UpscalingFrameClass:
     @staticmethod
     def scenario_upscaling(pre_scenario, standard_param, scenario_name,
                            clustering):
+        """
+            Methods starting the upscaling pre_processing Algorithm
+
+            :param pre_scenario: containing path to pre_scenario file
+            :type pre_scenario: tk.StringVar
+            :param standard_param: containing path to standard_parameter
+                file
+            :type standard_param: tk.StringVar
+            :param scenario_name: containing path to scenario_name file
+            :type scenario_name: tk.StringVar
+            :param clustering: containing boolean rather the pre
+                scenario is clustered or not
+            :type clustering: tk.BooleanVar
+
+        """
         # urban_district_upscaling
         urban_district_upscaling_pre_processing(
             pre_scenario=pre_scenario.get(),
