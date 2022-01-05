@@ -29,6 +29,7 @@ pip install graphviz==0.13.2
 pip install xlrd==1.2.0
 pip install Pyomo==5.7.1
 pip install xlsxwriter
+pip install demandlib --upgrade
 
 @echo ######################
 @echo Installation completed
