@@ -18,7 +18,7 @@ class MethodsGUI(tk.Tk):
             :param frame: tkinter frame where the heading will be
                 included
             :type frame: tk.Frame
-            :param text: text of the frame to be created
+            :param text: text of the label to be created
             :type text: str
             :param column: defines in which column the heading will be
                 placed
@@ -66,17 +66,49 @@ class MethodsGUI(tk.Tk):
             :param row: defines in which row the optionmenu will be
                 placed
             :type row: int
-            
+
         """
         DMenu = OptionMenu(frame, variable, *options)
         DMenu.grid(column=column, row=row)
         
     @staticmethod
     def create_checkbox(frame, variable, column, row):
+        """
+            creates tkinter checkbox
+
+            :param frame: tkinter frame where the checkbox will be
+                included
+            :type frame: tk.Frame
+            :param variable: BooleanVar holding the checkbox status
+            :type variable: tk.BooleanVar
+            :param column: defines in which column the checkbox will be
+                placed
+            :type column: int
+            :param row: defines in which row the checkbox will be placed
+            :type row: int
+        """
         checkbox = Checkbutton(frame, variable=variable)
         checkbox.grid(column=column, row=row)
-    
-    def create_button(self, frame, text, command, column, row):
+
+    @staticmethod
+    def create_button(frame, text, command, column, row):
+        """
+            creates tkinter button
+
+            :param frame: tkinter frame where the button will be
+                included
+            :type frame: tk.Frame
+            :param text: button text
+            :type text: str
+            :param command: command executed onclick
+            :type command:
+            :param column: defines in which column the button will be
+                placed
+            :type column: int
+            :param row: defines in which row the button will be placed
+            :type row: int
+
+        """
         button = Button(frame, text=text, command=command)
         button.grid(column=column, row=row)
         
