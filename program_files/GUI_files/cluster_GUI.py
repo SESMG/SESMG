@@ -5,8 +5,10 @@ from program_files.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 
 
 def execute_sesmg():
-    """ 1. Creates the folder where the results will be saved
-        2. Excecutes the optimization algorithm """
+    """
+        1. Creates the folder where the results will be saved
+        2. Excecutes the optimization algorithm
+    """
     if gui_variables["scenario_path"] != "No scenario selected.":
         
         scenario_name = os.path.basename(gui_variables["scenario_path"])
