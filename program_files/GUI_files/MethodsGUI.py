@@ -7,6 +7,13 @@ class MethodsGUI(tk.Tk):
     """
         class holding the main methods for the Graphical User Interface
         (GUI)
+
+        :param TITLE: defines the TK Frame label
+        :type TITLE: str
+        :param VERSION: defines the Version of the SESMG
+        :type TITLE: str
+        :param geometry: defines the geometry of the GUI
+        :type geometry: str
     """
     
     @staticmethod
@@ -56,7 +63,7 @@ class MethodsGUI(tk.Tk):
             :param frame: tkinter frame where the optionmenu will be
                 included
             :type frame: tk.Frame
-            :param variable: StringVar holding the choosen option
+            :param variable: StringVar holding the chosen option
             :type variable: tk.StringVar
             :param options: list holding the possible options
             :type options: list
@@ -112,7 +119,19 @@ class MethodsGUI(tk.Tk):
         button = Button(frame, text=text, command=command)
         button.grid(column=column, row=row)
         
-    def get_path(self, type, store):
+    def get_path(self, type: str, store):
+        """
+            Opens a pop-up window asking the user to select a folder,
+            csv-file or xlsx-file.
+
+            :param type: defines rather the pop up for folder,
+                xlsx or csv will be shown
+            :type type: str
+            :param store: StringVar containing the chosen path
+            :type store: tk.StringVar
+            :return: **path**(tk.StringVar) - chosen path
+
+        """
         if type == "xlsx":
             path = filedialog.askopenfilename(
                     filetypes=(("Spreadsheet Files", "*.xlsx"),
@@ -132,6 +151,24 @@ class MethodsGUI(tk.Tk):
             return path
     
     def create_button_lines(self, frame, elements, row, gui_variables):
+        """
+            creates a tkinter row consisting of a label, a button and
+            a optional label
+
+            :param frame: tkinter frame where the button_row will be
+                included
+            :type frame: tk.Frame
+            :param elements: dictionary containing the information of
+                several buttons
+            :type elements: dict
+            :param row: defines in which row the button_row will be
+                placed
+            :type row: int
+            :param gui_variables: dictionary containing the gui
+                variables
+            :type gui_variables: dict
+
+        """
         for element in elements:
             self.create_heading(frame, element, 0, row, "w")
             self.create_button(frame=frame,
@@ -145,6 +182,22 @@ class MethodsGUI(tk.Tk):
         return row
 
     def create_cb_lines(self, frame, elements, row, gui_variables):
+        """
+            creates a tkinter row consisting of a label and a checkbox
+
+            :param frame: tkinter frame where the checkbox_row will be
+                included
+            :type frame: tk.Frame
+            :param elements: dictionary containing the information of
+                several checkboxes
+            :type elements: dict
+            :param row: defines in which row the checkbox_row will be
+                placed
+            :type row: int
+            :param gui_variables: dictionary containing the gui
+                variables
+            :type gui_variables: dict
+        """
         for param in elements:
             row += 1
             self.create_heading(frame, param, 0, row, "w")
