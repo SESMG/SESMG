@@ -13,3 +13,10 @@ Upscaling Frame
    :members:
    :undoc-members:
    :show-inheritance:
+
+Superclass MethodsGUI
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.GUI_files.MethodsGUI
+   :members:
+   :undoc-members:
+   :show-inheritance:
