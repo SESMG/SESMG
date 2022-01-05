@@ -97,6 +97,11 @@ def reload_settings(gui_variables: dict):
 
 
 class GUI(MethodsGUI):
+    """
+        This class is used to create the Graphical User Interface
+        (GUI). In this context, it uses the methods of the
+        superclass MethodsGUI.
+    """
     frames = []
     gui_variables = {}
 
@@ -257,11 +262,6 @@ class GUI(MethodsGUI):
                             timeout=10, shell=True)
     
     def __init__(self):
-        """
-            This class is used to create the Graphical User Interface
-            (GUI). In this context, it uses the methods of the
-            superclass MethodsGUI.
-        """
         # initialize super class to create an empty tk frame
         super().__init__(
                 "SESMG - Spreadsheet Energy System Model Generator",
