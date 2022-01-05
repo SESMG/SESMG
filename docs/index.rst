@@ -75,7 +75,7 @@ Sourcecode
 	:caption: Sourcecode documentation
 	
 	sourcecode_documentation/gui_functions
-    sourcecode_documentation/upscaling_tool
+    	sourcecode_documentation/upscaling_tool
 	sourcecode_documentation/program_functions
 	
 	
