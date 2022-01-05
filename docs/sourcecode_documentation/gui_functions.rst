@@ -1,14 +1,14 @@
-GUI module 
+GUI modules 
 --------------------------------------------
+Home Frame
+^
 .. automodule:: program_files.GUI_files.GUI
    :members:
    :undoc-members:
    :show-inheritance:
 
-Upscaling Tool modules
---------------------------------------------
 
-Upscaling Tool GUI 
+Upscaling Frame
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.GUI_files.urban_district_upscaling_GUI
    :members:
