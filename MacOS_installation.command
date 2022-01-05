@@ -33,6 +33,7 @@ bin/pip3 install xlsxwriter
 brew install graphviz
 mv feedinlib lib/python3.7/site-packages
 mv windpowerlib lib/python3.7/site-packages
+bin/pip3 install demandlib --upgrade 
 echo ----------------------
 echo Installation completed
 echo Starting SESMG
