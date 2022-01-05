@@ -31,7 +31,6 @@ class UpscalingFrameClass:
             :type clustering: tk.BooleanVar
 
         """
-        # urban_district_upscaling
         urban_district_upscaling_pre_processing(
             pre_scenario=pre_scenario.get(),
             standard_parameter_path=standard_param.get(),
@@ -43,6 +42,16 @@ class UpscalingFrameClass:
         
     @staticmethod
     def create_overview(components, clustering):
+        """
+            Methods starting the upscaling post_processing Algorithm
+
+            :param components: containing path to components.csv
+            :type components: tk.StringVar
+            :param clustering: containing boolean rather the pre
+                scenario is clustered or not
+            :type clustering: tk.BooleanVar
+
+        """
         if clustering:
             urban_district_upscaling_post_processing_clustered(
                     components.get())
@@ -52,6 +61,20 @@ class UpscalingFrameClass:
                         shell=True)
 
     def __init__(self, frame, gui_variables, tk):
+        """
+            This class is used to create the Graphical User Interface
+            (GUI) for the Urban_District_Upscaling_Tool.
+            In this context, it uses the methods of the superclass
+            MethodsGUI.
+
+            :param frame: tkinter upscaling frame
+            :type frame: ttk.Frame
+            :param gui_variables: dictionary containing GUI variables
+            :type gui_variables: dict
+            :param tk: object containing the super class methods
+            :type tk: GUI object
+
+        """
         # Headline
         row = 0
         tk.create_heading(frame, 'Urban District Upscaling', 0, row, "w", True,
@@ -79,9 +102,8 @@ class UpscalingFrameClass:
             }
         row = tk.create_button_lines(frame, upscaling_elements, row,
                                      gui_variables)
-        tk.create_heading(frame, 'Clustering', 0, row, "w")
-        tk.create_checkbox(frame, gui_variables["clustering"], 1, row)
-        row += 1
+        row = tk.create_button_lines(frame, {'Clustering': "clustering"}, row,
+                                     gui_variables) + 1
         upscaling_elements = {
             'Create Scenario':
                 [lambda: self.scenario_upscaling(
