@@ -129,7 +129,7 @@ class MethodsGUI(tk.Tk):
             :type type: str
             :param store: StringVar containing the chosen path
             :type store: tk.StringVar
-            :return: **path**(tk.StringVar) - chosen path
+            :return: **path** (tk.StringVar) - chosen path
 
         """
         if type == "xlsx":
