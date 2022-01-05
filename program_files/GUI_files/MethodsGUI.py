@@ -4,10 +4,37 @@ from tkinter import filedialog
 
 
 class MethodsGUI(tk.Tk):
+    """
+        class holding the main methods for the Graphical User Interface
+        (GUI)
+    """
     
     @staticmethod
     def create_heading(frame, text, column, row, sticky, bold=False,
                        columnspan=None, rowspan=None):
+        """
+            creates a tkinter Label
+
+            :param frame: tkinter frame where the heading will be
+                included
+            :type frame: tk.Frame
+            :param text: text of the frame to be created
+            :type text: str
+            :param column: defines in which column the heading will be
+                placed
+            :type column: int
+            :param row: defines in which row the heading will be placed
+            :type row: int
+            :param sticky: direction in which the heading will be sticky
+            :type sticky: str
+            :param bold: defines rather the heading will be bold
+            :type bold: bool
+            :param columnspan: number of column to be spanned
+            :type columnspan: int
+            :param rowspan: number of rows to be spanned
+            :type rowspan: int
+
+        """
         if bold:
             font = 'Helvetica 10 bold'
         else:
