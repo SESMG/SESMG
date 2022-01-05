@@ -12,6 +12,20 @@ import subprocess
 
 
 class UpscalingFrameClass:
+    """
+        This class is used to create the Graphical User Interface
+        (GUI) for the Urban_District_Upscaling_Tool.
+        In this context, it uses the methods of the superclass
+        MethodsGUI.
+
+        :param frame: tkinter upscaling frame
+        :type frame: ttk.Frame
+        :param gui_variables: dictionary containing GUI variables
+        :type gui_variables: dict
+        :param tk: object containing the super class methods
+        :type tk: GUI object
+
+    """
     
     @staticmethod
     def scenario_upscaling(pre_scenario, standard_param, scenario_name,
@@ -61,20 +75,6 @@ class UpscalingFrameClass:
                         shell=True)
 
     def __init__(self, frame, gui_variables, tk):
-        """
-            This class is used to create the Graphical User Interface
-            (GUI) for the Urban_District_Upscaling_Tool.
-            In this context, it uses the methods of the superclass
-            MethodsGUI.
-
-            :param frame: tkinter upscaling frame
-            :type frame: ttk.Frame
-            :param gui_variables: dictionary containing GUI variables
-            :type gui_variables: dict
-            :param tk: object containing the super class methods
-            :type tk: GUI object
-
-        """
         # Headline
         row = 0
         tk.create_heading(frame, 'Urban District Upscaling', 0, row, "w", True,
