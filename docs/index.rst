@@ -65,6 +65,7 @@ Troubleshooting
 Sourcecode
 -------------------------------------------------
 * :doc:`Source code documentation of the GUI <sourcecode_documentation/gui_functions>`
+* :doc:`Source code documentation of the Upscaling Tool <sourcecode_documentation/upscaling_tool>`
 * :doc:`Source code documentation of SESMG algorithm <sourcecode_documentation/program_functions>`
 	
 	
@@ -74,6 +75,7 @@ Sourcecode
 	:caption: Sourcecode documentation
 	
 	sourcecode_documentation/gui_functions
+    sourcecode_documentation/upscaling_tool
 	sourcecode_documentation/program_functions
 	
 	
