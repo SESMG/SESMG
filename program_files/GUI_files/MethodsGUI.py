@@ -50,6 +50,24 @@ class MethodsGUI(tk.Tk):
         
     @staticmethod
     def create_option_menu(frame, variable, options, column, row):
+        """
+            create tkinter optionmenu
+
+            :param frame: tkinter frame where the optionmenu will be
+                included
+            :type frame: tk.Frame
+            :param variable: StringVar holding the choosen option
+            :type variable: tk.StringVar
+            :param options: list holding the possible options
+            :type options: list
+            :param column: defines in which column the optionmenu will be
+                placed
+            :type column: int
+            :param row: defines in which row the optionmenu will be
+                placed
+            :type row: int
+            
+        """
         DMenu = OptionMenu(frame, variable, *options)
         DMenu.grid(column=column, row=row)
         
