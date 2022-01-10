@@ -18,3 +18,4 @@ FutureWarning: Current default for 'dyn_function_h0' is 'False'. This is about t
  ... in create_flow_dataframes for index; value in component['sequences'].sum().items(): KeyError: 'sequences', You have probably entered an invalid "transformer type" within the transformers sheet, check and correct the transformer types entered to the sheet
 AssertionError: Time discretization of irradiance is different from timestep 3600seconds . You need to change the resolution; first!, For the application of the richardson tool a weather dataset of a full year is required, Add a full year weather data set to the weather data sheet.
 Possible duplicate uids/labels?,two components of the model are having the same name,rename at least one of the components
+,,
