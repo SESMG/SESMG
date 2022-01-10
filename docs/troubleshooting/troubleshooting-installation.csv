@@ -1,1 +1,2 @@
 Error Message,Possible Error Cause,Debugging
+TypeError: Cannot interpret '<attribute 'dtype' of 'numpy.generic' objects>' as a data type, possible: module (e.g. demandlib) not actual, upgrade module in the installation.cmd (pip install demandlib --upgrade)
