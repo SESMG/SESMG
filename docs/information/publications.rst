@@ -9,7 +9,7 @@ Your publication/thesis/project is missing? Contact us!
 
 - Klemm, Christian & Wiese, Frauke (2022): "Indicators for the optimization of sustainable urban energy systems based on energy system modeling", Energy, Sustainability and Society, 12(1), 1-20, `https://doi.org/10.1186/s13705-021-00323-3 <https://doi.org/10.1186/s13705-021-00323-3>`_.
 
-- Klemm, Christian & Vennemann (2021), Peter: "Modellierung und Optimierung urbaner Energiesysteme im Projekt R2Q", 4. Regenerative Energietechnik Konferenz in Nordhausen 18. - 19. Februar 2021, `Available here (Page 177-188) <https://www.hs-nordhausen.de/fileadmin/daten/fb_ing/inret/PDFs/tagungsband_retcon21_web_aa3__1_.pdf>`_.
+- Klemm, Christian & Vennemann (2021), Peter: "Modellierung und Optimierung urbaner Energiesysteme im Projekt R2Q", 4. Regenerative Energietechnik Konferenz in Nordhausen 18. - 19. Februar 2021, `available here (Page 177-188) <https://www.hs-nordhausen.de/fileadmin/daten/fb_ing/inret/PDFs/tagungsband_retcon21_web_aa3__1_.pdf>`_.
 
 
 **Theses**
