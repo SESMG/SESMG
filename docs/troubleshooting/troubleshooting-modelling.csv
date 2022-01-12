@@ -19,4 +19,4 @@ FutureWarning: Current default for 'dyn_function_h0' is 'False'. This is about t
 AssertionError: Time discretization of irradiance is different from timestep 3600seconds . You need to change the resolution; first!, For the application of the richardson tool a weather dataset of a full year is required, Add a full year weather data set to the weather data sheet.
 Possible duplicate uids/labels?,two components of the model are having the same name,rename at least one of the components
 ,,
-ValueError: Length mismatch: Expected axis has 1 elements; new values have 8760 elements Flow: ID_pv_to_ID_electricity_link-ID_pv_bus. This could be caused by NaN-values in your input data., The Model isn't solvable, because of wrong energybalance., Activate all excesses and shortages under buses. 
+ValueError: Length mismatch: Expected axis has 1 elements; new values have 8760 elements Flow: ID_pv_to_ID_electricity_link-ID_pv_bus. This could be caused by NaN-values in your input data., The model probably isn't solvable; because of wrong energybalance., Activate necessary excesses sinks and shortages sources. 
