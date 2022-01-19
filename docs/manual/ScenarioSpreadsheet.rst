@@ -319,8 +319,8 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **active**: Specifies whether the storage shall be included to the model. 0 = inactive, 1 = active.
 - **storage type**: Defines whether the storage is a "Generic" or a "Stratified" sorage. These two inputs are possible.
 - **bus**: Specifies which bus the storage is connected to.
-- **input/capacity ratio** (invest): Indicates the performance with which the storage can be charged.
-- **output/capacity ratio** (invest): Indicates the performance with which the storage can be discharged.
+- **input/capacity ratio** (invest): Indicates the performance with which the storage can be charged (see also  `here <https://oemof-solph.readthedocs.io/en/latest/usage.html#using-an-investment-object-with-the-genericstorage-component>`_).
+- **output/capacity ratio** (invest): Indicates the performance with which the storage can be discharged (see also  `here <https://oemof-solph.readthedocs.io/en/latest/usage.html#using-an-investment-object-with-the-genericstorage-component>`_).
 - **efficiency inflow**: Specifies the charging efficiency.
 - **efficiency outflow**: Specifies the discharging efficiency.
 - **initial capacity**: Specifies how far the storage is loaded at time 0 of the simulation. Value must be between 0 and 1.
