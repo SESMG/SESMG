@@ -1,2 +1,4 @@
-Error Message,Possible Error Cause,Debugging
+Error Message: Input and Output from an component is active in the same timeframe,
+Possible Error Cause: The system has to much energy and try to waste it,
+Debugging: Add an bus_excess to the matching energy source of the component, 
 TypeError: Cannot interpret '<attribute 'dtype' of 'numpy.generic' objects>' as a data type, possible: module (e.g. demandlib) not actual, upgrade module in the installation.cmd (pip install demandlib --upgrade)
