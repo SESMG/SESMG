@@ -1,2 +1,5 @@
-Error Message,Possible Error Cause,Debugging
-TypeError: Cannot interpret '<attribute 'dtype' of 'numpy.generic' objects>' as a data type, possible: module (e.g. demandlib) not actual, upgrade module in the installation.cmd (pip install demandlib --upgrade)
+Error Message: df = node_results['sequences']
+KeyError: 'sequences'  ,
+Possible Error Cause: at least one of your parameters like existing capacity has a wrong dimension. This will break the calculation. It happens more likely if u have no shortages or excesses in your system, 
+Debugging: Add excesses or shortages, to let the calculation running.
+
