@@ -32,6 +32,7 @@ pip install xlsxwriter
 pip install pyproj
 pip install sympy
 pip install dhnx
+pip install pandas==1.1.0
 
 @echo ######################
 @echo Installation completed
