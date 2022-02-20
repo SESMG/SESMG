@@ -68,7 +68,9 @@ def calc_perpendicular_distance_line_point(p1, p2, p3, converted=False):
         
         .. math::
             dx = 111.3 * cos(lat) * (lon1 - lon2)\\
+            
             lat = (lat1 + lat2) / 2 * 0.01745\\
+            
             dy = 111.3 * (lat1 - lat2)
             
         lat1, lat2, lon1, lon2: northern latitude, eastern longitude in
