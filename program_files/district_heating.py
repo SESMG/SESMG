@@ -29,6 +29,7 @@ component_param = \
 def convert_dh_street_sections_list(street_sections):
     """
         convert street sections Dataframe to GK to reduce redundancy
+        
         :param street_sections: Dataframe holding start and end points
                                 of the streets under investigation
         :type street_sections: pd.Dataframe
@@ -251,6 +252,7 @@ def create_connection_points(consumers, road_sections):
 def create_intersection_forks(road_sections):
     """
         creates the forks of the scenario given street points
+        
         :param road_sections: pandas Dataframe containing the street
                               sections beginning and ending points
         :type road_sections: pandas.Dataframe
@@ -329,6 +331,7 @@ def calc_street_lengths(connection_points: list) -> list:
     """
         calculates the distances between the points of a given street
         given as connection_points
+        
         :param connection_points: list of connection_points on the
                                   given street
         :type connection_points: list
@@ -452,6 +455,7 @@ def adapt_dhnx_style():
 def create_components(nodes_data):
     """
         runs dhnx methods for creating thermal network oemof components
+        
         :param nodes_data: Dataframe holing scenario sheet information
         :type nodes_data: pd.Dataframe
         :return: - **oemof_opti_model** () - model holding dh components
@@ -492,6 +496,7 @@ def connect_dh_to_system(oemof_opti_model, busd):
     """
         method which creates links to connect the scenario based
         created sinks to the thermal network components created before
+        
         :param oemof_opti_model: Oemof model holing thermal network
         :type oemof_opti_model:
         :param busd: dictionary containing scenario buses
@@ -548,6 +553,7 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
     """
         method which creates links to connect the scenario based
         created sinks to the thermal network components created before
+        
         :param oemof_opti_model: Oemof model holing thermal network
         :type oemof_opti_model:
         :param busd: dictionary containing scenario buses
@@ -677,6 +683,7 @@ def create_producer_connection(oemof_opti_model, busd):
     """
         This method creates a link that connects the heat producer to
         the heat network.
+        
         :param oemof_opti_model: dh model created before
         :type oemof_opti_model:
         :param busd: dictionary containing the energysystem busses
