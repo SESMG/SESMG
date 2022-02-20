@@ -64,7 +64,7 @@ def calc_perpendicular_distance_line_point(p1, p2, p3, converted=False):
             &
             distance = \sqrt{dx * dx + dy * dy}
 
-        where :math: `dx` and :math: `dy` are defined as:
+        where :math:`dx` and :math:`dy` are defined as:
         
         .. math::
             dx = 111.3 * cos(lat) * (lon1 - lon2)\\
