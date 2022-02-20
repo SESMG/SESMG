@@ -102,7 +102,7 @@ class UpscalingFrameClass:
             }
         row = tk.create_button_lines(frame, upscaling_elements, row,
                                      gui_variables)
-        row = tk.create_button_lines(frame, {'Clustering': "clustering"}, row,
+        row = tk.create_cb_lines(frame, {'Clustering': "clustering"}, row,
                                      gui_variables) + 1
         upscaling_elements = {
             'Create Scenario':
