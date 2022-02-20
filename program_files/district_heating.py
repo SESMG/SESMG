@@ -19,9 +19,10 @@ thermal_network = dhnx.network.ThermalNetwork()
 
 transf_WGS84_GK = Transformer.from_crs("EPSG:4326", "EPSG:31466")
 transf_GK_WGS84 = Transformer.from_crs("EPSG:31466", "EPSG:4326")
+directory_path = os.path.dirname(os.path.abspath(__file__))
 component_param = \
-        pd.read_csv("program_files/technical_data"
-                    "/district_heating/component_parameters.csv",
+        pd.read_csv(directory_path + "/technical_data/district_heating"
+                                     "/component_parameters.csv",
                     index_col="label")
 
 
