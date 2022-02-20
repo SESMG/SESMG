@@ -84,6 +84,14 @@ create\_objects module
    :undoc-members:
    :show-inheritance:
    
+district\_heating module
+-----------------------------------
+
+.. automodule:: program_files.district_heating
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 create\_graph module
 -----------------------------------
 
