@@ -39,7 +39,7 @@ setup(
         "scipy==1.6.3",
         "pillow==8.3.2",
         "pandas==1.1.0",
-        "numpy==1.19.2",
+        "numpy==1.20.0",
         "tables==3.5.2",
         "openpyxl==3.0.0",
         "oemof.solph==0.4",
