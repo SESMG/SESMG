@@ -70,8 +70,8 @@ Docs:
  - https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
  
 GIT:
-
-https://github.com/chrklemm/SESMG
+ - https://github.com/chrklemm/SESMG
+ 
 -------------------------------------------------------------------------------
 
 
