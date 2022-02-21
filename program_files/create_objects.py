@@ -486,6 +486,7 @@ class Sources:
                 - 'Conversion Factor'
                 - 'Peripheral Losses'
                 - 'Electric Consumption'
+                
             @ Yannick Wittor - yw090223@fh-muenster.de, 27.11.2020
         """
 
@@ -1537,6 +1538,7 @@ class Transformers:
 
             :type tf: dict
             :param tf: has to contain the following keyword arguments
+            
                 - Standard Input information of transformer class
                 - 'transformer type': 'absorption_heat_transformer'
                 - 'mode': 'chiller'
@@ -1548,6 +1550,7 @@ class Transformers:
                 - 'chilling temperature'
                 - 'electrical input conversion factor'
                 - 'recooling temperature difference'
+                
             :param data: weather data
             :type data: dict
 
@@ -1750,6 +1753,7 @@ class Storages:
                                 - 'capacity max'
                                 - 'variable input costs'
                                 - 'variable output costs'
+                                
         :type nodes_data: dict
         :param busd: dictionary containing the buses of the energy system
         :type busd: dict
@@ -1763,11 +1767,11 @@ class Storages:
         """
             Creates a generic storage object with the parameters
             given in 'nodes_data' and adds it to the list of components 'nodes'
-            ----
-            Keyword arguments:
-            t : obj:'dict'
-                -- dictionary containing all information for
-                the creation of an oemof storage.
+            
+            :param t: dictionary containing all information for
+                      the creation of an oemof storage.
+            :type t: dict
+
         """
 
         # creates storage object and adds it to the
@@ -1822,6 +1826,7 @@ class Storages:
                 - 'temperature high'
                 - 'temperature low'
                 - 'U value /(W/(sqm*K))'
+                
             @ Yannick Wittor - yw090223@fh-muenster.de, 26.01.2021
         """
         # import functions for stratified thermal storages from oemof thermal
