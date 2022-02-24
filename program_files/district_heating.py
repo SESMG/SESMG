@@ -28,8 +28,8 @@ component_param = \
 
 def clear_thermal_network():
     """
-        method used to clear the pandas dataframes of thermal network
-        that might consist of old information
+        Method used to clear the pandas dataframes of thermal network
+        that might consist of old information.
     """
     thermal_network.components["forks"] = pd.DataFrame()
     thermal_network.components["consumers"] = pd.DataFrame()
@@ -39,8 +39,8 @@ def clear_thermal_network():
 
 def convert_dh_street_sections_list(street_sections):
     """
-        convert street sections Dataframe to Gaussian Kruger (GK)
-        to reduce redundancy
+        Convert street sections Dataframe to Gaussian Kruger (GK)
+        to reduce redundancy.
 
         :param street_sections: Dataframe holding start and end points
                                 of the streets under investigation
@@ -203,8 +203,8 @@ def create_fork(point, label, bus=None):
 
 def remove_redundant_sinks(oemof_opti_model):
     """
-        within the dhnx algorithm empty sinks are created,
-        which are removed in this method
+        Within the dhnx algorithm empty sinks are created,
+        which are removed in this method.
 
         :param oemof_opti_model: dh model
         :type oemof_opti_model: dhnx.model
@@ -225,8 +225,8 @@ def remove_redundant_sinks(oemof_opti_model):
 
 def create_connection_points(consumers, road_sections):
     """
-        create the entries for the connection points and adds them to
-        thermal network forks, consumers and pipes
+        Create the entries for the connection points and adds them to
+        thermal network forks, consumers and pipes.
 
         :param consumers: holding nodes_data["sinks"]
         :type consumers: pandas.Dataframe
@@ -278,7 +278,7 @@ def create_connection_points(consumers, road_sections):
 
 def create_intersection_forks(road_sections):
     """
-        creates the forks of the scenario given street points
+        Creates the forks of the scenario given street points.
 
         :param road_sections: pandas Dataframe containing the street
                               sections beginning and ending points
@@ -358,8 +358,8 @@ def create_producer_connection_point(nodes_data, road_sections):
 
 def calc_street_lengths(connection_points: list) -> list:
     """
-        calculates the distances between the points of a given street
-        given as connection_points
+        Calculates the distances between the points of a given street
+        given as connection_points.
 
         :param connection_points: list of connection_points on the
                                   given street
@@ -407,9 +407,13 @@ def calc_street_lengths(connection_points: list) -> list:
 
 def create_supply_line(streets):
     """
+        Acquisition of all points of a route (road sections), order
+        itself in ascending order and creation of the lines to link the
+        forks.
 
-    :param streets: district heating Dataframe including the scenario sheet
-    :type streets: pandas.Dataframe
+        :param streets: district heating Dataframe including the
+            scenario sheet
+        :type streets: pandas.Dataframe
     """
     pipes = {}
     for num, street in streets.iterrows():
@@ -484,11 +488,12 @@ def adapt_dhnx_style():
 
 def create_components(nodes_data):
     """
-        runs dhnx methods for creating thermal network oemof components
+        Runs dhnx methods for creating thermal network oemof components.
 
         :param nodes_data: Dataframe holing scenario sheet information
         :type nodes_data: pd.Dataframe
-        :return: **oemof_opti_model** () - model holding dh components
+        :return: **oemof_opti_model** (dhnx.optimization) - model \
+            holding dh components
     """
     frequency = nodes_data['energysystem']['temporal resolution'].values
     start_date = str(nodes_data['energysystem']['start date'].values[0])
@@ -531,8 +536,8 @@ def connect_dh_to_system(oemof_opti_model, busd):
         :type oemof_opti_model:
         :param busd: dictionary containing scenario buses
         :type busd: dict
-        :return: - **oemof_opti_model** () - oemof dh model within  \
-            connection to the main model
+        :return: - **oemof_opti_model** (dhnx.optimization) - oemof dh \
+            model within connection to the main model
     """
     oemof_opti_model = remove_redundant_sinks(oemof_opti_model)
     # create link to connect consumers heat bus to the dh-system
@@ -736,8 +741,8 @@ def create_producer_connection(oemof_opti_model, busd):
         :type oemof_opti_model:
         :param busd: dictionary containing the energysystem busses
         :type busd: dict
-        :return: - **oemof_opti_model** () - dhnx model within the new \
-            links
+        :return: - **oemof_opti_model** (dhnx.optimization) - dhnx model \
+            within the new links
     """
     counter = 0
     for key, producer in thermal_network.components["forks"].iterrows():
@@ -778,7 +783,17 @@ def create_producer_connection(oemof_opti_model, busd):
 
 def create_connect_dhnx(nodes_data, busd, clustering=False):
     """
+        At this point, the preparations of the heating network to use
+        the dhnx package are completed. For this purpose, it is checked
+        whether the given data result in a coherent network, which can
+        be optimized in the following.
 
+        :param nodes_data: Dataframe containing all components data
+        :type nodes_data: pandas.Dataframe
+        :param busd: dictionary containing scenario buses
+        :type busd: dict
+        :param clustering: used to define rather the spatial clustering
+            algorithm is used or not
     """
     thermal_network.is_consistent()
     thermal_network.set_timeindex()
@@ -823,7 +838,6 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
             # create pipes and connection point for building-streets connection
             create_connection_points(nodes_data['sinks'],
                                      street_sections)
-            print(thermal_network.components["forks"])
             # appends the intersections to the thermal network forks
             create_intersection_forks(nodes_data['district heating'])
             # create pipes and connection point for producer-streets connection
