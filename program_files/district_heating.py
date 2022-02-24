@@ -39,7 +39,8 @@ def clear_thermal_network():
 
 def convert_dh_street_sections_list(street_sections):
     """
-        convert street sections Dataframe to GK to reduce redundancy
+        convert street sections Dataframe to Gaussian Kruger (GK)
+        to reduce redundancy
 
         :param street_sections: Dataframe holding start and end points
                                 of the streets under investigation
@@ -47,15 +48,18 @@ def convert_dh_street_sections_list(street_sections):
         :return: **street_sections** (pd.Dataframe) - holding converted
                                                         points
     """
-    for num, point in street_sections.iterrows():
-        (street_sections.at[num, "lat. 1st intersection"],
-         street_sections.at[num, "lon. 1st intersection"]) \
-            = transf_WGS84_GK.transform(point["lat. 1st intersection"],
-                                        point["lon. 1st intersection"])
-        (street_sections.at[num, "lat. 2nd intersection"],
-         street_sections.at[num, "lon. 2nd intersection"]) \
-            = transf_WGS84_GK.transform(point["lat. 2nd intersection"],
-                                        point["lon. 2nd intersection"])
+    # iterating threw the given street points and converting each active
+    # one to EPSG31466
+    for num, street in street_sections.iterrows():
+        if street["active"]:
+            (street_sections.at[num, "lat. 1st intersection"],
+             street_sections.at[num, "lon. 1st intersection"]) \
+                = transf_WGS84_GK.transform(street["lat. 1st intersection"],
+                                            street["lon. 1st intersection"])
+            (street_sections.at[num, "lat. 2nd intersection"],
+             street_sections.at[num, "lon. 2nd intersection"]) \
+                = transf_WGS84_GK.transform(street["lat. 2nd intersection"],
+                                            street["lon. 2nd intersection"])
     return street_sections
 
 
@@ -204,7 +208,7 @@ def remove_redundant_sinks(oemof_opti_model):
 
         :param oemof_opti_model: dh model
         :type oemof_opti_model: dhnx.model
-        :return: - **oemof_opti_model** (dhnx.model) - dh model without \
+        :return: **oemof_opti_model** (dhnx.model) - dh model without \
                  unused sinks
     """
     sinks = []
@@ -360,8 +364,8 @@ def calc_street_lengths(connection_points: list) -> list:
         :param connection_points: list of connection_points on the
                                   given street
         :type connection_points: list
-        :return: - **ordered_road_section_points** (list) - list
-            containing all points of a certain street in an ordered
+        :return: **ordered_road_section_points** (list) - list \
+            containing all points of a certain street in an ordered \
             sequence
     """
     # sorts the points created on a road piece according to their
