@@ -44,7 +44,7 @@ def convert_dh_street_sections_list(street_sections):
         :param street_sections: Dataframe holding start and end points
                                 of the streets under investigation
         :type street_sections: pd.Dataframe
-        :return: - **street_sections** (pd.Dataframe) - holding converted
+        :return: **street_sections** (pd.Dataframe) - holding converted
                                                         points
     """
     for num, point in street_sections.iterrows():
@@ -62,13 +62,7 @@ def convert_dh_street_sections_list(street_sections):
 def calc_perpendicular_distance_line_point(p1, p2, p3, converted=False):
     """
         Determination of the perpendicular foot point as well as the
-        distance between point and straight line
-        p1 - Starting point of the road section
-        p2 - Ending point of the road section
-        p3 - point of the building under consideration
-        Are three geographical points where p1 and p2 represent the
-        street as the crow flies and p3 represents the house under
-        consideration.
+        distance between point and straight line.
         The points consist an array e.g [51.5553878, 7.21026385] which
         northern latitude and eastern longitude.
 
@@ -87,6 +81,16 @@ def calc_perpendicular_distance_line_point(p1, p2, p3, converted=False):
 
         lat1, lat2, lon1, lon2: northern latitude, eastern longitude in
         degree
+
+        :param p1: Starting point of the road section
+        :type p1: numpy.array
+        :param p2: Ending point of the road section
+        :type p2: numpy.array
+        :param p3:  point of the building under consideration
+        :type p3: numpy.array
+        :param converted: defines rather the points are given in \
+            EPSG 31466 or not
+        :type converted: bool
     """
     # check rather the third point is already converted or not
     if not converted:
@@ -135,7 +139,7 @@ def get_nearest_perp_foot_point(building, streets, index, building_type):
         :type index: int
         :param building_type: specifies building type
         :type building_type: str
-        :return: - **foot_point** (list) - list containing information
+        :return: - **foot_point** (list) - list containing information \
                                            of the perpendicular foot point
     """
     foot_points = []
@@ -200,7 +204,7 @@ def remove_redundant_sinks(oemof_opti_model):
 
         :param oemof_opti_model: dh model
         :type oemof_opti_model: dhnx.model
-        :return: - **oemof_opti_model** (dhnx.model) - dh model without
+        :return: - **oemof_opti_model** (dhnx.model) - dh model without \
                  unused sinks
     """
     sinks = []
