@@ -824,7 +824,33 @@ def create_connect_dhnx(nodes_data, busd, clustering=False):
 def district_heating(nodes_data, nodes, busd, district_heating_path,
                      save_dh_calculations, result_path, cluster_dh):
     """
+        The district_heating method represents the main method of heat
+        network creation, it is called by the main algorithm to perform
+        the preparation to use the dhnx components and finally add them
+        to the already existing energy system. It is up to the users to
+        choose whether they want to use spatial clustering or not.
 
+        :param nodes_data: Dataframe containing the scenario data
+        :type nodes_data: pandas.Dataframe
+        :param nodes: list which contains the already created components
+        :type nodes: list
+        :param busd: dictionary containing the scenario buses
+        :type busd: dict
+        :param district_heating_path: Path to a folder in which the
+            calculated heat network information was stored after a
+            one-time connection point search. Entering this parameter in
+            the GUI shortens the calculation time, because the above
+            mentioned search can then be skipped.
+        :type district_heating_path: str
+        :param save_dh_calculations: boolean which defines rather the
+            results of a one-time connection point search should be
+            saved
+        :type save_dh_calculations: bool
+        :param result_path: path where the result will be saved
+        :type result_path: str
+        :param cluster_dh: boolean which defines rather the heat network
+            is clustered spatially or not
+        :type cluster_dh: bool
     """
     clear_thermal_network()
     dh = False
