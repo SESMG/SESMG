@@ -840,7 +840,7 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
             calculated heat network information was stored after a
             one-time connection point search. Entering this parameter in
             the GUI shortens the calculation time, because the above
-            mentioned search can then be skipped.
+            mentioned search can be skipped.
         :type district_heating_path: str
         :param save_dh_calculations: boolean which defines rather the
             results of a one-time connection point search should be
