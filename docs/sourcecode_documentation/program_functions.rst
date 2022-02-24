@@ -84,9 +84,15 @@ create\_objects module
    :undoc-members:
    :show-inheritance:
    
-district\_heating module
+district\_heating 
 -----------------------------------
-
+.. figure:: ../images/district_heating_sourcecode_flowchart.png
+	:width: 100%
+	:alt: DH-Flow
+	:align: center
+	
+	Program flow of the district heating algorithm.
+	
 .. automodule:: program_files.district_heating
    :members:
    :undoc-members:
