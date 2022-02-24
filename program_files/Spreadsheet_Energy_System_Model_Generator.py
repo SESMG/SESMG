@@ -171,7 +171,7 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     t2 = Thread(target=create_objects.Sinks, args=(nodes_data, busd,
                                                    nodes, time_series,
                                                    weather_data,
-                                                   nodes_data["energetic_renovation"]))
+                                                   nodes_data["insulation"]))
     t2.start()
     # CREATES TRANSFORMER OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM
     # TO THE lIST OF COMPONENTS

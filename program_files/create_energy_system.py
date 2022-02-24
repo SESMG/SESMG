@@ -55,13 +55,13 @@ def import_scenario(filepath: str) -> dict:
               'storages': xls.parse('storages'),
               'weather data': xls.parse('weather data'),
               'competition constraints': xls.parse('competition constraints'),
-              'energetic_renovation': xls.parse('energetic renovation measures'),
-              'road sections': xls.parse('road sections')
+              'insulation': xls.parse('insulation'),
+              'district heating': xls.parse('district heating')
               }
         # delete spreadsheet row within technology or units specific parameters
         list = ["energysystem", "buses", "sinks", "sources", "transformers",
                 "storages", "links", "competition constraints",
-                "energetic_renovation", "road sections"]
+                "insulation", "district heating"]
         for i in list:
             nd[i] = nd[i].drop(index=0)
 
