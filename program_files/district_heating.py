@@ -181,11 +181,11 @@ def get_nearest_perp_foot_point(building, streets, index, building_type):
 
 def create_fork(point, label, bus=None):
     """
-        outsourced from creation algorithm to reduce redundancy
+        Outsourced from creation algorithm to reduce redundancy.
 
         :param point: list containing information of the point to be
                       appended
-        :type point:list
+        :type point: list
         :param label: id of the fork to be created
         :type label: int
         :param bus: bus is used for producers forks identification
