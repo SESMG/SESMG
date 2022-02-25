@@ -905,7 +905,7 @@ class Results:
         results = self.results.copy()
         components = []
         for i in self.results.keys():
-            if 'link-dhnx' not in str(i) and "tag1=" not in str(i) \
+            if 'dh_heat_house_station' not in str(i) and "tag1=" not in str(i)\
                     and "consumers_connection_dh" not in str(i) \
                     and "clustered_consumers" not in str(i):
                 results.pop(i)
@@ -974,8 +974,7 @@ class Results:
                 else:
                     name = str(components[i])
                 if length_list:
-                    pipes = pd.read_csv("program_files/technical_data"
-                                        "/district_heating/pipes_save.csv")
+                    pipes = pd.read_csv(result_path + "/pipes.csv")
                     for num, pipe in pipes.iterrows():
                         if pipe["from_node"] == length_list[0] \
                                 and pipe["to_node"] == length_list[1]:
@@ -1010,15 +1009,16 @@ class Results:
                                         ["constraint costs"])
                                 * length)
                         else:
+                            label = str(components[i]).split("_")[2]
                             periodical_costs = (
                                 investment
-                                * float(pipes_param.loc["linearized"]
-                                        ["capex_pipes"]) * length) # TODO
+                                * float(pipes_param.loc[label]["capex_pipes"])
+                                * float(length))
                             constraint_costs = (
                                 investment
-                                * float(pipes_param.loc["linearized"]
-                                        ["periodical_constraint_costs"]) # TODO
-                                * length)
+                                * float(pipes_param.loc[label]
+                                        ["periodical_constraint_costs"])
+                                * float(length))
                         total_periodical_costs += periodical_costs
                         total_constraint_costs += constraint_costs
                 elif "clustered_consumers" in str(components[i]) \

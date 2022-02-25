@@ -601,7 +601,7 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
         oemof_opti_model.nodes.append(bus)
         busd["clustered_consumers_{}".format(consumer["id"])] = bus
         oemof_opti_model.nodes.append(solph.Transformer(
-            label=("link-dhnx-c{}-".format(consumer["id"])
+            label=("dh_heat_house_station-c{}-".format(consumer["id"])
                    + "clustered_consumers-{}-".format(consumer["id"])
                    + str(consumer["length"])),
             inputs={oemof_opti_model.buses[
@@ -840,7 +840,7 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
             calculated heat network information was stored after a
             one-time connection point search. Entering this parameter in
             the GUI shortens the calculation time, because the above
-            mentioned search can be skipped.
+            mentioned search can then be skipped.
         :type district_heating_path: str
         :param save_dh_calculations: boolean which defines rather the
             results of a one-time connection point search should be
@@ -1047,3 +1047,4 @@ def clustering_dh_network(nodes_data):
     create_producer_connection_point(nodes_data, street_sections)
     create_supply_line(nodes_data['district heating'])
     adapt_dhnx_style()
+
