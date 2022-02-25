@@ -446,7 +446,7 @@ house station.
 
 .. figure:: ../images/district_heating.png
    :width: 50 %
-   :alt: links
+   :alt: district_heating
    :align: center
 
    Representation of the district heating network as described above.
