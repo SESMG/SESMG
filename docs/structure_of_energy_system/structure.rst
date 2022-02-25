@@ -1,7 +1,7 @@
 Structure of Energy Systems
 *************************************************
 
-Energy systems in the sense of the Spreadseet Energy System Model Generator are designed according to the 
+Energy systems in the sense of the Spreadsheet Energy System Model Generator are designed according to the
 specifications of the `oemof <https://oemof.org>`_ library. Accordingly, 
 energy systems can be represented with the help of mathematical graph theory. Thus, energy systems are 
 exemplified as "graphs" consisting of sets of "vertices" and "edges". In more specific terms, vertices 
@@ -340,7 +340,7 @@ plants, energy transforming processes
 (e.g., electrolysis, heat pumps), as well as transport lines with 
 losses. The transformers’ efficiencies can be defined for every 
 time step (e.g., the efficiency of a thermal 
-powerplants in dependence of  the ambient temperature).
+powerplant in dependence of the ambient temperature).
 
 Currently only Generic Transformers can be used within the Spreadsheet Energy System Model Generator. 
 These may have one or more different outputs, e.g., heat and electricity. For the modelling,
@@ -435,6 +435,21 @@ Storages are connected to a bus and can store energy from this bus and return it
 
 Stratified thermal storages use the thermal transmittance of the wall of the stratified thermal storage
 (including thermal insulation) for calculating the losses. Specific values can be found in data sheets.
+
+District Heating
+=================================================
+Different from the previously mentioned points, District Heating is not a component,
+but much more a piped heat supply option, elaborated on the basis of the oemof package DHNX.
+Within the district heating approach, a heat producer is connected to the consumers' heat sink
+via a link (taking pump losses into account), heat pipes (lossy transformers) and the district heating
+house station.
+
+.. figure:: ../images/district_heating.png
+   :width: 50 %
+   :alt: links
+   :align: center
+
+   Representation of the district heating network as described above.
 
 Investment
 =================================================
