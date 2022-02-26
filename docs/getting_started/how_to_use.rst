@@ -108,6 +108,7 @@ Within this sheet, the road network structure of the energy system is defined. T
 
 .. csv-table:: Exemplary input for the district heating sheet
    :header: label,active,lat. 1st intersection,lon. 1st intersection,lat. 2nd intersection,lon. 2nd intersection
+
    ,,,,,
    street1, 1, 50.000000, 10.000000, 55.000000, 11.000000
 
