@@ -52,7 +52,7 @@ For example, an area competition. If you do not want to use this spreadsheet, it
    :header: component 1,factor 1,component 2,factor 2,limit
 
 	,unit/KW,,unit/kW,unit
-	ID_photovoltaic_elecitricity_source,5.26,ID_solar_thermal_source,11.05,168
+	ID_photovoltaic_electricity_source,5.26,ID_solar_thermal_source,11.05,168
 
 Buses
 =================================================
@@ -68,22 +68,24 @@ Within this sheet, the buses of the energy system are defined. The following par
 - **shortage costs** in (CU/kWh): Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "0" is used.
 - **excess constraint costs** in (CU/kWh): Assigns a price per kWh to the release of energy to the excess sink referring to the constraint limit set in the "energysystem" sheet. If the excess sink was deactivated, the fill character "0" is used. If not considering constraints fill character "0" is used.
 - **shortage constraint costs** in (CU/kWh): Assigns a price per kWh to the purchase of energy from the shortage source referring to the constraint limit set in the "energysystem" sheet. If the shortage source was deactivated, the fill character "0" is used. If not considering constraints fill character "0" is used.
-
+- **district heating conn.**: This column allows you to specify whether the bus should be connected to the heating network. If not, select 0. If yes, either the nearest point of the heating network can be used as a connection (in this case the column must be filled with "dh-system"), or one of the street points from the "District Heating" sheet is used (in this case the column must be filled according to the following pattern: street-name-1 for the first node or street-name-2 for the second).
+- **lat**: This column must be filled if dh-system was specified in the "district heating conn." column. In this case, this column must be filled with the latitude (WGS84).
+- **lon**: This column must be filled if dh-system was specified in the "district heating conn." column. In this case, this column must be filled with the longitude (WGS84).
 
 .. csv-table:: Exemplary input for the buses sheet
-   :header: label,comments,active,excess,shortage,excess costs,shortage costs,excess constraint costs,shortage constraint costs
+   :header: label,comments,active,excess,shortage,excess costs,shortage costs,excess constraint costs,shortage constraint costs, district heating conn., lat, lon
 
-   ,,,,,(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh)
-   ID_electricity_bus,,1,0,1,0.000,0.300,0.00,474.00
-   ID_heat_bus,,1,1,0,0.000,0.000,0.00,0.00
-   ID_gas_bus,,1,0,1,0.000,0.070,0.00,0.00
-   ID_cooling_bus,chiller,1,1,0,0.000,0.000,0.00,0.00
-   ID_pv_bus,,1,1,0,-0.068,0.000,-56.00,0.00
-   ID_hp_electricity_bus,heat pumps,1,1,1,0.000,0.220,0.00,474.00
-   district_electricity_bus,delivering electr. to neighb. subsystems,0,0,0,0.000,0.000,0.00,0.00
-   district_heat_bus,delivering heat to neighb. subsystems,0,0,0,0.000,0.000,0.00,0.00
-   district_chp_electricity_bus,,0,0,1,0.000,0.000,-375.00,0.00
-   district_gas_bus,,0,0,1,0.000,0.070,0.00,0.00
+   ,,,,,(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh),,,
+   ID_electricity_bus,,1,0,1,0.000,0.300,0.00,474.00,0,0,0
+   ID_heat_bus,,1,1,0,0.000,0.000,0.00,0.00,0,0,0
+   ID_gas_bus,,1,0,1,0.000,0.070,0.00,0.00,0,0,0
+   ID_cooling_bus,chiller,1,1,0,0.000,0.000,0.00,0.00,0,0,0
+   ID_pv_bus,,1,1,0,-0.068,0.000,-56.00,0.00,0,0,0
+   ID_hp_electricity_bus,heat pumps,1,1,1,0.000,0.220,0.00,474.00,0,0,0
+   district_electricity_bus,delivering electr. to neighb. subsystems,0,0,0,0.000,0.000,0.00,0.00,0,0,0
+   district_heat_bus,delivering heat to neighb. subsystems,0,0,0,0.000,0.000,0.00,0.00,dh-system, 50.000000, 10.000000
+   district_chp_electricity_bus,,0,0,1,0.000,0.000,-375.00,0.00,0,0,0
+   district_gas_bus,,0,0,1,0.000,0.070,0.00,0.00,0,0,0
    
 .. figure:: ../images/BSP_Graph_Bus.png
    :width: 100 %
@@ -91,6 +93,23 @@ Within this sheet, the buses of the energy system are defined. The following par
    :align: center
 
    Graph of the energy system, which is created by entering the example components. The non-active components are not included in the graph above.
+
+District Heating
+=================================================
+
+Within this sheet, the road network structure of the energy system is defined. The following parameters need to be entered:
+
+- **street section name**: Unique designation of the street section.
+- **active**: Specifies whether the street section shall be included to the model. 0 = inactive, 1 = active.
+- **lat. 1st intersection**: Latitude (WGS84) of the first point of the given street part.
+- **lon. 1st intersection**: Longitude (WGS84) of the first point of the given street part.
+- **lat. 2nd intersection**: Latitude (WGS84) of the second point of the given street part.
+- **lon. 2nd intersection**: Longitude (WGS84) of the second point of the given street part.
+
+.. csv-table:: Exemplary input for the district heating sheet
+   :header: label,active,lat. 1st intersection,lon. 1st intersection,lat. 2nd intersection,lon. 2nd intersection
+   ,,,,,
+   street1, 1, 50.000000, 10.000000, 55.000000, 11.000000
 
 Sinks
 =================================================
@@ -108,14 +127,17 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **occupants** [RICHARDSON]: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "0" for other load profiles.
 - **building class** [HEAT SLP ONLY]: BDEW building classes that coincide with the building locations are explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#sinks>`_.
 - **wind class** [HEAT SLP ONLY]: wind classification for building location (0=not windy, 1=windy)
- 
+- **district heating**: This column allows you to specify whether the house should be connected to the heating network (1) or not (0).
+- **lat**: If house can be connected to dh-network this column must be filled with the latitude (WGS84).
+- **lon**: If house can be connected to dh-network this column must be filled with the longitude (WGS84).
+
 .. csv-table:: Exemplary input for the sinks sheet
-   :header: label,comment,active,fixed,input,load profile,nominal value,annual demand,occupants,building class,wind class
+   :header: label,comment,active,fixed,input,load profile,nominal value,annual demand,occupants,building class,wind class, district heating, lat, lon
 
    ,,,,,,(kW),(kWh/a),(richardson),(heat slp),(heat slp)
-   ID_electricity_sink,H0 standard load profile sink,1,1,ID_electricity_bus,h0,0,5000.0,0,0,0
-   ID_heat_sink,EFH standard load profile sink,1,1,ID_heat_bus,efh,0,30000.0,0,3,0
-   ID_cooling_sink,fixed timeseries cooling demand,0,1,ID_cooling_bus,timeseries,1,0,0,0,0
+   ID_electricity_sink,H0 standard load profile sink,1,1,ID_electricity_bus,h0,0,5000.0,0,0,0,0,0,0
+   ID_heat_sink,EFH standard load profile sink,1,1,ID_heat_bus,efh,0,30000.0,0,3,0,1,55.000000,11.000000
+   ID_cooling_sink,fixed timeseries cooling demand,0,1,ID_cooling_bus,timeseries,1,0,0,0,0,0,0,0
 
 .. figure:: ../images/BSP_Graph_sink.png
    :width: 100 %
