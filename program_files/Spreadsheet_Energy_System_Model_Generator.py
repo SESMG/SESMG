@@ -95,8 +95,7 @@ from program_files import (create_objects,
 def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
                graph: bool, criterion_switch: bool, xlsx_results: bool,
                console_results: bool, timeseries_prep: list, solver: str,
-               save_dh_calculations: bool, cluster_dh,
-               district_heating_path=None):
+               cluster_dh, district_heating_path=None):
     """
         Main function of the Spreadsheet System Model Generator
 
@@ -198,7 +197,6 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     
     nodes = district_heating.district_heating(nodes_data, nodes, busd,
                                               district_heating_path,
-                                              save_dh_calculations,
                                               result_path, cluster_dh)
     # ADDS THE COMPONENTS TO THE ENERGYSYSTEM
     esys.add(*nodes)

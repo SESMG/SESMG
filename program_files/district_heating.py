@@ -822,7 +822,7 @@ def create_connect_dhnx(nodes_data, busd, clustering=False):
 
 
 def district_heating(nodes_data, nodes, busd, district_heating_path,
-                     save_dh_calculations, result_path, cluster_dh):
+                     result_path, cluster_dh):
     """
         The district_heating method represents the main method of heat
         network creation, it is called by the main algorithm to perform
@@ -873,10 +873,9 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
             # if any consumers where connected to the thermal network
             if thermal_network.components['consumers'].values.any():
                 adapt_dhnx_style()
-                if save_dh_calculations:
-                    for i in ["consumers", "pipes", "producers", "forks"]:
-                        thermal_network.components[i].to_csv(
-                            result_path + "/" + i + ".csv")
+                for i in ["consumers", "pipes", "producers", "forks"]:
+                    thermal_network.components[i].to_csv(
+                        result_path + "/" + i + ".csv")
 
                 static_map = dhnx.plotting.StaticMap(thermal_network)
                 static_map.draw(background_map=False)
@@ -910,14 +909,12 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
             clustering_dh_network(nodes_data)
         for i in ["consumers", "pipes", "producers", "forks"]:
             thermal_network.components[i].to_csv(
-                result_path + "/" + i + "_clustered.csv")
+                result_path + "/" + i + ".csv")
     if dh:
         if cluster_dh == 1:
             new_nodes = create_connect_dhnx(nodes_data, busd, True)
         else:
             new_nodes = create_connect_dhnx(nodes_data, busd, False)
-        thermal_network.components["pipes"].to_csv(
-            "program_files/technical_data/district_heating/pipes_save.csv")
         for i in new_nodes:
             nodes.append(i)
     return nodes
