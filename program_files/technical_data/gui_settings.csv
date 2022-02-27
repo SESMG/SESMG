@@ -1,18 +1,17 @@
-scenario_path,/Users/gregor/Desktop/Arbeit/Szenarien/scenario_A_emissionen_20211118.xlsx
+scenario_path,scenario_v0.2.0.xlsx
 save_path_directory,results
-save_path,results/scenario_A_emissionen_20211118_2021-12-01--10-56-07
+save_path,
 num_threads,2
-timeseries_algorithm,slicing A
-timeseries_cluster,130
+timeseries_algorithm,none
+timeseries_cluster,none
 timeseries_criterion,none
-timeseries_period,days
+timeseries_period,none
 timeseries_season,none
 graph_state,0
 criterion_state,0
-solver_select,gurobi
+solver_select,cbc
 xlsx_select_state,0
 console_select_state,0
-plotly_select_state,1
+plotly_select_state,0
 dh_path,
-save_dh_state,0
 cluster_dh,0
