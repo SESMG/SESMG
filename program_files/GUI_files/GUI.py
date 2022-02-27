@@ -200,7 +200,6 @@ class GUI(MethodsGUI):
                     self.gui_variables["console_select_state"]),
                 solver=self.gui_variables["solver_select"].get(),
                 district_heating_path=self.gui_variables["dh_path"].get(),
-                save_dh_calculations=self.gui_variables["save_dh_state"].get(),
                 cluster_dh=self.gui_variables["cluster_dh"].get())
             # start algorithm for creation of plotly dash
             if self.gui_variables["plotly_select_state"].get() == 1:
@@ -298,7 +297,6 @@ class GUI(MethodsGUI):
             "console_select_state": IntVar(),
             "plotly_select_state": IntVar(),
             "dh_path": StringVar(self.frames[0], ''),
-            "save_dh_state": IntVar(),
             "cluster_dh": IntVar(),
             # upscaling tool variables
             "pre_scenario_path":
@@ -363,8 +361,7 @@ class GUI(MethodsGUI):
         
         checkboxes_parameters = {
             'Show Graph': "graph_state",
-            'Switch Criteria': "criterion_state",
-            'Save DH calculations': "save_dh_state"}
+            'Switch Criteria': "criterion_state"}
         row += 1
         row = self.create_cb_lines(self.frames[0], checkboxes_parameters, row,
                                    self.gui_variables) + 1
