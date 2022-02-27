@@ -30,17 +30,24 @@ bin/pip3 install graphviz==0.13.2
 bin/pip3 install xlrd==1.2.0
 bin/pip3 install Pyomo==5.7.1
 bin/pip3 install xlsxwriter
-bin/pip3 install dhnx 
+bin/pip3 install dhnx
 bin/pip3 install pyproj
 bin/pip3 install sympy
 bin/pip3 install numpy==1.17.4
 brew install graphviz
 mv feedinlib lib/python3.7/site-packages
 mv windpowerlib lib/python3.7/site-packages
+mv dhnx lib/python3.7/site-packages
+mkdir files_deviant_operating_system
+mv Linux_installation.sh files_deviant_operating_system
+mv Run_SESMG_for_Linux.sh files_deviant_operating_system
+mv Windows_installation.cmd files_deviant_operating_system
+mv Run_SESMG_for_windows.cmd files_deviant_operating_system
+
 echo ----------------------
 echo Installation completed
 echo Starting SESMG
 echo ----------------------
 
-bin/python3.7 program_files/GUI.py
+bin/python3.7 start_script.py
 osascript -e 'tell application "Terminal" to quit'
