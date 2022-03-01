@@ -6,4 +6,4 @@
 cd Scripts
 start /b activate.bat
 cd ..
-Scripts\python.exe program_files/GUI_files/GUI.py
+Scripts\python.exe start_script.py
