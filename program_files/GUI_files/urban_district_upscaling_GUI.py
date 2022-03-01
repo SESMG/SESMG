@@ -1,6 +1,6 @@
 import os
 from program_files.urban_district_upscaling\
-    .urban_district_upscaling_pre_processing \
+    .pre_processing \
     import urban_district_upscaling_pre_processing
 from program_files.urban_district_upscaling\
     .urban_district_upscaling_post_processing \
