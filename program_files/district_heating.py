@@ -775,8 +775,7 @@ def create_producer_connection(oemof_opti_model, busd):
                          dhnx.optimization_oemof_heatpipe.Label(
                              'producers', 'heat', 'bus',
                              str("producers-{}".format(
-                                 str(counter))))]):
-                    float(component_param.loc["pump"]["efficiency"])}))
+                                 str(counter))))]):1}))
 
     return oemof_opti_model
 
