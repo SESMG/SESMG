@@ -467,7 +467,7 @@ def create_central_gas_heating_transformer(gastype, standard_parameters):
     # connection to central electricity bus
     create_standard_parameter_link(
         label="heating_plant_" + gastype + "_link",
-        bus_1="central_" + gastype + "_bus",
+        bus_1="central_chp_naturalgas_bus",
         bus_2="central_" + gastype + "_plant_bus",
         link_type="central_naturalgas_building_link",
         standard_parameters=standard_parameters)
@@ -477,8 +477,6 @@ def create_central_gas_heating_transformer(gastype, standard_parameters):
         standard_parameters.parse('transformers')
     heating_plant_standard_parameters.set_index('comment', inplace=True)
     heating_plant_label = heating_plant_standard_parameters.loc['central_naturalgas_heating_plant_transformer']
-    print(heating_plant_label.keys().tolist())
-    print('lololololo')
     heating_plant_dict = \
         {'label': "central_" + gastype + '_heating_plant_transformer',
          'input': "central_" + gastype + "_plant_bus",
