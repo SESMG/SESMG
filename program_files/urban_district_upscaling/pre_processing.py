@@ -475,7 +475,10 @@ def create_central_gas_heating_transformer(gastype, standard_parameters):
     # transformer parameters
     heating_plant_standard_parameters = \
         standard_parameters.parse('transformers')
-
+    heating_plant_standard_parameters.set_index('comment', inplace=True)
+    heating_plant_label = heating_plant_standard_parameters.loc['central_naturalgas_heating_plant_transformer']
+    print(heating_plant_label.keys().tolist())
+    print('lololololo')
     heating_plant_dict = \
         {'label': "central_" + gastype + '_heating_plant_transformer',
          'input': "central_" + gastype + "_plant_bus",
@@ -485,11 +488,11 @@ def create_central_gas_heating_transformer(gastype, standard_parameters):
     # read the chp standards from standard_parameters.xlsx and append
     # them to the gchp_central_dict
     heating_plant_standard_keys = \
-        heating_plant_standard_parameters.keys().tolist()
+        heating_plant_label.keys().tolist()
     for i in range(len(heating_plant_standard_keys)):
         heating_plant_dict[heating_plant_standard_keys[i]] = \
-            heating_plant_standard_parameters[
-                heating_plant_standard_keys[i]][0]
+            heating_plant_label[heating_plant_standard_keys[i]]
+
 
     # produce a pandas series out of the dict above due to easier appending
     heating_plant_series = pd.Series(heating_plant_dict)
