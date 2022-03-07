@@ -100,44 +100,6 @@ def calculate_k_medoids_clusters(cluster_number: int, weather_data: dict,
     model = kmedoids.fit(cluster_vectors)
     return model.labels_
 
-def calculate_brute_force_clusters(cluster_number: int, weather_data: dict,
-                               cluster_criterion: str, period: str):
-    """
-        Applies the k-medoids algorithm to a list of day-weather-vectors.
-        Caution: weather data set must be available in hourly resolution!
-
-        :param cluster_number: Number of k-mean-clusters
-        :type cluster_number: int
-        :param weather_data: weather_data, the clusters should be applied to
-        :type weather_data: dict
-        :param cluster_criterion: weather_parameter/column name which
-            should be applied as cluster criterion
-        :type cluster_criterion: str
-        :param period: defines rather days or weeks were selected
-        :type period: str
-
-        :return: - **model.labels_** - Chronological list, which days of the
-            weather data set belongs to which cluster
-
-    """
-    cluster_vectors = extract_single_periods(data_set=weather_data,
-                                             column_name=cluster_criterion,
-                                             period=period)
-
-    neigh = KNeighborsClassifier(n_neigghbors=2)
-    
-
-
-    # nbrs = NearestNeighbors(n_neighbors=cluster_number, algorithm='brute').fit(cluster_vectors)
-    # print('ping1')
-    # print(nbrs)
-    # distances, indices = nbrs.kneighbors(cluster_vectors)
-    # print(len(distances))
-    # print(distances)
-
-    # kmedoids = KMedoids(n_clusters=cluster_number)
-    # model = kmedoids.fit(cluster_vectors)
-    return model.labels_
 
 def calculate_cluster_means(data_set, cluster_number: int,
                             cluster_labels, period: str):
@@ -515,42 +477,7 @@ def k_medoids_algorithm(clusters: int, criterion: str, nodes_data: dict,
     k_medoids_timeseries_adaption(nodes_data, clusters,
                                 cluster_labels, period)
 
-def brute_force_algorithm(clusters: int, criterion: str, nodes_data: dict,
-                        period: str):
-    """
-        TODO missing
-        :param clusters: number of clusters chosen in GUI
-        :type clusters: int
-        :param criterion: criterion chosen for k_mean algorithm
-        :type criterion: str
-        :param nodes_data: dictionary containing the excel worksheets from
-                           the used scenario workbook
 
-        :type nodes_data: dict
-        :param period: defines rather days or weeks were selected
-        :type period: str
-    """
-    # Merge the timeseries and weather data sets, sothat that all timeseries'
-    # get clustered within one step
-    nodes_data['timeseries'] = append_timeseries_to_weatherdata_sheet(nodes_data)
-
-    weather_data = nodes_data['timeseries'].copy()
-
-    # Calculate k-medoids clusters, based on the cluster_criterion
-    cluster_labels = calculate_brute_force_clusters(cluster_number=clusters,
-                                                    weather_data=weather_data,
-                                                    cluster_criterion=criterion,
-                                                    period=period)
-
-    weather_data = nodes_data['timeseries'].copy()
-    nodes_data['weather data'] = weather_data
-    nodes_data['timeseries'] = weather_data
-
-    # Adapts Other Parameters (despite weather data) of the energy system
-    k_means_parameter_adaption(nodes_data, clusters, period)
-
-    k_medoids_timeseries_adaption(nodes_data, clusters,
-                                cluster_labels, period)
 
 def timeseries_averaging(clusters: int, nodes_data: dict, period: str):
     """
@@ -1354,19 +1281,6 @@ def timeseries_preparation(timeseries_prep_param: list,
                             criterion=cluster_criterion,
                             nodes_data=nodes_data,
                             period=cluster_period)
-
-    # BRUTE-FORCE ALGORITHM
-    if data_prep == 'brute force':
-        if cluster_period == 'days':
-            clusters = 365 // int(days_per_cluster)
-        elif cluster_period == 'weeks':
-            clusters = 52 // int(days_per_cluster)
-        else:
-            raise ValueError("period chosen not possible")
-        brute_force_algorithm(clusters=clusters,
-                              criterion=cluster_criterion,
-                              nodes_data=nodes_data,
-                              period=cluster_period)
 
     # AVERAGING ALGORITHM
     elif data_prep == 'averaging':
