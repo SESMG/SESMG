@@ -453,7 +453,7 @@ class Sources:
         # returns logging info
         logging.info('   ' + 'Source created: ' + so['label'])
 
-    def solar_heat_source(self, so, data):
+    def solar_heat_source(self, so, data, energysystem):
         """
             Creates a solar thermal collector source object.
 
@@ -504,8 +504,7 @@ class Sources:
 
         # import weather data and set datetime index with hourly frequency
         data.index.name = 'Datum'
-        # TODO get frequency from energysystem sheet
-        data = data.asfreq('h')
+        data = data.asfreq(energysystem["temporal resolution"])
 
         # calculates global horizontal irradiance from diffuse (dhi)
         # and direct irradiance (dirhi) and adds it to the weather data frame
@@ -615,6 +614,7 @@ class Sources:
         self.nodes_sources = []
         # Initialise a class intern copy of the bus dictionary
         self.busd = busd.copy()
+        energysystem = next(nodes_data['energysystem'].iterrows())[1]
 
         # Create Source from "Sources" Table
         for i, so in nodes_data['sources'].iterrows():
@@ -640,7 +640,7 @@ class Sources:
                 # Create flat plate solar thermal Sources
                 elif so['technology'] in ['solar_thermal_flat_plate',
                                           'concentrated_solar_power']:
-                    self.solar_heat_source(so, weather_data)
+                    self.solar_heat_source(so, weather_data, energysystem)
 
         # appends created sources and other objects to the list of nodes
         for i in range(len(self.nodes_sources)):
@@ -892,10 +892,10 @@ class Sinks:
 
         # Create DataFrame
         demand = pd.DataFrame(
-            index=pd.date_range(pd.datetime(start_date.year,
-                                            start_date.month,
-                                            start_date.day,
-                                            start_date.hour),
+            index=pd.date_range(datetime.datetime(start_date.year,
+                                                  start_date.month,
+                                                  start_date.day,
+                                                  start_date.hour),
                                 periods=periods, freq=temp_resolution))
         # creates time series
         if de['load profile'] in heat_slps_commercial \
