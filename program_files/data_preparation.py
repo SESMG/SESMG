@@ -1,4 +1,7 @@
 from sklearn.cluster import KMeans
+from sklearn_extra.cluster import KMedoids
+from sklearn.neighbors import NearestNeighbors
+from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
 import numpy as np
 
@@ -70,6 +73,72 @@ def calculate_k_means_clusters(cluster_number: int, weather_data: dict,
     return model.labels_
 
 
+def calculate_k_medoids_clusters(cluster_number: int, weather_data: dict,
+                               cluster_criterion: str, period: str):
+    """
+        Applies the k-medoids algorithm to a list of day-weather-vectors.
+        Caution: weather data set must be available in hourly resolution!
+
+        :param cluster_number: Number of k-mean-clusters
+        :type cluster_number: int
+        :param weather_data: weather_data, the clusters should be applied to
+        :type weather_data: dict
+        :param cluster_criterion: weather_parameter/column name which
+            should be applied as cluster criterion
+        :type cluster_criterion: str
+        :param period: defines rather days or weeks were selected
+        :type period: str
+
+        :return: - **model.labels_** - Chronological list, which days of the
+            weather data set belongs to which cluster
+
+    """
+    cluster_vectors = extract_single_periods(data_set=weather_data,
+                                             column_name=cluster_criterion,
+                                             period=period)
+    kmedoids = KMedoids(n_clusters=cluster_number)
+    model = kmedoids.fit(cluster_vectors)
+    return model.labels_
+
+def calculate_brute_force_clusters(cluster_number: int, weather_data: dict,
+                               cluster_criterion: str, period: str):
+    """
+        Applies the k-medoids algorithm to a list of day-weather-vectors.
+        Caution: weather data set must be available in hourly resolution!
+
+        :param cluster_number: Number of k-mean-clusters
+        :type cluster_number: int
+        :param weather_data: weather_data, the clusters should be applied to
+        :type weather_data: dict
+        :param cluster_criterion: weather_parameter/column name which
+            should be applied as cluster criterion
+        :type cluster_criterion: str
+        :param period: defines rather days or weeks were selected
+        :type period: str
+
+        :return: - **model.labels_** - Chronological list, which days of the
+            weather data set belongs to which cluster
+
+    """
+    cluster_vectors = extract_single_periods(data_set=weather_data,
+                                             column_name=cluster_criterion,
+                                             period=period)
+
+    neigh = KNeighborsClassifier(n_neigghbors=2)
+    
+
+
+    # nbrs = NearestNeighbors(n_neighbors=cluster_number, algorithm='brute').fit(cluster_vectors)
+    # print('ping1')
+    # print(nbrs)
+    # distances, indices = nbrs.kneighbors(cluster_vectors)
+    # print(len(distances))
+    # print(distances)
+
+    # kmedoids = KMedoids(n_clusters=cluster_number)
+    # model = kmedoids.fit(cluster_vectors)
+    return model.labels_
+
 def calculate_cluster_means(data_set, cluster_number: int,
                             cluster_labels, period: str):
     """
@@ -122,6 +191,92 @@ def calculate_cluster_means(data_set, cluster_number: int,
         # Appends the calculated reference days for the current weather
         # data column to the final weather data set
         prep_data_set[column_names[i]] = reference_data_set
+
+    return prep_data_set
+
+def append_timeseries_to_weatherdata_sheet(nodes_data: dict):
+    """
+    Merges the time series of the weather data set and the time series. This
+    allows the weather data and time series to be processed together for
+    cluster algorithms, reducing the error-proneness of sepparate processing.
+    :param data_set:
+    :return:
+    """
+
+    # Adding the weather data set to the timeseries data set
+    nodes_data['timeseries'] = nodes_data['timeseries'].merge(
+        nodes_data['weather data'], how='inner', left_index=True,
+        right_index=True)
+
+    # Correction of duplicate names/columns
+    for column_name in list(nodes_data['timeseries'].columns.values):
+        # if a column was in both of the panda data frames, they are indexed
+        # with the ending "_x" and "_y". Those are identified, and renamed,
+        # respectively deleted.
+        if column_name[-2:] == "_x":
+            nodes_data['timeseries'].rename(columns={column_name: column_name[:-2]}, inplace=True)
+        elif column_name[-2:] == "_y":
+            del nodes_data['timeseries'][column_name]
+
+    print(list(nodes_data['timeseries'].columns.values))
+    print(nodes_data['timeseries'])
+
+    return nodes_data['timeseries']
+
+def calculate_cluster_medoids(data_set, cluster_number: int,
+                            cluster_labels, period: str):
+    """
+        Determines weather medoid of the individual clusters for a
+        weather dataset, based on predetermined cluster allocation.
+        Caution: weather data set must be available in hourly resolution!
+
+        :param data_set: data_set, the clusters should be applied to
+        :type data_set: pd.core.frame.DataFrame
+        :param cluster_number: Number of clusters
+        :type cluster_number: int
+        :param cluster_labels: Chronological list, which days of the
+            weather data set belongs to which cluster
+        :type cluster_labels: np.array
+        :param period: defines rather days or weeks were selected
+        :type period: str
+
+        :return: - **prep_data_set** (pd.Dataframe) - pandas dataframe
+            containing the prepared weather data set
+
+    """
+
+
+    # column_names = [data_set.columns[i] for i in
+    #                 range(1, len(data_set.columns))]
+    # # Define pandas Dataframe for final data_set
+    # prep_data_set = pd.DataFrame()
+    # # Loop for every column of the weather data set
+    # for i in range(len(column_names) - 1):
+    #     # Extract individual weather data set for the current weather
+    #     # data column
+    #     data_set_column = extract_single_periods(data_set=data_set,
+    #                                              column_name=column_names[i],
+    #                                              period=period)
+    #     # Define empty list used later
+    #     reference_data_set = []
+    #     # Loop for every k-cluster
+    #     for j in range(0, cluster_number):
+    #         # Define empty list used later
+    #         cluster_dataset = []
+    #         # Loop for every day of the weather data set
+    #         for k in range(len(data_set_column)):
+    #             # if the day belongs to the current cluster, it will be
+    #             # appended to 'cluster_dataset'
+    #             if cluster_labels[k] == j:
+    #                 cluster_dataset.append(data_set_column[k])
+    #         # Calculates the medoid for ever hour of the current cluster
+    #         cluster_dataset_array = np.array(cluster_dataset)
+    #         # Appends the calculated mean values to the 'reference_data_
+    #         # set' list
+    #         reference_data_set += cluster_dataset_array.argmin(distMatrix.sum(axis=0)).tolist()
+    #     # Appends the calculated reference days for the current weather
+    #     # data column to the final weather data set
+    #     prep_data_set[column_names[i]] = reference_data_set
 
     return prep_data_set
 
@@ -225,8 +380,50 @@ def k_means_timeseries_adaption(nodes_data: dict, clusters: int,
         prep_timeseries['timestamp'] = \
             nodes_data['timeseries']['timestamp'][
             :int(len(nodes_data['timeseries']) / (clusters*7))]
-    print(prep_timeseries)
+    # print(prep_timeseries)
     nodes_data['timeseries'] = prep_timeseries
+
+
+def k_medoids_timeseries_adaption(nodes_data: dict, clusters: int,
+                                cluster_labels, period: str):
+    """
+        TODO missing
+        :param nodes_data: system parameters
+        :type nodes_data: dict
+        :param clusters: Number of clusters
+        :type clusters: int
+        :param cluster_labels: Chronological list, which days of the weather
+                               data set belongs to which cluster
+
+        :type cluster_labels: np.array
+        :param period: defines rather hours, days or weeks were selected
+        :type period: str
+
+    """
+    prep_timeseries = \
+        calculate_cluster_means(data_set=nodes_data['timeseries'].copy(),
+                                cluster_number=clusters,
+                                cluster_labels=cluster_labels,
+                                period=period)
+    clusters = len(nodes_data["timeseries"]) \
+               // len(nodes_data["weather data"])
+    print(prep_timeseries)
+    # Rename columns of the new timeseries-dataset
+    if period == 'hours':
+        prep_timeseries['timestamp'] = \
+            nodes_data['timeseries']['timestamp'][
+            :int(len(nodes_data['timeseries']))]
+    elif period == 'days':
+        prep_timeseries['timestamp'] = \
+            nodes_data['timeseries']['timestamp'][
+            :int(len(nodes_data['timeseries']) / clusters)]
+    elif period == 'weeks':
+        prep_timeseries['timestamp'] = \
+            nodes_data['timeseries']['timestamp'][
+            :int(len(nodes_data['timeseries']) / (clusters * 7))]
+    # print(prep_timeseries)
+    nodes_data['timeseries'] = prep_timeseries
+    nodes_data['weather data'] = prep_timeseries
 
 
 def k_means_algorithm(clusters: int, criterion: str, nodes_data: dict,
@@ -237,9 +434,9 @@ def k_means_algorithm(clusters: int, criterion: str, nodes_data: dict,
         :type clusters: int
         :param criterion: criterion chosen for k_mean algorithm
         :type criterion: str
-        :param nodes_data: dictionary containing the excel worksheets from 
+        :param nodes_data: dictionary containing the excel worksheets from
                            the used scenario workbook
-                            
+
         :type nodes_data: dict
         :param period: defines rather days or weeks were selected
         :type period: str
@@ -276,6 +473,84 @@ def k_means_algorithm(clusters: int, criterion: str, nodes_data: dict,
     k_means_timeseries_adaption(nodes_data, clusters,
                                 cluster_labels, period)
 
+
+def k_medoids_algorithm(clusters: int, criterion: str, nodes_data: dict,
+                        period: str):
+    """
+        TODO missing
+        :param clusters: number of clusters chosen in GUI
+        :type clusters: int
+        :param criterion: criterion chosen for k_mean algorithm
+        :type criterion: str
+        :param nodes_data: dictionary containing the excel worksheets from
+                           the used scenario workbook
+
+        :type nodes_data: dict
+        :param period: defines rather days or weeks were selected
+        :type period: str
+    """
+    # Merge the timeseries and weather data sets, sothat that all timeseries'
+    # get clustered within one step
+    nodes_data['timeseries'] = append_timeseries_to_weatherdata_sheet(nodes_data)
+
+    weather_data = nodes_data['timeseries'].copy()
+
+    # Calculate k-medoids clusters, based on the cluster_criterion
+    cluster_labels = calculate_k_medoids_clusters(cluster_number=clusters,
+                                                  weather_data=weather_data,
+                                                  cluster_criterion=criterion,
+                                                  period=period)
+
+
+
+
+
+    weather_data = nodes_data['timeseries'].copy()
+    nodes_data['weather data'] = weather_data
+    nodes_data['timeseries'] = weather_data
+
+    # Adapts Other Parameters (despite weather data) of the energy system
+    k_means_parameter_adaption(nodes_data, clusters, period)
+
+    k_medoids_timeseries_adaption(nodes_data, clusters,
+                                cluster_labels, period)
+
+def brute_force_algorithm(clusters: int, criterion: str, nodes_data: dict,
+                        period: str):
+    """
+        TODO missing
+        :param clusters: number of clusters chosen in GUI
+        :type clusters: int
+        :param criterion: criterion chosen for k_mean algorithm
+        :type criterion: str
+        :param nodes_data: dictionary containing the excel worksheets from
+                           the used scenario workbook
+
+        :type nodes_data: dict
+        :param period: defines rather days or weeks were selected
+        :type period: str
+    """
+    # Merge the timeseries and weather data sets, sothat that all timeseries'
+    # get clustered within one step
+    nodes_data['timeseries'] = append_timeseries_to_weatherdata_sheet(nodes_data)
+
+    weather_data = nodes_data['timeseries'].copy()
+
+    # Calculate k-medoids clusters, based on the cluster_criterion
+    cluster_labels = calculate_brute_force_clusters(cluster_number=clusters,
+                                                    weather_data=weather_data,
+                                                    cluster_criterion=criterion,
+                                                    period=period)
+
+    weather_data = nodes_data['timeseries'].copy()
+    nodes_data['weather data'] = weather_data
+    nodes_data['timeseries'] = weather_data
+
+    # Adapts Other Parameters (despite weather data) of the energy system
+    k_means_parameter_adaption(nodes_data, clusters, period)
+
+    k_medoids_timeseries_adaption(nodes_data, clusters,
+                                cluster_labels, period)
 
 def timeseries_averaging(clusters: int, nodes_data: dict, period: str):
     """
@@ -1066,6 +1341,32 @@ def timeseries_preparation(timeseries_prep_param: list,
                           criterion=cluster_criterion,
                           nodes_data=nodes_data,
                           period=cluster_period)
+
+    # K-MEDOIDS ALGORITHM
+    if data_prep == 'k_medoids':
+        if cluster_period == 'days':
+            clusters = 365 // int(days_per_cluster)
+        elif cluster_period == 'weeks':
+            clusters = 52 // int(days_per_cluster)
+        else:
+            raise ValueError("period chosen not possible")
+        k_medoids_algorithm(clusters=clusters,
+                            criterion=cluster_criterion,
+                            nodes_data=nodes_data,
+                            period=cluster_period)
+
+    # BRUTE-FORCE ALGORITHM
+    if data_prep == 'brute force':
+        if cluster_period == 'days':
+            clusters = 365 // int(days_per_cluster)
+        elif cluster_period == 'weeks':
+            clusters = 52 // int(days_per_cluster)
+        else:
+            raise ValueError("period chosen not possible")
+        brute_force_algorithm(clusters=clusters,
+                              criterion=cluster_criterion,
+                              nodes_data=nodes_data,
+                              period=cluster_period)
 
     # AVERAGING ALGORITHM
     elif data_prep == 'averaging':
