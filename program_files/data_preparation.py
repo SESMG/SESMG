@@ -528,7 +528,7 @@ def timeseries_downsampling(nodes_data: dict, n_timesteps: int, period: str):
 
     """
     end_date = nodes_data['energysystem']['end date'].copy()
-    periods = nodes_data["energysystem"]["periods"] / n_timesteps
+    periods = round(nodes_data["energysystem"]["periods"] / n_timesteps,0)
     # shortening timeseries and weather data
     nodes_data['timeseries'] = \
         nodes_data['timeseries'].iloc[::n_timesteps, :]
