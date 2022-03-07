@@ -113,9 +113,11 @@ def define_energy_system(nodes_data: dict):
     nodes_data['timeseries'].set_index('timestamp', inplace=True)
     nodes_data['timeseries'].index = pd.to_datetime(
         nodes_data['timeseries'].index.values, utc=True)
-    nodes_data['weather data'].set_index('timestamp', inplace=True)
-    nodes_data['weather data'].index = pd.to_datetime(
-        nodes_data['weather data'].index.values, utc=True)
+
+    if "timestamp" in list(nodes_data['weather data'].columns.values):
+        nodes_data['weather data'].set_index('timestamp', inplace=True)
+        nodes_data['weather data'].index = pd.to_datetime(
+            nodes_data['weather data'].index.values, utc=True)
     
     # returns logging info
     logging.info(
