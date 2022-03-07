@@ -332,7 +332,7 @@ class GUI(MethodsGUI):
 
         # TimeSeries Prep Menu
         timeseries_algorithm_list = \
-            ["none", "k_means", "k_medoids", "brute force", "averaging", "slicing A", "slicing B",
+            ["none", "k_means", "k_medoids", "averaging", "slicing A", "slicing B",
              "downsampling A", "downsampling B", "heuristic selection",
              "random sampling"]
         
