@@ -34,7 +34,7 @@ Getting started
 * :doc:`getting_started/how_to_install`
 * :doc:`getting_started/how_to_execute`
 * :doc:`getting_started/how_to_use`
-* :doc:`getting_started/how_to_use_technical_data
+* :doc:`getting_started/how_to_use_technical_data`
 * :doc:`getting_started/analyze_results`
 * :doc:`getting_started/demo_feature`
 
@@ -48,7 +48,7 @@ Getting started
 	getting_started/how_to_install
 	getting_started/how_to_execute
 	getting_started/how_to_use
-    getting_started/how_to_use_technical_data
+    	getting_started/how_to_use_technical_data
 	getting_started/analyze_results
 	getting_started/demo_feature
 	
