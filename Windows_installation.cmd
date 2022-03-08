@@ -33,6 +33,8 @@ pip install pyproj
 pip install sympy
 pip install dhnx
 pip install pandas==1.1.0
+pip install memory-profiler
+pip install scikit-learn-extra
 
 @echo ######################
 @echo Installation completed
