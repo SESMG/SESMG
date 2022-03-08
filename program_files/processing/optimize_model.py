@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from oemof import solph
+from memory_profiler import memory_usage
+from datetime import datetime
 
 
 def constraint_optimization_against_two_values(om: solph.Model,
@@ -151,7 +153,6 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
 
         Christian Klemm - christian.klemm@fh-muenster.de
     """
-
     import logging
     import math
     import pyomo.environ as po
@@ -212,5 +213,5 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
 
     # solving the linear problem using the given solver
     om.solve(solver=solver, cmdline_options={"threads": num_threads})
- 
+    logging.info("\t Memory Usage during processing:" + str(memory_usage()))
     return om

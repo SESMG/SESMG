@@ -5,11 +5,12 @@ from tkinter import ttk
 import subprocess
 import os
 import csv
-from program_files.Spreadsheet_Energy_System_Model_Generator import sesmg_main
+from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 from program_files.GUI_files.urban_district_upscaling_GUI \
     import UpscalingFrameClass
 from program_files.GUI_files.MethodsGUI import MethodsGUI
-
+import program_files.postprocessing.merge_partial_results as merge_partial_results
+import program_files.postprocessing.plotting as plotting
 
 def get_pid():
     """ Returns the ID of the running process on Port 8050 """
@@ -127,8 +128,8 @@ class GUI(MethodsGUI):
             /results/graphs    
         """
         import os
-        from program_files import (create_energy_system,
-                                   create_graph)
+        from program_files.preprocessing import (create_energy_system,
+                                                 create_graph)
     
         # DEFINES PATH OF INPUT DATA
         scenario_file = self.gui_variables["scenario_path"].get()
@@ -167,16 +168,6 @@ class GUI(MethodsGUI):
             # save the choices made in the GUI
             save_settings(self.gui_variables)
 
-            scenario_name = \
-                os.path.basename(self.gui_variables["scenario_path"].get())
-            # set the save path
-            self.gui_variables["save_path"].set(
-                str(os.path.join(self.gui_variables[
-                                     "save_path_directory"].get())
-                    + '/' + scenario_name[:-5]
-                    + str(datetime.now().strftime('_%Y-%m-%d--%H-%M-%S'))))
-            # create new folder in which the results will be stored
-            os.mkdir(self.gui_variables["save_path"].get())
             # set the timeseries preparation arguments
             timeseries_season = self.gui_variables["timeseries_season"].get()
             timeseries_prep_param = \
@@ -185,25 +176,56 @@ class GUI(MethodsGUI):
                  self.gui_variables["timeseries_criterion"].get(),
                  self.gui_variables["timeseries_period"].get(),
                  0 if timeseries_season == 'none' else timeseries_season]
-            # execute SESMG algorithm
-            sesmg_main(
-                scenario_file=self.gui_variables["scenario_path"].get(),
-                result_path=self.gui_variables["save_path"].get(),
-                num_threads=self.gui_variables["num_threads"].get(),
-                timeseries_prep=timeseries_prep_param,
-                graph=self.__get_cb_state(self.gui_variables["graph_state"]),
-                criterion_switch=self.__get_cb_state(
-                    self.gui_variables["criterion_state"]),
-                xlsx_results=self.__get_cb_state(
-                    self.gui_variables["xlsx_select_state"]),
-                console_results=self.__get_cb_state(
-                    self.gui_variables["console_select_state"]),
-                solver=self.gui_variables["solver_select"].get(),
-                district_heating_path=self.gui_variables["dh_path"].get(),
-                cluster_dh=self.gui_variables["cluster_dh"].get())
+            limits = self.gui_variables["limits_pareto"].get().split(",")
+            print(limits)
+            result_folders = {"1": []}
+            for scenario in self.gui_variables["scenario_path"].get().split("\n"):
+                # set the save path
+                scenario_name = os.path.basename(scenario)[:-5]
+                self.gui_variables["save_path"].set(
+                    str(os.path.join(self.gui_variables[
+                                         "save_path_directory"].get()) + '/'
+                        + scenario_name
+                        + str(datetime.now().strftime('_%Y-%m-%d--%H-%M-%S'))))
+                result_folders["1"].append(self.gui_variables["save_path"].get())
+                # create new folder in which the results will be stored
+                os.mkdir(self.gui_variables["save_path"].get())
+                # execute SESMG algorithm
+                sesmg_main(
+                    scenario_file=scenario,
+                    result_path=self.gui_variables["save_path"].get(),
+                    num_threads=self.gui_variables["num_threads"].get(),
+                    timeseries_prep=timeseries_prep_param,
+                    graph=self.__get_cb_state(self.gui_variables["graph_state"]),
+                    criterion_switch=self.__get_cb_state(
+                        self.gui_variables["criterion_state"]),
+                    xlsx_results=self.__get_cb_state(
+                        self.gui_variables["xlsx_select_state"]),
+                    console_results=self.__get_cb_state(
+                        self.gui_variables["console_select_state"]),
+                    solver=self.gui_variables["solver_select"].get(),
+                    district_heating_path=self.gui_variables["dh_path"].get(),
+                    cluster_dh=self.gui_variables["cluster_dh"].get())
+            if len(limits) > 1:
+                print("100% scenarios finished")
+                constraints = merge_partial_results.get_constraints(result_folders)
+                files, path = \
+                    merge_partial_results.create_transformation_scenarios(
+                        constraints,
+                        self.gui_variables["scenario_path"].get().split("\n"),
+                        result_folders, limits)
+                result_folders = \
+                    merge_partial_results.run_pareto(
+                            limits, files, self.gui_variables,
+                            timeseries_prep_param, path, result_folders)
+                # TODO merge components or not
+                dfs = merge_partial_results.merge_component_csvs(
+                        limits, files, path, result_folders)
+                plotting.create_pareto_plot(dfs.values())
             # start algorithm for creation of plotly dash
             if self.gui_variables["plotly_select_state"].get() == 1:
                 self.show_results()
+
         else:
             print('Please select scenario first!')
             self.gui_variables["scenario_path"].set(
@@ -250,7 +272,7 @@ class GUI(MethodsGUI):
         # Starts the new Plotly Dash Server for MACOS
         elif sys.platform.startswith("darwin"):
             ir_path = os.path.dirname(os.path.abspath(__file__))
-            subprocess.call("python3 " + ir_path + "/Interactive_Results.py "
+            subprocess.call("python3 " + os.path.dirname(ir_path) + "/Interactive_Results.py "
                             + str(self.gui_variables["save_path"].get()),
                             timeout=10, shell=True)
         # Starts the new Plotly Dash Server for Linux
@@ -298,6 +320,7 @@ class GUI(MethodsGUI):
             "plotly_select_state": IntVar(),
             "dh_path": StringVar(self.frames[0], ''),
             "cluster_dh": IntVar(),
+            "limits_pareto": StringVar(self.frames[0], ''),
             # upscaling tool variables
             "pre_scenario_path":
                 StringVar(self.frames[1],
@@ -332,7 +355,7 @@ class GUI(MethodsGUI):
 
         # TimeSeries Prep Menu
         timeseries_algorithm_list = \
-            ["none", "k_means", "k_medoids", "averaging", "slicing A", "slicing B",
+            ["none", "k_means", "averaging", "slicing A", "slicing B",
              "downsampling A", "downsampling B", "heuristic selection",
              "random sampling"]
         
@@ -371,6 +394,9 @@ class GUI(MethodsGUI):
         self.create_option_menu(self.frames[0],
                                 self.gui_variables["solver_select"],
                                 ["cbc", "gurobi"], 1, row)
+        row += 1
+        self.create_heading(self.frames[0], 'Pareto limits', 0, row, "w")
+        self.create_entry(self.frames[0], row, self.gui_variables["limits_pareto"])
         
         row += 1
         # result checkboxes

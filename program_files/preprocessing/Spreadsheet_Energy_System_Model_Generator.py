@@ -83,13 +83,13 @@ import os
 import pandas as pd
 from threading import *
 import sys
-from program_files import (create_objects,
-                           create_results,
-                           create_energy_system,
-                           optimize_model,
-                           create_graph,
-                           data_preparation,
-                           district_heating)
+from program_files.preprocessing import (create_objects,
+                                         create_energy_system,
+                                         create_graph,
+                                         data_preparation,
+                                         district_heating)
+from program_files.postprocessing import create_results
+from program_files.processing import optimize_model
 
 
 def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
@@ -217,6 +217,5 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     create_results.Results(nodes_data, om, esys, result_path,
                            console_log=console_results, cluster_dh=cluster_dh)
 
-    logging.info('   ' + '----------------------------------------------'
-                         '----------')
-    logging.info('   ' + 'Modelling and optimization successfully completed!')
+    logging.info('\t ' + 56 * '-')
+    logging.info('\t Modelling and optimization successfully completed!')

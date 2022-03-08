@@ -118,7 +118,11 @@ class MethodsGUI(tk.Tk):
         """
         button = Button(frame, text=text, command=command)
         button.grid(column=column, row=row)
-        
+
+    def create_entry(self, frame, row, gui_variable):
+        entry = Entry(frame, textvariable=gui_variable)
+        entry.grid(column=1, row=row)
+
     def get_path(self, type: str, store):
         """
             Opens a pop-up window asking the user to select a folder,
@@ -133,7 +137,7 @@ class MethodsGUI(tk.Tk):
 
         """
         if type == "xlsx":
-            path = filedialog.askopenfilename(
+            path = filedialog.askopenfilenames(
                     filetypes=(("Spreadsheet Files", "*.xlsx"),
                                ("all files", "*.*")))
         elif type == "folder":
@@ -145,7 +149,18 @@ class MethodsGUI(tk.Tk):
         else:
             raise ValueError("type not implemented yet")
         if store:
-            store.set(path)
+            string = ""
+            counter = 0
+            if type == "xlsx":
+                for entry in path:
+                    if counter == 0:
+                        string = str(entry)
+                        counter += 1
+                    else:
+                        string += "\n" + str(entry)
+            else:
+                string = path
+            store.set(string)
             self.update_idletasks()
         else:
             return path
