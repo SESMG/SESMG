@@ -35,6 +35,8 @@ pip install dhnx
 pip install pandas==1.1.0
 pip install memory-profiler
 pip install scikit-learn-extra
+pip install seaborn
+pip install matplotlib
 
 @echo ######################
 @echo Installation completed
