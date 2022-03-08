@@ -43,4 +43,4 @@ pip install matplotlib
 @echo Starting SESMG
 @echo ######################
 cd ..
-Scripts\python.exe program_files/GUI.py
+Scripts\python.exe start_script.py
