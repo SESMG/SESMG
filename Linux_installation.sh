@@ -41,6 +41,8 @@ pip3 install pyproj
 pip3 install sympy
 pip3 install memory-profiler
 pip3 install scikit-learn-extra
+pip3 install seaborn
+pip3 install matplotlib
 sudo mv feedinlib lib/python3.7/site-packages
 sudo mv windpowerlib lib/python3.7/site-packages
 echo ----------------------
