@@ -1,6 +1,7 @@
 from graphviz import Digraph
 import os
 
+
 def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
     """
         Visualizes the energy system as graph.
@@ -63,6 +64,7 @@ def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
               'links': ['box']}
     bus = {'buses': ['label'], 'sources': ['output'], 'sinks': ['input'],
            'transformers': ['input'], 'storages': ['bus'], 'links': ['bus1']}
+    dh_nodes = []
     for i in bus.keys():
         for j, b in nodes_data[i].iterrows():
             if b['active']:
@@ -90,9 +92,10 @@ def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
                                      height='0.6')
                             # creates additional bus
                             c_bus = b['label'] + '_bus'
-                            c_bus=linebreaks(c_bus)
+                            c_bus = linebreaks(c_bus)
                             dot.node(c_bus, shape='ellipse', fontsize="10")
-                            # Adds edge for transformer, source and bus to the graph
+                            # Adds edge for transformer, source and bus to
+                            # the graph
                             dot.edge(b['input'], transformer)
                             dot.edge(c_bus, transformer)
                             dot.edge(transformer, b['output'])
@@ -101,7 +104,7 @@ def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
                     if b['shortage']:
                         dot.node(label, shape='trapezium', fontsize="10",
                                  fixedsize='shape', width='1.1', height='0.6')
-                        
+                    
                     if b['excess'] and not b['shortage']:
                         dot.node(label, shape='invtrapezium', fontsize="10",
                                  fixedsize='shape', width='1.1', height='0.6')
@@ -118,6 +121,13 @@ def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
                                         ["solar_thermal_flat_plate", "CSP"])) \
                         or i == 'storages' or (i == 'buses' and b['shortage']):
                     dot.edge(label, b[bus[i][0]])
+                if i == "buses":
+                    if b["district heating conn."]:
+                        dot.node("dh-network",
+                                 "dh-network", shape="hexagon")
+                        dot.edge(b["label"], "dh-network")
+                if i == "sinks" and b["district heating"]:
+                    dot.edge("dh-network", b["input"])
                 if i == 'links':
                     dot.edge(label, b['bus2'])
                     if b['(un)directed'] == 'undirected':
@@ -160,4 +170,5 @@ def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
                                  fixedsize='shape', width='1.1', height='0.6')
                         dot.node(b[bus[i][0]], shape='ellipse', fontsize="10")
                         dot.edge(b[bus[i][0]], label)
+    
     dot.render(filepath + '/graph.gv', view=show)
