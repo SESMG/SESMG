@@ -34,6 +34,8 @@ bin/pip3 install dhnx
 bin/pip3 install pyproj
 bin/pip3 install sympy
 bin/pip3 install numpy==1.17.4
+bin/pip3 install memory-profiler
+bin/pip3 install scikit-learn-extra
 brew install graphviz
 mv feedinlib lib/python3.7/site-packages
 mv windpowerlib lib/python3.7/site-packages
