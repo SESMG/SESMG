@@ -266,19 +266,19 @@ class GUI(MethodsGUI):
         # Starts the new Plotly Dash Server for Windows
         if sys.platform.startswith("win"):
             subprocess.call(r"Scripts\python.exe"
-                            + " program_files/Interactive_Results.py "
+                            + " program_files/postprocessing/Interactive_Results.py "
                             + 'r"' + self.gui_variables["save_path"].get()
                             + '"', timeout=10, shell=True)
         # Starts the new Plotly Dash Server for MACOS
         elif sys.platform.startswith("darwin"):
             ir_path = os.path.dirname(os.path.abspath(__file__))
-            subprocess.call("python3 " + os.path.dirname(ir_path) + "/Interactive_Results.py "
+            subprocess.call("python3 " + os.path.dirname(ir_path) + "/postprocessing/Interactive_Results.py "
                             + str(self.gui_variables["save_path"].get()),
                             timeout=10, shell=True)
         # Starts the new Plotly Dash Server for Linux
         elif sys.platform.startswith("linux"):
             ir_path = os.path.dirname(os.path.abspath(__file__))
-            subprocess.call("python3 " + ir_path + "/Interactive_Results.py "
+            subprocess.call("python3 " + os.path.dirname(ir_path) + "/postprocessing/Interactive_Results.py "
                             + str(self.gui_variables["save_path"].get()),
                             timeout=10, shell=True)
     
