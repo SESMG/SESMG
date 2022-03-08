@@ -1564,8 +1564,8 @@ class Transformers:
 
         # Import characteristic equation parameters
         char_para = pd.read_csv(os.path.join(
-            os.path.dirname(__file__)) +
-                                '/technical_data/characteristic_parameters.csv')
+            os.path.dirname(os.path.dirname(__file__)))
+            + '/technical_data/characteristic_parameters.csv')
 
         # creates one oemof-bus object for compression heat transformers
         # depending on mode of operation
