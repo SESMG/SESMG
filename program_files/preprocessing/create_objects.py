@@ -764,6 +764,7 @@ class Sinks:
                                             solph.Flow(
                                                 investment=solph.Investment(
                                                     ep_costs=ep_costs,
+                                                    periodical_constraint_costs=ep_constr_costs,
                                                     minimum=0,
                                                     maximum=max(temp)),
                                                 fix=(timeseries_args["fix"]
