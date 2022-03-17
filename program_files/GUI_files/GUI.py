@@ -5,12 +5,17 @@ from tkinter import ttk
 import subprocess
 import os
 import csv
-from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
+from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
+    import \
+    sesmg_main
 from program_files.GUI_files.urban_district_upscaling_GUI \
     import UpscalingFrameClass
 from program_files.GUI_files.MethodsGUI import MethodsGUI
-import program_files.postprocessing.merge_partial_results as merge_partial_results
+import \
+    program_files.postprocessing.merge_partial_results as merge_partial_results
 import program_files.postprocessing.plotting as plotting
+from program_files.preprocessing.create_energy_system import import_scenario
+
 
 def get_pid():
     """ Returns the ID of the running process on Port 8050 """
@@ -86,7 +91,7 @@ def reload_settings(gui_variables: dict):
         :return: **gui_variables** (dict) - updated dictionary holding \
             GUI settings
     """
-
+    
     with open(os.path.dirname(os.path.dirname(os.path.join(__file__)))
               + "/technical_data/" + 'gui_settings.csv') \
             as csv_file:
@@ -105,7 +110,7 @@ class GUI(MethodsGUI):
     """
     frames = []
     gui_variables = {}
-
+    
     @staticmethod
     def __get_cb_state(checkbox) -> bool:
         """
@@ -120,20 +125,20 @@ class GUI(MethodsGUI):
             return True
         else:
             return False
-
+    
     def show_graph(self):
-        """ 
+        """
             creates and shows a graph of the energy system given by a
-            Spreadsheet - the created graphs are saved in 
-            /results/graphs    
+            Spreadsheet - the created graphs are saved in
+            /results/graphs
         """
         import os
         from program_files.preprocessing import (create_energy_system,
                                                  create_graph)
-    
+        
         # DEFINES PATH OF INPUT DATA
         scenario_file = self.gui_variables["scenario_path"].get()
-    
+        
         # DEFINES PATH OF OUTPUT DATA
         if sys.platform.startswith("win"):
             result_path = os.path.join(os.path.dirname(__file__)
@@ -147,17 +152,17 @@ class GUI(MethodsGUI):
             subprocess.call("chmod +x " + result_path, shell=True)
         else:
             raise ValueError("unsupported operating system")
-    
+        
         # IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
         nodes_data = create_energy_system.import_scenario(
-            filepath=scenario_file)
-    
+                filepath=scenario_file)
+        
         # PRINTS A GRAPH OF THE ENERGY SYSTEM
         create_graph.create_graph(filepath=result_path,
                                   nodes_data=nodes_data,
                                   show=self.gui_variables["graph_state"],
                                   legend=False)
-
+    
     def execute_sesmg(self):
         """
             1. Creates the folder where the results will be saved
@@ -167,7 +172,7 @@ class GUI(MethodsGUI):
         if self.gui_variables["scenario_path"].get():
             # save the choices made in the GUI
             save_settings(self.gui_variables)
-
+            
             # set the timeseries preparation arguments
             timeseries_season = self.gui_variables["timeseries_season"].get()
             timeseries_prep_param = \
@@ -179,41 +184,50 @@ class GUI(MethodsGUI):
             limits = self.gui_variables["limits_pareto"].get().split(",")
             print(limits)
             result_folders = {"1": []}
-            for scenario in self.gui_variables["scenario_path"].get().split("\n"):
+            for scenario in self.gui_variables["scenario_path"].get().split(
+                    "\n"):
                 # set the save path
                 scenario_name = os.path.basename(scenario)[:-5]
                 self.gui_variables["save_path"].set(
-                    str(os.path.join(self.gui_variables[
-                                         "save_path_directory"].get()) + '/'
-                        + scenario_name
-                        + str(datetime.now().strftime('_%Y-%m-%d--%H-%M-%S'))))
-                result_folders["1"].append(self.gui_variables["save_path"].get())
+                        str(os.path.join(self.gui_variables[
+                                             "save_path_directory"].get()) +
+                            '/'
+                            + scenario_name
+                            + str(
+                            datetime.now().strftime('_%Y-%m-%d--%H-%M-%S'))))
+                result_folders["1"].append(
+                    self.gui_variables["save_path"].get())
+                print(result_folders["1"])
                 # create new folder in which the results will be stored
                 os.mkdir(self.gui_variables["save_path"].get())
                 # execute SESMG algorithm
                 sesmg_main(
-                    scenario_file=scenario,
-                    result_path=self.gui_variables["save_path"].get(),
-                    num_threads=self.gui_variables["num_threads"].get(),
-                    timeseries_prep=timeseries_prep_param,
-                    graph=self.__get_cb_state(self.gui_variables["graph_state"]),
-                    criterion_switch=self.__get_cb_state(
-                        self.gui_variables["criterion_state"]),
-                    xlsx_results=self.__get_cb_state(
-                        self.gui_variables["xlsx_select_state"]),
-                    console_results=self.__get_cb_state(
-                        self.gui_variables["console_select_state"]),
-                    solver=self.gui_variables["solver_select"].get(),
-                    district_heating_path=self.gui_variables["dh_path"].get(),
-                    cluster_dh=self.gui_variables["cluster_dh"].get())
-            if len(limits) > 1:
+                        scenario_file=scenario,
+                        result_path=self.gui_variables["save_path"].get(),
+                        num_threads=self.gui_variables["num_threads"].get(),
+                        timeseries_prep=timeseries_prep_param,
+                        graph=self.__get_cb_state(
+                                self.gui_variables["graph_state"]),
+                        criterion_switch=self.__get_cb_state(
+                                self.gui_variables["criterion_state"]),
+                        xlsx_results=self.__get_cb_state(
+                                self.gui_variables["xlsx_select_state"]),
+                        console_results=self.__get_cb_state(
+                                self.gui_variables["console_select_state"]),
+                        solver=self.gui_variables["solver_select"].get(),
+                        district_heating_path=self.gui_variables[
+                            "dh_path"].get(),
+                        cluster_dh=self.gui_variables["cluster_dh"].get())
+            if len(limits) > 1 or limits[0] != "":
                 print("100% scenarios finished")
-                constraints = merge_partial_results.get_constraints(result_folders)
+                constraints = merge_partial_results.get_constraints(
+                    result_folders)
                 files, path = \
                     merge_partial_results.create_transformation_scenarios(
-                        constraints,
-                        self.gui_variables["scenario_path"].get().split("\n"),
-                        result_folders, limits)
+                            constraints,
+                            self.gui_variables["scenario_path"].get().split(
+                                "\n"),
+                            result_folders, limits)
                 result_folders = \
                     merge_partial_results.run_pareto(
                             limits, files, self.gui_variables,
@@ -221,11 +235,13 @@ class GUI(MethodsGUI):
                 # TODO merge components or not
                 dfs = merge_partial_results.merge_component_csvs(
                         limits, files, path, result_folders)
-                plotting.create_pareto_plot(dfs.values())
+                plotting.create_pareto_plot(dfs.values(), path)
+                plotting.create_energy_amount_plot_elec(
+                        dfs, path, import_scenario(scenario), self, tab_control)
             # start algorithm for creation of plotly dash
             if self.gui_variables["plotly_select_state"].get() == 1:
                 self.show_results()
-
+        
         else:
             print('Please select scenario first!')
             self.gui_variables["scenario_path"].set(
@@ -240,7 +256,7 @@ class GUI(MethodsGUI):
         if self.gui_variables["save_path"].get() == '':
             raise SystemError('No optimization since the last restart'
                               ' please select a result folder!')
-    
+        
         # Determines the ID of a still running process on port 8050.
         pid = get_pid()
         # Checks if the ID is not an empty return (no process available)
@@ -262,7 +278,7 @@ class GUI(MethodsGUI):
                 subprocess.call("open http://127.0.0.1:8050", shell=True)
             elif sys.platform.startswith("linux"):
                 subprocess.call("xdg-open http://127.0.0.1:8050", shell=True)
-    
+        
         # Starts the new Plotly Dash Server for Windows
         if sys.platform.startswith("win"):
             subprocess.call(r"Scripts\python.exe"
@@ -272,13 +288,15 @@ class GUI(MethodsGUI):
         # Starts the new Plotly Dash Server for MACOS
         elif sys.platform.startswith("darwin"):
             ir_path = os.path.dirname(os.path.abspath(__file__))
-            subprocess.call("python3 " + os.path.dirname(ir_path) + "/postprocessing/Interactive_Results.py "
+            subprocess.call("python3 " + os.path.dirname(
+                ir_path) + "/postprocessing/Interactive_Results.py "
                             + str(self.gui_variables["save_path"].get()),
                             timeout=10, shell=True)
         # Starts the new Plotly Dash Server for Linux
         elif sys.platform.startswith("linux"):
             ir_path = os.path.dirname(os.path.abspath(__file__))
-            subprocess.call("python3 " + os.path.dirname(ir_path) + "/postprocessing/Interactive_Results.py "
+            subprocess.call("python3 " + os.path.dirname(
+                ir_path) + "/postprocessing/Interactive_Results.py "
                             + str(self.gui_variables["save_path"].get()),
                             timeout=10, shell=True)
     
@@ -288,6 +306,7 @@ class GUI(MethodsGUI):
                 "SESMG - Spreadsheet Energy System Model Generator",
                 "0.x",
                 "1200x1050")
+        global tab_control
         tab_control = ttk.Notebook(self)
         tab_control.pack(expand=1, fill='both')
         tab_control.pressed_index = None
@@ -347,17 +366,18 @@ class GUI(MethodsGUI):
         self.create_heading(self.frames[0], 'Modeling', 0, 0, "w", True)
         # Scenario selection line
         self.create_button_lines(
-            self.frames[0],
-            {'Select scenario file':
-                [lambda: self.get_path("xlsx",
-                                       self.gui_variables["scenario_path"]),
-                 'Change', 'scenario_path']}, 1, self.gui_variables)
-
+                self.frames[0],
+                {'Select scenario file':
+                     [lambda: self.get_path("xlsx",
+                                            self.gui_variables[
+                                                "scenario_path"]),
+                      'Change', 'scenario_path']}, 1, self.gui_variables)
+        
         # TimeSeries Prep Menu
         timeseries_algorithm_list = \
-            ["none", "k_means", "k_medoids", "averaging", "slicing A", "slicing B",
-             "downsampling A", "downsampling B", "heuristic selection",
-             "random sampling"]
+            ["none", "k_means", "k_medoids", "averaging", "slicing A",
+             "slicing B", "downsampling A", "downsampling B",
+             "heuristic selection", "random sampling"]
         
         timeseries_cluster_criteria = \
             ["temperature", "dhi", "el_demand_sum", "heat_demand_sum"]
@@ -396,7 +416,8 @@ class GUI(MethodsGUI):
                                 ["cbc", "gurobi"], 1, row)
         row += 1
         self.create_heading(self.frames[0], 'Pareto limits', 0, row, "w")
-        self.create_entry(self.frames[0], row, self.gui_variables["limits_pareto"])
+        self.create_entry(self.frames[0], row,
+                          self.gui_variables["limits_pareto"])
         
         row += 1
         # result checkboxes
@@ -409,7 +430,7 @@ class GUI(MethodsGUI):
             'Clustering DH': "cluster_dh"}
         row = self.create_cb_lines(self.frames[0], checkboxes_parameters, row,
                                    self.gui_variables) + 1
-
+        
         self.create_heading(self.frames[0], 'Execution', 0, row, "w", True)
         # execution buttons
         row += 1
@@ -429,8 +450,9 @@ class GUI(MethodsGUI):
         row += 1
         analyzing_elements = \
             {'Select scenario result folder':
-             [lambda: self.get_path("folder", self.gui_variables["save_path"]),
-              'Change', "save_path"],
+                 [lambda: self.get_path("folder",
+                                        self.gui_variables["save_path"]),
+                  'Change', "save_path"],
              'Start Plotly': [self.show_results, 'Execute', '']}
         self.create_button_lines(self.frames[0], analyzing_elements, row,
                                  self.gui_variables)
@@ -455,5 +477,5 @@ class GUI(MethodsGUI):
         # img = img.subsample(2, 2)
         # lab = Label(master=demo_frame, image=img)\
         #         .grid(column=0, columnspan=4, row=19, rowspan=40)
-        
+
         self.mainloop()
