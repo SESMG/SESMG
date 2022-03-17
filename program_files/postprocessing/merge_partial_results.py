@@ -34,7 +34,7 @@ def merge_component_csvs(limits, files, directory, result_folders):
         for dataframe in components_csvs[limit]:
             dataframe = \
                 dataframe.replace(to_replace="---", value=0)
-            result_df = result_df.append(dataframe)
+            result_df = result_df.append(dataframe, sort=True)
         for col in result_df.keys():
             if not (str(col) == "ID" or str(col) == "type"):
                 result_df[str(col)] = result_df[str(col)].astype(float)
@@ -131,7 +131,6 @@ def create_transformation_scenarios(constraints, scenario_names, result_path,
 
 
 if __name__ == "__main__":
-    merge_components_csv(
-        ['../../results/auto_generated_scenario_2022-03-01--15-00-57',
-         '../../results/auto_generated_scenario_no1_2022-03-01--15-01-24']
+    merge_component_csvs([], "", "/Users/gregorbecker/Desktop/SESMG-dev_open_district_upscaling-3/results",
+                          {"1": ["results/a_test", "results/b_test", "results/c_test"]}
 )
