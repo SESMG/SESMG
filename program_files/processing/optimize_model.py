@@ -131,6 +131,32 @@ def competition_constraint(om, nd, energy_system):
     return om
 
 
+def constraint_optimization_of_criterion_adherence_to_a_minval(
+        om: solph.Model, limit: float) -> solph.Model:
+    
+    import pyomo.environ as po
+    from oemof.solph.plumbing import sequence
+    flows = {}
+    for (i, o) in om.flows:
+        if hasattr(om.flows[i, o].investment, "constraint2"):
+            flows[(i, o)] = om.flows[i, o].investment
+    
+    limit_name = "invest_limit_" + "space2"
+    
+    setattr(om, limit_name, po.Expression(
+            expr=sum(om.flow[inflow, outflow, t]
+                     * om.timeincrement[t]
+                     * sequence(getattr(flows[inflow, outflow],
+                                        "constraint2"))[t]
+                     for (inflow, outflow) in flows
+                     for t in om.TIMESTEPS)))
+
+    setattr(om, limit_name + "_constraint2", po.Constraint(
+            expr=((getattr(om, limit_name) >= limit))))
+    
+    return om
+    
+    
 def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
                      nodes_data: dict, busd: dict, solver: str) -> solph.Model:
     """
@@ -173,6 +199,14 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
         limit = float(next(nodes_data["energysystem"].iterrows())[1]
                       ["constraint cost limit"])
         om = constraint_optimization_against_two_values(om, limit)
+    if (str(next(nodes_data["energysystem"].iterrows())[1]
+            ["minimum final energy reduction"]) != 'none'
+            and
+            str(next(nodes_data["energysystem"].iterrows())[1]
+                ["minimum final energy reduction"]) != 'None'):
+        limit = float(next(nodes_data["energysystem"].iterrows())[1]
+                      ["minimum final energy reduction"])
+        om = constraint_optimization_of_criterion_adherence_to_a_minval(om, limit)
    
     # limit for two given outflows e.g area_competition
     if "competition constraints" in nodes_data:
