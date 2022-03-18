@@ -11,6 +11,7 @@ from oemof import solph
 from matplotlib import pyplot as plt
 import os
 import dhnx
+import program_files.postprocessing.plotting as plotting
 
 
 def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str):
@@ -50,28 +51,33 @@ def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str):
     # Bus xlsx-files for district heating busses
     results_copy = results.copy()
     components = []
+    # iterate threw result keys to find district heating buses
     for i in results.keys():
         if 'tag1=' not in str(i):
             results_copy.pop(i)
+    # determine only the district heating buses from result_copy
     for i in results_copy.keys():
         if i[0] not in components and i[0] is not None:
-            if "bus" in str(i[0]):
+            if "bus" in str(i[0]) and "dh_source_link" not in str(i[0]):
                 components.append(i[0])
         if i[1] not in components and i[1] is not None:
-            if "bus" in str(i[1]):
+            if "bus" in str(i[1]) and "dh_source_link" not in str(i[1]):
                 components.append(i[1])
     for component in components:
+        # renaming label for better file names
+        label = str(component).replace("infrastructure_heat_bus",
+                                       "districtheating")
+        label = label.replace("consumers_heat_bus", "districtheating")
+        label = label.replace("producers_heat_bus", "districtheating")
         file_path = \
-            os.path.join(filepath, 'results_' + str(component) + '.xlsx')
+            os.path.join(filepath, 'results_' + str(label) + '.xlsx')
         node_results = solph.views.node(results, str(component))
         df = node_results['sequences']
         df.head(2)
-        sheet_name = str(component).replace("infrastructure", "infras.")
-        sheet_name = sheet_name.replace("consumers", "cons.")
         with pd.ExcelWriter(file_path) as writer:  # doctest: +SKIP
-            df.to_excel(writer, sheet_name=sheet_name)
+            df.to_excel(writer, sheet_name=label)
         # returns logging info
-        logging.info('   ' + 'Results saved as xlsx for ' + str(component))
+        logging.info('\t Results saved as xlsx for ' + str(label))
 
 
 def charts(nodes_data: dict, optimization_model: solph.Model,
@@ -263,14 +269,16 @@ class Results:
                                              ['scalars']['invest'])
         return component_investment
 
-    def get_dh_investment(self, label):
+    def get_dh_investment(self, label, pipe_labels):
         component_invest = 0
         if "bus" not in str(type(label)):
             for i in self.results.keys():
                 node_1 = self.esys.groups[str(i[0])]
-                if "link-dhnx-" in str(i[0]):
+                # calculate investment for district heat house station
+                if "link-dhnx-" in str(i[0]) \
+                        or "dh_heat_house_station" in str(i[0]):
                     if str(label) in str(i[0]):
-                        if "consumers" in str(i[1]):
+                        if str(type(i[1])) == "<class 'oemof.solph.network.bus.Bus'>":
                             node_1 = self.esys.groups[str(i[0])]
                             node_2 = self.esys.groups[str(i[1])]
                             component_invest = (self.results[node_1, node_2]
@@ -281,24 +289,79 @@ class Results:
                             node_2 = self.esys.groups[str(i[1])]
                             component_invest = (self.results[node_1, node_2]
                             ["scalars"]["invest"])
-        # TODO remove Diameter from code
-        if "infrastructure" in str(label) and "Diameter-100" in str(label):
-            for key in self.results.keys():
-                if key[1] is not None:
-                    if str(key[0].label) == str(label):
-                        try:
-                            component_invest = \
-                            self.results[key]["scalars"][
-                                "invest"]
-                        except (KeyError, IndexError):
+        
+        if "infrastructure" in str(label):
+            pipe_type = str(label).split("_")[2]
+            if pipe_type in pipe_labels:
+                for key in self.results.keys():
+                    if key[1] is not None:
+                        if str(key[0].label) == str(label):
                             try:
                                 component_invest = \
-                                self.results[key][
-                                    "scalars"]["invest"][0]
+                                self.results[key]["scalars"][
+                                    "invest"]
                             except (KeyError, IndexError):
-                                component_invest = 0
+                                try:
+                                    component_invest = \
+                                    self.results[key][
+                                        "scalars"]["invest"][0]
+                                except (KeyError, IndexError):
+                                    component_invest = 0
         return component_invest
-
+    
+    @staticmethod
+    def determine_pipe_type(component, pipes_param):
+        if "forks" in str(component):
+            component_strlist = str(component).split("-")
+            diameter = str(component_strlist[0]).split("_")[2]
+            if "consumers" in str(component_strlist[-2]):
+                for num, consumer in pipes_param.iterrows():
+                    if "consumers" in consumer["to_node"]:
+                        name = (consumer["street"] + "_" + str(diameter) + "_f"
+                                + str(component_strlist[-3])
+                                + "_to_c" + str(component_strlist[-1]))
+                        length_list = [
+                            "forks-{}".format(component_strlist[-3]),
+                            "consumers-{}".format(component_strlist[-1])]
+            elif "producers" in component_strlist[-4]:
+                for num, pipe in pipes_param.iterrows():
+                    if pipe["from_node"] == "producers-{}".format(
+                            component_strlist[-3]) \
+                            and pipe["to_node"] == "forks-{}".format(
+                            component_strlist[-1]):
+                        name = ("producer" + pipe["street"] + "_" + str(
+                            diameter) + "_p" + str(component_strlist[-3])
+                                + "_to_f"+ str(component_strlist[-1]))
+                        length_list = [
+                            "producers-{}".format(component_strlist[-3]),
+                            "forks-{}".format(component_strlist[-1])]
+            else:
+                for num, pipe in pipes_param.iterrows():
+                    if "forks-{}".format(component_strlist[-3]) == pipe[
+                        "from_node"] \
+                            and "forks-{}".format(component_strlist[-1]) == \
+                            pipe["to_node"]:
+                        name = (pipe["street"] + "_" + str(diameter) + "_f"
+                                + str(component_strlist[-3]
+                                + "_to_f" +component_strlist[-1]))
+                        length_list = [
+                            "forks-{}".format(component_strlist[-3]),
+                            "forks-{}".format(component_strlist[-1])]
+                    elif "forks-{}".format(component_strlist[-1]) == pipe[
+                        "from_node"] \
+                            and "forks-{}".format(component_strlist[-3]) == \
+                            pipe["to_node"]:
+                        name = (pipe["street"] + "_revers_" + str(diameter)
+                                + "_f" + str(component_strlist[-3]) + "_to_f"
+                                + str(component_strlist[-1]))
+                        length_list = [
+                            "forks-{}".format(component_strlist[-3]),
+                            "forks-{}".format(component_strlist[-1])]
+        else:
+            name = str(component)
+            length_list = None
+        return name, length_list
+        
     def calc_constraint_costs(self, comp, investment=None, comp_type=None):
         # get flow values
         inflow1 = 0 if self.comp_input1 is None else self.comp_input1.sum()
@@ -697,12 +760,16 @@ class Results:
                             input_bus = comp["input"]
                             for num, insulation in \
                                     nodes_data[
-                                        "energetic_renovation"].iterrows():
+                                        "insulation"].iterrows():
                                 if insulation["sink"] == comp["label"] \
                                         and insulation["active"]:
                                     comp_type = "insulation"
                                     if not (insulation["U-value old"] ==
                                             insulation["U-value new"]):
+                                        insul = solph.views.node(
+                                            self.results, "insulation-{}".format(insulation["label"]))
+                                        input1 -= \
+                                            insul['sequences'][(("insulation-{}".format(insulation["label"]), input_bus), 'flow')]
                                         investment = \
                                             self.results[self.esys.groups[
                                                 "insulation-"
@@ -732,6 +799,8 @@ class Results:
                                             investment=investment,
                                             maxinvest="---",
                                             constraints=constraint_costs)
+                                    periodical_costs = None
+                                    constraint_costs = None
                             self.comp_input1 = input1.copy()
                         investment = None
                         capacity = round(self.comp_input1.max(), 2)
@@ -904,11 +973,14 @@ class Results:
             self.log_category("DISTRICT HEATING")
         results = self.results.copy()
         components = []
+        # iterate threw result keys extracting the district heating results
         for i in self.results.keys():
             if 'dh_heat_house_station' not in str(i) and "tag1=" not in str(i)\
                     and "consumers_connection_dh" not in str(i) \
-                    and "clustered_consumers" not in str(i):
+                    and "clustered_consumers" not in str(i)\
+                    and "dh_source_link" not in str(i):
                 results.pop(i)
+        # differentiate buses from house stations, heatpipes etc.
         for i in results.keys():
             if i[0] not in components:
                 if i[0] is not None:
@@ -919,15 +991,14 @@ class Results:
                         "<class 'oemof.solph.network.transformer.Transformer'>":
                     components.append(i[1])
         for i in range(len(components)):
-            if "clustered_consumer" not in str(components[i]) \
-                    and "-" in str(components[i]):
+            if "clustered_consumer" not in str(components[i]):
                 variable_costs = None
                 constraint_costs = None
                 transformer_type = None
                 investment = None
                 periodical_costs = None
                 if console_log:
-                    logging.info('   ' + str(components[i]))
+                    logging.info('\t ' + str(components[i]))
                 component = solph.views.node(self.results,
                                              str(components[i]))
                 # create class intern dataframes consisting the flows
@@ -935,7 +1006,11 @@ class Results:
                 self.create_flow_dataframes(component,
                                             district_heating=
                                             {"label": str(components[i])})
-                investment = self.get_dh_investment(components[i])
+                pipe_types = \
+                    pd.read_csv("program_files/technical_data"
+                                "/district_heating/pipes.csv",
+                                index_col="label_3")
+                investment = self.get_dh_investment(components[i], pipe_labels=pipe_types.index)
                 if investment > 0:
                     investments_to_be_made[str(components[i])] = \
                         (str(round(investment, 2)) + ' kW')
@@ -943,32 +1018,12 @@ class Results:
                     investment = None
                 # get length of pipes
                 length_list = []
+                pipes_esys = pd.read_csv(result_path + "/pipes.csv",
+                                    index_col="id")
+                # checks rather an input flow for the given component was found
                 if self.comp_input1 is not None:
-                    if "forks" in str(components[i]):
-                        list = str(components[i]).split("-")
-                        if "consumers" in str(list[-2]):
-                            name = ("heatp.-"
-                                    + str(list[1])
-                                    + "-f{}".format(list[-3]) + "-to"
-                                    + "-c{}".format(list[-1]))
-                            length_list = ["forks-{}".format(list[-3]),
-                                           "consumers-{}".format(list[-1])]
-                        elif "producers" in list[1]:
-                            name = ("heatp.-"
-                                    + str(list[1])
-                                    + "-p{}".format(list[-3]) + "-to"
-                                    + "-f{}".format(list[-1]))
-                            length_list = ["producers-{}".format(list[-3]),
-                                           "forks-{}".format(list[-1])]
-                        else:
-                            name = ("heatp.-"
-                                    + str(list[1])
-                                    + "-f{}".format(list[-3]) + "-to"
-                                    + "-f{}".format(list[-1]))
-                            length_list = ["forks-{}".format(list[-3]),
-                                           "forks-{}".format(list[-1])]
-                    else:
-                        name = str(components[i])
+                    name, length_list = \
+                        self.determine_pipe_type(components[i], pipes_esys)
                     self.df_result_table[
                         name + "-input"] = self.comp_input1
                 else:
@@ -986,10 +1041,7 @@ class Results:
                     pd.read_csv("program_files/technical_data"
                                 "/district_heating/component_parameters.csv",
                                 index_col="label")
-                pipes_param = \
-                    pd.read_csv("program_files/technical_data"
-                                "/district_heating/pipes.csv",
-                                index_col="label_3")
+
                 # TODO linearisierter Kostenfaktor
                 if "infrastructure" in str(components[i]) \
                         or "link-dhnx-c" in str(components[i]):
@@ -1012,11 +1064,13 @@ class Results:
                             label = str(components[i]).split("_")[2]
                             periodical_costs = (
                                 investment
-                                * float(pipes_param.loc[label]["capex_pipes"])
+                                * float(pipe_types.loc[label]["capex_pipes"]
+                                        if pipe_types.loc[label]["capex_pipes"]!= 0
+                                        else pipe_types.loc[label]["fix_costs"])
                                 * float(length))
                             constraint_costs = (
                                 investment
-                                * float(pipes_param.loc[label]
+                                * float(pipe_types.loc[label]
                                         ["periodical_constraint_costs"])
                                 * float(length))
                         total_periodical_costs += periodical_costs
@@ -1037,8 +1091,12 @@ class Results:
                     periodical_costs = None
 
                 if self.comp_output2 is not None:
-                    self.df_result_table[
-                        name + "-output"] = self.comp_output2
+                    if str(name + "-ouput") not in self.df_result_table.keys():
+                        self.df_result_table[
+                            name + "-output"] = self.comp_output2
+                    else:
+                        self.df_result_table[
+                            name + "-output2"] = self.comp_output2
                 if self.comp_input2 is not None:
                     self.df_result_table[
                         name + "-input2"] = self.comp_input2
