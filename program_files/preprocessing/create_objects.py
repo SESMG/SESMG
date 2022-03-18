@@ -765,6 +765,7 @@ class Sinks:
                                                 investment=solph.Investment(
                                                     ep_costs=ep_costs,
                                                     periodical_constraint_costs=ep_constr_costs,
+                                                    constraint2=1,
                                                     minimum=0,
                                                     maximum=max(temp)),
                                                 fix=(timeseries_args["fix"]
@@ -1075,7 +1076,7 @@ class Sinks:
         # appends created sinks on the list of nodes
         for i in range(len(self.nodes_sinks)):
             nodes.append(self.nodes_sinks[i])
-        nodes_data["energetic_renovation"] = self.energetic_renovation.copy()
+        nodes_data["insulation"] = self.energetic_renovation.copy()
 
 
 class Transformers:
