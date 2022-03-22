@@ -1076,6 +1076,40 @@ def hierarchical_selection(nodes_data, scheme, period, seasons, scheme_path):
 
         return average_data
 
+    def reorder_weather_data():
+        """
+            reorder weather data set due to the meteorological beginning
+            of winter on the 01.12.
+        """
+        old_start_date = nodes_data['energysystem']['start date'][1]
+        old_end_date = nodes_data['energysystem']['end date'][1]
+        if int(old_end_date.day) == 30:
+            nodes_data['energysystem'][
+                'start date'] = datetime.datetime.strptime(
+                str(int(old_start_date.year) - 1) + "-12-02 00:00:00",
+                '%Y-%m-%d %H:%M:%S')
+        else:
+            nodes_data['energysystem'][
+                'start date'] = datetime.datetime.strptime(
+                str(int(old_start_date.year) - 1) + "-12-01 00:00:00",
+                '%Y-%m-%d %H:%M:%S')
+        nodes_data['energysystem']['end date'] = datetime.datetime.strptime(
+            str(old_end_date.year) + "-11-30 23:00:00", '%Y-%m-%d %H:%M:%S')
+        nodes_data["timeseries"] = append_timeseries_to_weatherdata_sheet(
+            nodes_data)
+        old_timeseries = nodes_data["timeseries"].copy()
+
+        nodes_data["timeseries"] = old_timeseries[-30 * 24:]
+        nodes_data["timeseries"] = nodes_data["timeseries"].append(
+            old_timeseries[:-30 * 24])
+
+        for i in range(8040, 8759):
+            nodes_data['timeseries'].loc[i, 'timestamp'] = \
+            nodes_data['timeseries']['timestamp'][i].replace(
+                year=int(old_start_date.year - 1))
+        nodes_data["timeseries"].reset_index(inplace=True, drop=False)
+        nodes_data["weather data"] = nodes_data["timeseries"].copy()
+
     def create_period_weather_data(period: str):
         """
              Splits the weather data_set in nodes_data into weekly od
@@ -1207,7 +1241,7 @@ def hierarchical_selection(nodes_data, scheme, period, seasons, scheme_path):
                 prep_weather_data = prep_weather_data.append(selected_week)
 
         return prep_weather_data
-
+    reorder_weather_data()
     period_data_slices = create_period_weather_data(period)
     season_data = create_period_season_weather_data(period_data_slices,
                                                     seasons=seasons)
@@ -1367,8 +1401,9 @@ def timeseries_preparation(timeseries_prep_param: list,
     cluster_period = timeseries_prep_param[3]
     cluster_seasons = int(timeseries_prep_param[4])
 
-    # Adapting Standard Load Profile-Sinks
-    slp_sink_adaption(nodes_data)
+    if data_prep != 'none':
+        # Adapting Standard Load Profile-Sinks
+        slp_sink_adaption(nodes_data)
 
     # K-MEANS ALGORITHM
     if data_prep == 'k_means':
