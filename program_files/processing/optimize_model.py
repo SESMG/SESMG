@@ -34,6 +34,18 @@ def constraint_optimization_against_two_values(om: solph.Model,
                          "periodical_constraint_costs")
                  for (inflow, outflow) in invest_flows
                  )))
+    invest_flows2 = {}
+    for (i, o) in om.flows:
+        if hasattr(om.flows[i, o].investment, "fix_constraint_costs"):
+            invest_flows2[(i, o)] = om.flows[i, o].investment
+    print(invest_flows2)
+
+    limit_name4 = "invest_limit_" + "nonconvex"
+
+    setattr(om, limit_name4, po.Expression(
+        expr=sum(getattr(invest_flows2[inflow, outflow],
+                         "fix_constraint_costs")
+                 )))
 
     ############
     flows = {}
@@ -53,18 +65,27 @@ def constraint_optimization_against_two_values(om: solph.Model,
     
     ############
     comp = {}
+    comp_fix = {}
     for num in om.GenericInvestmentStorageBlock.INVESTSTORAGES.data():
         if hasattr(num.investment, "periodical_constraint_costs"):
             comp[num] = num.investment
+        if hasattr(num.investment, "fix_constraint_costs"):
+            comp_fix[num] = num.investment
     limit_name2 = "invest_limit_storage"
     setattr(om, limit_name2, po.Expression(
             expr=sum(om.GenericInvestmentStorageBlock.invest[num]
                      * getattr(comp[num], "periodical_constraint_costs")
                      for num in comp)))
+    limit_name3 = "invest_limit_fix_storage"
+    setattr(om, limit_name3, po.Expression(
+        expr=sum(getattr(comp[num], "fix_constraint_costs")
+                 for num in comp)))
 
     setattr(om, limit_name + "_constraint", po.Constraint(
             expr=((getattr(om, limit_name) + getattr(om, limit_name1)
-                   + getattr(om, limit_name2)) <= limit)))
+                   + getattr(om, limit_name2) + getattr(om, limit_name4)
+                   + getattr(om, limit_name3))
+                  <= limit)))
 
     return om
 

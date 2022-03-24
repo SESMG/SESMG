@@ -228,7 +228,8 @@ class Sources:
                         so['non-convex investment'] == 1
                         else False,
                         offset=so[
-                            'fix investment costs']),
+                            'fix investment costs'],
+                        fix_constraint_costs=so["fix investment constraint costs"]),
                     **timeseries_args,
                     variable_costs=so['variable costs'],
                     emission_factor=so[
@@ -841,7 +842,7 @@ class Sinks:
                          'max': nodes_data[de['label'] + '.max'].tolist()})
         elif de['fixed'] == 1:
             # sets the attributes for a fixed time_series sink
-            args.update({'fix': nodes_data[de['label'] + '.fix'].tolist()})
+            args.update({'fix': nodes_data[de['label'] + '.fix']})
         # starts the create_sink method with the parameters set before
         self.create_sink(de, args)
 
@@ -1165,7 +1166,9 @@ class Transformers:
                     existing=tf['existing capacity'],
                     nonconvex=True if
                     tf['non-convex investment'] == 1 else False,
-                    offset=tf['fix investment costs']))}
+                    offset=tf['fix investment costs'],
+                    fix_constraint_costs=tf["fix investment constraint costs"])
+            )}
         conversion_factors = {self.busd[tf['output']]: tf['efficiency']}
         # Defines Capacity values for the second transformer output
         if tf['output2'] not in ['None', 'none', 0]:
@@ -1191,10 +1194,7 @@ class Transformers:
                         minimum=minimum_capacity2,
                         maximum=maximum_capacity2
                         if tf['max. investment capacity'] != "inf"
-                        else float("+inf"),
-                        nonconvex=True if
-                        tf['non-convex investment'] == 1 else False,
-                        offset=tf['fix investment costs']))})
+                        else float("+inf")))})
             conversion_factors.update(
                 {self.busd[tf['output2']]: tf['efficiency2']})
         outputs = {"outputs": outputs}
@@ -1410,7 +1410,13 @@ class Transformers:
                 else float("+inf"),
                 periodical_constraint_costs=tf[
                     'periodical constraint costs'],
-                existing=tf['existing capacity']))}}
+                existing=tf['existing capacity'],
+                nonconvex=True if
+                tf['non-convex investment'] == 1 else False,
+                offset=tf['fix investment costs'],
+                fix_constraint_costs=tf[
+                    "fix investment constraint costs"]
+            ))}}
         conversion_factors = {
             "conversion_factors": {
                 self.busd[tf['label'] + temp + '_bus']:
@@ -1491,7 +1497,9 @@ class Transformers:
                         existing=tf['existing capacity'],
                         nonconvex=True if
                         tf['non-convex investment'] == 1 else False,
-                        offset=tf['fix investment costs']
+                        offset=tf['fix investment costs'],
+                        fix_constraint_costs=tf[
+                            "fix investment constraint costs"]
                     ),
                     P_max_woDH=[
                         tf['max. electric power without district '
@@ -1809,7 +1817,9 @@ class Storages:
                     else float("+inf"),
                     nonconvex=True if
                     s['non-convex investment'] == 1 else False,
-                    offset=s['fix investment costs'])))
+                    offset=s['fix investment costs'],
+                    fix_constraint_costs=s["fix investment constraint costs"]))
+        )
 
         # returns logging info
         logging.info('   ' + 'Storage created: ' + s['label'])
@@ -1878,7 +1888,9 @@ class Storages:
                     else float("+inf"),
                     nonconvex=True if
                     s['non-convex investment'] == 1 else False,
-                    offset=s['fix investment costs'])))
+                    offset=s['fix investment costs'],
+                    fix_constraint_costs=s["fix investment constraint costs"])
+            ))
         # returns logging info
         logging.info('   ' + 'Storage created: ' + s['label'])
 
@@ -1976,7 +1988,9 @@ class Links:
                             link['non-convex investment'] == 1
                             else False,
                             offset=link[
-                                'fix investment costs'])),
+                                'fix investment costs'],
+                            fix_constraint_costs=link[
+                                "fix investment constraint costs"])),
                         self.busd[link['bus1']]: solph.Flow(
                             variable_costs=
                             link['variable output costs'],
@@ -1992,12 +2006,7 @@ class Links:
                                 if link['max. investment capacity'] != "inf"
                                 else float("+inf"),
                                 existing=link[
-                                    'existing capacity'],
-                                nonconvex=True if
-                                link['non-convex investment'] == 1
-                                else False,
-                                offset=link[
-                                    'fix investment costs'])), },
+                                    'existing capacity'],))},
                     conversion_factors={
                         (self.busd[link['bus1']],
                          self.busd[link['bus2']]): link['efficiency'],
