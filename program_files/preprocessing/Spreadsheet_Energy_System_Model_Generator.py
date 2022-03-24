@@ -134,7 +134,7 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
                            r'_schemes.xlsx')
     else:
         scheme_path = \
-            os.path.join(os.path.dirname(__file__)
+            os.path.join(os.path.dirname(os.path.dirname(__file__))
                          + r'/technical_data/hierarchical_selection'
                            r'_schemes.xlsx')
     # Timeseries Preprocessing
