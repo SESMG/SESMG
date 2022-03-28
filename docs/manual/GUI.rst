@@ -94,6 +94,22 @@ heuristic selection
 ^^^^^^^^^^^^^^^^^^^^^
 "In heuristic selection, representative time periods of a time series are selected from certain selection criteria" [1] "Based on the approach of Poncelet et al. heuristic selection scheme[s are] carried out" [1]
 
+Available selection schemes:
+
++--------+---------+-------------------------------+--------------+------------------+---------------------+
+| index  | period  | criterion                     | temperature  | solar radiation  | electricity demand  |
++========+=========+===============================+==============+==================+=====================+
+| 1      | 2       | year                          | hp, lv       | --               | --                  |
+| 2      | 4       | year                          | hp, lv       | ha, la           | --                  |
+| 3      | 8       | summer, winter                | hp, lv       | ha, la           | --                  |
+| 4      | 16      | winter, spring, summer, fall  | hp, lv       | ha, la           | --                  |
+| 5      | 24      | winter, spring, summer, fall  | hp, lv       | ha, la           | ha, la              |
++--------+---------+-------------------------------+--------------+------------------+---------------------+
+Acronyms: hp=highest peak, lv=lowest valley, ha=highest average, la=lowest average
+
+
+Furthere schemes can be added here: https://github.com/chrklemm/SESMG/blob/master/program_files/technical_data/hierarchical_selection_schemes.xlsx
+
 
 random sampling
 ^^^^^^^^^^^^^^^^^^^^^
