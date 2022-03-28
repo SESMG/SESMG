@@ -74,6 +74,34 @@ The following algorithms are applicable and must be specified with the following
 	:file: ../manual/timeseries_preparation.csv
 	:header-rows: 1
 
+k-means / k-medoids
+^^^^^^^^^^^^^^^^^^^^^
+"The k-clustering algorithm divides a time series into a given number k of clusters so that the squared deviation of the cluster centers of gravity is minimal. The procedure is well described by Green et al. [2]. k-means-clustering as well as k-medoids-clustering are carried out using the python libraries ``scikit-learn'', respectively ``scikit-learn-extra''." [1] Different cluster criteria (1. temperature, 2. solar radiation, 3. electricity demand) as well as different periods (days and weeks) can be applied. To apply the criterion "electricity demand", a column "el_demand_sum" must be inserted in the scenario.xlsx file in the weather-data sheet, which defines the reference consumption.
+
+averaging
+^^^^^^^^^^^^^^^^^^^^^
+"In averaging, successive time periods (e.g. two consecutive days) are averaged and combined into one segment" [1]. Values of different numbers of days and weeks can be applied.
+
+slicing A/B
+^^^^^^^^^^^^^^^^^^^^^
+"In slicing every $n$-th period is selected, e.g. every second day, and subsequently recombined to a reduced time series." [1] Slicing A: every n-th period is **selected and considered** within the modeling. Slicing B: every n-th period is **deleted and removed** from the modeling.
+
+downsampling A/B
+^^^^^^^^^^^^^^^^^^^^^
+"The temporal resolution of an entire time series is changed. For example, the resolution can be changed from a 1-hourly to a 3-hourly temporal resolution." [1] "On the one hand it allows the *consideration* of every $n$-th hour [downsampling A]. Thereby the number of modeled time steps must be at least halved ($n$=2). To allow a smaller time series reduction, the possibility to *remove* every $n$-th hour was also implemented [downsampling B]" [1].
+
+heuristic selection
+^^^^^^^^^^^^^^^^^^^^^
+"In heuristic selection, representative time periods of a time series are selected from certain selection criteria" [1] "Based on the approach of Poncelet et al. heuristic selection scheme[s are] carried out" [1]
+
+
+random sampling
+^^^^^^^^^^^^^^^^^^^^^
+"In random sampling, a predetermined number of random periods (e.g. days or weeks) are selected and used as representatives." [1] "The python library ``random'' is utilized. To ensure reproducability, a ``seed'' is defined, so that with each run the same random periods will be selected. Furthermore, a random time series of e.g. 10 periods thereby automatically makes up 10 periods of a random time series of, e.g. 20 periods" [1]
+
+
+
+
 Further Adjustments
 -------------------
 
@@ -92,3 +120,4 @@ Depending on the simplification applied, further adjustments to the energy syste
 References
 ==========
 [1] Klemm C. *Model-based run-time and memory optimization for a mixed-used multi-energy system model with high spatial resolution*, unpublished at the time of publication of this documentation, 2022.
+[2] Green, Richard, Iain Staffell, and Nicholas Vasilakos. "Divide and Conquer? k-Means Clustering of Demand Data Allows Rapid and Accurate Simulations of the British Electricity System." IEEE Transactions on Engineering Management 61.2 (2014): 251-260.
