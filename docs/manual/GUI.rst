@@ -80,10 +80,10 @@ Further Adjustments
 Depending on the simplification applied, further adjustments to the energy system must be made automatically.
 
 **Adjustment of time series of non-divisible length:**
-"For a time series adjustment, the simplification factor should ideally be divisible by the length of the given time series without remainder. For example, out of 365 days, every fifth day can be selected via slicing without any problems (365/5=73), but every tenth day results in a remainder (365/10=36.5). In order to be able to simplify the time series correctly, in such cases the given time series is shortened so far that the calculation is correct. For slicing with every tenth day, for example, the time series would be shortened to 360 days (360/10=36) because the time series length is then divisible by the simplification factor" [1]. 
+"For a time series' adjustments, the simplification factor should ideally be divisible by the length of the given time series without remainder. For example, out of 365 days, every fifth day can be selected via slicing without any problems (365/5=73), but every tenth day results in a remainder (365/10=36.5). In order to be able to simplify the time series correctly, in such cases the given time series is shortened so far that the calculation is correct. For slicing with every tenth day, for example, the time series would be shortened to 360 days (360/10=36). In sampling methods, the selected periods are strung together and merged into a new time series. The individual sample periods are partially assigned new time stamps" [1]. 
 
 **Variable cost factor:**
-"To ensure that the simplification of the time series correctly takes into account the relationship between periodic and variable costs over the entire simulation period, all variable costs and variable constraint costs in the model are automatically multiplied by the "variable cost factor". It is calculated as follows" [1]: 
+"To ensure the correct consideration of the relationship between variable and periodical (annual) costs in the case of shortened time series, variable costs are multiplied by the variable cost factor" [1]: 
 
 `variable cost factor = original number of timesteps / new number of timesteps`
 
@@ -91,4 +91,4 @@ Depending on the simplification applied, further adjustments to the energy syste
 
 References
 ==========
-[1] Klemm C. *Model-based runtime optimization for a spatially high-resolution mixed-used multi-energy system model*, unpublished at the time of publication of this documentation, 2022.
+[1] Klemm C. *Model-based run-time and memory optimization for a mixed-used multi-energy system model with high spatial resolution*, unpublished at the time of publication of this documentation, 2022.
