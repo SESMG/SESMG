@@ -1960,6 +1960,7 @@ class Links:
             if link['active']:
                 if link['(un)directed'] == 'directed':
                     ep_costs = link['periodical costs']
+                    ep_constr_costs = link['periodical constraint costs']
                 elif link['(un)directed'] == 'undirected':
                     ep_costs = link['periodical costs'] / 2
                 else:
@@ -1975,8 +1976,7 @@ class Links:
                         link['variable constraint costs'],
                         investment=solph.Investment(
                             ep_costs=ep_costs,
-                            periodical_constraint_costs=link[
-                                'periodical constraint costs'],
+                            periodical_constraint_costs=ep_constr_costs,
                             minimum=link[
                                 'min. investment capacity'],
                             maximum=link['max. investment capacity']
@@ -1998,8 +1998,7 @@ class Links:
                             link['variable constraint costs'],
                             investment=solph.Investment(
                                 ep_costs=ep_costs,
-                                periodical_constraint_costs=link[
-                                    'periodical constraint costs'],
+                                periodical_constraint_costs=ep_constr_costs,
                                 minimum=link[
                                     'min. investment capacity'],
                                 maximum=link['max. investment capacity']
