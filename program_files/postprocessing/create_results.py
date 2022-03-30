@@ -161,7 +161,8 @@ class Results:
 
     def create_flow_dataframes(self, component, comp=None,
                                excess_or_shortage=None,
-                               district_heating=None):
+                               district_heating=None,
+                               solar_thermal=None):
         """
             creates up to 5 pandas series consisting the flows of the
             given component
@@ -371,7 +372,15 @@ class Results:
         constraint_costs = 0
         # calculating constraint costs for different components
         if comp_type == 'source':
-            constraint_costs += outflow1 * comp['variable constraint costs']
+            if comp["technology"] in ["solar_thermal_flat_plate",
+                                      "concentrated_solar_power"]:
+                inflow2 = self.comp_input2.sum()
+                constraint_costs += inflow2 \
+                                    * comp['variable constraint costs']
+            else:
+                constraint_costs += outflow1 \
+                                    * comp['variable constraint costs']
+
         elif comp_type == 'link':
             constraint_costs += \
                 comp['variable constraint costs'] * (outflow1 + outflow2)
@@ -410,7 +419,12 @@ class Results:
         variable_costs = 0
 
         if comp_type == 'sources':
-            variable_costs += comp['variable costs'] * outflow1
+            if comp["technology"] in ["solar_thermal_flat_plate",
+                                      "concentrated_solar_power"]:
+                inflow2 = self.comp_input2.sum()
+                variable_costs += comp["variable costs"] * inflow2
+            else:
+                variable_costs += comp['variable costs'] * outflow1
         elif comp_type == 'storages' or comp_type == 'transformers':
             variable_costs += comp['variable input costs'] * inflow1
             variable_costs += comp['variable output costs'] * outflow1
@@ -697,7 +711,6 @@ class Results:
                             'technology'] in ['solar_thermal_flat_plate',
                                               'concentrated_solar_power']:
                         comp['label'] = comp['label'] + '_collector'
-
                     if i == 'buses_e':
                         if console_log:
                             logging.info('   ' + comp['label'] + '_excess')
@@ -711,7 +724,6 @@ class Results:
                             logging.info('   ' + comp['label'])
                         excess_or_shortage = None
                     component = solph.views.node(self.results, comp['label'])
-
                     # create class intern dataframes consisting the flows
                     # of given component
                     self.create_flow_dataframes(component, comp,
@@ -829,27 +841,27 @@ class Results:
                             periodical_costs = None
                             investment = None
                         # Non-thermal-sources and shortage sources
-                        if comp_input in [0, 'None', 'none']:
-                            if i != 'buses_s':
-                                comp_label = comp['label']
-                            else:
-                                comp_label = comp['label'] + '_shortage'
-                            self.df_result_table[comp_label] = \
-                                self.comp_output1
-                            capacity = round(self.comp_output1.max(), 2)
-                        # thermal-sources
-                        else:
-                            self.df_result_table[
-                                comp['label'] + '_el_input'] = \
-                                self.comp_input1
-                            self.df_result_table[
-                                comp['label'] + '_solar_input'] = \
-                                self.comp_input2
-                            self.df_result_table[
-                                comp['label'] + '_heat_output'] = \
-                                self.comp_output1
+                        #if comp_input in [0, 'None', 'none']:
+                        if i != 'buses_s':
                             comp_label = comp['label']
-                            capacity = round(self.comp_input2.max(), 2)
+                        else:
+                            comp_label = comp['label'] + '_shortage'
+                        self.df_result_table[comp_label] = \
+                            self.comp_output1
+                        capacity = round(self.comp_output1.max(), 2)
+                        # thermal-sources
+                        #else:
+                        #    self.df_result_table[
+                        #        comp['label'] + '_el_input'] = \
+                        #        self.comp_input1
+                        #    self.df_result_table[
+                        #        comp['label'] + '_solar_input'] = \
+                        #        self.comp_input2
+                        #    self.df_result_table[
+                        #        comp['label'] + '_heat_output'] = \
+                        #        self.comp_output1
+                        #    comp_label = comp['label']
+                        #    capacity = round(self.comp_input2.max(), 2)
                     # transformers
                     elif i == "transformers":
                         comp_label = comp['label']
