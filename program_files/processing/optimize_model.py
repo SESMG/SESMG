@@ -45,6 +45,7 @@ def constraint_optimization_against_two_values(om: solph.Model,
     setattr(om, limit_name4, po.Expression(
         expr=sum(getattr(invest_flows2[inflow, outflow],
                          "fix_constraint_costs")
+                 for (inflow, outflow) in invest_flows2
                  )))
 
     ############
