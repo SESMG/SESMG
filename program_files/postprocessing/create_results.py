@@ -403,7 +403,7 @@ class Results:
                     += inflow1 * comp['variable input constraint costs']
         if comp_type in ["source", "link", "transformer", "storage"]:
             if comp["non-convex investment"]:
-                if inflow1 + outflow1 + outflow2 != 0:
+                if round(inflow1 + outflow1 + outflow2, 0) != 0:
                     constraint_costs += comp["fix investment constraint costs"]
         if comp_type != 'excess' and comp_type != 'shortage':
             constraint_costs += investment \
