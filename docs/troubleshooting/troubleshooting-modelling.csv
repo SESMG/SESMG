@@ -21,3 +21,4 @@ Possible duplicate uids/labels?,two components of the model are having the same 
 ,,
 ValueError: Length mismatch: Expected axis has 1 elements; new values have 8760 elements Flow: ID_pv_to_ID_electricity_link-ID_pv_bus. This could be caused by NaN-values in your input data., The model probably isn't solvable; because of wrong energybalance., Activate necessary excesses sinks and shortages sources. 
 ERROR: Solver (gurobi) returned non-zero return code (1),,reinstall the pyomo-package: 1. open a terminal 2. navigate to your SESMG folder 3. navigate to the scripts-subfolder: "cd Scripts" 4. start the virtual environment: ``start /b activate.bat`` 5. reinstall pyomo: ``pip install pyomo==5.7.1``
+df = node_results['sequences'] KeyError: 'sequences'  , The model may possibly have an over or under supply. This will break the calculation., The bus of the oversupply or undersupply can be localized by activating excess or shortage.
