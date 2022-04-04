@@ -1,5 +1,5 @@
 Error Message: df = node_results['sequences']
 KeyError: 'sequences'  ,
-Possible Error Cause: at least one of your parameters like existing capacity has a wrong dimension. This will break the calculation. It happens more likely if u have no shortages or excesses in your system, 
-Debugging: Add excesses or shortages, to let the calculation running.
+Possible Error Cause: The model may possibly have an over or under supply. This will break the calculation., 
+Debugging: The bus of the oversupply or undersupply can be localized by activating excess or shortage.
 
