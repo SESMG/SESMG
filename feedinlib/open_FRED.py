@@ -1,19 +1,32 @@
-from itertools import chain, groupby
-from numbers import Number
+from itertools import chain
+from itertools import groupby
+from typing import Dict
+from typing import List
+from typing import Tuple
+from typing import Union
 
-from pandas import DataFrame as DF, Series, Timedelta as TD, to_datetime as tdt
-from geoalchemy2.elements import WKTElement as WKTE
-from geoalchemy2.shape import to_shape
-from shapely.geometry import Point
-from sqlalchemy.orm import sessionmaker
-import oedialect
+import oedialect  # noqa: F401
+import open_FRED.cli as ofr
 import pandas as pd
 import sqlalchemy as sqla
+from geoalchemy2.elements import WKTElement as WKTE
+from geoalchemy2.shape import to_shape
+from pandas import DataFrame as DF
+from pandas import Series
+from pandas import Timedelta as TD
+from pandas import to_datetime as tdt
+from shapely.geometry import Point
+from sqlalchemy.orm import sessionmaker
 
-import open_FRED.cli as ofr
+from .dedup import deduplicate
+
+#: The type of variable selectors. A selector should always contain the
+#: name of the variable to select and optionally the height to select,
+#: if only a specific one is desired.
+Selector = Union[Tuple[str], Tuple[str, int]]
 
 
-TRANSLATIONS = {
+TRANSLATIONS: Dict[str, Dict[str, List[Selector]]] = {
     "windpowerlib": {
         "wind_speed": [("VABS_AV",)],
         "temperature": [("T",)],
@@ -40,7 +53,7 @@ def defaultdb():
         getattr(defaultdb, "session", None) or sessionmaker(bind=engine)()
     )
     defaultdb.session = session
-    metadata = sqla.MetaData(schema="model_draft", bind=engine, reflect=False)
+    metadata = sqla.MetaData(schema="climate", bind=engine, reflect=False)
     return {"session": session, "db": ofr.mapped_classes(metadata)}
 
 
@@ -55,16 +68,20 @@ class Weather:
 
     Now you can simply instantiate a `Weather` object via e.g.:
 
+    Examples
+    --------
+
     >>> from shapely.geometry import Point
     >>> point = Point(9.7311, 53.3899)
     >>> weather = Weather(
-    ...    "2003-04-05 06:00",
-    ...    "2003-04-05 07:31",
-    ...    [point],
-    ...    [10],
-    ...    "pvlib",
+    ...    start="2007-04-05 06:00",
+    ...    stop="2007-04-05 07:31",
+    ...    locations=[point],
+    ...    heights=[10],
+    ...    variables="pvlib",
     ...    **defaultdb()
-    ...)
+    ... )
+
 
     Instead of the special values `"pvlib"` and `"windpowerlib"` you can
     also supply a list of variables, like e.g. `["P", "T", "Z0"]`, to
@@ -83,7 +100,12 @@ class Weather:
     locations : list of :shapely:`Point`
         Weather measurements are collected from measurement locations closest
         to the the given points.
-    heights : list of numbers
+    location_ids : list of int
+        Weather measurements are collected from measurement locations having
+        primary keys, i.e. IDs, in this list. Use this e.g. if you know you're
+        using the same location(s) for multiple queries and you don't want
+        the overhead of doing the same nearest point query multiple times.
+    heights : list of numeric
         Limit selected timeseries to these heights. If `variables` contains a
         variable which isn't height dependent, i.e. it has only one height,
         namely `0`, the corresponding timeseries is always
@@ -108,6 +130,7 @@ class Weather:
         start,
         stop,
         locations,
+        location_ids=None,
         heights=None,
         variables=None,
         regions=None,
@@ -134,7 +157,7 @@ class Weather:
         }[variables if variables in ["pvlib", "windpowerlib"] else None]
 
         self.locations = (
-            {(l.x, l.y): self.location(l) for l in locations}
+            {(p.x, p.y): self.location(p) for p in locations}
             if locations is not None
             else {}
         )
@@ -144,11 +167,15 @@ class Weather:
             if regions is not None
             else {}
         )
-
-        location_ids = [
-            l.id
-            for l in chain(self.locations.values(), *self.regions.values())
-        ]
+        if location_ids is None:
+            location_ids = []
+        self.location_ids = set(
+            [
+                d.id
+                for d in chain(self.locations.values(), *self.regions.values())
+            ]
+            + location_ids
+        )
 
         self.locations = {
             k: to_shape(self.locations[k].point) for k in self.locations
@@ -179,14 +206,14 @@ class Weather:
             .join(db["Series"].variable)
             .join(db["Series"].timespan)
             .join(db["Series"].location)
-            .filter((db["Series"].location_id.in_(location_ids)))
+            .filter((db["Series"].location_id.in_(self.location_ids)))
             .filter(
-                None
+                True
                 if variables is None
                 else db["Variable"].name.in_(variables)
             )
             .filter(
-                None
+                True
                 if heights is None
                 else (db["Series"].height.in_(chain([0], heights)))
             )
@@ -230,34 +257,7 @@ class Weather:
                 ),
             )
         }
-        # TODO: Fix the data. If possible add a constraint preventing this from
-        #       happending again alongside the fix.
-        #       This is just here because there's duplicate data (that we know)
-        #       at the end of 2017. The last timestamp of 2017 is duplicated in
-        #       the first timespan of 2018. And unfortunately it's not exactly
-        #       duplicated. The timestamps are equal, but the values are only
-        #       equal within a certain margin.
-        self.series = {
-            k: (
-                self.series[k][:-1]
-                if (self.series[k][-1][0:2] == self.series[k][-2][0:2])
-                and (
-                    (self.series[k][-1][2] == self.series[k][-2][2])
-                    or (
-                        isinstance(self.series[k][-1][2], Number)
-                        and isinstance(self.series[k][-2][2], Number)
-                        and (
-                            abs(self.series[k][-1][2] - self.series[k][-2][2])
-                            <= 0.5
-                        )
-                    )
-                )
-                else self.series[k]
-            )
-            for k in self.series
-        }
-        # TODO: Collect duplication errors not cought by the code above.
-
+        self.series = {k: deduplicate(self.series[k]) for k in self.series}
         self.variables = {
             k: sorted(set(h for _, h in g))
             for k, g in groupby(
@@ -301,7 +301,7 @@ class Weather:
     def location(self, point: Point):
         """ Get the measurement location closest to the given `point`.
         """
-        point = WKTE(point.to_wkt(), srid=4326)
+        point = WKTE(point.wkt, srid=4326)
         return (
             self.session.query(self.db["Location"])
             .order_by(self.db["Location"].point.distance_centroid(point))
@@ -311,7 +311,7 @@ class Weather:
     def within(self, region=None):
         """ Get all measurement locations within the given `region`.
         """
-        region = WKTE(region.to_wkt(), srid=4326)
+        region = WKTE(region.wkt, srid=4326)
         return (
             self.session.query(self.db["Location"])
             .filter(self.db["Location"].point.ST_Within(region))
@@ -343,7 +343,7 @@ class Weather:
             quotechar="'",
         )
         df.columns.set_levels(
-            [df.columns.levels[0], [float(l) for l in df.columns.levels[1]]],
+            [df.columns.levels[0], [float(c) for c in df.columns.levels[1]]],
             inplace=True,
         )
         df = df.applymap(lambda s: pd.read_json(s, typ="series"))

@@ -7,7 +7,7 @@
 import os
 import pandas as pd
 import logging
-
+from program_files.preprocessing import import_weather_data
 
 def import_scenario(filepath: str) -> dict:
     """
@@ -70,7 +70,14 @@ def import_scenario(filepath: str) -> dict:
         raise ValueError('No nodes data provided.')
 
     # returns logging info
-    logging.info('Spreadsheet scenario successfully imported.')
+    logging.info('\t Spreadsheet scenario successfully imported.')
+    if nd["energysystem"].loc[1, "weather data lat"] is not None:
+        logging.info('\t Start import weather data')
+        lat = nd["energysystem"].loc[1, "weather data lat"]
+        lon = nd["energysystem"].loc[1, "weather data lon"]
+        import_weather_data.create_weather_data_plot(lat, lon)
+        nd = import_weather_data.import_open_fred_windpowerlib(nd, lat, lon)
+        nd = import_weather_data.import_open_fred_pvlib(nd, lat, lon)
     # returns nodes
     return nd
 
