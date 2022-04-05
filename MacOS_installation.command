@@ -18,7 +18,6 @@ bin/pip3 install numpy==1.17.4
 bin/pip3 install tables==3.5.2
 bin/pip3 install openpyxl==3.0.0
 
-bin/pip3 install oemof.solph==0.4.1
 bin/pip3 install oemof.thermal==0.0.3
 bin/pip3 install demandlib==0.1.6
 bin/pip3 install pvlib==0.7.1
@@ -43,6 +42,7 @@ bin/pip3 install memory-profiler
 bin/pip3 install scikit-learn-extra
 bin/pip3 install seaborn
 bin/pip3 install matplotlib
+bin/pip3 install oemof.solph==0.4.1
 bin/pip3 install numpy==1.17.4
 brew install graphviz
 mv feedinlib lib/python3.7/site-packages
