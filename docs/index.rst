@@ -34,10 +34,10 @@ Manual
 * :doc:`manual/installation`
 * :doc:`manual/GUI`
 * :doc:`manual/ScenarioSpreadsheet`
-* :doc:`getting_started/how_to_use_technical_data`
+* :doc:`manual/TechnicalData`
 * :doc:`manual/Results`
 * :doc:`manual/UpscalingTool`
-* :doc:`manual/DemoTool
+* :doc:`manual/DemoTool`
 
 
 ..	toctree::
@@ -45,10 +45,10 @@ Manual
 	:hidden:
 	:caption: Manual
 	
-	manual/installation
-	manual/GUI
-	manual/ScenarioSpreadsheet
-    getting_started/how_to_use_technical_data
+    manual/installation
+    manual/GUI
+    manual/ScenarioSpreadsheet
+    manual/TechnicalData
     manual/Results
     manual/UpscalingTool
     manual/DemoTool
