@@ -86,10 +86,6 @@ MacOS
 Linux 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. note:: 
-
-	The current development team does not use local Linux systems. Feel free to contact us if you are willing to help us keep the Linux installation up to date.
-
 1. Install Python (version 3.5 or higher)
 
 - go to `<https://phoenixnap.com/kb/how-to-install-python-3-ubuntu/>`_

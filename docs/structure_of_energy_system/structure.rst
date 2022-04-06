@@ -18,7 +18,7 @@ Buses furthermore form connection points of an energy system. The graph of a sim
 consisting of each one source, one transformer, one sink, as well as two buses, could look like the 
 example displayed in the following figure.
   
-.. figure:: ../images/simple_energy_system.png
+.. figure:: ../images/structure_of_energy_system/simple_energy_system.png
    :width: 100 %
    :alt: Bus-Example
    :align: center
@@ -70,7 +70,7 @@ source could represent the purchase of energy at a fixed price.
 The following Figure sketches the fractions of radiation
 arriving at a PV-module as well as further relevant parameters. 
 
-.. figure:: ../images/PV_Aufbau.png
+.. figure:: ../images/structure_of_energy_system/PV_Aufbau.png
    :width: 100 %
    :alt: pv_systems
    :align: center
@@ -146,7 +146,7 @@ its technical parameters. The transformer object embodies the systems
 periphery (pipes, pumps). Thermal losses and the electricity demand
 of this periphery can be considered by the transformer.
 
-.. figure:: ../images/solar_thermal_collector_structure.png
+.. figure:: ../images/structure_of_energy_system/solar_thermal_collector_structure.png
    :width: 50%
    :alt: solar_thermal_system
    :align: center
@@ -340,7 +340,7 @@ plants, energy transforming processes
 (e.g., electrolysis, heat pumps), as well as transport lines with 
 losses. The transformers’ efficiencies can be defined for every 
 time step (e.g., the efficiency of a thermal 
-powerplant in dependence of the ambient temperature).
+powerplants in dependence of  the ambient temperature).
 
 Currently only Generic Transformers can be used within the Spreadsheet Energy System Model Generator. 
 These may have one or more different outputs, e.g., heat and electricity. For the modelling,
@@ -356,7 +356,7 @@ The compression heat transformer function automatically creates a heat source an
 temperature bus, depending on the mode of operation (see red bubble). So only a transformer
 and a electricity bus needs to be created. An example is shown in the following figure.
 
-.. figure:: ../images/graph_chiller_heat_pump.png
+.. figure:: ../images/structure_of_energy_system/graph_chiller_heat_pump.png
    :width: 100 %
    :alt: graph heatpump and chiller
    :align: center
@@ -422,7 +422,7 @@ In an energy system, links can represent, for
 example, electrical powerlines, gas pipelines, district heating
 distribution networks or similar.
 
-.. figure:: ../images/link.png
+.. figure:: ../images/structure_of_energy_system/link.png
    :width: 50 %
    :alt: links
    :align: center
@@ -444,7 +444,7 @@ Within the district heating approach, a heat producer is connected to the consum
 via a link (taking pump losses into account), heat pipes (lossy transformers) and the district heating
 house station.
 
-.. figure:: ../images/district_heating.png
+.. figure:: ../images/structure_of_energy_system/district_heating.png
    :width: 50 %
    :alt: district_heating
    :align: center

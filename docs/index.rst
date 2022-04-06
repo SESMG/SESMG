@@ -17,7 +17,7 @@ results can be viewed and analyzed using a browser-based results output.
 
 
 
-Structure of Energy System
+Structure of Energy Systems
 -------------------------------------------------
 * :doc:`structure_of_energy_system/structure`
 	
@@ -25,32 +25,33 @@ Structure of Energy System
 ..	toctree::
 	:maxdepth: 2
 	:hidden:
-	:caption: Structure of Energy System
+	:caption: Structure of Energy Systems
 	
 	structure_of_energy_system/structure
 	
-Getting started 
+Manual
 -------------------------------------------------
-* :doc:`getting_started/how_to_install`
-* :doc:`getting_started/how_to_execute`
-* :doc:`getting_started/how_to_use`
+* :doc:`manual/installation`
+* :doc:`manual/GUI`
+* :doc:`manual/ScenarioSpreadsheet`
 * :doc:`getting_started/how_to_use_technical_data`
-* :doc:`getting_started/analyze_results`
-* :doc:`getting_started/demo_feature`
-
+* :doc:`manual/Results`
+* :doc:`manual/UpscalingTool`
+* :doc:`manual/DemoTool
 
 
 ..	toctree::
 	:maxdepth: 2
 	:hidden:
-	:caption: Getting started
+	:caption: Manual
 	
-	getting_started/how_to_install
-	getting_started/how_to_execute
-	getting_started/how_to_use
-    	getting_started/how_to_use_technical_data
-	getting_started/analyze_results
-	getting_started/demo_feature
+	manual/installation
+	manual/GUI
+	manual/ScenarioSpreadsheet
+    getting_started/how_to_use_technical_data
+    manual/Results
+    manual/UpscalingTool
+    manual/DemoTool
 	
 Troubleshooting 
 -------------------------------------------------
@@ -74,10 +75,10 @@ Sourcecode
 ..	toctree::
 	:maxdepth: 3
 	:hidden:
-	:caption: Sourcecode documentation
+	:caption: Sourcecode Documentation
 	
 	sourcecode_documentation/gui_functions
-    	sourcecode_documentation/upscaling_tool
+    sourcecode_documentation/upscaling_tool
 	sourcecode_documentation/program_functions
 	
 	

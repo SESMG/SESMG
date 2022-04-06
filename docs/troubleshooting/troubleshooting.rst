@@ -3,23 +3,8 @@ Troubleshooting
 During execution of the model generator, error messages and associated error messages may occur. 
 
 
-**General debugging**:
-
-Pay attention to the correct spelling:
-
-- Pay attention to correct upper and lower case.
-- Do not use spaces in the entire spreadsheet (except for the "comment" columns).
-- Make sure that every column of the used lines is filled. Columns that are not used can be filled with a "0".
-
-Make sure that the displayed system can stay in balance. 
-- It must always be possible to take off all of the supplied energy and vice versa. 
-- The use of excess-sinks and shortage-sources can help to keep the system in balance.
-
-
-**Your error message is not included? Help us and all users by reporting your error message - with or without a solution!. Thank you!**
-
 Contributing to the troubleshooting
-================================================
+===============================
 
 Were you able to solve a bug that was not listed here yet? Help other users and report it by following these simple steps:
 
@@ -43,14 +28,49 @@ Were you able to solve a bug that was not listed here yet? Help other users and 
 
 Installation
 ===============================
-.. csv-table:: 
-   :file: ../troubleshooting/troubleshooting-installation.csv
-   :header-rows: 1
+
+Error I-001: numpy.generic objects
+----------------------------------
+**Error Message:** Cannot interpret attribute 'dtype' of 'numpy.generic' objects' as a data type
+
+**Possible Error Cause:** possible module (e.g., demandlib) not actual
+
+**Debugging:** upgrade module in the installation.cmd (pip install demandlib --upgrade)
+
+Error I-002: port 443
+----------------------------------
+**Error Message:** HTTPSConnectionPool(host='pypi.python.org' port=443), due to a timeout
+
+**Possible Error Cause:** A package named in the error message was not installed correctly
+
+**Debugging:** Reinstall the package manually in the virtual environment as follows: 1. open a terminal 2. navigate to your SESMG folder 3. navigate to the scripts-subfolder: ``cd Scripts`` 4. start the virtual environment: ``start /b activate.bat`` 5. install the missing package as follows: ```pip install --default-timeout=100 'PACKAGE-NAME``` (see also `here <https://stackoverflow.com/questions/43298872/how-to-solve-readtimeouterror-httpsconnectionpoolhost-pypi-python-org-port>`_)
+
+
+Error I-XXX: Vorlage
+----------------------------------
+**Error Message:**
+**Possible Error Cause:**
+**Debugging:**
 
 
 Modeling
 ===============================
-.. csv-table:: 
+
+**General debugging**:
+
+Pay attention to the correct spelling:
+
+- Pay attention to correct upper and lower case.
+- Do not use spaces in the entire spreadsheet (except for the "comment" columns).
+- Make sure that every column of the used lines is filled. Columns that are not used can be filled with a "0".
+
+Make sure that the displayed system can stay in balance.
+- It must always be possible to take off all of the supplied energy and vice versa.
+- The use of excess-sinks and shortage-sources can help to keep the system in balance.
+
+**Your error message is not included? Help us and all users by reporting your error message - with or without a solution!. Thank you!**
+
+.. csv-table::
    :file: ../troubleshooting/troubleshooting-modelling.csv
    :header-rows: 1
    

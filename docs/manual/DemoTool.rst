@@ -14,7 +14,7 @@ With the help of the demo tool the chosen energy supply scenario can be simulate
 Instruction
 =================================================
 
-.. figure:: ../images/demo_interface.png
+.. figure:: ../images/manual/DemoTool/demo_interface.png
    :width: 100 %
    :alt: Demo Interface
    :align: center

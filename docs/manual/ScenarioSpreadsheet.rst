@@ -1,4 +1,4 @@
-Using the Scenario File
+Scenario Spreadsheet
 *************************************************
 
 For the modeling and optimization of an energy system, parameters for all system components must be given in the model 
@@ -10,7 +10,7 @@ required weather data is stored. When completing the input file, it is recommend
 step and to perform test runs in between, so that potential input errors are detected early and can be localized more 
 easily. In addition to the explanation of the individual input sheets, an example energy system is built step by step 
 in the following subchapters. The input file for this example is stored in the program folder "examples" and viewed on 
-`GitHub <https://github.com/chrklemm/SESMG/tree/master/examples>`_. The following units are used throughout:
+`GitHub <https://github.com/chrklemm/SESMG_examples>`_. The following units are used throughout:
 
 - capacity/performance in kW,
 - energy in kWh,
@@ -87,7 +87,7 @@ Within this sheet, the buses of the energy system are defined. The following par
    district_chp_electricity_bus,,0,0,1,0.000,0.000,-375.00,0.00,0,0,0
    district_gas_bus,,0,0,1,0.000,0.070,0.00,0.00,0,0,0
    
-.. figure:: ../images/BSP_Graph_Bus.png
+.. figure:: ../images/manual/ScenarioSpreadsheet/BSP_Graph_Bus.png
    :width: 100 %
    :alt: Bus_Graph
    :align: center
@@ -140,7 +140,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
    ID_heat_sink,EFH standard load profile sink,1,1,ID_heat_bus,efh,0,30000.0,0,3,0,1,55.000000,11.000000
    ID_cooling_sink,fixed timeseries cooling demand,0,1,ID_cooling_bus,timeseries,1,0,0,0,0,0,0,0
 
-.. figure:: ../images/BSP_Graph_sink.png
+.. figure:: ../images/manual/ScenarioSpreadsheet/BSP_Graph_sink.png
    :width: 100 %
    :alt: Sink_Graph
    :align: center
@@ -239,7 +239,7 @@ If you have choosen the technology "other", the solver has the opportunity to co
    wind_turbine,,0,1,windpower,electricity_bus,None,0,0,30,0,0,0,100,9,0,E-126/4200,135,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 
-.. figure:: ../images/BSP_Graph_source.png
+.. figure:: ../images/manual/ScenarioSpreadsheet/BSP_Graph_source.png
    :width: 100 %
    :alt: Source_Graph
    :align: center
@@ -308,8 +308,8 @@ The following parameters are only required, if "transformer type" is set to "Com
 - **length of the geoth. probe** in (m): Length of the vertical heat exchanger, only for GC-CHT.
 - **heat extraction** in (kW/(m*a)): Heat extraction for the heat exchanger referring to the location, only for GC-CHT.
 - **min. borehole area** in (sqm): Limited space due to the regeneation of the ground source, only for GC-CHT.
-- **temp threshold icing**: Temperature below which icing occurs (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
-- **factor icing**: COP reduction caused by icing (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_). Only required if "mode" is set to "heat_pump".
+- **temp threshold icing**: Temperature below which icing occurs (see `oemof.thermal <https://oemof-thermal.readthedocs.io/en/latest/>`_). Only required if "mode" is set to "heat_pump".
+- **factor icing**: COP reduction caused by icing (see `oemof.thermal <https://oemof-thermal.readthedocs.io/en/latest/>`_). Only required if "mode" is set to "heat_pump".
 
 Absorption Heat Transformer
 --------------------------------
@@ -334,7 +334,7 @@ The following parameters are only required, if "transformer type" is set to "Abs
 	ID_ASHP_transformer,air source heat pump,1,compression_heat_transformer,heat_pump,ID_hp_electricity_bus,ID_heat_bus,None,1,0,0,0,20,0,0,0,0,0,112.78,0,0,0,0,Air,60,0,0.4,0,0,0,0,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	ID_chp_transformer,,0,GenericTransformer,0,district_gas_bus,district_chp_electricity_bus,district_heat_bus,0.35,0.55,0,0,20,0,0,0,0,0,50,130,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	
-.. figure:: ../images/BSP_Graph_transformer.png
+.. figure:: ../images/manual/ScenarioSpreadsheet/BSP_Graph_transformer.png
    :width: 100 %
    :alt: Transformer_Graph
    :align: center
@@ -351,13 +351,13 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **active**: Specifies whether the storage shall be included to the model. 0 = inactive, 1 = active.
 - **storage type**: Defines whether the storage is a "Generic" or a "Stratified" sorage. These two inputs are possible.
 - **bus**: Specifies which bus the storage is connected to.
-- **input/capacity ratio** (invest): Indicates the performance with which the memory can be charged.
-- **output/capacity ratio** (invest): Indicates the performance with which the memory can be discharged.
+- **input/capacity ratio** (invest): Indicates the performance with which the storage can be charged (see also  `here <https://oemof-solph.readthedocs.io/en/latest/usage.html#using-an-investment-object-with-the-genericstorage-component>`_).
+- **output/capacity ratio** (invest): Indicates the performance with which the storage can be discharged (see also  `here <https://oemof-solph.readthedocs.io/en/latest/usage.html#using-an-investment-object-with-the-genericstorage-component>`_).
 - **efficiency inflow**: Specifies the charging efficiency.
 - **efficiency outflow**: Specifies the discharging efficiency.
-- **initial capacity**: Specifies how far the memory is loaded at time 0 of the simulation. Value must be between 0 and 1.
-- **capacity min**: Specifies the minimum amount of memory that must be loaded at any given time. Value must be between 0 and 1.
-- **capacity max**: Specifies the maximum amount of memory that can be loaded at any given time. Value must be between 0 and 1.
+- **initial capacity**: Specifies how far the storage is loaded at time 0 of the simulation. Value must be between 0 and 1.
+- **capacity min**: Specifies the minimum amount of storage that must be loaded at any given time. Value must be between 0 and 1.
+- **capacity max**: Specifies the maximum amount of storage that can be loaded at any given time. Value must be between 0 and 1.
 
 Costs
 --------------------
@@ -393,7 +393,7 @@ Stratified Storage
 	ID_stratified_thermal_storage,,0,Stratified,ID_heat_bus,0.2,0.2,1,0.98,0,0.05,0.95,0,0,100,0,0,0,20,35,0,0,100,0,0.8,60,40,0.04
 	district_battery_storage,,0,Generic,district_electricity_bus,0.17,0.17,1,0.98,0,0.1,1,0,0,1000,0,0,0,0,10,0,0,10,0,0,0,0,0
 	
-.. figure:: ../images/BSP_Graph_Storage.png
+.. figure:: ../images/manual/ScenarioSpreadsheet/BSP_Graph_Storage.png
    :width: 100 %
    :alt: Transformer_Graph
    :align: center
@@ -437,7 +437,7 @@ Costs
 	district_chp_to_district_electricity_bus,,0,directed,district_chp_electricity_bus,district_electricity_bus,1,0,0,0,0,0,0.1438,0,0,0
 	ID_pv_to_district_electricity_link,,0,directed,ID_pv_bus,ID_electricity_bus,1,0,0,0,0,0,0.1438,0,0,0
 	
-.. figure:: ../images/BSP_Graph_link.png
+.. figure:: ../images/manual/ScenarioSpreadsheet/BSP_Graph_link.png
    :width: 100 %
    :alt: bsp-graph-link
    :align: center
