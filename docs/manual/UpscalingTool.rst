@@ -17,7 +17,7 @@ The upscaling tool can be used with the following steps:
 Upscaling Model
 ---------------
 
-.. figure:: ../images/Upsclaing_Tool/Upscaling_Model.png
+.. figure:: ../images/manual/Upsclaing_Tool/Upscaling_Model.png
    :width: 100 %
    :alt: Upscaling_Model
    :align: center
