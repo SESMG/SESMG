@@ -67,7 +67,7 @@ source could represent the purchase of energy at a fixed price.
 
 **Photovoltaic Systems**
 
-The following Figure sketches the fractions of radiation
+The following figure sketches the fractions of radiation
 arriving at a PV-module as well as further relevant parameters. 
 
 .. figure:: ../images/PV_Aufbau.png
@@ -351,7 +351,7 @@ the respective output ratios, and an efficiency for each output need to be known
 
 For the modeling of compression heat pumps and chillers, different heat sources are considered so the
 weather data set must include different temperatures. The efficiency of 
-the heat pump or chiller cycle process can be described by the coefficient of Performance (COP).
+the heat pump or chiller cycle process can be described by the coefficient of performance (COP).
 The compression heat transformer function automatically creates a heat source and a low or high 
 temperature bus, depending on the mode of operation (see red bubble). So only a transformer
 and a electricity bus needs to be created. An example is shown in the following figure.
