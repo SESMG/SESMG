@@ -52,7 +52,7 @@ For example, an area competition. If you do not want to use this spreadsheet, it
    :header: component 1,factor 1,component 2,factor 2,limit
 
 	,unit/KW,,unit/kW,unit
-	ID_photovoltaic_elecitricity_source,5.26,ID_solar_thermal_source,1,79,168
+	ID_photovoltaic_elecitricity_source,5.26,ID_solar_thermal_source,1.79,168
 
 Buses
 =================================================
