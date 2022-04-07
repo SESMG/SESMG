@@ -52,7 +52,7 @@ For example, an area competition. If you do not want to use this spreadsheet, it
    :header: component 1,factor 1,component 2,factor 2,limit
 
 	,unit/KW,,unit/kW,unit
-	ID_photovoltaic_elecitricity_source,5.26,ID_solar_thermal_source,11.05,168
+	ID_photovoltaic_elecitricity_source,5.26,ID_solar_thermal_source,1,79,168
 
 Buses
 =================================================
@@ -174,6 +174,7 @@ Concentrated Solar Power
 - **Cleanliness**: Cleanliness of a parabolic through collector. Only required for Concentrated Solar Power source, use fill character "0" for other technologies.
 - **Electric Consumption**: Electric consumption of the collector system. Example: If value is set to 0,05, the electric consumption is 5 % of the energy output. Use fill character "0" for other technologies.
 - **Peripheral Losses**: Heat loss coefficient for losses in the collector's peripheral system. Use fill character "0" for other technologies.
+
 **Exemplary values for concentrated_solar_power technology**:
 
 .. csv-table:: Exemplary values for concentrated_solar_power technology (The parameters refer to `Janotte, N; et al <https://www.sciencedirect.com/science/article/pii/S1876610214004664>`_)
@@ -194,6 +195,7 @@ Solar Thermal Flatplate
 - **Temperature Difference** in (°C): Temperature Difference between in- and outlet temperature of the solar heat collector module. Use fill character "0" for other technologies.
 - **Electric Consumption**: Electric consumption of the collector system. Example: If value is set to 0,05, the electric consumption is 5 % of the energy output. Use fill character "0" for other technologies.
 - **Peripheral Losses**: Heat loss coefficient for losses in the collector's peripheral system. Use fill character "0" for other technologies.
+- **Conversion Factor** in m²/kW: follows soon
 Timeseries
 -------------------------
 If you have choosen the technology "timeseries", you have to include a timeseries in the  `Time series sheet`_ or use default one.
@@ -207,7 +209,7 @@ If you have choosen the technology "other", the solver has the opportunity to co
 
    ,,,,,,solar heat,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/(kW a)),windpower,windpower,PV,PV,PV,PV,PV,(m)| PV,(°),(°),(°),(°),solar heat,solar heat,solar heat,solar heat,solar heat,(°C) | solar heat,(°C)|solar heat,(sqm/kW) | solar heat,solar heat,solar heat,solar heat
    ID_photovoltaic_electricity_source,,1,1,photovoltaic,ID_pv_bus,None,0,0,20,0,0,0,90,56,0,0,0,SandiaMod,sandiainverter,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,0.18,60,180,35,52.13,7.36,0,0,0,0,0,0,0,0,0,0,0
-   ID_solar_thermal_source,,1,1,solar_thermal_flat_plate,ID_heat_bus,ID_electricity_bus,0,0,20,0,0,0,40,25,0,0,0,0,0,0,0,0,0,20,10,52.13,7.36,0.719,1.063,0.005,0,0,40,15,1.89941306,0.05,0.06,0
+   ID_solar_thermal_source,,1,1,solar_thermal_flat_plate,ID_heat_bus,ID_electricity_bus,0,0,20,0,0,0,40,25,0,0,0,0,0,0,0,0,0,20,10,52.13,7.36,0.719,1.063,0.005,0,0,40,15,1.79,0.05,0.06,0
    wind_turbine,,0,1,windpower,electricity_bus,None,0,0,30,0,0,0,100,9,0,E-126/4200,135,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 
