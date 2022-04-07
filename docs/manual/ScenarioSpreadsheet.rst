@@ -444,6 +444,24 @@ Costs
 
    Graph of the energy system, which is created by entering the example components. The non-active components are not included in the graph above.
 
+Insulation
+=================================================
+
+Within this sheet, the energy system insulation options are defined. The following parameters have 
+to be entered:
+
+- **label**: Unique designation of the insulation. The following format is recommended: "ID_sink_label_insulation_type"
+- **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
+- **active**: Specifies whether the insulation shall be included to the model. 0 = inactive, 1 = active. 
+- **sink**: Sink influenced by the insulation.
+- **temperature indoor** in (°C): Definition of the living space temperature.
+- **heat limit temperature** in (°C): Temperature from which the heating is switched on.
+- **U-value old** in (W/(m :sup: 2 *K)): U-value before insulation. 
+- **U-value new** in (W/(m :sup: 2 *K)): U-value after insulation. 
+- **area** in (m :sup: 2): Area that can be considered for isolation.
+- **periodical costs** in (CU/(m :sup: 2 *a)): Costs incurred per m :sup: 2 for investments within the time horizon.
+- **periodical constraint costs** in (CU/(m :sup: 2 *a)): Costs incurred per m :sup: 2 for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+
 .. _`Time series sheet`:
 
 Time Series
