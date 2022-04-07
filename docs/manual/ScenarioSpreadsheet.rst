@@ -456,11 +456,11 @@ to be entered:
 - **sink**: Sink influenced by the insulation.
 - **temperature indoor** in (°C): Definition of the living space temperature.
 - **heat limit temperature** in (°C): Temperature from which the heating is switched on.
-- **U-value old** in (W/(m:sup:`2` *K)): U-value before insulation. 
-- **U-value new** in (W/(m:sup:`2` *K)): U-value after insulation. 
-- **area** in (m:sup:`2`): Area that can be considered for isolation.
-- **periodical costs** in (CU/(m:sup:`2` *a)): Costs incurred per m:sup:`2` for investments within the time horizon.
-- **periodical constraint costs** in (CU/(m:sup:`2` *a)): Costs incurred per m:sup:`2` for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **U-value old** in (W/(`m`:sup:`2` *K)): U-value before insulation. 
+- **U-value new** in (W/(`m`:sup:`2` *K)): U-value after insulation. 
+- **area** in (`m`:sup:`2`): Area that can be considered for isolation.
+- **periodical costs** in (CU/(`m`:sup:`2` *a)): Costs incurred per `m`:sup:`2` for investments within the time horizon.
+- **periodical constraint costs** in (CU/(`m`:sup:`2` *a)): Costs incurred per `m`:sup:`2` for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 
 .. _`Time series sheet`:
 
