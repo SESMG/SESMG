@@ -439,9 +439,9 @@ Stratified thermal storages use the thermal transmittance of the wall of the str
 District Heating
 =================================================
 Different from the previously mentioned points, District Heating is not a component,
-but a piped heat supply option, elaborated on the basis of the oemof package DHNX.
+but a piped heat supply option, elaborated on the basis of the oemof package DHNx.
 Within the district heating approach, a heat producer is connected to the consumers' heat sink
-via a link (taking pump losses into account), heat pipes (lossy transformers) and the district heating
+via a link, heat pipes (lossy transformers) and the district heating
 house station.
 
 .. figure:: ../images/structure_of_energy_system/district_heating.png
