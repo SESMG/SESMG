@@ -13,6 +13,7 @@ echo ---------------------------------------------
 
 brew install cbc
 brew install postgresql
+brew install geos
 bin/pip3 install pandas==0.25.3
 bin/pip3 install numpy==1.17.4
 bin/pip3 install tables==3.5.2
