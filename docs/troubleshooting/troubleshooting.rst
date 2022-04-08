@@ -70,6 +70,21 @@ Make sure that the displayed system can stay in balance.
 
 **Your error message is not included? Help us and all users by reporting your error message - with or without a solution!. Thank you!**
 
+Error M-001: KeyError: 'sequences'
+----------------------------------
+**Error Message:** ... KeyError: 'sequences'
+
+**Possible Error Cause:** 
+   - A system component was entered inccorectly in the input file.
+   - The implemented model probably has a circuit. For example the excess sink of bus could achieve higher selling prices than buying from a shortage source. In theory this could generate an infinitely large profit. Such a model cannot be solved.  
+   - The model may possibly have an over or under supply. This will break the calculation.
+
+**Debugging:** 
+   - For all components make sure that 
+      1) each column is filled correctly  and 
+      2) the first component of a sheet is entered in the row directly below the header row  and that there are no blank rows between the individual components of a sheet
+   - The bus of the oversupply or undersupply can be localized by activating excess or shortage.
+
 .. csv-table::
    :file: ../troubleshooting/troubleshooting-modelling.csv
    :header-rows: 1
