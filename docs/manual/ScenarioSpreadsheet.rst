@@ -30,8 +30,8 @@ Within this sheet, the time horizon and the temporal resolution of the model is 
 - **periods**: Number of periods within the time horizon (one year with hourly resolution equals 8760 periods).
 - **constraint cost limit** in (CU): Value in order to set a limit for the whole energysystem, e.g. carbon dioxide emissions. Set this field to "None" in order to ignore the limit. If you want to set a limit, you have to set specific values for each components seen below.
 - **minimum final energy reduction** in (kWh): This value can be used to regulate how much final energy reduction (e.g. through insulation) must be achieved.
-- **weather data lat**: Latitude of the area under investigation. This value is used to import weather data from `Open Energy Platform <https://openenergy-platform.org/>` using feedinlib's OpenFred.
-- **weather data lon**: Longitude of the area under investigation. This value is used to import weather data from `Open Energy Platform <https://openenergy-platform.org/>` using feedinlib's OpenFred.
+- **weather data lat**: Latitude of the area under investigation. This value is used to import weather data from `Open Energy Platform <https://openenergy-platform.org>` using feedinlib's OpenFred.
+- **weather data lon**: Longitude of the area under investigation. This value is used to import weather data from `Open Energy Platform <https://openenergy-platform.org>` using feedinlib's OpenFred.
    
 .. csv-table:: Exemplary input for the energy system
    :header: start date,end date,temporal resolution,periods,constraint cost limit, minimum final energy reduction, weather data lat, weather data lon
