@@ -46,8 +46,8 @@ The pipes sheet defines a 'database' which is pipe specific parameters like:
 | periodical constraint | n.n.         | CU for second optimization criterion per kW |
 | costs (CU / kW * m)   |              | transportable installed heat capacity       |
 +-----------------------+--------------+---------------------------------------------+
-| fix constraint costs  | n.n.         | CO2 emission per meter of pipe and its      |
-| (CU / m)              |              | laying                                      |
+| fix constraint costs  | n.n.         | CU for second optimization criterion per    |
+| (CU / m)              |              | meter of pipe and its laying                |
 +-----------------------+--------------+---------------------------------------------+
 
 Reference: Becker G. "A comparative study of open-source district heating modeling tools.", unpublished at the time of publication of this documentation, 2022.
