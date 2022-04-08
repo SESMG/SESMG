@@ -28,7 +28,8 @@ Structure of Energy Systems
 	:caption: Structure of Energy Systems
 	
 	structure_of_energy_system/structure
-	
+
+
 Manual
 -------------------------------------------------
 * :doc:`manual/installation`
