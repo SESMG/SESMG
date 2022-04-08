@@ -46,7 +46,7 @@ Error I-002: port 443
 **Debugging:** Reinstall the package manually in the virtual environment as follows: 1. open a terminal 2. navigate to your SESMG folder 3. navigate to the scripts-subfolder: ``cd Scripts`` 4. start the virtual environment: ``start /b activate.bat`` 5. install the missing package as follows: ```pip install --default-timeout=100 'PACKAGE-NAME``` (see also `here <https://stackoverflow.com/questions/43298872/how-to-solve-readtimeouterror-httpsconnectionpoolhost-pypi-python-org-port>`_)
 
 
-Error I-XXX: Vorlage
+Error I-XXX: Template
 ----------------------------------
 **Error Message:**
 **Possible Error Cause:**
@@ -106,7 +106,7 @@ Error M-003: Memory Error
    (1) Restart the used Python interpreter 
    (2) Close unnecessary programs on the computer 
    (3) Make sure that python 64 bit version is used (Python 32 bit can manage only 2 GB of memory). 
-   (4)Start the program on a computer with a higher memory.
+   (4) Start the program on a computer with a higher memory.
 
 Error M-004: module 'time' has no attribute 'clock'
 ---------------------------------------------------
@@ -115,7 +115,23 @@ Error M-004: module 'time' has no attribute 'clock'
 **Possible Error Cause:** You are using a Python version not compatible with oemof.
 
 **Debugging:** Use Pyhton 3.7
-   
+
+Error M-005: operands could not be broadcast together
+-----------------------------------------------------
+**Error Message:** ValueError: operands could not be broadcast together with shapes (8784 ) (8760 )
+
+**Possible Error Cause:** The weather dataset contains the wrong number of data points for using feedinlib.
+
+**Debugging:** Make sure that the number of weather data points corresponds to the time steps of the model (At hourly resolution  one year has 8760 time steps). When simulating a leap year  it is recommended limiting the time horizon to 8760 hours.
+
+Error M-XXX: Template
+-----------------------------------------------------
+**Error Message:** 
+
+**Possible Error Cause:** 
+
+**Debugging:** 
+
 .. csv-table::
    :file: ../troubleshooting/troubleshooting-modelling.csv
    :header-rows: 1
