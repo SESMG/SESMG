@@ -30,8 +30,8 @@ Within this sheet, the time horizon and the temporal resolution of the model is 
 - **periods**: Number of periods within the time horizon (one year with hourly resolution equals 8760 periods).
 - **constraint cost limit** in (CU): Value in order to set a limit for the whole energysystem, e.g. carbon dioxide emissions. Set this field to "None" in order to ignore the limit. If you want to set a limit, you have to set specific values for each components seen below.
 - **minimum final energy reduction** in (kWh): This value can be used to regulate how much final energy reduction (e.g. through insulation) must be achieved.
-- **weather data lat**: Latitude of the area under investigation. This value is used to import weather data from `Open Energy Platform <https://openenergy-platform.org>`_ using feedinlib's OpenFred.
-- **weather data lon**: Longitude of the area under investigation. This value is used to import weather data from `Open Energy Platform <https://openenergy-platform.org>`_ using feedinlib's OpenFred.
+- **weather data lat**: Latitude (WGS84) of the area under investigation. This value is used to import weather data from `Open Energy Platform <https://openenergy-platform.org>`_ using feedinlib's OpenFred.
+- **weather data lon**: Longitude (WGS84) of the area under investigation. This value is used to import weather data from `Open Energy Platform <https://openenergy-platform.org>`_ using feedinlib's OpenFred.
    
 .. csv-table:: Exemplary input for the energy system
    :header: start date,end date,temporal resolution,periods,constraint cost limit, minimum final energy reduction, weather data lat, weather data lon
@@ -54,7 +54,7 @@ For example, an area competition. If you do not want to use this spreadsheet, it
    :header: component 1,factor 1,component 2,factor 2,limit
 
 	,unit/KW,,unit/kW,unit
-	ID_photovoltaic_electricity_source,5.26,ID_solar_thermal_source,11.05,168
+	ID_photovoltaic_electricity_source,5.26,ID_solar_thermal_source,1.79,168
 
 Buses
 =================================================
@@ -70,7 +70,7 @@ Within this sheet, the buses of the energy system are defined. The following par
 - **shortage costs** in (CU/kWh): Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage source was deactivated, the fill character "0" is used.
 - **excess constraint costs** in (CU/kWh): Assigns a price per kWh to the release of energy to the excess sink referring to the constraint limit set in the "energysystem" sheet. If the excess sink was deactivated, the fill character "0" is used. If not considering constraints fill character "0" is used.
 - **shortage constraint costs** in (CU/kWh): Assigns a price per kWh to the purchase of energy from the shortage source referring to the constraint limit set in the "energysystem" sheet. If the shortage source was deactivated, the fill character "0" is used. If not considering constraints fill character "0" is used.
-- **district heating conn.**: This column allows you to specify whether the bus should be connected to the heating network. If not, select 0. If yes, either the nearest point of the heating network can be used as a connection (in this case the column must be filled with "dh-system"), or one of the street points from the "District Heating" sheet is used (in this case the column must be filled according to the following pattern: street-name-1 for the first node or street-name-2 for the second).
+- **district heating conn.**: This column allows you to specify whether the bus should be connected to the heating network. If not, select 0. If yes, either the nearest point of the heating network can be used as a connection (in this case the column must be filled with "dh-system"), or one of the street points from the "District Heating" sheet is used (in this case the column must be filled according to the following pattern: street-label-1 for the first node or street-label-2 for the second).
 - **lat**: This column must be filled if dh-system was specified in the "district heating conn." column. In this case, this column must be filled with the latitude (WGS84).
 - **lon**: This column must be filled if dh-system was specified in the "district heating conn." column. In this case, this column must be filled with the longitude (WGS84).
 
@@ -130,9 +130,9 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **occupants** [RICHARDSON]: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "0" for other load profiles.
 - **building class** [HEAT SLP ONLY]: BDEW building classes that coincide with the building locations are explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#sinks>`_.
 - **wind class** [HEAT SLP ONLY]: wind classification for building location (0=not windy, 1=windy)
-- **district heating**: This column allows you to specify whether the house should be connected to the heating network (1) or not (0).
-- **lat**: If house can be connected to dh-network this column must be filled with the latitude (WGS84).
-- **lon**: If house can be connected to dh-network this column must be filled with the longitude (WGS84).
+- **district heating**: This column allows you to specify whether the sink should be connected to the heating network (1) or not (0).
+- **lat**: If house sink be connected to dh-network this column must be filled with the latitude (WGS84).
+- **lon**: If house sink be connected to dh-network this column must be filled with the longitude (WGS84).
 
 .. csv-table:: Exemplary input for the sinks sheet
    :header: label,comment,active,fixed,input,load profile,nominal value,annual demand,occupants,building class,wind class, district heating, lat, lon
