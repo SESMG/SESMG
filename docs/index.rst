@@ -23,7 +23,7 @@ Structure of Energy Systems
 	
 	
 ..	toctree::
-	:maxdepth: 2
+	:maxdepth: 1
 	:hidden:
 	:caption: Structure of Energy Systems
 	
@@ -47,13 +47,13 @@ Manual
 	:hidden:
 	:caption: Manual
 	
-    manual/installation
-    manual/GUI
-    manual/ScenarioSpreadsheet
-    manual/TechnicalData
-    manual/Results
-    manual/UpscalingTool
-    manual/DemoTool
+	manual/installation
+	manual/GUI
+	manual/ScenarioSpreadsheet
+	manual/TechnicalData
+	manual/Results
+	manual/UpscalingTool
+	manual/DemoTool
 
 
 
@@ -84,7 +84,7 @@ Sourcecode
 	:caption: Sourcecode Documentation
 	
 	sourcecode_documentation/gui_functions
-    sourcecode_documentation/upscaling_tool
+        sourcecode_documentation/upscaling_tool
 	sourcecode_documentation/program_functions
 	
 	
