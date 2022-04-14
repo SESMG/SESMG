@@ -160,9 +160,10 @@ efficiency of the collector, A1 is the linear heat loss coefficient
 and A2 is the quadratic heat loss coefficient. Values for Eta 0, A1
 and A2 are collector specific values and can be found in data sheets.
 These values are measured and calculated according to DIN EN ISO
-9806. The parameters C1 and C2 for concentrated solar power are as
-well collector specific values. An exemplary  set of values is give
-in the documentation on how to use the scenario file.
+9806. The parameters C1 and C2 for concentrated solar power are 
+collector specific values as
+well. An exemplary  set of values is given
+in the documentation on how to use the `scenario file <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/manual/ScenarioSpreadsheet.html#concentrated-solar-power>`_.
 
 The solar irradiance is given in W/sqm. Therefore the collector's heat
 output is given in this unit as well. The investment object has to
@@ -200,15 +201,17 @@ output is 1,504 kW and the conversion factor roundabout 1,68 (sqm/kW).
 
 Example for calculation of conversion factor.
 
-If you are calculating a system with the concentrated solar power
-module, you need to be careful. Depending on the azimuth of the system
-some tests have shown, that for some hours of the considered period the
-calculated power output of the concentrated solar power module peaks
-by a factor of e.g. 100 compared to the rest of the period. This was
-observed with increasing azimuth e.g. an azimuth of 270 degrees.
-These peaks in power output are not possible, so the final results
-have to be evaluated carefully. The interactive results in the end
-can help to identify possible peaks very well.
+.. note::
+
+    If you are calculating a system with the concentrated solar power
+    module, you need to be careful. Depending on the azimuth of the system
+    some tests have shown, that for some hours of the considered period the
+    calculated power output of the concentrated solar power module peaks
+    by a factor of e.g. 100 compared to the rest of the period. This was
+    observed with increasing azimuth e.g. an azimuth of 270 degrees.
+    These peaks in power output are not possible, so the final results
+    have to be evaluated carefully. The interactive results in the end
+    can help to identify possible peaks very well.
 
 Sinks
 =================================================
