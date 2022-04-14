@@ -30,6 +30,7 @@ Structure of Energy Systems
 	structure_of_energy_system/structure
 
 
+
 Manual
 -------------------------------------------------
 * :doc:`manual/installation`
@@ -53,7 +54,9 @@ Manual
     manual/Results
     manual/UpscalingTool
     manual/DemoTool
-	
+
+
+
 Troubleshooting 
 -------------------------------------------------
 * :doc:`troubleshooting/troubleshooting`
@@ -65,6 +68,8 @@ Troubleshooting
 	:caption: Troubleshooting
 	
 	troubleshooting/troubleshooting
+
+
 
 Sourcecode
 -------------------------------------------------
@@ -81,6 +86,7 @@ Sourcecode
 	sourcecode_documentation/gui_functions
     sourcecode_documentation/upscaling_tool
 	sourcecode_documentation/program_functions
+	
 	
 	
 Further Information
