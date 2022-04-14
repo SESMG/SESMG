@@ -117,7 +117,7 @@ listed in the following table.
 **Wind Turbines**
 
 For the modeling of wind turbines, the weather data set must
-include wind speeds. The wind speeds must be available for a 
+include wind speeds, as well as the roughness length z0 and the pressure. The wind speeds must be available for a 
 measurement height of 10 m in the unit m/s.
 
 The system data of the wind turbine to be modelled are obtained 
