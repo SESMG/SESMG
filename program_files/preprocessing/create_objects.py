@@ -1844,7 +1844,7 @@ class Storages:
         # import functions for stratified thermal storages from oemof thermal
         from oemof.thermal.stratified_thermal_storage import calculate_losses
         # Import weather Data
-        data.index = pd.to_datetime(data["timestamp"].values, utc=True)
+        data.index = pd.to_datetime(data.index.values, utc=True)
         data.index = pd.to_datetime(data.index).tz_convert("Europe/Berlin")
         # calculations for stratified thermal storage
         loss_rate, fixed_losses_relative, fixed_losses_absolute = \
