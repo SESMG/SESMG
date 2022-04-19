@@ -453,6 +453,10 @@ house station.
 
    Representation of the district heating network as described above.
 
+Insulation
+=================================================
+Thermal insulation represents a possibility to reduce the heat demand of a respective building. For this purpose, an investment decision is used to calculate a U-value and temperature difference dependent saving, which is subtracted from the sinks.
+
 Investment
 =================================================
 The investment costs help to compare the costs of building new components to the costs of further using existing
