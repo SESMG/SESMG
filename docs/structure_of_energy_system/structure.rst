@@ -344,8 +344,7 @@ plants, energy transforming processes
 losses. The transformers’ efficiencies can be defined for every 
 time step (e.g., the efficiency of a thermal 
 powerplants in dependence of  the ambient temperature).
-
-Currently only Generic Transformers can be used within the Spreadsheet Energy System Model Generator. 
+ 
 These may have one or more different outputs, e.g., heat and electricity. For the modelling,
 the nominal performance of a generic transformer with several outputs,
 the respective output ratios, and an efficiency for each output need to be known.
