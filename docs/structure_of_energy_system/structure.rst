@@ -455,7 +455,7 @@ house station.
 
 Insulation
 =================================================
-Thermal insulation represents a possibility to reduce the heat demand of a respective building. For this purpose, an investment decision is used to calculate a U-value and temperature difference dependent saving, which is subtracted from the sinks.
+Thermal insulation represents a possibility to reduce the heat demand of a respective building. For this purpose, an investment decision is used to calculate a U-value and temperature difference dependent saving, which is substracted from the sinks.
 
 Investment
 =================================================
