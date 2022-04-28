@@ -23,15 +23,18 @@ def sink_clustering(building, sink, sink_parameters):
         # get res elec demand
         if "RES" in building[2]:
             sink_parameters[0] += sink["annual demand"]
-            sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
+            sink_parameters[7].append(sink["label"])
+            #sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
         # get com elec demand
         elif "COM" in building[2]:
             sink_parameters[1] += sink["annual demand"]
-            sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
+            sink_parameters[8].append(sink["label"])
+            #sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
         # get ind elec demand
         elif "IND" in building[2]:
             sink_parameters[2] += sink["annual demand"]
-            sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
+            sink_parameters[9].append(sink["label"])
+            #sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
     # get cluster heat sinks
     elif str(building[0]) in sink["label"] \
             and "heat" in sink["label"]:
@@ -527,29 +530,38 @@ def create_cluster_elec_sinks(standard_parameters, sink_parameters, cluster,
     
     # create clustered electricity sinks
     if sink_parameters[0] > 0:
+        for i in sink_parameters[7]:
+            sheets["sinks"].loc[sheets["sinks"]["label"] == i, "input"] \
+                = str(cluster) + "_res_electricity_bus"
         # create clustered res electricity sink
         # annual demand sink_parameters[0]
-        pre_processing.create_standard_parameter_sink(
-                "RES_electricity_sink",
-                str(cluster) + "_res_electricity_demand",
-                str(cluster) + "_res_electricity_bus",
-                sink_parameters[0], standard_parameters)
+        #pre_processing.create_standard_parameter_sink(
+        #        "RES_electricity_sink",
+        #        str(cluster) + "_res_electricity_demand",
+        #        str(cluster) + "_res_electricity_bus",
+        #        sink_parameters[0], standard_parameters)
     if sink_parameters[1] > 0:
+        for i in sink_parameters[8]:
+            sheets["sinks"].loc[sheets["sinks"]["label"] == i, "input"] \
+                = str(cluster) + "_com_electricity_bus"
         # create clustered res electricity sink
         # annual demand sink_parameters[1]
-        pre_processing.create_standard_parameter_sink(
-                "COM_electricity_sink",
-                str(cluster) + "_com_electricity_demand",
-                str(cluster) + "_com_electricity_bus",
-                sink_parameters[1], standard_parameters)
+        #pre_processing.create_standard_parameter_sink(
+        #        "COM_electricity_sink",
+        #        str(cluster) + "_com_electricity_demand",
+        #        str(cluster) + "_com_electricity_bus",
+        #        sink_parameters[1], standard_parameters)
     if sink_parameters[2] > 0:
+        for i in sink_parameters[9]:
+            sheets["sinks"].loc[sheets["sinks"]["label"] == i, "input"] \
+                = str(cluster) + "_ind_electricity_bus"
         # create clustered res electricity sink
         # annual demand sink_parameters[2]
-        pre_processing.create_standard_parameter_sink(
-                "IND_electricity_sink",
-                str(cluster) + "_ind_electricity_demand",
-                str(cluster) + "_ind_electricity_bus",
-                sink_parameters[2], standard_parameters)
+        #pre_processing.create_standard_parameter_sink(
+        #        "IND_electricity_sink",
+        #        str(cluster) + "_ind_electricity_demand",
+        #        str(cluster) + "_ind_electricity_bus",
+        #        sink_parameters[2], standard_parameters)
         
 
 def create_cluster_averaged_bus(sink_parameters, cluster, type,
@@ -888,8 +900,9 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets_input,
             # cluster sinks parameter
             # [res_elec_demand, com_elec_demand, ind_elec_demand,
             #  heat_buses, res_heat_demand, com_heat_demand,
-            #  ind_heat_demand, heat_sinks]
-            sink_parameters = [0, 0, 0, [], 0, 0, 0, []]
+            #  ind_heat_demand, heat_sinks, elec_res_sink,
+            #  elec_com_sink, elec_ind_sink]
+            sink_parameters = [0, 0, 0, [], 0, 0, 0, [], [], [], []]
             
             # transformer_param technology:
             # [counter, efficiency, efficiency2, periodical_costs,
