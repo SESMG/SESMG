@@ -17,25 +17,38 @@ def append_component(sheet: str, comp_parameter: dict):
 
 def read_standard_parameters(standard_parameters, name, param_type, index):
     """
+        searches the right entry within the standard parameter sheet
 
-        :param standard_parameters:
-        :type standard_parameters:
-        :param name:
-        :type name:
+        :param standard_parameters: pandas Dataframe containing the \
+            technology specific parameters
+        :type standard_parameters: pandas.DataFrame
+        :param name: component's name
+        :type name: str
+        :param param_type: determines the technology type
+        :type param_type: str
+        :param index: defines on which column the index of the parsed \
+            Dataframe will be set in order to locate the component's \
+            name specific row
+        :returns standard_param: technology specific parameters of name
+        :rtype standard_param: pandas.Dataframe
+        :returns standard_keys: technology specific keys of name
+        :rtype standard_keys: list
     """
-    # read the standards from standard_param and append
-    # them to the dict
+    # get the param_type sheet from standard parameters
     standard_param_df = standard_parameters.parse(param_type)
+    # reset the dataframes index to the index variable set in args
     standard_param_df.set_index(index, inplace=True)
+    # locate the row labeled name
     standard_param = standard_param_df.loc[name]
+    # get the keys of the located row
     standard_keys = standard_param.keys().tolist()
-
+    # return parameters and keys
     return standard_param, standard_keys
 
 
 def create_standard_parameter_bus(label: str, bus_type: str,
-                                  standard_parameters, lat=None, lon=None,
-                                  dh=None):
+                                  standard_parameters, dh=None, lat=None,
+                                  lon=None):
     """
         creates a bus with standard_parameters, based on the standard
         parameters given in the "standard_parameters" dataset and adds
@@ -68,11 +81,13 @@ def create_standard_parameter_bus(label: str, bus_type: str,
     standard_param, standard_keys = \
         read_standard_parameters(standard_parameters, bus_type, "buses",
                                  'bus_type')
-    # adapt standard values
+    # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
         bus_dict[standard_keys[i]] = standard_param[standard_keys[i]]
+    # defines rather a district heating connection is possible
     if lat is not None:
         bus_dict.update({"district heating conn.": dh, "lat": lat, "lon": lon})
+    # appends the new created component to buses sheet
     append_component("buses", bus_dict)
 
 
@@ -96,19 +111,23 @@ def create_standard_parameter_link(label: str, bus_1: str, bus_2: str,
                information imported from the standard parameter file
         :type standard_parameters: pd.Dataframe
     """
+    # define individual values
     parameter_dict = {'label': label, 'bus1': bus_1, 'bus2': bus_2}
+    # extracts the link specific standard values from the
+    # standard_parameters dataset
     standard_param, standard_keys = \
         read_standard_parameters(standard_parameters, link_type, "links",
                                  'link_type')
+    # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
         parameter_dict[standard_keys[i]] = standard_param[standard_keys[i]]
+    # appends the new created component to links sheet
     append_component("links", parameter_dict)
 
 
 def create_standard_parameter_sink(sink_type: str, label: str,
                                    sink_input: str, annual_demand: int,
-                                   standard_parameters, dh: int, lat=None,
-                                   lon=None):
+                                   standard_parameters):
     """
         creates a sink with standard_parameters, based on the standard
         parameters given in the "standard_parameters" dataset and adds
@@ -136,17 +155,18 @@ def create_standard_parameter_sink(sink_type: str, label: str,
                     consumer bus to district heating network
         :type lon: float
     """
+    # define individual values
+    sink_dict = {'label': label, 'input': sink_input,
+                 'annual demand': annual_demand}
+    # extracts the sink specific standard values from the
+    # standard_parameters dataset
     standard_param, standard_keys = \
         read_standard_parameters(standard_parameters, sink_type, "sinks",
                                  'sink_type')
-    sink_dict = {'label': label, 'input': sink_input,
-                 'annual demand': annual_demand, 'district heating': dh,
-                 'lat': lat if (lat is not None or lon is not None) else 0,
-                 'lon': lon if (lat is not None or lon is not None) else 0}
-    # read the heat network standards from standard_parameters.xlsx and append
-    # them to the sink_house_specific_dict
+    # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
         sink_dict[standard_keys[i]] = standard_param[standard_keys[i]]
+    # appends the new created component to sinks sheet
     append_component("sinks", sink_dict)
 
 
@@ -154,7 +174,9 @@ def create_standard_parameter_transformer(specific_param: dict,
                                           standard_parameters,
                                           standard_param_name):
     """
-        TODO DOCSTRING TEXT
+        creates a transformer with standard_parameters, based on the
+        standard parameters given in the "standard_parameters" dataset
+        and adds it to the "sheets"-output dataset.
 
         :param specific_param: dictionary holding the transformer specific
                                parameters (e.g. electrolysis specific...)
@@ -167,11 +189,14 @@ def create_standard_parameter_transformer(specific_param: dict,
                                     to locate the right standard parameters
         :type standard_param_name: string
     """
-    # get transformer standard parameters
+    # extracts the transformer specific standard values from the
+    # standard_parameters dataset
     standard_param, standard_keys = read_standard_parameters(
         standard_parameters, standard_param_name, "transformers", "comment")
+    # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
         specific_param[standard_keys[i]] = standard_param[standard_keys[i]]
+    # appends the new created component to transformers sheet
     append_component("transformers", specific_param)
 
 
@@ -179,6 +204,9 @@ def create_standard_parameter_storage(specific_param: dict,
                                       standard_parameters,
                                       standard_param_name):
     """
+        creates a storage with standard_parameters, based on the
+        standard parameters given in the "standard_parameters" dataset
+        and adds it to the "sheets"-output dataset.
 
         :param specific_param: dictionary holding the storage specific
                                parameters (e.g. ng_storage specific, ...)
@@ -191,91 +219,137 @@ def create_standard_parameter_storage(specific_param: dict,
                                     to locate the right standard parameters
         :type standard_param_name: str
     """
-    # get storage standard parameters
+    # extracts the storage specific standard values from the
+    # standard_parameters dataset
     standard_param, standard_keys = read_standard_parameters(
         standard_parameters, standard_param_name, "storages", "comment")
+    # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
         specific_param[standard_keys[i]] = standard_param[standard_keys[i]]
-    # append new storage on pandas dataframe
+    # appends the new created component to storages sheet
     append_component("storages", specific_param)
+
+
+def create_central_heat_component(type, bus, standard_parameters,
+                                  central_elec_bus, central_chp):
+    """
+        In this method, all heat supply systems are calculated for a
+        heat input into the district heat network.
+        
+        :param type: defines the component type
+        :type type: str
+        :param bus: defines the output bus which is one of the heat
+            input buses of the district heating network
+        :type bus: str
+        :param standard_parameters:
+        :param central_elec_bus:
+        :param central_chp:
+        :return:
+    """
+    if type == 'naturalgas_chp':
+        create_central_chp(gastype='naturalgas',
+                           standard_parameters=standard_parameters,
+                           output=bus,
+                           central_elec_bus=central_elec_bus)
+    if type == 'biogas_chp':
+        create_central_chp(gastype='biogas',
+                           standard_parameters=standard_parameters,
+                           output=bus,
+                           central_elec_bus=central_elec_bus)
+    # central natural gas heating plant
+    if type == 'naturalgas_heating_plant':
+        create_central_gas_heating_transformer(
+            gastype='naturalgas',
+            standard_parameters=standard_parameters,
+            output=bus,
+            central_chp=central_chp)
+    # central swhp
+    central_heatpump_indicator = 0
+    if type == 'swhp_transformer':
+        create_central_heatpump(
+            standard_parameters=standard_parameters,
+            specification='swhp',
+            create_bus=True if central_heatpump_indicator == 0 else False,
+            output=bus, central_elec_bus=central_elec_bus)
+        central_heatpump_indicator += 1
+    # central ashp
+    if type == 'ashp_transformer':
+        create_central_heatpump(
+            standard_parameters=standard_parameters,
+            specification='ashp',
+            create_bus=True if central_heatpump_indicator == 0 else False,
+            central_elec_bus=central_elec_bus,
+            output=bus)
+        central_heatpump_indicator += 1
+    # central biomass plant
+    if type == 'biomass_plant':
+        create_central_biomass_plant(
+            standard_parameters=standard_parameters,
+            output=bus)
+    if type == 'thermal_storage':
+        create_thermal_storage(building_id="central",
+                               standard_parameters=standard_parameters,
+                               storage_type="central",
+                               bus=bus)
 
 
 def central_comp(central, standard_parameters):
     """
-        TODO DOCSTRING TEXT
+        In this method, the central components of the energy system are
+        added to the scenario, first checking if a heating network is
+        foreseen and if so, creating the feeding components, and then
+        creating Power to Gas and battery storage if defined in the pre
+        scenario.
 
-        :param central: pandas Dataframe holding the information from the
-                        prescenario file "central" sheet
+        :param central: pandas Dataframe holding the information from the \
+                prescenario file "central" sheet
         :type central: pd.Dataframe
-        :param standard_parameters: pandas Dataframe holding the
-                   information imported from the standard parameter file
+        :param standard_parameters: pandas Dataframe holding the \
+               information imported from the standard parameter file
         :type standard_parameters: pd.Dataframe
     """
     for i, j in central.iterrows():
 
-        # create central electricity bus
+        # creation of the bus for the local power exchange
         if j['electricity_bus'] in ['Yes', 'yes', 1]:
             create_standard_parameter_bus(
                 label='central_electricity_bus',
                 bus_type="central_electricity_bus",
                 standard_parameters=standard_parameters)
 
-        # central natural gas
-        if j['naturalgas_chp'] in ['yes', 'Yes', 1] \
-                or j["biogas_chp"] in ['yes', 'Yes', 1] \
-                or j['swhp_transformer'] in ['yes', 'Yes', 1] \
-                or j['biomass_plant'] in ['yes', 'Yes', 1] \
-                or j['naturalgas_heating_plant'] in ['yes', 'Yes', 1] \
-                or j['thermal_storage'] in ['yes', 'Yes', 1]:
-            # TODO only one central input implemented yet
-            create_standard_parameter_bus(
-                label='central_heat_input_bus',
-                bus_type="central_heat_input_bus",
-                standard_parameters=standard_parameters,
-                dh="dh-system",
-                lat=j["lat.-chp"],
-                lon=j["lon.-chp"])
-            if j['naturalgas_chp'] in ['yes', 'Yes', 1]:
-                create_central_chp(gastype='naturalgas',
-                                   standard_parameters=standard_parameters)
-            if j['biogas_chp'] in ['yes', 'Yes', 1]:
-                create_central_chp(gastype='biogas',
-                                   standard_parameters=standard_parameters)
-            # central natural gas heating plant
-            if j['naturalgas_heating_plant'] in ['yes', 'Yes', 1]:
-                create_central_gas_heating_transformer(
-                    gastype='naturalgas',
-                    standard_parameters=standard_parameters)
-            # central swhp
-            central_heatpump_indicator = 0
-            if j['swhp_transformer'] in ['yes', 'Yes', 1]:
-                create_central_heatpump(
-                    standard_parameters=standard_parameters,
-                    specification='swhp',
-                    create_bus=True if central_heatpump_indicator == 0 else
-                    False)
-                central_heatpump_indicator += 1
-            # central ashp
-            if j['ashp_transformer'] in ['yes', 'Yes', 1]:
-                create_central_heatpump(
-                    standard_parameters=standard_parameters,
-                    specification='ashp',
-                    create_bus=True if central_heatpump_indicator == 0 else
-                    False)
-                central_heatpump_indicator += 1
-            # central biomass plant
-            if j['biomass_plant'] in ['yes', 'Yes', 1]:
-                create_central_biomass_plant(
-                    standard_parameters=standard_parameters)
-            if j['thermal_storage'] in ['yes', 'Yes', 1]:
-                create_thermal_storage(building_id="central",
-                                       standard_parameters=standard_parameters,
-                                       storage_type="central",
-                                       bus="central_heat_input_bus")
+        # central heat supply
+        if j["central_heat_supply"] in ['yes', 'Yes', 1]:
+            for num in range(1, 3):
+                print(num)
+                if j["heat_input_{}".format(str(num))] in ['yes', 'Yes', 1]:
+                    print(num)
+                    # create bus which would be used as producer bus in
+                    # district heating network
+                    create_standard_parameter_bus(
+                        label='central_heat_input{}_bus'.format(num),
+                        bus_type="central_heat_input_bus",
+                        standard_parameters=standard_parameters,
+                        dh="dh-system",
+                        lat=j["lat.heat_input-{}".format(num)],
+                        lon=j["lon.heat_input-{}".format(num)])
+                    # create components connected to the producer bus
+                    for comp in \
+                            str(j["connected_components_heat_input{}".format(num)
+                                ]).split(","):
+                        if j[comp] in ['yes', 'Yes', 1]:
+                            create_central_heat_component(
+                                comp, 'central_heat_input{}_bus'.format(num),
+                                standard_parameters,
+                                True if j['electricity_bus'] in
+                                    ['Yes', 'yes', 1] else False,
+                                True if j['naturalgas_chp'] in
+                                    ['Yes', 'yes', 1] else False)
+
         # power to gas system
         if j['power_to_gas'] in ['yes', 'Yes', 1]:
             create_power_to_gas_system(standard_parameters=standard_parameters)
 
+        # central battery storage
         if j['battery_storage'] in ['yes', 'Yes', 1]:
             create_battery(building_id="central",
                            standard_parameters=standard_parameters,
@@ -368,7 +442,7 @@ def create_power_to_gas_system(standard_parameters):
         standard_parameters=standard_parameters)
 
 
-def create_central_biomass_plant(standard_parameters):
+def create_central_biomass_plant(standard_parameters, output):
     """
         This method creates a central biomass plant with the data given
         in the standard parameter sheet.
@@ -376,43 +450,54 @@ def create_central_biomass_plant(standard_parameters):
         :param standard_parameters: pandas Dataframe holding the
                    information imported from the standard parameter file
         :type standard_parameters: pd.Dataframe
+        :param output: string containing the output bus label
+        :type output: str
     """
     # biomass bus
     create_standard_parameter_bus(label="central_biomass_bus",
                                   bus_type="central_biomass_bus",
                                   standard_parameters=standard_parameters)
-
+    # define individual values
     parameter_dict = {'label': 'central_biomass_transformer',
                       'comment': 'automatically_created',
                       'input': "central_biomass_bus",
-                      'output': 'central_heat_input_bus',
+                      'output': output,
                       'output2': 'None'}
 
-    # read the biomass standards from standard_parameters.xlsx and append
-    # them to the biomass_central_dict
+    # extracts the transformer specific standard values from the
+    # standard_parameters dataset
     standard_param, standard_keys = \
         read_standard_parameters(standard_parameters,
                                  'central_biomass_transformer', "transformers",
                                  "comment")
-
+    # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
         parameter_dict[standard_keys[i]] = standard_param[standard_keys[i]]
-    # append new transformer on pandas dataframe
+    # appends the new created component to transformers sheet
     append_component("transformers", parameter_dict)
 
 
-def create_central_heatpump(standard_parameters, specification, create_bus):
+def create_central_heatpump(standard_parameters, specification, create_bus,
+                            central_elec_bus, output):
     """
-        TODO DOCSTRING
+        In this method, a central heatpump unit with specified gas type
+        is created, for this purpose the necessary data set is obtained
+        from the standard parameter sheet, and the component is attached
+        to the transformers sheet.
+        
         :param standard_parameters: pandas Dataframe holding the
                                     information imported from the
                                     standard parameter file
+        :type standard_parameters: pandas Dataframe
         :param specification: string giving the information which type
                               of heatpump shall be added.
+        :type specification: str
         :param create_bus: indicates whether a central heatpump
                            electricity bus and further parameters shall
                            be created or not.
-        :return:
+        :param central_elec_bus: indicates whether a central elec exists
+        :type central_elec_bus: bool
+        :return: bool
     """
 
     if create_bus:
@@ -420,36 +505,41 @@ def create_central_heatpump(standard_parameters, specification, create_bus):
             label="central_heatpump_elec_bus",
             bus_type="central_heatpump_electricity_bus",
             standard_parameters=standard_parameters)
-        # connection to central electricity bus
-        create_standard_parameter_link(
-            label="central_heatpump_electricity_link",
-            bus_1="central_electricity_bus",
-            bus_2="central_heatpump_elec_bus",
-            link_type="building_central_building_link",
-            standard_parameters=standard_parameters)
-
-    standard_param, standard_keys = read_standard_parameters(
-        standard_parameters, 'central_' + specification + '_transformer',
-        "transformers", "comment")
-
+        if central_elec_bus:
+            # connection to central electricity bus
+            create_standard_parameter_link(
+                label="central_heatpump_electricity_link",
+                bus_1="central_electricity_bus",
+                bus_2="central_heatpump_elec_bus",
+                link_type="building_central_building_link",
+                standard_parameters=standard_parameters)
+            
+    # define individual values
     parameter_dict = {
         'label': 'central_' + specification + '_transformer',
         'comment': 'automatically_created',
         'input': "central_heatpump_elec_bus",
-        'output': 'central_heat_input_bus',
+        'output': output,
         'output2': 'None'}
-
-    # read the heatpump standards from standard_parameters.xlsx and append
-    # them to the heatpump_central_dict
+    # extracts the transformer specific standard values from the
+    # standard_parameters dataset
+    standard_param, standard_keys = read_standard_parameters(
+            standard_parameters, 'central_' + specification + '_transformer',
+            "transformers", "comment")
+    # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
         parameter_dict[standard_keys[i]] = standard_param[standard_keys[i]]
-    # produce a pandas series out of the dict above due to easier appending
+    # appends the new created component to transformers sheet
     append_component("transformers", parameter_dict)
 
 
-def create_central_gas_heating_transformer(gastype, standard_parameters):
+def create_central_gas_heating_transformer(gastype, standard_parameters,
+                                           output, central_chp):
     """
-        TODO DOCSTRING TEXT
+        In this method, a central heating plant unit with specified gas
+        type is created, for this purpose the necessary data set is
+        obtained from the standard parameter sheet, and the component is
+        attached to the transformers sheet.
 
         :param gastype: string which defines rather naturalgas or biogas
                         is used
@@ -457,102 +547,107 @@ def create_central_gas_heating_transformer(gastype, standard_parameters):
         :param standard_parameters: pandas Dataframe holding the
                    information imported from the standard parameter file
         :type standard_parameters: pd.Dataframe
+        :param output: str containing the transformers output
+        :type output: str
+        :param central_chp: defines rather a central chp is investable
+        :type central_chp: bool
     """
 
     # plant gas bus
     create_standard_parameter_bus(label="central_" + gastype + "_plant_bus",
                                   bus_type="central_chp_naturalgas_bus",
                                   standard_parameters=standard_parameters)
-
-    # connection to central electricity bus
-    create_standard_parameter_link(
-        label="heating_plant_" + gastype + "_link",
-        bus_1="central_chp_naturalgas_bus",
-        bus_2="central_" + gastype + "_plant_bus",
-        link_type="central_naturalgas_building_link",
-        standard_parameters=standard_parameters)
-
-    # transformer parameters
-    heating_plant_standard_parameters = \
-        standard_parameters.parse('transformers')
-    heating_plant_standard_parameters.set_index('comment', inplace=True)
-    heating_plant_label = heating_plant_standard_parameters.loc['central_naturalgas_heating_plant_transformer']
+    
+    if central_chp:
+        # connection to central electricity bus
+        create_standard_parameter_link(
+            label="heating_plant_" + gastype + "_link",
+            bus_1="central_chp_naturalgas_bus",
+            bus_2="central_" + gastype + "_plant_bus",
+            link_type="central_naturalgas_building_link",
+            standard_parameters=standard_parameters)
+    # define individual values
     heating_plant_dict = \
         {'label': "central_" + gastype + '_heating_plant_transformer',
          'input': "central_" + gastype + "_plant_bus",
-         'output': "central_heat_input_bus",
+         'output': output,
          'output2': 'None'}
-
-    # read the chp standards from standard_parameters.xlsx and append
-    # them to the gchp_central_dict
-    heating_plant_standard_keys = \
-        heating_plant_label.keys().tolist()
+    # extracts the transformer specific standard values from the
+    # standard_parameters dataset
+    heating_plant_parameter, heating_plant_standard_keys = \
+        read_standard_parameters(
+                standard_parameters,
+                'central_naturalgas_heating_plant_transformer', "transformers",
+                "comment")
+    # insert standard parameters in the components dataset (dict)
     for i in range(len(heating_plant_standard_keys)):
         heating_plant_dict[heating_plant_standard_keys[i]] = \
-            heating_plant_label[heating_plant_standard_keys[i]]
+            heating_plant_parameter[heating_plant_standard_keys[i]]
+    # appends the new created component to transformers sheet
+    append_component("transformers", heating_plant_dict)
 
 
-    # produce a pandas series out of the dict above due to easier appending
-    heating_plant_series = pd.Series(heating_plant_dict)
-    sheets["transformers"] = sheets["transformers"].append(
-        heating_plant_series, ignore_index=True)
-
-
-def create_central_chp(gastype, standard_parameters):
+def create_central_chp(gastype, standard_parameters, output, central_elec_bus):
     """
-        TODO DOCSTRING TEXT
+        In this method, a central CHP unit with specified gas type is
+        created, for this purpose the necessary data set is obtained
+        from the standard parameter sheet, and the component is attached
+         to the transformers sheet.
 
-        :param gastype: string which defines rather naturalgas or biogas
-                        is used
+        :param gastype: string which defines rather naturalgas or \
+            biogas is used
         :type gastype: str
         :param standard_parameters: pandas Dataframe holding the
-                   information imported from the standard parameter file
+            information imported from the standard parameter file
         :type standard_parameters: pd.Dataframe
+        :param output: string containing the heat output bus name
+        :type output: str
+        :param central_elec_bus: determines if the central power \
+            exchange exists
     """
     # chp gas bus
     create_standard_parameter_bus(label="central_chp_" + gastype + "_bus",
                                   bus_type="central_chp_" + gastype + "_bus",
                                   standard_parameters=standard_parameters)
 
-    # central electricity bus
+    # chp electricity bus
     create_standard_parameter_bus(
         label="central_chp_" + gastype + "_elec_bus",
         bus_type="central_chp_" + gastype + "_electricity_bus",
         standard_parameters=standard_parameters)
-
-    # connection to central electricity bus
-    create_standard_parameter_link(
-        label="central_chp_" + gastype + "_elec_central_link",
-        bus_1="central_chp_" + gastype + "_elec_bus",
-        bus_2="central_electricity_bus",
-        link_type="central_chp_elec_central_link",
-        standard_parameters=standard_parameters)
-
-    # chp transformer
-    chp_standard_parameters = standard_parameters.parse(
-        'transformers')
-
+    
+    if central_elec_bus:
+        # connection to central electricity bus
+        create_standard_parameter_link(
+            label="central_chp_" + gastype + "_elec_central_link",
+            bus_1="central_chp_" + gastype + "_elec_bus",
+            bus_2="central_electricity_bus",
+            link_type="central_chp_elec_central_link",
+            standard_parameters=standard_parameters)
+    # define individual values
     chp_central_dict = {'label': 'central_' + gastype + '_chp_transformer',
                         'input': "central_chp_" + gastype + "_bus",
                         'output': "central_chp_" + gastype + "_elec_bus",
-                        'output2': "central_heat_input_bus"
+                        'output2': output
                         }
-    # read the chp standards from standard_parameters.xlsx and append
-    # them to the gchp_central_dict
-    chp_standard_keys = chp_standard_parameters.keys().tolist()
-    for i in range(len(chp_standard_keys)):
-        chp_central_dict[chp_standard_keys[i]] = \
-            chp_standard_parameters[chp_standard_keys[i]][0]
-
-    # produce a pandas series out of the dict above due to easier appending
-    chp_series = pd.Series(chp_central_dict)
-    sheets["transformers"] = sheets["transformers"].append(
-        chp_series, ignore_index=True)
+    # extracts the transformer specific standard values from the
+    # standard_parameters dataset
+    chp_standard_parameters, chp_parameters_keys = \
+        read_standard_parameters(standard_parameters,
+                                 "central_" + gastype + "_chp", "transformers",
+                                 "comment")
+    # insert standard parameters in the components dataset (dict)
+    for i in range(len(chp_parameters_keys)):
+        chp_central_dict[chp_parameters_keys[i]] = \
+            chp_standard_parameters[chp_parameters_keys[i]]
+    # appends the new created component to transformers sheet
+    append_component("transformers", chp_central_dict)
 
 
 def create_buses(building_id: str, pv_bus: bool, building_type: str,
                  hp_elec_bus: bool, central_elec_bus: bool, gchp: bool,
-                 standard_parameters, gchp_heat_bus=None, gchp_elec_bus=None):
+                 standard_parameters, gchp_heat_bus=None, gchp_elec_bus=None,
+                 lat=None, lon=None):
     """
         todo docstring
         :param building_id: building identification
@@ -601,17 +696,20 @@ def create_buses(building_id: str, pv_bus: bool, building_type: str,
                 link_type="building_central_building_link",
                 standard_parameters=standard_parameters)
 
-    if building_type != "0":
+    if building_type != "0" and building_type != 0:
         # house heat bus
         create_standard_parameter_bus(label=str(building_id) + "_heat_bus",
                                       bus_type='building_heat_bus',
-                                      standard_parameters=standard_parameters)
+                                      standard_parameters=standard_parameters,
+                                      dh=1 if lat is not None else 0, lat=lat,
+                                      lon=lon)
 
     if hp_elec_bus:
         # building hp electricity bus
         create_standard_parameter_bus(label=str(building_id) + "_hp_elec_bus",
                                       bus_type='building_hp_electricity_bus',
-                                      standard_parameters=standard_parameters)
+                                      standard_parameters=standard_parameters,
+                                      dh=None)
         # electricity link from building electricity bus to hp elec bus
         create_standard_parameter_link(
             label=str(building_id) + "_gchp_building_link",
@@ -661,15 +759,10 @@ def create_buses(building_id: str, pv_bus: bool, building_type: str,
 
 
 def create_sinks(sink_id: str, building_type: str, units: int,
-                 occupants: int, yoc: str, area: int, standard_parameters,
-                 latitude, longitude, dh):
+                 occupants: int, yoc: str, area: int, standard_parameters):
     """
         TODO DOCSTRING
     """
-    if dh:
-        dh_value = 1
-    else:
-        dh_value = 0
     # electricity demand
     if building_type not in ['None', '0', 0]:
         # residential parameters
@@ -720,8 +813,7 @@ def create_sinks(sink_id: str, building_type: str, units: int,
             label=str(sink_id) + "_electricity_demand",
             sink_input=str(sink_id) + "_electricity_bus",
             annual_demand=demand_el,
-            standard_parameters=standard_parameters,
-            dh=0)
+            standard_parameters=standard_parameters)
 
         # heat demand
         if "RES" in building_type:
@@ -756,10 +848,7 @@ def create_sinks(sink_id: str, building_type: str, units: int,
                                        label=str(sink_id) + "_heat_demand",
                                        sink_input=str(sink_id) + "_heat_bus",
                                        annual_demand=demand_heat,
-                                       standard_parameters=standard_parameters,
-                                       lat=latitude,
-                                       lon=longitude,
-                                       dh=dh_value)
+                                       standard_parameters=standard_parameters)
 
 
 def create_pv_source(building_id, plant_id, azimuth, tilt, area,
@@ -1112,13 +1201,14 @@ def create_building_insulation(building_id: str, yoc: int, area_window: float,
         u_values.update(
             {comp: [insul_standard_param.loc[yoc][comp],
                     insul_standard_param.loc["potential"][comp],
-                    insul_standard_param.loc["periodical_costs"][comp],
+                    insul_standard_param.loc["periodical costs"][comp],
                     insul_standard_param.loc[
-                        "periodical_constraint_costs"][comp]]})
+                        "periodical constraint costs"][comp]]})
         if comp == "roof":
             u_values[comp] \
              += [insul_standard_param.loc["potential flat"]["roof"],
-                 insul_standard_param.loc["periodical_costs_flat"]["roof"]]
+                 insul_standard_param.loc["periodical costs flat"]["roof"],
+                 insul_standard_param.loc["periodical constraint costs flat"]["roof"]]
     param_dict = {'comment': 'automatically_created',
                   'active': 1,
                   'sink': str(building_id) + "_heat_demand",
@@ -1132,7 +1222,7 @@ def create_building_insulation(building_id: str, yoc: int, area_window: float,
              'U-value new': u_values["window"][1],
              'area': area_window,
              'periodical costs': u_values["window"][2],
-             'periodical_constraint_costs': u_values["window"][3]})
+             'periodical constraint costs': u_values["window"][3]})
         append_component("insulation", window_dict)
 
     if area_wall:
@@ -1143,7 +1233,7 @@ def create_building_insulation(building_id: str, yoc: int, area_window: float,
              'U-value new': u_values["outer wall"][1],
              'area': area_wall,
              'periodical costs': u_values["outer wall"][2],
-             'periodical_constraint_costs': u_values["outer wall"][3]})
+             'periodical constraint costs': u_values["outer wall"][3]})
         append_component("insulation", wall_dict)
 
     if area_roof:
@@ -1157,7 +1247,7 @@ def create_building_insulation(building_id: str, yoc: int, area_window: float,
              'U-value new': u_value_new,
              'area': area_roof,
              'periodical costs': periodical_costs,
-             'periodical_constraint_costs': u_values["roof"][3]})
+             'periodical constraint costs': u_values["roof"][3 if roof_type != "flat roof" else 6]})
         append_component("insulation", roof_dict)
 
 
@@ -1213,11 +1303,14 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
     global sheets
     sheets = {}
     columns = {}
+    # get keys from plain scenario
     plain_sheet_pd = pd.ExcelFile(plain_sheet)
     sheet_names = plain_sheet_pd.sheet_names
     for i in range(1, len(sheet_names)):
         columns[sheet_names[i]] = plain_sheet_pd.parse(sheet_names[i]).keys()
+    # append worksheets' names to the list of worksheets
     worksheets = [column for column in columns.keys()]
+    # get spreadsheet units from plain sheet
     for sheet in worksheets:
         sheets_units = {}
         sheets.update({sheet: pd.DataFrame(columns=(columns[sheet]))})
@@ -1230,6 +1323,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
     standard_parameters = pd.ExcelFile(standard_parameter_path)
     # import the sheet which is filled by the user
     pre_scenario_pd = pd.ExcelFile(pre_scenario)
+    # get the input sheets
     tool = pre_scenario_pd.parse("tool")
     parcel = pre_scenario_pd.parse("parcel")
     central = pre_scenario_pd.parse("central")
@@ -1243,7 +1337,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
     p2g_link = False
     # update the values regarding the values given in central sheet
     for i, j in central.iterrows():
-        if j['heat_link'] in ['Yes', 'yes', 1]:
+        if j['central_heat_supply'] in ['Yes', 'yes', 1]:
             central_heating_network = True
         if j['electricity_bus'] in ['Yes', 'yes', 1]:
             central_electricity_network = True
@@ -1296,7 +1390,8 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
                 gchp_elec_bus=(building['parcel'][-9:] + "_hp_elec_bus")
                 if (building['parcel'] != 0
                     and building['parcel'][-9:] in gchps) else None,
-                standard_parameters=standard_parameters)
+                standard_parameters=standard_parameters,
+                lat=building["latitude"], lon=building["longitude"])
 
             create_sinks(sink_id=building['label'],
                          building_type=building['building type'],
@@ -1304,10 +1399,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
                          occupants=building['occupants per unit'],
                          yoc=building['year of construction'],
                          area=building['living space'] * building['floors'],
-                         standard_parameters=standard_parameters,
-                         latitude=building["latitude"],
-                         longitude=building["longitude"],
-                         dh=central_heating_network)
+                         standard_parameters=standard_parameters)
 
             create_building_insulation(
                 building_id=building['label'],
@@ -1346,7 +1438,8 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
                             pv_standard_parameters=pv_standard_parameters)
                     if (building['st or pv %1d' % roof_num] == "st"
                         or building['st or pv %1d' % roof_num] == "pv&st") \
-                            and building["building type"] != "0":
+                            and building["building type"] != "0" \
+                            and building["building type"] != 0:
                         create_solarthermal_source(
                             building_id=building['label'],
                             plant_id=plant_id,
@@ -1417,7 +1510,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
 
     if clustering:
         clustering_py.clustering_method(tool, standard_parameters, worksheets,
-                                        central_electricity_network, sheets)
+                                        sheets, central_electricity_network)
     # open the new excel file and add all the created components
     j = 0
     writer = pd.ExcelWriter(output_scenario, engine='xlsxwriter')
