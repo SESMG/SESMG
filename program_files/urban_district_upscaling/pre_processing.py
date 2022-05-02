@@ -291,6 +291,10 @@ def create_central_heat_component(type, bus, standard_parameters,
                                standard_parameters=standard_parameters,
                                storage_type="central",
                                bus=bus)
+    # power to gas system
+    if type == 'power_to_gas':
+        create_power_to_gas_system(standard_parameters=standard_parameters,
+                                   bus=bus)
 
 
 def central_comp(central, standard_parameters):
@@ -319,10 +323,9 @@ def central_comp(central, standard_parameters):
 
         # central heat supply
         if j["central_heat_supply"] in ['yes', 'Yes', 1]:
+            # TODO only two central heat buses implemented yet
             for num in range(1, 3):
-                print(num)
                 if j["heat_input_{}".format(str(num))] in ['yes', 'Yes', 1]:
-                    print(num)
                     # create bus which would be used as producer bus in
                     # district heating network
                     create_standard_parameter_bus(
@@ -345,10 +348,6 @@ def central_comp(central, standard_parameters):
                                 True if j['naturalgas_chp'] in
                                     ['Yes', 'yes', 1] else False)
 
-        # power to gas system
-        if j['power_to_gas'] in ['yes', 'Yes', 1]:
-            create_power_to_gas_system(standard_parameters=standard_parameters)
-
         # central battery storage
         if j['battery_storage'] in ['yes', 'Yes', 1]:
             create_battery(building_id="central",
@@ -356,7 +355,7 @@ def central_comp(central, standard_parameters):
                            storage_type="central")
 
 
-def create_power_to_gas_system(standard_parameters):
+def create_power_to_gas_system(standard_parameters, bus):
     """
         TODO DOCSTRING TEXT
 
@@ -364,16 +363,16 @@ def create_power_to_gas_system(standard_parameters):
                    information imported from the standard parameter file
         :type standard_parameters: pd.Dataframe
     """
-
-    # h2 bus
-    create_standard_parameter_bus(label="central_h2_bus",
-                                  bus_type="central_h2_bus",
-                                  standard_parameters=standard_parameters)
-
-    # natural gas bus
-    create_standard_parameter_bus(label="central_naturalgas_bus",
-                                  bus_type="central_naturalgas_bus",
-                                  standard_parameters=standard_parameters)
+    if "central_h2_bus" not in sheets["buses"]["label"].to_list():
+        # h2 bus
+        create_standard_parameter_bus(label="central_h2_bus",
+                                      bus_type="central_h2_bus",
+                                      standard_parameters=standard_parameters)
+    if "central_naturalgas_bus" not in sheets["buses"]["label"].to_list():
+        # natural gas bus
+        create_standard_parameter_bus(label="central_naturalgas_bus",
+                                      bus_type="central_naturalgas_bus",
+                                      standard_parameters=standard_parameters)
 
     # electrolysis transformer
     electrolysis_transformer_param = \
@@ -407,7 +406,7 @@ def create_power_to_gas_system(standard_parameters):
          'comment': 'automatically_created',
          'input': 'central_h2_bus',
          'output': 'central_electricity_bus',
-         'output2': 'central_heat_input_bus'}
+         'output2': bus}
 
     create_standard_parameter_transformer(
         specific_param=fuelcell_transformer_param,
@@ -501,18 +500,19 @@ def create_central_heatpump(standard_parameters, specification, create_bus,
     """
 
     if create_bus:
-        create_standard_parameter_bus(
-            label="central_heatpump_elec_bus",
-            bus_type="central_heatpump_electricity_bus",
-            standard_parameters=standard_parameters)
-        if central_elec_bus:
-            # connection to central electricity bus
-            create_standard_parameter_link(
-                label="central_heatpump_electricity_link",
-                bus_1="central_electricity_bus",
-                bus_2="central_heatpump_elec_bus",
-                link_type="building_central_building_link",
+        if "central_heatpump_elec_bus" not in sheets["buses"]["label"].to_list():
+            create_standard_parameter_bus(
+                label="central_heatpump_elec_bus",
+                bus_type="central_heatpump_electricity_bus",
                 standard_parameters=standard_parameters)
+            if central_elec_bus:
+                # connection to central electricity bus
+                create_standard_parameter_link(
+                    label="central_heatpump_electricity_link",
+                    bus_1="central_electricity_bus",
+                    bus_2="central_heatpump_elec_bus",
+                    link_type="building_central_building_link",
+                    standard_parameters=standard_parameters)
             
     # define individual values
     parameter_dict = {

@@ -400,7 +400,7 @@ def storage_clustering(building, sheets_clustering, storage_parameter):
 
 
 def restructuring_links(sheets_clustering, building, cluster,
-                        standard_parameters):
+                        standard_parameters, sink_parameters):
     # TODO comments
     for i, j in sheets_clustering["links"].iterrows():
 
@@ -426,6 +426,13 @@ def restructuring_links(sheets_clustering, building, cluster,
                         bus_2="central_electricity_bus",
                         link_type="building_pv_central_link",
                         standard_parameters=standard_parameters)
+                    if sink_parameters[0] + sink_parameters[1] + sink_parameters[2]:
+                        pre_processing.create_standard_parameter_link(
+                                cluster + "pv_electricity_link",
+                                bus_1=cluster + "_pv_bus",
+                                bus_2=cluster + "_electricity_bus",
+                                link_type="building_pv_central_link",
+                                standard_parameters=standard_parameters)
                     sheets["links"].set_index("label", inplace=True,
                                               drop=False)
             # delete pvbus ->  elec bus of building
@@ -958,7 +965,7 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets_input,
                                        storage_parameters)
                 # restructre all links
                 restructuring_links(sheets_clustering, building, cluster,
-                                    standard_parameters)
+                                    standard_parameters, sink_parameters)
                 
                 # update the sources in and output
                 update_sources_in_output(building, sheets_clustering, cluster)
@@ -1037,14 +1044,14 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets_input,
                 # cluster the district heating building buses
                 lats = []
                 lons = []
-                for num, bus in sheets["buses"].iterrows():
-                    for sink_bus in sink_parameters[3]:
-                        if len(sink_parameters[3]) > 0 \
-                               and bus["label"] == sink_bus[1]:
-                            print(sheets["buses"].loc[num, "lat"])
-                            lats.append(sheets["buses"].loc[num, "lat"])
-                            lons.append(sheets["buses"].loc[num, "lon"])
-                            sheets["buses"].loc[num, "district heating conn."] = 0
+                #for num, bus in sheets["buses"].iterrows():
+                #    for sink_bus in sink_parameters[3]:
+                #        if len(sink_parameters[3]) > 0 \
+                #              and bus["label"] == sink_bus[1]:
+                #            print(sheets["buses"].loc[num, "lat"])
+                #            lats.append(sheets["buses"].loc[num, "lat"])
+                #            lons.append(sheets["buses"].loc[num, "lon"])
+                #            sheets["buses"].loc[num, "district heating conn."] = 0
                 if str(cluster) + "_heat_bus" not in sheets["buses"].index:
                     # create cluster's heat bus
                     pre_processing.create_standard_parameter_bus(
