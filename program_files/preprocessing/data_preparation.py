@@ -1540,13 +1540,6 @@ def change_optimization_criterion(nodes_data: dict):
              else 'shortage constraint costs' if x == 'shortage costs'
              else x for x in column_names_list]
 
-        if scenario_sheet == 'links':
-            column_names_list = ['variable output costs'
-                                 if x == 'variable costs'
-                                 else 'variable constraint costs'
-                                 if x == 'variable output constraint costs'
-                                 else x for x in column_names_list]
-
         nd[scenario_sheet].columns = column_names_list
 
     for i in [*nodes_data]:

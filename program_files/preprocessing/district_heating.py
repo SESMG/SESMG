@@ -236,7 +236,7 @@ def create_connection_points(consumers, road_sections):
     consumer_counter = 0
     for num, consumer in consumers.iterrows():
         if consumer['active']:
-            if consumer['district heating']:
+            if consumer['district heating conn.'] == 1:
                 # TODO label of sinks has to be id_...
                 label = consumer['label'].split("_")[0]
                 foot_point = \
@@ -252,7 +252,7 @@ def create_connection_points(consumers, road_sections):
                             "lon": float(consumer['lon']),
                             "component_type": "Consumer",
                             "P_heat_max": 1,
-                            "input": consumer["input"],
+                            "input": consumer["label"],
                             "label": consumer["label"],
                             "street": foot_point[5]}),
                         ignore_index=True)
@@ -544,7 +544,7 @@ def connect_dh_to_system(oemof_opti_model, busd):
     # create link to connect consumers heat bus to the dh-system
     for num, consumer in thermal_network.components["consumers"].iterrows():
         oemof_opti_model.nodes.append(solph.Transformer(
-            label=("dh_heat_house_station_" + consumer["label"][:-12]),
+            label=("dh_heat_house_station_" + consumer["label"].split("_")[0]),
             inputs={
                 oemof_opti_model.buses[
                     dhnx.optimization_oemof_heatpipe.Label(
@@ -556,6 +556,8 @@ def connect_dh_to_system(oemof_opti_model, busd):
                     investment=solph.Investment(
                         ep_costs=float(component_param.loc["dh_heatstation"]
                                        ["costs"]),
+                        periodical_constraint_costs=float(component_param.loc["dh_heatstation"]
+                                       ["constraint costs"]),
                         minimum=0,
                         maximum=999 * len(consumer["input"]),
                         existing=0,
@@ -588,8 +590,7 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
         oemof_opti_model.nodes.append(bus)
         busd["clustered_consumers_{}".format(consumer["id"])] = bus
         oemof_opti_model.nodes.append(solph.Transformer(
-            label=("dh_heat_house_station-c{}-".format(consumer["id"])
-                   + "clustered_consumers-{}-".format(consumer["id"])
+            label=("pipe-clustered{}-".format(consumer["id"])
                    + str(consumer["length"])),
             inputs={oemof_opti_model.buses[
                 dhnx.optimization_oemof_heatpipe.Label(
@@ -623,11 +624,13 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
         counter = 1
         for consumer_input in consumer["input"]:
             oemof_opti_model.nodes.append(solph.Transformer(
-                label="clustered_consumers_{}".format(consumer["id"])
+                label="dh_heat_house_station_{}".format(consumer["id"])
                       + "-" + str(consumer_input),
                 inputs={
                     busd["clustered_consumers_{}".format(consumer["id"])]:
-                        solph.Flow(investment=solph.Investment(
+                        solph.Flow()},
+                outputs={busd[consumer_input]: solph.Flow(
+                    investment=solph.Investment(
                             ep_costs=float(component_param.loc[
                                                "dh_heatstation"]
                                            ["costs"]),
@@ -635,7 +638,6 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd):
                             maximum=999 * len(consumer["input"]),
                             existing=0,
                             nonconvex=False))},
-                outputs={busd[consumer_input]: solph.Flow()},
                 conversion_factors={busd[consumer_input]:
                                     float(component_param.loc[
                                                   "dh_heatstation"]
@@ -666,55 +668,56 @@ def add_excess_shortage_to_dh(oemof_opti_model, nodes_data, busd):
                 and bus["district heating conn."] != "dh-system":
             busses.append(bus)
     for bus in busses:
-        conn_point = bus['district heating conn.'].split("-")
-        lat = None
-        lon = None
-        for i, street in nodes_data['district heating'].iterrows():
-            if street["active"]:
-                if street['street section name'] == conn_point[0]:
-                    if conn_point[1] == "1":
-                        lat = street["lat. 1st intersection"]
-                        lon = street["lon. 1st intersection"]
-                    elif conn_point[1] == "2":
-                        lat = street["lat. 2nd intersection"]
-                        lon = street["lon. 2nd intersection"]
-                    else:
-                        raise ValueError("invalid district heating conn.")
-        if lat is None or lon is None:
-            raise ValueError
-        for key, fork in thermal_network.components["forks"].iterrows():
-            if fork["lat"] == lat and fork["lon"] == lon:
-                oemof_opti_model.nodes.append(solph.custom.Link(
-                    label=("link-dhnx-" + bus['label']
-                           + "-f{}".format(fork["id"])),
-                    inputs={
-                        oemof_opti_model.buses[
-                            dhnx.optimization_oemof_heatpipe.Label(
-                                'infrastructure', 'heat', 'bus',
-                                str("forks-{}".format(fork["id"])))]:
-                        solph.Flow(),
-                        busd[bus['label']]: solph.Flow()},
-                    outputs={busd[bus['label']]: solph.Flow(),
+        if bus['district heating conn.'] not in [0, 1]:
+            conn_point = bus['district heating conn.'].split("-")
+            lat = None
+            lon = None
+            for i, street in nodes_data['district heating'].iterrows():
+                if street["active"]:
+                    if street['street section name'] == conn_point[0]:
+                        if conn_point[1] == "1":
+                            lat = street["lat. 1st intersection"]
+                            lon = street["lon. 1st intersection"]
+                        elif conn_point[1] == "2":
+                            lat = street["lat. 2nd intersection"]
+                            lon = street["lon. 2nd intersection"]
+                        else:
+                            raise ValueError("invalid district heating conn.")
+            if lat is None or lon is None:
+                raise ValueError
+            for key, fork in thermal_network.components["forks"].iterrows():
+                if fork["lat"] == lat and fork["lon"] == lon:
+                    oemof_opti_model.nodes.append(solph.custom.Link(
+                        label=("link-dhnx-" + bus['label']
+                               + "-f{}".format(fork["id"])),
+                        inputs={
+                            oemof_opti_model.buses[
+                                dhnx.optimization_oemof_heatpipe.Label(
+                                    'infrastructure', 'heat', 'bus',
+                                    str("forks-{}".format(fork["id"])))]:
+                            solph.Flow(),
+                            busd[bus['label']]: solph.Flow()},
+                        outputs={busd[bus['label']]: solph.Flow(),
+                                 oemof_opti_model.buses[
+                                     dhnx.optimization_oemof_heatpipe.Label(
+                                         'infrastructure', 'heat', 'bus',
+                                         str("forks-{}".format(
+                                             fork["id"])))]:
+                                 solph.Flow()},
+                        conversion_factors={
+                            (oemof_opti_model.buses[
+                                 dhnx.optimization_oemof_heatpipe
+                             .Label('infrastructure', 'heat',
+                                    'bus',
+                                    str("forks-{}".format(fork["id"])))],
+                             busd[bus['label']]): 1,
+                            (busd[bus['label']],
                              oemof_opti_model.buses[
-                                 dhnx.optimization_oemof_heatpipe.Label(
-                                     'infrastructure', 'heat', 'bus',
-                                     str("forks-{}".format(
-                                         fork["id"])))]:
-                             solph.Flow()},
-                    conversion_factors={
-                        (oemof_opti_model.buses[
-                             dhnx.optimization_oemof_heatpipe
-                         .Label('infrastructure', 'heat',
-                                'bus',
-                                str("forks-{}".format(fork["id"])))],
-                         busd[bus['label']]): 1,
-                        (busd[bus['label']],
-                         oemof_opti_model.buses[
-                             dhnx.optimization_oemof_heatpipe
-                         .Label('infrastructure', 'heat',
-                                'bus',
-                                str("forks-{}".format(fork["id"])))]): 1
-                    }))
+                                 dhnx.optimization_oemof_heatpipe
+                             .Label('infrastructure', 'heat',
+                                    'bus',
+                                    str("forks-{}".format(fork["id"])))]): 1
+                        }))
 
     return oemof_opti_model
 
@@ -836,7 +839,7 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
                 convert_dh_street_sections_list(
                     nodes_data['district heating'].copy())
             # create pipes and connection point for building-streets connection
-            create_connection_points(nodes_data['sinks'],
+            create_connection_points(nodes_data['buses'],
                                      street_sections)
             # appends the intersections to the thermal network forks
             create_intersection_forks(nodes_data['district heating'])

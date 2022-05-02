@@ -749,7 +749,7 @@ class Sinks:
                                    * insul_type["area"] \
                                    / max(temp)
                         ep_constr_costs = \
-                            insul_type["periodical_constraint_costs"] \
+                            insul_type["periodical constraint costs"] \
                             * insul_type["area"] \
                             / max(temp)
                         self.energetic_renovation.loc[
@@ -1973,7 +1973,7 @@ class Links:
                         variable_costs=
                         link['variable output costs'],
                         emission_factor=
-                        link['variable constraint costs'],
+                        link['variable output constraint costs'],
                         investment=solph.Investment(
                             ep_costs=ep_costs,
                             periodical_constraint_costs=ep_constr_costs,
@@ -1995,7 +1995,7 @@ class Links:
                             variable_costs=
                             link['variable output costs'],
                             emission_factor=
-                            link['variable constraint costs'],
+                            link['variable output constraint costs'],
                             investment=solph.Investment(
                                 ep_costs=ep_costs,
                                 periodical_constraint_costs=ep_constr_costs,
