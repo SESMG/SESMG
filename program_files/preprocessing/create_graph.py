@@ -122,12 +122,12 @@ def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
                         or i == 'storages' or (i == 'buses' and b['shortage']):
                     dot.edge(label, b[bus[i][0]])
                 if i == "buses":
-                    if b["district heating conn."]:
+                    if b["district heating conn."] not in [0, 1]:
                         dot.node("dh-network",
                                  "dh-network", shape="hexagon")
                         dot.edge(b["label"], "dh-network")
-                if i == "sinks" and b["district heating"]:
-                    dot.edge("dh-network", b["input"])
+                if i == "buses" and b["district heating conn."] == 1:
+                    dot.edge("dh-network", b["label"])
                 if i == 'links':
                     dot.edge(label, b['bus2'])
                     if b['(un)directed'] == 'undirected':
