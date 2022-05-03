@@ -357,6 +357,7 @@ class GUI(MethodsGUI):
                                        + "/urban_district_upscaling/",
                                        r'auto_generated_scenario.xlsx')),
             "clustering": BooleanVar(False),
+            "clustering_dh": BooleanVar(False),
             "components_path": StringVar()
         }
         # reload the stored variables from technical_data/gui_settings

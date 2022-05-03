@@ -29,7 +29,7 @@ class UpscalingFrameClass:
     
     @staticmethod
     def scenario_upscaling(pre_scenario, standard_param, scenario_name,
-                           clustering):
+                           clustering, clustering_dh):
         """
             Methods starting the upscaling pre_processing Algorithm
 
@@ -52,7 +52,7 @@ class UpscalingFrameClass:
             plain_sheet=os.path.join(
                     os.path.dirname(__file__),
                     r'../urban_district_upscaling/plain_scenario.xlsx'),
-            clustering=clustering.get())
+            clustering=clustering.get(), clustering_dh=clustering_dh.get())
         
     @staticmethod
     def create_overview(components, clustering):
@@ -104,13 +104,17 @@ class UpscalingFrameClass:
                                      gui_variables)
         row = tk.create_cb_lines(frame, {'Clustering': "clustering"}, row,
                                      gui_variables) + 1
+        row = tk.create_cb_lines(frame, {'Clustering DH': "clustering_dh"}, row,
+                                 gui_variables) + 1
         upscaling_elements = {
             'Create Scenario':
                 [lambda: self.scenario_upscaling(
                        pre_scenario=gui_variables['pre_scenario_path'],
                        standard_param=gui_variables['standard_parameter_path'],
                        scenario_name=gui_variables['scenario_name'],
-                       clustering=gui_variables["clustering"]), 'Execute', '']}
+                       clustering=gui_variables["clustering"],
+                       clustering_dh=gui_variables["clustering_dh"]),
+                 'Execute', '']}
         row = tk.create_button_lines(frame, upscaling_elements, row,
                                      gui_variables)
         # Headline
