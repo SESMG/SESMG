@@ -1,4 +1,3 @@
-﻿label,costs,constraint costs,efficiency
-clustered_consumer_link,2.629,8.3538,---
-dh_heatstation,85,0,0.98
-pump,0,0,0.85
+,label,costs,constraint costs,efficiency,fix investment costs,non-convex investment
+0,clustered_consumer_link,0.1565582758,0.9122902,0.02898939,0,0
+1,dh_heatstation,85.0,1e-06,0.98,0,0
