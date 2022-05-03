@@ -1279,7 +1279,8 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
                                             standard_parameter_path: str,
                                             output_scenario: str,
                                             plain_sheet: str,
-                                            clustering: bool):
+                                            clustering: bool,
+                                            clustering_dh: bool):
     """
         TODO DOCSTRING TEXT
 
@@ -1296,6 +1297,9 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
         :param clustering: boolean for decision rather the buildings are
                            clustered spatially
         :tpye clustering: bool
+        :param clustering_dh: boolean for decision rather the district
+            heating connection will be clustered cluster_id wise
+        :type clustering_dh: bool
     """
 
     print('Creating scenario sheet...')
@@ -1510,7 +1514,8 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
 
     if clustering:
         clustering_py.clustering_method(tool, standard_parameters, worksheets,
-                                        sheets, central_electricity_network)
+                                        sheets, central_electricity_network,
+                                        clustering_dh)
     # open the new excel file and add all the created components
     j = 0
     writer = pd.ExcelWriter(output_scenario, engine='xlsxwriter')

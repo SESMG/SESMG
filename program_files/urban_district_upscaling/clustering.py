@@ -842,7 +842,7 @@ def create_cluster_storage(standard_parameters, type, cluster,
 
 
 def clustering_method(tool, standard_parameters, sheet_names, sheets_input,
-                      central_electricity_network):
+                      central_electricity_network, clustering_dh):
     """
         TODO DOCSTRING TEXT
         :param tool:
@@ -1044,14 +1044,15 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets_input,
                 # cluster the district heating building buses
                 lats = []
                 lons = []
-                #for num, bus in sheets["buses"].iterrows():
-                #    for sink_bus in sink_parameters[3]:
-                #        if len(sink_parameters[3]) > 0 \
-                #              and bus["label"] == sink_bus[1]:
-                #            print(sheets["buses"].loc[num, "lat"])
-                #            lats.append(sheets["buses"].loc[num, "lat"])
-                #            lons.append(sheets["buses"].loc[num, "lon"])
-                #            sheets["buses"].loc[num, "district heating conn."] = 0
+                if clustering_dh:
+                    for num, bus in sheets["buses"].iterrows():
+                        for sink_bus in sink_parameters[3]:
+                            if len(sink_parameters[3]) > 0 \
+                                  and bus["label"] == sink_bus[1]:
+                                lats.append(sheets["buses"].loc[num, "lat"])
+                                lons.append(sheets["buses"].loc[num, "lon"])
+                                sheets["buses"].loc[
+                                    num, "district heating conn."] = 0
                 if str(cluster) + "_heat_bus" not in sheets["buses"].index:
                     # create cluster's heat bus
                     pre_processing.create_standard_parameter_bus(
