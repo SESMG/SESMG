@@ -101,13 +101,14 @@ https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
 
 ## Credits ![who](https://cs.adelaide.edu.au/~christoph/badges/content-who-yellow.svg)
 
-### Contact 
+### Contact and Code of Conduct 
 
+Code of Conduct can be found [here](/CODE_OF_CONDUCT.md).
+
+#### Contact information 
 Münster University of Applied Sciences
 
-Christian Klemm
-
-christian.klemm@fh-muenster.de
+Christian Klemm - christian.klemm@fh-muenster.de
 
 ### Acknowledgments
 
