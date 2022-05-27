@@ -54,7 +54,7 @@ Download [here](http://ampl.com/dl/open/cbc/cbc-win64.zip)
 
 run `$ sudo apt-get install coinor-cbc`
 
-### STEP 7) Install Graphviz (Windows and Linux only) 
+### Step 7) Install Graphviz (Windows and Linux only) 
 
 #### For Windows:
 Download [here](https://graphviz.gitlab.io/download/)
@@ -66,7 +66,7 @@ Download [here](https://graphviz.gitlab.io/download/)
 
 run `$ sudo apt-get install graphviz`
 
-### STEP 8) Start the operating system specific installation file. 
+### Step 8) Start the operating system specific installation file. 
 
 
 ## SESMG Features & Releases ![what-why](https://cs.adelaide.edu.au/~christoph/badges/content-what-why-brightgreen.svg) 
