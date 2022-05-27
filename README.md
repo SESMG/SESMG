@@ -125,6 +125,6 @@ This project is published under MIT license, click [here](https://github.com/chr
 
 Issues and Pull Requests are greatly appreciated. If you've never contributed to an open source project before I'm more than happy to walk you through how to create a pull request.
 
-Detailed description of the contribution procedure as well as the projects coding standards can be found [here](https://github.com/chrklemm/SESMG/tree/master/docs/CONTRIBUTING.md).
+Detailed description of the contribution procedure as well as the projects coding standards can be found [here](/docs/CONTRIBUTING.md).
 
 
