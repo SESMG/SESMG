@@ -383,7 +383,7 @@ def k_medoids_timeseries_adaption(nodes_data: dict, clusters: int,
     elif period == 'weeks':
         prep_timeseries['timestamp'] = \
             nodes_data['timeseries']['timestamp'][
-            :int(len(nodes_data['timeseries']) / (clusters * 7))]
+            :int(len(nodes_data['timeseries']))]# / (clusters * 7))]
     # print(prep_timeseries)
     nodes_data['timeseries'] = prep_timeseries
     nodes_data['weather data'] = prep_timeseries
@@ -1422,8 +1422,12 @@ def timeseries_preparation(timeseries_prep_param: list,
     if data_prep == 'k_medoids':
         if cluster_period == 'days':
             clusters = 365 // int(days_per_cluster)
+            print('days per cluster: ' + str(days_per_cluster))
+            print('clusters: ' + str(clusters))
         elif cluster_period == 'weeks':
             clusters = 52 // int(days_per_cluster)
+            print('days per cluster: '+str(days_per_cluster))
+            print('clusters: ' + str(clusters))
         else:
             raise ValueError("period chosen not possible")
         k_medoids_algorithm(clusters=clusters,
