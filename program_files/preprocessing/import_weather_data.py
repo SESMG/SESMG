@@ -98,14 +98,16 @@ def import_open_fred_pvlib(nodes_data, lat, lon):
                 save_df.update({counter: []})
     for num in range(0, len(save_df) -1):
         df = save_df[num][0].copy()
-        #df["dni"] = (df["dni"] + save_df[num][1]["dni"]) / 2
+        df["dni"] = (df["dni"] + save_df[num][1]["dni"]) / 2
         df["dhi"] = (df["dhi"] + save_df[num][1]["dhi"]) / 2
         df["ghi"] = (df["ghi"] + save_df[num][1]["ghi"]) / 2
         df["index"] = df["index"] + timedelta(minutes=7, seconds=30)
         pvlib_df = pvlib_df.append(df)
     pvlib_df.reset_index(drop=True, inplace=True)
     nodes_data["weather data"]["dhi"] = pvlib_df["dhi"].copy()
+    nodes_data["weather data"]["dni"] = pvlib_df["dni"].copy()
     nodes_data["weather data"]["dirhi"] = (pvlib_df["ghi"].copy() - pvlib_df["dhi"].copy())
+    nodes_data["weather data"].to_csv("wetter.csv")
     return nodes_data
 
 

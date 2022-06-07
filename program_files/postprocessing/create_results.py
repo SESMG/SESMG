@@ -505,14 +505,13 @@ class Results:
             else str(round(investment, 2))
         constraints = '---' if constraints is None \
             else str(round(constraints, 2))
-
-        self.df_list_of_components = \
-            self.df_list_of_components.append(
-                pd.DataFrame(
+        
+        pd.concat([self.df_list_of_components,
+                  pd.DataFrame(
                     [[label, comp_type, inflow1, inflow2, outflow1, outflow2,
                       capacity, variable_costs, periodical_costs, investment,
                       maxinvest,
-                      constraints]], columns=self.copt))
+                      constraints]], columns=self.copt)])
 
     @staticmethod
     def get_first_node_flow(flow):

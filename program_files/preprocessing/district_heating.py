@@ -196,9 +196,7 @@ def create_fork(point, label, bus=None):
     if bus:
         fork_dict.update({"bus": bus})
     # create consumers forks pandas Dataframe for thermal network
-    thermal_network.components["forks"] = \
-        thermal_network.components["forks"].append(
-            pd.Series(data=fork_dict), ignore_index=True)
+    pd.concat([thermal_network.components["forks"], pd.Series(data=fork_dict)])
 
 
 def remove_redundant_sinks(oemof_opti_model):
@@ -244,34 +242,32 @@ def create_connection_points(consumers, road_sections):
                                                 consumer_counter, "consumers")
                 # add consumer to thermal network components (dummy
                 # because cut from system after creating dhnx components
-                thermal_network.components["consumers"] = \
-                    thermal_network.components["consumers"].append(
-                        pd.Series(data={
-                            "id": "consumers-{}".format(consumer_counter),
-                            "lat": float(consumer['lat']),
-                            "lon": float(consumer['lon']),
-                            "component_type": "Consumer",
-                            "P_heat_max": 1,
-                            "input": consumer["label"],
-                            "label": consumer["label"],
-                            "street": foot_point[5]}),
-                        ignore_index=True)
+                pd.concat([thermal_network.components["consumers"],
+                           pd.Series(data={
+                               "id": "consumers-{}".format(consumer_counter),
+                               "lat": float(consumer['lat']),
+                               "lon": float(consumer['lon']),
+                               "component_type": "Consumer",
+                               "P_heat_max": 1,
+                               "input": consumer["label"],
+                               "label": consumer["label"],
+                               "street": foot_point[5]})
+                           ])
                 # add fork of perpendicular foot point to the dataframe
                 # of forks
                 create_fork(foot_point, foot_point[0][10:-5])
                 # add pipe between the perpendicular foot point and the
                 # building to the dataframe of pipes
-                thermal_network.components["pipes"] = \
-                    thermal_network.components["pipes"].append(
-                        pd.Series(data={
-                            "id": "pipe-{}".format(foot_point[0][10:-5]),
-                            "from_node":
-                                "forks-{}".format(foot_point[0][10:-5]),
-                            "to_node": foot_point[0][:-5],
-                            "length": foot_point[3],
-                            "component_type": "Pipe",
-                            "street": label}),
-                        ignore_index=True)
+                pd.concat([thermal_network.components["pipes"],
+                           pd.Series(data={
+                               "id": "pipe-{}".format(foot_point[0][10:-5]),
+                               "from_node":
+                                   "forks-{}".format(foot_point[0][10:-5]),
+                               "to_node": foot_point[0][:-5],
+                               "length": foot_point[3],
+                               "component_type": "Pipe",
+                               "street": label})
+                           ])
                 consumer_counter += 1
                 logging.info("\t Connected {} to district heating network"
                              .format(label))
@@ -307,12 +303,11 @@ def create_intersection_forks(road_sections):
                 fork_num += 1
 
     for point in road_section_points:
-        thermal_network.components["forks"] = \
-            thermal_network.components["forks"].append(
-                pd.Series({"id": point[6:],
-                           "lat": road_section_points[point][0],
-                           "lon": road_section_points[point][1],
-                           "component_type": "Fork"}), ignore_index=True)
+        pd.concat([thermal_network.components["forks"],
+                   pd.Series({"id": point[6:],
+                              "lat": road_section_points[point][0],
+                              "lon": road_section_points[point][1],
+                              "component_type": "Fork"})])
 
 
 def create_producer_connection_point(nodes_data, road_sections):
@@ -331,28 +326,28 @@ def create_producer_connection_point(nodes_data, road_sections):
         if bus["district heating conn."] == "dh-system" and bus['active'] == 1:
             # create a producer buses and its connections point and pipe
             # due to the given lat and lon from buses sheet
-            thermal_network.components["producers"] = \
-                thermal_network.components["producers"].append(
-                    pd.Series({"id": number, "lat": bus["lat"],
-                               "lon": bus["lon"],
-                               "component_type": "Producer",
-                               "active": 1}), ignore_index=True)
+            pd.concat([thermal_network.components["producers"],
+                       pd.Series({"id": number, "lat": bus["lat"],
+                                  "lon": bus["lon"],
+                                  "component_type": "Producer",
+                                  "active": 1})])
             foot_point = \
                 get_nearest_perp_foot_point(bus, road_sections,
                                             number, "producers")
             create_fork(foot_point,
                         len(thermal_network.components["forks"]) + 1,
                         bus["label"])
-            thermal_network.components['pipes'] = \
-                thermal_network.components['pipes'].append(pd.Series(data={
-                    "id": "pipe-{}".format(
-                        len(thermal_network.components['pipes']) + 1),
-                    "from_node": "producers-{}".format(number),
-                    "to_node": "forks-{}".format(
-                        len(thermal_network.components["forks"])),
-                    "length": foot_point[3],
-                    "component_type": "Pipe",
-                    "street": bus["label"]}), ignore_index=True)
+            pd.concat([thermal_network.components['pipes'],
+                       pd.Series(data={
+                           "id": "pipe-{}".format(
+                                   len(thermal_network.components[
+                                           'pipes']) + 1),
+                           "from_node": "producers-{}".format(number),
+                           "to_node": "forks-{}".format(
+                                   len(thermal_network.components["forks"])),
+                           "length": foot_point[3],
+                           "component_type": "Pipe",
+                           "street": bus["label"]})])
             number += 1
             logging.info("\t Connected {} to district heating network"
                          .format(bus["label"]))

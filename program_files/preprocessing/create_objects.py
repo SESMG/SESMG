@@ -341,7 +341,9 @@ class Sources:
             'tilt': so['Surface Tilt'],
             'module_name': so['Modul Model'],
             'inverter_name': so['Inverter Model'],
-            'albedo': so['Albedo']}
+            'albedo': so['Albedo'],
+            "module_type": "glass_glass",
+            "racking_model": "open_rack"}
 
         # sets pv system parameters for pv_module
         pv_module = powerplants.Photovoltaic(**parameter_set)
@@ -1963,9 +1965,10 @@ class Links:
                     ep_constr_costs = link['periodical constraint costs']
                 elif link['(un)directed'] == 'undirected':
                     ep_costs = link['periodical costs'] / 2
+                    ep_constr_costs = link['periodical constraint costs'] / 2
                 else:
                     raise SystemError('Problem with periodical costs')
-                nodes.append(solph.custom.Link(
+                link_node = solph.custom.Link(
                     label=link['label'],
                     inputs={self.busd[link['bus1']]: solph.Flow(),
                             self.busd[link['bus2']]: solph.Flow()},
@@ -2010,9 +2013,12 @@ class Links:
                         (self.busd[link['bus1']],
                          self.busd[link['bus2']]): link['efficiency'],
                         (self.busd[link['bus2']],
-                         self.busd[link['bus1']]):
-                            (link['efficiency']
-                             if link['(un)directed'] == 'undirected' else 0)}
-                ))
+                         self.busd[link['bus1']]): link['efficiency']})
+                if link["(un)directed"] == "directed":
+                    link_node.inputs.pop(self.busd[link['bus2']])
+                    link_node.outputs.pop(self.busd[link['bus1']])
+                    link_node.conversion_factors.pop((self.busd[link['bus2']],
+                                                      self.busd[link['bus1']]))
+                nodes.append(link_node)
                 # returns logging info
                 logging.info('   ' + 'Link created: ' + link['label'])
