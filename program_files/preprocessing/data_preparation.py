@@ -5,7 +5,8 @@ from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
 import numpy as np
 import demandlib.bdew as bdew
-import datetime
+from datetime import datetime
+
 
 def extract_single_periods(data_set, column_name, period):
     """
@@ -443,107 +444,102 @@ def k_means_algorithm(clusters: int, criterion: str, nodes_data: dict,
                                 cluster_labels, period)
 
 
-def slp_sink_adaption(nodes_data):
+def slp_sink_adaption(nodes_data: dict) -> None:
     """
-    calculates the standard load profil timeseries, saves them to the
-    timeseries data-sheet and changes the timeseries-reference for the
-    respective sinks within the sinks-sheet.
-
-    This step is required, so that the slp-timeseries will be considered during
-    the timeseries adaptions.
-
-    :param nodes_data:
-    :return:
+        calculates the standard load profile timeseries, saves them to
+        the timeseries data-sheet and changes the timeseries-reference
+        for the respective sinks within the sinks-sheet.
+    
+        This step is required, so that the slp-timeseries will be
+        considered during the timeseries adaptions.
+    
+        :param nodes_data: dictionary containing the data imported from\
+            the imported scenario file relevant sheets within this \
+            method:
+            
+                - weather data
+                - timeseries
+                - energysystem
+                - sinks
+            
     """
-
-
+    # TODO There is no handling for richardson sinks yet
     # Lists of possible standard load profiles
     heat_slp_list = ['efh', 'mfh']
     heat_slp_com = ['gmf', 'gpd', 'ghd', 'gwa', 'ggb', 'gko',
-                     'gbd', 'gba', 'gmk', 'gbh', 'gga', 'gha']
+                    'gbd', 'gba', 'gmk', 'gbh', 'gga', 'gha']
     elec_slp_list = ['h0', 'g0', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'l0',
                      'l1', 'l2']
-    slp_list = heat_slp_list + elec_slp_list + heat_slp_com
 
-    slp_profiles = pd.DataFrame()
     weather_data = nodes_data["weather data"].copy()
 
-    # Creating Timesystem and Dataframe (required for the creation of standard
-    # load profiles)
+    # Creating Timesystem and Dataframe
     ts = next(nodes_data['energysystem'].iterrows())[1]
     temp_resolution = str(ts['temporal resolution'])
     periods = int(ts["periods"])
-    start_date = str(ts['start date'])
-    start_date = \
-        datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
-    print(temp_resolution)
+    start_date = datetime.strptime(str(ts['start date']), '%Y-%m-%d %H:%M:%S')
 
-
-    # Creating standard load profile time series for sinks refering to heat or
-    # electric standard load profiles
+    # Creating standard load profile time series for sinks referring to
+    # heat or electric standard load profiles
     for i, j in nodes_data["sinks"].iterrows():
-        print(j["load profile"])
-        demand = pd.DataFrame(
-            index=pd.date_range(datetime.datetime(start_date.year,
-                                                  start_date.month,
-                                                  start_date.day,
-                                                  start_date.hour),
-                                periods=periods, freq=temp_resolution))
-
-        if j["load profile"] in heat_slp_list or j["load profile"] in heat_slp_com:
-            # sets the parameters of the heat slps
-            args = {'temperature': weather_data['temperature'],
-                    'shlp_type': j["load profile"],
-                    'wind_class': j['wind class'],
-                    'annual_heat_demand': j['annual demand'],
-                    'name': j['load profile']}
-            if j["load profile"] in heat_slp_list:
-                args.update({'building_class': j['building class']})
-            # Add heat SLP to Timeseries-Dataframe
-            slp=bdew.HeatBuilding(demand.index, **args).get_bdew_profile()
-            nodes_data['timeseries'].insert(loc=len(nodes_data['timeseries'].columns), column=j["label"]+'.fix',value=slp.tolist())
-
-            # Replacing SLP-index with timeseries index
-            nodes_data["sinks"].at[i, 'load profile'] = 'timeseries'
-            # Replacing Nominal-Value
-            nodes_data["sinks"].at[i, 'nominal value'] = 1
-
-        # creates time series for electricity slps
-        elif j["load profile"] in elec_slp_list:
-            year = datetime.datetime.strptime(str(ts['start date']),
-                                              '%Y-%m-%d %H:%M:%S').year
-            # Imports standard load profiles
-            e_slp = bdew.ElecSlp(year)
-            # TODO Discuss if this is right !!! ( dyn_function_h0 )
-            demand = e_slp.get_profile({j['load profile']: 1})
-            # creates time series based on standard load profiles
-            slp = demand.resample(temp_resolution).mean()
-            print('PINGO')
-            slp_list = [item for sublist in slp.values.tolist() for item in sublist]
-            del slp_list[:-int(ts['periods'])]
-            print(len(slp_list))
-            nodes_data['timeseries'].insert(
-                loc=len(nodes_data['timeseries'].columns),
-                column=j["label"] + '.fix', value=slp_list)
-            # nodes_data['timeseries'].append(slp, ignore_index=True)
-
-            # Replacing SLP-index with timeseries index
-            nodes_data["sinks"].at[i, 'load profile'] = 'timeseries'
-            # Replacing Nominal-Value
-            nodes_data["sinks"].at[i, 'nominal value'] = j['annual demand']
-
-
-        elif j["load profile"] == "timeseries":
-            pass
-        else:
-            raise ValueError('Invalid Load Profile for '+ str(j["label"]))
-
-    # Add newly created slp-timeseries to timeseries dataframe
-    # nodes_data['timeseries'] = nodes_data['timeseries'].append(slp_profiles, ignore_index=True, sort=False)
-
-    print("PING PING")
-    print(nodes_data['timeseries'])
-    # print(slp_profiles)
+        if j["active"]:
+            # create an empty indexed Dataframe (required for the
+            # creation of standard load profiles)
+            demand = pd.DataFrame(
+                index=pd.date_range(datetime(start_date.year, start_date.month,
+                                             start_date.day, start_date.hour),
+                                    periods=periods, freq=temp_resolution))
+    
+            if j["load profile"] in heat_slp_list + heat_slp_com:
+                # sets the parameters of the heat slps
+                args = {'temperature': weather_data['temperature'],
+                        'shlp_type': j["load profile"],
+                        'wind_class': j['wind class'],
+                        'annual_heat_demand': j['annual demand'],
+                        'name': j['load profile']}
+                if j["load profile"] in heat_slp_list:
+                    args.update({'building_class': j['building class']})
+                # Add heat SLP to Timeseries-Dataframe
+                slp = bdew.HeatBuilding(demand.index,
+                                        **args).get_bdew_profile()
+                # append the calculated load profile to the timeseries
+                # sheet
+                nodes_data['timeseries'].insert(
+                        loc=len(nodes_data['timeseries'].columns),
+                        column=j["label"]+'.fix',
+                        value=slp.tolist())
+    
+                # Replacing SLP-index with timeseries index
+                nodes_data["sinks"].at[i, 'load profile'] = 'timeseries'
+                # Replacing Nominal-Value
+                nodes_data["sinks"].at[i, 'nominal value'] = 1
+    
+            # creates time series for electricity slps
+            elif j["load profile"] in elec_slp_list:
+                year = start_date.year
+                # Imports standard load profiles
+                e_slp = bdew.ElecSlp(year)
+                demand = e_slp.get_profile({j['load profile']: 1})
+                # creates time series based on standard load profiles
+                slp = demand.resample(temp_resolution).mean()
+                slp_list = [item for sublist in slp.values.tolist()
+                            for item in sublist]
+                del slp_list[:-int(ts['periods'])]
+                # append the calculated load profile to the timeseries
+                # sheet
+                nodes_data['timeseries'].insert(
+                    loc=len(nodes_data['timeseries'].columns),
+                    column=j["label"] + '.fix',
+                    value=slp_list)
+                # Replacing SLP-index with timeseries index
+                nodes_data["sinks"].at[i, 'load profile'] = 'timeseries'
+                # Replacing Nominal-Value
+                nodes_data["sinks"].at[i, 'nominal value'] = j['annual demand']
+    
+            elif j["load profile"] == "timeseries":
+                pass
+            else:
+                raise ValueError('Invalid Load Profile for ' + str(j["label"]))
 
 
 def k_medoids_algorithm(clusters: int, criterion: str, nodes_data: dict,
@@ -588,7 +584,6 @@ def k_medoids_algorithm(clusters: int, criterion: str, nodes_data: dict,
                                 cluster_labels, period)
 
 
-
 def timeseries_averaging(clusters: int, nodes_data: dict, period: str):
     """
         Averages the values of the time series, how many values are
@@ -601,9 +596,12 @@ def timeseries_averaging(clusters: int, nodes_data: dict, period: str):
         :type nodes_data: dict
         :param period: defines rather days or weeks were selected
         :type period: str
+        
+        :raise ValueError: if non supported period is chosen
     """
     weather_data = nodes_data['weather data']
-
+    
+    # get number of periods based on the user's chosen averaging type
     if period == 'days':
         periods = int(len(weather_data) / 24)
     elif period == 'weeks':
@@ -611,7 +609,7 @@ def timeseries_averaging(clusters: int, nodes_data: dict, period: str):
     elif period == 'hours':
         periods = int(len(weather_data))
     else:
-        raise ValueError("period choosen not possible")
+        raise ValueError("period chosen not possible !")
         
     cluster_labels = []
     for i in range(clusters):
@@ -685,7 +683,8 @@ def data_set_slicing(n_days: int, data_set, period: str):
     return prep_data_set
 
 
-def data_set_slicing2(n_days, data_set, period):
+def data_set_slicing2(n_days: int, data_set: pd.DataFrame, period: str) \
+        -> pd.DataFrame:
     """
         cuts out every nth period from the given data_set and leaves the
         remaining periods for further consideration
@@ -696,6 +695,9 @@ def data_set_slicing2(n_days, data_set, period):
         :type data_set: pandas.core.frame.Dataframe
         :param period: defines rather hours, days or weeks were selected
         :type period: str
+        
+        :return: - ** prep_data_set ** (pd.Dataframe): Dataframe \
+            containing the prepared weather data sheet
     """
 
     column_names = [data_set.columns[i] for i in
@@ -714,7 +716,8 @@ def data_set_slicing2(n_days, data_set, period):
         # If the data set is not divisible by the corresponding number
         # of periods, the data set is shortened accordingly
         if len(data_set_column) % n_days > 0:
-            data_set_column = data_set_column[0:-(len(data_set_column)%n_days)]
+            data_set_column = \
+                data_set_column[0:-(len(data_set_column) % n_days)]
 
         sliced_column = data_set_column
         del sliced_column[n_days-1::n_days]
@@ -723,7 +726,7 @@ def data_set_slicing2(n_days, data_set, period):
         for j in range(len(sliced_column)):
             reference_data_set = reference_data_set + sliced_column[j]
 
-        # Appends the calculated reference days for the curent weather
+        # Appends the calculated reference days for the current weather
         # data column to the final weather data set
         prep_data_set[column_names[i]] = reference_data_set
 
@@ -1085,15 +1088,15 @@ def hierarchical_selection(nodes_data, scheme, period, seasons, scheme_path):
         old_end_date = nodes_data['energysystem']['end date'][1]
         if int(old_end_date.day) == 30:
             nodes_data['energysystem'][
-                'start date'] = datetime.datetime.strptime(
+                'start date'] = datetime.strptime(
                 str(int(old_start_date.year) - 1) + "-12-02 00:00:00",
                 '%Y-%m-%d %H:%M:%S')
         else:
             nodes_data['energysystem'][
-                'start date'] = datetime.datetime.strptime(
+                'start date'] = datetime.strptime(
                 str(int(old_start_date.year) - 1) + "-12-01 00:00:00",
                 '%Y-%m-%d %H:%M:%S')
-        nodes_data['energysystem']['end date'] = datetime.datetime.strptime(
+        nodes_data['energysystem']['end date'] = datetime.strptime(
             str(old_end_date.year) + "-11-30 23:00:00", '%Y-%m-%d %H:%M:%S')
         nodes_data["timeseries"] = append_timeseries_to_weatherdata_sheet(
             nodes_data)
