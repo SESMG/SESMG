@@ -31,38 +31,32 @@ setup(
     classifiers=[
         # complete classifier list:
         # http://pypi.python.org/pypi?%3Aaction=list_classifiers
-    'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.6',
-    'Programming Language :: Python :: 3.7'],
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.9'],
 
     install_requires=[
-        "scipy==1.6.3",
-        "pillow==8.3.2",
-        "pandas==1.1.0",
-        "numpy==1.20.0",
-        "tables==3.5.2",
-        "openpyxl==3.0.0",
-        "oemof.solph==0.4",
-        "oemof.network==0.4.0rc0",
-        "oemof.thermal==0.0.5",
-        "demandlib==0.1.8",
-        "pvlib==0.7.1",
-        "feedinlib==0.0.12",
-        "richardsonpy==0.2.1",
-        "dash==1.7.0",
-        "dash_canvas==0.1.0",
-        "pydot==1.4.1",
-        "graphviz==0.13.2",
-        "xlrd==1.2.0",
-        "Pyomo==5.7.1",
-        "sympy==1.9",
-        "pyproj==3.2.1",
-        "folium==0.12.1.post1",
-        "addict==2.4.0",
-        "xlsxwriter==3.0.2"
+        "oemof.solph>=0.4",
+        "openpyxl>=3.0.0",
+        "oemof.thermal>=0.0.5",
+        "open_fred-cli>=0.0.1",
+        "basemap>=1.3.0",
+        "richardsonpy>=0.2.0",
+        "graphviz>=0.20",
+        "scikit-learn-extra>=0.2.0",
+        "memory-profiler>=0.60.0",
+        "dhnx>=0.0.2",
+        "sympy>=1.10.0",
+        "osmnx>=1.2.0",
+        "xlsxwriter>=3.0.0",
+        "seaborn>=0.11.0",
+        "dash>=2.4.0",
+        "dash_canvas>=0.1.0"
         ],
     extras_require={
-        "dev": ["pytest", "sphinx", "sphinx_rtd_theme"],
+        "dev":
+            ["pytest", "sphinx", "sphinx_rtd_theme",
+             "git+https://github.com/oemof/feedinlib.git@refs/pull/73/head",
+             "git+https://github.com/oemof/demandlib.git@refs/pull/51/head"],
     },  
 )
 
