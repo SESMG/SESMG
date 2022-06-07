@@ -67,12 +67,15 @@ def calculate_k_means_clusters(cluster_number: int, weather_data: dict,
             weather data set belongs to which cluster
             
     """
-    cluster_vectors = extract_single_periods(data_set=weather_data,
-                                             column_name=cluster_criterion,
-                                             period=period)
-    kmeans = KMeans(n_clusters=cluster_number)
-    model = kmeans.fit(cluster_vectors)
-    return model.labels_
+    if cluster_criterion == "none":
+        raise ValueError("Criterion has to be not none!")
+    else:
+        cluster_vectors = extract_single_periods(data_set=weather_data,
+                                                 column_name=cluster_criterion,
+                                                 period=period)
+        kmeans = KMeans(n_clusters=cluster_number)
+        model = kmeans.fit(cluster_vectors)
+        return model.labels_
 
 
 def calculate_k_medoids_clusters(cluster_number: int, weather_data: dict,
@@ -187,6 +190,7 @@ def append_timeseries_to_weatherdata_sheet(nodes_data: dict):
 
     return nodes_data['timeseries']
 
+
 def calculate_cluster_medoids(data_set, cluster_number: int,
                             cluster_labels, period: str):
     """
@@ -260,18 +264,15 @@ def k_means_parameter_adaption(nodes_data: dict, clusters: int, period: str):
     if period == 'days':
         variable_cost_factor = int(nodes_data['energysystem']['periods']) \
                                / int(24*clusters)
-        print('VARIABLE COST FACTOR')
-        print(variable_cost_factor)
+        print('VARIABLE COST FACTOR \n ' + str(variable_cost_factor))
     elif period == 'weeks':
         variable_cost_factor = int(nodes_data['energysystem']['periods']) \
                                / int(7*24 * clusters)
-        print('VARIABLE COST FACTOR')
-        print(variable_cost_factor)
+        print('VARIABLE COST FACTOR \n ' + str(variable_cost_factor))
     elif period == 'hours':
         variable_cost_factor = int(nodes_data['energysystem']['periods']) \
                                / int(clusters)
-        print('VARIABLE COST FACTOR')
-        print(variable_cost_factor)
+        print('VARIABLE COST FACTOR \n ' + str(variable_cost_factor))
     else:
         raise ValueError("unsupported period")
 
@@ -1103,8 +1104,7 @@ def hierarchical_selection(nodes_data, scheme, period, seasons, scheme_path):
         old_timeseries = nodes_data["timeseries"].copy()
 
         nodes_data["timeseries"] = old_timeseries[-30 * 24:]
-        nodes_data["timeseries"] = nodes_data["timeseries"].append(
-            old_timeseries[:-30 * 24])
+        pd.concat([nodes_data["timeseries"], old_timeseries[:-30 * 24]])
 
         for i in range(8040, 8759):
             nodes_data['timeseries'].loc[i, 'timestamp'] = \
