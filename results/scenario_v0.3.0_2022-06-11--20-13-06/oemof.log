@@ -1,0 +1,48 @@
+******************************************************
+2022-06-11 20:13:06,038 - INFO - logger - Path for logging: results/scenario_v0.3.0_2022-06-11--20-13-06/oemof.log
+2022-06-11 20:13:08,669 - INFO - create_energy_system - 	 Spreadsheet scenario successfully imported.
+2022-06-11 20:13:09,951 - INFO - create_energy_system - Date time index successfully defined:
+ start date:          2012-01-01 00:00:00,
+ end date:            2012-01-18 23:00:00,
+ temporal resolution: h
+2022-06-11 20:13:09,951 - INFO - create_objects -    Bus created: ID_electricity_bus
+2022-06-11 20:13:09,952 - INFO - create_objects -    Bus created: ID_heat_bus
+2022-06-11 20:13:09,952 - INFO - create_objects -    Bus created: ID_gas_bus
+2022-06-11 20:13:09,953 - INFO - create_objects -    Bus created: ID_cooling_bus
+2022-06-11 20:13:09,953 - INFO - create_objects -    Bus created: ID_pv_bus
+2022-06-11 20:13:09,953 - INFO - create_objects -    Bus created: ID_hp_electricity_bus
+2022-06-11 20:13:09,954 - INFO - create_objects -    Bus created: district_chp_electricity_bus
+2022-06-11 20:13:09,954 - INFO - create_objects -    Bus created: district_gas_bus
+2022-06-11 20:13:09,954 - INFO - create_objects -    Bus created: district_heat_bus
+2022-06-11 20:13:09,956 - INFO - create_objects -    Transformer created: ID_gasheating_transformer
+2022-06-11 20:13:09,958 - INFO - create_objects -    Storage created: ID_battery_storage
+2022-06-11 20:13:09,959 - INFO - create_objects -    Sink created: ID_electricity_sink
+2022-06-11 20:13:09,960 - INFO - create_objects -    Storage created: ID_thermal_storage
+2022-06-11 20:13:09,962 - INFO - create_objects -    Link created: ID_pv_to_ID_electricity_link
+2022-06-11 20:13:09,971 - INFO - create_objects -    Sink created: ID_heat_sink
+2022-06-11 20:13:09,972 - INFO - create_objects -    Link created: ID_electricity_to_ID_hp_electricity_bus
+2022-06-11 20:13:09,974 - INFO - create_objects -    Sink created: ID_cooling_sink
+2022-06-11 20:13:10,019 - INFO - create_objects -    Bus created: ID_GCHP_transformer_low_temp_bus
+2022-06-11 20:13:10,019 - INFO - create_objects -    Heat Source created: ID_GCHP_transformer_low_temp_source
+2022-06-11 20:13:10,021 - INFO - create_objects -    ID_GCHP_transformer, Average Coefficient of Performance (COP): 4.32
+2022-06-11 20:13:10,023 - INFO - create_objects -    Transformer created: ID_GCHP_transformer
+2022-06-11 20:13:10,023 - INFO - create_objects -    Bus created: ID_ASCH_transformer_high_temp_bus
+2022-06-11 20:13:10,024 - INFO - create_objects -    Heat Source created: ID_ASCH_transformer_high_temp_source
+2022-06-11 20:13:10,025 - INFO - create_objects -    ID_ASCH_transformer, Average Coefficient of Performance (COP): 7.88
+2022-06-11 20:13:10,027 - INFO - create_objects -    Transformer created: ID_ASCH_transformer
+2022-06-11 20:13:10,031 - INFO - create_objects -    Bus created: ID_AbsCH_transformer_high_temp_bus
+2022-06-11 20:13:10,034 - INFO - create_objects -    ID_AbsCH_transformer, Average Coefficient of Performance (COP): 0.80
+2022-06-11 20:13:10,034 - INFO - create_objects -    Heat Source created:ID_AbsCH_transformer_high_temp_source
+2022-06-11 20:13:10,035 - INFO - create_objects -    Transformer created: ID_AbsCH_transformer
+2022-06-11 20:13:10,035 - INFO - create_objects -    Bus created: ID_ASHP_transformer_low_temp_bus
+2022-06-11 20:13:10,035 - INFO - create_objects -    Heat Source created: ID_ASHP_transformer_low_temp_source
+2022-06-11 20:13:10,036 - INFO - create_objects -    ID_ASHP_transformer, Average Coefficient of Performance (COP): 2.70
+2022-06-11 20:13:10,038 - INFO - create_objects -    Transformer created: ID_ASHP_transformer
+2022-06-11 20:13:10,039 - INFO - create_objects -    Transformer created: ID_chp_transformer
+2022-06-11 20:13:10,118 - INFO - district_heating - 	 Connected ID to district heating network
+2022-06-11 20:13:10,137 - INFO - district_heating - 	 Connected district_heat_bus to district heating network
+2022-06-11 20:13:10,144 - DEBUG - _tools - os.makedirs('results/scenario_v0.3.0_2022-06-11--20-13-06')
+2022-06-11 20:13:10,144 - DEBUG - saving - write lines to 'results/scenario_v0.3.0_2022-06-11--20-13-06/graph.gv'
+2022-06-11 20:13:10,145 - DEBUG - execute - run [PosixPath('dot'), '-Kdot', '-Tpng', '-O', 'graph.gv']
+2022-06-11 20:13:10,574 - INFO - optimize_model -    *********************************************************
+2022-06-11 20:13:10,575 - INFO - optimize_model -    Create Energy System...

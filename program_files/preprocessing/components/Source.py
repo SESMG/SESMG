@@ -442,7 +442,7 @@ class Sources:
                      + " kWh/(m²a), Irradiance on collector per year and m²: "
                        "{:2.2f}".format(numpy.sum(irradiance)) + ' kWh/(m²a)')
     
-    def __init__(self, nodes_data: dict, nodes: list, busd: dict):
+    def __init__(self, nd: dict, nodes: list, busd: dict):
         """
             Inits the source class
             ---
@@ -456,34 +456,30 @@ class Sources:
         self.nodes_sources = []
         # Initialise a class intern copy of the bus dictionary
         self.busd = busd.copy()
-        energysystem = next(nodes_data['energysystem'].iterrows())[1]
-        weather_data = nodes_data["weather data"].copy()
-        time_series = nodes_data["timeseries"].copy()
+        energysystem = next(nd['energysystem'].iterrows())[1]
         # Create Source from "Sources" Table
-        for i, so in nodes_data['sources'].iterrows():
-            # Create a source object for every source,
-            # which is marked as "active"
-            if so['active']:
-                # Create Commodity Sources
-                if so['technology'] == 'other':
-                    self.commodity_source(so)
-                
-                # Create Photovoltaic Sources
-                elif so['technology'] == 'photovoltaic':
-                    self.pv_source(so, weather_data)
-                
-                # Create Windpower Sources
-                elif so['technology'] == 'windpower':
-                    self.windpower_source(so, weather_data)
-                
-                # Create Time-series Sources
-                elif so['technology'] == 'timeseries':
-                    self.timeseries_source(so, time_series)
-                
-                # Create flat plate solar thermal Sources
-                elif so['technology'] in ['solar_thermal_flat_plate',
-                                          'concentrated_solar_power']:
-                    self.solar_heat_source(so, weather_data, energysystem)
+        for i, so in nd["sources"].loc[nd["sources"]["active"] == 1].iterrows():
+            # Create Commodity Sources
+            if so['technology'] == 'other':
+                self.commodity_source(so)
+            
+            # Create Photovoltaic Sources
+            elif so['technology'] == 'photovoltaic':
+                self.pv_source(so, nd["weather data"].copy())
+            
+            # Create Windpower Sources
+            elif so['technology'] == 'windpower':
+                self.windpower_source(so, nd["weather data"].copy())
+            
+            # Create Time-series Sources
+            elif so['technology'] == 'timeseries':
+                self.timeseries_source(so, nd["timeseries"].copy())
+            
+            # Create flat plate solar thermal Sources
+            elif so['technology'] in ['solar_thermal_flat_plate',
+                                      'concentrated_solar_power']:
+                self.solar_heat_source(so, nd["weather data"].copy(),
+                                       energysystem)
         
         # appends created sources and other objects to the list of nodes
         for i in range(len(self.nodes_sources)):
