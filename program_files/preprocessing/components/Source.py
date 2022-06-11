@@ -193,7 +193,7 @@ class Sources:
         # Returns logging info
         logging.info('\t Timeseries Source created: ' + so['label'])
         
-    def create_pv_wind_source(self, feedin: pd.Series, so: dict):
+    def create_feedin_source(self, feedin: pd.Series, so: dict):
         """
         
         """
@@ -281,9 +281,9 @@ class Sources:
         # Set values greater 1 to 1 (requirement for solving the model)
         feedin[feedin > 1] = 1
 
-        self.create_pv_wind_source(feedin, so)
+        self.create_feedin_source(feedin, so)
     
-    def windpower_source(self, so: dict, weather_df_wind):
+    def windpower_source(self, so: dict, weather_df: pd.DataFrame):
         """
             Creates an oemof windpower source object.
 
@@ -300,13 +300,13 @@ class Sources:
                             - 'Turbine Model (Windpower ONLY)'
                             - 'Hub Height (Windpower ONLY)'
             :type so: dict
-            :param weather_df_wind: Dataframe containing:
+            :param weather_df: Dataframe containing:
 
                             - 'windspeed'
                             - 'temperature'
                             - 'z0'
                             - 'pressure'
-            :type weather_df_wind: pandas.core.frame.Dataframe
+            :type weather_df: pd.DataFrame
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
@@ -314,25 +314,21 @@ class Sources:
         # set up wind turbine using the wind turbine library.
         # The turbine name must correspond to an entry in the turbine
         # data-base of the feedinlib. Unit of the hub height is m.
-        turbine_data = {
-            'turbine_type': so['Turbine Model'],
-            'hub_height': so['Hub Height']}
+        turbine_data = {'turbine_type': so['Turbine Model'],
+                        'hub_height': so['Hub Height']}
+        # create windturbine
         wind_turbine = WindPowerPlant(**turbine_data)
         
-        data_height = {'pressure': 0, 'temperature': 2, 'wind_speed': 10,
-                       'roughness_length': 0}
-        weather_df_wind = \
-            weather_df_wind[['windspeed', 'temperature', 'z0', 'pressure']]
-        weather_df_wind.columns = \
-            [['wind_speed', 'temperature', 'roughness_length', 'pressure'],
-             [data_height['wind_speed'], data_height['temperature'],
-              data_height['roughness_length'], data_height['pressure']]]
+        weather_df = weather_df[['windspeed', 'temperature', 'z0', 'pressure']]
+        # second row is height of data acquisition in m
+        weather_df.columns = [['wind_speed', 'temperature', 'roughness_length',
+                               'pressure'], [0, 2, 10, 0]]
         
         # calculate scaled feed-in
-        feedin_wind_scaled = wind_turbine.feedin(
-                weather=weather_df_wind, scaling='nominal_power')
+        feedin = wind_turbine.feedin(weather=weather_df,
+                                     scaling='nominal_power')
 
-        self.create_pv_wind_source(feedin_wind_scaled, so)
+        self.create_feedin_source(feedin, so)
     
     def solar_heat_source(self, so, data, energysystem):
         """
