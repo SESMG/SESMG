@@ -163,8 +163,7 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     
     # CREATES SOURCE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
-    t1 = Thread(target=Source.Sources,
-                args=(nodes_data, nodes, busd, time_series, weather_data))
+    t1 = Thread(target=Source.Sources, args=(nodes_data, nodes, busd))
     t1.start()
     # CREATES SINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS

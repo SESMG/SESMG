@@ -451,8 +451,7 @@ class Sources:
                      + " kWh/(m²a), Irradiance on collector per year and m²: "
                        "{:2.2f}".format(numpy.sum(irradiance)) + ' kWh/(m²a)')
     
-    def __init__(self, nodes_data: dict, nodes: list, busd: dict,
-                 time_series, weather_data):
+    def __init__(self, nodes_data: dict, nodes: list, busd: dict):
         """
             Inits the source class
             ---
@@ -467,7 +466,8 @@ class Sources:
         # Initialise a class intern copy of the bus dictionary
         self.busd = busd.copy()
         energysystem = next(nodes_data['energysystem'].iterrows())[1]
-        
+        weather_data = nodes_data["weather data"].copy()
+        time_series = nodes_data["timeseries"].copy()
         # Create Source from "Sources" Table
         for i, so in nodes_data['sources'].iterrows():
             # Create a source object for every source,
