@@ -19,7 +19,7 @@ class Sources:
             - 'photovoltaic': a photovoltaic component
             - 'wind power': a wind power component
 
-        :param nodes_data: dictionary containing parameters of sources
+        :param nd: dictionary containing parameters of sources
                            to be created.The following data have to be
                            provided:
 
@@ -47,23 +47,11 @@ class Sources:
                                 - 'Altitude(PV ONLY)'
                                 - 'Latitude(PV ONLY)'
                                 - 'Longitude(PV ONLY)'
-        :type nodes_data: dict
+        :type nd: dict
         :param busd: dictionary containing the buses of the energy system
         :type busd: dict
         :param nodes: list of components created before(can be empty)
         :type nodes: list
-        :param filepath: path to .xlsx scenario-file containing a
-                         "weather data" sheet with timeseries for
-
-                            - "dhi"(diffuse horizontal irradiation)
-                              W / m ^ 2
-                            - "dirhi"(direct horizontal irradiance)
-                              W / m ^ 2
-                            - "pressure" in Pa
-                            - "temperature" in °C
-                            - "windspeed" in m / s
-                            - "z0"(roughness length) in m
-        :type filepath: str
 
         Contributors:
 
@@ -93,6 +81,8 @@ class Sources:
                                     'fix-attribute' or the 'min-' and
                                     'max-attribute' of a source
             :type timeseries_args: dict
+            :param output: definies the oemof output bus
+            :type output: Bus
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
@@ -142,7 +132,7 @@ class Sources:
         # Returns logging info
         logging.info('\t Commodity Source created: ' + so['label'])
     
-    def timeseries_source(self, so: dict, time_series):
+    def timeseries_source(self, so: dict):
         """
             Creates an oemof source object from a pre-defined
             timeseries with the use of the create_source method.
@@ -161,20 +151,17 @@ class Sources:
                             - 'fix investment costs'
                             - 'variable costs'
             :type so: dict
-            :param filepath: path to .xlsx scenario-file containing a
-                             "time_series" sheet
-            :type filepath: str
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
         
         if so['fixed'] == 1:
             # sets the timeseries attribute for a fixed source
-            args = {'fix': time_series[so['label'] + '.fix'].tolist()}
+            args = {'fix': self.timeseries[so['label'] + '.fix'].tolist()}
         elif so['fixed'] == 0:
             # sets the timeseries attributes for an unfixed source
-            args = {'min': time_series[so['label'] + '.min'].tolist(),
-                    'max': time_series[so['label'] + '.max'].tolist()}
+            args = {'min': self.timeseries[so['label'] + '.min'].tolist(),
+                    'max': self.timeseries[so['label'] + '.max'].tolist()}
         else:
             raise SystemError(so['label'] + " Error in fixed attribute")
         
@@ -205,7 +192,7 @@ class Sources:
         # returns logging info
         logging.info('\t Source created: ' + so["label"])
         
-    def pv_source(self, so: dict, weather_dataframe: pd.DataFrame):
+    def pv_source(self, so: dict):
         """
             Creates an oemof photovoltaic source object.
 
@@ -227,14 +214,6 @@ class Sources:
                             - 'Latitude (PV ONLY)'
                             - 'Longitude (PV ONLY)'
             :type so: dict
-            :param weather_dataframe: Dataframe containing:
-
-                            - 'dirhi'
-                            - 'dhi'
-                            - 'dni'
-                            - 'temperature'
-                            - 'windspeed'
-            :type weather_dataframe: pd.DataFrame
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
@@ -254,16 +233,16 @@ class Sources:
         
         # calculates global horizontal irradiance from diffuse (dhi)
         # and direct irradiance and adds it to the weather data frame
-        weather_dataframe['ghi'] = (weather_dataframe.dirhi
-                                    + weather_dataframe.dhi)
+        self.weather_data['ghi'] = (self.weather_data.dirhi
+                                    + self.weather_data.dhi)
         
         # changes names of data columns,
         # so it fits the needs of the feedinlib
         name_dc = {'temperature': 'temp_air', 'windspeed': 'v_wind'}
-        weather_dataframe.rename(columns=name_dc)
+        self.weather_data.rename(columns=name_dc)
         
         # calculates time series normed on 1 kW pv peak performance
-        feedin = pv_module.feedin(weather=weather_dataframe,
+        feedin = pv_module.feedin(weather=self.weather_data,
                                   location=(so['Latitude'], so['Longitude']),
                                   scaling='peak_power')
 
@@ -276,7 +255,7 @@ class Sources:
 
         self.create_feedin_source(feedin, so)
     
-    def windpower_source(self, so: dict, weather_df: pd.DataFrame):
+    def windpower_source(self, so: dict):
         """
             Creates an oemof windpower source object.
 
@@ -293,13 +272,6 @@ class Sources:
                             - 'Turbine Model (Windpower ONLY)'
                             - 'Hub Height (Windpower ONLY)'
             :type so: dict
-            :param weather_df: Dataframe containing:
-
-                            - 'windspeed'
-                            - 'temperature'
-                            - 'z0'
-                            - 'pressure'
-            :type weather_df: pd.DataFrame
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
@@ -312,7 +284,8 @@ class Sources:
         # create windturbine
         wind_turbine = WindPowerPlant(**turbine_data)
         
-        weather_df = weather_df[['windspeed', 'temperature', 'z0', 'pressure']]
+        weather_df = self.weather_data[['windspeed', 'temperature',
+                                        'z0', 'pressure']]
         # second row is height of data acquisition in m
         weather_df.columns = [['wind_speed', 'temperature', 'roughness_length',
                                'pressure'], [0, 2, 10, 0]]
@@ -323,7 +296,7 @@ class Sources:
 
         self.create_feedin_source(feedin, so)
     
-    def solar_heat_source(self, so: dict, weather_data: pd.DataFrame, energysystem):
+    def solar_heat_source(self, so: dict):
         """
             Creates a solar thermal collector source object.
 
@@ -373,8 +346,9 @@ class Sources:
         output = col_bus
         
         # import weather data and set datetime index with hourly frequency
-        weather_data.index.name = 'Datum'
-        weather_data = weather_data.asfreq(energysystem["temporal resolution"])
+        self.weather_data.index.name = 'Datum'
+        weather_data = self.weather_data.asfreq(
+                self.energysystem["temporal resolution"])
         
         # calculates global horizontal irradiance from diffuse (dhi)
         # and direct irradiance (dirhi) and adds it to the weather data frame
@@ -410,8 +384,8 @@ class Sources:
                     a_1=so['A1'], a_2=so['A2'], eta_0=so['ETA 0'],
                     c_1=so['C1'], c_2=so['C2'],
                     temp_collector_inlet=so['Temperature Inlet'],
-                    temp_collector_outlet=so['Temperature Inlet']
-                                          + so['Temperature Difference'],
+                    temp_collector_outlet=so[
+                        'Temperature Inlet'] + so['Temperature Difference'],
                     temp_amb=weather_data['temperature'],
                     E_dir_hor=weather_data['dirhi'])
             # set variables collectors_heat and irradiance and conversion
@@ -419,8 +393,8 @@ class Sources:
             irradiance = precalc_res.collector_irradiance / 1000
         else:
             raise ValueError("Technology chosen not accepted!")
-        collectors_heat = precalc_res.collectors_heat / 1000 \
-                          * so['Conversion Factor']
+        collectors_heat = (precalc_res.collectors_heat / 1000) \
+            * so['Conversion Factor']
         self.create_feedin_source(collectors_heat, so, output)
         
         self.nodes_sources.append(Transformer(
@@ -456,30 +430,20 @@ class Sources:
         self.nodes_sources = []
         # Initialise a class intern copy of the bus dictionary
         self.busd = busd.copy()
-        energysystem = next(nd['energysystem'].iterrows())[1]
+        self.energysystem = next(nd['energysystem'].iterrows())[1]
+        self.weather_data = nd["weather data"].copy()
+        self.timeseries = nd["timeseries"].copy()
+        switch_dict = {
+            "other": self.commodity_source,
+            "photovoltaic": self.pv_source,
+            "windpower": self.windpower_source,
+            "timeseries": self.timeseries_source,
+            "solar_thermal_flat_plate": self.solar_heat_source,
+            "concentrated_solar_power": self.solar_heat_source
+        }
         # Create Source from "Sources" Table
-        for i, so in nd["sources"].loc[nd["sources"]["active"] == 1].iterrows():
-            # Create Commodity Sources
-            if so['technology'] == 'other':
-                self.commodity_source(so)
-            
-            # Create Photovoltaic Sources
-            elif so['technology'] == 'photovoltaic':
-                self.pv_source(so, nd["weather data"].copy())
-            
-            # Create Windpower Sources
-            elif so['technology'] == 'windpower':
-                self.windpower_source(so, nd["weather data"].copy())
-            
-            # Create Time-series Sources
-            elif so['technology'] == 'timeseries':
-                self.timeseries_source(so, nd["timeseries"].copy())
-            
-            # Create flat plate solar thermal Sources
-            elif so['technology'] in ['solar_thermal_flat_plate',
-                                      'concentrated_solar_power']:
-                self.solar_heat_source(so, nd["weather data"].copy(),
-                                       energysystem)
+        for i, s in nd["sources"].loc[nd["sources"]["active"] == 1].iterrows():
+            switch_dict.get(s["technology"], "Invalid technology !")(s)
         
         # appends created sources and other objects to the list of nodes
         for i in range(len(self.nodes_sources)):
