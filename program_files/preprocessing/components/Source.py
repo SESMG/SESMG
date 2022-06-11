@@ -1,6 +1,7 @@
 from feedinlib import powerplants, WindPowerPlant
 from oemof.solph import Source, Flow, Investment, Bus, Transformer
 import logging
+import pandas as pd
 
 
 class Sources:
@@ -191,8 +192,27 @@ class Sources:
         
         # Returns logging info
         logging.info('\t Timeseries Source created: ' + so['label'])
+        
+    def create_pv_wind_source(self, feedin: pd.Series, so: dict):
+        """
+        
+        """
+        if so["fixed"] == 1:
+            # sets the attribute for a fixed pv_source
+            args = {'fix': feedin}
+        elif so["fixed"] == 0:
+            # sets the attributes for an unfixed pv_source
+            args = {'min': 0, 'max': feedin}
+        else:
+            raise SystemError(so["label"] + " Error in fixed attribute")
     
-    def pv_source(self, so: dict, my_weather_pandas_dataframe):
+        # starts the create_source method with the parameters set before
+        self.create_source(so, args, self.busd[so['output']])
+    
+        # returns logging info
+        logging.info('\t Source created: ' + so["label"])
+        
+    def pv_source(self, so: dict, weather_dataframe: pd.DataFrame):
         """
             Creates an oemof photovoltaic source object.
 
@@ -214,13 +234,14 @@ class Sources:
                             - 'Latitude (PV ONLY)'
                             - 'Longitude (PV ONLY)'
             :type so: dict
-            :param my_weather_pandas_dataframe: Dataframe containing:
+            :param weather_dataframe: Dataframe containing:
 
                             - 'dirhi'
                             - 'dhi'
+                            - 'dni'
                             - 'temperature'
                             - 'windspeed'
-            :type my_weather_pandas_dataframe: pandas.core.frame.Dataframe
+            :type weather_dataframe: pd.DataFrame
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
@@ -240,47 +261,27 @@ class Sources:
         
         # calculates global horizontal irradiance from diffuse (dhi)
         # and direct irradiance and adds it to the weather data frame
-        my_weather_pandas_dataframe['ghi'] = \
-            (my_weather_pandas_dataframe.dirhi
-             + my_weather_pandas_dataframe.dhi)
+        weather_dataframe['ghi'] = (weather_dataframe.dirhi
+                                    + weather_dataframe.dhi)
         
         # changes names of data columns,
         # so it fits the needs of the feedinlib
         name_dc = {'temperature': 'temp_air', 'windspeed': 'v_wind'}
-        my_weather_pandas_dataframe.rename(columns=name_dc)
+        weather_dataframe.rename(columns=name_dc)
         
         # calculates time series normed on 1 kW pv peak performance
-        feedin = pv_module.feedin(
-                weather=my_weather_pandas_dataframe,
-                location=(so['Latitude'], so['Longitude']),
-                scaling='peak_power')
-        
-        # Prepare data set for compatibility with oemof
-        for i in range(len(feedin)):
-            # Set negative values to zero
-            # (requirement for solving the model)
-            if feedin[i] < 0:
-                feedin[i] = 0
-            # Set values greater 1 to 1
-            # (requirement for solving the model)
-            if feedin[i] > 1:
-                feedin[i] = 1
-            # Replace 'nan' value with 0
-            feedin = feedin.fillna(0)
-        if so['fixed'] == 1:
-            # sets the attribute for a fixed pv_source
-            args = {'fix': feedin}
-        elif so['fixed'] == 0:
-            # sets the attributes for an unfixed pv_source
-            args = {'min': 0, 'max': feedin}
-        else:
-            raise SystemError(so['label'] + " Error in fixed attribute")
-        
-        # starts the create_source method with the parameters set before
-        self.create_source(so, args, self.busd[so['output']])
-        
-        # returns logging info
-        logging.info('\t Source created: ' + so['label'])
+        feedin = pv_module.feedin(weather=weather_dataframe,
+                                  location=(so['Latitude'], so['Longitude']),
+                                  scaling='peak_power')
+
+        # Replace 'nan' value with 0
+        feedin = feedin.fillna(0)
+        # Set negative values to zero (requirement for solving the model)
+        feedin[feedin < 0] = 0
+        # Set values greater 1 to 1 (requirement for solving the model)
+        feedin[feedin > 1] = 1
+
+        self.create_pv_wind_source(feedin, so)
     
     def windpower_source(self, so: dict, weather_df_wind):
         """
@@ -330,20 +331,8 @@ class Sources:
         # calculate scaled feed-in
         feedin_wind_scaled = wind_turbine.feedin(
                 weather=weather_df_wind, scaling='nominal_power')
-        if so['fixed'] == 1:
-            # sets the attribute for a fixed windpower_source
-            args = {'fix': feedin_wind_scaled}
-        elif so['fixed'] == 0:
-            # sets the attribute for an unfixed windpower_source
-            args = {'min': 0, 'max': feedin_wind_scaled}
-        else:
-            raise SystemError(so['label'] + " Error in fixed attribute")
-        
-        # starts the create_source method with the parameters set before
-        self.create_source(so, args, self.busd[so['output']])
-        
-        # returns logging info
-        logging.info('\t Source created: ' + so['label'])
+
+        self.create_pv_wind_source(feedin_wind_scaled, so)
     
     def solar_heat_source(self, so, data, energysystem):
         """
