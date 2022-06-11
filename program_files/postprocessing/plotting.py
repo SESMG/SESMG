@@ -15,19 +15,7 @@ from tkinter import ttk
 from program_files.GUI_files import GUI
 
 
-def create_pareto_plot(dfs, result_path):
-    costs_moni = []
-    costs_emi = []
-    for dataframe in dfs:
-        costs_moni.append(sum(dataframe["variable costs/CU"]) \
-                          + sum(dataframe["periodical costs/CU"]))
-        costs_emi.append(sum(dataframe["constraints/CU"]))
-    df1 = pd.DataFrame({"costs": costs_moni, "emissions": costs_emi},
-                       columns=["costs", "emissions"])
-    plt.clf()
-    sns.lineplot(data=df1, x="costs", y="emissions", marker="o")
-    plt.grid()
-    plt.savefig(result_path + "/pareto.jpeg")
+
 
 
 def get_family(a, df1):
