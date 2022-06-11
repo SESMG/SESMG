@@ -88,7 +88,7 @@ from program_files.preprocessing import (create_objects,
                                          create_graph,
                                          data_preparation,
                                          district_heating)
-from program_files.preprocessing.components import Source
+from program_files.preprocessing.components import Source, Sink
 from program_files.postprocessing import create_results
 from program_files.processing import optimize_model
 
@@ -167,10 +167,8 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     t1.start()
     # CREATES SINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
-    t2 = Thread(target=create_objects.Sinks, args=(nodes_data, busd,
-                                                   nodes, time_series,
-                                                   weather_data,
-                                                   nodes_data["insulation"]))
+    t2 = Thread(target=Sink.Sinks, args=(nodes_data, busd, nodes,
+                                         nodes_data["insulation"]))
     t2.start()
     # CREATES TRANSFORMER OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM
     # TO THE lIST OF COMPONENTS

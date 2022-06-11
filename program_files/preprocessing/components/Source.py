@@ -6,10 +6,7 @@ import pandas as pd
 
 class Sources:
     """
-        Creates source objects.
 
-
-    #def create_source(self, so, timeseries_args, output):
         Creates an oemof source with fixed or unfixed timeseries
 
         There are four options for labeling source objects to be created:
@@ -18,6 +15,8 @@ class Sources:
             - 'timeseries': a source with predefined time series
             - 'photovoltaic': a photovoltaic component
             - 'wind power': a wind power component
+            - 'solar thermal components': a solar thermal or \
+              concentrated solar power component
 
         :param nd: dictionary containing parameters of sources
                            to be created.The following data have to be
@@ -81,7 +80,7 @@ class Sources:
                                     'fix-attribute' or the 'min-' and
                                     'max-attribute' of a source
             :type timeseries_args: dict
-            :param output: definies the oemof output bus
+            :param output: defines the oemof output bus
             :type output: Bus
 
             Christian Klemm - christian.klemm@fh-muenster.de
@@ -127,7 +126,7 @@ class Sources:
         """
         # starts the create_source method with the parameters
         # min = 0 and max = 1
-        self.create_source(so, {'min': 0, 'max': 1}, self.busd[so['output']])
+        self.create_source(so, {'max': 1}, self.busd[so['output']])
         
         # Returns logging info
         logging.info('\t Commodity Source created: ' + so['label'])
@@ -180,7 +179,7 @@ class Sources:
             args = {'fix': feedin}
         elif so["fixed"] == 0:
             # sets the attributes for an unfixed pv_source
-            args = {'min': 0, 'max': feedin}
+            args = {'max': feedin}
         else:
             raise SystemError(so["label"] + " Error in fixed attribute")
         if output is None:
