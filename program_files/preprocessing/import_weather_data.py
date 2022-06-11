@@ -3,6 +3,8 @@ from feedinlib.open_FRED import Weather, defaultdb
 from matplotlib import pyplot as plt
 from mpl_toolkits.basemap import Basemap
 from datetime import timedelta
+import pandas as pd
+
 
 def create_weather_data_plot(lat, lon):
     fig = plt.figure(figsize=(8, 8))
@@ -102,7 +104,7 @@ def import_open_fred_pvlib(nodes_data, lat, lon):
         df["dhi"] = (df["dhi"] + save_df[num][1]["dhi"]) / 2
         df["ghi"] = (df["ghi"] + save_df[num][1]["ghi"]) / 2
         df["index"] = df["index"] + timedelta(minutes=7, seconds=30)
-        pvlib_df = pvlib_df.append(df)
+        pd.concat([pvlib_df, df])
     pvlib_df.reset_index(drop=True, inplace=True)
     nodes_data["weather data"]["dhi"] = pvlib_df["dhi"].copy()
     nodes_data["weather data"]["dni"] = pvlib_df["dni"].copy()

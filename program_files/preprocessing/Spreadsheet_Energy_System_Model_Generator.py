@@ -88,6 +88,7 @@ from program_files.preprocessing import (create_objects,
                                          create_graph,
                                          data_preparation,
                                          district_heating)
+from program_files.preprocessing.components import Source
 from program_files.postprocessing import create_results
 from program_files.processing import optimize_model
 
@@ -162,7 +163,7 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     
     # CREATES SOURCE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
-    t1 = Thread(target=create_objects.Sources,
+    t1 = Thread(target=Source.Sources,
                 args=(nodes_data, nodes, busd, time_series, weather_data))
     t1.start()
     # CREATES SINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
