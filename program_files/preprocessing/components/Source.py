@@ -193,7 +193,7 @@ class Sources:
         # Returns logging info
         logging.info('\t Timeseries Source created: ' + so['label'])
         
-    def create_feedin_source(self, feedin: pd.Series, so: dict):
+    def create_feedin_source(self, feedin: pd.Series, so: dict, output=None):
         """
         
         """
@@ -205,10 +205,12 @@ class Sources:
             args = {'min': 0, 'max': feedin}
         else:
             raise SystemError(so["label"] + " Error in fixed attribute")
-    
-        # starts the create_source method with the parameters set before
-        self.create_source(so, args, self.busd[so['output']])
-    
+        if output is None:
+            # starts the create_source method with the parameters set before
+            self.create_source(so, args, self.busd[so['output']])
+        else:
+            # starts the create_source method with the parameters set before
+            self.create_source(so, args, output)
         # returns logging info
         logging.info('\t Source created: ' + so["label"])
         
@@ -330,7 +332,7 @@ class Sources:
 
         self.create_feedin_source(feedin, so)
     
-    def solar_heat_source(self, so, data, energysystem):
+    def solar_heat_source(self, so: dict, weather_data: pd.DataFrame, energysystem):
         """
             Creates a solar thermal collector source object.
 
@@ -380,79 +382,55 @@ class Sources:
         output = col_bus
         
         # import weather data and set datetime index with hourly frequency
-        data.index.name = 'Datum'
-        data = data.asfreq(energysystem["temporal resolution"])
+        weather_data.index.name = 'Datum'
+        weather_data = weather_data.asfreq(energysystem["temporal resolution"])
         
         # calculates global horizontal irradiance from diffuse (dhi)
         # and direct irradiance (dirhi) and adds it to the weather data frame
-        data['ghi'] = (data["dirhi"] + data["dhi"])
+        weather_data['ghi'] = (weather_data["dirhi"] + weather_data["dhi"])
 
-        collectors_heat = None
-        
         # precalculations for flat plate collectors, calculates total
         # irradiance on collector, efficiency and heat output
         if so['technology'] == 'solar_thermal_flat_plate':
-            precalc_results = flat_plate_precalc(
-                    lat=so['Latitude'],
-                    long=so['Longitude'],
+            precalc_res = flat_plate_precalc(
+                    lat=so['Latitude'], long=so['Longitude'],
                     collector_tilt=so['Surface Tilt'],
                     collector_azimuth=so['Azimuth'],
-                    eta_0=so['ETA 0'],
-                    a_1=so['A1'],
-                    a_2=so['A2'],
-                    temp_collector_inlet=
-                    so['Temperature Inlet'],
-                    delta_temp_n=
-                    so['Temperature Difference'],
-                    irradiance_global=(data['ghi']),
-                    irradiance_diffuse=(data['dhi']),
-                    temp_amb=data['temperature'])
+                    eta_0=so['ETA 0'], a_1=so['A1'], a_2=so['A2'],
+                    temp_collector_inlet=so['Temperature Inlet'],
+                    delta_temp_n=so['Temperature Difference'],
+                    irradiance_global=(weather_data['ghi']),
+                    irradiance_diffuse=(weather_data['dhi']),
+                    temp_amb=weather_data['temperature'])
             # set variables collectors_heat and irradiance and conversion
             # from W/sqm to kW/sqm
-            collectors_heat = precalc_results.collectors_heat / 1000
-            irradiance = precalc_results.col_ira / 1000
-            collectors_heat = collectors_heat * so['Conversion Factor']
-        
+            irradiance = precalc_res.col_ira / 1000
+
         # set parameters for precalculations for concentrating solar power
         elif so['technology'] == 'concentrated_solar_power':
             # precalculation with parameter set, ambient temperature and
             # direct horizontal irradiance. Calculates total irradiance on
             # collector, efficiency and heat output
-            precalc_results = csp_precalc(
-                    lat=so['Latitude'],
-                    long=so['Longitude'],
+            precalc_res = csp_precalc(
+                    lat=so['Latitude'], long=so['Longitude'],
                     collector_tilt=so['Surface Tilt'],
                     collector_azimuth=so['Azimuth'],
                     cleanliness=so['Cleanliness'],
-                    a_1=so['A1'],
-                    a_2=so['A2'],
-                    eta_0=so['ETA 0'],
-                    c_1=so['C1'],
-                    c_2=so['C2'],
+                    a_1=so['A1'], a_2=so['A2'], eta_0=so['ETA 0'],
+                    c_1=so['C1'], c_2=so['C2'],
                     temp_collector_inlet=so['Temperature Inlet'],
                     temp_collector_outlet=so['Temperature Inlet']
                                           + so['Temperature Difference'],
-                    temp_amb=data['temperature'],
-                    E_dir_hor=data['dirhi'])
-            
+                    temp_amb=weather_data['temperature'],
+                    E_dir_hor=weather_data['dirhi'])
             # set variables collectors_heat and irradiance and conversion
             # from W/sqm to kW/sqm
-            collectors_heat = precalc_results.collector_heat / 1000
-            irradiance = precalc_results.collector_irradiance / 1000
-            collectors_heat = collectors_heat * so['Conversion Factor']
-        
-        # set collector heat as timeseries as argument for source
-        if so['fixed'] == 1 and collectors_heat is not None:
-            # sets the attribute for a fixed solar heat source
-            args = {'fix': collectors_heat}
-        elif so['fixed'] == 0 and collectors_heat is not None:
-            # sets the attributes for an unfixed solar heat source
-            args = {'min': 0, 'max': collectors_heat}
+            irradiance = precalc_res.collector_irradiance / 1000
         else:
-            raise SystemError(so['label'] + " Error in fixed attribute")
-        
-        # starts the create_source method with the parameters set before
-        self.create_source(so, args, output)
+            raise ValueError("Technology chosen not accepted!")
+        collectors_heat = precalc_res.collectors_heat / 1000 \
+                          * so['Conversion Factor']
+        self.create_feedin_source(collectors_heat, so, output)
         
         self.nodes_sources.append(Transformer(
             label=so['label'] + '_collector',

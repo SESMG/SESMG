@@ -1,0 +1,51 @@
+******************************************************
+2022-06-11 19:52:54,270 - INFO - logger - Path for logging: results/scenario_v0.3.0_2022-06-11--19-52-54/oemof.log
+2022-06-11 19:52:57,875 - INFO - create_energy_system - 	 Spreadsheet scenario successfully imported.
+2022-06-11 19:53:00,115 - INFO - create_energy_system - Date time index successfully defined:
+ start date:          2012-01-01 00:00:00,
+ end date:            2012-01-18 23:00:00,
+ temporal resolution: h
+2022-06-11 19:53:00,116 - INFO - create_objects -    Bus created: ID_electricity_bus
+2022-06-11 19:53:00,119 - INFO - create_objects -    Bus created: ID_heat_bus
+2022-06-11 19:53:00,120 - INFO - create_objects -    Bus created: ID_gas_bus
+2022-06-11 19:53:00,121 - INFO - create_objects -    Bus created: ID_cooling_bus
+2022-06-11 19:53:00,122 - INFO - create_objects -    Bus created: ID_pv_bus
+2022-06-11 19:53:00,123 - INFO - create_objects -    Bus created: ID_hp_electricity_bus
+2022-06-11 19:53:00,125 - INFO - create_objects -    Bus created: district_chp_electricity_bus
+2022-06-11 19:53:00,125 - INFO - create_objects -    Bus created: district_gas_bus
+2022-06-11 19:53:00,126 - INFO - create_objects -    Bus created: district_heat_bus
+2022-06-11 19:53:00,133 - INFO - create_objects -    Transformer created: ID_gasheating_transformer
+2022-06-11 19:53:00,138 - INFO - create_objects -    Storage created: ID_battery_storage
+2022-06-11 19:53:00,142 - INFO - create_objects -    Link created: ID_pv_to_ID_electricity_link
+2022-06-11 19:53:00,144 - INFO - create_objects -    Sink created: ID_electricity_sink
+2022-06-11 19:53:00,146 - INFO - create_objects -    Storage created: ID_thermal_storage
+2022-06-11 19:53:00,147 - INFO - create_objects -    Link created: ID_electricity_to_ID_hp_electricity_bus
+2022-06-11 19:53:00,162 - INFO - create_objects -    Sink created: ID_heat_sink
+2022-06-11 19:53:00,170 - INFO - create_objects -    Sink created: ID_cooling_sink
+2022-06-11 19:53:00,202 - INFO - create_objects -    Bus created: ID_GCHP_transformer_low_temp_bus
+2022-06-11 19:53:00,203 - INFO - create_objects -    Heat Source created: ID_GCHP_transformer_low_temp_source
+2022-06-11 19:53:00,205 - INFO - create_objects -    ID_GCHP_transformer, Average Coefficient of Performance (COP): 4.32
+2022-06-11 19:53:00,211 - INFO - create_objects -    Transformer created: ID_GCHP_transformer
+2022-06-11 19:53:00,216 - INFO - create_objects -    Bus created: ID_ASCH_transformer_high_temp_bus
+2022-06-11 19:53:00,218 - INFO - create_objects -    Heat Source created: ID_ASCH_transformer_high_temp_source
+2022-06-11 19:53:00,219 - INFO - create_objects -    ID_ASCH_transformer, Average Coefficient of Performance (COP): 7.88
+2022-06-11 19:53:00,225 - INFO - create_objects -    Transformer created: ID_ASCH_transformer
+2022-06-11 19:53:00,233 - INFO - create_objects -    Bus created: ID_AbsCH_transformer_high_temp_bus
+2022-06-11 19:53:00,242 - INFO - create_objects -    ID_AbsCH_transformer, Average Coefficient of Performance (COP): 0.80
+2022-06-11 19:53:00,243 - INFO - create_objects -    Heat Source created:ID_AbsCH_transformer_high_temp_source
+2022-06-11 19:53:00,245 - INFO - create_objects -    Transformer created: ID_AbsCH_transformer
+2022-06-11 19:53:00,246 - INFO - create_objects -    Bus created: ID_ASHP_transformer_low_temp_bus
+2022-06-11 19:53:00,247 - INFO - create_objects -    Heat Source created: ID_ASHP_transformer_low_temp_source
+2022-06-11 19:53:00,250 - INFO - create_objects -    ID_ASHP_transformer, Average Coefficient of Performance (COP): 2.70
+2022-06-11 19:53:00,261 - INFO - create_objects -    Transformer created: ID_ASHP_transformer
+2022-06-11 19:53:00,263 - INFO - create_objects -    Transformer created: ID_chp_transformer
+2022-06-11 19:53:00,389 - INFO - Source - 	 Source created: ID_photovoltaic_electricity_source
+2022-06-11 19:53:00,541 - INFO - district_heating - 	 Connected ID to district heating network
+2022-06-11 19:53:00,572 - INFO - district_heating - 	 Connected district_heat_bus to district heating network
+2022-06-11 19:53:00,583 - DEBUG - _tools - os.makedirs('results/scenario_v0.3.0_2022-06-11--19-52-54')
+2022-06-11 19:53:00,583 - DEBUG - saving - write lines to 'results/scenario_v0.3.0_2022-06-11--19-52-54/graph.gv'
+2022-06-11 19:53:00,584 - DEBUG - execute - run [PosixPath('dot'), '-Kdot', '-Tpng', '-O', 'graph.gv']
+2022-06-11 19:53:01,105 - INFO - optimize_model -    *********************************************************
+2022-06-11 19:53:01,106 - INFO - optimize_model -    Create Energy System...
+2022-06-11 19:53:01,233 - ERROR - block - Constructing component 'Bus.balance_build' from data=None failed:
+KeyError: 'Index \'("<oemof.solph.network.source.Source: \'ID_photovoltaic_electricity_source\'>", "<oemof.solph.network.bus.Bus: \'ID_pv_bus\'>", 0)\' is not valid for indexed component \'flow\''
