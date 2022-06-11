@@ -96,17 +96,7 @@ class Sources:
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
-        # output default
-        if output is None:
-            output = self.busd[so['output']]
-        # set variables minimum, maximum and existing
-        minimum = so['min. investment capacity']
-        maximum = (so['max. investment capacity']
-                   if so['max. investment capacity'] != "inf"
-                   else float("+inf"))
-        existing = so['existing capacity']
-        ep_costs = so['periodical costs']
-        ep_constr_costs = so['periodical constraint costs']
+        # set non convex bool
         non_convex = True if so['non-convex investment'] == 1 else False
         # Creates a oemof source and appends it to the nodes_sources
         # (variable of the create_sources-class) list
@@ -115,15 +105,16 @@ class Sources:
                 label=so['label'],
                 outputs={output: Flow(
                         investment=Investment(
-                            ep_costs=ep_costs,
-                            periodical_constraint_costs=ep_constr_costs,
-                            minimum=minimum,
-                            maximum=maximum,
-                            existing=existing,
+                            ep_costs=so['periodical costs'],
+                            periodical_constraint_costs=so[
+                                'periodical constraint costs'],
+                            minimum=so['min. investment capacity'],
+                            maximum=so['max. investment capacity'],
+                            existing=so['existing capacity'],
                             nonconvex=non_convex,
                             offset=so['fix investment costs'],
-                            fix_constraint_costs=so["fix investment constraint"
-                                                    " costs"]),
+                            fix_constraint_costs=so[
+                                "fix investment constraint costs"]),
                         **timeseries_args,
                         variable_costs=so['variable costs'],
                         emission_factor=so['variable constraint costs'])}))

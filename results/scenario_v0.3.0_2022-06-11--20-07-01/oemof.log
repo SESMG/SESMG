@@ -1,0 +1,70 @@
+******************************************************
+2022-06-11 20:07:01,153 - INFO - logger - Path for logging: results/scenario_v0.3.0_2022-06-11--20-07-01/oemof.log
+2022-06-11 20:07:04,760 - INFO - create_energy_system - 	 Spreadsheet scenario successfully imported.
+2022-06-11 20:07:06,605 - INFO - create_energy_system - Date time index successfully defined:
+ start date:          2012-01-01 00:00:00,
+ end date:            2012-01-18 23:00:00,
+ temporal resolution: h
+2022-06-11 20:07:06,606 - INFO - create_objects -    Bus created: ID_electricity_bus
+2022-06-11 20:07:06,607 - INFO - create_objects -    Bus created: ID_heat_bus
+2022-06-11 20:07:06,607 - INFO - create_objects -    Bus created: ID_gas_bus
+2022-06-11 20:07:06,607 - INFO - create_objects -    Bus created: ID_cooling_bus
+2022-06-11 20:07:06,608 - INFO - create_objects -    Bus created: ID_pv_bus
+2022-06-11 20:07:06,608 - INFO - create_objects -    Bus created: ID_hp_electricity_bus
+2022-06-11 20:07:06,609 - INFO - create_objects -    Bus created: district_chp_electricity_bus
+2022-06-11 20:07:06,609 - INFO - create_objects -    Bus created: district_gas_bus
+2022-06-11 20:07:06,609 - INFO - create_objects -    Bus created: district_heat_bus
+2022-06-11 20:07:06,611 - INFO - create_objects -    Transformer created: ID_gasheating_transformer
+2022-06-11 20:07:06,613 - INFO - create_objects -    Link created: ID_pv_to_ID_electricity_link
+2022-06-11 20:07:06,614 - INFO - create_objects -    Storage created: ID_battery_storage
+2022-06-11 20:07:06,618 - INFO - create_objects -    Sink created: ID_electricity_sink
+2022-06-11 20:07:06,619 - INFO - create_objects -    Link created: ID_electricity_to_ID_hp_electricity_bus
+2022-06-11 20:07:06,619 - INFO - create_objects -    Storage created: ID_thermal_storage
+2022-06-11 20:07:06,629 - INFO - create_objects -    Sink created: ID_heat_sink
+2022-06-11 20:07:06,631 - INFO - create_objects -    Sink created: ID_cooling_sink
+2022-06-11 20:07:06,647 - INFO - create_objects -    Bus created: ID_GCHP_transformer_low_temp_bus
+2022-06-11 20:07:06,648 - INFO - create_objects -    Heat Source created: ID_GCHP_transformer_low_temp_source
+2022-06-11 20:07:06,649 - INFO - create_objects -    ID_GCHP_transformer, Average Coefficient of Performance (COP): 4.32
+2022-06-11 20:07:06,651 - INFO - create_objects -    Transformer created: ID_GCHP_transformer
+2022-06-11 20:07:06,651 - INFO - create_objects -    Bus created: ID_ASCH_transformer_high_temp_bus
+2022-06-11 20:07:06,651 - INFO - create_objects -    Heat Source created: ID_ASCH_transformer_high_temp_source
+2022-06-11 20:07:06,652 - INFO - create_objects -    ID_ASCH_transformer, Average Coefficient of Performance (COP): 7.88
+2022-06-11 20:07:06,654 - INFO - create_objects -    Transformer created: ID_ASCH_transformer
+2022-06-11 20:07:06,657 - INFO - create_objects -    Bus created: ID_AbsCH_transformer_high_temp_bus
+2022-06-11 20:07:06,660 - INFO - create_objects -    ID_AbsCH_transformer, Average Coefficient of Performance (COP): 0.80
+2022-06-11 20:07:06,660 - INFO - create_objects -    Heat Source created:ID_AbsCH_transformer_high_temp_source
+2022-06-11 20:07:06,661 - INFO - create_objects -    Transformer created: ID_AbsCH_transformer
+2022-06-11 20:07:06,663 - INFO - create_objects -    Bus created: ID_ASHP_transformer_low_temp_bus
+2022-06-11 20:07:06,663 - INFO - create_objects -    Heat Source created: ID_ASHP_transformer_low_temp_source
+2022-06-11 20:07:06,664 - INFO - create_objects -    ID_ASHP_transformer, Average Coefficient of Performance (COP): 2.70
+2022-06-11 20:07:06,666 - INFO - create_objects -    Transformer created: ID_ASHP_transformer
+2022-06-11 20:07:06,667 - INFO - create_objects -    Transformer created: ID_chp_transformer
+2022-06-11 20:07:06,741 - INFO - Source - 	 Source created: ID_photovoltaic_electricity_source
+2022-06-11 20:07:07,437 - INFO - Source - 	 Source created: ID_solar_thermal_source
+2022-06-11 20:07:07,438 - INFO - Source - 	 Source created: ID_solar_thermal_source, Max Heat power output per year and m²: 12.32 kWh/(m²a), Irradiance on collector per year and m²: 28.98 kWh/(m²a)
+2022-06-11 20:07:07,470 - DEBUG - modelchain - Calculating wind speed using logarithmic wind profile.
+2022-06-11 20:07:07,474 - DEBUG - modelchain - Calculating power output using power curve.
+2022-06-11 20:07:07,475 - INFO - Source - 	 Source created: wind_turbine
+2022-06-11 20:07:07,572 - INFO - district_heating - 	 Connected ID to district heating network
+2022-06-11 20:07:07,593 - INFO - district_heating - 	 Connected district_heat_bus to district heating network
+2022-06-11 20:07:07,600 - DEBUG - _tools - os.makedirs('results/scenario_v0.3.0_2022-06-11--20-07-01')
+2022-06-11 20:07:07,600 - DEBUG - saving - write lines to 'results/scenario_v0.3.0_2022-06-11--20-07-01/graph.gv'
+2022-06-11 20:07:07,600 - DEBUG - execute - run [PosixPath('dot'), '-Kdot', '-Tpng', '-O', 'graph.gv']
+2022-06-11 20:07:08,092 - INFO - optimize_model -    *********************************************************
+2022-06-11 20:07:08,093 - INFO - optimize_model -    Create Energy System...
+2022-06-11 20:07:09,580 - INFO - optimize_model -    *********************************************************
+2022-06-11 20:07:09,580 - INFO - optimize_model -    Starting Optimization with gurobi-Solver
+2022-06-11 20:07:11,581 - INFO - models - Optimization successful...
+2022-06-11 20:07:11,682 - INFO - optimize_model - 	 Memory Usage during processing:[398.9609375]
+2022-06-11 20:07:12,490 - INFO - create_results -    Results saved as xlsx for ID_electricity_bus
+2022-06-11 20:07:12,602 - INFO - create_results -    Results saved as xlsx for ID_heat_bus
+2022-06-11 20:07:12,663 - INFO - create_results -    Results saved as xlsx for ID_gas_bus
+2022-06-11 20:07:12,738 - INFO - create_results -    Results saved as xlsx for ID_cooling_bus
+2022-06-11 20:07:12,832 - INFO - create_results -    Results saved as xlsx for ID_pv_bus
+2022-06-11 20:07:12,936 - INFO - create_results -    Results saved as xlsx for ID_hp_electricity_bus
+2022-06-11 20:07:13,008 - INFO - create_results -    Results saved as xlsx for district_chp_electricity_bus
+2022-06-11 20:07:13,075 - INFO - create_results -    Results saved as xlsx for district_gas_bus
+2022-06-11 20:07:13,131 - INFO - create_results -    Results saved as xlsx for district_heat_bus
+2022-06-11 20:07:14,097 - INFO - create_results -    Successfully prepared results...
+2022-06-11 20:07:14,098 - INFO - Spreadsheet_Energy_System_Model_Generator - 	 --------------------------------------------------------
+2022-06-11 20:07:14,098 - INFO - Spreadsheet_Energy_System_Model_Generator - 	 Modelling and optimization successfully completed!
