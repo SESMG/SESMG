@@ -47,9 +47,39 @@ def get_children(a, children, df1):
     return children
 
 
-def save_sinks(sink_types, tabcontrol, gui, dfs, nodes_data, sink_known,
-               result_path, elec_amounts_bool=True, heat_amounts_bool=True,
-               capacity_bool=True):
+def save_sinks(sink_types: dict, tab_control: ttk.Notebook, gui: tk.Tk,
+               result_dfs: dict, nodes_data: dict, sink_known: dict,
+               result_path: str, elec_amounts_bool=True,
+               heat_amounts_bool=True, capacity_bool=True) -> None:
+    """
+        
+        :param sink_types: dictionary containing the sinks labels and \
+            a list of three booleans defining rather it is an \
+            electricity, a heat or a cooling sink
+        :type sink_types: dict
+        :param tab_control: ttk.Notebook containing the GUI's frames
+        :type tab_control: ttk.Notebook
+        :param gui: tkinter GUI
+        :type gui: tk.Tk
+        :param result_dfs: dict of Dataframes containing the pareto \
+            point results
+        :type result_dfs: dict
+        :param nodes_data: dict containing energy system parts data
+        :type nodes_data: dict
+        :param sink_known: dict containing the sink type for sinks \
+            where the type was already found in the label.
+        :type sink_known: dict
+        :param result_path: path to the result folder where the plots \
+            will be saved
+        :param elec_amounts_bool: defines rather the elec amounts will \
+            be plotted
+        :type elec_amounts_bool: bool
+        :param heat_amounts_bool: defines rather the heat amounts will \
+            be plotted
+        :type heat_amounts_bool: bool
+        :param capacity_bool: defines rather the capacities will be \
+            plotted
+    """
     if elec_amounts_bool:
         elec_amounts = pd.DataFrame()
         elec_amounts_dict = {}
@@ -59,13 +89,13 @@ def save_sinks(sink_types, tabcontrol, gui, dfs, nodes_data, sink_known,
     if capacity_bool:
         capacities = pd.DataFrame()
         capacities_dict = {}
-    emissions_100_percent = sum(dfs["1"]["constraints/CU"])
+    emissions_100_percent = sum(result_dfs["1"]["constraints/CU"])
     for sink in sink_types:
         sink_known.update({sink: [sink_types[sink][0].get(),
                                        sink_types[sink][1].get(),
                                        sink_types[sink][2].get()]})
-    tabcontrol.forget(gui.frames[-1])
-    for key in dfs:
+    tab_control.forget(gui.frames[-1])
+    for key in result_dfs:
         if elec_amounts_bool:
             elec_amounts_dict.update(
                 {"run": str(key),
@@ -78,7 +108,7 @@ def save_sinks(sink_types, tabcontrol, gui, dfs, nodes_data, sink_known,
                  "Import_system_internal": [], "grid_import": [],
                  "Electric_heating": [], "Battery_losses": [], "ST_elec": [],
                  "Battery_output": [], "central_elec_production": [],
-                 "reductionco2": sum(dfs[key]["constraints/CU"])
+                 "reductionco2": sum(result_dfs[key]["constraints/CU"])
                                  / emissions_100_percent})
         if heat_amounts_bool:
             heat_amounts_dict.update(
@@ -91,7 +121,7 @@ def save_sinks(sink_types, tabcontrol, gui, dfs, nodes_data, sink_known,
                  "ST_south_west": [], "ST_west": [], "ST_north_west": [],
                  "GCHP": [], "ASHP": [], "Insulation": [],
                  "central_heat_production": [],
-                 "reductionco2": sum(dfs[key]["constraints/CU"])
+                 "reductionco2": sum(result_dfs[key]["constraints/CU"])
                                  / emissions_100_percent})
         if capacity_bool:
             capacities_dict.update(
@@ -106,9 +136,9 @@ def save_sinks(sink_types, tabcontrol, gui, dfs, nodes_data, sink_known,
                      "ST_north": [], "ST_north_east": [],
                      "ST_east": [], "ST_south_east": [], "ST_south": [],
                      "ST_south_west": [], "ST_west": [], "ST_north_west": [],
-                     "reductionco2": sum(dfs[key]["constraints/CU"])
+                     "reductionco2": sum(result_dfs[key]["constraints/CU"])
                                      / emissions_100_percent})
-        dataframe = dfs[key].copy()
+        dataframe = result_dfs[key].copy()
         dataframe.reset_index(inplace=True, drop=False)
         counter = 0
         for key in nodes_data.keys():
