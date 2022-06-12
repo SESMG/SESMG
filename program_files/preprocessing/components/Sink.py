@@ -162,11 +162,8 @@ class Sinks:
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
-
-        # set static inflow values
-        inflow_args = {'nominal_value': de['nominal value']}
         # starts the create_sink method with the parameters set before
-        self.create_sink(de, args=inflow_args)
+        self.create_sink(de, args={'nominal_value': de['nominal value']})
         # returns logging info
         logging.info('\t Sink created: ' + de['label'])
 
