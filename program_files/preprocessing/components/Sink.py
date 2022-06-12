@@ -45,8 +45,6 @@ class Sinks:
     # intern variables
     busd = None
     nodes_sinks = []
-    energetic_renovation = None
-    weatherdata = None
 
     def create_sink(self, de: dict, timeseries_args: dict):
         """
@@ -72,47 +70,45 @@ class Sinks:
         self.nodes_sinks.append(
             Sink(label=de['label'],
                  inputs={self.busd[de['input']]: Flow(**timeseries_args)}))
-        for num, insul_type in self.energetic_renovation.iterrows():
-            if insul_type["active"]:
-                temp = []
-                time = 0
-                if insul_type["sink"] == de["label"]:
-                    for timestep in self.weather_data["temperature"]:
-                        if timestep <= insul_type["heat limit temperature"]:
-                            temp.append(
-                                ((insul_type["temperature indoor"] - timestep)
-                                 * (insul_type["U-value old"]
-                                    - insul_type["U-value new"])
-                                 * insul_type["area"]) / 1000)
-                        else:
-                            temp.append(0)
-                    if max(temp) != 0:
-                        ep_costs = insul_type["periodical costs"] \
-                                   * insul_type["area"] \
-                                   / max(temp)
-                        ep_constr_costs = \
-                            insul_type["periodical constraint costs"] \
-                            * insul_type["area"] \
-                            / max(temp)
-                        self.energetic_renovation.loc[
-                            num, "ep_costs_kW"] = ep_costs
-                        self.energetic_renovation.loc[
-                            num, "ep_constr_costs_kW"] = ep_constr_costs
-                        self.nodes_sinks.append(
-                            Source(
-                                label="insulation-{}".format(
-                                        insul_type["label"]),
-                                outputs={
-                                    self.busd[de['input']]:
-                                        Flow(
-                                            investment=Investment(
-                                                ep_costs=ep_costs,
-                                                periodical_constraint_costs=ep_constr_costs,
-                                                constraint2=1,
-                                                minimum=0,
-                                                maximum=max(temp)),
-                                            fix=(timeseries_args["fix"]
-                                                 / timeseries_args["fix"].max()))}))
+        # create insulation sources to the energy system components
+        for i, ins in self.insulation[
+                self.insulation["active"] == 1].iterrows():
+            temp = []
+            # if insulation sink == sink under investigation (above)
+            if ins["sink"] == de["label"]:
+                for time_step in self.weather_data["temperature"]:
+                    if time_step <= ins["heat limit temperature"]:
+                        temp.append(
+                            ((ins["temperature indoor"] - time_step)
+                             * (ins["U-value old"] - ins["U-value new"])
+                             * ins["area"]) / 1000)
+                    else:
+                        temp.append(0)
+                # check if there is an insulation potential
+                if max(temp) != 0:
+                    # calculate capacity specific costs
+                    ep_costs = ins["periodical costs"] * ins["area"] \
+                               / max(temp)
+                    # calculate capacity specific emissions
+                    ep_constr_costs = ins["periodical constraint costs"] \
+                        * ins["area"] / max(temp)
+                    # add capacity specific costs to self.insulation
+                    self.insulation.loc[i, "ep_costs_kW"] = ep_costs
+                    # add capacity specific emissions to self.insulation
+                    self.insulation.loc[i, "ep_constr_costs_kW"] = \
+                        ep_constr_costs
+                    self.nodes_sinks.append(
+                        Source(label="insulation-{}".format(ins["label"]),
+                               outputs={self.busd[de['input']]: Flow(
+                                    investment=Investment(
+                                        ep_costs=ep_costs,
+                                        periodical_constraint_costs=(
+                                            ep_constr_costs),
+                                        constraint2=1,
+                                        minimum=0,
+                                        maximum=max(temp)),
+                                    fix=(timeseries_args["fix"]
+                                         / timeseries_args["fix"].max()))}))
 
         # self.nodes_sinks.append(
         #    solph.custom.SinkDSM(label=de['label'],
@@ -168,9 +164,6 @@ class Sinks:
                             - 'label'
                             - 'nominal value'
             :type de: dict
-            :param filepath: path to .xlsx scenario-file containing a
-                             "time_series" sheet
-            :type filepath: str
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
@@ -213,9 +206,6 @@ class Sinks:
                             - 'building class'
                             - 'wind class'
             :type de: dict
-            :param filepath: path to .xlsx scenario-file containing a
-                             "energysystem" sheet
-            :type filepath: str
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
@@ -225,19 +215,18 @@ class Sinks:
              'gmk', 'gbh', 'gga', 'gha']
         electricity_slps = \
             ['h0', 'g0', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'l0', 'l1', 'l2']
-        # Import weather Data
         # Importing timesystem parameters from the scenario
         temp_resolution = self.energysystem['temporal resolution']
-        periods = self.energysystem["periods"]
-        start_date = str(self.energysystem['start date'])
 
         # Converting start date into datetime format
-        start_date = datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
+        start_date = datetime.strptime(str(self.energysystem['start date']),
+                                       '%Y-%m-%d %H:%M:%S')
 
         # Create DataFrame
         demand = pd.DataFrame(index=pd.date_range(datetime(
                 start_date.year, start_date.month, start_date.day,
-                start_date.hour), periods=periods, freq=temp_resolution))
+                start_date.hour),
+                periods=self.energysystem["periods"], freq=temp_resolution))
 
         # creates time series
         if de['load profile'] in heat_slps_commercial \
@@ -274,9 +263,9 @@ class Sinks:
         # starts the create_sink method with the parameters set before
         self.create_sink(de, args)
         # returns logging info
-        logging.info('   ' + 'Sink created: ' + de['label'])
+        logging.info('\t Sink created: ' + de['label'])
 
-    def richardson_sink(self, de: dict, nodes_data: dict, weather_data):
+    def richardson_sink(self, de: dict):
         """
             Creates a sink with stochastically timeseries.
 
@@ -294,8 +283,7 @@ class Sinks:
                             - 'annual demand'
                             - 'occupants'
             :type de: dict
-            :param nodes_data: dictionary containing excel sheets
-            :type nodes_data: dict
+            :raise ValueError: Invalid temporal resolution chosen
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
@@ -303,16 +291,15 @@ class Sinks:
         import richardsonpy.classes.occupancy as occ
         import richardsonpy.classes.electric_load as eload
         # Import Weather Data
-        dirhi = weather_data["dirhi"].values.flatten()
-        dhi = weather_data["dhi"].values.flatten()
+        dirhi = self.weather_data["dirhi"].values.flatten()
+        dhi = self.weather_data["dhi"].values.flatten()
 
         # Conversion of irradiation from W/m^2 to kW/m^2
         dhi = dhi / 1000
         dirhi = dirhi / 1000
 
         # Reads the temporal resolution from the scenario file
-        ts = nodes_data['energysystem']
-        temp_resolution = ts['temporal resolution'][1]
+        temp_resolution = self.energysystem['temporal resolution']
 
         # sets the occupancy rates
         nb_occ = de['occupants']
@@ -325,16 +312,14 @@ class Sinks:
         # sets the temporal resolution of the richardson.py time series,
         # depending on the temporal resolution of the entire model (as
         # defined in the input spreadsheet)
-        if temp_resolution == 'H':
-            timestep = 3600  # in seconds
-        elif temp_resolution == 'h':
+        if temp_resolution in ['H', 'h']:
             timestep = 3600  # in seconds
         elif temp_resolution == 'min':
             timestep = 60  # in seconds
         elif temp_resolution == 's':
             timestep = 1  # in seconds
         else:
-            raise SystemError('Invalid Temporal Resolution')
+            raise ValueError('Invalid Temporal Resolution')
 
         #  Generate occupancy object
         #  (necessary as input for electric load gen)
@@ -347,8 +332,7 @@ class Sinks:
 
         # creates richardson.py time series
         load_profile = el_load_obj.loadcurve
-        richardson_demand = (sum(el_load_obj.loadcurve)
-                             * timestep / (3600 * 1000))
+        richardson_demand = (sum(load_profile) * timestep / (3600 * 1000))
         annual_demand = de['annual demand']
 
         # Disables the stochastic simulation of the total yearly demand
@@ -366,9 +350,9 @@ class Sinks:
         # starts the create_sink method with the parameters set before
         self.create_sink(de, args)
         # returns logging info
-        logging.info('   ' + 'Sink created: ' + de['label'])
+        logging.info('\t Sink created: ' + de['label'])
 
-    def __init__(self, nd: dict, busd: dict, nodes: list, energetic_renovation):
+    def __init__(self, nd: dict, busd: dict, nodes: list):
         """ Inits the sink class.
         ---
         Other variables:
@@ -383,7 +367,7 @@ class Sinks:
         self.nodes_sinks = []
         # Initialise a class intern copy of the bus dictionary
         self.busd = busd.copy()
-        self.energetic_renovation = energetic_renovation.copy()
+        self.insulation = nd["insulation"].copy()
         self.weather_data = nd["weather data"].copy()
         self.timeseries = nd["timeseries"].copy()
         self.energysystem = next(nd['energysystem'].iterrows())[1]
@@ -405,4 +389,4 @@ class Sinks:
         # appends created sinks on the list of nodes
         for i in range(len(self.nodes_sinks)):
             nodes.append(self.nodes_sinks[i])
-        nd["insulation"] = self.energetic_renovation.copy()
+        nd["insulation"] = self.insulation.copy()
