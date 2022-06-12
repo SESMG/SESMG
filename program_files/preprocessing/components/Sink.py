@@ -240,8 +240,7 @@ class Sinks:
                 periods=self.energysystem["periods"], freq=temp_resolution))
 
         # creates time series
-        if de['load profile'] in heat_slps_commercial \
-                or de['load profile'] in heat_slps:
+        if de['load profile'] in heat_slps_commercial + heat_slps:
             # sets the parameters of the heat slps
             args = {'temperature': self.weather_data['temperature'],
                     'shlp_type': de['load profile'],
@@ -251,15 +250,12 @@ class Sinks:
             if de['load profile'] in heat_slps:
                 # adds the building class which is only necessary for
                 # the non commercial slps
-                args.update(
-                    {'building_class': de['building class']})
+                args.update({'building_class': de['building class']})
             demand[de['load profile']] = bdew.HeatBuilding(
                 demand.index, **args).get_bdew_profile()
         elif de['load profile'] in electricity_slps:
-            year = datetime.strptime(str(self.energysystem['start date']),
-                                     '%Y-%m-%d %H:%M:%S').year
             # Imports standard load profiles
-            e_slp = bdew.ElecSlp(year)
+            e_slp = bdew.ElecSlp(start_date.year)
             demand = e_slp.get_profile({de['load profile']: 1})
             # creates time series based on standard load profiles
             demand = demand.resample(temp_resolution).mean()
