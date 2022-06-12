@@ -73,7 +73,8 @@ class Sinks:
         else:
             return 0, 0, [0]
 
-    def create_sink(self, de: dict, timeseries_args: dict):
+    def create_sink(self, de: dict, nominal_value=None,
+                    load_profile=None, args=None):
         """
             Creates an oemof sink with fixed or unfixed timeseries.
 
@@ -92,11 +93,19 @@ class Sinks:
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
+        if args is None:
+            args = {"nominal value": nominal_value}
+            if de['fixed'] == 1:
+                # sets attributes for a fixed richardson sink
+                args.update({'fix': load_profile})
+            elif de['fixed'] == 0:
+                # sets attributes for an unfixed richardson sink
+                args.update({'max': load_profile})
         # creates an omeof Sink and appends it to the class intern list
         # of created sinks
         self.nodes_sinks.append(
             Sink(label=de['label'],
-                 inputs={self.busd[de['input']]: Flow(**timeseries_args)}))
+                 inputs={self.busd[de['input']]: Flow(**args)}))
         # create insulation sources to the energy system components
         for i, ins in self.insulation[
                 self.insulation["active"] == 1].iterrows():
@@ -118,8 +127,7 @@ class Sinks:
                                    constraint2=1,
                                    minimum=0,
                                    maximum=max(temp)),
-                               fix=(timeseries_args["fix"]
-                                    / timeseries_args["fix"].max()))}))
+                               fix=(args["fix"] / args["fix"].max()))}))
 
         # self.nodes_sinks.append(
         #    solph.custom.SinkDSM(label=de['label'],
@@ -158,9 +166,9 @@ class Sinks:
         # set static inflow values
         inflow_args = {'nominal_value': de['nominal value']}
         # starts the create_sink method with the parameters set before
-        self.create_sink(de, inflow_args)
+        self.create_sink(de, args=inflow_args)
         # returns logging info
-        logging.info('   ' + 'Sink created: ' + de['label'])
+        logging.info('\t Sink created: ' + de['label'])
 
     def timeseries_sink(self, de):
         """
@@ -191,10 +199,10 @@ class Sinks:
             # sets the attributes for a fixed time_series sink
             args.update({'fix': self.timeseries[de['label'] + '.fix']})
         # starts the create_sink method with the parameters set before
-        self.create_sink(de, args)
+        self.create_sink(de, args=args)
 
         # returns logging info
-        logging.info('   ' + 'Sink created: ' + de['label'])
+        logging.info('\t Sink created: ' + de['label'])
 
     def slp_sink(self, de: dict):
         """
@@ -259,16 +267,10 @@ class Sinks:
             demand = e_slp.get_profile({de['load profile']: 1})
             # creates time series based on standard load profiles
             demand = demand.resample(temp_resolution).mean()
-        # sets the nominal value
-        args = {'nominal_value': de['annual demand']}
-        if de['fixed'] == 1:
-            # sets the parameters for a fixed sink
-            args.update({'fix': demand[de['load profile']]})
-        elif de['fixed'] == 0:
-            # sets the parameters for an unfixed sink
-            args.update({'max': demand[de['load profile']]})
+            
         # starts the create_sink method with the parameters set before
-        self.create_sink(de, args)
+        self.create_sink(de, nominal_value=de['annual demand'],
+                         load_profile=demand[de['load profile']])
         # returns logging info
         logging.info('\t Sink created: ' + de['label'])
 
@@ -305,9 +307,6 @@ class Sinks:
         dhi = dhi / 1000
         dirhi = dirhi / 1000
 
-        # Reads the temporal resolution from the scenario file
-        temp_resolution = self.energysystem['temporal resolution']
-
         # sets the occupancy rates
         nb_occ = de['occupants']
 
@@ -319,12 +318,12 @@ class Sinks:
         # sets the temporal resolution of the richardson.py time series,
         # depending on the temporal resolution of the entire model (as
         # defined in the input spreadsheet)
-        if temp_resolution in ['H', 'h']:
-            timestep = 3600  # in seconds
-        elif temp_resolution == 'min':
-            timestep = 60  # in seconds
-        elif temp_resolution == 's':
-            timestep = 1  # in seconds
+        if self.energysystem['temporal resolution'] in ['H', 'h']:
+            time_step = 3600  # in seconds
+        elif self.energysystem['temporal resolution'] == 'min':
+            time_step = 60  # in seconds
+        elif self.energysystem['temporal resolution'] == 's':
+            time_step = 1  # in seconds
         else:
             raise ValueError('Invalid Temporal Resolution')
 
@@ -335,27 +334,20 @@ class Sinks:
         #  Generate stochastic electric power object
         el_load_obj = eload.ElectricLoad(occ_profile=occ_obj.occupancy,
                                          total_nb_occ=nb_occ, q_direct=dirhi,
-                                         q_diffuse=dhi, timestep=timestep)
+                                         q_diffuse=dhi, timestep=time_step)
 
         # creates richardson.py time series
         load_profile = el_load_obj.loadcurve
-        richardson_demand = (sum(load_profile) * timestep / (3600 * 1000))
-        annual_demand = de['annual demand']
+        richardson_demand = (sum(load_profile) * time_step / (3600 * 1000))
 
         # Disables the stochastic simulation of the total yearly demand
         # by scaling the generated time series using the total energy
         # demand of the sink generated in the spreadsheet
-        demand_ratio = annual_demand / richardson_demand
-        # sets nominal value
-        args = {'nominal_value': 0.001 * demand_ratio}
-        if de['fixed'] == 1:
-            # sets attributes for a fixed richardson sink
-            args.update({'fix': load_profile})
-        elif de['fixed'] == 0:
-            # sets attributes for an unfixed richardson sink
-            args.update({'max': load_profile})
+        demand_ratio = de['annual demand'] / richardson_demand
+        
         # starts the create_sink method with the parameters set before
-        self.create_sink(de, args)
+        self.create_sink(de, load_profile=load_profile,
+                         nominal_value=0.001 * demand_ratio)
         # returns logging info
         logging.info('\t Sink created: ' + de['label'])
 
