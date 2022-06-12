@@ -54,25 +54,24 @@ class Sinks:
             :type ins: pd.Series
         """
         temp = []
-        for time_step in self.weather_data["temperature"]:
-            if time_step <= ins["heat limit temperature"]:
-                temp.append(
-                        ((ins["temperature indoor"] - time_step)
-                         * (ins["U-value old"] - ins["U-value new"])
-                         * ins["area"]) / 1000)
-            else:
-                temp.append(0)
+        # calculate insulation capacity per time step
+        for time_step in self.weather_data[
+                self.weather_data["temperature"]
+                <= ins["heat limit temperature"]]["temperature"]:
+            temp_diff = ins["temperature indoor"] - float(time_step)
+            u_value_diff = (ins["U-value old"] - ins["U-value new"])
+            temp.append(temp_diff * u_value_diff * ins["area"] / 1000)
+
         # check if there is an insulation potential
-        if max(temp) != 0:
+        if len(temp) != 0:
             # calculate capacity specific costs
-            ep_costs = ins["periodical costs"] * ins["area"] \
-                       / max(temp)
+            ep_costs = ins["periodical costs"] * ins["area"] / max(temp)
             # calculate capacity specific emissions
             ep_constr_costs = ins["periodical constraint costs"] \
                 * ins["area"] / max(temp)
             return ep_costs, ep_constr_costs, temp
         else:
-            return 0, 0, temp
+            return 0, 0, [0]
 
     def create_sink(self, de: dict, timeseries_args: dict):
         """
