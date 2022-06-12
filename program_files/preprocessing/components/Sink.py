@@ -46,58 +46,33 @@ class Sinks:
     busd = None
     nodes_sinks = []
     
-    def create_sink_insulation(self, label: str, input_bus: str,
-                               timeseries_args:dict):
+    def calc_insulation_parameter(self, ins: pd.Series):
         """
-            calculation and creation of insulation measures for the
-            considered sink
+            calculation of insulation measures for the considered sink
             
-            :param label: label of sink under investigation
-            :type label: str
-            :param input_bus: sink's input bus
-            :type input_bus: str
-            :param timeseries_args: dict containing sinks load profile
-            :type timeseries_args: dict
+            :param ins: considered insulation row
+            :type ins: pd.Series
         """
-        # create insulation sources to the energy system components
-        for i, ins in self.insulation[
-                self.insulation["active"] == 1].iterrows():
-            temp = []
-            # if insulation sink == sink under investigation (above)
-            if ins["sink"] == label:
-                for time_step in self.weather_data["temperature"]:
-                    if time_step <= ins["heat limit temperature"]:
-                        temp.append(
-                                ((ins["temperature indoor"] - time_step)
-                                 * (ins["U-value old"] - ins["U-value new"])
-                                 * ins["area"]) / 1000)
-                    else:
-                        temp.append(0)
-                # check if there is an insulation potential
-                if max(temp) != 0:
-                    # calculate capacity specific costs
-                    ep_costs = ins["periodical costs"] * ins["area"] \
-                               / max(temp)
-                    # calculate capacity specific emissions
-                    ep_constr_costs = ins["periodical constraint costs"] \
-                        * ins["area"] / max(temp)
-                    # add capacity specific costs to self.insulation
-                    self.insulation.loc[i, "ep_costs_kW"] = ep_costs
-                    # add capacity specific emissions to self.insulation
-                    self.insulation.loc[i, "ep_constr_costs_kW"] = \
-                        ep_constr_costs
-                    self.nodes_sinks.append(
-                        Source(label="insulation-{}".format(ins["label"]),
-                               outputs={self.busd[input_bus]: Flow(
-                                       investment=Investment(
-                                               ep_costs=ep_costs,
-                                               periodical_constraint_costs=(
-                                                   ep_constr_costs),
-                                               constraint2=1,
-                                               minimum=0,
-                                               maximum=max(temp)),
-                                       fix=(timeseries_args["fix"]
-                                            / timeseries_args["fix"].max()))}))
+        temp = []
+        for time_step in self.weather_data["temperature"]:
+            if time_step <= ins["heat limit temperature"]:
+                temp.append(
+                        ((ins["temperature indoor"] - time_step)
+                         * (ins["U-value old"] - ins["U-value new"])
+                         * ins["area"]) / 1000)
+            else:
+                temp.append(0)
+        # check if there is an insulation potential
+        if max(temp) != 0:
+            # calculate capacity specific costs
+            ep_costs = ins["periodical costs"] * ins["area"] \
+                       / max(temp)
+            # calculate capacity specific emissions
+            ep_constr_costs = ins["periodical constraint costs"] \
+                * ins["area"] / max(temp)
+            return ep_costs, ep_constr_costs, temp
+        else:
+            return 0, 0, temp
 
     def create_sink(self, de: dict, timeseries_args: dict):
         """
@@ -123,8 +98,29 @@ class Sinks:
         self.nodes_sinks.append(
             Sink(label=de['label'],
                  inputs={self.busd[de['input']]: Flow(**timeseries_args)}))
-        # creates node specific insulation
-        self.create_sink_insulation(de["label"], de["input"], timeseries_args)
+        # create insulation sources to the energy system components
+        for i, ins in self.insulation[
+                self.insulation["active"] == 1].iterrows():
+            # if insulation sink == sink under investigation (above)
+            if ins["sink"] == de["label"]:
+                ep_costs, ep_constr_costs, temp = \
+                    self.calc_insulation_parameter(ins)
+                # add capacity specific costs to self.insulation
+                self.insulation.loc[i, "ep_costs_kW"] = ep_costs
+                # add capacity specific emissions to self.insulation
+                self.insulation.loc[i, "ep_constr_costs_kW"] = \
+                    ep_constr_costs
+                self.nodes_sinks.append(
+                    Source(label="insulation-{}".format(ins["label"]),
+                           outputs={self.busd[de["input"]]: Flow(
+                               investment=Investment(
+                                   ep_costs=ep_costs,
+                                   periodical_constraint_costs=ep_constr_costs,
+                                   constraint2=1,
+                                   minimum=0,
+                                   maximum=max(temp)),
+                               fix=(timeseries_args["fix"]
+                                    / timeseries_args["fix"].max()))}))
 
         # self.nodes_sinks.append(
         #    solph.custom.SinkDSM(label=de['label'],
