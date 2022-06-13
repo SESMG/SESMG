@@ -12,7 +12,7 @@ class Transformers:
         Creates transformers objects as defined in 'nodes_data' and adds
         them to the list of components 'nodes'.
 
-        :param nodes_data: dictionary containing data from excel scenario
+        :param nd: dictionary containing data from excel scenario
                            file. The following data have to be provided:
 
                                 - label,
@@ -29,7 +29,7 @@ class Transformers:
                                 - max. investment capacity,
                                 - min. investment capacity,
                                 - periodical costs
-        :type nodes_data: dict
+        :type nd: dict
         :param busd: dictionary containing the buses of the energy system
         :type busd: dict
         :param nodes: list of components created before(can be empty)
@@ -64,7 +64,7 @@ class Transformers:
                 label=tf['label'], **inputs, **outputs, **conversion_factors))
         logging.info('\t Transformer created: ' + tf['label'])
     
-    def generic_transformer(self, tf: dict):
+    def generic_transformer(self, tf: pd.Series):
         """
             Creates a Generic Transformer object.
             Creates a generic transformer with the parameters given in
@@ -165,7 +165,7 @@ class Transformers:
         
         return temp
         
-    def compression_heat_transformer(self, tf: dict, data):
+    def compression_heat_transformer(self, tf: pd.Series):
         """
             Creates a Compression Heat Pump or Compression Chiller by using
             oemof.thermal and adds it to the list of components 'nodes'.
@@ -193,18 +193,9 @@ class Transformers:
                 - 'min. borehole area'
                 - 'temp. threshold icing'
                 - 'factor icing'
-            :type tf: dict
-            :param data: Dataframe containing all temperature information \
-                         for the low temperature source. At least the \
-                         following key-value-pairs have to be included:
+            :type tf: pd.Series
 
-                            - 'ground_temp'
-                            - 'groundwater_temp'
-                            - 'temperature'
-                            - 'water_temp'
-            :type data: pandas.core.frame.Dataframe
-
-            :raise SystemError: choosen heat source not defined
+            :raise SystemError: chosen heat source not defined
 
             Janik Budde - Janik.Budde@fh-muenster.de
             Yannick Wittor - yw090223@fh-muenster.de
@@ -228,16 +219,16 @@ class Transformers:
                           * tf['heat extraction']
                           / (tf['min. borehole area']
                              if tf['min. borehole area'] != 0 else 1)),
-                       data['ground_temp']],
+                       self.weather_data['ground_temp']],
             "GroundWater": [tf['label'] + temp + '_groundwater_source',
                             float("+inf"),
-                            data['groundwater_temp']],
+                            self.weather_data['groundwater_temp']],
             "Air": [tf['label'] + temp + '_air_source',
                     float("+inf"),
-                    data['temperature']],
+                    self.weather_data['temperature']],
             "Water": [tf['label'] + temp + '_water_source',
                       float("+inf"),
-                      data['water_temp']]}
+                      self.weather_data['water_temp']]}
         # differentiation between heat sources under consideration of mode
         # of operation
         transformer_label = list(switch_dict.get(
@@ -309,7 +300,7 @@ class Transformers:
         self.create_transformer(tf, inputs=inputs,
                                 conversion_factors=conversion_factors)
     
-    def genericchp_transformer(self, tf: dict, nd: dict):
+    def genericchp_transformer(self, tf: pd.Series):
         """
             TODO column names - check completition
             Creates a Generic CHP transformer object.
@@ -337,9 +328,6 @@ class Transformers:
                             - 'non-convex investment'
                             - 'fix investment costs / (CU/a)'
             :type tf: dict
-            :param nd: dictionary containing parameters of the buses
-                       to be created.
-            :type nd: dict
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
@@ -347,7 +335,7 @@ class Transformers:
         # and saves it as variable
         # (number of periods is required for creating generic chp transformers)
         # Importing timesystem parameters from the scenario
-        periods = int(next(nd['energysystem'].iterrows())[1]['periods'])
+        periods = int(self.energysystem['periods'])
         # creates genericCHP transformer object and adds it to the
         # list of components
         self.nodes_transformer.append(GenericCHP(
@@ -395,7 +383,7 @@ class Transformers:
         # returns logging info
         logging.info('\t Transformer created: ' + tf['label'])
     
-    def absorption_heat_transformer(self, tf, data):
+    def absorption_heat_transformer(self, tf: pd.Series):
         """
             Creates an absorption heat transformer object with the parameters
             given in 'nodes_data' and adds it to the list of components 'nodes'
@@ -416,9 +404,6 @@ class Transformers:
                 - 'electrical input conversion factor'
                 - 'recooling temperature difference'
 
-            :param data: weather data
-            :type data: dict
-
             Yannick Wittor - yw090223@fh-muenster.de
         """
         # import oemof.thermal in order to calculate COP
@@ -431,7 +416,7 @@ class Transformers:
         
         # Calculates cooling temperature in absorber/evaporator depending on
         # ambient air temperature of recooling system
-        data_np = np.array(data['temperature'])
+        data_np = np.array(self.weather_data['temperature'])
         t_cool = data_np + tf['recooling temperature difference']
         t_cool = list(map(int, t_cool))
 
@@ -475,77 +460,45 @@ class Transformers:
         self.nodes_transformer.append(
             Source(label=source_label,
                    outputs={self.busd[tf['label'] + temp + '_bus']: Flow(
-                         investment=Investment(ep_costs=0,
-                                               minimum=0,
-                                               maximum=maximum,
-                                               existing=0),
-                         variable_costs=0)}))
+                         investment=Investment(maximum=maximum))}))
         
         # Returns logging info
         logging.info('\t Heat Source created:' + source_label)
         
         # Set in- and outputs with conversion factors and creates transformer
         # object and adds it to  the list of components
-        inputs = {"inputs": {self.busd[tf['input']]: Flow(
+        inputs = {"inputs": {
+            self.busd[tf['input']]: Flow(
                 variable_costs=tf['variable input costs'],
                 emission_factor=tf['variable input constraint costs']),
-            self.busd[tf['label'] + temp + '_bus']: Flow(variable_costs=0)}}
-        conversion_factors = {
-            "conversion_factors": {
-                self.busd[tf['output']]:  [cop for cop in cops_abs],
-                self.busd[tf['input']]:
-                    tf['electrical input conversion factor']
-            }}
+            self.busd[tf['label'] + temp + '_bus']: Flow()}}
+        conversion_factors = {"conversion_factors": {
+            self.busd[tf['output']]:  [cop for cop in cops_abs],
+            self.busd[tf['input']]: tf['electrical input conversion factor']}}
+        
         self.create_transformer(tf, inputs=inputs,
                                 conversion_factors=conversion_factors)
     
-    def __init__(self, nodes_data, nodes, busd, weather_data):
+    def __init__(self, nd, nodes, busd):
         """ TODO Docstring missing """
         # renames variables
         self.busd = busd
         self.nodes_transformer = []
-        
+        self.weather_data = nd["weather data"].copy()
+        self.energysystem = next(nd["energysystem"].iterrows())[1]
+        switch_dict = {
+            "GenericTransformer": self.generic_transformer,
+            "CompressionHeatTransformer": self.compression_heat_transformer,
+            "GenericCHP": self.genericchp_transformer,
+            "AbsorptionHeatTransformer": self.absorption_heat_transformer}
         # creates a transformer object for every transformer item within nd
-        for i, t in nodes_data['transformers'].iterrows():
-            if t['active']:
-                # Create Generic Transformers
-                if t['transformer type'] == 'GenericTransformer':
-                    self.generic_transformer(t)
-                
-                # Create Compression Heat Transformer
-                elif t['transformer type'] == 'CompressionHeatTransformer':
-                    self.compression_heat_transformer(t, weather_data)
-                
-                # Create Extraction Turbine CHPs
-                elif t['transformer type'] == 'ExtractionTurbineCHP':
-                    logging.info('   ' + 'WARNING: ExtractionTurbineCHP are'
-                                         ' currently not a part of this model '
-                                         'generator, but will be added later.')
-                
-                # Create Generic CHPs
-                elif t['transformer type'] == 'GenericCHP':
-                    self.genericchp_transformer(t, nodes_data)
-                
-                # Create Offset Transformers
-                elif t['transformer type'] == 'OffsetTransformer':
-                    logging.info(
-                            '   ' + 'WARNING: OffsetTransformer are currently'
-                            + ' not a part of this model generator, but will'
-                            + ' be added later.')
-                
-                # Create Absorption Chiller
-                elif t['transformer type'] == 'AbsorptionHeatTransformer':
-                    self.absorption_heat_transformer(t, weather_data)
-                
-                # Error Message for invalid Transformers
-                else:
-                    logging.info('   ' + 'WARNING: \''
-                                 + t['label']
-                                 + '\' was not created, because \''
-                                 + t['transformer type']
-                                 + '\' is no valid transformer type.')
+        for i, t in nd['transformers'].loc[
+                nd["transformers"]["active"] == 1].iterrows():
+            switch_dict.get(t["transformer type"],
+                            "WARNING: The chosen transformer type is currently"
+                            " not a part of this model generator or contains "
+                            "a typo!")(t)
         
         # appends created transformers to the list of nodes
         for i in range(len(self.nodes_transformer)):
             nodes.append(self.nodes_transformer[i])
-

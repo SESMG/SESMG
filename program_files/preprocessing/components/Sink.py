@@ -147,7 +147,7 @@ class Sinks:
         #                         shed_eligibility=False,
         #                         investment=solph.Investment(ep_costs=3)))
 
-    def unfixed_sink(self, de: dict):
+    def unfixed_sink(self, de: pd.Series):
         """
             Creates a sink object with an unfixed energy input and the
             use of the create_sink method.
@@ -167,7 +167,7 @@ class Sinks:
         # returns logging info
         logging.info('\t Sink created: ' + de['label'])
 
-    def timeseries_sink(self, de):
+    def timeseries_sink(self, de: pd.Series):
         """
             Creates a sink object with a fixed input. The input must be
             given as a time series in the scenario file.
@@ -201,7 +201,7 @@ class Sinks:
         # returns logging info
         logging.info('\t Sink created: ' + de['label'])
 
-    def slp_sink(self, de: dict):
+    def slp_sink(self, de: pd.Series):
         """
             Creates a sink with a residential or commercial
             SLP time series.
@@ -271,7 +271,7 @@ class Sinks:
         # returns logging info
         logging.info('\t Sink created: ' + de['label'])
 
-    def richardson_sink(self, de: dict):
+    def richardson_sink(self, de: pd.Series):
         """
             Creates a sink with stochastically timeseries.
 

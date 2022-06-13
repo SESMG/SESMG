@@ -171,10 +171,8 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     t2.start()
     # CREATES TRANSFORMER OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM
     # TO THE lIST OF COMPONENTS
-    t3 = Thread(target=Transformer.Transformers, args=(nodes_data,
-                                                              nodes,
-                                                              busd,
-                                                              weather_data))
+    t3 = Thread(target=Transformer.Transformers,
+                args=(nodes_data, nodes, busd))
     t3.start()
     # CREATES STORAGE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
