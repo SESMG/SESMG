@@ -9,7 +9,7 @@ class Storages:
         Creates oemof storage objects as defined in 'nodes_data' and
         adds them to the list of components 'nodes'.
 
-        :param nodes_data: dictionary containing parameters of storages
+        :param nd: dictionary containing parameters of storages
                            to be created.The following data have to be
                            provided:
 
@@ -32,7 +32,7 @@ class Storages:
                                 - 'variable input costs'
                                 - 'variable output costs'
 
-        :type nodes_data: dict
+        :type nd: dict
         :param busd: dictionary containing the buses of the energy system
         :type busd: dict
         :param nodes: list of components created before(can be empty)
@@ -95,7 +95,7 @@ class Storages:
                 storage_levels=[None, None],
                 fixed_losses=[None, None])
 
-    def stratified_thermal_storage(self, s, data):
+    def stratified_thermal_storage(self, s):
         """
             Creates a stratified thermal storage object with the parameters
             given in 'nodes_data' and adds it to the list of components 'nodes'
@@ -130,7 +130,7 @@ class Storages:
         self.create_sink(
                 s,
                 loss_rate,
-                storage_levels =[s['capacity min'], s['capacity max']],
+                storage_levels=[s['capacity min'], s['capacity max']],
                 fixed_losses=[fixed_losses_relative, fixed_losses_absolute])
     
     def __init__(self, nd: dict, nodes: list, busd: dict):
