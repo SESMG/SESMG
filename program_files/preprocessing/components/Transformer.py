@@ -41,25 +41,26 @@ class Transformers:
     nodes_transformer = []
     busd = None
     
-    def create_transformer(self, tf, inputs, conversion_factors, outputs=None):
+    def get_primary_output_data(self, tf):
+        """
+        
+        """
+        return {"outputs": {self.busd[tf['output']]: Flow(
+            variable_costs=tf['variable output costs'],
+            emission_factor=tf['variable output constraint costs'],
+            investment=Investment(
+                ep_costs=tf['periodical costs'],
+                minimum=tf['min. investment capacity'],
+                maximum=tf['max. investment capacity'],
+                periodical_constraint_costs=tf['periodical constraint costs'],
+                existing=tf['existing capacity'],
+                nonconvex=True if tf['non-convex investment'] == 1
+                else False,
+                offset=tf['fix investment costs'],
+                fix_constraint_costs=tf["fix investment constraint costs"]))}}
+        
+    def create_transformer(self, tf, inputs, conversion_factors, outputs):
         """ TODO Docstring missing """
-        if outputs is None:
-            outputs = {"outputs": {self.busd[tf['output']]: Flow(
-                variable_costs=tf['variable output costs'],
-                emission_factor=tf['variable output constraint costs'],
-                investment=Investment(
-                        ep_costs=tf['periodical costs'],
-                        minimum=tf['min. investment capacity'],
-                        maximum=tf['max. investment capacity'],
-                        periodical_constraint_costs=tf[
-                            'periodical constraint costs'],
-                        existing=tf['existing capacity'],
-                        nonconvex=True if tf['non-convex investment'] == 1
-                        else False,
-                        offset=tf['fix investment costs'],
-                        fix_constraint_costs=tf[
-                            "fix investment constraint costs"]
-                ))}}
         self.nodes_transformer.append(Transformer(
                 label=tf['label'], **inputs, **outputs, **conversion_factors))
         logging.info('\t Transformer created: ' + tf['label'])
@@ -93,22 +94,7 @@ class Transformers:
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
-        outputs = \
-            {self.busd[tf['output']]: Flow(
-                variable_costs=tf['variable output costs'],
-                emission_factor=tf['variable output constraint costs'],
-                investment=Investment(
-                    ep_costs=tf['periodical costs'],
-                    periodical_constraint_costs=tf[
-                        'periodical constraint costs'],
-                    minimum=tf['min. investment capacity'],
-                    maximum=tf['max. investment capacity'],
-                    existing=tf['existing capacity'],
-                    nonconvex=True if tf['non-convex investment'] == 1
-                    else False,
-                    offset=tf['fix investment costs'],
-                    fix_constraint_costs=tf["fix investment constraint costs"])
-            )}
+        outputs = self.get_primary_output_data(tf)
         conversion_factors = {self.busd[tf['output']]: tf['efficiency']}
         # Defines Capacity values for the second transformer output
         if tf['output2'] not in ['None', 'none', 0]:
@@ -123,28 +109,32 @@ class Transformers:
                                  * float(tf['max. investment capacity']))
             # Creates transformer object and adds it to the list of
             # components
-            outputs.update(
+            outputs["outputs"].update(
                 {self.busd[tf['output2']]: Flow(
                     variable_costs=tf['variable output costs 2'],
                     emission_factor=tf['variable output constraint costs 2'],
                     investment=Investment(
-                        ep_costs=0,
                         existing=existing_capacity2,
                         minimum=minimum_capacity2,
                         maximum=maximum_capacity2))})
             conversion_factors.update(
                     {self.busd[tf['output2']]: tf['efficiency2']})
-        outputs = {"outputs": outputs}
+        # outputs = {"outputs": outputs}
         
         conversion_factors = {"conversion_factors": conversion_factors}
         inputs = {"inputs": {self.busd[tf['input']]: Flow(
-                variable_costs=tf['variable input costs'],
-                emission_factor=tf['variable input constraint costs'])}}
+            variable_costs=tf['variable input costs'],
+            emission_factor=tf['variable input constraint costs'])}}
         self.create_transformer(tf, inputs, outputs, conversion_factors)
         
-    def create_abs_comp_bus(self, tf):
+    def create_abs_comp_bus(self, tf: pd.Series):
         """
-        
+            create absorption chiller and compression heat transformer's
+            intern bus
+            
+            :param tf: transformer specific data
+            :type tf: pd.Series
+            :return: - **temp**(str) - mode definition
         """
         # creates one oemof-bus object for compression heat transformers
         # depending on mode of operation
@@ -292,12 +282,13 @@ class Transformers:
                 variable_costs=tf['variable input costs'],
                 emission_factor=tf['variable input constraint costs']),
             self.busd[tf['label'] + temp + '_bus']: Flow()}}
+        outputs = self.get_primary_output_data(tf)
         # transformer conversion factor parameter
         conversion_factors = {"conversion_factors": {
             self.busd[tf['label'] + temp + '_bus']:
                 [((cop - 1) / cop) / tf['efficiency'] for cop in cops_hp],
             self.busd[tf['input']]: [1 / cop for cop in cops_hp]}}
-        self.create_transformer(tf, inputs=inputs,
+        self.create_transformer(tf, inputs=inputs, outputs=outputs,
                                 conversion_factors=conversion_factors)
     
     def genericchp_transformer(self, tf: pd.Series):
@@ -472,11 +463,12 @@ class Transformers:
                 variable_costs=tf['variable input costs'],
                 emission_factor=tf['variable input constraint costs']),
             self.busd[tf['label'] + temp + '_bus']: Flow()}}
+        outputs = self.get_primary_output_data(tf)
         conversion_factors = {"conversion_factors": {
             self.busd[tf['output']]:  [cop for cop in cops_abs],
             self.busd[tf['input']]: tf['electrical input conversion factor']}}
         
-        self.create_transformer(tf, inputs=inputs,
+        self.create_transformer(tf, inputs=inputs, outputs=outputs,
                                 conversion_factors=conversion_factors)
     
     def __init__(self, nd, nodes, busd):
