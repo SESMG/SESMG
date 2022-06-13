@@ -92,8 +92,8 @@ class Storages:
         self.create_sink(
                 s,
                 s['capacity loss'],
-                storage_levels=[None, None],
-                fixed_losses=[None, None])
+                storage_levels=[s['capacity min'], s['capacity max']],
+                fixed_losses=[0, 0])
 
     def stratified_thermal_storage(self, s):
         """
