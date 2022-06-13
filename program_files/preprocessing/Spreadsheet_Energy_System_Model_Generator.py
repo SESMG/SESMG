@@ -80,16 +80,14 @@ Christian Klemm - christian.klemm@fh-muenster.de
 import logging
 from oemof.tools import logger
 import os
-import pandas as pd
 from threading import *
 import sys
-from program_files.preprocessing import (create_objects,
-                                         create_energy_system,
+from program_files.preprocessing import (create_energy_system,
                                          create_graph,
                                          data_preparation,
                                          district_heating)
 from program_files.preprocessing.components \
-    import Sink, Transformer, Source, Storage, Link
+    import Sink, Transformer, Source, Storage, Link, Bus
 from program_files.postprocessing import create_results
 from program_files.processing import optimize_model
 
@@ -159,7 +157,7 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
 
     # CREATES BUS OBJECTS, EXCESS SINKS, AND SHORTAGE SOURCES AS DEFINED IN THE
     # SCENARIO FILE AND ADDS THEM TO THE lIST OF COMPONENTS
-    busd = create_objects.buses(nodes_data=nodes_data, nodes=nodes)
+    busd = Bus.buses(nd=nodes_data, nodes=nodes)
     # PARALLEL CREATION OF ALL OBJECTS OF THE SCENARIO FILE
     
     # CREATES SOURCE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
