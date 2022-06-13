@@ -110,7 +110,7 @@ class Storages:
                 - 'temperature low'
                 - 'U value /(W/(sqm*K))'
 
-            @ Yannick Wittor - yw090223@fh-muenster.de, 26.01.2021
+            @ Yannick Wittor - yw090223@fh-muenster.de
         """
         # import functions for stratified thermal storages from oemof thermal
         from oemof.thermal.stratified_thermal_storage import calculate_losses
