@@ -88,7 +88,8 @@ from program_files.preprocessing import (create_objects,
                                          create_graph,
                                          data_preparation,
                                          district_heating)
-from program_files.preprocessing.components import Source, Sink, Transformer
+from program_files.preprocessing.components \
+    import Sink, Transformer, Source, Storage
 from program_files.postprocessing import create_results
 from program_files.processing import optimize_model
 
@@ -176,7 +177,7 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     t3.start()
     # CREATES STORAGE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
-    t4 = Thread(target=create_objects.Storages, args=(nodes_data, nodes, busd))
+    t4 = Thread(target=Storage.Storages, args=(nodes_data, nodes, busd))
     t4.start()
     # CREATES LINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
