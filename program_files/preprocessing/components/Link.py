@@ -82,6 +82,7 @@ class Links:
                      self.busd[link['bus2']]): link['efficiency'],
                     (self.busd[link['bus2']],
                      self.busd[link['bus1']]): link['efficiency']})
+            # remove second direction if directed link is chosen
             if link["(un)directed"] == "directed":
                 link_node.inputs.pop(self.busd[link['bus2']])
                 link_node.outputs.pop(self.busd[link['bus1']])
