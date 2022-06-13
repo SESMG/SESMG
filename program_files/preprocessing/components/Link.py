@@ -27,7 +27,39 @@ class Links:
     """
     # intern variables
     busd = None
-
+    
+    @staticmethod
+    def get_flow(link):
+        """
+        
+        """
+        if link['(un)directed'] == 'directed':
+            ep_costs = link['periodical costs']
+            ep_constr_costs = link['periodical constraint costs']
+            fix_investment_costs = link['fix investment costs']
+            fix_constr_costs = link["fix investment constraint costs"]
+        elif link['(un)directed'] == 'undirected':
+            ep_costs = link['periodical costs'] / 2
+            ep_constr_costs = link['periodical constraint costs'] / 2
+            fix_investment_costs = link['fix investment costs'] / 2
+            fix_constr_costs = link["fix investment constraint costs"] / 2
+        else:
+            raise SystemError('Problem with periodical costs')
+        
+        return Flow(variable_costs=link['variable output costs'],
+                    emission_factor=link['variable output constraint costs'],
+                    investment=Investment(
+                        ep_costs=ep_costs,
+                        periodical_constraint_costs=ep_constr_costs,
+                        minimum=link['min. investment capacity'],
+                        maximum=link['max. investment capacity'],
+                        existing=link['existing capacity'],
+                        nonconvex=True
+                        if link['non-convex investment'] == 1
+                        else False,
+                        offset=fix_investment_costs,
+                        fix_constraint_costs=fix_constr_costs)),
+    
     def __init__(self, nd, nodes, busd):
         """
             Inits the Links class.
@@ -38,54 +70,13 @@ class Links:
         self.busd = busd
         # creates link objects for every link object in nd
         for i, link in nd['links'][nd["links"]["active"] == 1].iterrows():
-            if link['(un)directed'] == 'directed':
-                ep_costs = link['periodical costs']
-                ep_constr_costs = link['periodical constraint costs']
-                fix_investment_costs = link['fix investment costs']
-                fix_constr_costs = link["fix investment constraint costs"]
-            elif link['(un)directed'] == 'undirected':
-                ep_costs = link['periodical costs'] / 2
-                ep_constr_costs = link['periodical constraint costs'] / 2
-                fix_investment_costs = link['fix investment costs'] / 2
-                fix_constr_costs = link["fix investment constraint costs"] / 2
-            else:
-                raise SystemError('Problem with periodical costs')
             link_node = Link(
                 label=link['label'],
                 inputs={self.busd[link['bus1']]: Flow(),
                         self.busd[link['bus2']]: Flow()},
                 outputs={
-                    self.busd[link['bus2']]: Flow(
-                        variable_costs=link['variable output costs'],
-                        emission_factor=link[
-                            'variable output constraint costs'],
-                        investment=Investment(
-                            ep_costs=ep_costs,
-                            periodical_constraint_costs=ep_constr_costs,
-                            minimum=link['min. investment capacity'],
-                            maximum=link['max. investment capacity'],
-                            existing=link['existing capacity'],
-                            nonconvex=True
-                            if link['non-convex investment'] == 1
-                            else False,
-                            offset=fix_investment_costs,
-                            fix_constraint_costs=fix_constr_costs)),
-                    self.busd[link['bus1']]: Flow(
-                        variable_costs=link['variable output costs'],
-                        emission_factor=link[
-                            'variable output constraint costs'],
-                        investment=Investment(
-                            ep_costs=ep_costs,
-                            periodical_constraint_costs=ep_constr_costs,
-                            minimum=link['min. investment capacity'],
-                            maximum=link['max. investment capacity'],
-                            existing=link['existing capacity'],
-                            nonconvex=True
-                            if link['non-convex investment'] == 1
-                            else False,
-                            offset=fix_investment_costs,
-                            fix_constraint_costs=fix_constr_costs
-                        ))},
+                    self.busd[link['bus2']]: self.get_flow(link),
+                    self.busd[link['bus1']]: self.get_flow(link)},
                 conversion_factors={
                     (self.busd[link['bus1']],
                      self.busd[link['bus2']]): link['efficiency'],
