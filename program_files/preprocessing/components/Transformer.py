@@ -5,6 +5,7 @@ import numpy
 import pandas as pd
 import os
 
+
 class Transformers:
     """
         Creates a transformer object.
@@ -40,8 +41,25 @@ class Transformers:
     nodes_transformer = []
     busd = None
     
-    def create_transformer(self, tf, inputs, outputs, conversion_factors):
+    def create_transformer(self, tf, inputs, conversion_factors, outputs=None):
         """ TODO Docstring missing """
+        if outputs is None:
+            outputs = {"outputs": {self.busd[tf['output']]: Flow(
+                variable_costs=tf['variable output costs'],
+                emission_factor=tf['variable output constraint costs'],
+                investment=Investment(
+                        ep_costs=tf['periodical costs'],
+                        minimum=tf['min. investment capacity'],
+                        maximum=tf['max. investment capacity'],
+                        periodical_constraint_costs=tf[
+                            'periodical constraint costs'],
+                        existing=tf['existing capacity'],
+                        nonconvex=True if tf['non-convex investment'] == 1
+                        else False,
+                        offset=tf['fix investment costs'],
+                        fix_constraint_costs=tf[
+                            "fix investment constraint costs"]
+                ))}}
         self.nodes_transformer.append(Transformer(
                 label=tf['label'], **inputs, **outputs, **conversion_factors))
         logging.info('\t Transformer created: ' + tf['label'])
@@ -123,7 +141,30 @@ class Transformers:
                 variable_costs=tf['variable input costs'],
                 emission_factor=tf['variable input constraint costs'])}}
         self.create_transformer(tf, inputs, outputs, conversion_factors)
+        
+    def create_abs_comp_bus(self, tf):
+        """
+        
+        """
+        # creates one oemof-bus object for compression heat transformers
+        # depending on mode of operation
+        if tf['mode'] == 'heat_pump':
+            temp = '_low_temp'
+        elif tf['mode'] == 'chiller':
+            temp = '_high_temp'
+        else:
+            raise ValueError("Mode of " + tf['label'] + "contains a typo")
+        bus = Bus(label=tf['label'] + temp + '_bus')
     
+        # adds the bus object to the list of components "nodes"
+        self.nodes_transformer.append(bus)
+        self.busd[tf['label'] + temp + '_bus'] = bus
+    
+        # returns logging info
+        logging.info('\t Bus created: ' + tf['label'] + temp + '_bus')
+        
+        return temp
+        
     def compression_heat_transformer(self, tf: dict, data):
         """
             Creates a Compression Heat Pump or Compression Chiller by using
@@ -172,116 +213,64 @@ class Transformers:
         # import oemof.thermal in order to calculate the cop
         import oemof.thermal.compression_heatpumps_and_chillers \
             as cmpr_hp_chiller
-        import math
+        # create transformer intern bus and determine operational mode
+        temp = self.create_abs_comp_bus(tf)
         
-        # creates one oemof-bus object for compression heat transformers
-        # depending on mode of operation
-        if tf['mode'] == 'heat_pump':
-            temp = '_low_temp'
-        elif tf['mode'] == 'chiller':
-            temp = '_high_temp'
-        else:
-            raise ValueError("Mode of " + tf['label']
-                             + "contains a typo")
-        bus = Bus(label=tf['label'] + temp + '_bus')
-        
-        # adds the bus object to the list of components "nodes"
-        self.nodes_transformer.append(bus)
-        self.busd[tf['label'] + temp + '_bus'] = bus
-        
-        # returns logging info
-        logging.info('\t Bus created: ' + tf['label'] + temp + '_bus')
-        
+        # dictionary containing the
+        # 1. heat source specific labels,
+        # 2. capacity calculation,
+        # 3. heat_source_temperature definition
+        switch_dict = {
+            "Ground": [tf['label'] + temp + '_ground_source',
+                       # TODO Formel lesbar einfügen?
+                       tf['area']
+                       * (tf['length of the geoth. probe']
+                          * tf['heat extraction']
+                          / (tf['min. borehole area']
+                             if tf['min. borehole area'] != 0 else 1)),
+                       data['ground_temp']],
+            "GroundWater": [tf['label'] + temp + '_groundwater_source',
+                            float("+inf"),
+                            data['groundwater_temp']],
+            "Air": [tf['label'] + temp + '_air_source',
+                    float("+inf"),
+                    data['temperature']],
+            "Water": [tf['label'] + temp + '_water_source',
+                      float("+inf"),
+                      data['water_temp']]}
         # differentiation between heat sources under consideration of mode
         # of operation
-        # ground as a heat source referring to vertical-borehole
-        # ground-coupled compression heat transformers
-        if tf['heat source'] == "Ground":
-            
-            # borehole that acts as heat source for the transformer
-            cmpr_heat_transformer_label = tf['label'] + \
-                                          temp + '_ground_source'
-            
-            # the capacity of a borehole is limited by the area
-            heatsource_capacity = \
-                tf['area'] * \
-                (tf['length of the geoth. probe']
-                 * tf['heat extraction']
-                 / tf['min. borehole area'])
-        # ground water as a heat source
-        elif tf['heat source'] == "GroundWater":
-            
-            # ground water that acts as heat source for the transformer
-            cmpr_heat_transformer_label = tf['label'] + \
-                                          temp + '_groundwater_source'
-            
-            # the capacity of ambient ground water is not limited
-            heatsource_capacity = math.inf
-        
-        # ambient air as a heat source
-        elif tf['heat source'] == "Air":
-            
-            # ambient air that acts as heat source for the transformer
-            cmpr_heat_transformer_label = tf['label'] + temp + '_air_source'
-            
-            # the capacity of ambient air is not limited
-            heatsource_capacity = math.inf
-        
-        # surface water as a heat source
-        elif tf['heat source'] == "Water":
-            
-            # ambient air that acts as heat source for the transformer
-            cmpr_heat_transformer_label = tf['label'] + temp + '_water_source'
-            
-            # the capacity of ambient water is not limited
-            heatsource_capacity = math.inf
-        else:
-            raise ValueError(tf['label'] + " Error in heat source attribute")
-        maximum = heatsource_capacity
+        transformer_label = list(switch_dict.get(
+                tf["heat source"],
+                tf['label'] + " Error in heat source attribute"))[0]
+
+        heatsource_cap = list(switch_dict.get(
+                tf["heat source"],
+                tf['label'] + " Error in heat source attribute"))[1]
+
         # Creates heat source for transformer. The heat source costs are
         # considered by the transformer.
         self.nodes_transformer.append(
-            Source(label=cmpr_heat_transformer_label,
+            Source(label=transformer_label,
                    outputs={self.busd[tf['label'] + temp + '_bus']: Flow(
-                                investment=Investment(ep_costs=0,
-                                                      minimum=0,
-                                                      maximum=maximum,
-                                                      existing=0),
-                                variable_costs=0)}))
+                            investment=Investment(maximum=heatsource_cap))}))
         
         # Returns logging info
-        logging.info("\t Heat Source created: " + tf['label']
-                     + temp + '_source')
+        logging.info("\t Heat Source created: " + tf['label'] + temp
+                     + '_source')
         
         # set temp_high and temp_low and icing considering different
         # heat sources and the mode of operation
-        if tf['heat source'] == "Ground":
-            if tf['mode'] == 'heat_pump':
-                temp_low = data['ground_temp']
-            elif tf['mode'] == 'chiller':
-                temp_high = data['ground_temp']
-        elif tf['heat source'] == "GroundWater":
-            if tf['mode'] == 'heat_pump':
-                temp_low = data['groundwater_temp']
-            elif tf['mode'] == 'chiller':
-                temp_high = data['groundwater_temp']
-        elif tf['heat source'] == "Air":
-            if tf['mode'] == 'heat_pump':
-                temp_low = data['temperature']
-            elif tf['mode'] == 'chiller':
-                temp_high = data['temperature'].copy()
-                temp_low_value = tf['temperature low']
-                # low temperature as formula to avoid division by zero error
-                for index, value in enumerate(temp_high):
-                    if value == temp_low_value:
-                        temp_high[index] = temp_low_value + 0.1
-        elif tf['heat source'] == "Water":
-            if tf['mode'] == 'heat_pump':
-                temp_low = data['water_temp']
-            elif tf['mode'] == 'chiller':
-                temp_high = data['water_temp']
-        else:
-            raise SystemError(tf['label'] + " Error in heat source attribute")
+        temp_low = list(switch_dict.get(
+                tf["heat source"],
+                tf['label'] + " Error in heat source attribute"))[2]
+        temp_high = temp_low.copy()
+        if tf['heat source'] == "Air":
+            temp_low_value = tf['temperature low']
+            # low temperature as formula to avoid division by zero error
+            for index, value in enumerate(temp_high):
+                if value == temp_low_value:
+                    temp_high[index] = temp_low_value + 0.1
         
         if tf['mode'] == 'heat_pump':
             temp_threshold_icing = tf['temp. threshold icing']
@@ -293,8 +282,7 @@ class Transformers:
             factor_icing = None
             temp_low = [tf['temperature low']]
         else:
-            raise ValueError("Mode of " + tf['label']
-                             + "contains a typo")
+            raise ValueError("Mode of " + tf['label'] + "contains a typo")
         # calculation of COPs with set parameters
         cops_hp = cmpr_hp_chiller.calc_cops(
                 temp_high=temp_high,
@@ -307,33 +295,19 @@ class Transformers:
                      + ", Average Coefficient of Performance (COP): {:2.2f}"
                      .format(numpy.mean(cops_hp)))
         
-        # Creates transformer object and adds it to the list of components
-        inputs = {"inputs": {self.busd[tf['input']]: Flow(
+        # transformer inputs parameter
+        inputs = {"inputs": {
+            self.busd[tf['input']]: Flow(
                 variable_costs=tf['variable input costs'],
                 emission_factor=tf['variable input constraint costs']),
-            self.busd[tf['label'] + temp + '_bus']: Flow(variable_costs=0)}}
-        outputs = {"outputs": {self.busd[tf['output']]: Flow(
-                variable_costs=tf['variable output costs'],
-                emission_factor=tf['variable output constraint costs'],
-                investment=Investment(
-                    ep_costs=tf['periodical costs'],
-                    minimum=tf['min. investment capacity'],
-                    maximum=tf['max. investment capacity'],
-                    periodical_constraint_costs=tf[
-                        'periodical constraint costs'],
-                    existing=tf['existing capacity'],
-                    nonconvex=True if tf['non-convex investment'] == 1
-                    else False,
-                    offset=tf['fix investment costs'],
-                    fix_constraint_costs=tf["fix investment constraint costs"]
-                ))}}
-        conversion_factors = {
-            "conversion_factors": {
-                self.busd[tf['label'] + temp + '_bus']:
-                    [((cop - 1) / cop) / tf['efficiency']
-                     for cop in cops_hp],
-                self.busd[tf['input']]: [1 / cop for cop in cops_hp]}}
-        self.create_transformer(tf, inputs, outputs, conversion_factors)
+            self.busd[tf['label'] + temp + '_bus']: Flow()}}
+        # transformer conversion factor parameter
+        conversion_factors = {"conversion_factors": {
+            self.busd[tf['label'] + temp + '_bus']:
+                [((cop - 1) / cop) / tf['efficiency'] for cop in cops_hp],
+            self.busd[tf['input']]: [1 / cop for cop in cops_hp]}}
+        self.create_transformer(tf, inputs=inputs,
+                                conversion_factors=conversion_factors)
     
     def genericchp_transformer(self, tf: dict, nd: dict):
         """
@@ -373,8 +347,7 @@ class Transformers:
         # and saves it as variable
         # (number of periods is required for creating generic chp transformers)
         # Importing timesystem parameters from the scenario
-        ts = next(nd['energysystem'].iterrows())[1]
-        periods = int(ts['periods'])
+        periods = int(next(nd['energysystem'].iterrows())[1]['periods'])
         # creates genericCHP transformer object and adds it to the
         # list of components
         self.nodes_transformer.append(GenericCHP(
@@ -451,33 +424,10 @@ class Transformers:
         # import oemof.thermal in order to calculate COP
         import oemof.thermal.absorption_heatpumps_and_chillers \
             as abs_hp_chiller
-        from math import inf
         import numpy as np
         
-        # Import characteristic equation parameters
-        char_para = pd.read_csv(os.path.join(
-            os.path.dirname(os.path.dirname(__file__)))
-                            + '/technical_data/characteristic_parameters.csv')
-        
-        # creates one oemof-bus object for compression heat transformers
-        # depending on mode of operation
-        if tf['mode'] == 'heat_pump':
-            temp = '_low_temp'
-        elif tf['mode'] == 'chiller':
-            temp = '_high_temp'
-        else:
-            raise ValueError("Mode of " + tf['label'] + "contains a typo")
-        
-        bus_label = tf['label'] + temp + '_bus'
-        source_label = tf['label'] + temp + '_source'
-        bus = Bus(label=bus_label)
-        
-        # adds the bus object to the list of components "nodes"
-        self.nodes_transformer.append(bus)
-        self.busd[bus_label] = bus
-        
-        # returns logging info
-        logging.info('\t Bus created: ' + bus_label)
+        # create transformer intern bus and determine operational mode
+        temp = self.create_abs_comp_bus(tf)
         
         # Calculates cooling temperature in absorber/evaporator depending on
         # ambient air temperature of recooling system
@@ -485,33 +435,31 @@ class Transformers:
         t_cool = data_np + tf['recooling temperature difference']
         t_cool = list(map(int, t_cool))
 
+        # Import characteristic equation parameters
+        param = pd.read_csv(os.path.join(
+                os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+                + '/technical_data/characteristic_parameters.csv')
+        
         # Calculation of characteristic temperature difference
-        chiller_name = tf['name']
         ddt = abs_hp_chiller.calc_characteristic_temp(
-                t_hot=[tf['high temperature']],
-                t_cool=t_cool,
-                t_chill=[tf['chilling temperature']],
-                coef_a=char_para[(char_para['name'] ==
-                                  chiller_name)]['a'].values[0],
-                coef_e=char_para[(char_para['name'] ==
-                                  chiller_name)]['e'].values[0],
-                method='kuehn_and_ziegler')
+            t_hot=[tf['high temperature']],
+            t_cool=t_cool,
+            t_chill=[tf['chilling temperature']],
+            coef_a=param[(param['name'] == tf['name'])]['a'].values[0],
+            coef_e=param[(param['name'] == tf['name'])]['e'].values[0],
+            method='kuehn_and_ziegler')
         # Calculation of cooling capacity
         q_dots_evap = abs_hp_chiller.calc_heat_flux(
-                ddts=ddt,
-                coef_s=char_para[(char_para['name'] ==
-                                  chiller_name)]['s_E'].values[0],
-                coef_r=char_para[(char_para['name'] ==
-                                  chiller_name)]['r_E'].values[0],
-                method='kuehn_and_ziegler')
+            ddts=ddt,
+            coef_s=param[(param['name'] == tf['name'])]['s_E'].values[0],
+            coef_r=param[(param['name'] == tf['name'])]['r_E'].values[0],
+            method='kuehn_and_ziegler')
         # Calculation of driving heat
         q_dots_gen = abs_hp_chiller.calc_heat_flux(
-                ddts=ddt,
-                coef_s=char_para[(char_para['name'] ==
-                                  chiller_name)]['s_G'].values[0],
-                coef_r=char_para[(char_para['name'] ==
-                                  chiller_name)]['r_G'].values[0],
-                method='kuehn_and_ziegler')
+            ddts=ddt,
+            coef_s=param[(param['name'] == tf['name'])]['s_G'].values[0],
+            coef_r=param[(param['name'] == tf['name'])]['r_G'].values[0],
+            method='kuehn_and_ziegler')
         # Calculation of COPs
         cops_abs = \
             [Qevap / Qgen for Qgen, Qevap in zip(q_dots_gen, q_dots_evap)]
@@ -523,6 +471,7 @@ class Transformers:
         # creates a source object as high temperature heat source and sets
         # heat capacity for this source
         maximum = tf['heat capacity of source']
+        source_label = tf['label'] + temp + '_source'
         self.nodes_transformer.append(
             Source(label=source_label,
                    outputs={self.busd[tf['label'] + temp + '_bus']: Flow(
@@ -541,21 +490,14 @@ class Transformers:
                 variable_costs=tf['variable input costs'],
                 emission_factor=tf['variable input constraint costs']),
             self.busd[tf['label'] + temp + '_bus']: Flow(variable_costs=0)}}
-        outputs = {"outputs": {self.busd[tf['output']]: Flow(
-                variable_costs=tf['variable output costs'],
-                emission_factor=tf['variable output constraint costs'],
-                investment=Investment(
-                    ep_costs=tf['periodical costs'],
-                    minimum=tf['min. investment capacity'],
-                    maximum=tf['max. investment capacity'],
-                    existing=tf['existing capacity']))}}
         conversion_factors = {
             "conversion_factors": {
                 self.busd[tf['output']]:  [cop for cop in cops_abs],
                 self.busd[tf['input']]:
                     tf['electrical input conversion factor']
             }}
-        self.create_transformer(tf, inputs, outputs, conversion_factors)
+        self.create_transformer(tf, inputs=inputs,
+                                conversion_factors=conversion_factors)
     
     def __init__(self, nodes_data, nodes, busd, weather_data):
         """ TODO Docstring missing """
