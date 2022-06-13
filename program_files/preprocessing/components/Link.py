@@ -58,7 +58,7 @@ class Links:
                         if link['non-convex investment'] == 1
                         else False,
                         offset=fix_investment_costs,
-                        fix_constraint_costs=fix_constr_costs)),
+                        fix_constraint_costs=fix_constr_costs))
     
     def __init__(self, nd, nodes, busd):
         """
