@@ -73,6 +73,18 @@ class ESGraphRenderer:
                 self.add_comp("Source", "trapezium", False, self.c)
                 self.add_comp("Transformer", "rectangle", False, self.c)
                 self.add_comp("Storage", "rectangle", True, self.c)
+                
+        switch_dict = {
+            "<class 'oemof.solph.network.sink.Sink'>":
+                ["invtrapezium", False],
+            "<class 'oemof.solph.network.source.Source'>":
+                ["trapezium", False],
+            "<class 'oemof.solph.network.transformer.Transformer'>":
+                ["rectangle", False],
+            "<class 'oemof.solph.components.generic_storage.GenericStorage'>":
+                ["rectangle", True],
+            "<class 'oemof.solph.custom.link.Link'>":
+                ["rectangle", False]}
         # draw a node for each of the energy_system's component.
         # the shape depends on the component's type.
         for nd in energy_system.nodes:
@@ -83,26 +95,15 @@ class ESGraphRenderer:
                 self.busses.append(nd)
             elif isinstance(nd, Bus) and "infrastructure" in nd.label:
                 pass
-            elif isinstance(nd, Sink):
-                self.add_comp(str(nd.label), "invtrapezium", False, self.dot)
-            elif isinstance(nd, Source):
-                self.add_comp(str(nd.label), "trapezium", False, self.dot)
             elif isinstance(nd, HeatPipeline):
                 if "dh-network" not in str(self.dot):
                     self.dot.node("dh-network", "dh-network", shape="hexagon")
-            elif isinstance(nd, Transformer):
-                self.add_comp(str(nd.label), "rectangle", False, self.dot)
-            elif isinstance(nd, GenericStorage):
-                self.add_comp(str(nd.label), "rectangle", True, self.dot)
             else:
-                logging.warning(
-                    "The oemof component {} of type {} is not implemented in "
-                    "the rendering method of the energy model graph drawer. "
-                    "It will be therefore rendered as an ellipse".format(
+                self.add_comp(
                         str(nd.label),
-                        type(nd)
-                    )
-                )
+                        switch_dict.get(str(type(nd)), "Invalid component")[0],
+                        switch_dict.get(str(type(nd)), "Invalid component")[1],
+                        self.dot)
         # draw the edges between the nodes based on each bus inputs/outputs
         for bus in self.busses:
             for component in bus.inputs:
