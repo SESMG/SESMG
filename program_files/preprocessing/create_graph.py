@@ -93,19 +93,17 @@ class ESGraphRenderer:
                 self.add_comp(str(nd.label), "ellipse", False, self.dot)
                 # keep the bus reference for drawing edges later
                 self.busses.append(nd)
-            else:
+            elif isinstance(nd, Bus) and "infrastructure" in nd.label:
                 pass
-            
-            if isinstance(nd, HeatPipeline):
+            elif isinstance(nd, HeatPipeline):
                 if "dh-network" not in str(self.dot):
                     self.dot.node("dh-network", "dh-network", shape="hexagon")
-            elif not isinstance(nd, Bus):
+            else:
                 self.add_comp(
-                        str(nd.label),
-                        switch_dict.get(str(type(nd)), "Invalid component")[0],
-                        switch_dict.get(str(type(nd)), "Invalid component")[1],
-                        self.dot)
-                
+                    str(nd.label),
+                    switch_dict.get(str(type(nd)), "Invalid component")[0],
+                    switch_dict.get(str(type(nd)), "Invalid component")[1],
+                    self.dot)
         # draw the edges between the nodes based on each bus inputs/outputs
         for bus in self.busses:
             for component in bus.inputs:
