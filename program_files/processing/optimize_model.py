@@ -223,11 +223,8 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
     import pyomo.environ as po
 
     # add nodes and flows to energy system
-    logging.info(
-        '   ' + "******************************************************"
-        + "***")
+    logging.info("\t ********************************************************")
     logging.info('   ' + 'Create Energy System...')
-
     # creation of a least cost model from the energy system
     om = solph.Model(energy_system)
     if (str(next(nodes_data["energysystem"].iterrows())[1]

@@ -86,6 +86,7 @@ from program_files.preprocessing import (create_energy_system,
                                          create_graph,
                                          data_preparation,
                                          district_heating)
+from program_files.preprocessing.create_graph import ESGraphRenderer
 from program_files.preprocessing.components \
     import Sink, Transformer, Source, Storage, Link, Bus
 from program_files.postprocessing import create_results
@@ -192,12 +193,11 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     nodes = district_heating.district_heating(nodes_data, nodes, busd,
                                               district_heating_path,
                                               result_path, cluster_dh)
+    
     # ADDS THE COMPONENTS TO THE ENERGYSYSTEM
     esys.add(*nodes)
-
+    ESGraphRenderer(energy_system=esys, filepath=result_path, view=graph, legend=True)
     # PRINTS A GRAPH OF THE ENERGY SYSTEM
-    create_graph.create_graph(filepath=result_path, nodes_data=nodes_data,
-                              show=graph)
 
     # OPTIMIZES THE ENERGYSYSTEM AND RETURNS THE OPTIMIZED ENERGY SYSTEM
     om = optimize_model.least_cost_model(esys, num_threads, nodes_data, busd,
