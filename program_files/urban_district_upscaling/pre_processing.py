@@ -2,6 +2,7 @@ import xlsxwriter
 import pandas as pd
 import os
 import program_files.urban_district_upscaling.clustering as clustering_py
+from program_files.urban_district_upscaling.components import Sink, Source
 
 
 def append_component(sheet: str, comp_parameter: dict):
@@ -12,7 +13,7 @@ def append_component(sheet: str, comp_parameter: dict):
         :type comp_parameter: dict
     """
     series = pd.Series(comp_parameter)
-    sheets[sheet] = sheets[sheet].append(series, ignore_index=True)
+    sheets[sheet] = pd.concat([sheets[sheet], pd.DataFrame([series])])
 
 
 def read_standard_parameters(standard_parameters, name, param_type, index):
@@ -125,49 +126,7 @@ def create_standard_parameter_link(label: str, bus_1: str, bus_2: str,
     append_component("links", parameter_dict)
 
 
-def create_standard_parameter_sink(sink_type: str, label: str,
-                                   sink_input: str, annual_demand: int,
-                                   standard_parameters):
-    """
-        creates a sink with standard_parameters, based on the standard
-        parameters given in the "standard_parameters" dataset and adds
-        it to the "sheets"-output dataset.
 
-        :param sink_type: needed to get the standard parameters of the
-                          link to be created
-        :type sink_type: str
-        :param label: label, the created sink will be given
-        :type label: str
-        :param sink_input: label of the bus which will be the input of the
-                      sink to be created
-        :type sink_input: str
-        :param annual_demand: #todo formula
-        :type annual_demand: int
-        :param dh: boolean rather the dh-connection is active or not
-        :param dh: int
-        :param standard_parameters: pandas Dataframe holding the
-               information imported from the standard parameter file
-        :type standard_parameters: pd.Dataframe
-        :param lat: latitude of the given heat sink used to connect a
-                    consumer bus to district heating network
-        :type lat: float
-        :param lon: longitude of the given heat sink used to connect a
-                    consumer bus to district heating network
-        :type lon: float
-    """
-    # define individual values
-    sink_dict = {'label': label, 'input': sink_input,
-                 'annual demand': annual_demand}
-    # extracts the sink specific standard values from the
-    # standard_parameters dataset
-    standard_param, standard_keys = \
-        read_standard_parameters(standard_parameters, sink_type, "sinks",
-                                 'sink_type')
-    # insert standard parameters in the components dataset (dict)
-    for i in range(len(standard_keys)):
-        sink_dict[standard_keys[i]] = standard_param[standard_keys[i]]
-    # appends the new created component to sinks sheet
-    append_component("sinks", sink_dict)
 
 
 def create_standard_parameter_transformer(specific_param: dict,
@@ -758,226 +717,6 @@ def create_buses(building_id: str, pv_bus: bool, building_type: str,
                 standard_parameters=standard_parameters)
 
 
-def create_sinks(sink_id: str, building_type: str, units: int,
-                 occupants: int, yoc: str, area: int, standard_parameters):
-    """
-        TODO DOCSTRING
-    """
-    # electricity demand
-    if building_type not in ['None', '0', 0]:
-        # residential parameters
-        demand_el = 0
-        sinks_standard_param = standard_parameters.parse('sinks')
-        sinks_standard_param.set_index(
-            "sink_type", inplace=True)
-        if "RES" in building_type:
-            electricity_demand_residential = {}
-            electricity_demand_standard_param = \
-                standard_parameters.parse('ResElecDemand')
-            for i in range(len(electricity_demand_standard_param)):
-                electricity_demand_residential[
-                    electricity_demand_standard_param['household size'][i]] = \
-                    [electricity_demand_standard_param[
-                         building_type + ' (kWh/a)'][i]]
-
-            if occupants <= 5:
-                demand_el = electricity_demand_residential[occupants][0]
-                demand_el = demand_el * units
-            elif occupants > 5:
-                demand_el = \
-                    (electricity_demand_residential[5][0]) / 5 * occupants
-                demand_el = demand_el * units
-        else:
-            # commercial parameters
-            if "COM" in building_type:
-                electricity_demand_standard_param = \
-                    standard_parameters.parse('ComElecDemand')
-            # industrial parameters
-            elif "IND" in building_type:
-                electricity_demand_standard_param = \
-                    standard_parameters.parse('IndElecDemand')
-            else:
-                raise ValueError(
-                    "building type: " + building_type + "not allowed")
-            electricity_demand_standard_param.set_index(
-                "commercial type", inplace=True)
-            demand_el = electricity_demand_standard_param \
-                .loc[building_type]['specific demand (kWh/(sqm a))']
-            net_floor_area = area * sinks_standard_param \
-                .loc[building_type + "_electricity_sink"][
-                'net_floor_area / area']
-            demand_el = demand_el * net_floor_area
-
-        create_standard_parameter_sink(
-            sink_type=building_type + "_electricity_sink",
-            label=str(sink_id) + "_electricity_demand",
-            sink_input=str(sink_id) + "_electricity_bus",
-            annual_demand=demand_el,
-            standard_parameters=standard_parameters)
-
-        # heat demand
-        if "RES" in building_type:
-            # read standard values from standard_parameter-dataset
-            heat_demand_standard_param = \
-                standard_parameters.parse('ResHeatDemand')
-        elif "COM" in building_type:
-            heat_demand_standard_param = \
-                standard_parameters.parse('ComHeatDemand')
-        elif "IND" in building_type:
-            heat_demand_standard_param = \
-                standard_parameters.parse('IndHeatDemand')
-        else:
-            raise ValueError("building_type does not exist")
-        heat_demand_standard_param.set_index(
-            "year of construction", inplace=True)
-        if int(yoc) <= 1918:  # TODO
-            yoc = "<1918"
-        if units > 12:
-            units = "> 12"
-        if "RES" in building_type:
-            specific_heat_demand = \
-                heat_demand_standard_param.loc[yoc][str(units) + ' unit(s)']
-        else:
-            specific_heat_demand = \
-                heat_demand_standard_param.loc[yoc][building_type]
-        net_floor_area = area * sinks_standard_param \
-            .loc[building_type + "_heat_sink"]['net_floor_area / area']
-        demand_heat = specific_heat_demand * net_floor_area
-
-        create_standard_parameter_sink(sink_type=building_type + "_heat_sink",
-                                       label=str(sink_id) + "_heat_demand",
-                                       sink_input=str(sink_id) + "_heat_bus",
-                                       annual_demand=demand_heat,
-                                       standard_parameters=standard_parameters)
-
-
-def create_pv_source(building_id, plant_id, azimuth, tilt, area,
-                     pv_standard_parameters, latitude, longitude):
-    """
-        TODO DOCSTRINGTEXT
-        :param building_id: building label
-        :type building_id: str
-        :param plant_id: roof part number
-        :type plant_id: str
-        :param azimuth: azimuth of given roof part
-        :type azimuth: float
-        :param tilt: tilt of given roof part
-        :type tilt: float
-        :param area: area of the given roof part
-        :type area: float
-        :param pv_standard_parameters: pandas Dataframe holding the PV
-                                       specific standard parameters
-        :type pv_standard_parameters: pd.Dataframe
-        :param latitude: geographic latitude of the building
-        :type latitude: float
-        :param longitude: geographic longitude of the building
-        :type longitude: float
-    """
-    # technical parameters
-    pv_house_specific_dict = \
-        {'label': str(building_id) + '_' + str(plant_id) + '_pv_source',
-         'existing capacity': 0,
-         'min. investment capacity': 0,
-         'output': str(building_id) + '_pv_bus',
-         'Azimuth': azimuth,
-         'Surface Tilt': tilt,
-         'Latitude': latitude,
-         'Longitude': longitude,
-         'input': 0}
-
-    # read the pv standards from standard_parameters.xlsx and append
-    # them to the pv_house_specific_dict
-    pv_standard_keys = pv_standard_parameters.keys().tolist()
-    for i in range(len(pv_standard_keys)):
-        pv_house_specific_dict[pv_standard_keys[i]] = \
-            pv_standard_parameters[pv_standard_keys[i]]
-
-    pv_house_specific_dict['max. investment capacity'] = \
-        pv_standard_parameters['Capacity per Area (kW/m2)'] * area
-
-    # produce a pandas series out of the dict above due to easier appending
-    append_component("sources", pv_house_specific_dict)
-
-
-def create_solarthermal_source(building_id, plant_id, azimuth, tilt, area,
-                               solarthermal_standard_parameters, latitude,
-                               longitude):
-    """
-        TODO DOCSTRINGTEXT
-        :param building_id: building label
-        :type building_id: str
-        :param plant_id: roof part number
-        :type plant_id: str
-        :param azimuth: azimuth of given roof part
-        :type azimuth: float
-        :param tilt: tilt of given roof part
-        :type tilt: float
-        :param area: area of the given roof part
-        :type area: float
-        :param solarthermal_standard_parameters: pandas Dataframe
-                                                 holding the ST specific
-                                                 standard parameters
-        :type solarthermal_standard_parameters: pd.Dataframe
-        :param latitude: geographic latitude of the building
-        :type latitude: float
-        :param longitude: geographic longitude of the building
-        :type longitude: float
-    """
-
-    # technical parameters
-    solarthermal_house_specific_dict = \
-        {'label': (str(building_id) + '_' + str(plant_id)
-                   + '_solarthermal_source'),
-         'existing capacity': 0,
-         'min. investment capacity': 0,
-         'output': str(building_id) + '_heat_bus',
-         'Azimuth': azimuth,
-         'Surface Tilt': tilt,
-         'Latitude': latitude,
-         'Longitude': longitude,
-         'input': str(building_id) + '_electricity_bus'}
-
-    # read the pv standards from standard_parameters.xlsx and append
-    # them to the pv_house_specific_dict
-    solarthermal_standard_keys = \
-        solarthermal_standard_parameters.keys().tolist()
-    for i in range(len(solarthermal_standard_keys)):
-        solarthermal_house_specific_dict[solarthermal_standard_keys[i]] = \
-            solarthermal_standard_parameters[solarthermal_standard_keys[i]]
-
-    solarthermal_house_specific_dict['max. investment capacity'] = \
-        solarthermal_standard_parameters['Capacity per Area (kW/m2)'] * area
-
-    # produce a pandas series out of the dict above due to easier appending
-    solarthermal_series = pd.Series(solarthermal_house_specific_dict)
-    sheets["sources"] = \
-        sheets["sources"].append(solarthermal_series, ignore_index=True)
-
-
-def create_competition_constraint(component1, factor1, component2, factor2,
-                                  limit):
-    """
-        TODO DOCSTRINGTEXT
-        :param component1: label of the first component in competition
-        :type component1: str
-        :param factor1: power per unit of the first component
-                        in competition
-        :type factor1: float
-        :param component2: label of the second component in competition
-        :type component2: str
-        :param factor2: power per unit of the second component
-                        in competition
-        :type factor2: float
-        :param limit:
-        :type limit: float
-    """
-    # define individual values
-    constraint_dict = {'component 1': component1, 'factor 1': factor1,
-                       'component 2': component2, 'factor 2': factor2,
-                       'limit': limit, 'active': 1}
-    append_component("competition constraints", constraint_dict)
-
-
 def create_gchp(parcel_id, area, standard_parameters):
     """
         Sets the specific parameters for a ground coupled heat pump
@@ -1353,13 +1092,11 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
     ping = 0
     for num, parcel in parcel.iterrows():
         ping += 1
-        for num_inner, building in tool.iterrows():
-            if building["active"]:
-                if building["gchp"] not in ["No", "no", 0]:
-                    if parcel['ID parcel'] == building["parcel"]:
-                        gchps.update({
-                            parcel['ID parcel'][-9:]:
-                                parcel['gchp area (m²)']})
+        for num_inner, building in tool[tool["active"] == 1].iterrows():
+            if building["gchp"] not in ["No", "no", 0]:
+                if parcel['ID parcel'] == building["parcel"]:
+                    gchps.update({parcel['ID parcel'][-9:]:
+                                    parcel['gchp area (m²)']})
     # create gchp relevant components
     for gchp in gchps:
         create_gchp(parcel_id=gchp, area=gchps[gchp],
@@ -1371,143 +1108,94 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
                                       bus_type="building_heat_bus",
                                       standard_parameters=standard_parameters)
 
-    for num, building in tool.iterrows():
-        if building["active"]:
-            # foreach building the three necessary buses will be created
-            pv_bool = False
-            for roof_num in range(1, 29):
-                if building['st or pv %1d' % roof_num] == "pv&st":
-                    pv_bool = True
-            create_buses(
-                building_id=building['label'],
-                pv_bus=pv_bool,
-                building_type=building["building type"],
-                hp_elec_bus=True if
-                (building['parcel'] != 0
-                 and building["gchp"] not in ["No", "no", 0])
-                or building['ashp'] not in ["No", "no", 0] else False,
-                central_elec_bus=central_electricity_network,
-                gchp=True if building['parcel'] != 0 else False,
-                gchp_heat_bus=(building['parcel'][-9:] + "_heat_bus")
-                if (building['parcel'] != 0
-                    and building['parcel'][-9:] in gchps) else None,
-                gchp_elec_bus=(building['parcel'][-9:] + "_hp_elec_bus")
-                if (building['parcel'] != 0
-                    and building['parcel'][-9:] in gchps) else None,
-                standard_parameters=standard_parameters,
-                lat=building["latitude"], lon=building["longitude"])
+    for num, building in tool[tool["active"] == 1].iterrows():
+        # foreach building the three necessary buses will be created
+        pv_bool = False
+        for roof_num in range(1, 29):
+            if building['st or pv %1d' % roof_num] == "pv&st":
+                pv_bool = True
+        create_buses(
+            building_id=building['label'],
+            pv_bus=pv_bool,
+            building_type=building["building type"],
+            hp_elec_bus=True if
+            (building['parcel'] != 0
+             and building["gchp"] not in ["No", "no", 0])
+            or building['ashp'] not in ["No", "no", 0] else False,
+            central_elec_bus=central_electricity_network,
+            gchp=True if building['parcel'] != 0 else False,
+            gchp_heat_bus=(building['parcel'][-9:] + "_heat_bus")
+            if (building['parcel'] != 0
+                and building['parcel'][-9:] in gchps) else None,
+            gchp_elec_bus=(building['parcel'][-9:] + "_hp_elec_bus")
+            if (building['parcel'] != 0
+                and building['parcel'][-9:] in gchps) else None,
+            standard_parameters=standard_parameters,
+            lat=building["latitude"], lon=building["longitude"])
 
-            create_sinks(sink_id=building['label'],
-                         building_type=building['building type'],
-                         units=building['units'],
-                         occupants=building['occupants per unit'],
-                         yoc=building['year of construction'],
-                         area=building['living space'] * building['floors'],
-                         standard_parameters=standard_parameters)
+        Sink.create_sinks(sink_id=building['label'],
+                     building_type=building['building type'],
+                     units=building['units'],
+                     occupants=building['occupants per unit'],
+                     yoc=building['year of construction'],
+                     area=building['living space'] * building['floors'],
+                     standard_parameters=standard_parameters)
 
-            create_building_insulation(
-                building_id=building['label'],
-                standard_parameters=standard_parameters,
-                yoc=building['year of construction'],
-                area_window=building["windows"],
-                area_wall=building["walls_wo_windows"],
-                area_roof=building["roof area"],
-                roof_type=building["rooftype"])
+        create_building_insulation(
+            building_id=building['label'],
+            standard_parameters=standard_parameters,
+            yoc=building['year of construction'],
+            area_window=building["windows"],
+            area_wall=building["walls_wo_windows"],
+            area_roof=building["roof area"],
+            roof_type=building["rooftype"])
+        
+        # create sources
+        Source.create_sources(building=building,
+                              standard_parameters=standard_parameters,
+                              clustering=clustering)
 
-            # Define PV Standard-Parameters
-            sources_standard_parameters = standard_parameters.parse('sources')
-            sources_standard_parameters.set_index('comment', inplace=True)
-            pv_standard_parameters = \
-                sources_standard_parameters.loc['fixed photovoltaic source']
+        
 
-            # Define solar thermal Standard-Parameters
-            st_stan_param = \
-                sources_standard_parameters.loc['solar_thermal_collector']
-
-            # create pv-sources and solar thermal-sources including area
-            # competition
-            for roof_num in range(1, 29):
-                if building['roof area (m²) %1d' % roof_num]:
-                    plant_id = str(roof_num)
-                    if building['st or pv %1d' % roof_num] == "pv&st":
-                        create_pv_source(
-                            building_id=building['label'],
-                            plant_id=plant_id,
-                            azimuth=building['azimuth (°) %1d' % roof_num],
-                            tilt=building['surface tilt (°) %1d'
-                                          % roof_num],
-                            area=building['roof area (m²) %1d' % roof_num],
-                            latitude=building['latitude'],
-                            longitude=building['longitude'],
-                            pv_standard_parameters=pv_standard_parameters)
-                    if (building['st or pv %1d' % roof_num] == "st"
-                        or building['st or pv %1d' % roof_num] == "pv&st") \
-                            and building["building type"] != "0" \
-                            and building["building type"] != 0:
-                        create_solarthermal_source(
-                            building_id=building['label'],
-                            plant_id=plant_id,
-                            azimuth=building['azimuth (°) %1d' % roof_num],
-                            tilt=building['surface tilt (°) %1d'
-                                          % roof_num],
-                            area=building['roof area (m²) %1d' % roof_num],
-                            latitude=building['latitude'],
-                            longitude=building['longitude'],
-                            solarthermal_standard_parameters=st_stan_param)
-                    if building['st or pv %1d' % roof_num] == "pv&st" \
-                            and building["building type"] != "0" \
-                            and clustering == False:
-                        create_competition_constraint(
-                            component1=(building['label'] + '_'
-                                        + plant_id + '_pv_source'),
-                            factor1=1 / pv_standard_parameters[
-                                'Capacity per Area (kW/m2)'],
-                            component2=(building['label'] + '_' + plant_id
-                                        + '_solarthermal_source'),
-                            factor2=1 / st_stan_param[
-                                'Capacity per Area (kW/m2)'],
-                            limit=building['roof area (m²) %1d'
-                                           % roof_num])
-
-            # creates air source heat-pumps
-            if building['ashp'] in ['Yes', 'yes', 1]:
-                create_ashp(building_id=building['label'],
-                            standard_parameters=standard_parameters)
-
-            # creates gasheating-system
-            if building['gas heating'] in ['Yes', 'yes', 1]:
-                create_gas_heating(building_id=building['label'],
-                                   building_type=building['building type'],
-                                   standard_parameters=standard_parameters)
-
-                # natural gas connection link to p2g-ng-bus
-                if p2g_link:
-                    create_standard_parameter_link(
-                        label='central_naturalgas_' + building['label']
-                              + 'link',
-                        bus_1='central_naturalgas_bus',
-                        bus_2=building['label'] + '_gas_bus',
-                        link_type='central_naturalgas_building_link',
+        # creates air source heat-pumps
+        if building['ashp'] in ['Yes', 'yes', 1]:
+            create_ashp(building_id=building['label'],
                         standard_parameters=standard_parameters)
 
-            # creates electric heating-system
-            if building['electric heating'] in ['yes', 'Yes', 1]:
-                create_electric_heating(
-                    building_id=building['label'],
+        # creates gasheating-system
+        if building['gas heating'] in ['Yes', 'yes', 1]:
+            create_gas_heating(building_id=building['label'],
+                               building_type=building['building type'],
+                               standard_parameters=standard_parameters)
+
+            # natural gas connection link to p2g-ng-bus
+            if p2g_link:
+                create_standard_parameter_link(
+                    label='central_naturalgas_' + building['label']
+                          + 'link',
+                    bus_1='central_naturalgas_bus',
+                    bus_2=building['label'] + '_gas_bus',
+                    link_type='central_naturalgas_building_link',
                     standard_parameters=standard_parameters)
 
-            # battery storage
-            if building['battery storage'] in ['Yes', 'yes', 1]:
-                create_battery(building_id=building['label'],
-                               standard_parameters=standard_parameters,
-                               storage_type="building")
-            if building['thermal storage'] in ['Yes', 'yes', 1]:
-                create_thermal_storage(building_id=building['label'],
-                                       standard_parameters=standard_parameters,
-                                       storage_type="building")
+        # creates electric heating-system
+        if building['electric heating'] in ['yes', 'Yes', 1]:
+            create_electric_heating(
+                building_id=building['label'],
+                standard_parameters=standard_parameters)
 
-            print(str(building['label'])
-                  + ' subsystem added to scenario sheet.')
+        # battery storage
+        if building['battery storage'] in ['Yes', 'yes', 1]:
+            create_battery(building_id=building['label'],
+                           standard_parameters=standard_parameters,
+                           storage_type="building")
+        if building['thermal storage'] in ['Yes', 'yes', 1]:
+            create_thermal_storage(building_id=building['label'],
+                                   standard_parameters=standard_parameters,
+                                   storage_type="building")
+
+        print(str(building['label'])
+              + ' subsystem added to scenario sheet.')
     for sheet_tbc in ["energysystem", "weather data", "time series",
                       "district heating"]:
         sheets[sheet_tbc] = standard_parameters.parse(sheet_tbc)
