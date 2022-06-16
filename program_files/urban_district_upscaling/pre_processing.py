@@ -48,6 +48,38 @@ def read_standard_parameters(standard_parameters, name, param_type, index):
     return standard_param, standard_keys
 
 
+def create_standard_parameter_comp(specific_param: dict,
+                                   standard_parameters,
+                                   type,
+                                   index,
+                                   standard_param_name):
+    """
+        creates a storage with standard_parameters, based on the
+        standard parameters given in the "standard_parameters" dataset
+        and adds it to the "sheets"-output dataset.
+
+        :param specific_param: dictionary holding the storage specific
+                               parameters (e.g. ng_storage specific, ...)
+        :type specific_param: dict
+        :param standard_parameters: pandas Dataframe holding the
+                   information imported from the standard parameter file
+        :type standard_parameters: pd.Dataframe
+        :param standard_param_name: string defining the storage type
+                                    (e.g. central_naturalgas_storage,...)
+                                    to locate the right standard parameters
+        :type standard_param_name: str
+    """
+    # extracts the storage specific standard values from the
+    # standard_parameters dataset
+    standard_param, standard_keys = read_standard_parameters(
+        standard_parameters, standard_param_name, type, index)
+    # insert standard parameters in the components dataset (dict)
+    for i in range(len(standard_keys)):
+        specific_param[standard_keys[i]] = standard_param[standard_keys[i]]
+    # appends the new created component to storages sheet
+    append_component(type, specific_param)
+
+
 def create_standard_parameter_bus(label: str, bus_type: str,
                                   standard_parameters, dh=None, lat=None,
                                   lon=None):
@@ -113,50 +145,12 @@ def create_standard_parameter_link(label: str, bus_1: str, bus_2: str,
                information imported from the standard parameter file
         :type standard_parameters: pd.Dataframe
     """
-    # define individual values
-    parameter_dict = {'label': label, 'bus1': bus_1, 'bus2': bus_2}
-    # extracts the link specific standard values from the
-    # standard_parameters dataset
-    standard_param, standard_keys = \
-        read_standard_parameters(standard_parameters, link_type, "links",
-                                 'link_type')
-    # insert standard parameters in the components dataset (dict)
-    for i in range(len(standard_keys)):
-        parameter_dict[standard_keys[i]] = standard_param[standard_keys[i]]
-    # appends the new created component to links sheet
-    append_component("links", parameter_dict)
-
-
-def create_standard_parameter_comp(specific_param: dict,
-                                   standard_parameters,
-                                   type,
-                                   index,
-                                   standard_param_name):
-    """
-        creates a storage with standard_parameters, based on the
-        standard parameters given in the "standard_parameters" dataset
-        and adds it to the "sheets"-output dataset.
-
-        :param specific_param: dictionary holding the storage specific
-                               parameters (e.g. ng_storage specific, ...)
-        :type specific_param: dict
-        :param standard_parameters: pandas Dataframe holding the
-                   information imported from the standard parameter file
-        :type standard_parameters: pd.Dataframe
-        :param standard_param_name: string defining the storage type
-                                    (e.g. central_naturalgas_storage,...)
-                                    to locate the right standard parameters
-        :type standard_param_name: str
-    """
-    # extracts the storage specific standard values from the
-    # standard_parameters dataset
-    standard_param, standard_keys = read_standard_parameters(
-        standard_parameters, standard_param_name, type, index)
-    # insert standard parameters in the components dataset (dict)
-    for i in range(len(standard_keys)):
-        specific_param[standard_keys[i]] = standard_param[standard_keys[i]]
-    # appends the new created component to storages sheet
-    append_component(type, specific_param)
+    create_standard_parameter_comp(
+        specific_param={'label': label, 'bus1': bus_1, 'bus2': bus_2},
+        standard_parameters=standard_parameters,
+        type="links",
+        index="link_type",
+        standard_param_name=link_type)
 
 
 def create_central_heat_component(type, bus, standard_parameters,
@@ -216,9 +210,12 @@ def create_central_heat_component(type, bus, standard_parameters,
             standard_parameters=standard_parameters,
             output=bus)
     if type == 'thermal_storage':
-        Storage.create_thermal_storage(
-            building_id="central", standard_parameters=standard_parameters,
-            storage_type="central", bus=bus)
+        Storage.create_storage(
+            building_id="central",
+            standard_parameters=standard_parameters,
+            storage_type="thermal",
+            de_centralized="central",
+            bus=bus)
     # power to gas system
     if type == 'power_to_gas':
         create_power_to_gas_system(standard_parameters=standard_parameters,
@@ -241,7 +238,6 @@ def central_comp(central, standard_parameters):
         :type standard_parameters: pd.Dataframe
     """
     for i, j in central.iterrows():
-
         # creation of the bus for the local power exchange
         if j['electricity_bus'] in ['Yes', 'yes', 1]:
             create_standard_parameter_bus(
@@ -278,9 +274,11 @@ def central_comp(central, standard_parameters):
 
         # central battery storage
         if j['battery_storage'] in ['yes', 'Yes', 1]:
-            Storage. create_battery(
-                building_id="central", standard_parameters=standard_parameters,
-                storage_type="central")
+            Storage.create_storage(
+                building_id="central",
+                standard_parameters=standard_parameters,
+                storage_type="battery",
+                de_centralized="central")
 
 
 def create_power_to_gas_system(standard_parameters, bus):
@@ -926,16 +924,18 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
 
         # battery storage
         if building['battery storage'] in ['Yes', 'yes', 1]:
-            Storage.create_battery(
+            Storage.create_storage(
                 building_id=building['label'],
                 standard_parameters=standard_parameters,
-                storage_type="building")
+                storage_type="battery",
+                de_centralized="building")
         # thermal storage
         if building['thermal storage'] in ['Yes', 'yes', 1]:
-            Storage.create_thermal_storage(
+            Storage.create_storage(
                 building_id=building['label'],
                 standard_parameters=standard_parameters,
-                storage_type="building")
+                storage_type="thermal",
+                de_centralized="building")
 
         print(str(building['label'])
               + ' subsystem added to scenario sheet.')
