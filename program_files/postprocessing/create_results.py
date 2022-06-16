@@ -339,6 +339,7 @@ class Results:
     def determine_pipe_type(component, pipes_param):
         if "forks" in str(component):
             component_strlist = str(component).split("-")
+            print(component_strlist)
             diameter = str(component_strlist[0]).split("_")[2]
             if "consumers" in str(component_strlist[-2]):
                 for num, consumer in pipes_param.iterrows():
@@ -506,8 +507,9 @@ class Results:
         constraints = '---' if constraints is None \
             else str(round(constraints, 2))
         
-        pd.concat([self.df_list_of_components,
-                  pd.DataFrame(
+        self.df_list_of_components = pd.concat(
+                [self.df_list_of_components,
+                 pd.DataFrame(
                     [[label, comp_type, inflow1, inflow2, outflow1, outflow2,
                       capacity, variable_costs, periodical_costs, investment,
                       maxinvest,
@@ -1047,7 +1049,7 @@ class Results:
             # since there is no invest data for buses and the connection
             # between source an heat network ignore them
             if str(type(components[i])) != \
-                    "<class 'oemof.solph.network.Bus'>"\
+                    "<class 'oemof.solph.network.bus.Bus'>"\
                     and not "source_link" in str(components[i]):
                 variable_costs = None
                 constraint_costs = None
