@@ -159,7 +159,6 @@ def create_standard_parameter_comp(specific_param: dict,
     append_component(type, specific_param)
 
 
-
 def create_central_heat_component(type, bus, standard_parameters,
                                   central_elec_bus, central_chp):
     """
@@ -291,6 +290,8 @@ def create_power_to_gas_system(standard_parameters, bus):
         :param standard_parameters: pandas Dataframe holding the
                    information imported from the standard parameter file
         :type standard_parameters: pd.Dataframe
+        :param bus:
+        :type bus:
     """
     if "central_h2_bus" not in sheets["buses"]["label"].to_list():
         # h2 bus
@@ -302,71 +303,44 @@ def create_power_to_gas_system(standard_parameters, bus):
         create_standard_parameter_bus(label="central_naturalgas_bus",
                                       bus_type="central_naturalgas_bus",
                                       standard_parameters=standard_parameters)
-
-    # electrolysis transformer
-    electrolysis_transformer_param = \
-        {'label': 'central_electrolysis_transformer',
-         'comment': 'automatically_created',
-         'input': 'central_electricity_bus',
-         'output': 'central_h2_bus',
-         'output2': 'None'}
-
-    create_standard_parameter_comp(
-        specific_param=electrolysis_transformer_param,
-        standard_parameters=standard_parameters,
-        type="transformers",
-        index="comment",
-        standard_param_name='central_electrolysis_transformer')
-
-    # methanization transformer
-    methanization_transformer_param = \
-        {'label': 'central_methanization_transformer',
-         'comment': 'automatically_created',
-         'input': 'central_h2_bus',
-         'output': 'central_naturalgas_bus',
-         'output2': 'None'}
-
-    create_standard_parameter_comp(
-        specific_param=methanization_transformer_param,
-        standard_parameters=standard_parameters,
-        type="transformers",
-        index="comment",
-        standard_param_name='central_methanization_transformer')
-
-    # fuel cell transformer
-    fuelcell_transformer_param = \
-        {'label': 'central_fuelcell_transformer',
-         'comment': 'automatically_created',
-         'input': 'central_h2_bus',
-         'output': 'central_electricity_bus',
-         'output2': bus}
-
-    create_standard_parameter_comp(
-        specific_param=fuelcell_transformer_param,
-        standard_parameters=standard_parameters,
-        type="transformers",
-        index="comment",
-        standard_param_name='central_fuelcell_transformer')
-
-    # central h2 storage
-    create_standard_parameter_comp(
-        specific_param={'label': 'central_h2_storage',
-                        'comment': 'automatically_created',
-                        'bus': 'central_h2_bus'},
-        standard_parameters=standard_parameters,
-        type="storages",
-        index="comment",
-        standard_param_name='central_h2_storage')
-
-    # central natural gas storage
-    create_standard_parameter_comp(
-            specific_param={'label': 'central_naturalgas_storage',
-                            'comment': 'automatically_created',
-                            'bus': 'central_naturalgas_bus'},
-            standard_parameters=standard_parameters,
-            type="storages",
-            index="comment",
-            standard_param_name='central_naturalgas_storage')
+    # transformer
+    transformer_dict = {
+        "central_electrolysis_transformer":
+            ['central_electrolysis_transformer', "central_electricity_bus",
+             "central_h2_bus", "None"],
+        "central_methanization_transformer":
+            ['central_methanization_transformer', "central_h2_bus",
+             "central_naturalgas_bus", "None"],
+        "central_fuelcell_transformer":
+            ['central_fuelcell_transformer', "central_h2_bus",
+             "central_electricity_bus", bus]}
+    
+    for transformer in transformer_dict:
+        create_standard_parameter_comp(
+                specific_param={"label": transformer_dict[transformer][0],
+                                "comment": 'automatically_created',
+                                "input": transformer_dict[transformer][1],
+                                "output": transformer_dict[transformer][2],
+                                "output2": transformer_dict[transformer][3]},
+                standard_parameters=standard_parameters,
+                type="transformers",
+                index="comment",
+                standard_param_name=transformer)
+        
+    # storages
+    storage_dict = {
+        "central_h2_storage": ["central_h2_storage", "central_h2_bus"],
+        "central_naturalgas_storage": ["central_naturalgas_storage",
+                                       "central_naturalgas_bus"]}
+    for storage in storage_dict:
+        create_standard_parameter_comp(
+                specific_param={"label": storage_dict[storage][0],
+                                "comment": 'automatically_created',
+                                "bus": storage_dict[storage][1]},
+                standard_parameters=standard_parameters,
+                type="transformers",
+                index="comment",
+                standard_param_name=storage)
 
     # link to chp_naturalgas_bus
     create_standard_parameter_link(
@@ -392,24 +366,17 @@ def create_central_biomass_plant(standard_parameters, output):
     create_standard_parameter_bus(label="central_biomass_bus",
                                   bus_type="central_biomass_bus",
                                   standard_parameters=standard_parameters)
-    # define individual values
-    parameter_dict = {'label': 'central_biomass_transformer',
-                      'comment': 'automatically_created',
-                      'input': "central_biomass_bus",
-                      'output': output,
-                      'output2': 'None'}
-
-    # extracts the transformer specific standard values from the
-    # standard_parameters dataset
-    standard_param, standard_keys = \
-        read_standard_parameters(standard_parameters,
-                                 'central_biomass_transformer', "transformers",
-                                 "comment")
-    # insert standard parameters in the components dataset (dict)
-    for i in range(len(standard_keys)):
-        parameter_dict[standard_keys[i]] = standard_param[standard_keys[i]]
-    # appends the new created component to transformers sheet
-    append_component("transformers", parameter_dict)
+    
+    create_standard_parameter_comp(
+        specific_param={'label': 'central_biomass_transformer',
+                        'comment': 'automatically_created',
+                        'input': "central_biomass_bus",
+                        'output': output,
+                        'output2': 'None'},
+        standard_parameters=standard_parameters,
+        type="transformers",
+        index="comment",
+        standard_param_name="central_biomass_transformer")
 
 
 def create_central_heatpump(standard_parameters, specification, create_bus,
@@ -449,24 +416,17 @@ def create_central_heatpump(standard_parameters, specification, create_bus,
                     bus_2="central_heatpump_elec_bus",
                     link_type="building_central_building_link",
                     standard_parameters=standard_parameters)
-            
-    # define individual values
-    parameter_dict = {
-        'label': 'central_' + specification + '_transformer',
-        'comment': 'automatically_created',
-        'input': "central_heatpump_elec_bus",
-        'output': output,
-        'output2': 'None'}
-    # extracts the transformer specific standard values from the
-    # standard_parameters dataset
-    standard_param, standard_keys = read_standard_parameters(
-            standard_parameters, 'central_' + specification + '_transformer',
-            "transformers", "comment")
-    # insert standard parameters in the components dataset (dict)
-    for i in range(len(standard_keys)):
-        parameter_dict[standard_keys[i]] = standard_param[standard_keys[i]]
-    # appends the new created component to transformers sheet
-    append_component("transformers", parameter_dict)
+    
+    create_standard_parameter_comp(
+        specific_param={'label': 'central_' + specification + '_transformer',
+                        'comment': 'automatically_created',
+                        'input': "central_heatpump_elec_bus",
+                        'output': output,
+                        'output2': 'None'},
+        standard_parameters=standard_parameters,
+        type="transformers",
+        index="comment",
+        standard_param_name='central_' + specification + '_transformer')
 
 
 def create_central_gas_heating_transformer(gastype, standard_parameters,
@@ -502,25 +462,17 @@ def create_central_gas_heating_transformer(gastype, standard_parameters,
             bus_2="central_" + gastype + "_plant_bus",
             link_type="central_naturalgas_building_link",
             standard_parameters=standard_parameters)
-    # define individual values
-    heating_plant_dict = \
-        {'label': "central_" + gastype + '_heating_plant_transformer',
-         'input': "central_" + gastype + "_plant_bus",
-         'output': output,
-         'output2': 'None'}
-    # extracts the transformer specific standard values from the
-    # standard_parameters dataset
-    heating_plant_parameter, heating_plant_standard_keys = \
-        read_standard_parameters(
-                standard_parameters,
-                'central_naturalgas_heating_plant_transformer', "transformers",
-                "comment")
-    # insert standard parameters in the components dataset (dict)
-    for i in range(len(heating_plant_standard_keys)):
-        heating_plant_dict[heating_plant_standard_keys[i]] = \
-            heating_plant_parameter[heating_plant_standard_keys[i]]
-    # appends the new created component to transformers sheet
-    append_component("transformers", heating_plant_dict)
+
+    create_standard_parameter_comp(
+        specific_param={
+            'label': "central_" + gastype + '_heating_plant_transformer',
+            'input': "central_" + gastype + "_plant_bus",
+            'output': output,
+            'output2': 'None'},
+        standard_parameters=standard_parameters,
+        type="transformers",
+        index="comment",
+        standard_param_name="central_naturalgas_heating_plant_transformer")
 
 
 def create_central_chp(gastype, standard_parameters, output, central_elec_bus):
@@ -560,24 +512,16 @@ def create_central_chp(gastype, standard_parameters, output, central_elec_bus):
             bus_2="central_electricity_bus",
             link_type="central_chp_elec_central_link",
             standard_parameters=standard_parameters)
-    # define individual values
-    chp_central_dict = {'label': 'central_' + gastype + '_chp_transformer',
+
+    create_standard_parameter_comp(
+        specific_param={'label': 'central_' + gastype + '_chp_transformer',
                         'input': "central_chp_" + gastype + "_bus",
                         'output': "central_chp_" + gastype + "_elec_bus",
-                        'output2': output
-                        }
-    # extracts the transformer specific standard values from the
-    # standard_parameters dataset
-    chp_standard_parameters, chp_parameters_keys = \
-        read_standard_parameters(standard_parameters,
-                                 "central_" + gastype + "_chp", "transformers",
-                                 "comment")
-    # insert standard parameters in the components dataset (dict)
-    for i in range(len(chp_parameters_keys)):
-        chp_central_dict[chp_parameters_keys[i]] = \
-            chp_standard_parameters[chp_parameters_keys[i]]
-    # appends the new created component to transformers sheet
-    append_component("transformers", chp_central_dict)
+                        'output2': output},
+        standard_parameters=standard_parameters,
+        type="transformers",
+        index="comment",
+        standard_param_name="central_" + gastype + "_chp")
 
 
 def create_buses(building_id: str, pv_bus: bool, building_type: str,
@@ -986,6 +930,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
                 building_id=building['label'],
                 standard_parameters=standard_parameters,
                 storage_type="building")
+        # thermal storage
         if building['thermal storage'] in ['Yes', 'yes', 1]:
             Storage.create_thermal_storage(
                 building_id=building['label'],
