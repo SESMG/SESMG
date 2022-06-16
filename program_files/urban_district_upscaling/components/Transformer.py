@@ -1,35 +1,3 @@
-def create_standard_parameter_transformer(specific_param: dict,
-                                          standard_parameters,
-                                          standard_param_name):
-    """
-        creates a transformer with standard_parameters, based on the
-        standard parameters given in the "standard_parameters" dataset
-        and adds it to the "sheets"-output dataset.
-
-        :param specific_param: dictionary holding the transformer specific
-                               parameters (e.g. electrolysis specific...)
-        :type specific_param: dict
-        :param standard_parameters: pandas Dataframe holding the
-                   information imported from the standard parameter file
-        :type standard_parameters: pd.Dataframe
-        :param standard_param_name: string defining the transformer type
-                                    (e.g. central_electrolysis_transformer,...)
-                                    to locate the right standard parameters
-        :type standard_param_name: string
-    """
-    from program_files.urban_district_upscaling.pre_processing \
-        import read_standard_parameters, append_component
-    # extracts the transformer specific standard values from the
-    # standard_parameters dataset
-    standard_param, standard_keys = read_standard_parameters(
-        standard_parameters, standard_param_name, "transformers", "comment")
-    # insert standard parameters in the components dataset (dict)
-    for i in range(len(standard_keys)):
-        specific_param[standard_keys[i]] = standard_param[standard_keys[i]]
-    # appends the new created component to transformers sheet
-    append_component("transformers", specific_param)
-    
-    
 def create_gchp(parcel_id, area, standard_parameters):
     """
         Sets the specific parameters for a ground coupled heat pump
@@ -43,6 +11,8 @@ def create_gchp(parcel_id, area, standard_parameters):
                                     standard parameters
         :type standard_parameters: pd.Dataframe
     """
+    from program_files.urban_district_upscaling.pre_processing \
+        import create_standard_parameter_comp
     # TODO
     #probe_length = \
     #    transformers_standard_parameters.loc['building_gchp_transformer'][
@@ -54,7 +24,7 @@ def create_gchp(parcel_id, area, standard_parameters):
     #    transformers_standard_parameters.loc['building_gchp_transformer'][
     #        'min. borehole area']
     
-    create_standard_parameter_transformer(
+    create_standard_parameter_comp(
         specific_param={'label': str(parcel_id) + '_gchp_transformer',
                         'comment': 'automatically_created',
                         'input': str(parcel_id) + '_hp_elec_bus',
@@ -64,6 +34,8 @@ def create_gchp(parcel_id, area, standard_parameters):
                         'existing capacity': 0,
                         'min. investment capacity': 0},
         standard_parameters=standard_parameters,
+        type="transformers",
+        index="comment",
         standard_param_name="building_gchp_transformer")
 
 
@@ -78,7 +50,9 @@ def create_ashp(building_id, standard_parameters):
                                     standard parameters
         :type standard_parameters: pd.Dataframe
     """
-    create_standard_parameter_transformer(
+    from program_files.urban_district_upscaling.pre_processing \
+        import create_standard_parameter_comp
+    create_standard_parameter_comp(
         specific_param={'label': (str(building_id) + '_ashp_transformer'),
                         'comment': 'automatically_created',
                         'input': str(building_id) + '_hp_elec_bus',
@@ -87,6 +61,8 @@ def create_ashp(building_id, standard_parameters):
                         'existing capacity': 0,
                         'min. investment capacity': 0},
         standard_parameters=standard_parameters,
+        type="transformers",
+        index="comment",
         standard_param_name="building_ashp_transformer")
 
 
@@ -105,8 +81,8 @@ def create_gas_heating(building_id, building_type, standard_parameters):
         :type standard_parameters: pd.Dataframe
     """
     from program_files.urban_district_upscaling.pre_processing \
-        import create_standard_parameter_bus
-
+        import create_standard_parameter_bus, create_standard_parameter_comp
+    
     if building_type == "RES":
         bus = 'building_res_gas_bus'
     elif building_type == "IND":
@@ -118,13 +94,15 @@ def create_gas_heating(building_id, building_type, standard_parameters):
                                   bus_type=bus,
                                   standard_parameters=standard_parameters)
 
-    create_standard_parameter_transformer(
+    create_standard_parameter_comp(
         specific_param={'label': str(building_id) + '_gasheating_transformer',
                         'comment': 'automatically_created',
                         'input': str(building_id) + '_gas_bus',
                         'output': str(building_id) + '_heat_bus',
                         'output2': 'None'},
         standard_parameters=standard_parameters,
+        type="transformers",
+        index="comment",
         standard_param_name='building_gasheating_transformer')
 
 
@@ -139,12 +117,16 @@ def create_electric_heating(building_id, standard_parameters):
                                     specific standard parameters
         :type standard_parameters: pd.Dataframe
     """
-    create_standard_parameter_transformer(
-        specific_param={'label': str(building_id)
-                                 + '_electricheating_transformer',
-                        'comment': 'automatically_created',
-                        'input': str(building_id) + '_electricity_bus',
-                        'output': str(building_id) + '_heat_bus',
-                        'output2': 'None'},
+    from program_files.urban_district_upscaling.pre_processing \
+        import create_standard_parameter_comp
+    create_standard_parameter_comp(
+        specific_param={
+            'label': str(building_id) + '_electricheating_transformer',
+            'comment': 'automatically_created',
+            'input': str(building_id) + '_electricity_bus',
+            'output': str(building_id) + '_heat_bus',
+            'output2': 'None'},
         standard_parameters=standard_parameters,
+        type="tranformers",
+        index="comment",
         standard_param_name="building_electricheating_transformer")

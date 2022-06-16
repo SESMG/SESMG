@@ -2,7 +2,8 @@ import xlsxwriter
 import pandas as pd
 import os
 import program_files.urban_district_upscaling.clustering as clustering_py
-from program_files.urban_district_upscaling.components import Sink, Source
+from program_files.urban_district_upscaling.components \
+    import Sink, Source, Storage, Transformer
 
 
 def append_component(sheet: str, comp_parameter: dict):
@@ -126,9 +127,11 @@ def create_standard_parameter_link(label: str, bus_1: str, bus_2: str,
     append_component("links", parameter_dict)
 
 
-def create_standard_parameter_storage(specific_param: dict,
-                                      standard_parameters,
-                                      standard_param_name):
+def create_standard_parameter_comp(specific_param: dict,
+                                   standard_parameters,
+                                   type,
+                                   index,
+                                   standard_param_name):
     """
         creates a storage with standard_parameters, based on the
         standard parameters given in the "standard_parameters" dataset
@@ -148,12 +151,13 @@ def create_standard_parameter_storage(specific_param: dict,
     # extracts the storage specific standard values from the
     # standard_parameters dataset
     standard_param, standard_keys = read_standard_parameters(
-        standard_parameters, standard_param_name, "storages", "comment")
+        standard_parameters, standard_param_name, type, index)
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
         specific_param[standard_keys[i]] = standard_param[standard_keys[i]]
     # appends the new created component to storages sheet
-    append_component("storages", specific_param)
+    append_component(type, specific_param)
+
 
 
 def create_central_heat_component(type, bus, standard_parameters,
@@ -213,10 +217,9 @@ def create_central_heat_component(type, bus, standard_parameters,
             standard_parameters=standard_parameters,
             output=bus)
     if type == 'thermal_storage':
-        create_thermal_storage(building_id="central",
-                               standard_parameters=standard_parameters,
-                               storage_type="central",
-                               bus=bus)
+        Storage.create_thermal_storage(
+            building_id="central", standard_parameters=standard_parameters,
+            storage_type="central", bus=bus)
     # power to gas system
     if type == 'power_to_gas':
         create_power_to_gas_system(standard_parameters=standard_parameters,
@@ -276,9 +279,9 @@ def central_comp(central, standard_parameters):
 
         # central battery storage
         if j['battery_storage'] in ['yes', 'Yes', 1]:
-            create_battery(building_id="central",
-                           standard_parameters=standard_parameters,
-                           storage_type="central")
+            Storage. create_battery(
+                building_id="central", standard_parameters=standard_parameters,
+                storage_type="central")
 
 
 def create_power_to_gas_system(standard_parameters, bus):
@@ -308,9 +311,11 @@ def create_power_to_gas_system(standard_parameters, bus):
          'output': 'central_h2_bus',
          'output2': 'None'}
 
-    create_standard_parameter_transformer(
+    create_standard_parameter_comp(
         specific_param=electrolysis_transformer_param,
         standard_parameters=standard_parameters,
+        type="transformers",
+        index="comment",
         standard_param_name='central_electrolysis_transformer')
 
     # methanization transformer
@@ -321,9 +326,11 @@ def create_power_to_gas_system(standard_parameters, bus):
          'output': 'central_naturalgas_bus',
          'output2': 'None'}
 
-    create_standard_parameter_transformer(
+    create_standard_parameter_comp(
         specific_param=methanization_transformer_param,
         standard_parameters=standard_parameters,
+        type="transformers",
+        index="comment",
         standard_param_name='central_methanization_transformer')
 
     # fuel cell transformer
@@ -334,29 +341,32 @@ def create_power_to_gas_system(standard_parameters, bus):
          'output': 'central_electricity_bus',
          'output2': bus}
 
-    create_standard_parameter_transformer(
+    create_standard_parameter_comp(
         specific_param=fuelcell_transformer_param,
         standard_parameters=standard_parameters,
+        type="transformers",
+        index="comment",
         standard_param_name='central_fuelcell_transformer')
 
-    # h2 storage
-    h2_storage_param = {'label': 'central_h2_storage',
+    # central h2 storage
+    create_standard_parameter_comp(
+        specific_param={'label': 'central_h2_storage',
                         'comment': 'automatically_created',
-                        'bus': 'central_h2_bus'}
-
-    create_standard_parameter_storage(specific_param=h2_storage_param,
-                                      standard_parameters=standard_parameters,
-                                      standard_param_name='central_h2_storage')
-
-    # natural gas storage
-    ng_storage_param = {'label': 'central_naturalgas_storage',
-                        'comment': 'automatically_created',
-                        'bus': 'central_naturalgas_bus'}
-
-    create_standard_parameter_storage(
-        specific_param=ng_storage_param,
+                        'bus': 'central_h2_bus'},
         standard_parameters=standard_parameters,
-        standard_param_name='central_naturalgas_storage')
+        type="storages",
+        index="comment",
+        standard_param_name='central_h2_storage')
+
+    # central natural gas storage
+    create_standard_parameter_comp(
+            specific_param={'label': 'central_naturalgas_storage',
+                            'comment': 'automatically_created',
+                            'bus': 'central_naturalgas_bus'},
+            standard_parameters=standard_parameters,
+            type="storages",
+            index="comment",
+            standard_param_name='central_naturalgas_storage')
 
     # link to chp_naturalgas_bus
     create_standard_parameter_link(
@@ -685,49 +695,7 @@ def create_buses(building_id: str, pv_bus: bool, building_type: str,
 
 
 
-def create_battery(building_id: str, standard_parameters, storage_type: str):
-    """
-        Sets the specific parameters for a battery, and creates them
-        afterwards.
 
-        :param building_id: building label
-        :type building_id: str
-        :param standard_parameters: Dataframe holding battery
-                                    specific standard parameters
-        :type standard_parameters: pd.Dataframe
-        :param storage_type:
-        :type storage_type: str
-    """
-    create_standard_parameter_storage(
-        specific_param={
-            'label': str(building_id) + '_battery_storage',
-            'comment': 'automatically_created',
-            'bus': str(building_id) + '_electricity_bus'},
-        standard_parameters=standard_parameters,
-        standard_param_name=storage_type + '_battery_storage')
-
-
-def create_thermal_storage(building_id, standard_parameters,
-                           storage_type: str, bus=None):
-    """
-        TODO DOCSTRING TEXT
-        :param building_id: building label
-        :type building_id: str
-        :param standard_parameters: Dataframe holding thermal storage
-                                    specific standard parameters
-        :type standard_parameters: pd.Dataframe
-        :param storage_type:
-        :type storage_type: str
-        :param bus:
-        :type bus: str
-    """
-    create_standard_parameter_storage(
-        specific_param={
-            'label': str(building_id) + '_thermal_storage',
-            'comment': 'automatically_created',
-            'bus': str(building_id) + '_heat_bus' if bus is None else bus},
-        standard_parameters=standard_parameters,
-        standard_param_name=storage_type + '_thermal_storage')
 
 
 def create_building_insulation(building_id: str, yoc: int, area_window: float,
@@ -926,8 +894,8 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
                                     parcel['gchp area (m²)']})
     # create gchp relevant components
     for gchp in gchps:
-        create_gchp(parcel_id=gchp, area=gchps[gchp],
-                    standard_parameters=standard_parameters)
+        Transformer.create_gchp(parcel_id=gchp, area=gchps[gchp],
+                                standard_parameters=standard_parameters)
         create_standard_parameter_bus(label=gchp + "_hp_elec_bus",
                                       bus_type="building_hp_electricity_bus",
                                       standard_parameters=standard_parameters)
@@ -986,14 +954,15 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
 
         # creates air source heat-pumps
         if building['ashp'] in ['Yes', 'yes', 1]:
-            create_ashp(building_id=building['label'],
-                        standard_parameters=standard_parameters)
+            Transformer.create_ashp(building_id=building['label'],
+                                    standard_parameters=standard_parameters)
 
         # creates gasheating-system
         if building['gas heating'] in ['Yes', 'yes', 1]:
-            create_gas_heating(building_id=building['label'],
-                               building_type=building['building type'],
-                               standard_parameters=standard_parameters)
+            Transformer.create_gas_heating(
+                building_id=building['label'],
+                building_type=building['building type'],
+                standard_parameters=standard_parameters)
 
             # natural gas connection link to p2g-ng-bus
             if p2g_link:
@@ -1007,19 +976,21 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
 
         # creates electric heating-system
         if building['electric heating'] in ['yes', 'Yes', 1]:
-            create_electric_heating(
+            Transformer.create_electric_heating(
                 building_id=building['label'],
                 standard_parameters=standard_parameters)
 
         # battery storage
         if building['battery storage'] in ['Yes', 'yes', 1]:
-            create_battery(building_id=building['label'],
-                           standard_parameters=standard_parameters,
-                           storage_type="building")
+            Storage.create_battery(
+                building_id=building['label'],
+                standard_parameters=standard_parameters,
+                storage_type="building")
         if building['thermal storage'] in ['Yes', 'yes', 1]:
-            create_thermal_storage(building_id=building['label'],
-                                   standard_parameters=standard_parameters,
-                                   storage_type="building")
+            Storage.create_thermal_storage(
+                building_id=building['label'],
+                standard_parameters=standard_parameters,
+                storage_type="building")
 
         print(str(building['label'])
               + ' subsystem added to scenario sheet.')
