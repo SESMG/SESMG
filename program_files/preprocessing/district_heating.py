@@ -546,6 +546,26 @@ def connect_dh_to_system(oemof_opti_model, busd):
             model within connection to the main model
     """
     oemof_opti_model = remove_redundant_sinks(oemof_opti_model)
+    invest_data = pd.read_csv(os.path.join("program_files",
+                                           "technical_data",
+                                           "district_heating",
+                                           "pipes.csv"))
+    for a in oemof_opti_model.nodes:
+        if str(type(a)) == "<class 'oemof.solph.network.bus.Bus'>":
+            pass
+        else:
+            ep_costs = getattr(a.outputs[list(a.outputs.keys())[0]].investment,
+                               "ep_costs")
+            label = a.label.tag3
+            length = ep_costs \
+                     / float(invest_data.loc[invest_data["label_3"]
+                                       == label]["capex_pipes"])
+            setattr(a.outputs[list(a.outputs.keys())[0]].investment,
+                    "periodical_constraint_costs",
+                    length
+                    * float(invest_data.loc[invest_data["label_3"]
+                                            == label]
+                            ["periodical_constraint_costs"]))
     # create link to connect consumers heat bus to the dh-system
     for num, consumer in thermal_network.components["consumers"].iterrows():
         oemof_opti_model.nodes.append(solph.Transformer(
