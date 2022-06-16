@@ -326,19 +326,11 @@ def create_power_to_gas_system(standard_parameters, bus):
                 standard_param_name=transformer)
         
     # storages
-    storage_dict = {
-        "central_h2_storage": ["central_h2_storage", "central_h2_bus"],
-        "central_naturalgas_storage": ["central_naturalgas_storage",
-                                       "central_naturalgas_bus"]}
-    for storage in storage_dict:
-        create_standard_parameter_comp(
-                specific_param={"label": storage_dict[storage][0],
-                                "comment": 'automatically_created',
-                                "bus": storage_dict[storage][1]},
-                standard_parameters=standard_parameters,
-                type="transformers",
-                index="comment",
-                standard_param_name=storage)
+    for storage_type in ["h2_storage", "naturalgas_storage"]:
+        Storage.create_storage(building_id="central",
+                               standard_parameters=standard_parameters,
+                               storage_type=storage_type,
+                               de_centralized="central")
 
     # link to chp_naturalgas_bus
     create_standard_parameter_link(
@@ -634,10 +626,6 @@ def create_buses(building_id: str, pv_bus: bool, building_type: str,
                 bus_2="central_electricity_bus",
                 link_type="building_pv_central_link",
                 standard_parameters=standard_parameters)
-
-
-
-
 
 
 def create_building_insulation(building_id: str, yoc: int, area_window: float,

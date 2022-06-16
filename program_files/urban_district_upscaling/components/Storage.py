@@ -22,9 +22,15 @@ def create_storage(building_id: str, standard_parameters, storage_type: str,
         "battery": [de_centralized + '_battery_storage',
                     str(building_id) + '_battery_storage',
                     str(building_id) + '_electricity_bus'],
-        "thermal": [storage_type + '_thermal_storage',
+        "thermal": [de_centralized + '_thermal_storage',
                     str(building_id) + '_thermal_storage',
-                    str(building_id) + '_heat_bus' if bus is None else bus]}
+                    str(building_id) + '_heat_bus' if bus is None else bus],
+        "h2_storage": [de_centralized + "_h2_storage",
+                       str(building_id) + "_h2_storage",
+                       str(building_id) + "_h2_bus"],
+        "natural_gas_storage": [de_centralized + "_naturalgas_storage",
+                                str(building_id) + "_naturalgas_storage",
+                                str(building_id) + "_naturalgas_bus"]}
     
     create_standard_parameter_comp(
         specific_param={'label': storage_dict.get(storage_type)[1],
