@@ -73,7 +73,7 @@ class Sinks:
         else:
             return 0, 0, [0]
 
-    def create_sink(self, de: dict, nominal_value=None,
+    def create_sink(self, de: pd.Series, nominal_value=None,
                     load_profile=None, args=None):
         """
             Creates an oemof sink with fixed or unfixed timeseries.
@@ -93,8 +93,9 @@ class Sinks:
 
             Christian Klemm - christian.klemm@fh-muenster.de
         """
+        
         if args is None:
-            args = {"nominal value": nominal_value}
+            args = {"nominal_value": nominal_value}
             if de['fixed'] == 1:
                 # sets attributes for a fixed richardson sink
                 args.update({'fix': load_profile})
@@ -264,9 +265,9 @@ class Sinks:
             demand = e_slp.get_profile({de['load profile']: 1})
             # creates time series based on standard load profiles
             demand = demand.resample(temp_resolution).mean()
-            
         # starts the create_sink method with the parameters set before
-        self.create_sink(de, nominal_value=de['annual demand'],
+        self.create_sink(de,
+                         nominal_value=de['annual demand'],
                          load_profile=demand[de['load profile']])
         # returns logging info
         logging.info('\t Sink created: ' + de['label'])
