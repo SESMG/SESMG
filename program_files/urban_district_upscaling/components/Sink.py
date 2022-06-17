@@ -21,21 +21,14 @@ def create_standard_parameter_sink(sink_type: str, label: str,
         :type standard_parameters: pd.Dataframe
     """
     from program_files.urban_district_upscaling.pre_processing \
-        import append_component, read_standard_parameters
-    # define individual values
-    sink_dict = {'label': label,
-                 'input': sink_input,
-                 'annual demand': annual_demand}
-    # extracts the sink specific standard values from the
-    # standard_parameters dataset
-    standard_param, standard_keys = \
-        read_standard_parameters(standard_parameters, sink_type, "sinks",
-                                 'sink_type')
-    # insert standard parameters in the components dataset (dict)
-    for i in range(len(standard_keys)):
-        sink_dict[standard_keys[i]] = standard_param[standard_keys[i]]
-    # appends the new created component to sinks sheet
-    append_component("sinks", sink_dict)
+        import create_standard_parameter_comp
+    create_standard_parameter_comp(
+        specific_param={'label': label,
+                        'input': sink_input,
+                        'annual demand': annual_demand},
+        type="sinks",
+        index="sink_type",
+        standard_param_name=sink_type)
     
 
 def create_sinks(sink_id: str, building_type: str, units: int,

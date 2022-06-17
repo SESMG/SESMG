@@ -569,29 +569,30 @@ def load_input_data(plain_sheet, standard_parameter_path, pre_scenario):
     sheets = {}
     columns = {}
     # get keys from plain scenario
-    plain_sheet_pd = pd.ExcelFile(plain_sheet)
-    sheet_names = plain_sheet_pd.sheet_names
-    for i in range(1, len(sheet_names)):
-        if sheet_names[i] not in ["weather data", "time series"]:
-            columns[sheet_names[i]] = \
-                plain_sheet_pd.parse(sheet_names[i]).keys()
-    # append worksheets' names to the list of worksheets
-    worksheets = [column for column in columns.keys()]
-    # get spreadsheet units from plain sheet
-    for sheet in worksheets:
-        sheets_units = {}
-        sheets.update({sheet: pd.DataFrame(columns=(columns[sheet]))})
-        units = next(plain_sheet_pd.parse(sheet).iterrows())[1]
-        for unit in units.keys():
-            sheets_units.update({unit: units[unit]})
-        units_series = pd.Series(data=sheets_units)
-        sheets[sheet] = pd.concat([sheets[sheet],
-                                   pd.DataFrame([units_series])])
-    worksheets += ["weather data", "time series"]
+    plain_sheet = pd.ExcelFile(plain_sheet)
     # load standard parameters from standard parameter file
     standard_parameters = pd.ExcelFile(standard_parameter_path)
     # import the sheet which is filled by the user
     pre_scenario_pd = pd.ExcelFile(pre_scenario)
+    
+    for i in range(1, len(plain_sheet.sheet_names)):
+        if plain_sheet.sheet_names[i] not in ["weather data", "time series"]:
+            columns[plain_sheet.sheet_names[i]] = \
+                plain_sheet.parse(plain_sheet.sheet_names[i]).keys()
+    # append worksheets' names to the list of worksheets
+    worksheets = [column for column in columns.keys()]
+    # get spreadsheet units from plain sheet
+    for sheet in worksheets:
+        #sheets_units = {}
+        sheets.update({sheet: pd.DataFrame(columns=(columns[sheet]))})
+        #units = next(plain_sheet.parse(sheet).iterrows())[1]
+        #for unit in units.keys():
+        #    sheets_units.update({unit: units[unit]})
+        units_series = pd.Series(data={a: "x" for a in sheets[sheet].keys()})
+        sheets[sheet] = pd.concat([sheets[sheet],
+                                   pd.DataFrame([units_series])])
+    worksheets += ["weather data", "time series"]
+    
     # get the input sheets
     tool = pre_scenario_pd.parse("tool")
     parcel = pre_scenario_pd.parse("parcel")
@@ -762,8 +763,6 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
     # open the new excel file and add all the created components
     j = 0
     writer = pd.ExcelWriter(output_scenario, engine='xlsxwriter')
-    print(sheets)
-    print(worksheets)
     for i in sheets:
         sheets[i].to_excel(writer, worksheets[j], index=False)
         j = j + 1
