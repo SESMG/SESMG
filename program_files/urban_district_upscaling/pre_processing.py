@@ -417,26 +417,16 @@ def create_central_gas_heating_transformer(gastype, standard_parameters,
                                   standard_parameters=standard_parameters)
     
     if central_chp:
-        # connection to central electricity bus
-        create_standard_parameter_comp(
-            specific_param={'label': "heating_plant_" + gastype + "_link",
-                            'bus1': "central_chp_naturalgas_bus",
-                            'bus2': "central_" + gastype + "_plant_bus"},
-            standard_parameters=standard_parameters,
-            type="links",
-            index="link_type",
-            standard_param_name="central_naturalgas_building_link")
+        Link.create_link(label="heating_plant_" + gastype + "_link",
+                         bus_1="central_chp_naturalgas_bus",
+                         bus_2="central_" + gastype + "_plant_bus",
+                         link_type="central_naturalgas_building_link",
+                         standard_parameters=standard_parameters)
 
-    create_standard_parameter_comp(
-        specific_param={
-            'label': "central_" + gastype + '_heating_plant_transformer',
-            'input': "central_" + gastype + "_plant_bus",
-            'output': output,
-            'output2': 'None'},
-        standard_parameters=standard_parameters,
-        type="transformers",
-        index="comment",
-        standard_param_name="central_naturalgas_heating_plant_transformer")
+    Transformer.create_transformer(
+        building_id="central", standard_parameters=standard_parameters,
+        transformer_type="central_naturalgas_heating_plant_transformer",
+        gastype=gastype, output=output)
 
 
 def create_central_chp(gastype, standard_parameters, output, central_elec_bus):
@@ -470,26 +460,18 @@ def create_central_chp(gastype, standard_parameters, output, central_elec_bus):
     
     if central_elec_bus:
         # connection to central electricity bus
-        create_standard_parameter_comp(
-            specific_param={
-                'label': "central_chp_" + gastype + "_elec_central_link",
-                'bus1': "central_chp_" + gastype + "_elec_bus",
-                'bus2': "central_electricity_bus"},
-            standard_parameters=standard_parameters,
-            type="links",
-            index="link_type",
-            standard_param_name="central_chp_elec_central_link")
+        Link.create_link(label="central_chp_" + gastype + "_elec_central_link",
+                         bus_1="central_chp_" + gastype + "_elec_bus",
+                         bus_2="central_electricity_bus",
+                         link_type="central_chp_elec_central_link",
+                         standard_parameters=standard_parameters)
 
-
-    create_standard_parameter_comp(
-        specific_param={'label': 'central_' + gastype + '_chp_transformer',
-                        'input': "central_chp_" + gastype + "_bus",
-                        'output': "central_chp_" + gastype + "_elec_bus",
-                        'output2': output},
+    Transformer.create_transformer(
+        building_id="central",
         standard_parameters=standard_parameters,
-        type="transformers",
-        index="comment",
-        standard_param_name="central_" + gastype + "_chp")
+        transformer_type="central_" + gastype + "_chp",
+        gastype=gastype,
+        output=output)
 
 
 def create_buses(building_id: str, pv_bus: bool, building_type: str,
