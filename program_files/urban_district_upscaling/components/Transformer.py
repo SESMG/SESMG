@@ -15,34 +15,61 @@ def create_transformer(building_id, standard_parameters, transformer_type,
     #    transformers_standard_parameters.loc['building_gchp_transformer'][
     #        'min. borehole area']
     transf_dict = {
-        "building_gchp_transformer": ['_gchp_transformer', '_hp_elec_bus',
-                                      '_heat_bus', 'None'],
-        "building_ashp_transformer": ['_ashp_transformer', '_hp_elec_bus',
-                                      '_heat_bus', 'None'],
-        'building_gasheating_transformer': ['_gasheating_transformer',
-                                            '_gas_bus', '_heat_bus', 'None'],
+        "building_gchp_transformer": [
+            '_gchp_transformer',
+            '_hp_elec_bus',
+            '_heat_bus',
+            'None'],
+        "building_ashp_transformer": [
+            '_ashp_transformer',
+            '_hp_elec_bus',
+            '_heat_bus',
+            'None'],
+        'building_gasheating_transformer': [
+            '_gasheating_transformer',
+            '_gas_bus',
+            '_heat_bus',
+            'None'],
         "building_electricheating_transformer": [
-            '_electricheating_transformer', '_electricity_bus', '_heat_bus',
+            '_electricheating_transformer',
+            '_electricity_bus',
+            '_heat_bus',
             'None'],
         "central_" + specific + "_chp": [
-            "_" + specific + '_chp_transformer', "_chp_" + specific + "_bus",
-            "_chp_" + specific + "_elec_bus", output],
+            "_" + specific + '_chp_transformer',
+            "_chp_" + specific + "_bus",
+            "_chp_" + specific + "_elec_bus",
+            output],
         "central_naturalgas_heating_plant_transformer": [
             "_" + specific + '_heating_plant_transformer',
-            "_" + specific + "_plant_bus", output, "None"],
-        "central_" + specific + "_transformer": [
-            "_" + specific + "_transformer", "_heatpump_elec_bus",
-            output, "None"],
-        "central_biomass_transformer": ['_biomass_transformer', "_biomass_bus",
-                                        output, "None"],
-        "central_electrolysis_transformer": [
-            "_electrolysis_transformer", "_electricity_bus", "_h2_bus",
+            "_" + specific + "_plant_bus",
+            output,
             "None"],
-        "central_methanization_transformer":
-            ['_methanization_transformer', "_h2_bus", "_naturalgas_bus",
+        "central_" + specific + "_transformer": [
+            "_" + specific + "_transformer",
+            "_heatpump_elec_bus",
+            output,
+            "None"],
+        "central_biomass_transformer": [
+            '_biomass_transformer',
+            "_biomass_bus",
+            output,
+            "None"],
+        "central_electrolysis_transformer": [
+            "_electrolysis_transformer",
+            "_electricity_bus",
+            "_h2_bus",
+            "None"],
+        "central_methanization_transformer":[
+            '_methanization_transformer',
+             "_h2_bus",
+            "_naturalgas_bus",
              "None"],
-        "central_fuelcell_transformer":
-            ['_fuelcell_transformer', "_h2_bus", "_electricity_bus", output]
+        "central_fuelcell_transformer": [
+            '_fuelcell_transformer',
+            "_h2_bus",
+            "_electricity_bus",
+            output]
     }
     
     if building_type is not None:

@@ -28,7 +28,7 @@ def create_storage(building_id: str, standard_parameters, storage_type: str,
         "h2_storage": [de_centralized + "_h2_storage",
                        str(building_id) + "_h2_storage",
                        str(building_id) + "_h2_bus"],
-        "natural_gas_storage": [de_centralized + "_naturalgas_storage",
+        "naturalgas_storage": [de_centralized + "_naturalgas_storage",
                                 str(building_id) + "_naturalgas_storage",
                                 str(building_id) + "_naturalgas_bus"]}
     
