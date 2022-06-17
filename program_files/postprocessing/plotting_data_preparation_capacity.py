@@ -1,5 +1,4 @@
 import pandas as pd
-
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -20,7 +19,7 @@ def pv_st_capacity(components_df, pv_st, dataframe, capacities_dict):
         dir_dict = {
             "_south_west": [-157.5, -112.5],
             "_west": [-112.5, -67.5],
-            "_north_west": [-67.5, -22.5]
+            "_north_west": [-67.5, -22.5],
             "_north": [-22.5, 22.5],
             "_north_east": [22.5, 67.5],
             "_east": [67.5, 112.5],
@@ -145,7 +144,7 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
         capacities = capacities.sort_values("run")
 
         plt.clf()
-        fig, axs = plt.subplots(3, sharex=True)
+        fig, axs = plt.subplots(3, sharex="all")
         fig.set_size_inches(18.5, 15.5)
         capacities.set_index("run", inplace=True, drop=False)
         plot_dict = {
