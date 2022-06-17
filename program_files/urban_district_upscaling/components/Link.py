@@ -1,5 +1,5 @@
 def create_link(label: str, bus_1: str, bus_2: str,
-                link_type: str, standard_parameters):
+                link_type: str):
     """
         creates a link with standard_parameters, based on the standard
         parameters given in the "standard_parameters" dataset and adds
@@ -22,7 +22,6 @@ def create_link(label: str, bus_1: str, bus_2: str,
         import create_standard_parameter_comp
     create_standard_parameter_comp(
         specific_param={'label': label, 'bus1': bus_1, 'bus2': bus_2},
-        standard_parameters=standard_parameters,
         type="links",
         index="link_type",
         standard_param_name=link_type)

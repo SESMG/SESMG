@@ -1,4 +1,4 @@
-def create_storage(building_id: str, standard_parameters, storage_type: str,
+def create_storage(building_id: str, storage_type: str,
                    de_centralized: str, bus=None):
     """
         Sets the specific parameters for a battery, and creates them
@@ -29,14 +29,13 @@ def create_storage(building_id: str, standard_parameters, storage_type: str,
                        str(building_id) + "_h2_storage",
                        str(building_id) + "_h2_bus"],
         "naturalgas_storage": [de_centralized + "_naturalgas_storage",
-                                str(building_id) + "_naturalgas_storage",
-                                str(building_id) + "_naturalgas_bus"]}
+                               str(building_id) + "_naturalgas_storage",
+                               str(building_id) + "_naturalgas_bus"]}
     
     create_standard_parameter_comp(
         specific_param={'label': storage_dict.get(storage_type)[1],
                         'comment': 'automatically_created',
                         'bus': storage_dict.get(storage_type)[2]},
-        standard_parameters=standard_parameters,
         type="storages",
         index="comment",
         standard_param_name=storage_dict.get(storage_type)[0])
