@@ -1,3 +1,6 @@
+from program_files.postprocessing.plotting import get_pv_st_dir
+
+
 def create_pv_source(building_id, plant_id, azimuth, tilt, area,
                      latitude, longitude):
     """
@@ -152,3 +155,119 @@ def create_sources(building, clustering):
                     component2=(building['label'] + '_' + plant_id
                                 + '_solarthermal_source'),
                     limit=building['roof area (m²) %1d' % roof_num])
+
+
+def cluster_sources_information(source, source_param, azimuth_type, type):
+    """
+        Collects the source information of the selected type, and
+        inserts it into the dict containing the cluster specific
+        sources data.
+
+        :param source: Dataframe containing the source under \
+            investigation
+        :type source: pd.DataFrame
+        :param source_param: dictionary containing the cluster summed \
+            source information
+        :type source_param: dict
+        :param azimuth_type: definies the celestial direction of the \
+            source to be clustered
+        :type azimuth_type: str
+        :param type: source type needed to define the dict entry \
+            to be modified
+        :type type: str
+
+        :return: - **source_param** (dict) - dict extended by a new \
+            entry
+    """
+    # counter
+    source_param[type + "_{}".format(azimuth_type)][0] += 1
+    # maxinvest
+    source_param[type + "_{}".format(azimuth_type)][1] \
+        += source["max. investment capacity"]
+    # periodical_costs
+    source_param[type + "_{}".format(azimuth_type)][2] \
+        += source["periodical costs"]
+    # periodical constraint costs
+    source_param[type + "_{}".format(azimuth_type)][3] \
+        += source["periodical constraint costs"]
+    # variable costs
+    source_param[type + "_{}".format(azimuth_type)][4] \
+        += source["variable costs"]
+    # albedo
+    source_param[type + "_{}".format(azimuth_type)][5] += source["Albedo"]
+    # altitude
+    source_param[type + "_{}".format(azimuth_type)][6] += source["Altitude"]
+    # azimuth
+    source_param[type + "_{}".format(azimuth_type)][7] += source["Azimuth"]
+    # surface tilt
+    source_param[type + "_{}".format(azimuth_type)][8] \
+        += source["Surface Tilt"]
+    # latitude
+    source_param[type + "_{}".format(azimuth_type)][9] += source["Latitude"]
+    # longitude
+    source_param[type + "_{}".format(azimuth_type)][10] += source["Longitude"]
+    # remove the considered source from sources sheet
+    sheets["sources"] = sheets["sources"].drop(index=source["label"])
+    # return the modified source_param dict to the sources clustering
+    # method
+    return source_param
+
+
+def sources_clustering(source_param, building, sheets_clustering):
+    """
+        In this method, the information of the photovoltaic and solar
+        thermal systems to be clustered is collected, and the systems
+        whose information has been collected are deleted.
+        :param source_param: dictionary containing the cluster summed \
+            source information
+        :type source_param: dict
+        :param building: DataFrame containing the building row from the\
+            pre scenario sheet
+        :type building: pd.Dataframe
+        :param sheets_clustering: copy of the scenario created within \
+            the pre_processing.py
+        :type sheets_clustering: pd.DataFrame
+
+        :return: - **source_param** (dict) - containing the cluster \
+            summed source information attached within this method
+    """
+    for index, sources in sheets_clustering["sources"].iterrows():
+        # collecting information for bundled photovoltaic systems
+        if sources["technology"] in ["photovoltaic",
+                                     "solar_thermal_flat_plate"]:
+            # check the azimuth type for clustering in 8 cardinal
+            # directions
+            dir_dict = {"south_west": [-157.5, -112.5],
+                        "west": [-112.5, -67.5],
+                        "north_west": [-67.5, -22.5],
+                        "north": [-22.5, 22.5],
+                        "north_east": [22.5, 67.5],
+                        "east": [67.5, 112.5],
+                        "south_east": [112.5, 157.5]}
+            azimuth_type = None
+            for dire in dir_dict:
+                if not dir_dict[dire][0] <= sources["Azimuth"] \
+                       < dir_dict[dire][1]:
+                    pass
+                else:
+                    azimuth_type = dire
+            azimuth_type = "south" if azimuth_type is None else azimuth_type
+            # Photovoltaic clustering - collecting the sources
+            # information for each cluster
+            if str(building[0]) in sources["label"] \
+                    and sources["technology"] == "photovoltaic" \
+                    and sources["label"] in sheets["sources"].index:
+                source_param = \
+                    cluster_sources_information(sources, source_param,
+                                                azimuth_type, "pv")
+            # Solar thermal clustering - collecting the sources
+            # information for each cluster
+            if str(building[0]) in sources["label"] \
+                    and sources["technology"] == \
+                    "solar_thermal_flat_plate" \
+                    and sources["label"] in sheets["sources"].index:
+                source_param = \
+                    cluster_sources_information(sources, source_param,
+                                                azimuth_type, "st")
+    # return the collected data to the main clustering method
+    return source_param

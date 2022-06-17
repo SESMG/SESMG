@@ -1,59 +1,8 @@
 import program_files.urban_district_upscaling.pre_processing as pre_processing
+from program_files.urban_district_upscaling.components import Link, Sink
 
 
-def sink_clustering(building, sink, sink_parameters):
-    """
-        In this method, the current sinks of the respective cluster are
-        stored in dict and the current sinks are deleted. Furthermore,
-        the heat buses and heat requirements of each cluster are
-        collected in order to summarize them afterwards.
-        
-        :param building: DataFrame containing the building row from the\
-            pre scenario sheet
-        :type building: pd.Dataframe
-        :param sink: sink dataframe
-        :type sink: pd.Dataframe
-        :parameter sink_parameters: list containing clusters' sinks \
-            information
-        :type sink_parameters: list
-    """
-    # get cluster electricity sinks
-    if str(building[0]) in sink["label"] \
-            and "electricity" in sink["label"]:
-        # get res elec demand
-        if "RES" in building[2]:
-            sink_parameters[0] += sink["annual demand"]
-            sink_parameters[7].append(sink["label"])
-            #sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
-        # get com elec demand
-        elif "COM" in building[2]:
-            sink_parameters[1] += sink["annual demand"]
-            sink_parameters[8].append(sink["label"])
-            #sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
-        # get ind elec demand
-        elif "IND" in building[2]:
-            sink_parameters[2] += sink["annual demand"]
-            sink_parameters[9].append(sink["label"])
-            #sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
-    # get cluster heat sinks
-    elif str(building[0]) in sink["label"] \
-            and "heat" in sink["label"]:
-        # append heat bus to cluster heat buses
-        sink_parameters[3].append((building[2], sink["input"]))
-        # get res heat demand
-        if "RES" in building[2]:
-            sink_parameters[4] += sink["annual demand"]
-        # get com heat demand
-        elif "COM" in building[2]:
-            sink_parameters[5] += sink["annual demand"]
-        # get ind heat demand
-        elif "IND" in building[2]:
-            sink_parameters[6] += sink["annual demand"]
-        sink_parameters[7].append((building[2], sink["label"]))
-    return sink_parameters
-
-
-def create_cluster_elec_buses(building, cluster, standard_parameters):
+def create_cluster_elec_buses(building, cluster):
     """
         Method creating the building type specific electricity buses and
         connecting them to the main cluster electricity bus
@@ -85,144 +34,18 @@ def create_cluster_elec_buses(building, cluster, standard_parameters):
         # create building type specific bus
         pre_processing.create_standard_parameter_bus(
                 label=str(cluster) + bus_type + "electricity_bus",
-                bus_type="building" + bus_type + "electricity_bus",
-                standard_parameters=standard_parameters)
+                bus_type="building" + bus_type + "electricity_bus")
         # reset index to label to ensure further attachments
-        sheets["buses"].set_index("label", inplace=True,
-                                  drop=False)
+        sheets["buses"].set_index("label", inplace=True, drop=False)
         
         # Creates a Bus connecting the cluster electricity bus with
         # the res electricity bus
-        pre_processing.create_standard_parameter_link(
-                label=str(cluster) + bus_type + "electricity_link",
-                bus_1=str(cluster) + "_electricity_bus",
-                bus_2=str(cluster) + bus_type + "electricity_bus",
-                link_type='building_pv_building_link',
-                standard_parameters=standard_parameters)
+        Link.create_link(label=str(cluster) + bus_type + "electricity_link",
+                         bus_1=str(cluster) + "_electricity_bus",
+                         bus_2=str(cluster) + bus_type + "electricity_bus",
+                         link_type='building_pv_building_link')
         # reset index to label to ensure further attachments
-        sheets["links"].set_index("label", inplace=True,
-                                  drop=False)
-
-
-def cluster_sources_information(source, source_param, azimuth_type, type):
-    """
-        Collects the source information of the selected type, and
-        inserts it into the dict containing the cluster specific
-        sources data.
-
-        :param source: Dataframe containing the source under \
-            investigation
-        :type source: pd.DataFrame
-        :param source_param: dictionary containing the cluster summed \
-            source information
-        :type source_param: dict
-        :param azimuth_type: definies the celestial direction of the \
-            source to be clustered
-        :type azimuth_type: str
-        :param type: source type needed to define the dict entry \
-            to be modified
-        :type type: str
-        
-        :return: - **source_param** (dict) - dict extended by a new \
-            entry
-    """
-    # counter
-    source_param[type + "_{}".format(azimuth_type)][0] += 1
-    # maxinvest
-    source_param[type + "_{}".format(azimuth_type)][1] \
-        += source["max. investment capacity"]
-    # periodical_costs
-    source_param[type + "_{}".format(azimuth_type)][2] \
-        += source["periodical costs"]
-    # periodical constraint costs
-    source_param[type + "_{}".format(azimuth_type)][3] \
-        += source["periodical constraint costs"]
-    # variable costs
-    source_param[type + "_{}".format(azimuth_type)][4] \
-        += source["variable costs"]
-    # albedo
-    source_param[type + "_{}".format(azimuth_type)][5] += source["Albedo"]
-    # altitude
-    source_param[type + "_{}".format(azimuth_type)][6] += source["Altitude"]
-    # azimuth
-    source_param[type + "_{}".format(azimuth_type)][7] += source["Azimuth"]
-    # surface tilt
-    source_param[type + "_{}".format(azimuth_type)][8] \
-        += source["Surface Tilt"]
-    # latitude
-    source_param[type + "_{}".format(azimuth_type)][9] += source["Latitude"]
-    # longitude
-    source_param[type + "_{}".format(azimuth_type)][10] += source["Longitude"]
-    # remove the considered source from sources sheet
-    sheets["sources"] = sheets["sources"].drop(index=source["label"])
-    # return the modified source_param dict to the sources clustering
-    # method
-    return source_param
-
-
-def sources_clustering(source_param, building, sheets_clustering):
-    """
-        In this method, the information of the photovoltaic and solar
-        thermal systems to be clustered is collected, and the systems
-        whose information has been collected are deleted.
-        :param source_param: dictionary containing the cluster summed \
-            source information
-        :type source_param: dict
-        :param building: DataFrame containing the building row from the\
-            pre scenario sheet
-        :type building: pd.Dataframe
-        :param sheets_clustering: copy of the scenario created within \
-            the pre_processing.py
-        :type sheets_clustering: pd.DataFrame
-        
-        :return: - **source_param** (dict) - containing the cluster \
-            summed source information attached within this method
-    """
-    for index, sources in sheets_clustering["sources"].iterrows():
-        # collecting information for bundled photovoltaic systems
-        if sources["technology"] in ["photovoltaic",
-                                     "solar_thermal_flat_plate"]:
-            # check the azimuth type for clustering in 8 cardinal
-            # directions
-            if -22.5 <= sources["Azimuth"] < 22.5:
-                azimuth_type = "north"
-            elif 22.5 <= sources["Azimuth"] < 67.5:
-                azimuth_type = "north_east"
-            elif 67.5 <= sources["Azimuth"] < 112.5:
-                azimuth_type = "east"
-            elif 112.5 <= sources["Azimuth"] < 157.5:
-                azimuth_type = "south_east"
-            elif sources["Azimuth"] >= 157.5 \
-                    or sources["Azimuth"] < -157.5:
-                azimuth_type = "south"
-            elif -157.5 <= sources["Azimuth"] < -112.5:
-                azimuth_type = "south_west"
-            elif -112.5 <= sources["Azimuth"] < -67.5:
-                azimuth_type = "west"
-            elif -67.5 <= sources["Azimuth"] < -22.5:
-                azimuth_type = "north_west"
-            else:
-                azimuth_type = None
-            if azimuth_type:
-                # Photovoltaic clustering - collecting the sources
-                # information for each cluster
-                if str(building[0]) in sources["label"] \
-                        and sources["technology"] == "photovoltaic" \
-                        and sources["label"] in sheets["sources"].index:
-                    source_param = \
-                        cluster_sources_information(sources, source_param,
-                                                    azimuth_type, "pv")
-                # Solar thermal clustering - collecting the sources
-                # information for each cluster
-                if str(building[0]) in sources["label"] \
-                        and sources["technology"] == \
-                        "solar_thermal_flat_plate" \
-                        and sources["label"] in sheets["sources"].index:
-                    source_param = \
-                        cluster_sources_information(sources, source_param,
-                                                    azimuth_type, "st")
-    # return the collected data to the main clustering method
-    return source_param
+        sheets["links"].set_index("label", inplace=True, drop=False)
 
 
 def cluster_transf_information(transformer, transf_param, type):
@@ -942,8 +765,8 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets_input,
             for building in cluster_ids[cluster]:
                 for index, sink in sheets_clustering["sinks"].iterrows():
                     # collecting information for sinks
-                    sink_parameters = sink_clustering(building, sink,
-                                                      sink_parameters)
+                    sink_parameters = Sink.sink_clustering(building, sink,
+                                                           sink_parameters)
                     
                 # create cluster elec buses
                 create_cluster_elec_buses(building, cluster,

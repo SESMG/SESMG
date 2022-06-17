@@ -31,13 +31,6 @@ def get_value(label, column, dataframe):
 def get_pv_st_dir(c_dict, value, comp_type, comp):
     # TODO wie stellen wir fest ob -180 - 180 oder 0 - 360
     #  genutzt wurde
-    #dir_dict = {"_south_west": [-157.5, -112.5],
-    #            "_west": [-112.5, -67.5],
-    #            "_north_west": [-67.5, -22.5],
-    #            "_north": [-22.5, 22.5],
-    #            "_north_east": [22.5, 67.5],
-    #            "_east": [67.5, 112.5],
-    #            "_south_east": [112.5, 157.5],}
     dir_dict = {"_north_east": [22.5, 67.5],
                 "_east": [67.5, 112.5],
                 "_south_east": [112.5, 157.5],

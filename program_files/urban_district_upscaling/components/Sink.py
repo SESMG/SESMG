@@ -109,3 +109,56 @@ def create_sinks(sink_id: str, building_type: str, units: int,
                                        sink_input=str(sink_id) + "_heat_bus",
                                        annual_demand=demand_heat,
                                        standard_parameters=standard_parameters)
+
+
+def sink_clustering(building, sink, sink_parameters):
+    """
+        In this method, the current sinks of the respective cluster are
+        stored in dict and the current sinks are deleted. Furthermore,
+        the heat buses and heat requirements of each cluster are
+        collected in order to summarize them afterwards.
+
+        :param building: DataFrame containing the building row from the\
+            pre scenario sheet
+        :type building: pd.Dataframe
+        :param sink: sink dataframe
+        :type sink: pd.Dataframe
+        :parameter sink_parameters: list containing clusters' sinks \
+            information
+        :type sink_parameters: list
+    """
+    # get cluster electricity sinks
+    if str(building[0]) in sink["label"] \
+            and "electricity" in sink["label"]:
+        # get res elec demand
+        if "RES" in building[2]:
+            sink_parameters[0] += sink["annual demand"]
+            sink_parameters[7].append(sink["label"])
+            # sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
+        # get com elec demand
+        elif "COM" in building[2]:
+            sink_parameters[1] += sink["annual demand"]
+            sink_parameters[8].append(sink["label"])
+            # sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
+        # get ind elec demand
+        elif "IND" in building[2]:
+            sink_parameters[2] += sink["annual demand"]
+            sink_parameters[9].append(sink["label"])
+            # sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
+    # get cluster heat sinks
+    elif str(building[0]) in sink["label"] \
+            and "heat" in sink["label"]:
+        # append heat bus to cluster heat buses
+        sink_parameters[3].append((building[2], sink["input"]))
+        # get res heat demand
+        if "RES" in building[2]:
+            sink_parameters[4] += sink["annual demand"]
+        # get com heat demand
+        elif "COM" in building[2]:
+            sink_parameters[5] += sink["annual demand"]
+        # get ind heat demand
+        elif "IND" in building[2]:
+            sink_parameters[6] += sink["annual demand"]
+        sink_parameters[7].append((building[2], sink["label"]))
+    return sink_parameters
+
