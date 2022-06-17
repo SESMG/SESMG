@@ -17,13 +17,10 @@ def append_component(sheet: str, comp_parameter: dict):
     sheets[sheet] = pd.concat([sheets[sheet], pd.DataFrame([series])])
 
 
-def read_standard_parameters(standard_parameters, name, param_type, index):
+def read_standard_parameters(name, param_type, index):
     """
         searches the right entry within the standard parameter sheet
 
-        :param standard_parameters: pandas Dataframe containing the \
-            technology specific parameters
-        :type standard_parameters: pandas.DataFrame
         :param name: component's name
         :type name: str
         :param param_type: determines the technology type
@@ -68,7 +65,7 @@ def create_standard_parameter_comp(specific_param: dict,
     # extracts the storage specific standard values from the
     # standard_parameters dataset
     standard_param, standard_keys = read_standard_parameters(
-        standard_parameters, standard_param_name, type, index)
+        standard_param_name, type, index)
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
         specific_param[standard_keys[i]] = standard_param[standard_keys[i]]
@@ -76,8 +73,8 @@ def create_standard_parameter_comp(specific_param: dict,
     append_component(type, specific_param)
 
 
-def create_standard_parameter_bus(label: str, bus_type: str, dh=None, lat=None,
-                                  lon=None):
+def create_standard_parameter_bus(label: str, bus_type: str, dh=None,
+                                  cords=None):
     """
         creates a bus with standard_parameters, based on the standard
         parameters given in the "standard_parameters" dataset and adds
@@ -88,12 +85,9 @@ def create_standard_parameter_bus(label: str, bus_type: str, dh=None, lat=None,
         :param bus_type: defines, which set of standard param. will be
                          given to the dict
         :type bus_type: str
-        :param lat: latitude of the given bus used to connect a producer
-                    bus to district heating network
-        :type lat: float
-        :param lon: longitude of the given bus used to connect a producer
-                    bus to district heating network
-        :type lon: float
+        :param cords: latitude / longitude of the given bus used to \
+            connect a producer bus to district heating network
+        :type cords: list
         :param dh: string which can be "dh-system" (for searching the
                    nearest point on heat network or "street-1/2" if the
                    bus has to be connected to a specific intersection
@@ -105,14 +99,15 @@ def create_standard_parameter_bus(label: str, bus_type: str, dh=None, lat=None,
     # extracts the bus specific standard values from the
     # standard_parameters dataset
     standard_param, standard_keys = \
-        read_standard_parameters(standard_parameters, bus_type, "buses",
-                                 'bus_type')
+        read_standard_parameters(bus_type, "buses", 'bus_type')
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
         bus_dict[standard_keys[i]] = standard_param[standard_keys[i]]
     # defines rather a district heating connection is possible
-    if lat is not None:
-        bus_dict.update({"district heating conn.": dh, "lat": lat, "lon": lon})
+    if cords is not None:
+        bus_dict.update({"district heating conn.": dh,
+                         "lat": cords[0],
+                         "lon": cords[1]})
     # appends the new created component to buses sheet
     append_component("buses", bus_dict)
 
@@ -208,8 +203,8 @@ def central_comp(central):
                     label='central_heat_input{}_bus'.format(num),
                     bus_type="central_heat_input_bus",
                     dh="dh-system",
-                    lat=j["lat.heat_input-{}".format(num)],
-                    lon=j["lon.heat_input-{}".format(num)])
+                    cords=[j["lat.heat_input-{}".format(num)],
+                           j["lon.heat_input-{}".format(num)]])
                 # create components connected to the producer bus
                 for comp in str(j["connected_components_heat_input{}".format(
                         num)]).split(","):
@@ -421,8 +416,7 @@ def create_buses(building_id: str, pv_bus: bool, building_type: str,
         create_standard_parameter_bus(label=str(building_id) + "_heat_bus",
                                       bus_type='building_heat_bus',
                                       dh="1" if lat is not None else "0",
-                                      lat=lat,
-                                      lon=lon)
+                                      cords=[lat, lon])
 
     if hp_elec_bus:
         # building hp electricity bus
