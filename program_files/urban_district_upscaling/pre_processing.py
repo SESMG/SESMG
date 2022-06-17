@@ -262,39 +262,19 @@ def create_power_to_gas_system(standard_parameters, bus):
         :param bus:
         :type bus:
     """
-    if "central_h2_bus" not in sheets["buses"]["label"].to_list():
-        # h2 bus
-        create_standard_parameter_bus(label="central_h2_bus",
-                                      bus_type="central_h2_bus",
-                                      standard_parameters=standard_parameters)
-    if "central_naturalgas_bus" not in sheets["buses"]["label"].to_list():
-        # natural gas bus
-        create_standard_parameter_bus(label="central_naturalgas_bus",
-                                      bus_type="central_naturalgas_bus",
-                                      standard_parameters=standard_parameters)
-    # transformer
-    transformer_dict = {
-        "central_electrolysis_transformer":
-            ['central_electrolysis_transformer', "central_electricity_bus",
-             "central_h2_bus", "None"],
-        "central_methanization_transformer":
-            ['central_methanization_transformer', "central_h2_bus",
-             "central_naturalgas_bus", "None"],
-        "central_fuelcell_transformer":
-            ['central_fuelcell_transformer', "central_h2_bus",
-             "central_electricity_bus", bus]}
+    for bus_type in ["central_h2_bus", "central_naturalgas_bus"]:
+        if bus_type not in sheets["buses"]["label"].to_list():
+            # h2 bus
+            create_standard_parameter_bus(
+                label=bus_type, bus_type=bus_type,
+                standard_parameters=standard_parameters)
     
-    for transformer in transformer_dict:
-        create_standard_parameter_comp(
-                specific_param={"label": transformer_dict[transformer][0],
-                                "comment": 'automatically_created',
-                                "input": transformer_dict[transformer][1],
-                                "output": transformer_dict[transformer][2],
-                                "output2": transformer_dict[transformer][3]},
-                standard_parameters=standard_parameters,
-                type="transformers",
-                index="comment",
-                standard_param_name=transformer)
+    for transformer in ["central_electrolysis_transformer",
+                        "central_methanization_transformer",
+                        "central_fuelcell_transformer"]:
+        Transformer.create_transformer(
+            building_id="central", standard_parameters=standard_parameters,
+            transformer_type=transformer, output=bus)
         
     # storages
     for storage_type in ["h2_storage", "naturalgas_storage"]:
@@ -302,6 +282,7 @@ def create_power_to_gas_system(standard_parameters, bus):
                                standard_parameters=standard_parameters,
                                storage_type=storage_type,
                                de_centralized="central")
+        
     # link to chp_naturalgas_bus
     Link.create_link(label='central_naturalgas_chp_naturalgas_link',
                      bus_1='central_naturalgas_bus',
@@ -326,16 +307,10 @@ def create_central_biomass_plant(standard_parameters, output):
                                   bus_type="central_biomass_bus",
                                   standard_parameters=standard_parameters)
     
-    create_standard_parameter_comp(
-        specific_param={'label': 'central_biomass_transformer',
-                        'comment': 'automatically_created',
-                        'input': "central_biomass_bus",
-                        'output': output,
-                        'output2': 'None'},
+    Transformer.create_transformer(
+        building_id="central", output=output,
         standard_parameters=standard_parameters,
-        type="transformers",
-        index="comment",
-        standard_param_name="central_biomass_transformer")
+        transformer_type="central_biomass_transformer")
 
 
 def create_central_heatpump(standard_parameters, specification, create_bus,
@@ -358,37 +333,30 @@ def create_central_heatpump(standard_parameters, specification, create_bus,
                            be created or not.
         :param central_elec_bus: indicates whether a central elec exists
         :type central_elec_bus: bool
+        :param output:
+        :type output:
         :return: bool
     """
 
     if create_bus:
-        if "central_heatpump_elec_bus" not in sheets["buses"]["label"].to_list():
+        if "central_heatpump_elec_bus" not in \
+                sheets["buses"]["label"].to_list():
             create_standard_parameter_bus(
                 label="central_heatpump_elec_bus",
                 bus_type="central_heatpump_electricity_bus",
                 standard_parameters=standard_parameters)
             if central_elec_bus:
                 # connection to central electricity bus
-                create_standard_parameter_comp(
-                    specific_param={
-                        'label': "central_heatpump_electricity_link",
-                        'bus1': "central_electricity_bus",
-                        'bus2': "central_heatpump_elec_bus"},
-                    standard_parameters=standard_parameters,
-                    type="links",
-                    index="link_type",
-                    standard_param_name="building_central_building_link")
+                Link.create_link(label="central_heatpump_electricity_link",
+                                 bus_1="central_electricity_bus",
+                                 bus_2="central_heatpump_elec_bus",
+                                 link_type="building_central_building_link",
+                                 standard_parameters=standard_parameters)
     
-    create_standard_parameter_comp(
-        specific_param={'label': 'central_' + specification + '_transformer',
-                        'comment': 'automatically_created',
-                        'input': "central_heatpump_elec_bus",
-                        'output': output,
-                        'output2': 'None'},
-        standard_parameters=standard_parameters,
-        type="transformers",
-        index="comment",
-        standard_param_name='central_' + specification + '_transformer')
+    Transformer.create_transformer(
+            building_id="central", output=output,
+            transformer_type='central_' + specification + '_transformer',
+            specific=specification, standard_parameters=standard_parameters)
 
 
 def create_central_gas_heating_transformer(gastype, standard_parameters,
@@ -426,7 +394,7 @@ def create_central_gas_heating_transformer(gastype, standard_parameters,
     Transformer.create_transformer(
         building_id="central", standard_parameters=standard_parameters,
         transformer_type="central_naturalgas_heating_plant_transformer",
-        gastype=gastype, output=output)
+        specific=gastype, output=output)
 
 
 def create_central_chp(gastype, standard_parameters, output, central_elec_bus):
@@ -470,7 +438,7 @@ def create_central_chp(gastype, standard_parameters, output, central_elec_bus):
         building_id="central",
         standard_parameters=standard_parameters,
         transformer_type="central_" + gastype + "_chp",
-        gastype=gastype,
+        specific=gastype,
         output=output)
 
 
