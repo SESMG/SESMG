@@ -4,6 +4,7 @@ import seaborn as sns
 
 
 def pv_st_capacity(components_df, pv_st, dataframe, capacities_dict):
+    from program_files.postprocessing.plotting import get_pv_st_dir
     if pv_st == "photovoltaic":
         comp_type = "PV"
     else:
@@ -14,26 +15,9 @@ def pv_st_capacity(components_df, pv_st, dataframe, capacities_dict):
                 comp["label"])]["capacity/kW"].values
         value_cap = float(value_cap[0]) if value_cap.size > 0 else 0
         capacities_dict[comp_type].append(value_cap)
-        # TODO wie stellen wir fest ob -180 - 180 oder 0 - 360
-        #  genutzt wurde
-        dir_dict = {
-            "_south_west": [-157.5, -112.5],
-            "_west": [-112.5, -67.5],
-            "_north_west": [-67.5, -22.5],
-            "_north": [-22.5, 22.5],
-            "_north_east": [22.5, 67.5],
-            "_east": [67.5, 112.5],
-            "_south_east": [112.5, 157.5],
-        }
-        test = False
-        for dire in dir_dict:
-            if not dir_dict[dire][0] <= comp["Azimuth"] < dir_dict[dire][1]:
-                pass
-            else:
-                capacities_dict[comp_type + dire].append(value_cap)
-                test = True
-        if not test:
-            capacities_dict[comp_type + "_south"].append(value_cap)
+
+        capacities_dict = get_pv_st_dir(capacities_dict, value_cap,
+                                        comp_type, comp)
     return capacities_dict
 
 
@@ -75,9 +59,7 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
                     / emissions_100_percent})
         dataframe = dataframes[key].copy()
         dataframe.reset_index(inplace=True, drop=False)
-        print(dataframe)
         components_df = get_dataframe_from_nodes_data(nodes_data)
-        print(components_df)
         # PV-System
         capacities_dict = pv_st_capacity(components_df.copy(), "photovoltaic",
                                          dataframe, capacities_dict)
@@ -87,8 +69,10 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
                                          capacities_dict)
         
         df_hp = components_df[(components_df.isin([
-            "CompressionHeatTransformer", "AbsorptionHeatTransformer"])).any(
+            "CompressionHeatTransformer"])).any(
                 axis=1)]
+        df_hp = pd.concat([df_hp, (components_df.isin([
+             "AbsorptionHeatTransformer"])).any(axis=1)])
         for num, comp in df_hp.iterrows():
             if comp["heat source"] == "Ground":
                 value = dataframe.loc[dataframe["ID"].str.startswith(
