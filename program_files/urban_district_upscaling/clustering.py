@@ -46,79 +46,7 @@ def create_cluster_elec_buses(building, cluster):
                          link_type='building_pv_building_link')
         # reset index to label to ensure further attachments
         sheets["links"].set_index("label", inplace=True, drop=False)
-
-
-def cluster_storage_information(storage, storage_parameter, type):
-    """
-        Collects the transformer information of the selected type, and
-        inserts it into the dict containing the cluster specific
-        transformer data.
-
-        :param storage: Dataframe containing the storage under \
-            investigation
-        :type storage: pd.DataFrame
-        :param storage_parameter: dictionary containing the cluster \
-            summed storage information
-        :type storage_parameter: dict
-        :param type: storage type needed to define the dict entry \
-            to be modified
-        :type type: str
-
-        :return:
-    """
-    # counter
-    storage_parameter[type][0] += 1
-    # max invest
-    storage_parameter[type][1] += storage["max. investment capacity"]
-    # periodical costs
-    storage_parameter[type][2] += storage["periodical costs"]
-    # periodical constraint costs
-    storage_parameter[type][3] += storage["periodical constraint costs"]
-    if type == "thermal":
-        # variable output costs
-        storage_parameter[type][4] += storage["variable output costs"]
-    # remove the considered storage from transformer sheet
-    sheets["storages"] = sheets["storages"].drop(index=storage["label"])
-    # return the modified transf_param dict to the transformer clustering
-    # method
-    return storage_parameter
-
-
-def storage_clustering(building, sheets_clustering, storage_parameter):
-    """
-        Main method to collect the information about the storage
-        (battery, thermal storage), which are located in the considered
-        cluster.
-
-        :param building: DataFrame containing the building row from the\
-            pre scenario sheet
-        :type building: pd.Dataframe
-        :param sheets_clustering:
-        :type sheets_clustering: pd.DataFrame
-        :param storage_parameter: dictionary containing the collected \
-            storage information
-        :type storage_parameter: dict
-
-        :return:
-    """
-    for index, storage in sheets_clustering["storages"].iterrows():
-        # collect battery information
-        if str(building[0]) in storage["label"] \
-                and "battery" in storage["label"] \
-                and storage["label"] in sheets["storages"].index:
-            storage_parameter = cluster_storage_information(storage,
-                                                            storage_parameter,
-                                                            "battery")
-        # collect thermal storage information
-        if str(building[0]) in storage["label"] \
-                and "thermal" in storage["label"] \
-                and storage["label"] in sheets["storages"].index:
-            storage_parameter = cluster_storage_information(storage,
-                                                            storage_parameter,
-                                                            "thermal")
-    # return the collected data to the main clustering method
-    return storage_parameter
-
+        
 
 def restructuring_links(sheets_clustering, building, cluster,
                         standard_parameters, sink_parameters):
@@ -339,9 +267,6 @@ def create_cluster_averaged_bus(sink_parameters, cluster, type,
              "shortage costs"])
     
 
-
-
-
 def create_cluster_sources(standard_param, source_param, cluster):
     """
     
@@ -429,54 +354,7 @@ def create_cluster_sources(standard_param, source_param, cluster):
                     factor2=1 / pv_standard_param["Capacity per Area (kW/m2)"],
                     limit=area_pv)
    
-                
-def create_cluster_storage(standard_parameters, type, cluster,
-                           storage_parameters):
-    """
     
-    :param standard_parameters:
-    :param type:
-    :return:
-    """
-    if type == "battery":
-        standard_param, standard_keys = \
-            pre_processing.read_standard_parameters(
-                    standard_parameters, "building_battery_storage",
-                    "storages", "comment")
-        param_dict = {'label': str(cluster) + '_battery_storage',
-                      'comment': 'automatically_created',
-                      'bus': str(cluster) + '_electricity_bus'}
-    elif type == "thermal":
-        standard_param, standard_keys = \
-            pre_processing.read_standard_parameters(
-                    standard_parameters, "building_thermal_storage",
-                    "storages", "comment")
-        param_dict = {'label': str(cluster) + '_thermal_storage',
-                      'comment': 'automatically_created',
-                      'bus': str(cluster) + '_heat_bus'}
-    else:
-        raise ValueError("chosen storage type in create cluster storage "
-                         "not allowed")
-        
-    for i in range(len(standard_keys)):
-        param_dict[standard_keys[i]] = \
-            standard_param[standard_keys[i]]
-    # max invest
-    param_dict["max. investment capacity"] = storage_parameters[type][1]
-    # periodical costs
-    param_dict["periodical costs"] = storage_parameters[type][2] \
-        / storage_parameters[type][0]
-    # periodical constraint costs
-    param_dict["periodical constraint costs"] = storage_parameters[type][3] \
-        / storage_parameters[type][0]
-    if type == "thermal":
-        param_dict["variable output costs"] = storage_parameters[type][4] \
-            / storage_parameters[type][0]
-    # produce a pandas series out of the dict above due to easier
-    # appending
-    pre_processing.append_component("storages", param_dict)
-
-
 def clustering_method(tool, standard_parameters, sheet_names, sheets_input,
                       central_electricity_network, clustering_dh):
     """

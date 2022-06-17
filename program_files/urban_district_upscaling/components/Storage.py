@@ -1,3 +1,11 @@
+storage_dict = {
+    "battery": ['_battery_storage', '_battery_storage', '_electricity_bus'],
+    "thermal": ['_thermal_storage', '_thermal_storage', '_heat_bus'],
+    "h2_storage": ["_h2_storage", "_h2_storage", "_h2_bus"],
+    "naturalgas_storage": ["_naturalgas_storage", "_naturalgas_storage",
+                           "_naturalgas_bus"]}
+
+
 def create_storage(building_id: str, storage_type: str,
                    de_centralized: str, bus=None):
     """
@@ -18,24 +26,105 @@ def create_storage(building_id: str, storage_type: str,
     """
     from program_files.urban_district_upscaling.pre_processing \
         import create_standard_parameter_comp
-    storage_dict = {
-        "battery": [de_centralized + '_battery_storage',
-                    str(building_id) + '_battery_storage',
-                    str(building_id) + '_electricity_bus'],
-        "thermal": [de_centralized + '_thermal_storage',
-                    str(building_id) + '_thermal_storage',
-                    str(building_id) + '_heat_bus' if bus is None else bus],
-        "h2_storage": [de_centralized + "_h2_storage",
-                       str(building_id) + "_h2_storage",
-                       str(building_id) + "_h2_bus"],
-        "naturalgas_storage": [de_centralized + "_naturalgas_storage",
-                               str(building_id) + "_naturalgas_storage",
-                               str(building_id) + "_naturalgas_bus"]}
     
     create_standard_parameter_comp(
-        specific_param={'label': storage_dict.get(storage_type)[1],
-                        'comment': 'automatically_created',
-                        'bus': storage_dict.get(storage_type)[2]},
+        specific_param={
+            'label': str(building_id) + storage_dict.get(storage_type)[1],
+            'comment': 'automatically_created',
+            'bus':  str(building_id) + storage_dict.get(storage_type)[2]
+            if bus is None else bus},
         type="storages",
         index="comment",
-        standard_param_name=storage_dict.get(storage_type)[0])
+        standard_param_name=de_centralized + storage_dict.get(storage_type)[0])
+
+
+def storage_clustering(building, sheets_clustering, storage_parameter, sheets):
+    """
+        Main method to collect the information about the storage
+        (battery, thermal storage), which are located in the considered
+        cluster.
+
+        :param building: DataFrame containing the building row from the\
+            pre scenario sheet
+        :type building: pd.Dataframe
+        :param sheets_clustering:
+        :type sheets_clustering: pd.DataFrame
+        :param storage_parameter: dictionary containing the collected \
+            storage information
+        :type storage_parameter: dict
+
+        :return:
+    """
+    for index, storage in sheets_clustering["storages"].iterrows():
+        label = storage["label"]
+        # collect battery information
+        if str(building[0]) in label and label in sheets["storages"].index:
+            if label.split("_")[1] in ["battery", "thermal"]:
+                storage_parameter, sheets = cluster_storage_information(
+                    storage, storage_parameter, label.split("_")[1], sheets)
+    # return the collected data to the main clustering method
+    return storage_parameter
+
+
+def cluster_storage_information(storage, storage_parameter, type, sheets):
+    """
+        Collects the transformer information of the selected type, and
+        inserts it into the dict containing the cluster specific
+        transformer data.
+
+        :param storage: Dataframe containing the storage under \
+            investigation
+        :type storage: pd.DataFrame
+        :param storage_parameter: dictionary containing the cluster \
+            summed storage information
+        :type storage_parameter: dict
+        :param type: storage type needed to define the dict entry \
+            to be modified
+        :type type: str
+
+        :return:
+    """
+    # counter
+    storage_parameter[type][0] += 1
+    # max invest
+    storage_parameter[type][1] += storage["max. investment capacity"]
+    # periodical costs
+    storage_parameter[type][2] += storage["periodical costs"]
+    # periodical constraint costs
+    storage_parameter[type][3] += storage["periodical constraint costs"]
+    if type == "thermal":
+        # variable output costs
+        storage_parameter[type][4] += storage["variable output costs"]
+    # remove the considered storage from transformer sheet
+    sheets["storages"] = sheets["storages"].drop(index=storage["label"])
+    # return the modified transf_param dict to the transformer clustering
+    # method
+    return storage_parameter, sheets
+
+
+def create_cluster_storage(type, cluster, storage_parameters):
+    """
+
+    :param standard_parameters:
+    :param type:
+    :return:
+    """
+    from program_files.urban_district_upscaling.pre_processing \
+        import append_component
+
+    specific_dict = {
+        "label": str(cluster) + storage_dict.get(type)[0],
+        "comment": "automatically created",
+        "bus": str(cluster) + storage_dict.get(type)[1],
+        "periodical costs":
+            storage_parameters[type][2] / storage_parameters[type][0],
+        "periodical constraint costs":
+            storage_parameters[type][3] / storage_parameters[type][0],
+        "max. investment capacity": storage_parameters[type][1]}
+
+    if type == "thermal":
+        specific_dict["variable output costs"] = \
+            storage_parameters[type][4] / storage_parameters[type][0]
+    # produce a pandas series out of the dict above due to easier
+    # appending
+    append_component("storages", specific_dict)

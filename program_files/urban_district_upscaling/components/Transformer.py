@@ -20,6 +20,7 @@ transf_dict = {
             '_heat_bus',
             'None']}
 
+
 def create_transformer(building_id, transformer_type,
                        building_type=None, area="None", specific="None",
                        output="None"):
