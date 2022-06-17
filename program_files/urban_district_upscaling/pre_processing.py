@@ -707,8 +707,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
             roof_type=building["rooftype"])
         
         # create sources
-        Source.create_sources(building=building, clustering=clustering,
-                              standard_parameters=standard_parameters)
+        Source.create_sources(building=building, clustering=clustering)
 
         # creates air source heat-pumps
         if building['ashp'] in ['Yes', 'yes', 1]:

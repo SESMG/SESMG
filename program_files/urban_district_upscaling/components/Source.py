@@ -1,5 +1,5 @@
 def create_pv_source(building_id, plant_id, azimuth, tilt, area,
-                     standard_parameters, latitude, longitude):
+                     latitude, longitude):
     """
         TODO DOCSTRINGTEXT
         :param building_id: building label
@@ -33,8 +33,7 @@ def create_pv_source(building_id, plant_id, azimuth, tilt, area,
     # extracts the pv source specific standard values from the
     # standard_parameters dataset
     pv_param, pv_keys = read_standard_parameters(
-            standard_parameters, 'fixed photovoltaic source', "sources",
-            "comment")
+            'fixed photovoltaic source', "sources", "comment")
     for i in range(len(pv_keys)):
         pv_dict[pv_keys[i]] = pv_param[pv_keys[i]]
 
@@ -46,8 +45,7 @@ def create_pv_source(building_id, plant_id, azimuth, tilt, area,
     
     
 def create_solarthermal_source(building_id, plant_id, azimuth, tilt, area,
-                               standard_parameters, latitude,
-                               longitude):
+                               latitude, longitude):
     """
         TODO DOCSTRINGTEXT
         :param building_id: building label
@@ -82,8 +80,7 @@ def create_solarthermal_source(building_id, plant_id, azimuth, tilt, area,
     # extracts the st source specific standard values from the
     # standard_parameters dataset
     st_param, st_keys = read_standard_parameters(
-            standard_parameters, 'solar_thermal_collector', "sources",
-            "comment")
+            'solar_thermal_collector', "sources", "comment")
     for i in range(len(st_keys)):
         st_dict[st_keys[i]] = st_param[st_keys[i]]
 
@@ -93,8 +90,7 @@ def create_solarthermal_source(building_id, plant_id, azimuth, tilt, area,
     append_component("sources", st_dict)
     
     
-def create_competition_constraint(component1, component2, limit,
-                                  standard_parameters):
+def create_competition_constraint(component1, component2, limit):
     """
         TODO DOCSTRINGTEXT
         :param component1: label of the first component in competition
@@ -107,11 +103,9 @@ def create_competition_constraint(component1, component2, limit,
     from program_files.urban_district_upscaling.pre_processing \
         import append_component, read_standard_parameters
     pv_param, pv_keys = read_standard_parameters(
-            standard_parameters, 'fixed photovoltaic source', "sources",
-            "comment")
+            'fixed photovoltaic source', "sources", "comment")
     st_param, st_keys = read_standard_parameters(
-            standard_parameters, 'solar_thermal_collector', "sources",
-            "comment")
+            'solar_thermal_collector', "sources", "comment")
     # define individual values
     constraint_dict = {'component 1': component1,
                        'factor 1': 1 / pv_param['Capacity per Area (kW/m2)'],
@@ -121,7 +115,7 @@ def create_competition_constraint(component1, component2, limit,
     append_component("competition constraints", constraint_dict)
 
 
-def create_sources(building, standard_parameters, clustering):
+def create_sources(building, clustering):
     """
     
     """
@@ -138,8 +132,7 @@ def create_sources(building, standard_parameters, clustering):
                         tilt=building['surface tilt (°) %1d' % roof_num],
                         area=building['roof area (m²) %1d' % roof_num],
                         latitude=building['latitude'],
-                        longitude=building['longitude'],
-                        standard_parameters=standard_parameters)
+                        longitude=building['longitude'])
             if building['st or pv %1d' % roof_num] in ["st", "pv&st"] \
                     and building["building type"] not in ["0", 0]:
                 create_solarthermal_source(
@@ -149,8 +142,7 @@ def create_sources(building, standard_parameters, clustering):
                         tilt=building['surface tilt (°) %1d' % roof_num],
                         area=building['roof area (m²) %1d' % roof_num],
                         latitude=building['latitude'],
-                        longitude=building['longitude'],
-                        standard_parameters=standard_parameters)
+                        longitude=building['longitude'])
             if building['st or pv %1d' % roof_num] == "pv&st" \
                     and building["building type"] != "0" \
                     and not clustering:
@@ -159,5 +151,4 @@ def create_sources(building, standard_parameters, clustering):
                                 + plant_id + '_pv_source'),
                     component2=(building['label'] + '_' + plant_id
                                 + '_solarthermal_source'),
-                    limit=building['roof area (m²) %1d' % roof_num],
-                    standard_parameters=standard_parameters)
+                    limit=building['roof area (m²) %1d' % roof_num])
