@@ -17,23 +17,24 @@ def pv_st_capacity(components_df, pv_st, dataframe, capacities_dict):
         capacities_dict[comp_type].append(value_cap)
         # TODO wie stellen wir fest ob -180 - 180 oder 0 - 360
         #  genutzt wurde
-        if -22.5 <= comp["Azimuth"] < 22.5:
-            capacities_dict[comp_type + "_north"].append(value_cap)
-        elif 22.5 <= comp["Azimuth"] < 67.5:
-            capacities_dict[comp_type + "_north_east"].append(value_cap)
-        elif 67.5 <= comp["Azimuth"] < 112.5:
-            capacities_dict[comp_type + "_east"].append(value_cap)
-        elif 112.5 <= comp["Azimuth"] < 157.5:
-            capacities_dict[comp_type + "_south_east"].append(value_cap)
-        elif comp["Azimuth"] >= 157.5 \
-                or comp["Azimuth"] < -157.5:
+        dir_dict = {
+            "_south_west": [-157.5, -112.5],
+            "_west": [-112.5, -67.5],
+            "_north_west": [-67.5, -22.5]
+            "_north": [-22.5, 22.5],
+            "_north_east": [22.5, 67.5],
+            "_east": [67.5, 112.5],
+            "_south_east": [112.5, 157.5],
+        }
+        test = False
+        for dire in dir_dict:
+            if not dir_dict[dire][0] <= comp["Azimuth"] < dir_dict[dire][1]:
+                pass
+            else:
+                capacities_dict[comp_type + dire].append(value_cap)
+                test = True
+        if not test:
             capacities_dict[comp_type + "_south"].append(value_cap)
-        elif -157.5 <= comp["Azimuth"] < -112.5:
-            capacities_dict[comp_type + "_south_west"].append(value_cap)
-        elif -112.5 <= comp["Azimuth"] < -67.5:
-            capacities_dict[comp_type + "_west"].append(value_cap)
-        elif -67.5 <= comp["Azimuth"] < -22.5:
-            capacities_dict[comp_type + "_north_west"].append(value_cap)
     return capacities_dict
 
 
