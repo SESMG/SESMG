@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import program_files.urban_district_upscaling.clustering as clustering_py
 from program_files.urban_district_upscaling.components \
-    import Sink, Source, Storage, Transformer
+    import Sink, Source, Storage, Transformer, Link
 
 
 def append_component(sheet: str, comp_parameter: dict):
@@ -123,35 +123,6 @@ def create_standard_parameter_bus(label: str, bus_type: str,
         bus_dict.update({"district heating conn.": dh, "lat": lat, "lon": lon})
     # appends the new created component to buses sheet
     append_component("buses", bus_dict)
-
-
-def create_standard_parameter_link(label: str, bus_1: str, bus_2: str,
-                                   link_type: str, standard_parameters):
-    """
-        creates a link with standard_parameters, based on the standard
-        parameters given in the "standard_parameters" dataset and adds
-        it to the "sheets"-output dataset.
-
-        :param label: label, the created link will be given
-        :type label: str
-        :param bus_1: label, of the first bus
-        :type bus_1: str
-        :param bus_2: label, of the second bus
-        :type bus_2: str
-        :param link_type: needed to get the standard parameters of the
-                          link to be created
-        :type link_type: str
-        :param standard_parameters: pandas Dataframe holding the
-               information imported from the standard parameter file
-        :type standard_parameters: pd.Dataframe
-    """
-    create_standard_parameter_comp(
-        specific_param={'label': label, 'bus1': bus_1, 'bus2': bus_2},
-        standard_parameters=standard_parameters,
-        type="links",
-        index="link_type",
-        standard_param_name=link_type)
-
 
 def create_central_heat_component(type, bus, standard_parameters,
                                   central_elec_bus, central_chp):
@@ -331,14 +302,12 @@ def create_power_to_gas_system(standard_parameters, bus):
                                standard_parameters=standard_parameters,
                                storage_type=storage_type,
                                de_centralized="central")
-
     # link to chp_naturalgas_bus
-    create_standard_parameter_link(
-        label='central_naturalgas_chp_naturalgas_link',
-        bus_1='central_naturalgas_bus',
-        bus_2='central_chp_naturalgas_bus',
-        link_type='central_naturalgas_chp_link',
-        standard_parameters=standard_parameters)
+    Link.create_link(label='central_naturalgas_chp_naturalgas_link',
+                     bus_1='central_naturalgas_bus',
+                     bus_2='central_chp_naturalgas_bus',
+                     link_type='central_naturalgas_chp_link',
+                     standard_parameters=standard_parameters)
 
 
 def create_central_biomass_plant(standard_parameters, output):
@@ -400,12 +369,15 @@ def create_central_heatpump(standard_parameters, specification, create_bus,
                 standard_parameters=standard_parameters)
             if central_elec_bus:
                 # connection to central electricity bus
-                create_standard_parameter_link(
-                    label="central_heatpump_electricity_link",
-                    bus_1="central_electricity_bus",
-                    bus_2="central_heatpump_elec_bus",
-                    link_type="building_central_building_link",
-                    standard_parameters=standard_parameters)
+                create_standard_parameter_comp(
+                    specific_param={
+                        'label': "central_heatpump_electricity_link",
+                        'bus1': "central_electricity_bus",
+                        'bus2': "central_heatpump_elec_bus"},
+                    standard_parameters=standard_parameters,
+                    type="links",
+                    index="link_type",
+                    standard_param_name="building_central_building_link")
     
     create_standard_parameter_comp(
         specific_param={'label': 'central_' + specification + '_transformer',
@@ -446,12 +418,14 @@ def create_central_gas_heating_transformer(gastype, standard_parameters,
     
     if central_chp:
         # connection to central electricity bus
-        create_standard_parameter_link(
-            label="heating_plant_" + gastype + "_link",
-            bus_1="central_chp_naturalgas_bus",
-            bus_2="central_" + gastype + "_plant_bus",
-            link_type="central_naturalgas_building_link",
-            standard_parameters=standard_parameters)
+        create_standard_parameter_comp(
+            specific_param={'label': "heating_plant_" + gastype + "_link",
+                            'bus1': "central_chp_naturalgas_bus",
+                            'bus2': "central_" + gastype + "_plant_bus"},
+            standard_parameters=standard_parameters,
+            type="links",
+            index="link_type",
+            standard_param_name="central_naturalgas_building_link")
 
     create_standard_parameter_comp(
         specific_param={
@@ -496,12 +470,16 @@ def create_central_chp(gastype, standard_parameters, output, central_elec_bus):
     
     if central_elec_bus:
         # connection to central electricity bus
-        create_standard_parameter_link(
-            label="central_chp_" + gastype + "_elec_central_link",
-            bus_1="central_chp_" + gastype + "_elec_bus",
-            bus_2="central_electricity_bus",
-            link_type="central_chp_elec_central_link",
-            standard_parameters=standard_parameters)
+        create_standard_parameter_comp(
+            specific_param={
+                'label': "central_chp_" + gastype + "_elec_central_link",
+                'bus1': "central_chp_" + gastype + "_elec_bus",
+                'bus2': "central_electricity_bus"},
+            standard_parameters=standard_parameters,
+            type="links",
+            index="link_type",
+            standard_param_name="central_chp_elec_central_link")
+
 
     create_standard_parameter_comp(
         specific_param={'label': 'central_' + gastype + '_chp_transformer',
@@ -553,18 +531,21 @@ def create_buses(building_id: str, pv_bus: bool, building_type: str,
         bus = 'building_com_electricity_bus'
     if pv_bus or building_type != "0":
         # house electricity bus
-        create_standard_parameter_bus(label=(str(building_id)
-                                             + "_electricity_bus"),
-                                      bus_type=bus,
-                                      standard_parameters=standard_parameters)
+        create_standard_parameter_bus(
+            label=(str(building_id) + "_electricity_bus"),
+            bus_type=bus,
+            standard_parameters=standard_parameters)
         if central_elec_bus:
             # link from central elec bus to building electricity bus
-            create_standard_parameter_link(
-                label=str(building_id) + "central_electricity_link",
-                bus_1="central_electricity_bus",
-                bus_2=str(building_id) + "_electricity_bus",
-                link_type="building_central_building_link",
-                standard_parameters=standard_parameters)
+            create_standard_parameter_comp(
+                specific_param={
+                    'label': str(building_id) + "central_electricity_link",
+                    'bus1': "central_electricity_bus",
+                    'bus2': str(building_id) + "_electricity_bus",},
+                standard_parameters=standard_parameters,
+                type="links",
+                index="link_type",
+                standard_param_name="building_central_building_link",)
 
     if building_type != "0" and building_type != 0:
         # house heat bus
@@ -581,27 +562,34 @@ def create_buses(building_id: str, pv_bus: bool, building_type: str,
                                       standard_parameters=standard_parameters,
                                       dh=None)
         # electricity link from building electricity bus to hp elec bus
-        create_standard_parameter_link(
-            label=str(building_id) + "_gchp_building_link",
-            bus_1=str(building_id) + "_electricity_bus",
-            bus_2=str(building_id) + "_hp_elec_bus",
-            link_type="building_hp_elec_link",
-            standard_parameters=standard_parameters)
-
-        if gchp:
-            if gchp_elec_bus is not None:
-                create_standard_parameter_link(
-                    label=str(building_id) + "_parcel_gchp_elec",
-                    bus_1=str(building_id) + "_hp_elec_bus",
-                    bus_2=gchp_elec_bus,
-                    link_type="building_hp_elec_link",
-                    standard_parameters=standard_parameters)
-                create_standard_parameter_link(
-                    label=str(building_id) + "_parcel_gchp",
-                    bus_1=gchp_heat_bus,
-                    bus_2=str(building_id) + "_heat_bus",
-                    link_type="building_hp_elec_link",
-                    standard_parameters=standard_parameters)
+        create_standard_parameter_comp(
+            specific_param={'label': str(building_id) + "_gchp_building_link",
+                            'bus1': str(building_id) + "_electricity_bus",
+                            'bus2': str(building_id) + "_hp_elec_bus",},
+            standard_parameters=standard_parameters,
+            type="links",
+            index="link_type",
+            standard_param_name="building_hp_elec_link",)
+        
+        if gchp and gchp_elec_bus is not None:
+            create_standard_parameter_comp(
+                specific_param={
+                    'label': str(building_id) + "_parcel_gchp_elec",
+                    'bus1': str(building_id) + "_hp_elec_bus",
+                    'bus2': gchp_elec_bus},
+                standard_parameters=standard_parameters,
+                type="links",
+                index="link_type",
+                standard_param_name="building_hp_elec_link")
+            create_standard_parameter_comp(
+                specific_param={
+                    'label': str(building_id) + "_parcel_gchp",
+                    'bus1': gchp_heat_bus,
+                    'bus2': str(building_id) + "_heat_bus"},
+                standard_parameters=standard_parameters,
+                type="links",
+                index="link_type",
+                standard_param_name="building_hp_elec_link")
 
     # todo excess constraint costs
     if pv_bus:
@@ -611,7 +599,7 @@ def create_buses(building_id: str, pv_bus: bool, building_type: str,
                                       standard_parameters=standard_parameters)
 
         # link from pv bus to building electricity bus
-        create_standard_parameter_link(
+        Link.create_link(
             label=str(building_id) + "pv_" + str(building_id)
                   + "_electricity_link",
             bus_1=str(building_id) + "_pv_bus",
@@ -620,7 +608,7 @@ def create_buses(building_id: str, pv_bus: bool, building_type: str,
             standard_parameters=standard_parameters)
         if central_elec_bus:
             # link from pv bus to central electricity bus
-            create_standard_parameter_link(
+            Link.create_link(
                 label=str(building_id) + "pv_central_electricity_link",
                 bus_1=str(building_id) + "_pv_bus",
                 bus_2="central_electricity_bus",
@@ -718,7 +706,7 @@ def create_building_insulation(building_id: str, yoc: int, area_window: float,
 def create_central_elec_bus_connection(cluster, standard_parameters):
     if (cluster + "central_electricity_link") \
             not in sheets["links"].index:
-        create_standard_parameter_link(
+        Link.create_link(
             cluster + "central_electricity_link",
             bus_1="central_electricity_bus",
             bus_2=cluster + "_electricity_bus",
@@ -729,7 +717,7 @@ def create_central_elec_bus_connection(cluster, standard_parameters):
     if (cluster + "pv_" + cluster + "_electricity_link") \
             not in sheets["links"].index \
             and (cluster + "pv_central") in sheets["links"].index:
-        create_standard_parameter_link(
+        Link.create_link(
             cluster + "pv_" + cluster + "_electricity_link",
             bus_1=cluster + "_pv_bus",
             bus_2=cluster + "_electricity_bus",
@@ -824,8 +812,11 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
                                     parcel['gchp area (m²)']})
     # create gchp relevant components
     for gchp in gchps:
-        Transformer.create_gchp(parcel_id=gchp, area=gchps[gchp],
-                                standard_parameters=standard_parameters)
+        Transformer.create_transformer(
+            building_id=gchp,
+            area=gchps[gchp],
+            transformer_type="building_gchp_transformer",
+            standard_parameters=standard_parameters)
         create_standard_parameter_bus(label=gchp + "_hp_elec_bus",
                                       bus_type="building_hp_electricity_bus",
                                       standard_parameters=standard_parameters)
@@ -884,19 +875,22 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
 
         # creates air source heat-pumps
         if building['ashp'] in ['Yes', 'yes', 1]:
-            Transformer.create_ashp(building_id=building['label'],
-                                    standard_parameters=standard_parameters)
+            Transformer.create_transformer(
+                building_id=building['label'],
+                transformer_type="building_ashp_transformer",
+                standard_parameters=standard_parameters)
 
         # creates gasheating-system
         if building['gas heating'] in ['Yes', 'yes', 1]:
-            Transformer.create_gas_heating(
+            Transformer.create_transformer(
                 building_id=building['label'],
                 building_type=building['building type'],
+                transformer_type="building_gasheating_transformer",
                 standard_parameters=standard_parameters)
 
             # natural gas connection link to p2g-ng-bus
             if p2g_link:
-                create_standard_parameter_link(
+                Link.create_link(
                     label='central_naturalgas_' + building['label']
                           + 'link',
                     bus_1='central_naturalgas_bus',
@@ -906,8 +900,9 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
 
         # creates electric heating-system
         if building['electric heating'] in ['yes', 'Yes', 1]:
-            Transformer.create_electric_heating(
+            Transformer.create_transformer(
                 building_id=building['label'],
+                transformer_type="building_electricheating_transformer",
                 standard_parameters=standard_parameters)
 
         # battery storage
