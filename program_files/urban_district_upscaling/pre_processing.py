@@ -73,43 +73,7 @@ def create_standard_parameter_comp(specific_param: dict,
     append_component(type, specific_param)
 
 
-def create_standard_parameter_bus(label: str, bus_type: str, dh=None,
-                                  cords=None):
-    """
-        creates a bus with standard_parameters, based on the standard
-        parameters given in the "standard_parameters" dataset and adds
-        it to the "sheets"-output dataset.
 
-        :param label: label, the created bus will be given
-        :type label: str
-        :param bus_type: defines, which set of standard param. will be
-                         given to the dict
-        :type bus_type: str
-        :param cords: latitude / longitude of the given bus used to \
-            connect a producer bus to district heating network
-        :type cords: list
-        :param dh: string which can be "dh-system" (for searching the
-                   nearest point on heat network or "street-1/2" if the
-                   bus has to be connected to a specific intersection
-        :type dh: str
-    """
-
-    # define individual values
-    bus_dict = {'label': label}
-    # extracts the bus specific standard values from the
-    # standard_parameters dataset
-    standard_param, standard_keys = \
-        read_standard_parameters(bus_type, "buses", 'bus_type')
-    # insert standard parameters in the components dataset (dict)
-    for i in range(len(standard_keys)):
-        bus_dict[standard_keys[i]] = standard_param[standard_keys[i]]
-    # defines rather a district heating connection is possible
-    if cords is not None:
-        bus_dict.update({"district heating conn.": dh,
-                         "lat": cords[0],
-                         "lon": cords[1]})
-    # appends the new created component to buses sheet
-    append_component("buses", bus_dict)
 
 
 def create_central_heat_component(type, bus, central_elec_bus, central_chp):
@@ -583,11 +547,7 @@ def load_input_data(plain_sheet, standard_parameter_path, pre_scenario):
     worksheets = [column for column in columns.keys()]
     # get spreadsheet units from plain sheet
     for sheet in worksheets:
-        #sheets_units = {}
         sheets.update({sheet: pd.DataFrame(columns=(columns[sheet]))})
-        #units = next(plain_sheet.parse(sheet).iterrows())[1]
-        #for unit in units.keys():
-        #    sheets_units.update({unit: units[unit]})
         units_series = pd.Series(data={a: "x" for a in sheets[sheet].keys()})
         sheets[sheet] = pd.concat([sheets[sheet],
                                    pd.DataFrame([units_series])])

@@ -185,8 +185,7 @@ def transformer_clustering(building, sheets_clustering,
     return heat_buses_gchps, transf_param
 
 
-def create_cluster_transformer(type, transf_param, cluster,
-                               standard_parameters):
+def create_cluster_transformer(type, transf_param, cluster):
     """
 
     :param type:

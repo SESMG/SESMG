@@ -162,3 +162,71 @@ def sink_clustering(building, sink, sink_parameters):
         sink_parameters[7].append((building[2], sink["label"]))
     return sink_parameters
 
+
+def create_cluster_elec_sinks(standard_parameters, sink_parameters, cluster,
+                              central_electricity_network, sheets):
+    """
+
+        :return:
+    """
+    from program_files.urban_district_upscaling.pre_processing \
+        import create_central_elec_bus_connection
+    from program_files.urban_district_upscaling.components import Bus
+    bus_parameters = standard_parameters.parse('buses', index_col='bus_type')
+    total_annual_demand = (
+            sink_parameters[0] + sink_parameters[1] + sink_parameters[2])
+    if total_annual_demand > 0:
+        if cluster + "_electricity_bus" not in sheets["buses"].index:
+            Bus.create_standard_parameter_bus(
+                    label=str(cluster) + "_electricity_bus",
+                    bus_type='building_res_electricity_bus')
+            sheets["buses"].set_index("label", inplace=True,
+                                      drop=False)
+            cost_type = "shortage costs"
+            label = "_electricity_bus"
+            sheets["buses"].loc[(str(cluster) + label), cost_type] = \
+                ((sink_parameters[0] / total_annual_demand)
+                 * bus_parameters.loc["building_res" + label][cost_type]
+                 + (sink_parameters[1] / total_annual_demand)
+                 * bus_parameters.loc["building_com" + label][cost_type]
+                 + (sink_parameters[2] / total_annual_demand)
+                 * bus_parameters.loc["building_ind" + label][cost_type])
+        if central_electricity_network:
+            create_central_elec_bus_connection(cluster)
+    
+    # create clustered electricity sinks
+    if sink_parameters[0] > 0:
+        for i in sink_parameters[7]:
+            sheets["sinks"].loc[sheets["sinks"]["label"] == i, "input"] \
+                = str(cluster) + "_res_electricity_bus"
+        # create clustered res electricity sink
+        # annual demand sink_parameters[0]
+        # pre_processing.create_standard_parameter_sink(
+        #        "RES_electricity_sink",
+        #        str(cluster) + "_res_electricity_demand",
+        #        str(cluster) + "_res_electricity_bus",
+        #        sink_parameters[0], standard_parameters)
+    if sink_parameters[1] > 0:
+        for i in sink_parameters[8]:
+            sheets["sinks"].loc[sheets["sinks"]["label"] == i, "input"] \
+                = str(cluster) + "_com_electricity_bus"
+        # create clustered res electricity sink
+        # annual demand sink_parameters[1]
+        # pre_processing.create_standard_parameter_sink(
+        #        "COM_electricity_sink",
+        #        str(cluster) + "_com_electricity_demand",
+        #        str(cluster) + "_com_electricity_bus",
+        #        sink_parameters[1], standard_parameters)
+    if sink_parameters[2] > 0:
+        for i in sink_parameters[9]:
+            sheets["sinks"].loc[sheets["sinks"]["label"] == i, "input"] \
+                = str(cluster) + "_ind_electricity_bus"
+        # create clustered res electricity sink
+        # annual demand sink_parameters[2]
+        # pre_processing.create_standard_parameter_sink(
+        #        "IND_electricity_sink",
+        #        str(cluster) + "_ind_electricity_demand",
+        #        str(cluster) + "_ind_electricity_bus",
+        #        sink_parameters[2], standard_parameters)
+    
+    return sheets

@@ -271,3 +271,94 @@ def sources_clustering(source_param, building, sheets_clustering):
                                                 azimuth_type, "st")
     # return the collected data to the main clustering method
     return source_param
+
+
+def create_cluster_sources(standard_param, source_param, cluster):
+    """
+
+    :param standard_param:
+    :param source_param:
+    :param cluster:
+    :return:
+    """
+    # Define PV Standard-Parameters
+    pv_standard_param, pv_standard_keys = \
+        pre_processing.read_standard_parameters(standard_param,
+                                                "fixed photovoltaic source",
+                                                "sources", "comment")
+    st_standard_param, st_standard_keys = \
+        pre_processing.read_standard_parameters(standard_param,
+                                                "solar_thermal_collector",
+                                                "sources", "comment")
+    
+    for azimuth in ["north_000", "north_east_045", "east_090",
+                    "south_east_135", "south_180",
+                    "south_west_225", "west_270", "north_west_315"]:
+        # Photovoltaic
+        if source_param["pv_{}".format(azimuth[:-4])][0] > 0:
+            if (str(cluster) + "_pv_bus") not in sheets["buses"].index:
+                pre_processing.create_standard_parameter_bus(
+                        label=str(cluster) + "_pv_bus",
+                        bus_type='building_pv_bus',
+                        standard_parameters=standard_param)
+                sheets["buses"].set_index("label", inplace=True,
+                                          drop=False)
+            pre_processing.create_pv_source(
+                    building_id=cluster,
+                    plant_id=azimuth[:-4],
+                    # calculate area from peak power
+                    area=source_param["pv_{}".format(azimuth[:-4])][1] \
+                         / pv_standard_param["Capacity per Area (kW/m2)"],
+                    # calculate mean tilt
+                    tilt=source_param["pv_{}".format(azimuth[:-4])][8] \
+                         / source_param["pv_{}".format(azimuth[:-4])][0],
+                    # extract azimuth from azimuth type
+                    azimuth=int(azimuth[-3:]),
+                    # calculate mean latitude
+                    latitude=source_param["pv_{}".format(azimuth[:-4])][9] \
+                             / source_param["pv_{}".format(azimuth[:-4])][0],
+                    # calculate mean longitude
+                    longitude=source_param["pv_{}".format(azimuth[:-4])][10] \
+                              / source_param["pv_{}".format(azimuth[:-4])][0],
+                    pv_standard_parameters=pv_standard_param)
+        
+        # Solar Thermal
+        if source_param["st_{}".format(azimuth[:-4])][0] > 0:
+            pre_processing.create_solarthermal_source(
+                    building_id=cluster,
+                    plant_id=azimuth[:-4],
+                    # extract azimuth from azimuth type
+                    azimuth=int(azimuth[-3:]),
+                    # calculate mean tilt
+                    tilt=source_param["st_{}".format(azimuth[:-4])][8] \
+                         / source_param["st_{}".format(azimuth[:-4])][0],
+                    # calculate area from peak power
+                    area=source_param["st_{}".format(azimuth[:-4])][1] \
+                         / st_standard_param["Capacity per Area (kW/m2)"],
+                    solarthermal_standard_parameters=st_standard_param,
+                    # calculate mean latitude
+                    latitude=source_param["st_{}".format(azimuth[:-4])][9] \
+                             / source_param["st_{}".format(azimuth[:-4])][0],
+                    # calculate mean longitude
+                    longitude=source_param["st_{}".format(azimuth[:-4])][10] \
+                              / source_param["st_{}".format(azimuth[:-4])][
+                                  0], )
+            # Create new competition constraint
+            if source_param["pv_{}".format(azimuth[:-4])][0] > 0:
+                # calculate area from peak power
+                area_st = (source_param["st_{}".format(azimuth[:-4])][1]
+                           / st_standard_param['Capacity per Area (kW/m2)'])
+                # calculate area from peak power
+                area_pv = (source_param["pv_{}".format(azimuth[:-4])][1]
+                           / pv_standard_param['Capacity per Area (kW/m2)'])
+                
+                pre_processing.create_competition_constraint(
+                        component1=str(cluster) + "_" + azimuth[:-4]
+                                   + "_solarthermal_source",
+                        factor1=1 / st_standard_param[
+                            'Capacity per Area (kW/m2)'],
+                        component2=str(cluster) + "_" + azimuth[:-4]
+                                   + "_pv_source",
+                        factor2=1 / pv_standard_param[
+                            "Capacity per Area (kW/m2)"],
+                        limit=area_pv)

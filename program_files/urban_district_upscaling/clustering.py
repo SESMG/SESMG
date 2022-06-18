@@ -1,55 +1,9 @@
 import program_files.urban_district_upscaling.pre_processing as pre_processing
-from program_files.urban_district_upscaling.components import Link, Sink
-
-
-def create_cluster_elec_buses(building, cluster):
-    """
-        Method creating the building type specific electricity buses and
-        connecting them to the main cluster electricity bus
-        
-        :param building: Dataframe holding the building specific data \
-            from prescenario file
-        :type building: pd.Dataframe
-        :param cluster: Cluster id
-        :type cluster: str
-    """
-    # ELEC BUSES
-    # get building type to specify bus type to be created
-    if "RES" in building[2] \
-            and str(cluster) + "_res_electricity_bus" \
-            not in sheets["buses"].index:
-        bus_type = "_res_"
-    elif "COM" in building[2] \
-            and str(cluster) + "_com_electricity_bus" \
-            not in sheets["buses"].index:
-        bus_type = "_com_"
-    elif "IND" in building[2] \
-            and str(cluster) + "_ind_electricity_bus" \
-            not in sheets["buses"].index:
-        bus_type = "_ind_"
-    else:
-        bus_type = None
-    # if the considered building type is in (RES, COM, IND)
-    if bus_type:
-        # create building type specific bus
-        pre_processing.create_standard_parameter_bus(
-                label=str(cluster) + bus_type + "electricity_bus",
-                bus_type="building" + bus_type + "electricity_bus")
-        # reset index to label to ensure further attachments
-        sheets["buses"].set_index("label", inplace=True, drop=False)
-        
-        # Creates a Bus connecting the cluster electricity bus with
-        # the res electricity bus
-        Link.create_link(label=str(cluster) + bus_type + "electricity_link",
-                         bus_1=str(cluster) + "_electricity_bus",
-                         bus_2=str(cluster) + bus_type + "electricity_bus",
-                         link_type='building_pv_building_link')
-        # reset index to label to ensure further attachments
-        sheets["links"].set_index("label", inplace=True, drop=False)
+from program_files.urban_district_upscaling.components \
+    import Link, Sink, Transformer, Storage, Bus, Source
         
 
-def restructuring_links(sheets_clustering, building, cluster,
-                        standard_parameters, sink_parameters):
+def restructuring_links(sheets_clustering, building, cluster, sink_parameters):
     # TODO comments
     for i, j in sheets_clustering["links"].iterrows():
 
@@ -69,19 +23,15 @@ def restructuring_links(sheets_clustering, building, cluster,
                         and "central_electricity" in j["bus2"]) \
                         and cluster + "pv_central_electricity_link" \
                         not in sheets["links"].index:
-                    pre_processing.create_standard_parameter_link(
-                        cluster + "pv_central_electricity_link",
-                        bus_1=cluster + "_pv_bus",
-                        bus_2="central_electricity_bus",
-                        link_type="building_pv_central_link",
-                        standard_parameters=standard_parameters)
+                    Link.create_link(cluster + "pv_central_electricity_link",
+                                     bus_1=cluster + "_pv_bus",
+                                     bus_2="central_electricity_bus",
+                                     link_type="building_pv_central_link")
                     if sink_parameters[0] + sink_parameters[1] + sink_parameters[2]:
-                        pre_processing.create_standard_parameter_link(
-                                cluster + "pv_electricity_link",
-                                bus_1=cluster + "_pv_bus",
-                                bus_2=cluster + "_electricity_bus",
-                                link_type="building_pv_central_link",
-                                standard_parameters=standard_parameters)
+                        Link.create_link(cluster + "pv_electricity_link",
+                                         bus_1=cluster + "_pv_bus",
+                                         bus_2=cluster + "_electricity_bus",
+                                         link_type="building_pv_central_link")
                     sheets["links"].set_index("label", inplace=True,
                                               drop=False)
             # delete pvbus ->  elec bus of building
@@ -102,12 +52,11 @@ def restructuring_links(sheets_clustering, building, cluster,
 
                     if "central_naturalgas" + cluster \
                             not in sheets["links"].index:
-                        pre_processing.create_standard_parameter_link(
+                        Link.create_link(
                             "central_naturalgas" + cluster,
                             bus_1="central_naturalgas_bus",
                             bus_2=cluster + "_gas_bus",
-                            link_type="central_naturalgas_building_link",
-                            standard_parameters=standard_parameters)
+                            link_type="central_naturalgas_building_link")
                         sheets["links"].set_index("label", inplace=True,
                                                   drop=False)
         if str(building[0]) in j["bus2"] and "electricity" in j["bus2"]:
@@ -147,213 +96,6 @@ def update_sources_in_output(building, sheets_clustering, cluster):
                         [str(building[0]) + "_heat_bus"],
                         str(cluster) + "_heat_bus")
             
-
-def create_cluster_elec_sinks(standard_parameters, sink_parameters, cluster,
-                              central_electricity_network):
-    """
-        
-        :return:
-    """
-    bus_parameters = \
-        standard_parameters.parse('buses', index_col='bus_type')
-    total_annual_elec_demand = (sink_parameters[0]
-                                + sink_parameters[1]
-                                + sink_parameters[2])
-    if total_annual_elec_demand > 0:
-        if cluster + "_electricity_bus" \
-                not in sheets["buses"].index:
-            pre_processing.create_standard_parameter_bus(
-                    label=str(cluster) + "_electricity_bus",
-                    bus_type='building_res_electricity_bus',
-                    standard_parameters=standard_parameters)
-            sheets["buses"].set_index("label", inplace=True,
-                                      drop=False)
-            sheets["buses"].loc[(str(cluster) + "_electricity_bus"),
-                                "shortage costs"] = \
-                ((sink_parameters[0]
-                  / total_annual_elec_demand)
-                 * bus_parameters.loc["building_res_electricity_bus"][
-                     "shortage costs"]
-                 + (sink_parameters[1] / total_annual_elec_demand)
-                 * bus_parameters.loc["building_com_electricity_bus"][
-                     "shortage costs"]
-                 + (sink_parameters[2] / total_annual_elec_demand)
-                 * bus_parameters.loc["building_ind_electricity_bus"][
-                     "shortage costs"])
-        if central_electricity_network:
-            pre_processing.create_central_elec_bus_connection(
-                    cluster, standard_parameters)
-    
-    # create clustered electricity sinks
-    if sink_parameters[0] > 0:
-        for i in sink_parameters[7]:
-            sheets["sinks"].loc[sheets["sinks"]["label"] == i, "input"] \
-                = str(cluster) + "_res_electricity_bus"
-        # create clustered res electricity sink
-        # annual demand sink_parameters[0]
-        #pre_processing.create_standard_parameter_sink(
-        #        "RES_electricity_sink",
-        #        str(cluster) + "_res_electricity_demand",
-        #        str(cluster) + "_res_electricity_bus",
-        #        sink_parameters[0], standard_parameters)
-    if sink_parameters[1] > 0:
-        for i in sink_parameters[8]:
-            sheets["sinks"].loc[sheets["sinks"]["label"] == i, "input"] \
-                = str(cluster) + "_com_electricity_bus"
-        # create clustered res electricity sink
-        # annual demand sink_parameters[1]
-        #pre_processing.create_standard_parameter_sink(
-        #        "COM_electricity_sink",
-        #        str(cluster) + "_com_electricity_demand",
-        #        str(cluster) + "_com_electricity_bus",
-        #        sink_parameters[1], standard_parameters)
-    if sink_parameters[2] > 0:
-        for i in sink_parameters[9]:
-            sheets["sinks"].loc[sheets["sinks"]["label"] == i, "input"] \
-                = str(cluster) + "_ind_electricity_bus"
-        # create clustered res electricity sink
-        # annual demand sink_parameters[2]
-        #pre_processing.create_standard_parameter_sink(
-        #        "IND_electricity_sink",
-        #        str(cluster) + "_ind_electricity_demand",
-        #        str(cluster) + "_ind_electricity_bus",
-        #        sink_parameters[2], standard_parameters)
-        
-
-def create_cluster_averaged_bus(sink_parameters, cluster, type,
-                                standard_parameters):
-    """
-    
-    :param sink_parameters:
-    :param cluster:
-    :param type:
-    :return:
-    """
-    bus_parameters = \
-        standard_parameters.parse('buses', index_col='bus_type')
-    if type != "gas":
-        type1 = "hp_elec"
-        type2 = "hp_electricity"
-        type3 = "hp_electricity"
-        type4 = "electricity"
-    else:
-        type1 = "gas"
-        type2 = "res_gas"
-        type3 = "com_gas"
-        type4 = "gas"
-    # calculate cluster's total heat demand
-    total_annual_heat_demand = (sink_parameters[4]
-                                + sink_parameters[5]
-                                + sink_parameters[6])
-    # create standard_parameter gas bus
-    pre_processing.create_standard_parameter_bus(
-            label=str(cluster) + "_" + type1 + "_bus",
-            bus_type='building_' + type2 + '_bus',
-            standard_parameters=standard_parameters)
-    # reindex for further attachments
-    sheets["buses"].set_index("label", inplace=True,
-                              drop=False)
-    # recalculate gas bus shortage costs building type weighted
-    sheets["buses"].loc[(str(cluster) + "_" + type1 + "_bus"),
-                        "shortage costs"] = \
-        ((sink_parameters[4] / total_annual_heat_demand)
-         * bus_parameters.loc["building_" + type2 + "_bus"][
-             "shortage costs"]
-         + (sink_parameters[5] / total_annual_heat_demand)
-         * bus_parameters.loc["building_" + type3 + "_bus"][
-             "shortage costs"]
-         + (sink_parameters[6] / total_annual_heat_demand)
-         * bus_parameters.loc["building_ind_" + type4 + "_bus"][
-             "shortage costs"])
-    
-
-def create_cluster_sources(standard_param, source_param, cluster):
-    """
-    
-    :param standard_param:
-    :param source_param:
-    :param cluster:
-    :return:
-    """
-    # Define PV Standard-Parameters
-    pv_standard_param, pv_standard_keys = \
-        pre_processing.read_standard_parameters(standard_param,
-                                                "fixed photovoltaic source",
-                                                "sources", "comment")
-    st_standard_param, st_standard_keys = \
-        pre_processing.read_standard_parameters(standard_param,
-                                                "solar_thermal_collector",
-                                                "sources", "comment")
-    
-    for azimuth in ["north_000", "north_east_045", "east_090",
-                    "south_east_135", "south_180",
-                    "south_west_225", "west_270", "north_west_315"]:
-        # Photovoltaic
-        if source_param["pv_{}".format(azimuth[:-4])][0] > 0:
-            if (str(cluster) + "_pv_bus") not in sheets["buses"].index:
-                pre_processing.create_standard_parameter_bus(
-                        label=str(cluster) + "_pv_bus",
-                        bus_type='building_pv_bus',
-                        standard_parameters=standard_param)
-                sheets["buses"].set_index("label", inplace=True,
-                                          drop=False)
-            pre_processing.create_pv_source(
-                building_id=cluster,
-                plant_id=azimuth[:-4],
-                # calculate area from peak power
-                area=source_param["pv_{}".format(azimuth[:-4])][1] \
-                / pv_standard_param["Capacity per Area (kW/m2)"],
-                # calculate mean tilt
-                tilt=source_param["pv_{}".format(azimuth[:-4])][8] \
-                / source_param["pv_{}".format(azimuth[:-4])][0],
-                # extract azimuth from azimuth type
-                azimuth=int(azimuth[-3:]),
-                # calculate mean latitude
-                latitude=source_param["pv_{}".format(azimuth[:-4])][9] \
-                / source_param["pv_{}".format(azimuth[:-4])][0],
-                # calculate mean longitude
-                longitude=source_param["pv_{}".format(azimuth[:-4])][10] \
-                / source_param["pv_{}".format(azimuth[:-4])][0],
-                pv_standard_parameters=pv_standard_param)
-        
-        # Solar Thermal
-        if source_param["st_{}".format(azimuth[:-4])][0] > 0:
-            pre_processing.create_solarthermal_source(
-                building_id=cluster,
-                plant_id=azimuth[:-4],
-                # extract azimuth from azimuth type
-                azimuth=int(azimuth[-3:]),
-                # calculate mean tilt
-                tilt=source_param["st_{}".format(azimuth[:-4])][8] \
-                / source_param["st_{}".format(azimuth[:-4])][0],
-                # calculate area from peak power
-                area=source_param["st_{}".format(azimuth[:-4])][1] \
-                / st_standard_param["Capacity per Area (kW/m2)"],
-                solarthermal_standard_parameters=st_standard_param,
-                # calculate mean latitude
-                latitude=source_param["st_{}".format(azimuth[:-4])][9] \
-                / source_param["st_{}".format(azimuth[:-4])][0],
-                # calculate mean longitude
-                longitude=source_param["st_{}".format(azimuth[:-4])][10] \
-                / source_param["st_{}".format(azimuth[:-4])][0], )
-            # Create new competition constraint
-            if source_param["pv_{}".format(azimuth[:-4])][0] > 0:
-                # calculate area from peak power
-                area_st = (source_param["st_{}".format(azimuth[:-4])][1]
-                           / st_standard_param['Capacity per Area (kW/m2)'])
-                # calculate area from peak power
-                area_pv = (source_param["pv_{}".format(azimuth[:-4])][1]
-                           / pv_standard_param['Capacity per Area (kW/m2)'])
-                
-                pre_processing.create_competition_constraint(
-                    component1=str(cluster) + "_" + azimuth[:-4]
-                    + "_solarthermal_source",
-                    factor1=1 / st_standard_param['Capacity per Area (kW/m2)'],
-                    component2=str(cluster) + "_" + azimuth[:-4]
-                    + "_pv_source",
-                    factor2=1 / pv_standard_param["Capacity per Area (kW/m2)"],
-                    limit=area_pv)
-   
     
 def clustering_method(tool, standard_parameters, sheet_names, sheets_input,
                       central_electricity_network, clustering_dh):
@@ -460,34 +202,35 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets_input,
                                                            sink_parameters)
                     
                 # create cluster elec buses
-                create_cluster_elec_buses(building, cluster,
-                                          standard_parameters)
+                sheets = Bus.create_cluster_elec_buses(
+                    building, cluster, sheets)
                     
                 # collect cluster intern source information
-                source_param = sources_clustering(source_param, building,
-                                                  sheets_clustering)
+                source_param = Source.sources_clustering(
+                    source_param, building, sheets_clustering)
                 
                 # collect cluster intern transformer information
-                heat_buses_gchps, transformer_parameters = \
-                    transformer_clustering(building, sheets_clustering,
-                                           transformer_parameters,
-                                           heat_buses_gchps)
+                heat_buses_gchps, transformer_parameters, sheets = \
+                    Transformer.transformer_clustering(
+                        building, sheets_clustering, transformer_parameters,
+                        heat_buses_gchps, sheets)
                 
                 # collect cluster intern storage information
-                storage_parameters = \
-                    storage_clustering(building, sheets_clustering,
-                                       storage_parameters)
+                storage_parameters, sheets = \
+                    Storage.storage_clustering(
+                        building, sheets_clustering, storage_parameters, sheets)
                 # restructre all links
                 restructuring_links(sheets_clustering, building, cluster,
-                                    standard_parameters, sink_parameters)
+                                    sink_parameters)
                 
                 # update the sources in and output
                 update_sources_in_output(building, sheets_clustering, cluster)
                 
             # TRANSFORMER
             # create cluster electricity sinks
-            create_cluster_elec_sinks(standard_parameters, sink_parameters,
-                                      cluster, central_electricity_network)
+            sheets = Sink.create_cluster_elec_sinks(
+                standard_parameters, sink_parameters,
+                cluster, central_electricity_network, sheets)
 
             # create res or com gasheating
             if transformer_parameters["gasheating"][0] > 0 \
@@ -495,58 +238,57 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets_input,
                          + sink_parameters[6]) != 0:
                 # create cluster gas bus with building type weighted shortage
                 # costs
-                create_cluster_averaged_bus(sink_parameters, cluster, "gas",
-                                            standard_parameters)
+                sheets = Bus.create_cluster_averaged_bus(
+                    sink_parameters, cluster, "gas", sheets,
+                    standard_parameters)
                 # create cluster's gasheating system
-                create_cluster_transformer("gasheating",
-                                           transformer_parameters, cluster,
-                                           standard_parameters)
+                Transformer.create_cluster_transformer(
+                    "gasheating", transformer_parameters, cluster)
 
             # create cluster's electric heating system
             if transformer_parameters["electric_heating"][0] > 0:
-                create_cluster_transformer("electric_heating",
-                                           transformer_parameters, cluster,
-                                           standard_parameters)
+                Transformer.create_cluster_transformer(
+                    "electric_heating", transformer_parameters, cluster)
 
             if transformer_parameters["ashp"][0] > 0 \
                     and (sink_parameters[4] + sink_parameters[5]
                          + sink_parameters[6]) != 0:
                 # create hp building type averaged price
-                create_cluster_averaged_bus(sink_parameters, cluster,
-                                            "hp_elec", standard_parameters)
+                sheets = Bus.create_cluster_averaged_bus(
+                    sink_parameters, cluster, "hp_elec", sheets,
+                    standard_parameters)
                 # electricity link from building electricity bus to hp
                 # elec bus
-                pre_processing.create_standard_parameter_link(
-                        label=str(cluster) + "_gchp_building_link",
-                        bus_1=str(cluster) + "_electricity_bus",
-                        bus_2=str(cluster) + "_hp_elec_bus",
-                        link_type="building_hp_elec_link",
-                        standard_parameters=standard_parameters)
+                Link.create_link(label=str(cluster) + "_gchp_building_link",
+                                 bus_1=str(cluster) + "_electricity_bus",
+                                 bus_2=str(cluster) + "_hp_elec_bus",
+                                 link_type="building_hp_elec_link")
                 # create cluster's ashp
-                create_cluster_transformer("ashp", transformer_parameters,
-                                           cluster, standard_parameters)
+                Transformer.create_cluster_transformer(
+                    "ashp", transformer_parameters, cluster)
 
             if transformer_parameters["gchp"][0] > 0 \
                     and (sink_parameters[4] + sink_parameters[5]
                          + sink_parameters[6]) != 0:
                 if not transformer_parameters["ashp"][0] > 0:
-                    create_cluster_averaged_bus(sink_parameters, cluster,
-                                                "hp_elec", standard_parameters)
+                    sheets = Bus.create_cluster_averaged_bus(
+                        sink_parameters, cluster, "hp_elec", sheets,
+                        standard_parameters)
                 # create cluster's gchp
-                create_cluster_transformer("gchp", transformer_parameters,
-                                           cluster, standard_parameters)
+                Transformer.create_cluster_transformer(
+                    "gchp", transformer_parameters, cluster)
             # SOURCES
             # create cluster's sources and competition constraints
-            create_cluster_sources(standard_parameters, source_param, cluster)
+            Source.create_cluster_sources(standard_parameters, source_param, cluster)
             # STORAGES
             if storage_parameters["battery"][0] > 0:
                 # create cluster's battery
-                create_cluster_storage(standard_parameters, "battery", cluster,
-                                       storage_parameters)
+                Storage.create_cluster_storage("battery",
+                                               cluster, storage_parameters)
             if storage_parameters["thermal"][0] > 0:
                 # create cluster's thermal storage
-                create_cluster_storage(standard_parameters, "thermal", cluster,
-                                       storage_parameters)
+                Storage.create_cluster_storage("thermal",
+                                               cluster, storage_parameters)
                 
             # create cluster heat bus if it consists rather the
             # opportunity for an investment in electricheating,
@@ -569,24 +311,23 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets_input,
                                     num, "district heating conn."] = 0
                 if str(cluster) + "_heat_bus" not in sheets["buses"].index:
                     # create cluster's heat bus
-                    pre_processing.create_standard_parameter_bus(
+                    Bus.create_standard_parameter_bus(
                         label=str(cluster) + "_heat_bus",
                         bus_type='building_heat_bus',
-                        dh=1 if len(lats) > 0 else 0,
-                        lat=(sum(lats) / len(lats)) if len(lats) > 0 else 0,
-                        lon=(sum(lons) / len(lons)) if len(lons) > 0 else 0,
-                        standard_parameters=standard_parameters)
+                        dh="1" if len(lats) > 0 else "0",
+                        cords=[
+                            (sum(lats) / len(lats)) if len(lats) > 0 else 0,
+                            (sum(lons) / len(lons)) if len(lons) > 0 else 0],)
                     sheets["buses"].set_index("label", inplace=True,
                                               drop=False)
             # if building and gchp parcel are in the same cluster create
             # a link between them
             for i in sink_parameters[3]:
-                pre_processing.create_standard_parameter_link(
+                Link.create_link(
                     label=str(i[0]) + "_" + str(i[1]) + "_heat_building_link",
                     bus_1=str(cluster) + "_heat_bus",
                     bus_2=str(i[1]),
-                    link_type="building_hp_elec_link",
-                    standard_parameters=standard_parameters)
+                    link_type="building_hp_elec_link")
 
     buses = sheets["buses"].copy()
 
