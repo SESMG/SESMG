@@ -11,16 +11,17 @@ from os.path import dirname
 from os.path import join
 from os.path import splitext
 
-from setuptools import find_packages
-from setuptools import setup
+from setuptools import setup, find_packages
+from setuptools.command.install import install as InstallCommand
 
 
-def read(*names, **kwargs):
-    with io.open(
-        join(dirname(__file__), *names),
-        encoding=kwargs.get("encoding", "utf8"),
-    ) as fh:
-        return fh.read()
+class Install(InstallCommand):
+    """ Customized setuptools install command which uses pip. """
+
+    def run(self, *args, **kwargs):
+        import pip
+        pip.main(['install', '.'])
+        InstallCommand.run(self, *args, **kwargs)
 
 setup(
     name="SESMG",
@@ -28,6 +29,7 @@ setup(
     license="MIT",
     author="Christian Klemm",
     author_email="christian.klemm@fh-muenster.de",
+    cmdclass={'install': Install,},
     classifiers=[
         # complete classifier list:
         # http://pypi.python.org/pypi?%3Aaction=list_classifiers
