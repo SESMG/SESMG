@@ -50,10 +50,12 @@ setup(
         "xlsxwriter>=3.0.0",
         "seaborn>=0.11.0",
         "dash>=2.4.0",
-        "dash_canvas>=0.1.0",
-        "git+https://github.com/oemof/feedinlib.git@refs/pull/73/head",
-        "git+https://github.com/oemof/demandlib.git@refs/pull/51/head"
+        "dash_canvas>=0.1.0"
         ],
+    dependency_links = [
+     "git+https://github.com/oemof/feedinlib.git@refs/pull/73/head",
+     "git+https://github.com/oemof/demandlib.git@refs/pull/51/head"
+    ],
     extras_require={
         "dev":
             ["pytest", "sphinx", "sphinx_rtd_theme"]
