@@ -1,13 +1,11 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Duplication Check
 
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "dev_open_district_upscaling" branch
   push:
-    branches: [ "dev_open_district_upscaling" ]
-  pull_request:
     branches: [ "dev_open_district_upscaling" ]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -21,12 +19,12 @@ jobs:
     runs-on: ubuntu-20.04
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
       - name: Duplicate code detection tool
-        uses: platisd/duplicate-code-detection-tool@1.1.0
+        uses: platisd/duplicate-code-detection-tool@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          directories: "program_files/"
+          directories: "src"
+          ignore_below: 0
+          file_extensions: "py"
+          warn_above: 5
 
