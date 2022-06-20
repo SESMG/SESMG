@@ -16,10 +16,9 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
+ duplicate-code-check:
+    name: Check for duplicate code
+    runs-on: ubuntu-20.04
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -27,4 +26,7 @@ jobs:
 
       - name: Duplicate code detection tool
         uses: platisd/duplicate-code-detection-tool@1.1.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          directories: "program_files/"
 
