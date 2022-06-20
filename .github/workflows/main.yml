@@ -22,8 +22,7 @@ jobs:
       - name: Duplicate code detection tool
         uses: platisd/duplicate-code-detection-tool@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          directories: "src"
+          directories: "program_files"
           ignore_below: 0
           file_extensions: "py"
           warn_above: 5
