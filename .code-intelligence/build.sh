@@ -1,7 +1,9 @@
 #/bin/bash
 
 set -ex
+
+cd ..
+cd ..
 pwd
-cd ..
-cd ..
+ls
 . Linux_installation.sh
