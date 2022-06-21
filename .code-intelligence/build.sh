@@ -3,5 +3,4 @@
 set -ex
 
 cd ..
-run Linux_installation.sh
-run Run_SESMG_for_Linux.sh
+bin/sh Linux_installation.sh
