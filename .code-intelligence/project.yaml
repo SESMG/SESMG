@@ -18,7 +18,8 @@ run_container: "cifuzz/ci-ubuntu"
 ## A relative path to the build script that executes inside the container
 ## and builds the project. Relative to the project root directory.
 # build_script: ".code-intelligence/build.sh"
-build_script: "Linux_installation.sh"
+#build_script: "Linux_installation.sh"
+build_script: "setup.py"
 ## Paths to the fuzz tests to execute
 fuzz_tests:
  # - .code-intelligence/fuzz_targets/[b-z]*.cpp
