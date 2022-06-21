@@ -2,11 +2,11 @@ description: >
   Zint uses raw data as input which can easily lead to memory errors. Fuzzing is specialized in finding those with little effort.
 
 ## The name of the container image used for building the fuzz tests
-build_container: "cifuzz/builder-zint:ubuntu_latest"
+build_container: "cifuzz/ci-ubuntu"
 
 ## The name of the container image used for running the fuzz tests. If
 ## unspecified, the image of the build container is used.
-run_container: "gcr.io/oss-fuzz-base/base-runner"
+run_container: "cifuzz/ci-ubuntu"
 
 ## A list of source and destination paths. The source paths will be
 ## bind-mounted from the host filesystem to the destination paths in
@@ -18,7 +18,7 @@ run_container: "gcr.io/oss-fuzz-base/base-runner"
 ## A relative path to the build script that executes inside the container
 ## and builds the project. Relative to the project root directory.
 # build_script: ".code-intelligence/build.sh"
-
+build_script: "Linux_installation.sh"
 ## Paths to the fuzz tests to execute
 fuzz_tests:
  # - .code-intelligence/fuzz_targets/[b-z]*.cpp
