@@ -14,7 +14,7 @@ on:
 env:
   FUZZING_SERVER_ADDRESS: grpc.code-intelligence.com:443
   WEB_APP_ADDRESS: https://app.code-intelligence.com
-  CHECKOUT_DIR: program_files
+  CHECKOUT_DIR: .
 
 
 jobs:
