@@ -3,4 +3,4 @@
 set -ex
 
 cd ..
-bin/sh Linux_installation.sh
+. Linux_installation.sh
