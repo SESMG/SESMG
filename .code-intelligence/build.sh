@@ -2,5 +2,4 @@
 
 set -ex
 pwd
-cd ..
 . Linux_installation.sh
