@@ -168,4 +168,6 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
         axs[0].set_ylabel("installed capacity in kW")
         axs[1].set_ylabel("installed capacity in kW")
         axs[2].set_ylabel("installed capacity in kW")
-        plt.savefig(result_path + "/capacities.jpeg")
+        axs[2].legend(loc="upper right")
+        axs[2].set_ylim([0, 25000])
+        plt.savefig(result_path + "/capacities.svg")

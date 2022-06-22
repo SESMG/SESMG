@@ -14,7 +14,8 @@ def pv_elec_amount(components_df, pv_st, dataframe, amounts_dict):
         # TODO wie stellen wir fest ob -180 - 180 oder 0 - 360
         #  genutzt wurde
         amounts_dict = get_pv_st_dir(amounts_dict, value_am,  "PV", comp)
-        pv_buses.append(comp["output"])
+        if comp["output"] not in pv_buses:
+            pv_buses.append(comp["output"])
     return amounts_dict, pv_buses
 
 
@@ -61,7 +62,6 @@ def create_elec_amount_plots(dataframes: dict, nodes_data, result_path,
         elec_amounts_dict, pv_buses = pv_elec_amount(
                 components_df.copy(), "photovoltaic",
                 dataframe, elec_amounts_dict)
-        
         for bus in pv_buses:
             elec_amounts_dict["PV_excess"].append(get_value(
                     str(bus) + "_excess", "input 1/kWh", dataframe))
@@ -137,34 +137,34 @@ def create_elec_amount_plots(dataframes: dict, nodes_data, result_path,
         elec_amounts = elec_amounts.sort_values("run")
 
     plt.clf()
-    fig, axs = plt.subplots(5, sharex="all")
+    fig, axs = plt.subplots(4, sharex="all")
     fig.set_size_inches(18.5, 15.5)
     elec_amounts.set_index("run", inplace=True, drop=False)
     plot_dict = {
         axs[0]: {
             "SLP_DEMAND": elec_amounts.Electricity_Demand,
-            "PV EXCESS": elec_amounts.PV_excess,
-            "PV_to_Central": elec_amounts.PV_to_Central,
-            "Battery losses": elec_amounts.Battery_losses},
-        axs[1]: {
-            'PV': elec_amounts.PV - elec_amounts.PV_to_Central,
-            'PV to local market': elec_amounts.PV_to_Central,
-            'GRID': elec_amounts.grid_import},
-        axs[2]: {
-            # TODO
+            "Battery losses": elec_amounts.Battery_losses,
             "Electric_heating": elec_amounts.Electric_heating,
             "Heatpump_elec": elec_amounts.GCHP + elec_amounts.ASHP,
             "ST_elec": elec_amounts.ST_elec},
-        axs[3]: {
-            "PV_north": elec_amounts.PV_north,
-            "PV_north_east": elec_amounts.PV_north_east,
-            "PV_east": elec_amounts.PV_east,
-            "PV_south_east": elec_amounts.PV_south_east,
+        axs[1]: {
+            'building consumption (PV)':
+                elec_amounts.PV
+                - elec_amounts.PV_to_Central
+                - elec_amounts.PV_excess,
+            "PV Export": elec_amounts.PV_excess,
+            'PV to local market': elec_amounts.PV_to_Central,
+            'GRID Import': elec_amounts.grid_import},
+        axs[2]: {
             "PV_south": elec_amounts.PV_south,
+            "PV_south_east": elec_amounts.PV_south_east,
             "PV_south_west": elec_amounts.PV_south_west,
             "PV_west": elec_amounts.PV_west,
-            "PV_north_west": elec_amounts.PV_north_west},
-        axs[4]: {
+            "PV_east": elec_amounts.PV_east,
+            "PV_north_west": elec_amounts.PV_north_west,
+            "PV_north_east": elec_amounts.PV_north_east,
+            "PV_north": elec_amounts.PV_north,},
+        axs[3]: {
             "central_elec_production":
             elec_amounts.central_elec_production}}
     for plot in plot_dict:
@@ -172,15 +172,13 @@ def create_elec_amount_plots(dataframes: dict, nodes_data, result_path,
                        plot_dict.get(plot).values(),
                        labels=list(plot_dict.get(plot).keys()))
 
-    axs[0].legend()
+    axs[0].legend(loc="upper left")
     axs[0].set_ylabel("Electricity Amount in kWh")
-    axs[1].legend()
+    axs[1].legend(loc="upper left")
     axs[1].set_ylabel("Electricity Amount in kWh")
     axs[2].legend(loc="upper left")
     axs[2].set_ylabel("Electricity Amount in kWh")
     axs[3].legend(loc="upper left")
     axs[3].set_ylabel("Electricity Amount in kWh")
-    axs[4].invert_xaxis()
-    axs[4].legend(loc="upper left")
-    axs[4].set_ylabel("Electricity Amount in kWh")
+    axs[3].invert_xaxis()
     plt.savefig(result_path + "/elec_amounts.svg")
