@@ -72,8 +72,8 @@ class Links:
         for i, link in nd['links'][nd["links"]["active"] == 1].iterrows():
             link_node = Link(
                 label=link['label'],
-                inputs={self.busd[link['bus1']]: Flow(),
-                        self.busd[link['bus2']]: Flow()},
+                inputs={self.busd[link['bus1']]: Flow(emission_factor=0),
+                        self.busd[link['bus2']]: Flow(emission_factor=0)},
                 outputs={
                     self.busd[link['bus2']]: self.get_flow(link),
                     self.busd[link['bus1']]: self.get_flow(link)},

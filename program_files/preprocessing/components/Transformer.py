@@ -234,7 +234,8 @@ class Transformers:
         self.nodes_transformer.append(
             Source(label=transformer_label,
                    outputs={self.busd[tf['label'] + temp + '_bus']: Flow(
-                            investment=Investment(maximum=heatsource_cap))}))
+                        investment=Investment(maximum=heatsource_cap),
+                        emission_factor=0)}))
         
         # Returns logging info
         logging.info("\t Heat Source created: " + tf['label'] + temp
@@ -281,7 +282,7 @@ class Transformers:
             self.busd[tf['input']]: Flow(
                 variable_costs=tf['variable input costs'],
                 emission_factor=tf['variable input constraint costs']),
-            self.busd[tf['label'] + temp + '_bus']: Flow()}}
+            self.busd[tf['label'] + temp + '_bus']: Flow(emission_factor=0)}}
         outputs = self.get_primary_output_data(tf)
         # transformer conversion factor parameter
         conversion_factors = {"conversion_factors": {
@@ -451,7 +452,8 @@ class Transformers:
         self.nodes_transformer.append(
             Source(label=source_label,
                    outputs={self.busd[tf['label'] + temp + '_bus']: Flow(
-                         investment=Investment(maximum=maximum))}))
+                       investment=Investment(maximum=maximum),
+                       emission_factor=0)}))
         
         # Returns logging info
         logging.info('\t Heat Source created:' + source_label)
@@ -462,7 +464,7 @@ class Transformers:
             self.busd[tf['input']]: Flow(
                 variable_costs=tf['variable input costs'],
                 emission_factor=tf['variable input constraint costs']),
-            self.busd[tf['label'] + temp + '_bus']: Flow()}}
+            self.busd[tf['label'] + temp + '_bus']: Flow(emission_factor=0)}}
         outputs = self.get_primary_output_data(tf)
         conversion_factors = {"conversion_factors": {
             self.busd[tf['output']]:  [cop for cop in cops_abs],

@@ -398,9 +398,9 @@ class Sources:
         
         self.nodes_sources.append(Transformer(
             label=so['label'] + '_collector',
-            inputs={self.busd[so['label'] + '_bus']: Flow(),
-                    self.busd[so['input']]: Flow()},
-            outputs={self.busd[so['output']]: Flow()},
+            inputs={self.busd[so['label'] + '_bus']: Flow(emission_factor=0),
+                    self.busd[so['input']]: Flow(emission_factor=0)},
+            outputs={self.busd[so['output']]: Flow(emission_factor=0)},
             conversion_factors={
                 self.busd[so['label'] + '_bus']: 1,
                 self.busd[so['input']]:
