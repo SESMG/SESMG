@@ -6,25 +6,31 @@ from dhnx.optimization_oemof_heatpipe import HeatPipeline
 import csv
 
 
-def get_flows(label, inputs, outputs, results, esys):
-    component = solph.views.node(results, label)
+def get_flows(nd, results, esys):
+    inputs = None
+    outputs = None
+    if len(list(nd.inputs)) != 0:
+        inputs = list(nd.inputs)
+    if len(list(nd.outputs)) != 0:
+        outputs = list(nd.outputs)
+    component = solph.views.node(results, str(nd.label))
     comp_input1 = [0 for i in range(0, len(esys.timeindex))]
     comp_input2 = [0 for i in range(0, len(esys.timeindex))]
     comp_output1 = [0 for i in range(0, len(esys.timeindex))]
     comp_output2 = [0 for i in range(0, len(esys.timeindex))]
 
     if inputs:
-            comp_input1 = component['sequences'][
-                ((str(inputs[0].label), label), 'flow')]
-            if len(inputs) == 2:
-                comp_input2 = component['sequences'][
-                    ((str(inputs[1].label), label), 'flow')]
+        comp_input1 = component['sequences'][
+            ((str(inputs[0].label), str(nd.label)), 'flow')]
+        if len(inputs) == 2:
+            comp_input2 = component['sequences'][
+                ((str(inputs[1].label), str(nd.label)), 'flow')]
     if outputs:
         comp_output1 = component['sequences'][
-            ((label, str(outputs[0].label)), 'flow')]
+            ((str(nd.label), str(outputs[0].label)), 'flow')]
         if len(outputs) == 2:
             comp_output2 = component['sequences'][
-                ((label, str(outputs[1].label)), 'flow')]
+                ((str(nd.label), str(outputs[1].label)), 'flow')]
     return comp_input1, comp_input2, comp_output1, comp_output2
     
     
@@ -147,9 +153,7 @@ def collect_data(nodes_data, results, esys):
         if not isinstance(nd, Bus):
             comp_dict.update({label: []})
             comp_input1, comp_input2, comp_output1, comp_output2 = get_flows(
-                label,
-                list(nd.inputs) if len(list(nd.inputs)) != 0 else None,
-                list(nd.outputs) if len(list(nd.outputs)) != 0 else None,
+                nd,
                 results,
                 esys)
             comp_dict[label] += [comp_input1,
