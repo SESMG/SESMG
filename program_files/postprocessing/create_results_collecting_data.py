@@ -72,52 +72,24 @@ def calc_periodical_costs(nd, investment, storage, link):
         return 0
 
 
-def calc_variable_costs(nd, comp_dict):
-    variable_costs = 0
+def calc_variable_costs(nd, comp_dict, attr):
+    costs = 0
     type_dict = {
         "inputs": [nd.inputs, comp_dict[0], comp_dict[1]],
         "outputs": [nd.outputs, comp_dict[2], comp_dict[3]]}
     for flow_type in type_dict:
-        if sum(type_dict[flow_type][1]) > 0:
-            variable_costs += \
-                sum(type_dict[flow_type][1]
-                    * getattr(type_dict[flow_type][0][
-                                  list(type_dict[flow_type][0].keys())[0]],
-                              "variable_costs"))
-        if sum(type_dict[flow_type][2]) > 0:
-            variable_costs += \
-                sum(type_dict[flow_type][2]
-                    * getattr(type_dict[flow_type][0][
-                                  list(type_dict[flow_type][0].keys())[1]],
-                              "variable_costs"))
-    return variable_costs
-
-
-def calc_variable_constraint_costs(nd, comp_dict):
-    constraint_costs = 0
-    type_dict = {
-        "inputs": [nd.inputs, comp_dict[0], comp_dict[1]],
-        "outputs": [nd.outputs, comp_dict[2], comp_dict[3]]}
-    for flow_type in type_dict:
-        if sum(type_dict[flow_type][1]) > 0:
-            if hasattr(type_dict[flow_type][0]
-                       [list(type_dict[flow_type][0].keys())[0]],
-                       "emission_factor"):
-                constraint_costs += \
-                    sum(type_dict[flow_type][1]
+        for i in range(0, 1):
+            if sum(type_dict[flow_type][i + 1]) > 0:
+                if hasattr(type_dict[flow_type][0]
+                           [list(type_dict[flow_type][0].keys())[i]],
+                           attr):
+                    costs += sum(
+                        type_dict[flow_type][i + 1]
                         * getattr(type_dict[flow_type][0]
-                                  [list(type_dict[flow_type][0].keys())[0]],
-                                  "emission_factor"))
-        if sum(type_dict[flow_type][2]) > 0:
-            if hasattr(type_dict[flow_type][0]
-                       [list(type_dict[flow_type][0].keys())[1]],
-                       "emission_factor"):
-                constraint_costs += \
-                    sum(type_dict[flow_type][2]
-                        * getattr(type_dict[flow_type][0]
-                                  [list(type_dict[flow_type][0].keys())[1]],
-                                  "emission_factor"))
-    return constraint_costs
+                                  [list(type_dict[flow_type][0].keys())[i]],
+                                  attr))
+
+    return costs
 
 
 def calc_periodical_constraint_costs(investment, nd, link):
@@ -208,11 +180,12 @@ def collect_data(nodes_data, results, esys):
         if not (isinstance(nd, Sink)
                 and nd.label in list(nodes_data["sinks"]["label"])) \
                 and not isinstance(nd, Bus):
-            variable_costs = calc_variable_costs(nd, comp_dict[label])
+            variable_costs = calc_variable_costs(nd, comp_dict[label],
+                                                 "variable_costs")
             comp_dict[label].append(variable_costs)
             
             constraint_costs = \
-                calc_variable_constraint_costs(nd, comp_dict[label])
+                calc_variable_costs(nd, comp_dict[label], "emission_factor")
             if investment:
                 constraint_costs += calc_periodical_constraint_costs(
                     investment, nd,
