@@ -72,12 +72,11 @@ def calc_periodical_costs(nd, investment, storage, link):
         return 0
 
 
-def calc_variable_costs(nd, comp_input1, comp_input2, comp_output1,
-                        comp_output2):
+def calc_variable_costs(nd, comp_dict):
     variable_costs = 0
     type_dict = {
-        "inputs": [nd.inputs, comp_input1, comp_input2],
-        "outputs": [nd.outputs, comp_output1, comp_output2]}
+        "inputs": [nd.inputs, comp_dict[0], comp_dict[1]],
+        "outputs": [nd.outputs, comp_dict[2], comp_dict[3]]}
     for flow_type in type_dict:
         if sum(type_dict[flow_type][1]) > 0:
             variable_costs += \
@@ -94,12 +93,11 @@ def calc_variable_costs(nd, comp_input1, comp_input2, comp_output1,
     return variable_costs
 
 
-def calc_variable_constraint_costs(nd, comp_input1, comp_input2, comp_output1,
-                                   comp_output2):
+def calc_variable_constraint_costs(nd, comp_dict):
     constraint_costs = 0
     type_dict = {
-        "inputs": [nd.inputs, comp_input1, comp_input2],
-        "outputs": [nd.outputs, comp_output1, comp_output2]}
+        "inputs": [nd.inputs, comp_dict[0], comp_dict[1]],
+        "outputs": [nd.outputs, comp_dict[2], comp_dict[3]]}
     for flow_type in type_dict:
         if sum(type_dict[flow_type][1]) > 0:
             if hasattr(type_dict[flow_type][0]
@@ -210,12 +208,11 @@ def collect_data(nodes_data, results, esys):
         if not (isinstance(nd, Sink)
                 and nd.label in list(nodes_data["sinks"]["label"])) \
                 and not isinstance(nd, Bus):
-            variable_costs = calc_variable_costs(
-                nd, comp_input1, comp_input2, comp_output1, comp_output2)
+            variable_costs = calc_variable_costs(nd, comp_dict[label])
             comp_dict[label].append(variable_costs)
             
-            constraint_costs = calc_variable_constraint_costs(
-                    nd, comp_input1, comp_input2, comp_output1, comp_output2)
+            constraint_costs = \
+                calc_variable_constraint_costs(nd, comp_dict[label])
             if investment:
                 constraint_costs += calc_periodical_constraint_costs(
                     investment, nd,
