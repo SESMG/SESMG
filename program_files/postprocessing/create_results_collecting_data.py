@@ -80,11 +80,8 @@ def calc_variable_costs(nd, comp_dict, attr):
     for flow_type in type_dict:
         for i in range(0, 1):
             if sum(type_dict[flow_type][i + 1]) > 0:
-                if hasattr(type_dict[flow_type][0]
-                           [list(type_dict[flow_type][0].keys())[i]],
-                           attr):
-                    costs += sum(
-                        type_dict[flow_type][i + 1]
+                costs += \
+                    sum(type_dict[flow_type][i + 1]
                         * getattr(type_dict[flow_type][0]
                                   [list(type_dict[flow_type][0].keys())[i]],
                                   attr))
