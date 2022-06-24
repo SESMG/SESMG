@@ -49,20 +49,28 @@ def get_investment(nd, esys, results, storage):
         return 0
 
 
-def calc_periodical_costs(nd, investment, storage, link):
+def calc_periodical_costs(nd, investment, storage, link, cost_type):
     """
 
     """
+    print(nd.label)
     ep_costs = 0
     offset = 0
+    if cost_type == "costs":
+        attr1 = "ep_costs"
+        attr2 = "offset"
+    else:
+        attr1 = "periodical_constraint_costs"
+        attr2 = "fix_constraint_costs"
+    
     if investment > 0 and not storage:
         ep_costs = getattr(nd.outputs[list(nd.outputs.keys())[0]].investment,
-                           "ep_costs")
+                           attr1)
         offset = getattr(nd.outputs[list(nd.outputs.keys())[0]].investment,
-                         "offset")
+                         attr2)
     elif investment > 0 and storage:
-        ep_costs = getattr(nd.investment, "ep_costs")
-        offset = getattr(nd.investment, "offset")
+        ep_costs = getattr(nd.investment, attr1)
+        offset = getattr(nd.investment, attr2)
         
     if link:
         return (investment * 2 * ep_costs) + 2 * offset
@@ -85,36 +93,6 @@ def calc_variable_costs(nd, comp_dict, attr):
                                   attr))
 
     return costs
-
-
-def calc_periodical_constraint_costs(investment, nd, link):
-    constraint_costs = 0
-    if hasattr(nd.outputs[list(nd.outputs.keys())[0]].investment,
-               "periodical_constraint_costs"):
-        if not link:
-            constraint_costs += \
-                investment \
-                * getattr(nd.outputs[list(nd.outputs.keys())[0]].investment,
-                          "periodical_constraint_costs")
-            if hasattr(nd.outputs[list(nd.outputs.keys())[0]].investment,
-                       "fix_constraint_costs"):
-                constraint_costs += \
-                    getattr(nd.outputs[list(nd.outputs.keys())[0]].investment,
-                            "fix_constraint_costs")
-        else:
-            constraint_costs += \
-                investment \
-                * getattr(
-                        nd.outputs[list(nd.outputs.keys())[0]].investment,
-                        "periodical_constraint_costs") * 2
-            if hasattr(nd.outputs[list(nd.outputs.keys())[0]].investment,
-                       "fix_constraint_costs"):
-                constraint_costs += \
-                    getattr(nd.outputs[
-                                list(nd.outputs.keys())[0]].investment,
-                            "fix_constraint_costs") * 2
-    
-    return constraint_costs
 
 
 def get_comp_type(nd, comp_dict):
@@ -141,6 +119,12 @@ def collect_data(nodes_data, results, esys):
     for nd in esys.nodes:
         investment = None
         label = str(nd.label)
+        undirected_link = \
+            True if isinstance(nd, Link) \
+            and str(nodes_data["links"].loc[
+                        nodes_data["links"]["label"] == nd.label]
+                    ["(un)directed"]) == "undirected" else False
+        storage = True if isinstance(nd, GenericStorage) else False
         # get component flows from each component except buses
         if not isinstance(nd, Bus):
             comp_dict.update({label: []})
@@ -155,18 +139,11 @@ def collect_data(nodes_data, results, esys):
         if not (isinstance(nd, Source) and "shortage" in nd.label) \
                 and not isinstance(nd, Sink) and not isinstance(nd, Bus):
             # get investment
-            investment = get_investment(
-                nd, esys, results,
-                True if isinstance(nd, GenericStorage) else False)
+            investment = get_investment(nd, esys, results, storage)
             comp_dict[label].append(investment)
             # get periodical costs
             periodical_costs = calc_periodical_costs(
-                nd, investment,
-                True if isinstance(nd, GenericStorage) else False,
-                True if isinstance(nd, Link)
-                and str(nodes_data["links"].loc[
-                            nodes_data["links"]["label"] == nd.label]
-                        ["(un)directed"]) == "undirected" else False)
+                nd, investment, storage, undirected_link, "costs")
             comp_dict[label].append(periodical_costs)
         elif not isinstance(nd, Bus):
             comp_dict[label] += [0, 0]
@@ -180,12 +157,8 @@ def collect_data(nodes_data, results, esys):
             constraint_costs = \
                 calc_variable_costs(nd, comp_dict[label], "emission_factor")
             if investment:
-                constraint_costs += calc_periodical_constraint_costs(
-                    investment, nd,
-                    True if isinstance(nd, Link)
-                    and str(nodes_data["links"].loc[
-                                nodes_data["links"]["label"] == nd.label]
-                            ["(un)directed"]) == "undirected" else False)
+                constraint_costs += calc_periodical_costs(
+                    nd, investment, storage, undirected_link, "emissions")
             comp_dict[label].append(constraint_costs)
         elif not isinstance(nd, Bus):
             comp_dict[label] += [0, 0]

@@ -127,7 +127,9 @@ class Sinks:
                                    periodical_constraint_costs=ep_constr_costs,
                                    constraint2=1,
                                    minimum=0,
-                                   maximum=max(temp)),
+                                   maximum=max(temp),
+                                   fix_constraint_costs=0),
+                               emission_factor=0,
                                fix=(args["fix"] / args["fix"].max()))}))
 
         # self.nodes_sinks.append(

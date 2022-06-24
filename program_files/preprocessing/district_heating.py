@@ -566,6 +566,13 @@ def connect_dh_to_system(oemof_opti_model, busd):
                     * float(invest_data.loc[invest_data["label_3"]
                                             == label]
                             ["periodical_constraint_costs"]))
+            setattr(a.inputs[list(a.inputs.keys())[0]],
+                    "emission_factor", 0)
+            setattr(a.outputs[list(a.outputs.keys())[0]],
+                    "emission_factor", 0)
+            setattr(a.outputs[list(a.outputs.keys())[0]].investment,
+                    "fix_constraint_costs", 0)
+
     # create link to connect consumers heat bus to the dh-system
     for num, consumer in thermal_network.components["consumers"].iterrows():
         oemof_opti_model.nodes.append(solph.Transformer(
@@ -575,7 +582,7 @@ def connect_dh_to_system(oemof_opti_model, busd):
                     dhnx.optimization_oemof_heatpipe.Label(
                         'consumers', 'heat', 'bus',
                         'consumers-{}'.format(consumer["id"]))]:
-                solph.Flow()},
+                solph.Flow(emission_factor=0)},
             outputs={
                 busd[consumer["input"]]: solph.Flow(
                     investment=solph.Investment(
@@ -586,7 +593,9 @@ def connect_dh_to_system(oemof_opti_model, busd):
                         minimum=0,
                         maximum=999 * len(consumer["input"]),
                         existing=0,
-                        nonconvex=False))},
+                        nonconvex=False,
+                        fix_constraint_costs=0),
+                    emission_factor=0)},
             conversion_factors={
                 (oemof_opti_model.buses[
                      dhnx.optimization_oemof_heatpipe.Label(
@@ -765,13 +774,13 @@ def create_producer_connection(oemof_opti_model, busd):
             oemof_opti_model.nodes.append(solph.Transformer(
                 label=(str(producer["bus"]) + "_dh_source_link"),
                 inputs={
-                    busd[producer["bus"]]: solph.Flow()},
+                    busd[producer["bus"]]: solph.Flow(emission_factor=0)},
                 outputs={
                     oemof_opti_model.buses[
                         dhnx.optimization_oemof_heatpipe.Label(
                             'producers', 'heat', 'bus',
                             str("producers-{}".format(str(counter))))]:
-                    solph.Flow()},
+                    solph.Flow(emission_factor=0)},
                 conversion_factors={
                     (oemof_opti_model.buses[
                          dhnx.optimization_oemof_heatpipe.Label(

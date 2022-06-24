@@ -116,7 +116,9 @@ class Transformers:
                     investment=Investment(
                         existing=existing_capacity2,
                         minimum=minimum_capacity2,
-                        maximum=maximum_capacity2))})
+                        maximum=maximum_capacity2,
+                        periodical_constraint_costs=0,
+                        fix_constraint_costs=0))})
             conversion_factors.update(
                     {self.busd[tf['output2']]: tf['efficiency2']})
         # outputs = {"outputs": outputs}
@@ -234,7 +236,9 @@ class Transformers:
         self.nodes_transformer.append(
             Source(label=transformer_label,
                    outputs={self.busd[tf['label'] + temp + '_bus']: Flow(
-                        investment=Investment(maximum=heatsource_cap),
+                        investment=Investment(maximum=heatsource_cap,
+                                              periodical_constraint_costs=0,
+                                              fix_constraint_costs=0),
                         emission_factor=0)}))
         
         # Returns logging info
@@ -452,7 +456,9 @@ class Transformers:
         self.nodes_transformer.append(
             Source(label=source_label,
                    outputs={self.busd[tf['label'] + temp + '_bus']: Flow(
-                       investment=Investment(maximum=maximum),
+                       investment=Investment(maximum=maximum,
+                                             fix_constraint_costs=0,
+                                             periodical_constraint_costs=0),
                        emission_factor=0)}))
         
         # Returns logging info
