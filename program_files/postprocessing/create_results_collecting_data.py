@@ -4,6 +4,20 @@ from oemof.solph.custom import Link
 from oemof.solph.components import GenericStorage
 
 
+def check_for_link_storage(nd, nodes_data):
+    undirected_link = \
+        True if isinstance(nd, Link) and str(nodes_data["links"].loc[
+            nodes_data["links"]["label"] == nd.label]
+            ["(un)directed"]) == "undirected" else False
+    storage = True if isinstance(nd, GenericStorage) else False
+    if undirected_link:
+        return "link"
+    elif storage:
+        return "storage"
+    else:
+        return ""
+
+
 def get_sequence(flow, component, nd, output_flow, esys):
     return_list = []
     flow = list(flow) if len(list(flow)) != 0 else None
@@ -35,12 +49,12 @@ def get_flows(nd, results, esys):
         result_list[3][0]
 
 
-def get_investment(nd, esys, results, storage):
+def get_investment(nd, esys, results, comp_type):
     """
 
     """
     component_node = esys.groups[str(nd.label)]
-    if not storage:
+    if comp_type != "storage":
         bus_node = esys.groups[str(list(nd.outputs)[0].label)]
     else:
         bus_node = None
@@ -50,7 +64,7 @@ def get_investment(nd, esys, results, storage):
         return 0
 
 
-def calc_periodical_costs(nd, investment, storage, link, cost_type):
+def calc_periodical_costs(nd, investment, comp_type, cost_type):
     """
 
     """
@@ -59,7 +73,7 @@ def calc_periodical_costs(nd, investment, storage, link, cost_type):
     attributes = {
         "costs": ["ep_costs", "offset"],
         "emissions": ["periodical_constraint_costs", "fix_constraint_costs"]}
-    if storage:
+    if comp_type == "storage":
         invest_object = nd.investment
     else:
         invest_object = nd.outputs[list(nd.outputs.keys())[0]].investment
@@ -67,7 +81,7 @@ def calc_periodical_costs(nd, investment, storage, link, cost_type):
         ep_costs = getattr(invest_object, attributes.get(cost_type)[0])
         offset = getattr(invest_object, attributes.get(cost_type)[1])
     
-    if link:
+    if comp_type == "link":
         return (investment * 2 * ep_costs) + 2 * offset
     else:
         return investment * ep_costs + offset
@@ -112,12 +126,7 @@ def collect_data(nodes_data, results, esys):
     for nd in esys.nodes:
         investment = None
         label = str(nd.label)
-        undirected_link = \
-            True if isinstance(nd, Link) \
-                    and str(nodes_data["links"].loc[
-                                nodes_data["links"]["label"] == nd.label]
-                            ["(un)directed"]) == "undirected" else False
-        storage = True if isinstance(nd, GenericStorage) else False
+        comp_type = check_for_link_storage(nd, nodes_data)
         # get component flows from each component except buses
         if not isinstance(nd, Bus):
             comp_dict.update({label: []})
@@ -132,11 +141,11 @@ def collect_data(nodes_data, results, esys):
         if not (isinstance(nd, Source) and "shortage" in nd.label) \
                 and not isinstance(nd, Sink) and not isinstance(nd, Bus):
             # get investment
-            investment = get_investment(nd, esys, results, storage)
+            investment = get_investment(nd, esys, results, comp_type)
             comp_dict[label].append(investment)
             # get periodical costs
             periodical_costs = calc_periodical_costs(
-                    nd, investment, storage, undirected_link, "costs")
+                    nd, investment, comp_type, "costs")
             comp_dict[label].append(periodical_costs)
         elif not isinstance(nd, Bus):
             comp_dict[label] += [0, 0]
@@ -151,7 +160,7 @@ def collect_data(nodes_data, results, esys):
                 calc_variable_costs(nd, comp_dict[label], "emission_factor")
             if investment:
                 constraint_costs += calc_periodical_costs(
-                        nd, investment, storage, undirected_link, "emissions")
+                        nd, investment, comp_type, "emissions")
             comp_dict[label].append(constraint_costs)
         elif not isinstance(nd, Bus):
             comp_dict[label] += [0, 0]
