@@ -7,12 +7,9 @@ import csv
 
 
 def get_flows(nd, results, esys):
-    inputs = None
-    outputs = None
-    if len(list(nd.inputs)) != 0:
-        inputs = list(nd.inputs)
-    if len(list(nd.outputs)) != 0:
-        outputs = list(nd.outputs)
+    inputs = list(nd.inputs) if len(list(nd.inputs)) != 0 else None
+    outputs = list(nd.outputs) if len(list(nd.outputs)) != 0 else None
+    
     component = solph.views.node(results, str(nd.label))
     comp_input1 = [0 for i in range(0, len(esys.timeindex))]
     comp_input2 = [0 for i in range(0, len(esys.timeindex))]
