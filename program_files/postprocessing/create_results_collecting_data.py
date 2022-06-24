@@ -53,6 +53,8 @@ def calc_periodical_costs(nd, investment, storage, link):
     """
 
     """
+    ep_costs = 0
+    offset = 0
     if investment > 0 and not storage:
         ep_costs = getattr(nd.outputs[list(nd.outputs.keys())[0]].investment,
                            "ep_costs")
@@ -61,9 +63,6 @@ def calc_periodical_costs(nd, investment, storage, link):
     elif investment > 0 and storage:
         ep_costs = getattr(nd.investment, "ep_costs")
         offset = getattr(nd.investment, "offset")
-    else:
-        ep_costs = 0
-        offset = 0
         
     if link:
         return (investment * 2 * ep_costs) + 2 * offset
