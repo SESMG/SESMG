@@ -137,60 +137,6 @@ class Results:
     comp_capacity = None
     df_list_of_components = None
     df_result_table = pd.DataFrame()
- 
-    @staticmethod
-    def determine_pipe_type(component, pipes_param):
-        if "forks" in str(component):
-            component_strlist = str(component).split("-")
-            print(component_strlist)
-            diameter = str(component_strlist[0]).split("_")[2]
-            if "consumers" in str(component_strlist[-2]):
-                for num, consumer in pipes_param.iterrows():
-                    if "consumers" in consumer["to_node"]:
-                        name = str(str(consumer["street"]) + "_" + str(diameter) + "_f"
-                                + str(component_strlist[-3])
-                                + "_to_c" + str(component_strlist[-1]))
-                        length_list = [
-                            "forks-{}".format(component_strlist[-3]),
-                            "consumers-{}".format(component_strlist[-1])]
-            elif "producers" in component_strlist[-4]:
-                for num, pipe in pipes_param.iterrows():
-                    if pipe["from_node"] == "producers-{}".format(
-                            component_strlist[-3]) \
-                            and pipe["to_node"] == "forks-{}".format(
-                            component_strlist[-1]):
-                        name = ("producer" + pipe["street"] + "_" + str(
-                            diameter) + "_p" + str(component_strlist[-3])
-                                + "_to_f"+ str(component_strlist[-1]))
-                        length_list = [
-                            "producers-{}".format(component_strlist[-3]),
-                            "forks-{}".format(component_strlist[-1])]
-            else:
-                for num, pipe in pipes_param.iterrows():
-                    if "forks-{}".format(component_strlist[-3]) == pipe[
-                        "from_node"] \
-                            and "forks-{}".format(component_strlist[-1]) == \
-                            pipe["to_node"]:
-                        name = (pipe["street"] + "_" + str(diameter) + "_f"
-                                + str(component_strlist[-3]
-                                + "_to_f" +component_strlist[-1]))
-                        length_list = [
-                            "forks-{}".format(component_strlist[-3]),
-                            "forks-{}".format(component_strlist[-1])]
-                    elif "forks-{}".format(component_strlist[-1]) == pipe[
-                        "from_node"] \
-                            and "forks-{}".format(component_strlist[-3]) == \
-                            pipe["to_node"]:
-                        name = (pipe["street"] + "_revers_" + str(diameter)
-                                + "_f" + str(component_strlist[-3]) + "_to_f"
-                                + str(component_strlist[-1]))
-                        length_list = [
-                            "forks-{}".format(component_strlist[-3]),
-                            "forks-{}".format(component_strlist[-1])]
-        else:
-            name = str(component)
-            length_list = None
-        return name, length_list
 
     @staticmethod
     def get_first_node_flow(flow):
@@ -381,8 +327,9 @@ class Results:
             collect_data(nd, self.results, self.esys)
         
         loc, total_periodical_costs, total_variable_costs, \
-            total_constraint_costs, total_demand = \
-            prepare_data(comp_dict, total_demand, nd)
+            total_constraint_costs, total_demand, df_result_table = \
+            prepare_data(comp_dict, total_demand, nd, result_path,
+                         self.df_result_table)
         # SUMMARY
         meta_results = solph.processing.meta_results(optimization_model)
         meta_results_objective = meta_results['objective']
@@ -432,7 +379,7 @@ class Results:
         # Dataframes are exported as csv for further processing
         loc.to_csv(result_path + '/components.csv', index=False)
 
-        df_result_table = self.df_result_table.rename_axis('date')
+        df_result_table = df_result_table.rename_axis('date')
         df_result_table.to_csv(result_path + '/results.csv')
 
         df_summary.to_csv(result_path + '/summary.csv', index=False)

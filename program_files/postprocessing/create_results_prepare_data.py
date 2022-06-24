@@ -31,8 +31,50 @@ def add_component_to_loc(label, comp_dict, df_list_of_components,
     return df_list_of_components
 
 
-def prepare_data(comp_dict, total_demand, nd):
+def get_dh_label(label, param):
+    label_parts = str(label).split("-")
+    diameter = str(label).split("_")[2]
+    if "consumers" in str(label_parts):
+        pipe = param.loc[param["to_node"] == "consumers-" + label_parts[-1]]
+        name = str(pipe["street"].values[0]) + "_" + str(diameter) \
+               + "_f" + str(label_parts[-3]) + "_to_c" + str(label_parts[-1])
+    elif "producers" in str(label_parts):
+        pipe = param.loc[param["from_node"] == "producers-" + label_parts[-3]]
+        name = "producer" + str(pipe["street"].values[0]) + "_" \
+               + str(diameter) + "_p" + str(label_parts[-3]) + "_to_f" \
+               + str(label_parts[-1])
+    else:
+        pipe = param.loc[(param["to_node"] == "forks-" + label_parts[-1])
+                         & (param["from_node"] == "forks-" + label_parts[-3])]
+        pipe_reverse = \
+            param.loc[(param["to_node"] == "forks-" + label_parts[-3])
+                      & (param["from_node"] == "forks-" + label_parts[-1])]
+        if not pipe.empty:
+            name = str(pipe["street"].values[0]) + "_" + str(diameter) + "_f" \
+                   + str(label_parts[-3]) + "_to_f" + str(label_parts[-1])
+        elif not pipe_reverse.empty:
+            name = str(pipe_reverse["street"].values[0]) + "_revers_" \
+                   + str(diameter) + "_f" + str(label_parts[-3]) + "_to_f" \
+                   + str(label_parts[-1])
+    return str(name)
+
+
+def append_flows(label, comp_dict, df_result_table):
+    print(comp_dict[0])
+    if sum(comp_dict[0]) != 0:
+        df_result_table.loc[:, label + "_input1"] = comp_dict[0]
+    if sum(comp_dict[1]) != 0:
+        df_result_table.loc[:, label + "_input2"] = comp_dict[1]
+    if sum(comp_dict[2]) != 0:
+        df_result_table.loc[:, label + "_output1"] = comp_dict[2]
+    if sum(comp_dict[3]) != 0:
+        df_result_table.loc[:, label + "_output2"] = comp_dict[3]
+    return df_result_table
+
+
+def prepare_data(comp_dict, total_demand, nd, result_path, df_result_table):
     df_list_of_components = pd.DataFrame(columns=copt)
+    pipe_data = pd.read_csv(result_path + "/pipes.csv")
     for label in comp_dict.copy():
         if "insulation" in label:
             sink = str(nd["insulation"].loc[
@@ -48,10 +90,14 @@ def prepare_data(comp_dict, total_demand, nd):
             for i in range(0, 3):
                 comp_dict[label[:-10]][i] = comp_dict[label][i]
             comp_dict.pop(label)
+        elif comp_dict[label][8] == "dh":
+            comp_dict[get_dh_label(label, pipe_data)] = comp_dict.pop(label)
     total_periodical_costs = 0
     total_variable_costs = 0
     total_constraint_costs = 0
     for label in comp_dict:
+        df_result_table = \
+            append_flows(str(label), comp_dict[label], df_result_table)
         df_list_of_components = add_component_to_loc(
             label=label,
             comp_dict=comp_dict[label],
@@ -61,4 +107,5 @@ def prepare_data(comp_dict, total_demand, nd):
         total_variable_costs += comp_dict[label][6]
         total_constraint_costs += comp_dict[label][7]
     return df_list_of_components, total_periodical_costs, \
-        total_variable_costs, total_constraint_costs, total_demand
+        total_variable_costs, total_constraint_costs, total_demand, \
+        df_result_table
