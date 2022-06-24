@@ -8,7 +8,8 @@ import numpy as np
 from threading import *
 import os
 import subprocess
-from program_files.Spreadsheet_Energy_System_Model_Generator import sesmg_main
+from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
+    import sesmg_main
 
 
 class demo_frame_class:
@@ -18,100 +19,87 @@ class demo_frame_class:
         print(demo_file)
         print(demo_results)
 
-        sesmg_main(scenario_file=demo_file,
-                   result_path=demo_results,
-                   num_threads=2,
-                   graph=False,
-                   results=False,
-                   plotly=True)
+        sesmg_main(
+            scenario_file=demo_file,
+            result_path=demo_results,
+            num_threads=2,
+            timeseries_prep=['none', 'none', 'none', 'none', 0],
+            graph=False,
+            criterion_switch=False,
+            xlsx_results=False,
+            console_results=False,
+            solver="cbc",
+            cluster_dh=False,
+            district_heating_path="")
 
-    def monetary_demo_scenario(self):
+    def demo_scenario(self, mode):
         '''modifies financial demo scenario'''
-
+        mode_dict = {
+            "monetary": ["demo_scenario_monetaer.xlsx",
+                         r"/results/demo/financial",
+                         'Total System Costs',
+                         'Total Constraint Costs'],
+            "emissions": ["demo_scenario_emissionen.xlsx",
+                          r"/results/demo/emissions",
+                          'Total Constraint Costs',
+                          'Total System Costs']}
+        
         xfile = openpyxl.load_workbook(os.path.dirname(__file__)
-                        + '/v0.0.6_demo_scenario/demo_scenario_monetaer.xlsx',
+                                       + '/v0.0.6_demo_scenario/'
+                                       + mode_dict.get(mode)[0],
                                        data_only=True)
 
-        # WINDPOWER
-        sheet = xfile["sources"]
-        sheet['K2'] = (int(self.entry_values['windpower'].get()))
-        sheet['L2'] = (int(self.entry_values['windpower'].get()))
         # PHOTOVOLTAICS
         sheet = xfile["sources"]
-        sheet['K3'] = (int(self.entry_values['photovoltaics'].get()))
-        sheet['L3'] = (int(self.entry_values['photovoltaics'].get()))
+        sheet['I3'] = (int(self.entry_values['photovoltaics'].get()))
+        sheet['J3'] = (int(self.entry_values['photovoltaics'].get()))
+        # SOLAR THERMAL
+        sheet = xfile["sources"]
+        sheet['I5'] = (int(self.entry_values['solarthermal'].get()))
+        sheet['J5'] = (int(self.entry_values['solarthermal'].get()))
         # BATTERY
         sheet = xfile["storages"]
-        sheet['G2'] = (int(self.entry_values['battery'].get()))
-        sheet['H2'] = (int(self.entry_values['battery'].get()))
+        sheet['N3'] = (int(self.entry_values['battery'].get()))
+        sheet['O3'] = (int(self.entry_values['battery'].get()))
         # CHP
         sheet = xfile["transformers"]
-        sheet['Q3'] = (int(self.entry_values['chp'].get()))
-        sheet['R3'] = (int(self.entry_values['chp'].get()))
+        sheet['C4'] = (int(self.entry_values["district heating"].get()))
+        sheet['L4'] = (int(self.entry_values['chp'].get()))
+        sheet['M4'] = (int(self.entry_values['chp'].get()))
+        # ASHP
+        sheet = xfile["transformers"]
+        sheet['L6'] = (int(self.entry_values['ASHP'].get()))
+        sheet['M6'] = (int(self.entry_values['ASHP'].get()))
+        # GCHP
+        sheet = xfile["transformers"]
+        sheet['L5'] = (int(self.entry_values['GCHP'].get()))
+        sheet['M5'] = (int(self.entry_values['GCHP'].get()))
         # THERMAL STORAGE
         sheet = xfile["storages"]
-        sheet['G3'] = (int(self.entry_values['thermal storage'].get()))
-        sheet['H3'] = (int(self.entry_values['thermal storage'].get()))
+        sheet['C4'] = (int(self.entry_values["district heating"].get()))
+        sheet['N4'] = (int(self.entry_values['thermal storage'].get()))
+        sheet['O4'] = (int(self.entry_values['thermal storage'].get()))
+        # THERMAL STORAGE
+        sheet = xfile["storages"]
+        sheet['N5'] = (int(self.entry_values['thermal storage (decentralized)'].get()))
+        sheet['O5'] = (int(self.entry_values['thermal storage (decentralized)'].get()))
         # District Heating
         sheet = xfile["links"]
-        sheet['C2'] = (int(self.entry_values['district heating'].get()))
+        sheet['C3'] = (int(self.entry_values['district heating'].get()))
 
-        xfile.save(self.mainpath + '/results/demo/financial/scenario.xlsx')
+        xfile.save(self.mainpath + mode_dict.get(mode)[1] + '/scenario.xlsx')
         self.execute_sesmg_DEMO(
-            demo_file=self.mainpath + r"/results/demo/financial/scenario.xlsx",
-            demo_results=self.mainpath + r"/results/demo/financial")
+            demo_file=self.mainpath + mode_dict.get(mode)[1]
+                      + r"/scenario.xlsx",
+            demo_results=self.mainpath + mode_dict.get(mode)[1])
 
         df_summary = pd.read_csv(self.mainpath
-                                 + r"/results/demo/financial/summary.csv")
+                                 + mode_dict.get(mode)[1] + r"/summary.csv")
         # monetary_costs = float(df_summary['Total System Costs'])
         self.monetary_costs.set(
-            str(round(float(df_summary['Total System Costs']/1000000), 2)))
+            str(round(float(df_summary[mode_dict.get(mode)[2]]/1000000), 2)))
         self.emission_costs.set(
-            str(round(float(df_summary['Total Constraint Costs'])/1000000, 0)))
-        self.window.update_idletasks()
-
-    def emission_demo_scenario(self):
-        '''modifies financial demo scenario'''
-
-        xfile = openpyxl.load_workbook(os.path.dirname(__file__) +
-            '/v0.0.6_demo_scenario/demo_scenario_emissionen.xlsx')
-
-        # WINDPOWER
-        sheet = xfile["sources"]
-        sheet['K2'] = (int(self.entry_values['windpower'].get()))
-        sheet['L2'] = (int(self.entry_values['windpower'].get()))
-        # PHOTOVOLTAICS
-        sheet = xfile["sources"]
-        sheet['K3'] = (int(self.entry_values['photovoltaics'].get()))
-        sheet['L3'] = (int(self.entry_values['photovoltaics'].get()))
-        # BATTERY
-        sheet = xfile["storages"]
-        sheet['G2'] = (int(self.entry_values['battery'].get()))
-        sheet['H2'] = (int(self.entry_values['battery'].get()))
-        # CHP
-        sheet = xfile["transformers"]
-        sheet['Q3'] = (int(self.entry_values['chp'].get()))
-        sheet['R3'] = (int(self.entry_values['chp'].get()))
-        # THERMAL STORAGE
-        sheet = xfile["storages"]
-        sheet['G3'] = (int(self.entry_values['thermal storage'].get()))
-        sheet['H3'] = (int(self.entry_values['thermal storage'].get()))
-        # District Heating
-        sheet = xfile["links"]
-        sheet['C2'] = (int(self.entry_values['district heating'].get()))
-
-        xfile.save(self.mainpath + '/results/demo/emissions/scenario.xlsx')
-        self.execute_sesmg_DEMO(
-            demo_file=self.mainpath + '/results/demo/emissions/scenario.xlsx',
-            demo_results=self.mainpath + '/results/demo/emissions')
-
-        df_summary = pd.read_csv(self.mainpath
-                                 + r"/results/demo/emissions/summary.csv")
-
-        self.emission_costs.set(
-            str(round(float(df_summary['Total System Costs'])/1000000, 0)))
-        self.monetary_costs.set(
-            str(round(float(df_summary['Total Constraint Costs'])/1000000, 0)))
+            str(round(float(df_summary[mode_dict.get(mode)[3]])/1000000, 2)))
         self.window.update_idletasks()
 
     def simulate_scenario(self):
@@ -120,17 +108,18 @@ class demo_frame_class:
                   + self.entry_values[self.demo_names[i]].get()
                   + ' ' + self.demo_unit[self.demo_names[i]])
         if self.executionmode.get() == "emissions":
-            self.emission_demo_scenario()
+            self.demo_scenario("emissions")
         elif self.executionmode.get() == "monetary":
-            self.monetary_demo_scenario()
+            self.demo_scenario("monetary")
 
     def include_optimized_scenarios(self):
         self.results_dict['Status Quo'] = \
-            [8.2594606, 18521.2, 0, 0, 0, 0, 0, 0]
+            [10.837808, 17222.180444, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.results_dict['Financial Minimum'] = \
-            [1.310668, 14400.430112, 29700, 10000, 0, 0, 0, 0]
+            [8.043211, 9221.384569, 10000, 0, 0, 0, 2070.6, 5000, 10000, 0, 0]
         self.results_dict['Emission Minimum'] = \
-            [9.825963, 12574.7, 5526, 644, 29680, 2769, 0, 10000]
+            [12.96770, 7653.872254, 10000, 6800, 10000, 0, 17523.36,
+             5000, 10000, 0, 0]
 
     def save_results(self):
 
@@ -225,14 +214,13 @@ class demo_frame_class:
 
         plt.show()
 
-    def __init__(self, window, tab_control, demo_frame):
+    def __init__(self, demo_frame, window):
         # Definition of the DEMO-Frames
         # main_frame = ttk.Frame(tab_control)
         self.mainpath = \
             os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
         self.window = window
-        tab_control.add(demo_frame, text='DEMO')
         self.monetary_costs = StringVar()
         self.monetary_costs.set('--')
 
@@ -263,20 +251,26 @@ class demo_frame_class:
         label_monetary_costs.grid(column=5, row=row)
 
         demo_components = {"name": 'name',
-                           "windpower": '0',
                            "photovoltaics": '0',
+                           "solarthermal": '0',
                            "battery": '0',
                            "chp": '0',
+                           "ASHP": '0',
+                           "GCHP": '0',
+                           'thermal storage (decentralized)': "0",
                            "thermal storage": '0',
                            "district heating": '0'}
         self.demo_components = demo_components
         self.demo_unit = {"name": '',
-                     "windpower": 'kW',
-                     "photovoltaics": 'kW',
-                     "battery": 'kWh',
-                     "chp": 'kW (el.)',
-                     "thermal storage": 'kWh',
-                     "district heating": 'True (1) / False (0)'}
+                          "photovoltaics": 'kW',
+                          "solarthermal": 'kW',
+                          "battery": 'kWh',
+                          "chp": 'kW (el.)',
+                          "ASHP": 'kW',
+                          "GCHP": 'kW',
+                          'thermal storage (decentralized)': "kWh",
+                          "thermal storage": 'kWh',
+                          "district heating": 'True (1) / False (0)'}
 
         row = row + 1
         self.demo_names = list(demo_components.keys())
@@ -437,7 +431,7 @@ class demo_frame_class:
         #
         #
         # EXECUTION BUTTONS
-        row = 15
+        row = 18
         Button(demo_frame, text='SAVE', command=self.save_manual_results)\
             .grid(column=1 + 4, row=row, pady=4)
         row = row + 1
@@ -460,17 +454,22 @@ class demo_frame_class:
         
         demo_assumptions = {
             'Electricity Demand': '14 000 000 kWh/a, h0 Load Profile',
-            'Heaty Demand': '52 203 000 kWh/a, EFH Load Profile',
-            'Windturbines': '2 000 000 €/MW, 8 g/kWh, 20 a, max. 29.7 MW',
-            'Photovoltaics': '1 140 000 €/MW, 56 g/kWh, 20 a, max. 10 MW',
-            'Battery': '1 000 000 €/MWh, 155 t/MWh (Invest!), 20 a',
-            'CHP': '190 000 €/MWh (el.), 375 g/kWh (el), 165 g/kWh (th.), '
-                   '20 a',
-            'Thermal Storage': '35 000 €/MWh, 46 g/kWh, 20 a, 3 % loss /d',
+            'Heat Demand': '52 203 000 kWh/a, EFH Load Profile',
+            #'Windturbines': '2 000 000 €/MW, 8 g/kWh, 20 a, max. 29.7 MW',
+            'Photovoltaics': '1 070 000 €/MW, 27 g/kWh, 20 a, max. 10 MW',
+            'Solar Thermal': '  846 000 €/MW, 12 g/kWh, 20 a, max. 6.8 MW',
+            'Battery': '1 000 000 €/MWh, 3.96 kg/(kWh * a) (Invest!), 20 a',
+            'Gas Heating': '1 005 000 €/MW, 232g/kWh, 18 a, 0.92',
+            'CHP': '760 000 €/MW (el.), 308 g/kWh (el), 265 g/kWh (th.), 20 a',
+            'Thermal Storage': '35 000 €/MWh, 743 g/(kWh * a), 20 a, 3 % loss /d',
+            'Thermal Storage (decentral)': '49 000 €/MWh,  604g/(kWh * a), 20 a, 3 % loss /d',
             'district heating': '86 000 000 €, 15 % loss, 40 a',
-            'Gas Import/Heating': '6.4 ct/kWh (gas), 85 % efficiency, '
-                                  '45.62 g/kWh',
-            'Electricity Import': '30.5 ct/kWh, 474 g/kWh'
+            'Gas Import': '6.29 ct/kWh (gas)',
+            'Electricity Import': '31.22 ct/kWh, 366 g/kWh, '
+                                  'HEATPUMP: 22 ct/kWh, 366 g/kWh',
+            'Electricity Export': '- 6.8 ct/kWh, - 27 g/kWh',
+            'Air Source Heat Pump': '1 318 000 €/MW, 12g/kWh, 18 a',
+            'Ground-coupled Heatpump': '1 444 000 €/MW, 8 g/kWh, 20 a'
             }
 
         assumption_keys = list(demo_assumptions.keys())
