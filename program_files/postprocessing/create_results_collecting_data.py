@@ -5,11 +5,9 @@ from oemof.solph.components import GenericStorage
 
 
 def check_for_link_storage(nd, nodes_data):
-    link_row = \
-        nodes_data["links"].loc[nodes_data["links"]["label"] == nd.label]
-    if not link_row.empty and isinstance(nd, Link):
-        if str(link_row["(un)directed"]) == "undirected":
-            return "link"
+    link_row = nodes_data.loc[nodes_data["label"] == nd.label]
+    if str(link_row["(un)directed"]) == "undirected" and isinstance(nd, Link):
+        return "link"
     if isinstance(nd, GenericStorage):
         return "storage"
     else:
@@ -124,7 +122,7 @@ def collect_data(nodes_data, results, esys):
     for nd in esys.nodes:
         investment = None
         label = str(nd.label)
-        comp_type = check_for_link_storage(nd, nodes_data)
+        comp_type = check_for_link_storage(nd, nodes_data["links"])
         # get component flows from each component except buses
         if not isinstance(nd, Bus):
             comp_dict.update({label: []})
