@@ -276,75 +276,50 @@ class demo_frame_class(MethodsGUI):
 
         # Erstellt Eingabefelder für alle variierbaren componenten.
         for i in range(len(demo_components)):
-            column = 0
-
             # Defines Label
-            label_name = Label(demo_frame, text=self.demo_names[i],
-                               font='Helvetica 10')
-            label_name.grid(column=column, row=row, sticky="W")
-            column = column + 1
-
+            self.create_heading(demo_frame, self.demo_names[i], 0, row,
+                                "W")
             # Defines Entry Field
             self.entry_values[self.demo_names[i]] = StringVar()
             self.entry_values[self.demo_names[i]].set(demo_values[i])
-            self.entry_values[self.demo_names[i]] = Entry(demo_frame, text=str(
-                self.entry_values[self.demo_names[i]]))
-            self.entry_values[self.demo_names[i]].grid(column=column, row=row)
-            column = column + 1
 
+            self.create_entry(demo_frame, row,
+                              self.entry_values[self.demo_names[i]])
             # Defines Unit
-            label_name = Label(demo_frame,
-                               text=self.demo_unit[self.demo_names[i]],
-                               font='Helvetica 10')
-            label_name.grid(column=column, row=row, sticky="W")
-
-            row = row + 1
-        Label(demo_frame, text="Monetarily driven, emission driven",
-                               font='Helvetica 10').grid(
-                column=0, row=row, sticky="W")
-        # EXECUTION BUTTONS
-        # row = row + 1
+            self.create_heading(demo_frame, self.demo_unit[self.demo_names[i]],
+                                2, row, "W")
+            row += 1
+        self.create_heading(demo_frame, "Monetarily driven, emission driven",
+                            0, row, "W")
+        
         self.executionmode = StringVar(demo_frame, "monetary")
-        OptionMenu(demo_frame, self.executionmode, "emissions", "monetary")\
-            .grid(column=1, row=row, pady=4)
-        row = row + 1
+        self.create_option_menu(demo_frame, self.executionmode,
+                                ["emissions", "monetary"], 1, row)
+
+        row += 1
         Button(demo_frame, text='SIMULATE', command=self.simulate_scenario)\
             .grid(column=1, row=row, pady=4)
 
         # RESULTS
-        row = row + 2
-        label_monetary_costs = Label(demo_frame, text='RESULTS',
-                                     font='Helvetica 10')
-        label_monetary_costs.grid(column=0, row=row, sticky="W")
-
-        row = row + 1
-        label_monetary_costs = Label(demo_frame, text='Monetary Costs: ',
-                                     font='Helvetica 10')
-        label_monetary_costs.grid(column=0, row=row, sticky="W")
-
+        row += 2
+        self.create_heading(demo_frame, 'RESULTS', 0, row, "W")
+        row += 1
+        self.create_heading(demo_frame, "Monetary Costs: ", 0, row, "W")
         label_monetary_costs_value = Label(demo_frame,
                                            textvariable=self.monetary_costs,
                                            font='Helvetica 10')
         label_monetary_costs_value.grid(column=1, row=row, sticky="W")
-
-        label_monetary_unit = Label(demo_frame, text=' Mio. EUR/a',
-                                    font='Helvetica 10')
-        label_monetary_unit.grid(column=2, row=row, sticky="W")
-
-        row = row + 1
-        label_emission_costs = Label(demo_frame, text='CO2 Emissions: ',
-                                     font='Helvetica 10')
-        label_emission_costs.grid(column=0, row=row, sticky="W")
-        label_emission_costs_value = Label(demo_frame,
+        self.create_heading(demo_frame, ' Mio. EUR/a', 2, row, "W")
+        row += 1
+        self.create_heading(demo_frame, 'CO2 Emissions: ', 0, row, "W")
+        label_monetary_costs_value = Label(demo_frame,
                                            textvariable=self.emission_costs,
                                            font='Helvetica 10')
-        label_emission_costs_value.grid(column=1, row=row, sticky="W")
-        label_emission_unit = Label(demo_frame, text=' t/a',
-                                    font='Helvetica 10')
-        label_emission_unit.grid(column=2, row=row, sticky="W")
+        label_monetary_costs_value.grid(column=1, row=row, sticky="W")
+        self.create_heading(demo_frame, ' t/a', 2, row, "W")
 
         # EXECUTION BUTTONS
-        row = row + 1
+        row += 1
         Button(demo_frame, text='SAVE', command=self.save_results)\
             .grid(column=1, row=row, sticky=W, pady=4)
 
