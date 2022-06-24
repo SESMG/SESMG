@@ -5,14 +5,12 @@ from oemof.solph.components import GenericStorage
 
 
 def check_for_link_storage(nd, nodes_data):
-    undirected_link = \
-        True if isinstance(nd, Link) and str(nodes_data["links"].loc[
-            nodes_data["links"]["label"] == nd.label]
-            ["(un)directed"]) == "undirected" else False
-    storage = True if isinstance(nd, GenericStorage) else False
-    if undirected_link:
-        return "link"
-    elif storage:
+    link_row = \
+        nodes_data["links"].loc[nodes_data["links"]["label"] == nd.label]
+    if not link_row.empty and isinstance(nd, Link):
+        if str(link_row["(un)directed"]) == "undirected":
+            return "link"
+    if isinstance(nd, GenericStorage):
         return "storage"
     else:
         return ""
