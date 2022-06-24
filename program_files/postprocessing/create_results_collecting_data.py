@@ -53,30 +53,23 @@ def calc_periodical_costs(nd, investment, storage, link):
     """
 
     """
-    if investment and not storage:
-        return investment \
-               * getattr(nd.outputs[
-                             list(nd.outputs.keys())[0]].investment,
-                         "ep_costs") \
-               + getattr(nd.outputs[
-                             list(nd.outputs.keys())[0]].investment,
+    if investment > 0 and not storage:
+        ep_costs = getattr(nd.outputs[list(nd.outputs.keys())[0]].investment,
+                           "ep_costs")
+        offset = getattr(nd.outputs[list(nd.outputs.keys())[0]].investment,
                          "offset")
-    elif investment and link:
-        return investment \
-               * 2 \
-               * getattr(nd.outputs[
-                             list(nd.outputs.keys())[0]].investment,
-                         "ep_costs") \
-               + (getattr(nd.outputs[
-                              list(nd.outputs.keys())[0]].investment,
-                          "offset") * 2)
-    elif investment and storage:
-        return investment \
-               * getattr(nd.investment, "ep_costs") \
-               + getattr(nd.investment, "offset")
+    elif investment > 0 and storage:
+        ep_costs = getattr(nd.investment, "ep_costs")
+        offset = getattr(nd.investment, "offset")
     else:
-        return 0
-
+        ep_costs = 0
+        offset = 0
+        
+    if link:
+        return (investment * 2 * ep_costs) + 2 * offset
+    else:
+        return investment * ep_costs + offset
+    
 
 def calc_variable_costs(nd, comp_dict, attr):
     costs = 0
