@@ -6,31 +6,37 @@ from dhnx.optimization_oemof_heatpipe import HeatPipeline
 import csv
 
 
+def get_sequence(flow, component, nd, output_flow, esys):
+    return_list = []
+    flow = list(flow) if len(list(flow)) != 0 else None
+    if flow:
+        attr1 = (str(flow[0].label), str(nd.label))
+        attr2 = (str(flow[1].label), str(nd.label)) if len(flow) == 2 else ()
+        if output_flow:
+            attr1 = attr1[::-1]
+            attr2 = attr2[::-1]
+        for i in [attr1, attr2]:
+            if i != ():
+                return_list.append([component['sequences'][(i, "flow")]])
+            else:
+                return_list.append([len(esys.timeindex) * [0]])
+    else:
+        return_list.append([len(esys.timeindex) * [0]])
+        return_list.append([len(esys.timeindex) * [0]])
+    return return_list
+    
+    
 def get_flows(nd, results, esys):
-    inputs = list(nd.inputs) if len(list(nd.inputs)) != 0 else None
-    outputs = list(nd.outputs) if len(list(nd.outputs)) != 0 else None
-    
+    result_list = []
     component = solph.views.node(results, str(nd.label))
-    comp_input1 = [0 for i in range(0, len(esys.timeindex))]
-    comp_input2 = [0 for i in range(0, len(esys.timeindex))]
-    comp_output1 = [0 for i in range(0, len(esys.timeindex))]
-    comp_output2 = [0 for i in range(0, len(esys.timeindex))]
+    for flow in [nd.inputs, nd.outputs]:
+        result_list += get_sequence(flow, component, nd,
+                                    True if flow == nd.outputs else False,
+                                    esys)
+    return result_list[0][0], result_list[1][0], result_list[2][0], \
+        result_list[3][0]
 
-    if inputs:
-        comp_input1 = component['sequences'][
-            ((str(inputs[0].label), str(nd.label)), 'flow')]
-        if len(inputs) == 2:
-            comp_input2 = component['sequences'][
-                ((str(inputs[1].label), str(nd.label)), 'flow')]
-    if outputs:
-        comp_output1 = component['sequences'][
-            ((str(nd.label), str(outputs[0].label)), 'flow')]
-        if len(outputs) == 2:
-            comp_output2 = component['sequences'][
-                ((str(nd.label), str(outputs[1].label)), 'flow')]
-    return comp_input1, comp_input2, comp_output1, comp_output2
-    
-    
+
 def get_investment(nd, esys, results, storage):
     """
 
@@ -64,12 +70,12 @@ def calc_periodical_costs(nd, investment, storage, link, cost_type):
     elif investment > 0 and storage:
         ep_costs = getattr(nd.investment, attributes.get(cost_type)[0])
         offset = getattr(nd.investment, attributes.get(cost_type)[1])
-        
+    
     if link:
         return (investment * 2 * ep_costs) + 2 * offset
     else:
         return investment * ep_costs + offset
-    
+
 
 def calc_variable_costs(nd, comp_dict, attr):
     costs = 0
@@ -84,25 +90,23 @@ def calc_variable_costs(nd, comp_dict, attr):
                         * getattr(type_dict[flow_type][0]
                                   [list(type_dict[flow_type][0].keys())[i]],
                                   attr))
-
+    
     return costs
 
 
 def get_comp_type(nd, comp_dict):
-    if isinstance(nd, HeatPipeline):
-        comp_dict[str(nd.label)].append("dh")
-    elif isinstance(nd, Sink):
-        comp_dict[nd.label].append("sink")
-    elif isinstance(nd, Source):
-        comp_dict[nd.label].append("source")
-    elif isinstance(nd, Transformer) and not isinstance(nd, HeatPipeline):
-        comp_dict[nd.label].append("transformer")
-    elif isinstance(nd, GenericStorage):
-        comp_dict[nd.label].append("storage")
-    elif isinstance(nd, Link):
-        comp_dict[nd.label].append("link")
-        
-        
+    type_dict = {
+        "<class 'dhnx.optimization_oemof_heatpipe.HeatPipeline'>": "dh",
+        "<class 'oemof.solph.network.sink.Sink'>": "sink",
+        "<class 'oemof.solph.network.source.Source'>": "source",
+        "<class 'oemof.solph.components.generic_storage.GenericStorage'>":
+            "storage",
+        "<class 'oemof.solph.custom.link.Link'>": "link",
+        "<class 'oemof.solph.network.transformer.Transformer'>": "transformer"}
+
+    comp_dict[str(nd.label)].append(type_dict.get(str(type(nd))))
+
+
 def collect_data(nodes_data, results, esys):
     total_demand = 0
     # dictionary containing energy system components data
@@ -114,17 +118,17 @@ def collect_data(nodes_data, results, esys):
         label = str(nd.label)
         undirected_link = \
             True if isinstance(nd, Link) \
-            and str(nodes_data["links"].loc[
-                        nodes_data["links"]["label"] == nd.label]
-                    ["(un)directed"]) == "undirected" else False
+                    and str(nodes_data["links"].loc[
+                                nodes_data["links"]["label"] == nd.label]
+                            ["(un)directed"]) == "undirected" else False
         storage = True if isinstance(nd, GenericStorage) else False
         # get component flows from each component except buses
         if not isinstance(nd, Bus):
             comp_dict.update({label: []})
             comp_input1, comp_input2, comp_output1, comp_output2 = get_flows(
-                nd,
-                results,
-                esys)
+                    nd,
+                    results,
+                    esys)
             comp_dict[label] += [comp_input1,
                                  comp_input2,
                                  comp_output1,
@@ -136,7 +140,7 @@ def collect_data(nodes_data, results, esys):
             comp_dict[label].append(investment)
             # get periodical costs
             periodical_costs = calc_periodical_costs(
-                nd, investment, storage, undirected_link, "costs")
+                    nd, investment, storage, undirected_link, "costs")
             comp_dict[label].append(periodical_costs)
         elif not isinstance(nd, Bus):
             comp_dict[label] += [0, 0]
@@ -151,11 +155,11 @@ def collect_data(nodes_data, results, esys):
                 calc_variable_costs(nd, comp_dict[label], "emission_factor")
             if investment:
                 constraint_costs += calc_periodical_costs(
-                    nd, investment, storage, undirected_link, "emissions")
+                        nd, investment, storage, undirected_link, "emissions")
             comp_dict[label].append(constraint_costs)
         elif not isinstance(nd, Bus):
             comp_dict[label] += [0, 0]
             total_demand += sum(comp_input1)
-
-        get_comp_type(nd, comp_dict)
+        if not isinstance(nd, Bus):
+            get_comp_type(nd, comp_dict)
     return comp_dict, total_demand
