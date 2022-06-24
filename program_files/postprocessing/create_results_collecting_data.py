@@ -2,8 +2,6 @@ import oemof.solph as solph
 from oemof.network.network import Bus, Sink, Source, Transformer
 from oemof.solph.custom import Link
 from oemof.solph.components import GenericStorage
-from dhnx.optimization_oemof_heatpipe import HeatPipeline
-import csv
 
 
 def get_sequence(flow, component, nd, output_flow, esys):
@@ -61,15 +59,13 @@ def calc_periodical_costs(nd, investment, storage, link, cost_type):
     attributes = {
         "costs": ["ep_costs", "offset"],
         "emissions": ["periodical_constraint_costs", "fix_constraint_costs"]}
-    
-    if investment > 0 and not storage:
-        ep_costs = getattr(nd.outputs[list(nd.outputs.keys())[0]].investment,
-                           attributes.get(cost_type)[0])
-        offset = getattr(nd.outputs[list(nd.outputs.keys())[0]].investment,
-                         attributes.get(cost_type)[1])
-    elif investment > 0 and storage:
-        ep_costs = getattr(nd.investment, attributes.get(cost_type)[0])
-        offset = getattr(nd.investment, attributes.get(cost_type)[1])
+    if storage:
+        invest_object = nd.investment
+    else:
+        invest_object = nd.outputs[list(nd.outputs.keys())[0]].investment
+    if investment > 0:
+        ep_costs = getattr(invest_object, attributes.get(cost_type)[0])
+        offset = getattr(invest_object, attributes.get(cost_type)[1])
     
     if link:
         return (investment * 2 * ep_costs) + 2 * offset
