@@ -53,24 +53,20 @@ def calc_periodical_costs(nd, investment, storage, link, cost_type):
     """
 
     """
-    print(nd.label)
     ep_costs = 0
     offset = 0
-    if cost_type == "costs":
-        attr1 = "ep_costs"
-        attr2 = "offset"
-    else:
-        attr1 = "periodical_constraint_costs"
-        attr2 = "fix_constraint_costs"
+    attributes = {
+        "costs": ["ep_costs", "offset"],
+        "emissions": ["periodical_constraint_costs", "fix_constraint_costs"]}
     
     if investment > 0 and not storage:
         ep_costs = getattr(nd.outputs[list(nd.outputs.keys())[0]].investment,
-                           attr1)
+                           attributes.get(cost_type)[0])
         offset = getattr(nd.outputs[list(nd.outputs.keys())[0]].investment,
-                         attr2)
+                         attributes.get(cost_type)[1])
     elif investment > 0 and storage:
-        ep_costs = getattr(nd.investment, attr1)
-        offset = getattr(nd.investment, attr2)
+        ep_costs = getattr(nd.investment, attributes.get(cost_type)[0])
+        offset = getattr(nd.investment, attributes.get(cost_type)[1])
         
     if link:
         return (investment * 2 * ep_costs) + 2 * offset
