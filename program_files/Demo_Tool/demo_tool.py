@@ -10,9 +10,10 @@ import os
 import subprocess
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main
+from program_files.GUI_files import MethodsGUI
 
 
-class demo_frame_class:
+class demo_frame_class(MethodsGUI):
 
     def execute_sesmg_DEMO(self, demo_file, demo_results):
         """ Excecutes the optimization algorithm """
@@ -232,23 +233,19 @@ class demo_frame_class:
 
         row = 0
         explanation = ('DEMO-Energy System: In this DEMO the financial costs '
-                       'and carbon dioxide emissions of a residential area are '
-                       'simulated. For improvement, the technologies listed '
-                       'below are \n available with the parameters below. The '
-                       'simulated scenarios can be compared with the status '
-                       'quo, the financial minimum and the emission minimum.')
+                       'and carbon dioxide emissions of a residential area '
+                       'are simulated. For improvement, the technologies '
+                       'listed below are \n available with the parameters '
+                       'below. The simulated scenarios can be compared with '
+                       'the status quo, the financial minimum and the '
+                       'emission minimum.')
 
-        label_explanation = Label(demo_frame, text=explanation,
-                                  font='Helvetica 10 bold')
-        label_explanation.grid(column=0, columnspan=7, row=row)
+        self.create_heading(demo_frame, explanation, 0, row, "W", True, 7)
 
-        row = row + 1
-        label_monetary_costs = Label(demo_frame, text='Simulation Input',
-                                     font='Helvetica 10 bold')
-        label_monetary_costs.grid(column=1, row=row)
-        label_monetary_costs = Label(demo_frame, text='Manual Result Input',
-                                     font='Helvetica 10 bold')
-        label_monetary_costs.grid(column=5, row=row)
+        row += 1
+        self.create_heading(demo_frame, 'Simulation Input', 1, row, "W", True)
+        self.create_heading(demo_frame, 'Manual Result Input', 5, row, "W",
+                            True)
 
         demo_components = {"name": 'name',
                            "photovoltaics": '0',
