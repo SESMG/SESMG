@@ -567,11 +567,11 @@ def create_gchp(tool, parcel):
     # create GCHPs parcel wise
     gchps = {}
     for num, parcel in parcel.iterrows():
-        for num_inner, building in tool[tool["active"] == 1].iterrows():
-            if building["gchp"] not in ["No", "no", 0]:
-                if parcel['ID parcel'] == building["parcel"]:
-                    gchps.update({parcel['ID parcel'][-9:]:
-                                      parcel['gchp area (m²)']})
+        for j, building in tool[(tool["active"] == 1) & (tool["gchp"].isin(
+                ["Yes", "yes", 1]))].iterrows():
+            if parcel['ID parcel'] == building["parcel"]:
+                gchps.update({parcel['ID parcel'][-9:]:
+                                  parcel['gchp area (m²)']})
     # create gchp relevant components
     for gchp in gchps:
         Transformer.create_transformer(
