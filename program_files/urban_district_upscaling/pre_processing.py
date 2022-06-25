@@ -330,9 +330,7 @@ def create_central_chp(gastype, output, central_elec_bus):
         output=output)
 
 
-def create_buses(building_id: str, pv_bus: bool, building_type: str,
-                 hp_elec_bus: bool, central_elec_bus: bool, gchp: bool,
-                 gchp_heat_bus=None, gchp_elec_bus=None, lat=None, lon=None):
+def create_buses(building, pv_bus: bool, central_elec_bus: bool, gchps):
     """
         todo docstring
         :param building_id: building identification
@@ -357,72 +355,87 @@ def create_buses(building_id: str, pv_bus: bool, building_type: str,
         :type gchp_elec_bus: str
 
     """
-    if building_type == "RES":
+    hp_elec_bus = \
+        True if (building['parcel'] != 0
+                 and building["gchp"] not in ["No", "no", 0]) \
+        or building['ashp'] not in ["No", "no", 0] else False
+    gchp = True if building['parcel'] != 0 else False,
+    gchp_heat_bus = (building['parcel'][-9:] + "_heat_bus") \
+        if (building['parcel'] != 0 and building['parcel'][-9:] in gchps) \
+        else None
+    gchp_elec_bus = (building['parcel'][-9:] + "_hp_elec_bus") \
+        if (building['parcel'] != 0 and building['parcel'][-9:] in gchps) \
+        else None
+
+    if building["building type"] == "RES":
         bus = 'building_res_electricity_bus'
-    elif building_type == "IND":
+    elif building["building type"] == "IND":
         bus = 'building_ind_electricity_bus'
     else:
         bus = 'building_com_electricity_bus'
-    if pv_bus or building_type != "0":
+    if pv_bus or building["building type"] != "0":
         # house electricity bus
         Bus.create_standard_parameter_bus(
-            label=(str(building_id) + "_electricity_bus"),
+            label=(str(building['label']) + "_electricity_bus"),
             bus_type=bus)
         if central_elec_bus:
             # link from central elec bus to building electricity bus
             Link.create_link(
-                label=str(building_id) + "central_electricity_link",
+                label=str(building['label']) + "central_electricity_link",
                 bus_1="central_electricity_bus",
-                bus_2=str(building_id) + "_electricity_bus",
+                bus_2=str(building['label']) + "_electricity_bus",
                 link_type="building_central_building_link")
 
-    if building_type not in ["0", 0]:
+    if building["building type"] not in ["0", 0]:
         # house heat bus
-        Bus.create_standard_parameter_bus(label=str(building_id) + "_heat_bus",
-                                          bus_type='building_heat_bus',
-                                          dh="1" if lat is not None else "0",
-                                          cords=[lat, lon])
+        Bus.create_standard_parameter_bus(
+            label=str(building['label']) + "_heat_bus",
+            bus_type='building_heat_bus',
+            dh="1" if building["latitude"] is not None else "0",
+            cords=[building["latitude"], building["longitude"]])
 
     if hp_elec_bus:
         # building hp electricity bus
         Bus.create_standard_parameter_bus(
-            label=str(building_id) + "_hp_elec_bus",
+            label=str(building['label']) + "_hp_elec_bus",
             bus_type='building_hp_electricity_bus',
             dh="0")
         # electricity link from building electricity bus to hp elec bus
-        Link.create_link(label=str(building_id) + "_gchp_building_link",
-                         bus_1=str(building_id) + "_electricity_bus",
-                         bus_2=str(building_id) + "_hp_elec_bus",
+        Link.create_link(label=str(building['label']) + "_gchp_building_link",
+                         bus_1=str(building['label']) + "_electricity_bus",
+                         bus_2=str(building['label']) + "_hp_elec_bus",
                          link_type="building_hp_elec_link")
 
         if gchp and gchp_elec_bus is not None:
-            Link.create_link(label=str(building_id) + "_parcel_gchp_elec",
-                             bus_1=str(building_id) + "_hp_elec_bus",
-                             bus_2=gchp_elec_bus,
-                             link_type="building_hp_elec_link")
-            Link.create_link(label=str(building_id) + "_parcel_gchp",
+            Link.create_link(
+                label=str(building['label']) + "_parcel_gchp_elec",
+                bus_1=str(building['label']) + "_hp_elec_bus",
+                bus_2=gchp_elec_bus,
+                link_type="building_hp_elec_link")
+            Link.create_link(label=str(building['label']) + "_parcel_gchp",
                              bus_1=gchp_heat_bus,
-                             bus_2=str(building_id) + "_heat_bus",
+                             bus_2=str(building['label']) + "_heat_bus",
                              link_type="building_hp_elec_link")
 
     # todo excess constraint costs
     if pv_bus:
         # building pv bus
-        Bus.create_standard_parameter_bus(label=str(building_id) + "_pv_bus",
-                                          bus_type='building_pv_bus')
+        Bus.create_standard_parameter_bus(
+            label=str(building['label']) + "_pv_bus",
+            bus_type='building_pv_bus')
 
         # link from pv bus to building electricity bus
         Link.create_link(
-            label=str(building_id) + "pv_" + str(building_id)
+            label=str(building['label']) + "pv_" + str(building['label'])
                   + "_electricity_link",
-            bus_1=str(building_id) + "_pv_bus",
-            bus_2=str(building_id) + "_electricity_bus",
+            bus_1=str(building['label']) + "_pv_bus",
+            bus_2=str(building['label']) + "_electricity_bus",
             link_type="building_pv_central_link")
         if central_elec_bus:
             # link from pv bus to central electricity bus
             Link.create_link(
-                label=str(building_id) + "pv_central_electricity_link",
-                bus_1=str(building_id) + "_pv_bus",
+                label=str(building['label']) + "pv_central_electricity_link",
+                bus_1=str(building['label']) + "_pv_bus",
                 bus_2="central_electricity_bus",
                 link_type="building_pv_central_link")
 
@@ -642,23 +655,10 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
             if building['st or pv %1d' % roof_num] == "pv&st":
                 pv_bool = True
         create_buses(
-            building_id=building['label'],
+            building=building,
             pv_bus=pv_bool,
-            building_type=building["building type"],
-            hp_elec_bus=True if
-            (building['parcel'] != 0
-             and building["gchp"] not in ["No", "no", 0])
-            or building['ashp'] not in ["No", "no", 0] else False,
             central_elec_bus=central_electricity_network,
-            gchp=True if building['parcel'] != 0 else False,
-            gchp_heat_bus=(building['parcel'][-9:] + "_heat_bus")
-            if (building['parcel'] != 0
-                and building['parcel'][-9:] in gchps) else None,
-            gchp_elec_bus=(building['parcel'][-9:] + "_hp_elec_bus")
-            if (building['parcel'] != 0
-                and building['parcel'][-9:] in gchps) else None,
-            lat=building["latitude"], lon=building["longitude"])
-
+            gchps=gchps)
         Sink.create_sinks(sink_id=building['label'],
                           building_type=building['building type'],
                           units=building['units'],
