@@ -165,13 +165,9 @@ class demo_frame_class(MethodsGUI):
         plt.show()
 
     def plot_results_bar(self):
-        import matplotlib
         import matplotlib.pyplot as plt
         import numpy as np
-
         from matplotlib.figure import Figure
-        from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
-                                                       NavigationToolbar2Tk)
 
         # the figure that will contain the plot
         fig = Figure(figsize=(5, 5), dpi=100)
