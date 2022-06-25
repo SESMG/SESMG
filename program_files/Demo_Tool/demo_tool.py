@@ -214,7 +214,26 @@ class demo_frame_class(MethodsGUI):
         fig.tight_layout()
 
         plt.show()
-
+        
+    def create_entries(self, demo_components, row, demo_frame, demo_unit,
+                       column):
+        demo_values = list(demo_components.values())
+        demo_names = list(demo_components.keys())
+        entry_values = {}
+        # Erstellt Eingabefelder für alle variierbaren componenten.
+        for i in range(len(demo_components)):
+            # Defines Label
+            self.create_heading(demo_frame, demo_names[i], column, row, "W")
+            # Defines Entry Field
+            entry_values[demo_names[i]] = StringVar(demo_values[i])
+    
+            self.create_entry(demo_frame, row, entry_values[demo_names[i]])
+            # Defines Unit
+            self.create_heading(demo_frame, demo_unit[demo_names[i]],
+                                column + 2, row, "W")
+            row += 1
+        return entry_values, row
+    
     def __init__(self, demo_frame, window):
         # Definition of the DEMO-Frames
         # main_frame = ttk.Frame(tab_control)
@@ -271,24 +290,9 @@ class demo_frame_class(MethodsGUI):
 
         row = row + 1
         self.demo_names = list(demo_components.keys())
-        demo_values = list(demo_components.values())
-        self.entry_values = {}
-
-        # Erstellt Eingabefelder für alle variierbaren componenten.
-        for i in range(len(demo_components)):
-            # Defines Label
-            self.create_heading(demo_frame, self.demo_names[i], 0, row,
-                                "W")
-            # Defines Entry Field
-            self.entry_values[self.demo_names[i]] = StringVar()
-            self.entry_values[self.demo_names[i]].set(demo_values[i])
-
-            self.create_entry(demo_frame, row,
-                              self.entry_values[self.demo_names[i]])
-            # Defines Unit
-            self.create_heading(demo_frame, self.demo_unit[self.demo_names[i]],
-                                2, row, "W")
-            row += 1
+        self.entry_values, row = \
+            self.create_entries(self.demo_components, row,
+                                demo_frame, self.demo_unit, 0)
         self.create_heading(demo_frame, "Monetarily driven, emission driven",
                             0, row, "W")
         
@@ -328,37 +332,9 @@ class demo_frame_class(MethodsGUI):
                     column=3, row=i + 1)
 
         row = 2
-        self.demo_names2 = list(demo_components.keys())
-        demo_values2 = list(demo_components.values())
-        self.entry_values2 = {}
-
-        # Erstellt Eingabefelder für alle variierbaren componenten.
-        for i in range(len(demo_components)):
-            column = 4
-
-            # Defines Label
-            label_name = Label(demo_frame, text=self.demo_names2[i],
-                               font='Helvetica 10')
-            label_name.grid(column=column, row=row, sticky="W")
-            column = column + 1
-
-            # Defines Entry Field
-            self.entry_values2[self.demo_names2[i]] = StringVar()
-            self.entry_values2[self.demo_names2[i]].set(demo_values2[i])
-            self.entry_values2[self.demo_names2[i]] = \
-                Entry(demo_frame,
-                      text=str(self.entry_values2[self.demo_names2[i]]))
-            self.entry_values2[self.demo_names2[i]]\
-                .grid(column=column, row=row)
-            column = column + 1
-
-            # Defines Unit
-            label_name = Label(demo_frame,
-                               text=self.demo_unit[self.demo_names2[i]],
-                               font='Helvetica 10')
-            label_name.grid(column=column, row=row, sticky="W")
-
-            row = row + 1
+        self.entry_values2, row = \
+            self.create_entries(self.demo_components, row,
+                                demo_frame, self.demo_unit, 4)
 
         # RESULTS
 
