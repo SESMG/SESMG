@@ -567,9 +567,9 @@ def create_gchp(tool, parcel):
     # create GCHPs parcel wise
     gchps = {}
     for num, parcel in parcel.iterrows():
-        for j, building in tool[(tool["active"] == 1) & (tool["gchp"].isin(
-                ["Yes", "yes", 1]))].iterrows():
-            if parcel['ID parcel'] == building["parcel"]:
+        for build_parcel in tool[(tool["active"] == 1) & (tool["gchp"].isin(
+                ["Yes", "yes", 1]))]["parcel"]:
+            if parcel['ID parcel'] == build_parcel:
                 gchps.update({parcel['ID parcel'][-9:]:
                                   parcel['gchp area (m²)']})
     # create gchp relevant components
