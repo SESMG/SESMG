@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import program_files.urban_district_upscaling.clustering as clustering_py
 from program_files.urban_district_upscaling.components \
-    import Sink, Source, Storage, Transformer, Link
+    import Sink, Source, Storage, Transformer, Link, Bus
 
 
 def append_component(sheet: str, comp_parameter: dict):
@@ -119,8 +119,8 @@ def create_central_heat_component(type, bus, central_elec_bus, central_chp):
     # central biomass plant
     if type == 'biomass_plant':
         # biomass bus
-        create_standard_parameter_bus(label="central_biomass_bus",
-                                      bus_type="central_biomass_bus")
+        Bus.create_standard_parameter_bus(label="central_biomass_bus",
+                                          bus_type="central_biomass_bus")
 
         Transformer.create_transformer(
             building_id="central", output=bus,
@@ -152,9 +152,8 @@ def central_comp(central):
     j = next(central.iterrows())[1]
     # creation of the bus for the local power exchange
     if j['electricity_bus'] in ['Yes', 'yes', 1]:
-        create_standard_parameter_bus(
-            label='central_electricity_bus',
-            bus_type="central_electricity_bus")
+        Bus.create_standard_parameter_bus(label='central_electricity_bus',
+                                          bus_type="central_electricity_bus")
 
     # central heat supply
     if j["central_heat_supply"] in ['yes', 'Yes', 1]:
@@ -163,7 +162,7 @@ def central_comp(central):
             if j["heat_input_{}".format(str(num))] in ['yes', 'Yes', 1]:
                 # create bus which would be used as producer bus in
                 # district heating network
-                create_standard_parameter_bus(
+                Bus.create_standard_parameter_bus(
                     label='central_heat_input{}_bus'.format(num),
                     bus_type="central_heat_input_bus",
                     dh="dh-system",
@@ -199,7 +198,8 @@ def create_power_to_gas_system(bus):
     for bus_type in ["central_h2_bus", "central_naturalgas_bus"]:
         if bus_type not in sheets["buses"]["label"].to_list():
             # h2 bus
-            create_standard_parameter_bus(label=bus_type, bus_type=bus_type)
+            Bus.create_standard_parameter_bus(label=bus_type,
+                                              bus_type=bus_type)
     
     for transformer in ["central_electrolysis_transformer",
                         "central_methanization_transformer",
@@ -244,7 +244,7 @@ def create_central_heatpump(specification, create_bus,
     if create_bus:
         if "central_heatpump_elec_bus" not in \
                 sheets["buses"]["label"].to_list():
-            create_standard_parameter_bus(
+            Bus.create_standard_parameter_bus(
                 label="central_heatpump_elec_bus",
                 bus_type="central_heatpump_electricity_bus")
             if central_elec_bus:
@@ -277,7 +277,7 @@ def create_central_gas_heating_transformer(gastype,
     """
 
     # plant gas bus
-    create_standard_parameter_bus(label="central_" + gastype + "_plant_bus",
+    Bus.create_standard_parameter_bus(label="central_" + gastype + "_plant_bus",
                                   bus_type="central_chp_naturalgas_bus")
     
     if central_chp:
@@ -307,11 +307,12 @@ def create_central_chp(gastype, output, central_elec_bus):
             exchange exists
     """
     # chp gas bus
-    create_standard_parameter_bus(label="central_chp_" + gastype + "_bus",
-                                  bus_type="central_chp_" + gastype + "_bus")
+    Bus.create_standard_parameter_bus(
+        label="central_chp_" + gastype + "_bus",
+        bus_type="central_chp_" + gastype + "_bus")
 
     # chp electricity bus
-    create_standard_parameter_bus(
+    Bus.create_standard_parameter_bus(
         label="central_chp_" + gastype + "_elec_bus",
         bus_type="central_chp_" + gastype + "_electricity_bus")
     
@@ -364,7 +365,7 @@ def create_buses(building_id: str, pv_bus: bool, building_type: str,
         bus = 'building_com_electricity_bus'
     if pv_bus or building_type != "0":
         # house electricity bus
-        create_standard_parameter_bus(
+        Bus.create_standard_parameter_bus(
             label=(str(building_id) + "_electricity_bus"),
             bus_type=bus)
         if central_elec_bus:
@@ -377,16 +378,17 @@ def create_buses(building_id: str, pv_bus: bool, building_type: str,
 
     if building_type not in ["0", 0]:
         # house heat bus
-        create_standard_parameter_bus(label=str(building_id) + "_heat_bus",
-                                      bus_type='building_heat_bus',
-                                      dh="1" if lat is not None else "0",
-                                      cords=[lat, lon])
+        Bus.create_standard_parameter_bus(label=str(building_id) + "_heat_bus",
+                                          bus_type='building_heat_bus',
+                                          dh="1" if lat is not None else "0",
+                                          cords=[lat, lon])
 
     if hp_elec_bus:
         # building hp electricity bus
-        create_standard_parameter_bus(label=str(building_id) + "_hp_elec_bus",
-                                      bus_type='building_hp_electricity_bus',
-                                      dh="0")
+        Bus.create_standard_parameter_bus(
+            label=str(building_id) + "_hp_elec_bus",
+            bus_type='building_hp_electricity_bus',
+            dh="0")
         # electricity link from building electricity bus to hp elec bus
         Link.create_link(label=str(building_id) + "_gchp_building_link",
                          bus_1=str(building_id) + "_electricity_bus",
@@ -406,8 +408,8 @@ def create_buses(building_id: str, pv_bus: bool, building_type: str,
     # todo excess constraint costs
     if pv_bus:
         # building pv bus
-        create_standard_parameter_bus(label=str(building_id) + "_pv_bus",
-                                      bus_type='building_pv_bus')
+        Bus.create_standard_parameter_bus(label=str(building_id) + "_pv_bus",
+                                          bus_type='building_pv_bus')
 
         # link from pv bus to building electricity bus
         Link.create_link(
@@ -622,10 +624,11 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
             building_id=gchp,
             area=gchps[gchp],
             transformer_type="building_gchp_transformer")
-        create_standard_parameter_bus(label=gchp + "_hp_elec_bus",
-                                      bus_type="building_hp_electricity_bus")
-        create_standard_parameter_bus(label=gchp + "_heat_bus",
-                                      bus_type="building_heat_bus")
+        Bus.create_standard_parameter_bus(
+            label=gchp + "_hp_elec_bus",
+            bus_type="building_hp_electricity_bus")
+        Bus.create_standard_parameter_bus(label=gchp + "_heat_bus",
+                                          bus_type="building_heat_bus")
 
     for num, building in tool[tool["active"] == 1].iterrows():
         # foreach building the three necessary buses will be created

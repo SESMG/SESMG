@@ -324,9 +324,8 @@ class demo_frame_class(MethodsGUI):
             .grid(column=1, row=row, sticky=W, pady=4)
 
         for i in range(15):
-            label_placeholder = Label(demo_frame, text=' || ',
-                                      font='Helvetica 10')
-            label_placeholder.grid(column=3, row=i + 1)
+            Label(demo_frame, text=' || ', font='Helvetica 10').grid(
+                    column=3, row=i + 1)
 
         row = 2
         self.demo_names2 = list(demo_components.keys())
