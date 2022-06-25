@@ -25,7 +25,8 @@ def create_transformer(building_id, transformer_type,
                        building_type=None, area="None", specific="None",
                        output="None"):
     from program_files.urban_district_upscaling.pre_processing \
-        import create_standard_parameter_bus, create_standard_parameter_comp
+        import create_standard_parameter_comp
+    from program_files.urban_district_upscaling.components import Bus
 
     # TODO for gchps
     # probe_length = \
@@ -82,8 +83,8 @@ def create_transformer(building_id, transformer_type,
         else:
             bus = 'building_com_gas_bus'
             # building gas bus
-        create_standard_parameter_bus(label=str(building_id) + "_gas_bus",
-                                      bus_type=bus)
+        Bus.create_standard_parameter_bus(label=str(building_id) + "_gas_bus",
+                                          bus_type=bus)
     create_standard_parameter_comp(
         specific_param={
             'label': str(building_id) + transf_dict.get(transformer_type)[0],

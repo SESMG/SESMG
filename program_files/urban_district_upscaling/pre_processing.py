@@ -563,6 +563,29 @@ def load_input_data(plain_sheet, standard_parameter_path, pre_scenario):
     return central, parcel, tool, worksheets
 
 
+def create_gchp(tool, parcel):
+    # create GCHPs parcel wise
+    gchps = {}
+    for num, parcel in parcel.iterrows():
+        for num_inner, building in tool[tool["active"] == 1].iterrows():
+            if building["gchp"] not in ["No", "no", 0]:
+                if parcel['ID parcel'] == building["parcel"]:
+                    gchps.update({parcel['ID parcel'][-9:]:
+                                      parcel['gchp area (m²)']})
+    # create gchp relevant components
+    for gchp in gchps:
+        Transformer.create_transformer(
+                building_id=gchp,
+                area=gchps[gchp],
+                transformer_type="building_gchp_transformer")
+        Bus.create_standard_parameter_bus(
+                label=gchp + "_hp_elec_bus",
+                bus_type="building_hp_electricity_bus")
+        Bus.create_standard_parameter_bus(label=gchp + "_heat_bus",
+                                          bus_type="building_heat_bus")
+    return gchps
+
+
 def urban_district_upscaling_pre_processing(pre_scenario: str,
                                             standard_parameter_path: str,
                                             output_scenario: str,
@@ -610,26 +633,8 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
         if j['power_to_gas'] in ['Yes', 'yes', 1]:
             p2g_link = True
 
-    # create GCHPs parcel wise
-    gchps = {}
-    for num, parcel in parcel.iterrows():
-        for num_inner, building in tool[tool["active"] == 1].iterrows():
-            if building["gchp"] not in ["No", "no", 0]:
-                if parcel['ID parcel'] == building["parcel"]:
-                    gchps.update({parcel['ID parcel'][-9:]:
-                                    parcel['gchp area (m²)']})
-    # create gchp relevant components
-    for gchp in gchps:
-        Transformer.create_transformer(
-            building_id=gchp,
-            area=gchps[gchp],
-            transformer_type="building_gchp_transformer")
-        Bus.create_standard_parameter_bus(
-            label=gchp + "_hp_elec_bus",
-            bus_type="building_hp_electricity_bus")
-        Bus.create_standard_parameter_bus(label=gchp + "_heat_bus",
-                                          bus_type="building_heat_bus")
-
+    gchps = create_gchp(tool, parcel)
+    
     for num, building in tool[tool["active"] == 1].iterrows():
         # foreach building the three necessary buses will be created
         pv_bool = False
