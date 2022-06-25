@@ -73,9 +73,6 @@ def create_standard_parameter_comp(specific_param: dict,
     append_component(type, specific_param)
 
 
-
-
-
 def create_central_heat_component(type, bus, central_elec_bus, central_chp):
     """
         In this method, all heat supply systems are calculated for a
@@ -241,18 +238,17 @@ def create_central_heatpump(specification, create_bus,
         :return: bool
     """
 
-    if create_bus:
-        if "central_heatpump_elec_bus" not in \
-                sheets["buses"]["label"].to_list():
-            Bus.create_standard_parameter_bus(
-                label="central_heatpump_elec_bus",
-                bus_type="central_heatpump_electricity_bus")
-            if central_elec_bus:
-                # connection to central electricity bus
-                Link.create_link(label="central_heatpump_electricity_link",
-                                 bus_1="central_electricity_bus",
-                                 bus_2="central_heatpump_elec_bus",
-                                 link_type="building_central_building_link")
+    if create_bus and "central_heatpump_elec_bus" not in \
+            sheets["buses"]["label"].to_list():
+        Bus.create_standard_parameter_bus(
+            label="central_heatpump_elec_bus",
+            bus_type="central_heatpump_electricity_bus")
+        if central_elec_bus:
+            # connection to central electricity bus
+            Link.create_link(label="central_heatpump_electricity_link",
+                             bus_1="central_electricity_bus",
+                             bus_2="central_heatpump_elec_bus",
+                             link_type="building_central_building_link")
     
     Transformer.create_transformer(
             building_id="central", output=output, specific=specification,
