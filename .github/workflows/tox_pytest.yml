@@ -38,8 +38,3 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERALLS_SERVICE_NAME: github
-        
-    - name: Report to codecov
-      run: codecov
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
