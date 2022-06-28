@@ -29,7 +29,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install tox tox-gh-actions coverage coveralls flask
+        pip install tox tox-gh-actions coverage coveralls flask dash
     - name: Test with tox
       run: tox
 
