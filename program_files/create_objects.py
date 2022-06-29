@@ -1038,7 +1038,7 @@ class Transformers:
     # intern variables
     nodes_transformer = []
     busd = None
-    
+    # TODO implementation of two input transformer - DV-Bongingi
     def create_transformer(self, tf, inputs, outputs, conversion_factors):
         """ TODO Docstring missing """
         self.nodes_transformer.append(solph.Transformer(
