@@ -21,26 +21,26 @@ def create_source(source_type, area, source_param, building_id):
         """
     from program_files.urban_district_upscaling.pre_processing \
         import append_component, read_standard_parameters
-    if source_type == 'fixed photovoltaic source':
-        label = str(building_id) + '_' + str(source_param[0]) + '_pv_source'
-        output = str(building_id) + '_pv_bus'
-        input = 0
-    else:
-        label = str(building_id) + '_' + str(source_param[0]) \
-                + '_solarthermal_source'
-        output = str(building_id) + '_heat_bus'
-        input = str(building_id) + '_electricity_bus'
+    switch_dict = {
+        "fixed photovoltaic source":
+            [str(building_id) + '_' + str(source_param[0]) + '_pv_source',
+             str(building_id) + '_pv_bus', 0],
+        "solar_thermal_collector":
+            [str(building_id) + '_' + str(source_param[0])
+             + '_solarthermal_source',
+             str(building_id) + '_heat_bus',
+             str(building_id) + '_electricity_bus']}
     # technical parameters
     source_dict = \
-        {'label': label,
+        {'label': switch_dict.get(source_type)[0],
          'existing capacity': 0,
          'min. investment capacity': 0,
-         'output': output,
+         'output': switch_dict.get(source_type)[1],
          'Azimuth': source_param[1],
          'Surface Tilt': source_param[2],
          'Latitude': source_param[3],
          'Longitude': source_param[4],
-         'input': input}
+         'input': switch_dict.get(source_type)[2]}
     # extracts the st source specific standard values from the
     # standard_parameters dataset
     param, keys = read_standard_parameters(source_type, "sources", "comment")
