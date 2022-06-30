@@ -54,6 +54,17 @@ def create_fork(point, label, bus=None):
         pd.concat([thermal_network.components["forks"],
                    pd.DataFrame([pd.Series(data=fork_dict)])])
 
+def append_pipe(from_node: str, to_node: str, length: float, street: str):
+    thermal_network.components["pipes"] = \
+        pd.concat([thermal_network.components['pipes'],
+                   pd.DataFrame([pd.Series(data={
+                       "id": "pipe-{}".format(
+                        len(thermal_network.components['pipes']) + 1),
+                       "from_node": from_node,
+                       "to_node": to_node,
+                       "length": length,
+                       "component_type": "Pipe",
+                       "street": street})])])
 
 def remove_redundant_sinks(
         oemof_opti_model: optimization.OemofInvestOptimizationModel):
@@ -118,17 +129,8 @@ def create_connection_points(consumers, road_sections):
             create_fork(foot_point, foot_point[0][10:-5])
             # add pipe between the perpendicular foot point and the
             # building to the dataframe of pipes
-            thermal_network.components["pipes"] = \
-                pd.concat(
-                    [thermal_network.components["pipes"],
-                     pd.DataFrame([pd.Series(data={
-                          "id": "pipe-{}".format(foot_point[0][10:-5]),
-                          "from_node": "forks-{}".format(
-                                  foot_point[0][10:-5]),
-                          "to_node": foot_point[0][:-5],
-                          "length": foot_point[3],
-                          "component_type": "Pipe",
-                          "street": label})])])
+            append_pipe("forks-{}".format(foot_point[0][10:-5]),
+                        foot_point[0][:-5], foot_point[3], label)
             consumer_counter += 1
             logging.info("\t Connected {} to district heating network"
                          .format(label))
@@ -144,7 +146,7 @@ def create_intersection_forks(street_sec):
     """
     road_section_points = {}
     fork_num = len(thermal_network.components["forks"])
-    for num, street in street_sec[street_sec["active"].iterrows():
+    for num, street in street_sec[street_sec["active"] == 1].iterrows():
         if [street["lat. 1st intersection"], street["lon. 1st intersection"]] \
                 not in road_section_points.values():
             road_section_points.update(
@@ -200,18 +202,10 @@ def create_producer_connection_point(nodes_data, road_sections):
             create_fork(foot_point,
                         len(thermal_network.components["forks"]) + 1,
                         bus["label"])
-            thermal_network.components["pipes"] = \
-                pd.concat([thermal_network.components['pipes'],
-                           pd.DataFrame([pd.Series(data={
-                               "id": "pipe-{}".format(
-                                       len(thermal_network.components[
-                                               'pipes']) + 1),
-                               "from_node": "producers-{}".format(number),
-                               "to_node": "forks-{}".format(
-                                       len(thermal_network.components["forks"])),
-                               "length": foot_point[3],
-                               "component_type": "Pipe",
-                               "street": bus["label"]})])])
+            append_pipe("producers-{}".format(number),
+                        "forks-{}".format(
+                            len(thermal_network.components["forks"])),
+                        foot_point[3], bus["label"])
             number += 1
             logging.info("\t Connected {} to district heating network"
                          .format(bus["label"]))
@@ -228,33 +222,32 @@ def create_supply_line(streets):
         :type streets: pandas.Dataframe
     """
     pipes = {}
-    for num, street in streets.iterrows():
-        if street["active"]:
-            road_section = []
-            for key, point in thermal_network.components["forks"].iterrows():
-                if point["lat"] == street["lat. 1st intersection"] \
-                        and point["lon"] == street["lon. 1st intersection"]:
-                    # check if begin of road section is begin or end of another
-                    road_section.append([point["id"],
-                                         street["lat. 1st intersection"],
-                                         street["lon. 1st intersection"], 0,
-                                         0.0, street['street section name']])
-                if point["lat"] == street["lat. 2nd intersection"] \
-                        and point["lon"] == street["lon. 2nd intersection"]:
-                    # check if begin of road section is begin or end of another
-                    road_section.append([point["id"],
-                                         street["lat. 2nd intersection"],
-                                         street["lon. 2nd intersection"], 0,
-                                         1.0, street['street section name']])
-                if "street" in point:
-                    if point["street"] == street["street section name"]:
-                        road_section.append([point["id"], point["lat"],
-                                             point["lon"], 0, point["t"],
-                                             street["street section name"]])
+    for num, street in streets[streets["active"] == 1].iterrows():
+        road_section = []
+        for key, point in thermal_network.components["forks"].iterrows():
+            if point["lat"] == street["lat. 1st intersection"] \
+                    and point["lon"] == street["lon. 1st intersection"]:
+                # check if begin of road section is begin or end of another
+                road_section.append([point["id"],
+                                     street["lat. 1st intersection"],
+                                     street["lon. 1st intersection"], 0,
+                                     0.0, street['street section name']])
+            if point["lat"] == street["lat. 2nd intersection"] \
+                    and point["lon"] == street["lon. 2nd intersection"]:
+                # check if begin of road section is begin or end of another
+                road_section.append([point["id"],
+                                     street["lat. 2nd intersection"],
+                                     street["lon. 2nd intersection"], 0,
+                                     1.0, street['street section name']])
+            if "street" in point:
+                if point["street"] == street["street section name"]:
+                    road_section.append([point["id"], point["lat"],
+                                         point["lon"], 0, point["t"],
+                                         street["street section name"]])
 
-            # Order Connection points on the currently considered road section
-            pipes.update({street['street section name']:
-                          calc_street_lengths(road_section)})
+        # Order Connection points on the currently considered road section
+        pipes.update({street['street section name']:
+                      calc_street_lengths(road_section)})
 
     for street in pipes:
         for pipe in pipes[street]:
@@ -267,14 +260,7 @@ def create_supply_line(streets):
                 ends[1] = "forks-{}".format(ends[1][10:-5])
             else:
                 ends[1] = "forks-{}".format(ends[1])
-            thermal_network.components["pipes"] = \
-                pd.concat([thermal_network.components["pipes"],
-                           pd.DataFrame([pd.Series(data={
-                               "id": "pipe-{}".format(
-                                len(thermal_network.components["pipes"]) + 1),
-                               "from_node": ends[0], "to_node": ends[1],
-                               "length": pipe[1], "component_type": "Pipe",
-                               "street": street})])])
+            append_pipe(ends[0], ends[1], pipe[1], street)
 
 
 def adapt_dhnx_style():
@@ -412,20 +398,23 @@ def connect_dh_to_system(oemof_opti_model, busd):
     return oemof_opti_model
 
 
-def add_excess_shortage_to_dh(oemof_opti_model, nodes_data, busd):
+def add_excess_shortage_to_dh(
+        oemof_opti_model: optimization.OemofInvestOptimizationModel,
+        nodes_data, busd):
     """
         With the help of this method, it is possible to map an external
         heat supply (e.g. from a neighboring heat network) or the export
         to a neighboring heat network.
 
         :param oemof_opti_model: dh network components
-        :type oemof_opti_model: dhnx.optimization
+        :type oemof_opti_model: optimization.OemofInvestOptimizationModel
         :param nodes_data: Dataframe containing all components data
         :type nodes_data: pandas. Dataframe
         :param busd: dict containing all buses of the energysystem under
          investigation
         :type busd: dict
-        :return: - **oemof_opti_model** (dhnx.optimization) - dh network \
+        :return: - **oemof_opti_model** \
+            (optimization.OemofInvestOptimizationModel) - dh network \
             components + excess and shortage bus
     """
     busses = []
