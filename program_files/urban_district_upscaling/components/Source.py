@@ -98,20 +98,20 @@ def create_sources(building, clustering):
     # competition
     roof_num = 0
     while building['roof area (m²) %1d' % roof_num]:
-        if building['st or pv %1d' % roof_num] == "pv&st":
+        column = 'st or pv %1d' % roof_num
+        if building[column] == "pv&st":
             create_source(source_type="fixed photovoltaic source",
                           roof_num=roof_num, building=building)
-                
-        if building['st or pv %1d' % roof_num] in ["st", "pv&st"] \
-                and building["building type"] not in ["0", 0]:
-            create_source(source_type="solar_thermal_collector",
-                          roof_num=roof_num, building=building)
-
-        if building["building type"] not in ["0", 0] and not clustering \
-                and building['st or pv %1d' % roof_num] == "pv&st":
-            create_competition_constraint(
-                roof_num=roof_num, building_id=building["label"],
-                limit=building['roof area (m²) %1d' % roof_num])
+        if building["building type"] not in ["0", 0]:
+            if building[column] in ["st", "pv&st"]:
+                create_source(source_type="solar_thermal_collector",
+                              roof_num=roof_num, building=building)
+    
+            if not clustering and building[column] == "pv&st":
+                create_competition_constraint(
+                    roof_num=roof_num, building_id=building["label"],
+                    limit=building['roof area (m²) %1d' % roof_num])
+        roof_num += 1
 
 
 def cluster_sources_information(source, source_param, azimuth_type, type):
