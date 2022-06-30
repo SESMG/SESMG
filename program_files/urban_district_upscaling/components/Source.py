@@ -30,6 +30,7 @@ def create_source(source_type, area, source_param, building_id):
              + '_solarthermal_source',
              str(building_id) + '_heat_bus',
              str(building_id) + '_electricity_bus']}
+    
     # technical parameters
     source_dict = \
         {'label': switch_dict.get(source_type)[0],
@@ -41,6 +42,7 @@ def create_source(source_type, area, source_param, building_id):
          'Latitude': source_param[3],
          'Longitude': source_param[4],
          'input': switch_dict.get(source_type)[2]}
+    
     # extracts the st source specific standard values from the
     # standard_parameters dataset
     param, keys = read_standard_parameters(source_type, "sources", "comment")
@@ -84,37 +86,36 @@ def create_sources(building, clustering):
     """
     # create pv-sources and solar thermal-sources including area
     # competition
-    for roof_num in range(1, 29):
-        if building['roof area (m²) %1d' % roof_num]:
-            source_param = [str(roof_num),
-                            building['azimuth (°) %1d' % roof_num],
-                            building['surface tilt (°) %1d' % roof_num],
-                            building['latitude'], building['longitude']]
-            plant_id = str(roof_num)
-            if building['st or pv %1d' % roof_num] == "pv&st":
-                create_source(
-                    building_id=building['label'],
-                    source_param=source_param,
-                    area=building['roof area (m²) %1d' % roof_num],
-                    source_type="fixed photovoltaic source")
-
-            if building['st or pv %1d' % roof_num] in ["st", "pv&st"] \
-                    and building["building type"] not in ["0", 0]:
-                create_source(
-                        building_id=building['label'],
-                        source_param=source_param,
-                        area=building['roof area (m²) %1d' % roof_num],
-                        source_type="solar_thermal_collector")
-
-            if building['st or pv %1d' % roof_num] == "pv&st" \
-                    and building["building type"] != "0" \
+    roof_num = 0
+    while building['roof area (m²) %1d' % roof_num]:
+        source_param = [str(roof_num),
+                        building['azimuth (°) %1d' % roof_num],
+                        building['surface tilt (°) %1d' % roof_num],
+                        building['latitude'], building['longitude']]
+        if building['st or pv %1d' % roof_num] == "pv&st":
+            create_source(
+                building_id=building['label'],
+                source_param=source_param,
+                area=building['roof area (m²) %1d' % roof_num],
+                source_type="fixed photovoltaic source")
+            if building["building type"] not in ["0", 0] \
                     and not clustering:
                 create_competition_constraint(
-                    component1=(building['label'] + '_'
-                                + plant_id + '_pv_source'),
-                    component2=(building['label'] + '_' + plant_id
+                    component1=(building['label'] + '_' + str(roof_num)
+                                + '_pv_source'),
+                    component2=(building['label'] + '_' + str(roof_num)
                                 + '_solarthermal_source'),
                     limit=building['roof area (m²) %1d' % roof_num])
+                
+        if building['st or pv %1d' % roof_num] in ["st", "pv&st"] \
+                and building["building type"] not in ["0", 0]:
+            create_source(
+                building_id=building['label'],
+                source_param=source_param,
+                area=building['roof area (m²) %1d' % roof_num],
+                source_type="solar_thermal_collector")
+
+
 
 
 def cluster_sources_information(source, source_param, azimuth_type, type):
