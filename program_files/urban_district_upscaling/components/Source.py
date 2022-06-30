@@ -30,20 +30,18 @@ def create_source(source_type, roof_num, building):
                     building['roof area (m²) %1d' % roof_num]]
     switch_dict = {
         "fixed photovoltaic source":
-            [str(source_param[1]) + '_' + str(source_param[0]) + '_pv_source',
-             str(source_param[1]) + '_pv_bus', 0],
+            ['_pv_source', '_pv_bus', 0],
         "solar_thermal_collector":
-            [str(source_param[1]) + '_' + str(source_param[0])
-             + '_solarthermal_source',
-             str(source_param[1]) + '_heat_bus',
+            ['_solarthermal_source', '_heat_bus',
              str(source_param[1]) + '_electricity_bus']}
 
     # technical parameters
     source_dict = \
-        {'label': switch_dict.get(source_type)[0],
+        {'label': str(source_param[1]) + '_' + str(source_param[0])
+            + switch_dict.get(source_type)[0],
          'existing capacity': 0,
          'min. investment capacity': 0,
-         'output': switch_dict.get(source_type)[1],
+         'output': str(source_param[1]) + switch_dict.get(source_type)[1],
          'Azimuth': source_param[2],
          'Surface Tilt': source_param[3],
          'Latitude': source_param[4],
