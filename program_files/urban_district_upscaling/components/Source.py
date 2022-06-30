@@ -113,7 +113,8 @@ def create_sources(building, clustering):
         roof_num += 1
 
 
-def cluster_sources_information(source, source_param, azimuth_type, type):
+def cluster_sources_information(source, source_param, azimuth_type,
+                                source_type, sheets):
     """
         Collects the source information of the selected type, and
         inserts it into the dict containing the cluster specific
@@ -135,38 +136,26 @@ def cluster_sources_information(source, source_param, azimuth_type, type):
         :return: - **source_param** (dict) - dict extended by a new \
             entry
     """
-    # counter
-    source_param[type + "_{}".format(azimuth_type)][0] += 1
-    # maxinvest
-    source_param[type + "_{}".format(azimuth_type)][1] \
-        += source["max. investment capacity"]
-    # periodical_costs
-    source_param[type + "_{}".format(azimuth_type)][2] \
-        += source["periodical costs"]
-    # periodical constraint costs
-    source_param[type + "_{}".format(azimuth_type)][3] \
-        += source["periodical constraint costs"]
-    # variable costs
-    source_param[type + "_{}".format(azimuth_type)][4] \
-        += source["variable costs"]
-    # albedo
-    source_param[type + "_{}".format(azimuth_type)][5] += source["Albedo"]
-    # altitude
-    source_param[type + "_{}".format(azimuth_type)][6] += source["Altitude"]
-    # azimuth
-    source_param[type + "_{}".format(azimuth_type)][7] += source["Azimuth"]
-    # surface tilt
-    source_param[type + "_{}".format(azimuth_type)][8] \
-        += source["Surface Tilt"]
-    # latitude
-    source_param[type + "_{}".format(azimuth_type)][9] += source["Latitude"]
-    # longitude
-    source_param[type + "_{}".format(azimuth_type)][10] += source["Longitude"]
+    param_dict = {0: 1,
+                  1: source["max. investment capacity"],
+                  2: source["periodical costs"],
+                  3: source["periodical constraint costs"],
+                  4: source["variable costs"],
+                  5: source["Albedo"],
+                  6: source["Altitude"],
+                  7: source["Azimuth"],
+                  8: source["Surface Tilt"],
+                  9: source["Latitude"],
+                  10: source["Longitude"]}
+    for num in param_dict:
+        # counter
+        source_param[source_type + "_{}".format(azimuth_type)][num] \
+            += param_dict[num]
     # remove the considered source from sources sheet
     sheets["sources"] = sheets["sources"].drop(index=source["label"])
     # return the modified source_param dict to the sources clustering
     # method
-    return source_param
+    return source_param, sheets
 
 
 def sources_clustering(source_param, building, sheets_clustering):
