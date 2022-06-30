@@ -129,9 +129,9 @@ def cluster_sources_information(source, source_param, azimuth_type,
         :param azimuth_type: definies the celestial direction of the \
             source to be clustered
         :type azimuth_type: str
-        :param type: source type needed to define the dict entry \
+        :param source_type: source type needed to define the dict entry \
             to be modified
-        :type type: str
+        :type source_type: str
 
         :return: - **source_param** (dict) - dict extended by a new \
             entry
@@ -158,7 +158,7 @@ def cluster_sources_information(source, source_param, azimuth_type,
     return source_param, sheets
 
 
-def sources_clustering(source_param, building, sheets_clustering):
+def sources_clustering(source_param, building, sheets_clustering, sheets):
     """
         In this method, the information of the photovoltaic and solar
         thermal systems to be clustered is collected, and the systems
@@ -200,22 +200,20 @@ def sources_clustering(source_param, building, sheets_clustering):
             # Photovoltaic clustering - collecting the sources
             # information for each cluster
             if str(building[0]) in sources["label"] \
-                    and sources["technology"] == "photovoltaic" \
                     and sources["label"] in sheets["sources"].index:
-                source_param = \
-                    cluster_sources_information(sources, source_param,
-                                                azimuth_type, "pv")
-            # Solar thermal clustering - collecting the sources
-            # information for each cluster
-            if str(building[0]) in sources["label"] \
-                    and sources["technology"] == \
-                    "solar_thermal_flat_plate" \
-                    and sources["label"] in sheets["sources"].index:
-                source_param = \
-                    cluster_sources_information(sources, source_param,
-                                                azimuth_type, "st")
+                if sources["technology"] == "photovoltaic":
+                    source_param, sheets = \
+                        cluster_sources_information(
+                            sources, source_param, azimuth_type, "pv", sheets)
+                # Solar thermal clustering - collecting the sources
+                # information for each cluster
+                elif sources["technology"] == "solar_thermal_flat_plate":
+                    source_param, sheets = \
+                        cluster_sources_information(
+                            sources, source_param, azimuth_type, "st", sheets)
+
     # return the collected data to the main clustering method
-    return source_param
+    return source_param, sheets
 
 
 def create_cluster_sources(standard_param, source_param, cluster):
