@@ -3,7 +3,7 @@ import pandas as pd
 import dhnx
 import dhnx.plotting
 import dhnx.network
-import dhnx.optimization_oemof_heatpipe
+import dhnx.optimization_oemof_heatpipe as heatpipe
 import matplotlib.pyplot as plt
 import dhnx.optimization as optimization
 import oemof.solph as solph
@@ -487,28 +487,20 @@ def create_producer_connection(oemof_opti_model, busd):
         :param busd: dictionary containing the energysystem busses
         :type busd: dict
         :return: - **oemof_opti_model** (dhnx.optimization) - dhnx model \
-            within the new links
+            within the new Transformers
     """
     counter = 0
     for key, producer in thermal_network.components["forks"].iterrows():
         if str(producer["bus"]) != "nan":
+            label = heatpipe.Label('producers', 'heat', 'bus',
+                                   str("producers-{}".format(str(counter))))
             oemof_opti_model.nodes.append(solph.Transformer(
                 label=(str(producer["bus"]) + "_dh_source_link"),
-                inputs={
-                    busd[producer["bus"]]: solph.Flow(emission_factor=0)},
-                outputs={
-                    oemof_opti_model.buses[
-                        dhnx.optimization_oemof_heatpipe.Label(
-                            'producers', 'heat', 'bus',
-                            str("producers-{}".format(str(counter))))]:
-                    solph.Flow(emission_factor=0)},
-                conversion_factors={
-                    (oemof_opti_model.buses[
-                         dhnx.optimization_oemof_heatpipe.Label(
-                             'producers', 'heat', 'bus',
-                             str("producers-{}".format(
-                                 str(counter))))],
-                     busd[producer["bus"]]): 1}))
+                inputs={busd[producer["bus"]]: solph.Flow(emission_factor=0)},
+                outputs={oemof_opti_model.buses[label]:
+                             solph.Flow(emission_factor=0)},
+                conversion_factors={(oemof_opti_model.buses[label],
+                                     busd[producer["bus"]]): 1}))
 
     return oemof_opti_model
 
@@ -573,10 +565,6 @@ def district_heating(nodes_data, nodes, busd, district_heating_path,
             the GUI shortens the calculation time, because the above
             mentioned search can then be skipped.
         :type district_heating_path: str
-        :param save_dh_calculations: boolean which defines rather the
-            results of a one-time connection point search should be
-            saved
-        :type save_dh_calculations: bool
         :param result_path: path where the result will be saved
         :type result_path: str
         :param cluster_dh: boolean which defines rather the heat network
