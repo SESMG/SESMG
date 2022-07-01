@@ -120,6 +120,25 @@ def collect_clustering_information(building, sheets_clustering, sheets,
     return source_param, heat_buses_gchps, transformer_parameters, \
         storage_parameters, sheets
 
+
+def get_dict_building_cluster(tool):
+    # create a dictionary holding the combination of cluster ID the included
+    # building labels and its parcels
+    cluster_ids = {}
+    for num, building in tool.iterrows():
+        if building["active"]:
+            print(building["label"])
+            building_info = [building['label'], building['parcel'],
+                             str(building["building type"])[0:3]]
+            # if cluster id already in dict
+            if str(building["cluster_ID"]) in cluster_ids:
+                cluster_ids[str(building["cluster_ID"])].append(building_info)
+            # if cluster id not in dict
+            else:
+                cluster_ids.update({
+                    str(building["cluster_ID"]): [building_info]})
+    return cluster_ids
+
     
 def clustering_method(tool, standard_parameters, sheet_names, sheets,
                       central_electricity_network, clustering_dh):
@@ -138,21 +157,7 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets,
         :param clustering_dh:
         :type clustering_dh:
     """
-    # create a dictionary holding the combination of cluster ID the included
-    # building labels and its parcels
-    cluster_ids = {}
-    for num, building in tool.iterrows():
-        if building["active"]:
-            print(building["label"])
-            building_info = [building['label'], building['parcel'],
-                             str(building["building type"])[0:3]]
-            # if cluster id already in dict
-            if str(building["cluster_ID"]) in cluster_ids:
-                cluster_ids[str(building["cluster_ID"])].append(building_info)
-            # if cluster id not in dict
-            else:
-                cluster_ids.update({
-                    str(building["cluster_ID"]): [building_info]})
+    cluster_ids = get_dict_building_cluster(tool)
                 
     # local copy of status of scenario components
     sheets_clustering = {}
