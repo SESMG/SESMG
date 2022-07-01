@@ -507,25 +507,16 @@ def create_gchp(tool, parcel):
     return gchps
     
 
-def urban_district_upscaling_pre_processing(pre_scenario: str,
-                                            standard_parameter_path: str,
-                                            output_scenario: str,
-                                            plain_sheet: str,
+def urban_district_upscaling_pre_processing(paths: list,
                                             clustering: bool,
                                             clustering_dh: bool):
     """
         TODO DOCSTRING TEXT
-
-        :param pre_scenario: path of the pre_scenario file
-        :type pre_scenario: str
-        :param standard_parameter_path: path of the standard_parameter
-                                        file
-        :type standard_parameter_path: str
-        :param output_scenario: path to which the scenario should be
-                                created
-        :type output_scenario: str
-        :param plain_sheet: path to plain sheet file (holding structure)
-        :type plain_sheet: str
+        :param paths: path of the pre_scenario file [0] \
+                      path of the standard_parameter file [1] \
+                      path to which the scenario should be created [2]\
+                      path to plain sheet file (holding structure) [3]
+        :type paths: list
         :param clustering: boolean for decision rather the buildings are
                            clustered spatially
         :tpye clustering: bool
@@ -537,7 +528,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
     print('Creating scenario sheet...')
     # loading typical scenario structure from plain sheet
     central, parcel, tool, worksheets = \
-        load_input_data(plain_sheet, standard_parameter_path, pre_scenario)
+        load_input_data(paths[3], paths[1], paths[0])
     
     # create central components
     central_comp(central)
@@ -545,14 +536,9 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
     # set variable for central heating / electricity if activated to
     # decide rather a house can be connected to the central heat
     # network / central electricity network or not
-    central_electricity_network = False
-    p2g_link = False
-    # update the values regarding the values given in central sheet
-    for i, j in central.iterrows():
-        if j['electricity_bus'] in ['Yes', 'yes', 1]:
-            central_electricity_network = True
-        if j['power_to_gas'] in ['Yes', 'yes', 1]:
-            p2g_link = True
+    central_electricity_network = True if central['electricity_bus'] \
+        in true_bools else False
+    p2g_link = True if central['power_to_gas'] in true_bools else False
 
     gchps = create_gchp(tool, parcel)
     
@@ -563,11 +549,10 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
         for roof_num in range(1, 29):
             if building['st or pv %1d' % roof_num] == "pv&st":
                 pv_bool = True
-        create_buses(
-            building=building,
-            pv_bus=pv_bool,
-            central_elec_bus=central_electricity_network,
-            gchps=gchps)
+        
+        create_buses(building=building, pv_bus=pv_bool, gchps=gchps,
+                     central_elec_bus=central_electricity_network)
+        
         Sink.create_sinks(sink_id=label,
                           building_type=building['building type'],
                           units=building['units'],
@@ -602,7 +587,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
                                         clustering_dh)
     # open the new excel file and add all the created components
     j = 0
-    writer = pd.ExcelWriter(output_scenario, engine='xlsxwriter')
+    writer = pd.ExcelWriter(paths[2], engine='xlsxwriter')
     for i in sheets:
         sheets[i].to_excel(writer, worksheets[j], index=False)
         j = j + 1
