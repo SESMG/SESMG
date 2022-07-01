@@ -167,12 +167,13 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets,
     # 3. building specific heat pump electricity bus
     # 4. building specific pv bus
     for i, j in sheets_clustering["buses"].iterrows():
-        if "gas" in j["label"] and "central" not in j["label"]:
-            sheets["buses"] = sheets["buses"].drop(index=i)
-        if "electricity" in j["label"] and "central" not in j["label"]:
-            sheets["buses"] = sheets["buses"].drop(index=i)
-        if "hp_elec" in j["label"] and "swhp_elec" not in j["label"]:
-            sheets["buses"] = sheets["buses"].drop(index=i)
+        type_dict = {0: ["gas", "central"],
+                     1: ["electricity", "central"],
+                     2: ["hp_elec", "swhp_elec"]}
+        for k in type_dict:
+            if type_dict[k][0] in j["label"] \
+                    and type_dict[k][1] not in j["label"]:
+                sheets["buses"] = sheets["buses"].drop(index=i)
         if "pv_bus" in j["label"]:
             sheets["buses"] = sheets["buses"].drop(index=i)
             
