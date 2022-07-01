@@ -1,4 +1,3 @@
-import program_files.urban_district_upscaling.pre_processing as pre_processing
 from program_files.urban_district_upscaling.components \
     import Link, Sink, Transformer, Storage, Bus, Source
             
@@ -13,8 +12,12 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets,
         :type standard_parameters:
         :param sheet_names:
         :type sheet_names:
-        :param sheets_input:
-        :type sheets_input:
+        :param sheets:
+        :type sheets:
+        :param central_electricity_network:
+        :type central_electricity_network:
+        :param clustering_dh:
+        :type clustering_dh:
     """
     # create a dictionary holding the combination of cluster ID the included
     # building labels and its parcels
@@ -138,64 +141,57 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets,
             sheets = Sink.create_cluster_elec_sinks(
                 standard_parameters, sink_parameters,
                 cluster, central_electricity_network, sheets)
+            
+            total_heat_demand = \
+                sink_parameters[4] + sink_parameters[5] + sink_parameters[6]
+            for i in ["gasheating", "electric_heating", "ashp", "gchp"]:
+                # create res or com gasheating
+                if transformer_parameters[i][0] > 0 and total_heat_demand != 0:
+                    # create cluster gas bus with building type weighted
+                    # shortage costs
+                    if i == "gasheating":
+                        sheets = Bus.create_cluster_averaged_bus(
+                            sink_parameters, cluster, "gas", sheets,
+                            standard_parameters)
+                    elif i == "ashp":
+                        # create hp building type averaged price
+                        sheets = Bus.create_cluster_averaged_bus(
+                                sink_parameters, cluster, "hp_elec", sheets,
+                                standard_parameters)
+                        # electricity link from building electricity bus to hp
+                        # elec bus
+                        Link.create_link(
+                            label=str(cluster) + "_gchp_building_link",
+                            bus_1=str(cluster) + "_electricity_bus",
+                            bus_2=str(cluster) + "_hp_elec_bus",
+                            link_type="building_hp_elec_link")
+                    elif i == "gchp" \
+                            and not transformer_parameters["ashp"][0] > 0:
+                        # create hp building type averaged price
+                        sheets = Bus.create_cluster_averaged_bus(
+                                sink_parameters, cluster, "hp_elec", sheets,
+                                standard_parameters)
+                        # electricity link from building electricity bus to hp
+                        # elec bus
+                        Link.create_link(
+                            label=str(cluster) + "_gchp_building_link",
+                            bus_1=str(cluster) + "_electricity_bus",
+                            bus_2=str(cluster) + "_hp_elec_bus",
+                            link_type="building_hp_elec_link")
+                    # create cluster's gasheating system
+                    Transformer.create_cluster_transformer(
+                        i, transformer_parameters, cluster)
 
-            # create res or com gasheating
-            if transformer_parameters["gasheating"][0] > 0 \
-                    and (sink_parameters[4] + sink_parameters[5]
-                         + sink_parameters[6]) != 0:
-                # create cluster gas bus with building type weighted shortage
-                # costs
-                sheets = Bus.create_cluster_averaged_bus(
-                    sink_parameters, cluster, "gas", sheets,
-                    standard_parameters)
-                # create cluster's gasheating system
-                Transformer.create_cluster_transformer(
-                    "gasheating", transformer_parameters, cluster)
-
-            # create cluster's electric heating system
-            if transformer_parameters["electric_heating"][0] > 0:
-                Transformer.create_cluster_transformer(
-                    "electric_heating", transformer_parameters, cluster)
-
-            if transformer_parameters["ashp"][0] > 0 \
-                    and (sink_parameters[4] + sink_parameters[5]
-                         + sink_parameters[6]) != 0:
-                # create hp building type averaged price
-                sheets = Bus.create_cluster_averaged_bus(
-                    sink_parameters, cluster, "hp_elec", sheets,
-                    standard_parameters)
-                # electricity link from building electricity bus to hp
-                # elec bus
-                Link.create_link(label=str(cluster) + "_gchp_building_link",
-                                 bus_1=str(cluster) + "_electricity_bus",
-                                 bus_2=str(cluster) + "_hp_elec_bus",
-                                 link_type="building_hp_elec_link")
-                # create cluster's ashp
-                Transformer.create_cluster_transformer(
-                    "ashp", transformer_parameters, cluster)
-
-            if transformer_parameters["gchp"][0] > 0 \
-                    and (sink_parameters[4] + sink_parameters[5]
-                         + sink_parameters[6]) != 0:
-                if not transformer_parameters["ashp"][0] > 0:
-                    sheets = Bus.create_cluster_averaged_bus(
-                        sink_parameters, cluster, "hp_elec", sheets,
-                        standard_parameters)
-                # create cluster's gchp
-                Transformer.create_cluster_transformer(
-                    "gchp", transformer_parameters, cluster)
             # SOURCES
             # create cluster's sources and competition constraints
-            Source.create_cluster_sources(standard_parameters, source_param, cluster)
-            # STORAGES
-            if storage_parameters["battery"][0] > 0:
-                # create cluster's battery
-                Storage.create_cluster_storage("battery",
-                                               cluster, storage_parameters)
-            if storage_parameters["thermal"][0] > 0:
-                # create cluster's thermal storage
-                Storage.create_cluster_storage("thermal",
-                                               cluster, storage_parameters)
+            Source.create_cluster_sources(standard_parameters, source_param,
+                                          cluster)
+            for i in ["battery", "thermal"]:
+                # STORAGES
+                if storage_parameters[i][0] > 0:
+                    # create cluster's battery
+                    Storage.create_cluster_storage(
+                        i, cluster, storage_parameters)
                 
             # create cluster heat bus if it consists rather the
             # opportunity for an investment in electricheating,
