@@ -51,26 +51,22 @@ def create_cluster_heat_bus(transformer_parameters, clustering_dh, sheets,
         # cluster the district heating building buses
         lats = []
         lons = []
-        if clustering_dh:
+        if clustering_dh and len(sink_parameters[3]) > 0:
             for num, bus in sheets["buses"].iterrows():
-                for sink_bus in sink_parameters[3]:
-                    if len(sink_parameters[3]) > 0 \
-                            and bus["label"] == sink_bus[1]:
-                        lats.append(sheets["buses"].loc[num, "lat"])
-                        lons.append(sheets["buses"].loc[num, "lon"])
-                        sheets["buses"].loc[
-                            num, "district heating conn."] = 0
+                if bus["label"] == (sink_bus[1] for sink_bus
+                                    in sink_parameters[3]):
+                    lats.append(sheets["buses"].loc[num, "lat"])
+                    lons.append(sheets["buses"].loc[num, "lon"])
+                    sheets["buses"].loc[num, "district heating conn."] = 0
         if str(cluster) + "_heat_bus" not in sheets["buses"].index:
             # create cluster's heat bus
             Bus.create_standard_parameter_bus(
-                    label=str(cluster) + "_heat_bus",
-                    bus_type='building_heat_bus',
-                    dh="1" if len(lats) > 0 else "0",
-                    cords=[
-                        (sum(lats) / len(lats)) if len(lats) > 0 else 0,
-                        (sum(lons) / len(lons)) if len(lons) > 0 else 0], )
-            sheets["buses"].set_index("label", inplace=True,
-                                      drop=False)
+                label=str(cluster) + "_heat_bus",
+                bus_type='building_heat_bus',
+                dh="1" if len(lats) > 0 else "0",
+                cords=[(sum(lats) / len(lats)) if len(lats) > 0 else 0,
+                       (sum(lons) / len(lons)) if len(lons) > 0 else 0])
+            sheets["buses"].set_index("label", inplace=True, drop=False)
     return sheets
     
     
@@ -196,7 +192,9 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets,
             #  ind_heat_demand, heat_sinks, elec_res_sink,
             #  elec_com_sink, elec_ind_sink]
             sink_parameters = [0, 0, 0, [], 0, 0, 0, [], [], [], []]
-
+            transformer_parameters = None
+            storage_parameters = None
+            source_param = None
             for building in cluster_ids[cluster]:
                 for index, sink in sheets_clustering["sinks"].iterrows():
                     # collecting information for sinks
