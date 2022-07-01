@@ -18,20 +18,9 @@ def clustering_transformers(sink_parameters, transformer_parameters,
                 sheets = Bus.create_cluster_averaged_bus(
                         sink_parameters, cluster, "gas", sheets,
                         standard_parameters)
-            elif i == "ashp":
-                # create hp building type averaged price
-                sheets = Bus.create_cluster_averaged_bus(
-                        sink_parameters, cluster, "hp_elec", sheets,
-                        standard_parameters)
-                # electricity link from building electricity bus to hp
-                # elec bus
-                Link.create_link(
-                        label=str(cluster) + "_gchp_building_link",
-                        bus_1=str(cluster) + "_electricity_bus",
-                        bus_2=str(cluster) + "_hp_elec_bus",
-                        link_type="building_hp_elec_link")
-            elif i == "gchp" \
-                    and not transformer_parameters["ashp"][0] > 0:
+            elif (i == "ashp" or i == "gchp") \
+                    and not str(cluster) + "_gchp_building_link" \
+                    in sheets["links"].index:
                 # create hp building type averaged price
                 sheets = Bus.create_cluster_averaged_bus(
                         sink_parameters, cluster, "hp_elec", sheets,
