@@ -61,15 +61,11 @@ def get_dh_label(label, param):
 
 
 def append_flows(label, comp_dict, df_result_table):
-    print(comp_dict[0])
-    if sum(comp_dict[0]) != 0:
-        df_result_table.loc[:, label + "_input1"] = comp_dict[0]
-    if sum(comp_dict[1]) != 0:
-        df_result_table.loc[:, label + "_input2"] = comp_dict[1]
-    if sum(comp_dict[2]) != 0:
-        df_result_table.loc[:, label + "_output1"] = comp_dict[2]
-    if sum(comp_dict[3]) != 0:
-        df_result_table.loc[:, label + "_output2"] = comp_dict[3]
+    flow_type_dict = {0: "_input1", 1: "_input2", 2: "_output1", 3: "_output2"}
+    for flow in flow_type_dict:
+        if sum(comp_dict[flow]) != 0:
+            df_result_table.loc[:, label + flow_type_dict[flow]] = \
+                comp_dict[flow]
     return df_result_table
 
 
