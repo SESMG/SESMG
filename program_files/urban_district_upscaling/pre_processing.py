@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import program_files.urban_district_upscaling.clustering as clustering_py
 from program_files.urban_district_upscaling.components \
-    import Sink, Source, Storage, Transformer, Link, Bus
+    import Sink, Source, Storage, Transformer, Link, Bus, Insulation
 
 
 true_bools = ["yes", "Yes", 1]
@@ -431,89 +431,6 @@ def create_buses(building, pv_bus: bool, central_elec_bus: bool, gchps):
                 link_type="building_pv_central_link")
 
 
-def create_building_insulation(building_id: str, yoc: int, area_window: float,
-                               area_wall: float, area_roof: float,
-                               roof_type: str):
-    """
-        In this method, the U-value potentials as well as the building
-        year-dependent U-value of the insulation types are obtained from
-        the standard parameters to create the insulation components in
-        the scenario.
-
-        :param building_id: building label
-        :type building_id: str
-        :param yoc: year of construction of the given building
-        :type yoc: int
-        :param area_window: summed area of windows of the given building
-        :type area_window: float
-        :param area_wall: summed area of walls (without windows) of the
-                          given building
-        :type area_wall: float
-        :param area_roof: summed area of roof parts of the given
-                          building
-        :type area_roof: float
-        :param roof_type: defines rather the roof is a flat one or not
-        :type roof_type: str
-    """
-    insul_standard_param = standard_parameters.parse('insulation')
-    insul_standard_param.set_index("year of construction", inplace=True)
-    if int(yoc) <= 1918:  # TODO
-        yoc = "<1918"
-    u_values = {}
-    for comp in ["roof", "outer wall", "window"]:
-        u_values.update(
-            {comp: [insul_standard_param.loc[yoc][comp],
-                    insul_standard_param.loc["potential"][comp],
-                    insul_standard_param.loc["periodical costs"][comp],
-                    insul_standard_param.loc[
-                        "periodical constraint costs"][comp]]})
-        if comp == "roof":
-            u_values[comp] \
-             += [insul_standard_param.loc["potential flat"]["roof"],
-                 insul_standard_param.loc["periodical costs flat"]["roof"],
-                 insul_standard_param.loc["periodical constraint costs flat"]["roof"]]
-    param_dict = {'comment': 'automatically_created',
-                  'active': 1,
-                  'sink': str(building_id) + "_heat_demand",
-                  'temperature indoor': 20,
-                  'heat limit temperature': 15}
-    if area_window:
-        window_dict = param_dict.copy()
-        window_dict.update(
-            {'label': str(building_id) + "_window",
-             'U-value old': u_values["window"][0],
-             'U-value new': u_values["window"][1],
-             'area': area_window,
-             'periodical costs': u_values["window"][2],
-             'periodical constraint costs': u_values["window"][3]})
-        append_component("insulation", window_dict)
-
-    if area_wall:
-        wall_dict = param_dict.copy()
-        wall_dict.update(
-            {'label': str(building_id) + "_wall",
-             'U-value old': u_values["outer wall"][0],
-             'U-value new': u_values["outer wall"][1],
-             'area': area_wall,
-             'periodical costs': u_values["outer wall"][2],
-             'periodical constraint costs': u_values["outer wall"][3]})
-        append_component("insulation", wall_dict)
-
-    if area_roof:
-        u_value_new = u_values["roof"][4 if roof_type == "flat roof" else 1]
-        periodical_costs = \
-            u_values["roof"][5 if roof_type == "flat roof" else 2]
-        roof_dict = param_dict.copy()
-        roof_dict.update(
-            {'label': str(building_id) + "_roof",
-             'U-value old': u_values["roof"][0],
-             'U-value new': u_value_new,
-             'area': area_roof,
-             'periodical costs': periodical_costs,
-             'periodical constraint costs': u_values["roof"][3 if roof_type != "flat roof" else 6]})
-        append_component("insulation", roof_dict)
-
-
 def create_central_elec_bus_connection(cluster):
     if (cluster + "central_electricity_link") not in sheets["links"].index:
         Link.create_link(
@@ -588,7 +505,7 @@ def create_gchp(tool, parcel):
         Bus.create_standard_parameter_bus(label=gchp + "_heat_bus",
                                           bus_type="building_heat_bus")
     return gchps
-
+    
 
 def urban_district_upscaling_pre_processing(pre_scenario: str,
                                             standard_parameter_path: str,
@@ -640,6 +557,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
     gchps = create_gchp(tool, parcel)
     
     for num, building in tool[tool["active"] == 1].iterrows():
+        label = building["label"]
         # foreach building the three necessary buses will be created
         pv_bool = False
         for roof_num in range(1, 29):
@@ -650,7 +568,7 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
             pv_bus=pv_bool,
             central_elec_bus=central_electricity_network,
             gchps=gchps)
-        Sink.create_sinks(sink_id=building['label'],
+        Sink.create_sinks(sink_id=label,
                           building_type=building['building type'],
                           units=building['units'],
                           occupants=building['occupants per unit'],
@@ -658,59 +576,22 @@ def urban_district_upscaling_pre_processing(pre_scenario: str,
                           area=building['living space'] * building['floors'],
                           standard_parameters=standard_parameters)
 
-        create_building_insulation(
-            building_id=building['label'],
+        Insulation.create_building_insulation(
+            building_id=label,
             yoc=building['year of construction'],
-            area_window=building["windows"],
-            area_wall=building["walls_wo_windows"],
-            area_roof=building["roof area"],
-            roof_type=building["rooftype"])
+            areas=[building["windows"], building["walls_wo_windows"],
+                   building["roof area"]],
+            roof_type=building["rooftype"],
+            standard_parameters=standard_parameters)
         
         # create sources
         Source.create_sources(building=building, clustering=clustering)
+        # create transformer
+        Transformer.building_transformer(building, p2g_link, true_bools)
+        # create storages
+        Storage.building_storages(building, true_bools)
 
-        # creates air source heat-pumps
-        if building['ashp'] in ['Yes', 'yes', 1]:
-            Transformer.create_transformer(
-                building_id=building['label'],
-                transformer_type="building_ashp_transformer")
-
-        # creates gasheating-system
-        if building['gas heating'] in ['Yes', 'yes', 1]:
-            Transformer.create_transformer(
-                building_id=building['label'],
-                building_type=building['building type'],
-                transformer_type="building_gasheating_transformer")
-
-            # natural gas connection link to p2g-ng-bus
-            if p2g_link:
-                Link.create_link(
-                    label='central_naturalgas_' + building['label'] + 'link',
-                    bus_1='central_naturalgas_bus',
-                    bus_2=building['label'] + '_gas_bus',
-                    link_type='central_naturalgas_building_link')
-
-        # creates electric heating-system
-        if building['electric heating'] in ['yes', 'Yes', 1]:
-            Transformer.create_transformer(
-                building_id=building['label'],
-                transformer_type="building_electricheating_transformer")
-
-        # battery storage
-        if building['battery storage'] in ['Yes', 'yes', 1]:
-            Storage.create_storage(
-                building_id=building['label'],
-                storage_type="battery",
-                de_centralized="building")
-        # thermal storage
-        if building['thermal storage'] in ['Yes', 'yes', 1]:
-            Storage.create_storage(
-                building_id=building['label'],
-                storage_type="thermal",
-                de_centralized="building")
-
-        print(str(building['label'])
-              + ' subsystem added to scenario sheet.')
+        print(str(label) + ' subsystem added to scenario sheet.')
     for sheet_tbc in ["energysystem", "weather data", "time series",
                       "district heating"]:
         sheets[sheet_tbc] = standard_parameters.parse(sheet_tbc)

@@ -1,32 +1,31 @@
 transf_dict = {
-        "building_gchp_transformer": [
-            '_gchp_transformer',
-            '_hp_elec_bus',
-            '_heat_bus',
-            'None'],
-        "building_ashp_transformer": [
-            '_ashp_transformer',
-            '_hp_elec_bus',
-            '_heat_bus',
-            'None'],
-        'building_gasheating_transformer': [
-            '_gasheating_transformer',
-            '_gas_bus',
-            '_heat_bus',
-            'None'],
-        "building_electricheating_transformer": [
-            '_electricheating_transformer',
-            '_electricity_bus',
-            '_heat_bus',
-            'None']}
+    "building_gchp_transformer": [
+        '_gchp_transformer',
+        '_hp_elec_bus',
+        '_heat_bus',
+        'None'],
+    "building_ashp_transformer": [
+        '_ashp_transformer',
+        '_hp_elec_bus',
+        '_heat_bus',
+        'None'],
+    'building_gasheating_transformer': [
+        '_gasheating_transformer',
+        '_gas_bus',
+        '_heat_bus',
+        'None'],
+    "building_electricheating_transformer": [
+        '_electricheating_transformer',
+        '_electricity_bus',
+        '_heat_bus',
+        'None']}
 
 
 def create_transformer(building_id, transformer_type,
                        building_type=None, area="None", specific="None",
                        output="None"):
-    from program_files.urban_district_upscaling.pre_processing \
-        import create_standard_parameter_comp
-    from program_files.urban_district_upscaling.components import Bus
+    from program_files import create_standard_parameter_comp
+    from program_files import Bus
 
     # TODO for gchps
     # probe_length = \
@@ -97,9 +96,35 @@ def create_transformer(building_id, transformer_type,
         type="transformers",
         index="comment",
         standard_param_name=transformer_type)
+
+
+def building_transformer(building, p2g_link, true_bools):
+    """
+
+    """
+    from program_files import Link
+    transf_dict = {
+        'ashp': [None, "building_ashp_transformer"],
+        'gas heating': [building['building type'],
+                        "building_gasheating_transformer"],
+        'electric heating': [None, "building_electricheating_transformer"]}
+    for transf in transf_dict:
+        # creates air source heat-pumps
+        if building[transf] in true_bools:
+            create_transformer(
+                building_id=building['label'],
+                building_type=transf_dict[transf][0],
+                transformer_type=transf_dict[transf][1])
+            if transf == 'gas heating' and p2g_link:
+                Link.create_link(
+                        label='central_naturalgas_' + building['label']
+                              + 'link',
+                        bus_1='central_naturalgas_bus',
+                        bus_2=building['label'] + '_gas_bus',
+                        link_type='central_naturalgas_building_link')
     
     
-def cluster_transf_information(transformer, transf_param, type, sheets):
+def cluster_transf_information(transformer, transf_param, transf_type, sheets):
     """
         Collects the transformer information of the selected type, and
         inserts it into the dict containing the cluster specific
@@ -117,18 +142,19 @@ def cluster_transf_information(transformer, transf_param, type, sheets):
 
         :return:
     """
-    # counter
-    transf_param[type][0] += 1
-    # efficiency
-    transf_param[type][1] += transformer["efficiency"]
-    if type in ["ashp", "gchp"]:
-        transf_param[type][2] += transformer["efficiency2"]
-    # periodical costs
-    transf_param[type][3] += transformer["periodical costs"]
-    # variable output constraints
-    transf_param[type][4] += transformer["variable output constraint costs"]
-    if type == "gchp":
-        transf_param[type][5] += transformer["area"]
+    param_dict = {0: 1,
+                  1: transformer["efficiency"],
+                  3: transformer["periodical costs"],
+                  4: transformer["variable output constraint costs"]}
+    for num in param_dict:
+        # counter
+        transf_param[transf_type][num] += param_dict[num]
+
+    if transf_type in ["ashp", "gchp"]:
+        transf_param[transf_type][2] += transformer["efficiency2"]
+    
+    if transf_type == "gchp":
+        transf_param[transf_type][5] += transformer["area"]
     # remove the considered tranformer from transformer sheet
     sheets["transformers"] = \
         sheets["transformers"].drop(index=transformer["label"])
@@ -193,8 +219,7 @@ def create_cluster_transformer(type, transf_param, cluster):
     :param transf_param:
     :return:
     """
-    from program_files.urban_district_upscaling.pre_processing \
-        import read_standard_parameters, append_component
+    from program_files import read_standard_parameters, append_component
     type_dict = {"gasheating": "building_gasheating_transformer",
                  "electricheating": "building_electricheating_transformer",
                  "ashp":  "building_ashp_transformer",

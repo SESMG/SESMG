@@ -18,8 +18,7 @@ def create_standard_parameter_bus(label: str, bus_type: str, dh=None,
                    bus has to be connected to a specific intersection
         :type dh: str
     """
-    from program_files.urban_district_upscaling.pre_processing \
-        import read_standard_parameters, append_component
+    from program_files import read_standard_parameters, append_component
     # define individual values
     bus_dict = {'label': label}
     # extracts the bus specific standard values from the
@@ -49,7 +48,7 @@ def create_cluster_elec_buses(building, cluster, sheets):
         :param cluster: Cluster id
         :type cluster: str
     """
-    from program_files.urban_district_upscaling.components import Link
+    from . import Link
     # ELEC BUSES
     # get building type to specify bus type to be created
     if "RES" in building[2] and str(cluster) + "_res_electricity_bus" \

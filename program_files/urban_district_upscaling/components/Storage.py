@@ -36,6 +36,16 @@ def create_storage(building_id: str, storage_type: str,
         type="storages",
         index="comment",
         standard_param_name=de_centralized + storage_dict.get(storage_type)[0])
+    
+    
+def building_storages(building, true_bools):
+    storage_dict = {'battery storage': "battery",
+                    'thermal storage': "thermal"}
+    for storage in storage_dict:
+        if building[storage] in true_bools:
+            create_storage(building_id=building["label"],
+                           storage_type=storage_dict[storage],
+                           de_centralized="building")
 
 
 def storage_clustering(building, sheets_clustering, storage_parameter, sheets):
