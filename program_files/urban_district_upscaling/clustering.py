@@ -1,6 +1,54 @@
 from program_files.urban_district_upscaling.components \
     import Link, Sink, Transformer, Storage, Bus, Source
-            
+    
+    
+def clustering_transformers(sink_parameters, transformer_parameters,
+                            cluster, sheets, standard_parameters):
+    """
+    
+    """
+    total_heat_demand = \
+        sink_parameters[4] + sink_parameters[5] + sink_parameters[6]
+    for i in ["gasheating", "electric_heating", "ashp", "gchp"]:
+        # create res or com gasheating
+        if transformer_parameters[i][0] > 0 and total_heat_demand != 0:
+            # create cluster gas bus with building type weighted
+            # shortage costs
+            if i == "gasheating":
+                sheets = Bus.create_cluster_averaged_bus(
+                        sink_parameters, cluster, "gas", sheets,
+                        standard_parameters)
+            elif i == "ashp":
+                # create hp building type averaged price
+                sheets = Bus.create_cluster_averaged_bus(
+                        sink_parameters, cluster, "hp_elec", sheets,
+                        standard_parameters)
+                # electricity link from building electricity bus to hp
+                # elec bus
+                Link.create_link(
+                        label=str(cluster) + "_gchp_building_link",
+                        bus_1=str(cluster) + "_electricity_bus",
+                        bus_2=str(cluster) + "_hp_elec_bus",
+                        link_type="building_hp_elec_link")
+            elif i == "gchp" \
+                    and not transformer_parameters["ashp"][0] > 0:
+                # create hp building type averaged price
+                sheets = Bus.create_cluster_averaged_bus(
+                        sink_parameters, cluster, "hp_elec", sheets,
+                        standard_parameters)
+                # electricity link from building electricity bus to hp
+                # elec bus
+                Link.create_link(
+                        label=str(cluster) + "_gchp_building_link",
+                        bus_1=str(cluster) + "_electricity_bus",
+                        bus_2=str(cluster) + "_hp_elec_bus",
+                        link_type="building_hp_elec_link")
+            # create cluster's gasheating system
+            Transformer.create_cluster_transformer(
+                    i, transformer_parameters, cluster)
+    
+    return sheets
+    
     
 def clustering_method(tool, standard_parameters, sheet_names, sheets,
                       central_electricity_network, clustering_dh):
@@ -142,45 +190,9 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets,
                 standard_parameters, sink_parameters,
                 cluster, central_electricity_network, sheets)
             
-            total_heat_demand = \
-                sink_parameters[4] + sink_parameters[5] + sink_parameters[6]
-            for i in ["gasheating", "electric_heating", "ashp", "gchp"]:
-                # create res or com gasheating
-                if transformer_parameters[i][0] > 0 and total_heat_demand != 0:
-                    # create cluster gas bus with building type weighted
-                    # shortage costs
-                    if i == "gasheating":
-                        sheets = Bus.create_cluster_averaged_bus(
-                            sink_parameters, cluster, "gas", sheets,
-                            standard_parameters)
-                    elif i == "ashp":
-                        # create hp building type averaged price
-                        sheets = Bus.create_cluster_averaged_bus(
-                                sink_parameters, cluster, "hp_elec", sheets,
-                                standard_parameters)
-                        # electricity link from building electricity bus to hp
-                        # elec bus
-                        Link.create_link(
-                            label=str(cluster) + "_gchp_building_link",
-                            bus_1=str(cluster) + "_electricity_bus",
-                            bus_2=str(cluster) + "_hp_elec_bus",
-                            link_type="building_hp_elec_link")
-                    elif i == "gchp" \
-                            and not transformer_parameters["ashp"][0] > 0:
-                        # create hp building type averaged price
-                        sheets = Bus.create_cluster_averaged_bus(
-                                sink_parameters, cluster, "hp_elec", sheets,
-                                standard_parameters)
-                        # electricity link from building electricity bus to hp
-                        # elec bus
-                        Link.create_link(
-                            label=str(cluster) + "_gchp_building_link",
-                            bus_1=str(cluster) + "_electricity_bus",
-                            bus_2=str(cluster) + "_hp_elec_bus",
-                            link_type="building_hp_elec_link")
-                    # create cluster's gasheating system
-                    Transformer.create_cluster_transformer(
-                        i, transformer_parameters, cluster)
+            sheets = clustering_transformers(
+                sink_parameters, transformer_parameters, cluster, sheets,
+                standard_parameters)
 
             # SOURCES
             # create cluster's sources and competition constraints
