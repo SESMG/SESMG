@@ -136,7 +136,7 @@ def get_dict_building_cluster(tool):
     return cluster_ids
 
     
-def clustering_method(tool, standard_parameters, sheet_names, sheets,
+def clustering_method(tool, standard_parameters, sheets,
                       central_electricity_network, clustering_dh):
     """
         TODO DOCSTRING TEXT
@@ -144,8 +144,6 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets,
         :type tool: pd.Dataframe
         :param standard_parameters:
         :type standard_parameters:
-        :param sheet_names:
-        :type sheet_names:
         :param sheets:
         :type sheets:
         :param central_electricity_network:
@@ -157,7 +155,7 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets,
                 
     # local copy of status of scenario components
     sheets_clustering = {}
-    for sheet in sheet_names:
+    for sheet in sheets.keys():
         sheet_edited = sheets[sheet].copy()
         sheet_edited = sheet_edited.drop(index=0)
         sheets_clustering.update({sheet: sheet_edited})
