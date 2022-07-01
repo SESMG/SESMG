@@ -113,8 +113,7 @@ def create_sources(building, clustering):
         roof_num += 1
 
 
-def cluster_sources_information(source, source_param, azimuth_type,
-                                source_type, sheets):
+def cluster_sources_information(source, source_param, azimuth_type, sheets):
     """
         Collects the source information of the selected type, and
         inserts it into the dict containing the cluster specific
@@ -129,13 +128,14 @@ def cluster_sources_information(source, source_param, azimuth_type,
         :param azimuth_type: definies the celestial direction of the \
             source to be clustered
         :type azimuth_type: str
-        :param source_type: source type needed to define the dict entry \
-            to be modified
-        :type source_type: str
+        :param sheets:
+        :type sheets:
+
 
         :return: - **source_param** (dict) - dict extended by a new \
             entry
     """
+    source_type = "pv" if source["technology"] == "photovoltaic" else "st"
     param_dict = {0: 1,
                   1: source["max. investment capacity"],
                   2: source["periodical costs"],
@@ -201,16 +201,9 @@ def sources_clustering(source_param, building, sheets_clustering, sheets):
             # information for each cluster
             if str(building[0]) in sources["label"] \
                     and sources["label"] in sheets["sources"].index:
-                if sources["technology"] == "photovoltaic":
-                    source_param, sheets = \
-                        cluster_sources_information(
-                            sources, source_param, azimuth_type, "pv", sheets)
-                # Solar thermal clustering - collecting the sources
-                # information for each cluster
-                elif sources["technology"] == "solar_thermal_flat_plate":
-                    source_param, sheets = \
-                        cluster_sources_information(
-                            sources, source_param, azimuth_type, "st", sheets)
+                source_param, sheets = \
+                    cluster_sources_information(
+                        sources, source_param, azimuth_type, sheets)
 
     # return the collected data to the main clustering method
     return source_param, sheets
