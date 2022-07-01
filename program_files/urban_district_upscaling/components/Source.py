@@ -272,3 +272,20 @@ def create_cluster_sources(source_param, cluster, sheets):
                     
                 create_source(dependent_param.get(pv_st)[1], azimuth[:-4],
                               param_dict)
+
+
+def update_sources_in_output(building, sheets_clustering, cluster, sheets):
+    """
+
+    """
+    # change sources output bus
+    for i, j in sheets_clustering["sources"].iterrows():
+        heat_elec = {"heat": ["output", "_heat_bus"],
+                     "elec": ["input", "_electricity_bus"]}
+        for k in heat_elec:
+            if building[0] in j[heat_elec[k][0]] and k in j[heat_elec[k][0]]:
+                sheets["sources"][heat_elec[k][0]] = \
+                    sheets["sources"][heat_elec[k][0]].replace(
+                            [str(building[0]) + heat_elec[k][1],
+                             str(cluster) + heat_elec[k][1]])
+    return sheets

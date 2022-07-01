@@ -1,31 +1,9 @@
 import program_files.urban_district_upscaling.pre_processing as pre_processing
 from program_files.urban_district_upscaling.components \
     import Link, Sink, Transformer, Storage, Bus, Source
-        
-
-
-            
-            
-def update_sources_in_output(building, sheets_clustering, cluster):
-    """
-    
-    """
-    # change sources output bus
-    for i, j in sheets_clustering["sources"].iterrows():
-        if str(building[0]) in str(j["input"]) and \
-                "electricity" in str(j["input"]):
-            sheets["sources"]['input'] = \
-                sheets["sources"]['input'].replace(
-                        [str(building[0]) + "_electricity_bus"],
-                        str(cluster) + "_electricity_bus")
-        if str(building[0]) in str(j["output"]) and "heat" in str(j["output"]):
-            sheets["sources"]["output"] = \
-                sheets["sources"]["output"].replace(
-                        [str(building[0]) + "_heat_bus"],
-                        str(cluster) + "_heat_bus")
             
     
-def clustering_method(tool, standard_parameters, sheet_names, sheets_input,
+def clustering_method(tool, standard_parameters, sheet_names, sheets,
                       central_electricity_network, clustering_dh):
     """
         TODO DOCSTRING TEXT
@@ -38,8 +16,6 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets_input,
         :param sheets_input:
         :type sheets_input:
     """
-    global sheets
-    sheets = sheets_input
     # create a dictionary holding the combination of cluster ID the included
     # building labels and its parcels
     cluster_ids = {}
@@ -134,8 +110,8 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets_input,
                     building, cluster, sheets)
                     
                 # collect cluster intern source information
-                source_param = Source.sources_clustering(
-                    source_param, building, sheets_clustering)
+                source_param, sheets = Source.sources_clustering(
+                    source_param, building, sheets_clustering, sheets)
                 
                 # collect cluster intern transformer information
                 heat_buses_gchps, transformer_parameters, sheets = \
@@ -146,13 +122,16 @@ def clustering_method(tool, standard_parameters, sheet_names, sheets_input,
                 # collect cluster intern storage information
                 storage_parameters, sheets = \
                     Storage.storage_clustering(
-                        building, sheets_clustering, storage_parameters, sheets)
+                        building, sheets_clustering, storage_parameters,
+                        sheets)
                 # restructre all links
-                restructuring_links(sheets_clustering, building, cluster,
-                                    sink_parameters)
+                sheets = Link.restructuring_links(
+                    sheets_clustering, building, cluster, sink_parameters,
+                    sheets)
                 
                 # update the sources in and output
-                update_sources_in_output(building, sheets_clustering, cluster)
+                sheets = Source.update_sources_in_output(
+                    building, sheets_clustering, cluster, sheets)
                 
             # TRANSFORMER
             # create cluster electricity sinks
