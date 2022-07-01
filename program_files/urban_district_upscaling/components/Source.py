@@ -221,6 +221,7 @@ def create_cluster_sources(source_param, cluster, sheets):
 
     :param source_param:
     :param cluster:
+    :param sheets
     :return:
     """
     from program_files.urban_district_upscaling.pre_processing \
@@ -239,6 +240,17 @@ def create_cluster_sources(source_param, cluster, sheets):
                     "south_west_225", "west_270", "north_west_315"]:
         for pv_st in ["pv", "st"]:
             if source_param[pv_st + "_{}".format(azimuth[:-4])][0] > 0:
+                # type dependent parameter
+                dependent_param = {
+                    "pv": [pv_standard_param, "fixed photovoltaic source"],
+                    "st": [st_standard_param, "solar_thermal_collector"]
+                }
+                param_dict = {
+                    'roof area (m²) {}'.format(azimuth[:-4]):
+                        source_param[pv_st + "_{}".format(azimuth[:-4])][1]
+                        / dependent_param.get(pv_st)[0][
+                            "Capacity per Area (kW/m2)"]}
+                
                 if (str(cluster) + "_pv_bus") not in sheets["buses"].index \
                         and pv_st == "pv":
                     Bus.create_standard_parameter_bus(
@@ -246,40 +258,25 @@ def create_cluster_sources(source_param, cluster, sheets):
                         bus_type='building_pv_bus')
                     sheets["buses"].set_index("label", inplace=True,
                                               drop=False)
+
+                    create_competition_constraint(
+                        limit=param_dict['roof area (m²) {}'.format(
+                                azimuth[:-4])],
+                        building_id=cluster, roof_num=azimuth[:-4])
                 # parameter that aren't type dependent
-                param_dict = {
-                    "label": cluster,
-                    "azimuth (°) {}".format(azimuth[:-4]): int(azimuth[-3:]),
-                    "surface tilt (°) {}".format(azimuth[:-4]):
-                        source_param[pv_st + "_{}".format(azimuth[:-4])][8]
-                        / source_param[pv_st + "_{}".format(azimuth[:-4])][0],
-                    "latitude":
-                        source_param[pv_st + "_{}".format(azimuth[:-4])][9]
-                        / source_param[pv_st + "_{}".format(azimuth[:-4])][0],
-                    "longitude":
-                        source_param[pv_st + "_{}".format(azimuth[:-4])][10]
-                        / source_param[pv_st + "_{}".format(azimuth[:-4])][0]}
-                # type dependent parameter and source creation
-                dependent_param = {
-                    "pv": [pv_standard_param, "fixed photovoltaic source"],
-                    "st": [st_standard_param, "solar_thermal_collector"]
-                }
                 param_dict.update({
-                    'roof area (m²) {}'.format(azimuth[:-4]):
-                        source_param[pv_st + "_{}".format(azimuth[:-4])][1]
-                        / dependent_param.get(pv_st)[0][
-                            "Capacity per Area (kW/m2)"]})
+                    "label": cluster,
+                    "azimuth (°) {}".format(azimuth[:-4]): int(azimuth[-3:])})
+                # dict defining param location in sources information list
+                pos_dict = {
+                    "surface tilt (°) {}".format(azimuth[:-4]): 8,
+                    "latitude": 9,
+                    "longitude": 10}
+                for i in pos_dict:
+                    param_dict.update({
+                        i: source_param[pv_st + "_{}".format(azimuth[:-4])][
+                               pos_dict[i]]
+                        / source_param[pv_st + "_{}".format(azimuth[:-4])][0]})
+                    
                 create_source(dependent_param.get(pv_st)[1], azimuth[:-4],
                               param_dict)
-
-        # Create new competition constraint
-        if source_param["pv_{}".format(azimuth[:-4])][0] > 0:
-            # calculate area from peak power
-            area_st = (source_param["st_{}".format(azimuth[:-4])][1]
-                       / st_standard_param['Capacity per Area (kW/m2)'])
-            # calculate area from peak power
-            area_pv = (source_param["pv_{}".format(azimuth[:-4])][1]
-                       / pv_standard_param['Capacity per Area (kW/m2)'])
-            
-            create_competition_constraint(
-                limit=area_pv, building_id=cluster, roof_num=azimuth[:-4])
