@@ -117,22 +117,40 @@ def collect_clustering_information(building, sheets_clustering, sheets,
         storage_parameters, sheets
 
 
+def remove_buses(sheets_clustering, sheets):
+    # remove not longer used buses
+    # 1. building specific gas bus
+    # 2. building specific electricity bus
+    # 3. building specific heat pump electricity bus
+    # 4. building specific pv bus
+    for i, j in sheets_clustering["buses"].iterrows():
+        type_dict = {0: ["gas", "central"],
+                     1: ["electricity", "central"],
+                     2: ["hp_elec", "swhp_elec"]}
+        for k in type_dict:
+            if type_dict[k][0] in j["label"] \
+                    and type_dict[k][1] not in j["label"]:
+                sheets["buses"] = sheets["buses"].drop(index=i)
+        if "pv_bus" in j["label"]:
+            sheets["buses"] = sheets["buses"].drop(index=i)
+    return sheets
+
+
 def get_dict_building_cluster(tool):
     # create a dictionary holding the combination of cluster ID the included
     # building labels and its parcels
     cluster_ids = {}
-    for num, building in tool.iterrows():
-        if building["active"]:
-            print(building["label"])
-            building_info = [building['label'], building['parcel'],
-                             str(building["building type"])[0:3]]
-            # if cluster id already in dict
-            if str(building["cluster_ID"]) in cluster_ids:
-                cluster_ids[str(building["cluster_ID"])].append(building_info)
-            # if cluster id not in dict
-            else:
-                cluster_ids.update({
-                    str(building["cluster_ID"]): [building_info]})
+    for num, building in tool[tool["active"] == 1].iterrows():
+        print(building["label"])
+        building_info = [building['label'], building['parcel'],
+                         str(building["building type"])[0:3]]
+        # if cluster id already in dict
+        if str(building["cluster_ID"]) in cluster_ids:
+            cluster_ids[str(building["cluster_ID"])].append(building_info)
+        # if cluster id not in dict
+        else:
+            cluster_ids.update({
+                str(building["cluster_ID"]): [building_info]})
     return cluster_ids
 
     
@@ -160,21 +178,7 @@ def clustering_method(tool, standard_parameters, sheets,
         sheet_edited = sheet_edited.drop(index=0)
         sheets_clustering.update({sheet: sheet_edited})
         
-    # remove not longer used buses
-    # 1. building specific gas bus
-    # 2. building specific electricity bus
-    # 3. building specific heat pump electricity bus
-    # 4. building specific pv bus
-    for i, j in sheets_clustering["buses"].iterrows():
-        type_dict = {0: ["gas", "central"],
-                     1: ["electricity", "central"],
-                     2: ["hp_elec", "swhp_elec"]}
-        for k in type_dict:
-            if type_dict[k][0] in j["label"] \
-                    and type_dict[k][1] not in j["label"]:
-                sheets["buses"] = sheets["buses"].drop(index=i)
-        if "pv_bus" in j["label"]:
-            sheets["buses"] = sheets["buses"].drop(index=i)
+    sheets = remove_buses(sheets_clustering, sheets)
             
     heat_buses_gchps = []
     for cluster in cluster_ids:
