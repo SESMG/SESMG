@@ -260,20 +260,17 @@ def create_cluster_sources(source_param, cluster, sheets):
                         source_param[pv_st + "_{}".format(azimuth[:-4])][10]
                         / source_param[pv_st + "_{}".format(azimuth[:-4])][0]}
                 # type dependent parameter and source creation
-                if pv_st == "pv":
-                    param_dict.update({
-                        'roof area (m²) {}'.format(azimuth[:-4]):
-                            source_param["pv_{}".format(azimuth[:-4])][1]
-                            / pv_standard_param["Capacity per Area (kW/m2)"]})
-                    create_source("fixed photovoltaic source", azimuth[:-4],
-                                  param_dict)
-                else:
-                    param_dict.update({
-                        'roof area (m²) {}'.format(azimuth[:-4]):
-                            source_param["st_{}".format(azimuth[:-4])][1]
-                            / st_standard_param["Capacity per Area (kW/m2)"]})
-                    create_source("solar_thermal_collector", azimuth[:-4],
-                                  param_dict)
+                dependent_param = {
+                    "pv": [pv_standard_param, "fixed photovoltaic source"],
+                    "st": [st_standard_param, "solar_thermal_collector"]
+                }
+                param_dict.update({
+                    'roof area (m²) {}'.format(azimuth[:-4]):
+                        source_param[pv_st + "_{}".format(azimuth[:-4])][1]
+                        / dependent_param.get(pv_st)[0][
+                            "Capacity per Area (kW/m2)"]})
+                create_source(dependent_param.get(pv_st)[1], azimuth[:-4],
+                              param_dict)
 
         # Create new competition constraint
         if source_param["pv_{}".format(azimuth[:-4])][0] > 0:
