@@ -191,11 +191,10 @@ def sources_clustering(source_param, building, sheets_clustering, sheets):
                         "south_east": [112.5, 157.5]}
             azimuth_type = None
             for dire in dir_dict:
-                if not dir_dict[dire][0] <= sources["Azimuth"] \
+                if dir_dict[dire][0] <= sources["Azimuth"] \
                        < dir_dict[dire][1]:
-                    pass
-                else:
                     azimuth_type = dire
+                    
             azimuth_type = "south" if azimuth_type is None else azimuth_type
             # Photovoltaic clustering - collecting the sources
             # information for each cluster
