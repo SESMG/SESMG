@@ -25,6 +25,26 @@ def create_link(label: str, bus_1: str, bus_2: str,
         type="links",
         index="link_type",
         standard_param_name=link_type)
+    
+
+#def create_central_elec_bus_connection(cluster, sheets):
+#    if (cluster + "central_electricity_link") not in sheets["links"].index:
+#        create_link(
+#            cluster + "central_electricity_link",
+#            bus_1="central_electricity_bus",
+#            bus_2=cluster + "_electricity_bus",
+#            link_type="building_central_building_link")
+#        sheets["links"].set_index("label", inplace=True, drop=False)
+#    if (cluster + "pv_" + cluster + "_electricity_link") \
+#            not in sheets["links"].index \
+#            and (cluster + "pv_central") in sheets["links"].index:
+#        create_link(
+#            cluster + "pv_" + cluster + "_electricity_link",
+#            bus_1=cluster + "_pv_bus",
+#            bus_2=cluster + "_electricity_bus",
+#            link_type="building_pv_central_link")
+#        sheets["links"].set_index("label", inplace=True, drop=False)
+#    return sheets
 
 
 def restructuring_links(sheets_clustering, building, cluster, sink_parameters,
@@ -74,27 +94,27 @@ def restructuring_links(sheets_clustering, building, cluster, sink_parameters,
 
                 if "central_naturalgas" + cluster \
                         not in sheets["links"].index:
-                    Link.create_link(
+                    create_link(
                         "central_naturalgas" + cluster,
                         bus_1="central_naturalgas_bus",
                         bus_2=cluster + "_gas_bus",
                         link_type="central_naturalgas_building_link")
                     sheets["links"].set_index("label", inplace=True,
                                               drop=False)
-    if str(building[0]) in j["bus2"] and "electricity" in j["bus2"]:
-        sheets["links"]['bus2'] = \
-            sheets["links"]['bus2'].replace(
-                [str(building[0]) + "_electricity_bus"],
-                str(cluster) + "_electricity_bus")
-    # delete and replace central elec -> building elec
-    if str(building[0]) in j["bus2"] and \
-            "central_electricity" in j["bus1"] and \
-            "electricity_bus" in j["bus2"]:
-        sheets["links"] = sheets["links"].drop(index=j["label"])
-
-    if str(building[0]) in j["bus2"] and \
-            "gas" in j["bus2"]:
-        sheets["links"]['bus2'] = \
-            sheets["links"]['bus2'].replace(
-                [str(building[0]) + "_gas_bus"],
-                str(cluster) + "_gas_bus")
+        if str(building[0]) in j["bus2"] and "electricity" in j["bus2"]:
+            sheets["links"]['bus2'] = \
+                sheets["links"]['bus2'].replace(
+                    [str(building[0]) + "_electricity_bus"],
+                    str(cluster) + "_electricity_bus")
+        # delete and replace central elec -> building elec
+        if str(building[0]) in j["bus2"] and \
+                "central_electricity" in j["bus1"] and \
+                "electricity_bus" in j["bus2"]:
+            sheets["links"] = sheets["links"].drop(index=j["label"])
+    
+        if str(building[0]) in j["bus2"] and \
+                "gas" in j["bus2"]:
+            sheets["links"]['bus2'] = \
+                sheets["links"]['bus2'].replace(
+                    [str(building[0]) + "_gas_bus"],
+                    str(cluster) + "_gas_bus")
