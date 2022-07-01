@@ -44,18 +44,19 @@ def get_dh_label(label, param):
                + str(diameter) + "_p" + str(label_parts[-3]) + "_to_f" \
                + str(label_parts[-1])
     else:
-        pipe = param.loc[(param["to_node"] == "forks-" + label_parts[-1])
-                         & (param["from_node"] == "forks-" + label_parts[-3])]
-        pipe_reverse = \
-            param.loc[(param["to_node"] == "forks-" + label_parts[-3])
-                      & (param["from_node"] == "forks-" + label_parts[-1])]
-        if not pipe.empty:
-            name = str(pipe["street"].values[0]) + "_" + str(diameter) + "_f" \
-                   + str(label_parts[-3]) + "_to_f" + str(label_parts[-1])
-        elif not pipe_reverse.empty:
-            name = str(pipe_reverse["street"].values[0]) + "_revers_" \
-                   + str(diameter) + "_f" + str(label_parts[-3]) + "_to_f" \
-                   + str(label_parts[-1])
+        name = ""
+        pipe_dict = {"_": [-1, -3],
+                     "_revers_": [-3, -1]}
+        for i in pipe_dict:
+            pipe = param.loc[
+                (param["to_node"] == "forks-" + label_parts[pipe_dict[i][0]])
+                & (param["from_node"] == "forks-"
+                   + label_parts[pipe_dict[i][1]])]
+            if not pipe.empty:
+                name = str(pipe["street"].values[0]) + i + str(diameter) \
+                       + "_f" + str(label_parts[-3]) + "_to_f" \
+                       + str(label_parts[-1])
+
     return str(name)
 
 
