@@ -6,6 +6,9 @@ from program_files.urban_district_upscaling.components \
     import Sink, Source, Storage, Transformer, Link, Bus
 
 
+true_bools = ["yes", "Yes", 1]
+
+
 def append_component(sheet: str, comp_parameter: dict):
     """
         :param sheet:
@@ -99,20 +102,13 @@ def create_central_heat_component(type, bus, central_elec_bus, central_chp):
             central_chp=central_chp)
     # central swhp
     central_heatpump_indicator = 0
-    if type == 'swhp_transformer':
+    if type == 'swhp_transformer' or 'ashp_transformer':
         create_central_heatpump(
-            specification='swhp',
+            specification='swhp' if type == "swhp_transformer" else "ashp",
             create_bus=True if central_heatpump_indicator == 0 else False,
             output=bus, central_elec_bus=central_elec_bus)
         central_heatpump_indicator += 1
-    # central ashp
-    if type == 'ashp_transformer':
-        create_central_heatpump(
-            specification='ashp',
-            create_bus=True if central_heatpump_indicator == 0 else False,
-            central_elec_bus=central_elec_bus,
-            output=bus)
-        central_heatpump_indicator += 1
+
     # central biomass plant
     if type == 'biomass_plant':
         # biomass bus
@@ -148,37 +144,36 @@ def central_comp(central):
     """
     j = next(central.iterrows())[1]
     # creation of the bus for the local power exchange
-    if j['electricity_bus'] in ['Yes', 'yes', 1]:
+    if j['electricity_bus'] in true_bools:
         Bus.create_standard_parameter_bus(label='central_electricity_bus',
                                           bus_type="central_electricity_bus")
 
     # central heat supply
-    if j["central_heat_supply"] in ['yes', 'Yes', 1]:
-        # TODO only two central heat buses implemented yet
-        for num in range(1, 3):
-            if j["heat_input_{}".format(str(num))] in ['yes', 'Yes', 1]:
-                # create bus which would be used as producer bus in
-                # district heating network
-                Bus.create_standard_parameter_bus(
-                    label='central_heat_input{}_bus'.format(num),
-                    bus_type="central_heat_input_bus",
-                    dh="dh-system",
-                    cords=[j["lat.heat_input-{}".format(num)],
-                           j["lon.heat_input-{}".format(num)]])
-                # create components connected to the producer bus
-                for comp in str(j["connected_components_heat_input{}".format(
-                        num)]).split(","):
-                    if j[comp] in ['yes', 'Yes', 1]:
-                        create_central_heat_component(
-                            comp,
-                            'central_heat_input{}_bus'.format(num),
-                            True if j['electricity_bus'] in
-                                ['Yes', 'yes', 1] else False,
-                            True if j['naturalgas_chp'] in
-                                ['Yes', 'yes', 1] else False)
-
+    if j["central_heat_supply"] in true_bools:
+        num = 1
+        column_1 = "heat_input_{}".format(str(num))
+        while column_1 in j.keys and j[column_1] in true_bools:
+            # create bus which would be used as producer bus in
+            # district heating network
+            Bus.create_standard_parameter_bus(
+                label='central_heat_input{}_bus'.format(num),
+                bus_type="central_heat_input_bus",
+                dh="dh-system",
+                cords=[j["lat.heat_input-{}".format(num)],
+                       j["lon.heat_input-{}".format(num)]])
+            column = "connected_components_heat_input{}".format(num)
+            # create components connected to the producer bus
+            for comp in str(j[column]).split(","):
+                if j[comp] in true_bools:
+                    create_central_heat_component(
+                        comp,
+                        'central_heat_input{}_bus'.format(num),
+                        True if j['electricity_bus'] in true_bools else False,
+                        True if j['naturalgas_chp'] in true_bools else False)
+            num += 1
+            
     # central battery storage
-    if j['battery_storage'] in ['yes', 'Yes', 1]:
+    if j['battery_storage'] in true_bools:
         Storage.create_storage(
             building_id="central",
             storage_type="battery",
