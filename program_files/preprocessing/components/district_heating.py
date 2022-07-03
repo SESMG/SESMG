@@ -19,7 +19,7 @@ thermal_network = dhnx.network.ThermalNetwork()
 
 directory_path = os.path.dirname(os.path.abspath(__file__))
 component_param = \
-    pd.read_csv(os.path.dirname(directory_path)
+    pd.read_csv(os.path.dirname(os.path.dirname(directory_path))
                 + "/technical_data/district_heating/component_parameters.csv",
                 index_col="label")
 

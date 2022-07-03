@@ -94,7 +94,7 @@ def create_sources(building, clustering):
     """
     # create pv-sources and solar thermal-sources including area
     # competition
-    roof_num = 0
+    roof_num = 1
     while building['roof area (m²) %1d' % roof_num]:
         column = 'st or pv %1d' % roof_num
         if building[column] == "pv&st":

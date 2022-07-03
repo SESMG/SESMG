@@ -253,14 +253,14 @@ def urban_district_upscaling_pre_processing(paths: list,
         load_input_data(paths[3], paths[1], paths[0])
     
     # create central components
-    Central_components.central_comp(central, true_bools)
+    Central_components.central_comp(central, true_bools, sheets)
     
     # set variable for central heating / electricity if activated to
     # decide rather a house can be connected to the central heat
     # network / central electricity network or not
-    central_electricity_network = True if central['electricity_bus'] \
+    central_electricity_network = True if central['electricity_bus'][0] \
         in true_bools else False
-    p2g_link = True if central['power_to_gas'] in true_bools else False
+    p2g_link = True if central['power_to_gas'][0] in true_bools else False
 
     gchps = create_gchp(tool, parcel)
     

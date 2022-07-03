@@ -27,16 +27,6 @@ def create_transformer(building_id, transformer_type,
     from program_files import create_standard_parameter_comp
     from program_files import Bus
 
-    # TODO for gchps
-    # probe_length = \
-    #    transformers_standard_parameters.loc['building_gchp_transformer'][
-    #        'length of the geoth. probe']
-    # heat_extraction = \
-    #    transformers_standard_parameters.loc['building_gchp_transformer'][
-    #        'heat extraction']
-    # min_bore_hole_area = \
-    #    transformers_standard_parameters.loc['building_gchp_transformer'][
-    #        'min. borehole area']
     transf_dict.update({
         "central_" + specific + "_chp": [
             "_" + specific + '_chp_transformer',
