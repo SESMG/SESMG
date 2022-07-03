@@ -118,20 +118,28 @@ def collect_clustering_information(building, sheets_clustering, sheets,
 
 
 def remove_buses(sheets_clustering, sheets):
-    # remove not longer used buses
-    # 1. building specific gas bus
-    # 2. building specific electricity bus
-    # 3. building specific heat pump electricity bus
-    # 4. building specific pv bus
+    """
+        remove not longer used buses
+            1. building specific gas bus
+            2. building specific electricity bus
+            3. building specific heat pump electricity bus
+            4. building specific pv bus
+        :param sheets_clustering: dictionary containing a copy of \
+            the pandas DataFrames containing the energy system's data
+        :type sheets_clustering: dictionary containing the pandas \
+            DataFrames containing the energy system's data
+        :param sheets: dict
+        :return: - **sheets**(dict) - updated dictionary without the \
+            not used buses
+    """
+    
     for i, j in sheets_clustering["buses"].iterrows():
         type_dict = {0: ["gas", "central"],
                      1: ["electricity", "central"],
-                     2: ["hp_elec", "swhp_elec"]}
-        for k in type_dict:
-            if type_dict[k][0] in j["label"] \
-                    and type_dict[k][1] not in j["label"]:
-                sheets["buses"] = sheets["buses"].drop(index=i)
-        if "pv_bus" in j["label"]:
+                     2: ["hp_elec", "swhp_elec"],
+                     3: ["pv_bus", "pv_bus"]}
+        if (type_dict[k][0] in j["label"]
+                and type_dict[k][1] not in j["label"] for k in type_dict):
             sheets["buses"] = sheets["buses"].drop(index=i)
     return sheets
 
