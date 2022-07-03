@@ -153,6 +153,75 @@ def get_dict_building_cluster(tool):
                 str(building["cluster_ID"]): [building_info]})
     return cluster_ids
 
+
+def collect_builing_information(cluster_ids, sheets_clustering, cluster,
+                                sheets, heat_buses_gchps):
+    # cluster sinks parameter
+    # [res_elec_demand, com_elec_demand, ind_elec_demand,
+    #  heat_buses, res_heat_demand, com_heat_demand,
+    #  ind_heat_demand, heat_sinks, elec_res_sink,
+    #  elec_com_sink, elec_ind_sink]
+    sink_parameters = [0, 0, 0, [], 0, 0, 0, [], [], [], []]
+    source_param = None
+    storage_parameters = None
+    transformer_parameters = None
+    for building in cluster_ids:
+        for index, sink in sheets_clustering["sinks"].iterrows():
+            # collecting information for sinks
+            sink_parameters = Sink.sink_clustering(building, sink,
+                                                   sink_parameters)
+        
+        # create cluster elec buses
+        sheets = Bus.create_cluster_elec_buses(
+                building, cluster, sheets)
+        
+        source_param, heat_buses_gchps, transformer_parameters, \
+            storage_parameters, sheets = \
+            collect_clustering_information(building, sheets_clustering,
+                                           sheets, heat_buses_gchps)
+        # restructure all links
+        sheets = Link.restructuring_links(
+                sheets_clustering, building, cluster, sink_parameters,
+                sheets)
+        
+        # update the sources in and output
+        sheets = Source.update_sources_in_output(
+                building, sheets_clustering, cluster, sheets)
+    return sheets, sink_parameters, heat_buses_gchps, source_param,\
+        storage_parameters, transformer_parameters
+
+
+def create_cluster_components(standard_parameters, sink_parameters, cluster,
+                              central_electricity_network, sheets,
+                              transformer_parameters, source_param,
+                              storage_parameters, clustering_dh):
+    # TRANSFORMER
+    # create cluster electricity sinks
+    sheets = Sink.create_cluster_elec_sinks(
+            standard_parameters, sink_parameters,
+            cluster, central_electricity_network, sheets)
+    
+    sheets = clustering_transformers(
+            sink_parameters, transformer_parameters, cluster, sheets,
+            standard_parameters)
+    
+    # SOURCES
+    # create cluster's sources and competition constraints
+    Source.create_cluster_sources(standard_parameters, source_param,
+                                  cluster)
+    for i in ["battery", "thermal"]:
+        # STORAGES
+        if storage_parameters[i][0] > 0:
+            # create cluster's battery
+            Storage.create_cluster_storage(
+                    i, cluster, storage_parameters)
+    
+    sheets = create_cluster_heat_bus(
+            transformer_parameters, clustering_dh, sheets, sink_parameters,
+            cluster)
+    
+    return sheets
+
     
 def clustering_method(tool, standard_parameters, sheets,
                       central_electricity_network, clustering_dh):
@@ -188,62 +257,19 @@ def clustering_method(tool, standard_parameters, sheets,
             sheets[sheet].set_index("label", inplace=True, drop=False)
 
         if cluster_ids[cluster]:
-            # cluster sinks parameter
-            # [res_elec_demand, com_elec_demand, ind_elec_demand,
-            #  heat_buses, res_heat_demand, com_heat_demand,
-            #  ind_heat_demand, heat_sinks, elec_res_sink,
-            #  elec_com_sink, elec_ind_sink]
-            sink_parameters = [0, 0, 0, [], 0, 0, 0, [], [], [], []]
-            transformer_parameters = None
-            storage_parameters = None
-            source_param = None
-            for building in cluster_ids[cluster]:
-                for index, sink in sheets_clustering["sinks"].iterrows():
-                    # collecting information for sinks
-                    sink_parameters = Sink.sink_clustering(building, sink,
-                                                           sink_parameters)
-                    
-                # create cluster elec buses
-                sheets = Bus.create_cluster_elec_buses(
-                    building, cluster, sheets)
-
-                source_param, heat_buses_gchps, transformer_parameters, \
-                    storage_parameters, sheets = \
-                    collect_clustering_information(building, sheets_clustering,
-                                                   sheets, heat_buses_gchps)
-                # restructre all links
-                sheets = Link.restructuring_links(
-                    sheets_clustering, building, cluster, sink_parameters,
-                    sheets)
+    
+            sheets, sink_parameters, heat_buses_gchps, source_param, \
+                storage_parameters, transformer_parameters = \
+                collect_builing_information(
+                    cluster_ids[cluster], sheets_clustering, cluster, sheets,
+                    heat_buses_gchps)
                 
-                # update the sources in and output
-                sheets = Source.update_sources_in_output(
-                    building, sheets_clustering, cluster, sheets)
-                
-            # TRANSFORMER
-            # create cluster electricity sinks
-            sheets = Sink.create_cluster_elec_sinks(
-                standard_parameters, sink_parameters,
-                cluster, central_electricity_network, sheets)
-            
-            sheets = clustering_transformers(
-                sink_parameters, transformer_parameters, cluster, sheets,
-                standard_parameters)
-
-            # SOURCES
-            # create cluster's sources and competition constraints
-            Source.create_cluster_sources(standard_parameters, source_param,
-                                          cluster)
-            for i in ["battery", "thermal"]:
-                # STORAGES
-                if storage_parameters[i][0] > 0:
-                    # create cluster's battery
-                    Storage.create_cluster_storage(
-                        i, cluster, storage_parameters)
-                
-            sheets = create_cluster_heat_bus(
-                transformer_parameters, clustering_dh, sheets, sink_parameters,
-                cluster)
+            sheets = \
+                create_cluster_components(
+                    standard_parameters, sink_parameters, cluster,
+                    central_electricity_network, sheets,
+                    transformer_parameters, source_param, storage_parameters,
+                    clustering_dh)
             # if building and gchp parcel are in the same cluster create
             # a link between them
             for i in sink_parameters[3]:
