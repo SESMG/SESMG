@@ -1,26 +1,17 @@
-from program_files.postprocessing.plotting import get_pv_st_dir
-
-
-def create_source(source_type, roof_num, building):
+def create_source(source_type, roof_num, building, sheets):
     """
-            TODO DOCSTRINGTEXT
-            :param building_id: building label
-            :type building_id: str
-            :param plant_id: roof part number
-            :type plant_id: str
-            :param azimuth: azimuth of given roof part
-            :type azimuth: float
-            :param tilt: tilt of given roof part
-            :type tilt: float
-            :param area: area of the given roof part
-            :type area: float
-            :param latitude: geographic latitude of the building
-            :type latitude: float
-            :param longitude: geographic longitude of the building
-            :type longitude: float
+        TODO DOCSTRINGTEXT
+        :param source_type: define rather a photovoltaic or a \
+            solarthermal source has to be created
+        :type source_type: str
+        :param roof_num: roof part number
+        :type roof_num:
+        :param building:
+        :type building:
+        :param sheets:
+        :type sheets:
         """
-    from program_files.urban_district_upscaling.pre_processing \
-        import append_component, read_standard_parameters
+    from program_files import append_component, read_standard_parameters
     source_param = [str(roof_num),
                     building["label"],
                     building['azimuth (°) {}'.format(roof_num)],
@@ -57,38 +48,38 @@ def create_source(source_type, roof_num, building):
     source_dict['max. investment capacity'] = \
         param['Capacity per Area (kW/m2)'] * source_param[6]
     
-    append_component("sources", source_dict)
+    return append_component(sheets, "sources", source_dict)
     
     
-def create_competition_constraint(limit, building_id, roof_num):
+def create_competition_constraint(limit, label, roof_num, sheets):
     """
         TODO DOCSTRINGTEXT
-        :param component1: label of the first component in competition
-        :type component1: str
-        :param component2: label of the second component in competition
-        :type component2: str
         :param limit:
         :type limit: float
+        :param label:
+        :type label: str
+        :param roof_num:
+        :type roof_num: int
+        :param sheets:
+        :type sheets
     """
-    from program_files.urban_district_upscaling.pre_processing \
-        import append_component, read_standard_parameters
+    from program_files import append_component, read_standard_parameters
     pv_param, pv_keys = read_standard_parameters(
             'fixed photovoltaic source', "sources", "comment")
     st_param, st_keys = read_standard_parameters(
             'solar_thermal_collector', "sources", "comment")
     # define individual values
     constraint_dict = {
-        'component 1': str(building_id) + '_' + str(roof_num) + '_pv_source',
+        'component 1': label + '_' + str(roof_num) + '_pv_source',
         'factor 1': 1 / pv_param['Capacity per Area (kW/m2)'],
-        'component 2': str(building_id) + '_' + str(roof_num)
-                       + '_solarthermal_source',
+        'component 2': label + '_' + str(roof_num) + '_solarthermal_source',
         'factor 2': 1 / st_param['Capacity per Area (kW/m2)'],
         'limit': limit, 'active': 1}
     
-    append_component("competition constraints", constraint_dict)
+    return append_component(sheets, "competition constraints", constraint_dict)
 
 
-def create_sources(building, clustering):
+def create_sources(building, clustering, sheets):
     """
     
     """
@@ -98,19 +89,22 @@ def create_sources(building, clustering):
     while building['roof area (m²) %1d' % roof_num]:
         column = 'st or pv %1d' % roof_num
         if building[column] == "pv&st":
-            create_source(source_type="fixed photovoltaic source",
-                          roof_num=roof_num, building=building)
+            sheets = create_source(
+                source_type="fixed photovoltaic source", roof_num=roof_num,
+                building=building, sheets=sheets)
                 
         if building["building type"] not in ["0", 0]:
-            create_source(source_type="solar_thermal_collector",
-                          roof_num=roof_num, building=building)
+            sheets = create_source(
+                source_type="solar_thermal_collector", roof_num=roof_num,
+                building=building, sheets=sheets)
 
             if not clustering and building[column] == "pv&st":
-                create_competition_constraint(
-                        roof_num=roof_num, building_id=building["label"],
-                        limit=building['roof area (m²) %1d' % roof_num])
+                sheets = create_competition_constraint(
+                    roof_num=roof_num, label=building["label"], sheets=sheets,
+                    limit=building['roof area (m²) %1d' % roof_num])
 
         roof_num += 1
+    return sheets
 
 
 def cluster_sources_information(source, source_param, azimuth_type, sheets):
@@ -158,7 +152,7 @@ def cluster_sources_information(source, source_param, azimuth_type, sheets):
     return source_param, sheets
 
 
-def sources_clustering(source_param, building, sheets_clustering, sheets):
+def sources_clustering(source_param, building, sheets, sheets_clustering):
     """
         In this method, the information of the photovoltaic and solar
         thermal systems to be clustered is collected, and the systems
@@ -191,8 +185,7 @@ def sources_clustering(source_param, building, sheets_clustering, sheets):
                         "south_east": [112.5, 157.5]}
             azimuth_type = None
             for dire in dir_dict:
-                if dir_dict[dire][0] <= sources["Azimuth"] \
-                       < dir_dict[dire][1]:
+                if dir_dict[dire][0] <= sources["Azimuth"] < dir_dict[dire][1]:
                     azimuth_type = dire
                     
             azimuth_type = "south" if azimuth_type is None else azimuth_type
@@ -216,8 +209,7 @@ def create_cluster_sources(source_param, cluster, sheets):
     :param sheets
     :return:
     """
-    from program_files.urban_district_upscaling.pre_processing \
-        import read_standard_parameters
+    from program_files import read_standard_parameters
     from program_files.urban_district_upscaling.components import Bus
     # Define PV Standard-Parameters
     pv_standard_param, pv_standard_keys = \
@@ -226,7 +218,7 @@ def create_cluster_sources(source_param, cluster, sheets):
     st_standard_param, st_standard_keys = \
         read_standard_parameters("solar_thermal_collector",
                                  "sources", "comment")
-    
+    bus_created = False
     for azimuth in ["north_000", "north_east_045", "east_090",
                     "south_east_135", "south_180",
                     "south_west_225", "west_270", "north_west_315"]:
@@ -242,19 +234,18 @@ def create_cluster_sources(source_param, cluster, sheets):
                         source_param[pv_st + "_{}".format(azimuth[:-4])][1]
                         / dependent_param.get(pv_st)[0][
                             "Capacity per Area (kW/m2)"]}
-                
-                if (str(cluster) + "_pv_bus") not in sheets["buses"].index \
-                        and pv_st == "pv":
-                    Bus.create_standard_parameter_bus(
-                        label=str(cluster) + "_pv_bus",
-                        bus_type='building_pv_bus')
-                    sheets["buses"].set_index("label", inplace=True,
-                                              drop=False)
 
-                    create_competition_constraint(
+                if not bus_created and pv_st == "pv":
+                    sheets = Bus.create_standard_parameter_bus(
+                        label=str(cluster) + "_pv_bus",
+                        bus_type='building_pv_bus', sheets=sheets)
+                    bus_created = True
+                if pv_st == "pv" \
+                        and source_param["st_{}".format(azimuth[:-4])][0] > 0:
+                    sheets = create_competition_constraint(
                         limit=param_dict['roof area (m²) {}'.format(
                                 azimuth[:-4])],
-                        building_id=cluster, roof_num=azimuth[:-4])
+                        label=cluster, roof_num=azimuth[:-4], sheets=sheets)
                 # parameter that aren't type dependent
                 param_dict.update({
                     "label": cluster,
@@ -270,8 +261,9 @@ def create_cluster_sources(source_param, cluster, sheets):
                                pos_dict[i]]
                         / source_param[pv_st + "_{}".format(azimuth[:-4])][0]})
                     
-                create_source(dependent_param.get(pv_st)[1], azimuth[:-4],
-                              param_dict)
+                sheets = create_source(dependent_param.get(pv_st)[1],
+                                       azimuth[:-4], param_dict, sheets)
+    return sheets
 
 
 def update_sources_in_output(building, sheets_clustering, cluster, sheets):
@@ -283,9 +275,10 @@ def update_sources_in_output(building, sheets_clustering, cluster, sheets):
         heat_elec = {"heat": ["output", "_heat_bus"],
                      "elec": ["input", "_electricity_bus"]}
         for k in heat_elec:
-            if building[0] in j[heat_elec[k][0]] and k in j[heat_elec[k][0]]:
+            if building[0] in str(j[heat_elec[k][0]]) \
+                    and k in str(j[heat_elec[k][0]]):
                 sheets["sources"][heat_elec[k][0]] = \
                     sheets["sources"][heat_elec[k][0]].replace(
-                            [str(building[0]) + heat_elec[k][1],
-                             str(cluster) + heat_elec[k][1]])
+                        [str(building[0]) + heat_elec[k][1],
+                         str(cluster) + heat_elec[k][1]])
     return sheets

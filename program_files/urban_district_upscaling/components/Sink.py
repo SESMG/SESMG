@@ -1,6 +1,6 @@
 def create_standard_parameter_sink(sink_type: str, label: str,
                                    sink_input: str, annual_demand: int,
-                                   standard_parameters):
+                                   sheets):
     """
         creates a sink with standard_parameters, based on the standard
         parameters given in the "standard_parameters" dataset and adds
@@ -16,99 +16,103 @@ def create_standard_parameter_sink(sink_type: str, label: str,
         :type sink_input: str
         :param annual_demand: #todo formula
         :type annual_demand: int
-        :param standard_parameters: pandas Dataframe holding the
-               information imported from the standard parameter file
-        :type standard_parameters: pd.Dataframe
+        :param sheets:
+        :type sheets:
     """
-    from program_files.urban_district_upscaling.pre_processing \
-        import create_standard_parameter_comp
-    create_standard_parameter_comp(
+    from program_files import create_standard_parameter_comp
+    return create_standard_parameter_comp(
         specific_param={'label': label,
                         'input': sink_input,
                         'annual demand': annual_demand},
-        type="sinks",
-        index="sink_type",
-        standard_param_name=sink_type)
+        standard_parameter_info=[sink_type, "sinks", "sink_type"],
+        sheets=sheets)
     
 
-def create_sinks(sink_id: str, building_type: str, units: int,
-                 occupants: int, yoc: str, area: int, standard_parameters):
+def create_sinks(building, standard_parameters, sheets):
     """
         TODO DOCSTRING
     """
     # electricity demand
-    if building_type not in ['None', '0', 0]:
-        # residential parameters
-        demand_el = 0
+    if building['building type'] not in ['None', '0', 0]:
+        # TODO rename living space
+        area = building['living space'] * building['floors']
         # get sinks standard parameters
         sinks_standard_param = standard_parameters.parse('sinks')
         sinks_standard_param.set_index("sink_type", inplace=True)
         
-        if "RES" in building_type:
+        if "RES" in building['building type']:
             elec_demand_res = {}
             standard_param = standard_parameters.parse('ResElecDemand')
             for i in range(len(standard_param)):
                 elec_demand_res[standard_param['household size'][i]] = \
-                    [standard_param[building_type + ' (kWh/a)'][i]]
+                    [standard_param[building['building type'] + ' (kWh/a)'][i]]
 
-            if occupants <= 5:
-                demand_el = elec_demand_res[occupants][0] * units
-            elif occupants > 5:
-                demand_el = (elec_demand_res[5][0]) / 5 * occupants * units
+            if building['occupants per unit'] <= 5:
+                demand_el = elec_demand_res[building['occupants per unit']][0]\
+                            * building['units']
+            else:
+                demand_el = \
+                    (elec_demand_res[5][0]) / 5 \
+                    * building['occupants per unit'] * building['units']
         else:
             # commercial parameters
             elec_demand_com_ind = standard_parameters.parse(
-                    'ComElecDemand' if "COM" in building_type
-                    else "IndElecDemand")
+                'ComElecDemand' if "COM" in building['building type']
+                else "IndElecDemand")
 
             elec_demand_com_ind.set_index("commercial type", inplace=True)
-            demand_el = elec_demand_com_ind.loc[building_type][
+            demand_el = elec_demand_com_ind.loc[building['building type']][
                 'specific demand (kWh/(sqm a))']
             net_floor_area = area * sinks_standard_param.loc[
-                building_type + "_electricity_sink"]['net_floor_area / area']
+                building['building type'] + "_electricity_sink"][
+                'net_floor_area / area']
             demand_el *= net_floor_area
 
-        create_standard_parameter_sink(
-            sink_type=building_type + "_electricity_sink",
-            label=str(sink_id) + "_electricity_demand",
-            sink_input=str(sink_id) + "_electricity_bus",
+        sheets = create_standard_parameter_sink(
+            sink_type=building['building type'] + "_electricity_sink",
+            label=str(building["label"]) + "_electricity_demand",
+            sink_input=str(building["label"]) + "_electricity_bus",
             annual_demand=demand_el,
-            standard_parameters=standard_parameters)
+            sheets=sheets)
 
         # heat demand
-        if "RES" in building_type:
+        if "RES" in building['building type']:
             # read standard values from standard_parameter-dataset
             heat_demand_standard_param = \
                 standard_parameters.parse('ResHeatDemand')
-        elif "COM" in building_type:
+        elif "COM" in building['building type']:
             heat_demand_standard_param = \
                 standard_parameters.parse('ComHeatDemand')
-        elif "IND" in building_type:
+        elif "IND" in building['building type']:
             heat_demand_standard_param = \
                 standard_parameters.parse('IndHeatDemand')
         else:
             raise ValueError("building_type does not exist")
         heat_demand_standard_param.set_index(
             "year of construction", inplace=True)
-        if int(yoc) <= 1918:  # TODO
-            yoc = "<1918"
-        if units > 12:
-            units = "> 12"
-        if "RES" in building_type:
+        yoc = int(building['year of construction']) \
+            if int(building['year of construction']) > 1918 else "<1918"
+        units = str(building['units']) if building['units'] < 12 else "> 12"
+
+        if "RES" in building['building type']:
             specific_heat_demand = \
-                heat_demand_standard_param.loc[yoc][str(units) + ' unit(s)']
+                heat_demand_standard_param.loc[yoc][units + ' unit(s)']
         else:
             specific_heat_demand = \
-                heat_demand_standard_param.loc[yoc][building_type]
+                heat_demand_standard_param.loc[yoc][building['building type']]
         net_floor_area = area * sinks_standard_param \
-            .loc[building_type + "_heat_sink"]['net_floor_area / area']
+            .loc[building['building type'] + "_heat_sink"][
+             'net_floor_area / area']
         demand_heat = specific_heat_demand * net_floor_area
 
-        create_standard_parameter_sink(sink_type=building_type + "_heat_sink",
-                                       label=str(sink_id) + "_heat_demand",
-                                       sink_input=str(sink_id) + "_heat_bus",
-                                       annual_demand=demand_heat,
-                                       standard_parameters=standard_parameters)
+        sheets = create_standard_parameter_sink(
+            sink_type=building['building type'] + "_heat_sink",
+            label=str(building["label"]) + "_heat_demand",
+            sink_input=str(building["label"]) + "_heat_bus",
+            annual_demand=demand_heat,
+            sheets=sheets)
+        
+    return sheets
 
 
 def sink_clustering(building, sink, sink_parameters):
@@ -128,26 +132,21 @@ def sink_clustering(building, sink, sink_parameters):
         :type sink_parameters: list
     """
     # get cluster electricity sinks
-    if str(building[0]) in sink["label"] \
-            and "electricity" in sink["label"]:
+    if str(building[0]) in sink["label"] and "electricity" in sink["label"]:
         # get res elec demand
         if "RES" in building[2]:
             sink_parameters[0] += sink["annual demand"]
-            sink_parameters[7].append(sink["label"])
-            # sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
+            sink_parameters[8].append(sink["label"])
         # get com elec demand
         elif "COM" in building[2]:
             sink_parameters[1] += sink["annual demand"]
-            sink_parameters[8].append(sink["label"])
-            # sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
+            sink_parameters[9].append(sink["label"])
         # get ind elec demand
         elif "IND" in building[2]:
             sink_parameters[2] += sink["annual demand"]
-            sink_parameters[9].append(sink["label"])
-            # sheets["sinks"] = sheets["sinks"].drop(index=sink["label"])
+            sink_parameters[10].append(sink["label"])
     # get cluster heat sinks
-    elif str(building[0]) in sink["label"] \
-            and "heat" in sink["label"]:
+    elif str(building[0]) in sink["label"] and "heat" in sink["label"]:
         # append heat bus to cluster heat buses
         sink_parameters[3].append((building[2], sink["input"]))
         # get res heat demand
@@ -169,19 +168,17 @@ def create_cluster_elec_sinks(standard_parameters, sink_parameters, cluster,
 
         :return:
     """
-    from program_files.urban_district_upscaling.pre_processing \
-        import create_central_elec_bus_connection
+    from program_files.urban_district_upscaling.components import Link
     from program_files.urban_district_upscaling.components import Bus
     bus_parameters = standard_parameters.parse('buses', index_col='bus_type')
     total_annual_demand = (
             sink_parameters[0] + sink_parameters[1] + sink_parameters[2])
     if total_annual_demand > 0:
         if cluster + "_electricity_bus" not in sheets["buses"].index:
-            Bus.create_standard_parameter_bus(
-                    label=str(cluster) + "_electricity_bus",
-                    bus_type='building_res_electricity_bus')
-            sheets["buses"].set_index("label", inplace=True,
-                                      drop=False)
+            sheets = Bus.create_standard_parameter_bus(
+                label=str(cluster) + "_electricity_bus",
+                bus_type='building_res_electricity_bus', sheets=sheets)
+            sheets["buses"].set_index("label", inplace=True, drop=False)
             cost_type = "shortage costs"
             label = "_electricity_bus"
             sheets["buses"].loc[(str(cluster) + label), cost_type] = \
@@ -192,41 +189,20 @@ def create_cluster_elec_sinks(standard_parameters, sink_parameters, cluster,
                  + (sink_parameters[2] / total_annual_demand)
                  * bus_parameters.loc["building_ind" + label][cost_type])
         if central_electricity_network:
-            create_central_elec_bus_connection(cluster)
+            sheets = Link.create_central_elec_bus_connection(cluster, sheets)
     
     # create clustered electricity sinks
     if sink_parameters[0] > 0:
-        for i in sink_parameters[7]:
-            sheets["sinks"].loc[sheets["sinks"]["label"] == i, "input"] \
-                = str(cluster) + "_res_electricity_bus"
-        # create clustered res electricity sink
-        # annual demand sink_parameters[0]
-        # pre_processing.create_standard_parameter_sink(
-        #        "RES_electricity_sink",
-        #        str(cluster) + "_res_electricity_demand",
-        #        str(cluster) + "_res_electricity_bus",
-        #        sink_parameters[0], standard_parameters)
-    if sink_parameters[1] > 0:
         for i in sink_parameters[8]:
             sheets["sinks"].loc[sheets["sinks"]["label"] == i, "input"] \
-                = str(cluster) + "_com_electricity_bus"
-        # create clustered res electricity sink
-        # annual demand sink_parameters[1]
-        # pre_processing.create_standard_parameter_sink(
-        #        "COM_electricity_sink",
-        #        str(cluster) + "_com_electricity_demand",
-        #        str(cluster) + "_com_electricity_bus",
-        #        sink_parameters[1], standard_parameters)
-    if sink_parameters[2] > 0:
+                = str(cluster) + "_res_electricity_bus"
+    if sink_parameters[1] > 0:
         for i in sink_parameters[9]:
             sheets["sinks"].loc[sheets["sinks"]["label"] == i, "input"] \
+                = str(cluster) + "_com_electricity_bus"
+    if sink_parameters[2] > 0:
+        for i in sink_parameters[10]:
+            sheets["sinks"].loc[sheets["sinks"]["label"] == i, "input"] \
                 = str(cluster) + "_ind_electricity_bus"
-        # create clustered res electricity sink
-        # annual demand sink_parameters[2]
-        # pre_processing.create_standard_parameter_sink(
-        #        "IND_electricity_sink",
-        #        str(cluster) + "_ind_electricity_demand",
-        #        str(cluster) + "_ind_electricity_bus",
-        #        sink_parameters[2], standard_parameters)
     
     return sheets
