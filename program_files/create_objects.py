@@ -1761,15 +1761,18 @@ class Storages:
                 s['temperature high'],
                 s['temperature low'],
                 data['temperature'])
-
+        
+        if not(s["min. investment capacity"] > 0
+               or s["existing capacity"] > 0):
+            fixed_losses_absolute = 0
+            
         # creates storage object and adds it to the
         # list of components
         self.nodes.append(
             solph.components.GenericStorage(
                 label=s['label'],
                 inputs={self.busd[s['bus']]: solph.Flow(
-                    variable_costs=s[
-                        'variable input costs'],
+                    variable_costs=s['variable input costs'],
                     emission_factor=s[
                         'variable input constraint costs']
                 )},
@@ -1779,30 +1782,23 @@ class Storages:
                     emission_factor=s[
                         'variable output constraint costs']
                 )},
+                expandable=True,
                 min_storage_level=s['capacity min'],
                 max_storage_level=s['capacity max'],
                 loss_rate=loss_rate,
                 fixed_losses_relative=fixed_losses_relative,
                 fixed_losses_absolute=fixed_losses_absolute,
-                inflow_conversion_factor=s[
-                    'efficiency inflow'],
-                outflow_conversion_factor=s[
-                    'efficiency outflow'],
-                invest_relation_input_capacity=s[
-                    'input/capacity ratio'],
-                invest_relation_output_capacity=s[
-                    'output/capacity ratio'],
+                inflow_conversion_factor=s['efficiency inflow'],
+                outflow_conversion_factor=s['efficiency outflow'],
+                invest_relation_input_capacity=s['input/capacity ratio'],
+                invest_relation_output_capacity=s['output/capacity ratio'],
                 investment=solph.Investment(
-                    ep_costs=s[
-                        'periodical costs'],
+                    ep_costs=s['periodical costs'],
                     periodical_constraint_costs=s[
                         'periodical constraint costs'],
-                    existing=s[
-                        'existing capacity'],
-                    minimum=s[
-                        'min. investment capacity'],
-                    maximum=s[
-                        'max. investment capacity'],
+                    existing=s['existing capacity'],
+                    minimum=s['min. investment capacity'],
+                    maximum=s['max. investment capacity'],
                     nonconvex=True if
                     s['non-convex investment'] == 1 else False,
                     offset=s['fix investment costs'])))
