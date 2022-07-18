@@ -61,7 +61,6 @@ def import_scenario(filepath: str) -> dict:
                 "storages", "links", "competition constraints"]
         for i in list:
             nd[i] = nd[i].drop(index=0)
-
     # error message, if no nodes are provided
     if not nd:
         raise ValueError('No nodes data provided.')
@@ -113,7 +112,7 @@ def define_energy_system(nodes_data: dict):
     nodes_data['timeseries'].index = \
         pd.to_datetime(
             nodes_data['timeseries'].index).tz_convert("Europe/Berlin")
-    nodes_data['weather data'].set_index('timestamp', inplace=True)
+    nodes_data['weather data'].set_index('timestamp', inplace=True, drop=False)
     nodes_data['weather data'].index = pd.to_datetime(
         nodes_data['weather data'].index.values, utc=True)
     nodes_data['weather data'].index = \

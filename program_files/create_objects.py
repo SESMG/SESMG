@@ -1818,7 +1818,6 @@ class Storages:
         # renames variables
         self.busd = busd
         self.nodes = []
-
         # creates storage object for every storage element in nodes_data
         for i, s in nodes_data['storages'].iterrows():
             if s['active']:
