@@ -57,8 +57,8 @@ the energy system, others have fixed performances,
 which depend on external circumstances. In the latter case, 
 the exact performances must be entered to the model in 
 form of time series. With the help of oemofs "feedinlib" 
-and "windpowerlib", electrical outputs of photovoltaik 
-(pv)-systems and wind power plants can be generated 
+and "windpowerlib", electrical outputs of photovoltaic 
+(PV)-systems and wind power plants can be generated 
 automatically. In order to ensure a balance in the energy 
 system at all times, it may be useful to add a "shortage"
 source to the energy system, which supplies energy 
@@ -180,7 +180,7 @@ Example: `"Keymark Certificate 011-7S2432 F" <https://www.dincertco.de/logos/011
 If this collector is part of the energy model, the conversion factor
 is calculated by dividing the gross aperture area (2,53 sqm) by the
 power output. Considering an average inside collector temperature
-of 40 °C and an outside average temperature of 10°C result in a
+of 40 °C and an outside average temperature of 10 °C result in a
 temperature difference of 30 K. So, in this case the heat power
 output is 1,504 kW and the conversion factor roundabout 1,68 (sqm/kW).
 
@@ -337,13 +337,13 @@ Transformers
 Transformers are components with one ore more input flows, which are 
 transformed to one or more output flows. Transformers may be power 
 plants, energy transforming processes 
-(e.g., electrolysis, heat pumps), as well as transport lines with 
+(e.g. electrolysis, heat pumps), as well as transport lines with 
 losses. The transformers’ efficiencies can be defined for every 
-time step (e.g., the efficiency of a thermal 
+time step (e.g. the efficiency of a thermal 
 powerplants in dependence of  the ambient temperature).
 
 Currently only Generic Transformers can be used within the Spreadsheet Energy System Model Generator. 
-These may have one or more different outputs, e.g., heat and electricity. For the modelling,
+These may have one or more different outputs, e.g. heat and electricity. For the modelling,
 the nominal performance of a generic transformer with several outputs,
 the respective output ratios, and an efficiency for each output need to be known.
 
