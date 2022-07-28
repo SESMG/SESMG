@@ -343,7 +343,7 @@ plants, energy transforming processes
 (e.g., electrolysis, heat pumps), as well as transport lines with 
 losses. The transformers’ efficiencies can be defined for every 
 time step (e.g., the efficiency of a thermal 
-powerplants in dependence of  the ambient temperature).
+powerplants in dependence of the ambient temperature).
  
 These may have one or more different outputs, e.g., heat and electricity. For the modelling,
 the nominal performance of a generic transformer with several outputs,
