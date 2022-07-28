@@ -21,6 +21,7 @@ def get_pid():
     """ Returns the ID of the running process on Port 8050 """
     import socket
     import errno
+    import sys
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         # Checks if port 8050 can be reached
@@ -135,6 +136,7 @@ class GUI(MethodsGUI):
         import os
         from program_files.preprocessing import (create_energy_system,
                                                  create_graph)
+        import sys
         
         # DEFINES PATH OF INPUT DATA
         scenario_file = self.gui_variables["scenario_path"].get()
@@ -253,6 +255,7 @@ class GUI(MethodsGUI):
             executes the external program, which executes a plotl.
             dash app for displaying interactive results.
         """
+        import sys
         if self.gui_variables["save_path"].get() == '':
             raise SystemError('No optimization since the last restart'
                               ' please select a result folder!')
@@ -288,7 +291,7 @@ class GUI(MethodsGUI):
         # Starts the new Plotly Dash Server for MACOS
         elif sys.platform.startswith("darwin"):
             ir_path = os.path.dirname(os.path.abspath(__file__))
-            subprocess.call("python3 " + os.path.dirname(
+            subprocess.call("python3.9 " + os.path.dirname(
                 ir_path) + "/postprocessing/Interactive_Results.py "
                             + str(self.gui_variables["save_path"].get()),
                             timeout=10, shell=True)

@@ -223,11 +223,8 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
     import pyomo.environ as po
 
     # add nodes and flows to energy system
-    logging.info(
-        '   ' + "******************************************************"
-        + "***")
+    logging.info("\t ********************************************************")
     logging.info('   ' + 'Create Energy System...')
-
     # creation of a least cost model from the energy system
     om = solph.Model(energy_system)
     if (str(next(nodes_data["energysystem"].iterrows())[1]
@@ -266,19 +263,19 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
                         om.InvestmentFlow.invest[p, busd[z['bus1']]],
                         om.InvestmentFlow.invest[p, busd[z['bus2']]]
                     )
-                # check if the link is directed and ensure that the
-                # solver does not invest on the second direction
-                elif z['(un)directed'] == 'directed':
-                    p = energy_system.groups[z['label']]
-
-                    def input_rule(om, t):
-                        inflow = (om.flow[busd[z['bus2']], p, t])
-                        return inflow == 0
-
-                    om.InvestmentFlow.invest[p, busd[z['bus1']]] = 0
-                    setattr(om, z['label'] + "input_constraint",
-                            po.Constraint(om.TIMESTEPS, expr=input_rule))
-
+    #            # check if the link is directed and ensure that the
+    #            # solver does not invest on the second direction
+    #            elif z['(un)directed'] == 'directed':
+    #                p = energy_system.groups[z['label']]
+    #
+    #                def input_rule(om, t):
+    #                    inflow = (om.flow[busd[z['bus2']], p, t])
+    #                    return inflow == 0
+    #
+    #                om.InvestmentFlow.invest[p, busd[z['bus1']]] = 0
+    #                setattr(om, z['label'] + "input_constraint",
+    #                        po.Constraint(om.TIMESTEPS, expr=input_rule))
+    print(om.flows)
     logging.info(
         '   ' + "******************************************************"
         + "***")

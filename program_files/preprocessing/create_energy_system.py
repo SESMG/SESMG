@@ -43,17 +43,18 @@ def import_scenario(filepath: str) -> dict:
 
     # creates nodes from excel sheet
     xls = pd.ExcelFile(filepath)
-
     if 'sources' in xls.sheet_names:
         nd = {'buses': xls.parse('buses'),
               'energysystem': xls.parse('energysystem'),
               'sinks': xls.parse('sinks'),
               'links': xls.parse('links'),
               'sources': xls.parse('sources'),
-              'timeseries': xls.parse('time series'),
+              'timeseries': xls.parse('time series',
+                                      parse_dates=["timestamp"]),
               'transformers': xls.parse('transformers'),
               'storages': xls.parse('storages'),
-              'weather data': xls.parse('weather data'),
+              'weather data': xls.parse('weather data',
+                                        parse_dates=["timestamp"]),
               'competition constraints': xls.parse('competition constraints'),
               'insulation': xls.parse('insulation'),
               'district heating': xls.parse('district heating')
