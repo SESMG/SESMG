@@ -74,6 +74,7 @@ run `$ sudo apt-get install graphviz`
 ### Project Status 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/GregorBecker/SESMG/badges/quality-score.png?b=dev_open_district_upscaling)](https://scrutinizer-ci.com/g/GregorBecker/SESMG/?branch=dev_open_district_upscaling)
 [![codecov](https://codecov.io/gh/GregorBecker/SESMG/branch/dev_open_district_upscaling/graph/badge.svg?token=9UW00ZSDYC)](https://codecov.io/gh/GregorBecker/SESMG)
+[![Coverage Status](https://coveralls.io/repos/github/GregorBecker/SESMG/badge.svg?branch=dev_open_district_upscaling)](https://coveralls.io/github/GregorBecker/SESMG?branch=dev_open_district_upscaling)
 
 ### Examples
 Examples are stored in a separate GIT-Repository: https://github.com/chrklemm/SESMG_Examples
