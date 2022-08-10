@@ -23,4 +23,4 @@ jobs:
         python -m pip install --upgrade pip
         pip install coverage
     - name: Test with coverage
-      run: coverage -m unittest
+      run: coverage run -m unittest
