@@ -25,4 +25,4 @@ jobs:
         pip install pytest
         pip install -r requirements.txt
     - name: Test with coverage
-      run: coverage run pytest tests
+      run: coverage run -m pytest tests
