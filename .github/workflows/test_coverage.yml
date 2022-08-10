@@ -38,5 +38,10 @@ jobs:
       uses: paambaati/codeclimate-action@v3.0.0
       env:
           CC_TEST_REPORTER_ID: f4d1ecf9ea3c5cc8ab089c8e876172ead58ab7f6d6b050f637891fbbb7eafe58
+    - name: action-scrutinizer
+      # You may pin to the exact commit or the version.
+      # uses: sudo-bot/action-scrutinizer@090720595bc84f7f83e7ef55174296584df276d2
+      uses: sudo-bot/action-scrutinizer@latest
+    
 
   
