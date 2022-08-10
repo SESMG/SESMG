@@ -1,30 +1,24 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI
-
-# Controls when the workflow will run
-on:
-  # Triggers the workflow on push or pull request events but only for the "dev_open_district_upscaling" branch
-  push:
-    branches: [ "dev_open_district_upscaling" ]
-  pull_request:
-    branches: [ "dev_open_district_upscaling" ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+name: CodeCov
+on: [push, pull_request]
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  run:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    env:
+      OS: ubuntu-latest
+      PYTHON: '3.9'
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+    - uses: checkout@v2
+      with:
+        fetch-depth: ‘2’
 
-      - name: Code Coverage Summary
-        uses: irongut/CodeCoverageSummary@v1.3.0
+    - name: Setup Python
+      uses: actions/setup-python@master
+      with:
+        python-version: 3.7
+    - name: Generate Report
+      run: |
+        pip install coverage
+        coverage run -m unittest
+    - name: Upload Coverage to Codecov
+      uses: codecov/codecov-action@v2
 
