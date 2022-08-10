@@ -7,6 +7,9 @@ assignees: ''
 
 ---
 
+**Code of Conduct**
+- [ ] Hereby I consent to the [CODE_OF_CONDUCT](https://github.com/GregorBecker/SESMG/blob/dev_open_district_upscaling/CODE_OF_CONDUCT.md) 
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
