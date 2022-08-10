@@ -1,6 +1,6 @@
 import pytest
-from program_files.preprocessing.components.district_heating import \
-    calc_perpendicular_distance_line_point, transf_WGS84_GK
+from program_files.preprocessing.components.district_heating_calculations \
+    import calc_perpendicular_distance_line_point, transf_WGS84_GK
 
 
 def test_perpendicular_foot_print_calc():
