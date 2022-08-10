@@ -1,5 +1,9 @@
 name: CodeCov
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - dev_open_district_upscaling
+  pull_request:
 jobs:
   run:
     runs-on: ubuntu-latest
