@@ -72,9 +72,11 @@ run `$ sudo apt-get install graphviz`
 ## SESMG Features & Releases ![what-why](https://cs.adelaide.edu.au/~christoph/badges/content-what-why-brightgreen.svg) 
 
 ### Project Status 
+[![Maintainability](https://api.codeclimate.com/v1/badges/d82c7d94f8f421db19ce/maintainability)](https://codeclimate.com/github/GregorBecker/SESMG/maintainability)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/GregorBecker/SESMG/badges/quality-score.png?b=dev_open_district_upscaling)](https://scrutinizer-ci.com/g/GregorBecker/SESMG/?branch=dev_open_district_upscaling)
 [![codecov](https://codecov.io/gh/GregorBecker/SESMG/branch/dev_open_district_upscaling/graph/badge.svg?token=9UW00ZSDYC)](https://codecov.io/gh/GregorBecker/SESMG)
 [![Coverage Status](https://coveralls.io/repos/github/GregorBecker/SESMG/badge.svg?branch=dev_open_district_upscaling)](https://coveralls.io/github/GregorBecker/SESMG?branch=dev_open_district_upscaling)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/d82c7d94f8f421db19ce/test_coverage)](https://codeclimate.com/github/GregorBecker/SESMG/test_coverage)
 
 ### Examples
 Examples are stored in a separate GIT-Repository: https://github.com/chrklemm/SESMG_Examples
