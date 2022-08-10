@@ -35,7 +35,6 @@ setup(
         # http://pypi.python.org/pypi?%3Aaction=list_classifiers
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.9'],
-    packages=['program_files'],
     install_requires=[
         "oemof.solph>=0.4",
         "openpyxl>=3.0.0",

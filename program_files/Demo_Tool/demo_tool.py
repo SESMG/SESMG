@@ -34,7 +34,7 @@ class demo_frame_class(MethodsGUI):
             district_heating_path="")
 
     def demo_scenario(self, mode):
-        '''modifies financial demo scenario'''
+        """modifies financial demo scenario"""
         mode_dict = {
             "monetary": ["demo_scenario_monetaer.xlsx",
                          r"/results/demo/financial",
@@ -122,29 +122,22 @@ class demo_frame_class(MethodsGUI):
             [12.96770, 7653.872254, 10000, 6800, 10000, 0, 17523.36,
              5000, 10000, 0, 0]
 
-    def save_results(self):
+    def save_results(self, column="optimize"):
+        switch_dict = {
+            "optimize": [self.monetary_costs.get(), self.emission_costs.get(),
+                         self.entry_values],
+            "manual": [self.entry_monetary_costs_value.get(),
+                       self.entry_emission_costs_value.get(),
+                       self.entry_values2]}
+        interim_results = [float(switch_dict.get(column)[0]),
+                           float(switch_dict.get(column)[1])]
 
-        interim_results = [float(self.monetary_costs.get()),
-                           float(self.emission_costs.get()),]
-
-        for i in range(1, len(self.entry_values)):
+        for i in range(1, len(switch_dict.get(column)[2])):
             interim_results.append(
-                int(self.entry_values[self.demo_names[i]].get()))
+                int(switch_dict.get(column)[2][self.demo_names[i]].get()))
 
-        self.results_dict[self.entry_values[self.demo_names[0]].get()] \
-            = interim_results
-        print(self.results_dict)
-
-    def save_manual_results(self):
-        interim_results2 = [float(self.entry_monetary_costs_value.get()),
-                            float(self.entry_emission_costs_value.get()),]
-
-        for i in range(1, len(self.entry_values)):
-            interim_results2.append(
-                int(self.entry_values2[self.demo_names2[i]].get()))
-
-        self.results_dict[self.entry_values2[self.demo_names2[0]].get()] \
-            = interim_results2
+        self.results_dict[switch_dict.get(column)[2][
+            self.demo_names[0]].get()] = interim_results
         print(self.results_dict)
 
     def plot_results_scatter(self):
@@ -375,7 +368,8 @@ class demo_frame_class(MethodsGUI):
         #
         # EXECUTION BUTTONS
         row = 18
-        Button(demo_frame, text='SAVE', command=self.save_manual_results)\
+        Button(demo_frame, text='SAVE',
+               command=lambda: self.save_results("manual"))\
             .grid(column=1 + 4, row=row, pady=4)
         row = row + 1
         label_line = Label(demo_frame, text=14 * '===========',

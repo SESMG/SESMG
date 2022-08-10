@@ -83,12 +83,10 @@ import os
 from threading import *
 import sys
 from program_files.preprocessing import (create_energy_system,
-                                         create_graph,
-                                         data_preparation,
-                                         district_heating)
+                                         data_preparation,)
 from program_files.preprocessing.create_graph import ESGraphRenderer
 from program_files.preprocessing.components \
-    import Sink, Transformer, Source, Storage, Link, Bus
+    import Sink, Transformer, Source, Storage, Link, Bus, district_heating
 from program_files.postprocessing import create_results
 from program_files.processing import optimize_model
 

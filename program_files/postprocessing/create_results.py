@@ -327,7 +327,7 @@ class Results:
             collect_data(nd, self.results, self.esys)
         
         loc, total_periodical_costs, total_variable_costs, \
-            total_constraint_costs, total_demand, df_result_table = \
+            total_constraint_costs, df_result_table, total_demand = \
             prepare_data(comp_dict, total_demand, nd, result_path,
                          self.df_result_table)
         # SUMMARY

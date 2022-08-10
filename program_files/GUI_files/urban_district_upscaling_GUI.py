@@ -1,7 +1,5 @@
 import os
-from program_files.urban_district_upscaling\
-    .pre_processing \
-    import urban_district_upscaling_pre_processing
+from program_files import urban_district_upscaling_pre_processing
 from program_files.urban_district_upscaling\
     .urban_district_upscaling_post_processing \
     import urban_district_upscaling_post_processing
@@ -43,15 +41,16 @@ class UpscalingFrameClass:
             :param clustering: containing boolean rather the pre
                 scenario is clustered or not
             :type clustering: tk.BooleanVar
-
+            :param clustering_dh:
+            :type clustering_dh:
         """
         urban_district_upscaling_pre_processing(
-            pre_scenario=pre_scenario.get(),
-            standard_parameter_path=standard_param.get(),
-            output_scenario=scenario_name.get(),
-            plain_sheet=os.path.join(
-                    os.path.dirname(__file__),
-                    r'../urban_district_upscaling/plain_scenario.xlsx'),
+            paths=[pre_scenario.get(),
+                   standard_param.get(),
+                   scenario_name.get(),
+                   os.path.join(
+                       os.path.dirname(__file__),
+                       r'../urban_district_upscaling/plain_scenario.xlsx')],
             clustering=clustering.get(), clustering_dh=clustering_dh.get())
         
     @staticmethod
