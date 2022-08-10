@@ -1,15 +1,19 @@
-name: CodeCov
+name: Test coverage
+
 on:
   push:
     branches:
       - dev_open_district_upscaling
+      - include_testing
   pull_request:
+
 jobs:
-  run:
+  build:
     runs-on: ubuntu-latest
-    env:
-      OS: ubuntu-latest
-      PYTHON: '3.9'
+    strategy:
+      matrix:
+        python-version: [3.9]
+
     steps:
     - uses: checkout@v2
       with:
