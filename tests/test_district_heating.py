@@ -1,5 +1,5 @@
 import pytest
-from program_files.preprocessing.district_heating import \
+from program_files.preprocessing.components.district_heating import \
     calc_perpendicular_distance_line_point, transf_WGS84_GK
 
 
