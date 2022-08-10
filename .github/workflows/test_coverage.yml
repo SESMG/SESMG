@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - dev_open_district_upscaling
-      - include_testing
   pull_request:
 
 jobs:
@@ -24,6 +23,3 @@ jobs:
         pip install coverage
         pip freeze
         coverage run -m unittest
-    - name: Upload Coverage to Codecov
-      uses: codecov/codecov-action@v2
-
