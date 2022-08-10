@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Code of Conduct**
-- [ ] Hereby I consent to the [CODE_OF_CONDUCT](https://github.com/GregorBecker/SESMG/blob/dev_open_district_upscaling/CODE_OF_CONDUCT.md) 
+- [ ] Hereby I consent to the [CODE_OF_CONDUCT](https://github.com/GregorBecker/SESMG/blob/dev_open_district_upscaling/CODE_OF_CONDUCT.md)[^1]  
 
 **Describe the bug**
 A clear and concise description of what the bug is.
@@ -39,3 +39,5 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
+
+[^1]: Fill in a x between the brackets to check the check box.
