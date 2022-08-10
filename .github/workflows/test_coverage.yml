@@ -40,6 +40,6 @@ jobs:
       env:
           CC_TEST_REPORTER_ID: f4d1ecf9ea3c5cc8ab089c8e876172ead58ab7f6d6b050f637891fbbb7eafe58
     - name: action-scrutinizer
-      run: ocular --config-file "../.coveragerc"
+      run: ocular 
 
   
