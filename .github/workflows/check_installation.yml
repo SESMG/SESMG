@@ -5,7 +5,7 @@ jobs:
     name: Windows_test 
     strategy:
       matrix:
-        platform: [window-latest]
+        platform: [windows-latest]
         python-version: ["3.9"]
     runs-on: ${{ matrix.platform }}
     steps:
