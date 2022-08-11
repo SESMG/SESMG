@@ -14,14 +14,7 @@ jobs:
         with:
           node-version: 16
       - name: Set up GDAL
-        run: |
-          mkdir bld
-          cd bld
-          nmake /f ..\sqlite\Makefile.msc TOP=..\sqlite
-          nmake /f ..\sqlite\Makefile.msc sqlite3.c TOP=..\sqlite
-          nmake /f ..\sqlite\Makefile.msc sqlite3.dll TOP=..\sqlite
-          nmake /f ..\sqlite\Makefile.msc sqlite3.exe TOP=..\sqlite
-          nmake /f ..\sqlite\Makefile.msc test TOP=..\sqlite       
+        run: |   
           git clone https://github.com/OSGeo/PROJ.git
           cmake PROJ
           git clone https://github.com/OSGeo/gdal
