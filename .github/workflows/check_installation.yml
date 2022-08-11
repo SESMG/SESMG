@@ -16,7 +16,7 @@ jobs:
       - name: Set up GDAL
         run: |
           git clone https://github.com/OSGeo/gdal
-          make install
+          cmake install
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
