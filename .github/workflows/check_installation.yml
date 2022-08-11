@@ -4,12 +4,10 @@ jobs:
   test:
     strategy:
       matrix:
-        platform: [windows-latest]
+        platform: [ubuntu-latest, macos-latest]
         python-version: ["3.9"]
     runs-on: ${{ matrix.platform }}
     steps:
-    - name: test GDAL
-      run : gdalinfo --version
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
