@@ -17,18 +17,11 @@ jobs:
         run: |   
           git clone https://github.com/alex85k/sqlite3-cmake.git
           dir
-          mkdir build 
-          cd build
-          cmake ../sqlite3-cmake
-          cd ..
+          
           git clone https://github.com/OSGeo/PROJ.git
-          cd build
-          cmake ../PROJ
-          cd ..
+          cmake PROJ
           git clone https://github.com/OSGeo/gdal
-          cd build
-          cmake ../gdal
-          cd ..
+          cmake gdal
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
