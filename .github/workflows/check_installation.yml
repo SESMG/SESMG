@@ -16,6 +16,7 @@ jobs:
       - name: Set up GDAL
         run: |
           git clone https://github.com/OSGeo/gdal
+          cd gdal
           dir
           cmake install
 
