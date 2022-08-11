@@ -16,7 +16,11 @@ jobs:
       - name: Set up GDAL
         run: |
           git clone https://github.com/sqlite/sqlite.git
-          make install sqlite
+          mkdir bld                
+          cd bld                  
+          ../sqlite/configure      
+          make                     
+          make sqlite3.c           
           git clone https://github.com/OSGeo/PROJ.git
           cmake PROJ
           git clone https://github.com/OSGeo/gdal
