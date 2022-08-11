@@ -13,17 +13,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - name: Set up GDAL
-        run: |   
-          .\vcpkg search sqlite
-          git clone https://github.com/alex85k/sqlite3-cmake.git
-          dir
-          
-          git clone https://github.com/OSGeo/PROJ.git
-          cmake PROJ
-          git clone https://github.com/OSGeo/gdal
-          cmake gdal
-
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
         with:
