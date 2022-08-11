@@ -4,7 +4,7 @@ with open("README.md", encoding="utf-8") as f:
 with open("requirements.txt") as f:
     install_requires = f.read().splitlines()
 
-setup(
+setuptools.setup(
     name="SESMG",
     version="0.1.1",
     license="MIT",
