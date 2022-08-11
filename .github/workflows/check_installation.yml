@@ -1,11 +1,11 @@
 name: check installation
 on: push
 jobs:
-  Windows:
-    name: Windows_test 
+  MacOS:
+    name: MacOS_test 
     strategy:
       matrix:
-        platform: [windows-latest]
+        platform: [macos-latest]
         python-version: ["3.9"]
     runs-on: ${{ matrix.platform }}
     steps:
