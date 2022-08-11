@@ -4,7 +4,7 @@ jobs:
   test:
     strategy:
       matrix:
-        platform: [ubuntu-latest]
+        platform: [ubuntu-latest, windows-latest]
         python-version: ["3.9"]
     runs-on: ${{ matrix.platform }}
     steps:
