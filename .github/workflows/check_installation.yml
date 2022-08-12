@@ -21,7 +21,7 @@ jobs:
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install setuptools
-        python3 -m setup.py setup
+        python3 -m setup.py install
   Windows:
     name: Windows_test 
     strategy:
