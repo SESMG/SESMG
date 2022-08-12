@@ -20,8 +20,11 @@ jobs:
     - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip
-        python3 -m pip install setuptools
-        python3 -m setup.py install
+        python3 -m pip install setuptools setuptools_scm twine wheel
+    - name: Create packages
+      run: python setup.py sdist bdist_wheel
+    - name: Run twine check
+      run: twine check dist/*
   Windows:
     name: Windows_test 
     strategy:
