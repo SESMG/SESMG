@@ -40,6 +40,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install cmake
+          git clone https://github.com/OSGeo/gdal.git
+          cmake gdal
           pip install -r requirements.txt
   MacOS:
     name: MacOS_test 
