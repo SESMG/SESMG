@@ -1,7 +1,7 @@
 oemof.solph>=0.4  
 openpyxl>=3.0.0  
 oemof.thermal>=0.0.5  
-git+https://github.com/oemof/feedinlib.git@refs/pull/73/head
+https://github.com/oemof/feedinlib.git@f31d3621ac4d0bd6aded1d9b40525fe629db54f2
 open_fred-cli>=0.0.1  
 basemap>=1.3.0  
 git+https://github.com/oemof/demandlib.git@dev
