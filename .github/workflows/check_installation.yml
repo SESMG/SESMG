@@ -6,7 +6,7 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest]
-        python-version: ["3.9"]
+        python-version: ["3.7", "3.8", "3.9"]
     runs-on: ${{ matrix.platform }}
     steps:
     - uses: actions/checkout@v3
@@ -19,12 +19,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python3 -m pip install --upgrade pip
-        python3 -m pip install setuptools setuptools_scm twine wheel
-    - name: Create packages
-      run: python setup.py sdist bdist_wheel
-    - name: Run twine check
-      run: twine check dist/*
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
   Windows:
     name: Windows_test 
     strategy:
