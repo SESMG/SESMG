@@ -40,7 +40,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          conda install gdal
           pip install -r requirements.txt
   MacOS:
     name: MacOS_test 
