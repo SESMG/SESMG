@@ -20,7 +20,8 @@ jobs:
     - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip
-        python3 -m setup.py build
+        python3 -m pip install setuptools
+        python3 -m setup.py setup
   Windows:
     name: Windows_test 
     strategy:
