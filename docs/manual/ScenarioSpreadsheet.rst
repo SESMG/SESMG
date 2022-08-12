@@ -259,8 +259,8 @@ The following parameters have to be entered:
 - **label**: Unique designation of the transformer. The following format is recommended: "ID_energy sector_transformer".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the transformer shall be included to the model. 0 = inactive, 1 = active.
-- **transformer type**: Indicates what kind of transformer it is. Possible entries: "GenericTransformer" for linear transformers with constant efficiencies; "GenericCHP" for transformers with varying efficiencies; "compression_heat_transformer"; "absorption_heat_transformer".
-- **mode**: Specifies, if a compression or absorption heat transformer is working as "chiller" or "heat_pump". Only required if "transformer type" is set to "compression_heat_transformer" or "absorption_heat_transformer". Otherwise has to be set to "None", "none", "0".
+- **transformer type**: Indicates what kind of transformer it is. Possible entries: "GenericTransformer" for linear transformers with constant efficiencies; "GenericCHP" for transformers with varying efficiencies; "CompressionHeatTransformer"; "AbsorptionHeatTransformer".
+- **mode**: Specifies, if a compression or absorption heat transformer is working as "chiller" or "heat_pump". Only required if "transformer type" is set to "CompressionHeatTransformer" or "AbsorptionHeatTransformer". Otherwise has to be set to "None", "none", "0".
 - **input**: Specifies the bus from which the input to the transformer comes from.
 - **output**: Specifies bus to which the output of the transformer is forwarded to. For CHP Transformers it should be the electric output.
 - **output2**: Specifies the bus to which the output of the transformer is forwarded to, if there are several outputs. If there is no second output, the fill character "0" must be entered here.
@@ -311,7 +311,7 @@ The following parameters are only required, if "transformer type" is set to "Com
 - **heat extraction** in (kW/(m*a)): Heat extraction for the heat exchanger referring to the location, only for GC-CHT.
 - **min. borehole area** in (sqm): Limited space due to the regeneation of the ground source, only for GC-CHT.
 - **temp threshold icing**: Temperature below which icing occurs (see `oemof.thermal <https://oemof-thermal.readthedocs.io/en/latest/>`_). Only required if "mode" is set to "heat_pump".
-- **factor icing**: COP reduction caused by icing (see `oemof.thermal <https://oemof-thermal.readthedocs.io/en/latest/>`_). Only required if "mode" is set to "heat_pump".
+- **factor icing**: Factor to which the COP is reduced caused by icing (e.g. 0.8 if you have a reduction of 20%). (see `oemof.thermal <https://oemof-thermal.readthedocs.io/en/latest/>`_). Only required if "mode" is set to "heat_pump".
 
 Absorption Heat Transformer
 --------------------------------
@@ -330,10 +330,10 @@ The following parameters are only required, if "transformer type" is set to "Abs
 
 	,,,,,,,,,,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),,(°C),(°C),,(m²),(`m`),(kW/(m*a)),(m²),(°C),,,(°C),(°C),,(°C),,,(kW),(kW),,,(kW)
  	ID_gasheating_transformer,,1,GenericTransformer,0,ID_gas_bus,ID_heat_bus,None,0.85,0,10,0,20,0,0,0,0,0,70,0,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_GCHP_transformer,ground-coupled heat pump,1,compression_heat_transformer,heat_pump,ID_hp_electricity_bus,ID_heat_bus,None,1,0,0,0,20,0,0,0,0,0,115.57,0,0,0,0,Ground,60,0,0.6,1000,100,0.05,100,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_ASCH_transformer,air source chiller,1,compression_heat_transformer,chiller,ID_hp_electricity_bus,ID_cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,Air,0,-10,0.4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_AbsCH_transformer,absorption chiller,1,absorption_heat_transformer,chiller,ID_hp_electricity_bus,ID_cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Kuehn,85,10,0.05,6,0,0,0,0,0,0,0,0,0
-	ID_ASHP_transformer,air source heat pump,1,compression_heat_transformer,heat_pump,ID_hp_electricity_bus,ID_heat_bus,None,1,0,0,0,20,0,0,0,0,0,112.78,0,0,0,0,Air,60,0,0.4,0,0,0,0,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_GCHP_transformer,ground-coupled heat pump,1,CompressionHeatTransformer,heat_pump,ID_hp_electricity_bus,ID_heat_bus,None,1,0,0,0,20,0,0,0,0,0,115.57,0,0,0,0,Ground,60,0,0.6,1000,100,0.05,100,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_ASCH_transformer,air source chiller,1,CompressionHeatTransformer,chiller,ID_hp_electricity_bus,ID_cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,Air,0,-10,0.4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_AbsCH_transformer,absorption chiller,1,AbsorptionHeatTransformer,chiller,ID_hp_electricity_bus,ID_cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Kuehn,85,10,0.05,6,0,0,0,0,0,0,0,0,0
+	ID_ASHP_transformer,air source heat pump,1,CompressionHeatTransformer,heat_pump,ID_hp_electricity_bus,ID_heat_bus,None,1,0,0,0,20,0,0,0,0,0,112.78,0,0,0,0,Air,60,0,0.4,0,0,0,0,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	ID_chp_transformer,,0,GenericTransformer,0,district_gas_bus,district_chp_electricity_bus,district_heat_bus,0.35,0.55,0,0,20,0,0,0,0,0,50,130,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	
 .. figure:: ../images/manual/ScenarioSpreadsheet/BSP_Graph_transformer.png
