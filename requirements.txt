@@ -1,4 +1,3 @@
-numpy>=1.23
 oemof.solph>=0.4  
 openpyxl>=3.0.0  
 oemof.thermal>=0.0.5  
