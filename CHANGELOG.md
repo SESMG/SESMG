@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.0 (2022-08-15)
+### Feature
+* **CI:** Enable usage of automated semantic versioning ([`58518eb`](https://github.com/chrklemm/SESMG/commit/58518ebb746067a81ac586021eea841ccaf5ca14))
+
 ## v0.2.0 (2022-08-15)
 ### Feature
 * **README:** Update workflow picture ([`061f44e`](https://github.com/chrklemm/SESMG/commit/061f44e42f121c7ab43b17e1602058464984664b))
