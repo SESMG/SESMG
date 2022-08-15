@@ -5,4 +5,4 @@ Created on Tue Jan 14 09:35:53 2020
 @author: Christian
 """
 
-__version__ = "0.2.0"
+__version__ = "v0.2.0"
