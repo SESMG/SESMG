@@ -1,6 +1,6 @@
 # Spreadsheet Energy System Model Generator (SESMG) ![what-why](https://cs.adelaide.edu.au/~christoph/badges/content-what-why-brightgreen.svg) ![how](https://cs.adelaide.edu.au/~christoph/badges/content-how-green.svg)
 
-The **SESMG** provides a spreadsheet interface to the "Open Energy Modeling Framework" ("oemof"), allowing modeling and optimization of urban energy systems based the spreadsheet.
+The **SESMG** provides a spreadsheet interface to the "Open Energy Modeling Framework" ("oemof"), allowing modeling and optimization of urban energy systems based the spreadsheet. 
 
 **SESMG** makes it easier to create oemof-based energy system models.
 
@@ -127,6 +127,6 @@ This project is published under GNU GPL-3.0 license, click [here](https://github
 
 ## Contributing ![contribution](https://cs.adelaide.edu.au/~christoph/badges/content-contribution-blue.svg)
 
-Issues and Pull Requests are greatly appreciated. If you've never contributed to an open source project before I'm more than happy to walk you through how to create a pull request.
+Issues and Pull Requests are greatly appreciated. If you've never contributed to an open source project before I'm more than happy to walk you through how to create a Pull Request.
 
 Detailed description of the contribution procedure as well as the projects coding standards can be found [here](/docs/CONTRIBUTING.md).
