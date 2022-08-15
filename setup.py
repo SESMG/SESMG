@@ -8,15 +8,10 @@ with open("README.md", encoding="utf-8") as f:
 
 with open("requirements.txt") as f:
     install_requires = f.read().splitlines()
-    
-with open("program_files/__init__.py", "r") as fd:
-    version = re.search(
-        r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', fd.read(), re.MULTILINE
-    ).group(1)
 
 setuptools.setup(
     name="SESMG",
-    version=version,
+    version="0.4.2",
     license="GPL-3.0-only",
     author="Christian Klemm",
     author_email="christian.klemm@fh-muenster.de",
