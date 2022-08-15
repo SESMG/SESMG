@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.0 (2022-08-15)
+### Feature
+* **README:** Update workflow picture ([`061f44e`](https://github.com/chrklemm/SESMG/commit/061f44e42f121c7ab43b17e1602058464984664b))
+
 ## v0.1.0 (2022-08-15)
 ### Feature
 * **CI:** BREAKING CHANGES reset version ([`51ff214`](https://github.com/chrklemm/SESMG/commit/51ff2140f948edcd2799db2c61574205f3c82595))
