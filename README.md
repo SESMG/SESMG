@@ -13,7 +13,7 @@ program and the open source Python library "oemof", assembled to an energy syste
 and optimized with open source solvers (e.g. “CBC”). The modeling results can be 
 viewed and analyzed using a browser-based results output.
 
-![workflow_graph_SESMG](/docs/images/workflow_graph.jpeg)
+![workflow_graph_SESMG](/docs/images/SESMG_principle.png)
 
 ## Quick Start ![how](https://cs.adelaide.edu.au/~christoph/badges/content-how-green.svg)
 
