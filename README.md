@@ -82,7 +82,7 @@ Examples are stored in a separate GIT-Repository: https://github.com/chrklemm/SE
 ✓ Draft (alpha, beta) State <br />
 ✓ Modeling and Optimization of holistic energy systems <br />
 ✓ Several result plotting oportunities <br />
-✓ Usable on Windows, MacOS and Linux <br />
+✓ Usable on Windows, MacOS, and Linux <br />
 
 ✘ No support of Python 3.8 and newer <br />
 ✘ Issues on installing depedencies <br />
