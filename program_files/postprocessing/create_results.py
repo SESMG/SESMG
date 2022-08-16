@@ -407,8 +407,13 @@ class Results:
                                     * comp['variable constraint costs']
 
         elif comp_type == 'link':
+            if 'variable output constraint costs' in comp.keys():
+                variable_constr_costs = comp[
+                    'variable output constraint costs']
+            elif "variable constraint costs" in comp.keys():
+                variable_constr_costs = comp["variable constraint costs"]
             constraint_costs += \
-                comp['variable output constraint costs'] * (outflow1 + outflow2)
+                variable_constr_costs * (outflow1 + outflow2)
         elif comp_type == 'excess':
             constraint_costs += \
                 inflow1 * comp['excess constraint costs']
