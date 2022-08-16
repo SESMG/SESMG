@@ -73,7 +73,7 @@ run `$ sudo apt-get install graphviz`
 ## SESMG Features & Releases ![what-why](https://cs.adelaide.edu.au/~christoph/badges/content-what-why-brightgreen.svg) 
 
 ### Project Status 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/GregorBecker/SESMG/badges/quality-score.png?b=dev_open_district_upscaling)](https://scrutinizer-ci.com/g/GregorBecker/SESMG/?branch=dev_open_district_upscaling)
+[![Requirements Status](https://requires.io/github/chrklemm/SESMG/requirements.svg?branch=master)](https://requires.io/github/chrklemm/SESMG/requirements/?branch=master)
 
 ### Examples
 Examples are stored in a separate GIT-Repository: https://github.com/chrklemm/SESMG_Examples.
