@@ -19,7 +19,7 @@ pip install openpyxl==3.0.0
 pip install oemof.thermal==0.0.3
 pip install demandlib==0.1.6
 pip install pvlib==0.7.1
-echo pip install feedinlib==0.0.12
+echo bin/pip3 install feedinlib==0.0.12
 pip install oedialect==0.0.10
 pip install sqlalchemy==1.3.16
 pip install open_fred-cli
@@ -30,7 +30,7 @@ pip install pydot==1.4.1
 pip install graphviz==0.13.2
 pip install xlrd==1.2.0
 pip install Pyomo==5.7.1
-pip install basemap
+pip install basemap==1.3.3
 pip install xlsxwriter
 pip install dhnx
 pip install pyproj
@@ -43,6 +43,7 @@ pip install matplotlib
 pip install oemof.solph==0.4.1
 pip install numpy==1.17.4
 pip install werkzeug==2.0.3
+pip install flask==2.1.3
 
 @echo ######################
 @echo Installation completed
