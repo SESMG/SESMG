@@ -28,4 +28,4 @@ jobs:
           flake8: false
           # Mark the following line true if you want linters to attempt to autocorrect your code
           auto_fix: true
-          git_name: SESMG_bot
+          git_name: "SESMG_bot"
