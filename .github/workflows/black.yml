@@ -1,28 +1,35 @@
-# This is a basic workflow to help you get started with Actions
+name: Black
 
-name: Code Style black
-
-# Controls when the workflow will run
-on: push
+on:
+  push:
+    branches:
+      - dev_open_district_upscaling
 
 jobs:
-  black:
-    strategy:
-      matrix:
-        platform: [ubuntu-latest]
-        python-version: ["3.7"]
-    runs-on: ${{ matrix.platform }}
+  run-linters:
+    name: Run linters
+    runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 16
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install git+https://github.com/psf/black
-        black ./program_files
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+
+      - name: Install Python dependencies
+        run: pip install black flake8
+
+      - name: Run linters
+        uses: samuelmeuli/lint-action@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          # Enable linters
+          black: true
+          flake8: false
+          # Mark the following line true if you want linters to attempt to autocorrect your code
+          auto_fix: true
+          git_name: "Greene Lab Linter"
+          git_email: "csgreene@upenn.edu"
