@@ -25,7 +25,7 @@ pip3 install openpyxl==3.0.0
 pip3 install oemof.thermal==0.0.3
 pip3 install demandlib==0.1.6
 pip3 install pvlib==0.7.1
-echo pip3 install feedinlib==0.0.12
+echo bin/pip3 install feedinlib==0.0.12
 pip3 install oedialect==0.0.10
 pip3 install sqlalchemy==1.3.16
 pip3 install open_fred-cli
@@ -36,7 +36,7 @@ pip3 install pydot==1.4.1
 pip3 install graphviz==0.13.2
 pip3 install xlrd==1.2.0
 pip3 install Pyomo==5.7.1
-pip3 install basemap
+pip3 install basemap==1.3.3
 pip3 install xlsxwriter
 pip3 install dhnx
 pip3 install pyproj
@@ -49,6 +49,7 @@ pip3 install matplotlib
 pip3 install oemof.solph==0.4.1
 pip3 install numpy==1.17.4
 pip3 install werkzeug==2.0.3
+pip3 install flask==2.1.3
 sudo mv feedinlib lib/python3.7/site-packages
 sudo mv windpowerlib lib/python3.7/site-packages
 echo ----------------------
