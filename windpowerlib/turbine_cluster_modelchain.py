@@ -45,7 +45,7 @@ class TurbineClusterModelChain(ModelChain):
           Use :func:`~.wake_losses.get_wind_efficiency_curve` to get a
           DataFrame of all provided wind efficiency curves and see the provided
           example on how to plot the wind efficiency curves.
-          
+
        Default: 'dena_mean'.
     smoothing : bool
         If True the power curves will be smoothed to account for the
@@ -214,15 +214,11 @@ class TurbineClusterModelChain(ModelChain):
                 logging.debug("Wake losses in wind farms are not considered.")
             else:
                 logging.debug(
-                    "Wake losses considered with {}.".format(
-                        self.wake_losses_model
-                    )
+                    "Wake losses considered with {}.".format(self.wake_losses_model)
                 )
         else:
             logging.debug(
-                "Wake losses considered by {} wind ".format(
-                    self.wake_losses_model
-                )
+                "Wake losses considered by {} wind ".format(self.wake_losses_model)
                 + "efficiency curve."
             )
             wake_losses_model_to_power_curve = None
@@ -311,7 +307,5 @@ class TurbineClusterModelChain(ModelChain):
                 wind_speed_hub,
                 wind_efficiency_curve_name=self.wake_losses_model,
             )
-        self.power_output = self.calculate_power_output(
-            wind_speed_hub, density_hub
-        )
+        self.power_output = self.calculate_power_output(wind_speed_hub, density_hub)
         return self

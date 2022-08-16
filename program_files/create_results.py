@@ -11,6 +11,7 @@ from oemof import solph
 from matplotlib import pyplot as plt
 import os
 
+
 def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str):
     """
         Returns model results as xlsx-files.
@@ -34,21 +35,21 @@ def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str):
     # Writes a spreadsheet containing the input and output flows into
     # every bus of the energy system for every timestep of the
     # timesystem
-    for i, b in nodes_data['buses'].iterrows():
-        if b['active']:
-            file_path = \
-                os.path.join(filepath, 'results_' + b['label'] + '.xlsx')
-            node_results = solph.views.node(results, b['label'])
-            df = node_results['sequences']
+    for i, b in nodes_data["buses"].iterrows():
+        if b["active"]:
+            file_path = os.path.join(filepath, "results_" + b["label"] + ".xlsx")
+            node_results = solph.views.node(results, b["label"])
+            df = node_results["sequences"]
             df.head(2)
             with pd.ExcelWriter(file_path) as writer:  # doctest: +SKIP
-                df.to_excel(writer, sheet_name=b['label'])
+                df.to_excel(writer, sheet_name=b["label"])
             # returns logging info
-            logging.info('   ' + 'Results saved as xlsx for ' + b['label'])
+            logging.info("   " + "Results saved as xlsx for " + b["label"])
 
 
-def charts(nodes_data: dict, optimization_model: solph.Model,
-           energy_system: solph.EnergySystem):
+def charts(
+    nodes_data: dict, optimization_model: solph.Model, energy_system: solph.EnergySystem
+):
     """
         Plots model results.
 
@@ -71,31 +72,34 @@ def charts(nodes_data: dict, optimization_model: solph.Model,
     esys = energy_system
     results = solph.processing.results(optimization_model)
 
-    for i, b in nodes_data['buses'].iterrows():
-        if b['active']:
-            logging.info('   ' + "******************************************"
-                         + "***************")
-            logging.info('   ' + 'RESULTS: ' + b['label'])
+    for i, b in nodes_data["buses"].iterrows():
+        if b["active"]:
+            logging.info(
+                "   " + "******************************************" + "***************"
+            )
+            logging.info("   " + "RESULTS: " + b["label"])
 
-            bus = solph.views.node(results, b['label'])
-            logging.info('   ' + bus['sequences'].sum())
+            bus = solph.views.node(results, b["label"])
+            logging.info("   " + bus["sequences"].sum())
             fig, ax = plt.subplots(figsize=(10, 5))
-            bus['sequences'].plot(ax=ax)
-            ax.legend(loc='upper center', prop={'size': 8},
-                      bbox_to_anchor=(0.5, 1.4), ncol=2)
+            bus["sequences"].plot(ax=ax)
+            ax.legend(
+                loc="upper center", prop={"size": 8}, bbox_to_anchor=(0.5, 1.4), ncol=2
+            )
             fig.subplots_adjust(top=0.7)
             plt.show()
 
-    esys.results['main'] = solph.processing.results(optimization_model)
-    esys.results['meta'] = solph.processing.meta_results(optimization_model)
+    esys.results["main"] = solph.processing.results(optimization_model)
+    esys.results["meta"] = solph.processing.meta_results(optimization_model)
     esys.dump(dpath=None, filename=None)
 
 
 class Results:
     """
-        Class for preparing Plotly results and logging the results of
-        Cbc-Solver
+    Class for preparing Plotly results and logging the results of
+    Cbc-Solver
     """
+
     results = None
     esys = None
     comp_input1 = None
@@ -106,30 +110,40 @@ class Results:
     df_list_of_components = None
     df_result_table = pd.DataFrame()
     # columns_of_plotly_table
-    copt = ['ID', 'type', 'input 1/kWh', 'input 2/kWh', 'output 1/kWh',
-            'output 2/kWh', 'capacity/kW', 'variable costs/CU',
-            'periodical costs/CU', 'investment/kW', 'max. invest./kW', 'constraints/CU']
+    copt = [
+        "ID",
+        "type",
+        "input 1/kWh",
+        "input 2/kWh",
+        "output 1/kWh",
+        "output 2/kWh",
+        "capacity/kW",
+        "variable costs/CU",
+        "periodical costs/CU",
+        "investment/kW",
+        "max. invest./kW",
+        "constraints/CU",
+    ]
 
     @staticmethod
     def log_category(component: str):
         """
-            Returns logging info for type of given components.
-            Which is the first step of the logging/ results producing process.
+        Returns logging info for type of given components.
+        Which is the first step of the logging/ results producing process.
 
-            :param component: component type
-            :type component: str
+        :param component: component type
+        :type component: str
         """
         # returns logging infos
-        logging.info('   ' + 56 * "*")
-        logging.info('   ' + "***" + component + (53 - len(component)) * "*")
-        logging.info('   ' + 56 * "*")
-        logging.info('   ' + 56 * "-")
+        logging.info("   " + 56 * "*")
+        logging.info("   " + "***" + component + (53 - len(component)) * "*")
+        logging.info("   " + 56 * "*")
+        logging.info("   " + 56 * "-")
 
-    def create_flow_dataframes(self, comp, component,
-                               excess_or_shortage=None):
+    def create_flow_dataframes(self, comp, component, excess_or_shortage=None):
         """
-            creates up to 5 pandas series consisting the flows of the
-            given component
+        creates up to 5 pandas series consisting the flows of the
+        given component
         """
         # clearing all possibly used variables
         self.comp_input1 = None
@@ -138,48 +152,53 @@ class Results:
         self.comp_output2 = None
         self.comp_capacity = None
 
-        label = comp['label']
+        label = comp["label"]
         # because of not every sheet consisting the same columns these
         # tests are necessary
-        bus1 = comp['bus1'] if 'bus1' in comp else None
-        bus2 = comp['bus2'] if 'bus2' in comp else None
-        if 'input' in comp:
-            input1 = comp['input']
-        elif 'bus' in comp:
-            input1 = comp['bus']
+        bus1 = comp["bus1"] if "bus1" in comp else None
+        bus2 = comp["bus2"] if "bus2" in comp else None
+        if "input" in comp:
+            input1 = comp["input"]
+        elif "bus" in comp:
+            input1 = comp["bus"]
         else:
             input1 = None
-        if 'output' in comp:
-            output = comp['output']
-        elif 'bus' in comp:
-            output = comp['bus']
+        if "output" in comp:
+            output = comp["output"]
+        elif "bus" in comp:
+            output = comp["bus"]
         else:
             output = None
-        output2 = comp['output2'] if 'output2' in comp else None
-        for index, value in component['sequences'].sum().items():
+        output2 = comp["output2"] if "output2" in comp else None
+        for index, value in component["sequences"].sum().items():
             # inflow 1
-            if index in [((input1, label), 'flow'),
-                         ((bus1, label), 'flow'),
-                         ((label, label + '_excess'), 'flow')]:
-                self.comp_input1 = component['sequences'][index]
+            if index in [
+                ((input1, label), "flow"),
+                ((bus1, label), "flow"),
+                ((label, label + "_excess"), "flow"),
+            ]:
+                self.comp_input1 = component["sequences"][index]
             # inflow2
-            elif index in [((label + '_low_temp' + '_bus', label), 'flow'),
-                           ((label + '_high_temp' + '_bus', label), 'flow'),
-                           ((bus2, label), 'flow'),
-                           ((label[:-10] + '_bus', label), 'flow')]:
-                self.comp_input2 = component['sequences'][index]
+            elif index in [
+                ((label + "_low_temp" + "_bus", label), "flow"),
+                ((label + "_high_temp" + "_bus", label), "flow"),
+                ((bus2, label), "flow"),
+                ((label[:-10] + "_bus", label), "flow"),
+            ]:
+                self.comp_input2 = component["sequences"][index]
             # outflow 1
-            elif index in [((label, output), 'flow'),
-                           ((label, bus2), 'flow'),
-                           ((label + '_shortage', label), 'flow')]:
-                self.comp_output1 = component['sequences'][index]
+            elif index in [
+                ((label, output), "flow"),
+                ((label, bus2), "flow"),
+                ((label + "_shortage", label), "flow"),
+            ]:
+                self.comp_output1 = component["sequences"][index]
             # outflow 2
-            elif index in [((label, output2), 'flow'),
-                           ((label, bus1), 'flow')]:
-                self.comp_output2 = component['sequences'][index]
+            elif index in [((label, output2), "flow"), ((label, bus1), "flow")]:
+                self.comp_output2 = component["sequences"][index]
             # capacity
-            elif index == ((label, 'None'), 'storage_content'):
-                self.comp_capacity = component['sequences'][index]
+            elif index == ((label, "None"), "storage_content"):
+                self.comp_capacity = component["sequences"][index]
         if excess_or_shortage == "excess":
             self.comp_output1 = None
         elif excess_or_shortage == "shortage":
@@ -187,34 +206,36 @@ class Results:
 
     def get_comp_investment(self, comp, comp_type):
         component_investment = 0
-        if comp['max. investment capacity'] > 0:
-            component_node = self.esys.groups[comp['label']]
+        if comp["max. investment capacity"] > 0:
+            component_node = self.esys.groups[comp["label"]]
 
             # defines bus_node for different components
-            if comp_type == 'source':
-                if comp['input'] in [0, 'None', 'none']:
-                    bus_node = self.esys.groups[comp['output']]
+            if comp_type == "source":
+                if comp["input"] in [0, "None", "none"]:
+                    bus_node = self.esys.groups[comp["output"]]
                 else:
-                    component_node = self.esys.groups[comp['label'][:-10]]
-                    label = comp['label'][:-10] + '_bus'
+                    component_node = self.esys.groups[comp["label"][:-10]]
+                    label = comp["label"][:-10] + "_bus"
                     bus_node = self.esys.groups[label]
-            elif comp_type == 'storage':
+            elif comp_type == "storage":
                 bus_node = None
-            elif comp_type == 'link':
-                bus_node = self.esys.groups[comp['bus2']]
-            elif comp_type == 'transformer':
-                bus_node = self.esys.groups[comp['output']]
+            elif comp_type == "link":
+                bus_node = self.esys.groups[comp["bus2"]]
+            elif comp_type == "transformer":
+                bus_node = self.esys.groups[comp["output"]]
             else:
-                raise ValueError('comp_type not known')
+                raise ValueError("comp_type not known")
             # sets component investment
-            component_investment += (self.results[component_node, bus_node]
-                                     ['scalars']['invest'])
-            if comp_type == 'source':
-                if comp['input'] not in [0, 'None', 'none']:
+            component_investment += self.results[component_node, bus_node]["scalars"][
+                "invest"
+            ]
+            if comp_type == "source":
+                if comp["input"] not in [0, "None", "none"]:
                     # considers area conversion factor on investment for
                     # solar heat sources
-                    component_investment = \
-                        component_investment / comp['Conversion Factor']
+                    component_investment = (
+                        component_investment / comp["Conversion Factor"]
+                    )
 
         return component_investment
 
@@ -226,32 +247,28 @@ class Results:
 
         constraint_costs = 0
         # calculating constraint costs for different components
-        if comp_type == 'source':
-            constraint_costs += outflow1 * comp['variable constraint costs']
-        elif comp_type == 'link':
-            constraint_costs += \
-                comp['variable constraint costs'] * (outflow1 + outflow2)
-        elif comp_type == 'excess':
-            constraint_costs += \
-                inflow1 * comp['excess constraint costs']
-        elif comp_type == 'shortage':
-            constraint_costs += \
-                outflow1 * comp['shortage constraint costs']
+        if comp_type == "source":
+            constraint_costs += outflow1 * comp["variable constraint costs"]
+        elif comp_type == "link":
+            constraint_costs += comp["variable constraint costs"] * (
+                outflow1 + outflow2
+            )
+        elif comp_type == "excess":
+            constraint_costs += inflow1 * comp["excess constraint costs"]
+        elif comp_type == "shortage":
+            constraint_costs += outflow1 * comp["shortage constraint costs"]
         else:
-            constraint_costs += outflow1 \
-                                * comp['variable output constraint costs']
-            if comp_type == 'transformer':
-                constraint_costs \
-                    += outflow2 * comp['variable output constraint costs 2']
-                constraint_costs \
-                    += inflow1 * comp['variable input constraint costs']
-            if comp_type == 'storage':
-                constraint_costs \
-                    += inflow1 * comp['variable input constraint costs']
+            constraint_costs += outflow1 * comp["variable output constraint costs"]
+            if comp_type == "transformer":
+                constraint_costs += (
+                    outflow2 * comp["variable output constraint costs 2"]
+                )
+                constraint_costs += inflow1 * comp["variable input constraint costs"]
+            if comp_type == "storage":
+                constraint_costs += inflow1 * comp["variable input constraint costs"]
 
-        if comp_type != 'excess' and comp_type != 'shortage':
-            constraint_costs += investment \
-                                * comp['periodical constraint costs']
+        if comp_type != "excess" and comp_type != "shortage":
+            constraint_costs += investment * comp["periodical constraint costs"]
         return constraint_costs
 
     def calc_variable_costs(self, comp, comp_type):
@@ -262,92 +279,127 @@ class Results:
 
         variable_costs = 0
 
-        if comp_type == 'sources':
-            variable_costs += comp['variable costs'] * outflow1
-        elif comp_type == 'storages' or comp_type == 'transformers':
-            variable_costs += comp['variable input costs'] * inflow1
-            variable_costs += comp['variable output costs'] * outflow1
-            if comp_type == 'transformers':
-                variable_costs += (comp['variable output costs 2'] * outflow2)
-        elif comp_type == 'links':
-            variable_costs += \
-                comp['variable output costs'] * (outflow1 + outflow2)
-        elif comp_type == 'excess':
-            variable_costs += comp['excess costs'] * inflow1
-        elif comp_type == 'shortage':
-            variable_costs += comp['shortage costs'] * outflow1
+        if comp_type == "sources":
+            variable_costs += comp["variable costs"] * outflow1
+        elif comp_type == "storages" or comp_type == "transformers":
+            variable_costs += comp["variable input costs"] * inflow1
+            variable_costs += comp["variable output costs"] * outflow1
+            if comp_type == "transformers":
+                variable_costs += comp["variable output costs 2"] * outflow2
+        elif comp_type == "links":
+            variable_costs += comp["variable output costs"] * (outflow1 + outflow2)
+        elif comp_type == "excess":
+            variable_costs += comp["excess costs"] * inflow1
+        elif comp_type == "shortage":
+            variable_costs += comp["shortage costs"] * outflow1
 
         return variable_costs
 
     @staticmethod
     def calc_periodical_costs(comp, investment):
         periodical_costs = 0
-        fix_invest = comp['fix investment costs'] \
-            if 'fix investment costs' in comp else 0
-        non_convex = comp['non-convex investment'] \
-            if 'non-convex investment' in comp else 0
-        periodical_costs += (fix_invest
-                             if (non_convex == 1 and investment > 0) else 0)
-        periodical_costs += investment * comp['periodical costs']
+        fix_invest = (
+            comp["fix investment costs"] if "fix investment costs" in comp else 0
+        )
+        non_convex = (
+            comp["non-convex investment"] if "non-convex investment" in comp else 0
+        )
+        periodical_costs += fix_invest if (non_convex == 1 and investment > 0) else 0
+        periodical_costs += investment * comp["periodical costs"]
         return periodical_costs
 
-    def add_component_to_loc(self, label, comp_type,
-                             capacity=None, variable_costs=None,
-                             periodical_costs=None, investment=None, maxinvest='---',
-                             constraints=None):
+    def add_component_to_loc(
+        self,
+        label,
+        comp_type,
+        capacity=None,
+        variable_costs=None,
+        periodical_costs=None,
+        investment=None,
+        maxinvest="---",
+        constraints=None,
+    ):
         """
-            adds the given component with its parameters to
-            list of components (loc)
+        adds the given component with its parameters to
+        list of components (loc)
         """
         # creating strings for dataframe
-        inflow1 = '---' if self.comp_input1 is None \
-            else str(round(self.comp_input1.sum(), 2))
-        inflow2 = '---' if self.comp_input2 is None \
-            else str(round(self.comp_input2.sum(), 2))
-        outflow1 = '---' if self.comp_output1 is None \
+        inflow1 = (
+            "---" if self.comp_input1 is None else str(round(self.comp_input1.sum(), 2))
+        )
+        inflow2 = (
+            "---" if self.comp_input2 is None else str(round(self.comp_input2.sum(), 2))
+        )
+        outflow1 = (
+            "---"
+            if self.comp_output1 is None
             else str(round(self.comp_output1.sum(), 2))
-        outflow2 = '---' if self.comp_output2 is None \
+        )
+        outflow2 = (
+            "---"
+            if self.comp_output2 is None
             else str(round(self.comp_output2.sum(), 2))
-        capacity = '---' if capacity is None \
-            else str(round(capacity, 2))
-        variable_costs = '---' if variable_costs is None \
-            else str(round(variable_costs, 2))
-        periodical_costs = '---' if periodical_costs is None \
-            else str(round(periodical_costs, 2))
-        investment = '---' if investment is None \
-            else str(round(investment, 2))
-        constraints = '---' if constraints is None \
-            else str(round(constraints, 2))
+        )
+        capacity = "---" if capacity is None else str(round(capacity, 2))
+        variable_costs = (
+            "---" if variable_costs is None else str(round(variable_costs, 2))
+        )
+        periodical_costs = (
+            "---" if periodical_costs is None else str(round(periodical_costs, 2))
+        )
+        investment = "---" if investment is None else str(round(investment, 2))
+        constraints = "---" if constraints is None else str(round(constraints, 2))
 
-        self.df_list_of_components = \
-            self.df_list_of_components.append(
-                pd.DataFrame(
-                    [[label, comp_type, inflow1, inflow2, outflow1, outflow2,
-                      capacity, variable_costs, periodical_costs, investment,maxinvest,
-                      constraints]], columns=self.copt))
+        self.df_list_of_components = self.df_list_of_components.append(
+            pd.DataFrame(
+                [
+                    [
+                        label,
+                        comp_type,
+                        inflow1,
+                        inflow2,
+                        outflow1,
+                        outflow2,
+                        capacity,
+                        variable_costs,
+                        periodical_costs,
+                        investment,
+                        maxinvest,
+                        constraints,
+                    ]
+                ],
+                columns=self.copt,
+            )
+        )
 
     @staticmethod
     def get_first_node_flow(flow):
-        """ returns begin of the flow, used to log where the flow comes from"""
+        """returns begin of the flow, used to log where the flow comes from"""
         flow_name = str(flow.name)
         flow_name = flow_name[2:-10]
-        flow_name = flow_name.split(',')
+        flow_name = flow_name.split(",")
         return flow_name[0]
 
     @staticmethod
     def get_last_node_flow(flow):
-        """ returns end of the flow, used to log where the flow goes to"""
+        """returns end of the flow, used to log where the flow goes to"""
         flow_name = str(flow.name)
         flow_name = flow_name[2:-10]
-        flow_name = flow_name.split(',')
+        flow_name = flow_name.split(",")
         return flow_name[1]
 
-    def console_logging(self, comp_type, capacity=None, variable_costs=None,
-                        periodical_costs=None, investment=None,
-                        transformer_type=None):
+    def console_logging(
+        self,
+        comp_type,
+        capacity=None,
+        variable_costs=None,
+        periodical_costs=None,
+        investment=None,
+        transformer_type=None,
+    ):
         """
-            consists of the different console logging entries and logs
-            the one for the given component
+        consists of the different console logging entries and logs
+        the one for the given component
         """
 
         inflow1 = self.comp_input1
@@ -355,102 +407,196 @@ class Results:
         outflow1 = self.comp_output1
         outflow2 = self.comp_output2
 
-        if comp_type == 'sink':
-            logging.info('   ' + 'Total Energy Demand: ' + str(inflow1.sum())
-                         + ' kWh')
+        if comp_type == "sink":
+            logging.info("   " + "Total Energy Demand: " + str(inflow1.sum()) + " kWh")
         else:
-            if comp_type == 'source':
-                if inflow1 is None or \
-                        'shortage' in self.get_first_node_flow(outflow1):
-                    logging.info('   ' + 'Total Energy Input: '
-                                 + str(outflow1.sum()) + ' kWh')
-                    logging.info('   ' + 'Max. Capacity: ' + str(capacity)
-                                 + ' kW')
-                else:
-                    logging.info('   ' + 'Input from '
-                                 + self.get_first_node_flow(inflow1) + ': '
-                                 + str(round(inflow1.sum(), 2)) + ' kWh')
-                    logging.info('   ' + 'Ambient Energy Input to '
-                                 + self.get_first_node_flow(inflow2) + ': '
-                                 + str(round(inflow2.sum(), 2)) + ' kWh')
-                    logging.info('   ' + 'Energy Output to '
-                                 + self.get_last_node_flow(outflow1) + ': '
-                                 + str(round(outflow1.sum(), 2)) + ' kWh')
-
-            if comp_type == 'transformer':
-                if inflow2 is None:
-                    logging.info('   ' + 'Total Energy Output to'
-                                 + self.get_last_node_flow(outflow1) + ': '
-                                 + str(round(outflow1.sum(), 2)) + ' kWh')
-                    if outflow2 is not None:
-                        logging.info('   ' + 'Total Energy Output to'
-                                     + self.get_last_node_flow(outflow2) + ': '
-                                     + str(round(outflow2.sum(), 2)) + ' kWh')
-                else:
-                    logging.info('   ' + 'Electricity Energy Input to '
-                                 + self.get_first_node_flow(inflow1) + ': '
-                                 + str(round(inflow1.sum(), 2)) + ' kWh')
-                    if transformer_type == 'absorption_heat_transformer':
-                        logging.info('   ' + 'Heat Input to'
-                                     + self.get_last_node_flow(inflow2) + ': '
-                                     + str(round(inflow2.sum(), 2)) + ' kWh')
-                    elif transformer_type == 'compression_heat_transformer':
-                        logging.info('   ' + 'Ambient Energy Input to'
-                                     + self.get_last_node_flow(inflow2) + ': '
-                                     + str(round(inflow2.sum(), 2)) + ' kWh')
-                    logging.info('   ' + 'Total Energy Output to'
-                                 + self.get_last_node_flow(outflow1) + ': '
-                                 + str(round(outflow1.sum(), 2)) + ' kWh')
-                logging.info('   ' + 'Max. Capacity: ' + str(capacity) + ' kW')
-
-                if comp_type == 'storage':
+            if comp_type == "source":
+                if inflow1 is None or "shortage" in self.get_first_node_flow(outflow1):
                     logging.info(
-                        '   ' + 'Energy Output from '
-                        + self.get_first_node_flow(outflow1) + ': '
-                        + str(round(outflow1.sum(), 2)) + 'kWh')
-                    logging.info('   ' + 'Energy Input to '
-                                 + self.get_last_node_flow(outflow1) + ': '
-                                 + str(round(inflow1.sum(), 2)) + ' kWh')
+                        "   " + "Total Energy Input: " + str(outflow1.sum()) + " kWh"
+                    )
+                    logging.info("   " + "Max. Capacity: " + str(capacity) + " kW")
+                else:
+                    logging.info(
+                        "   "
+                        + "Input from "
+                        + self.get_first_node_flow(inflow1)
+                        + ": "
+                        + str(round(inflow1.sum(), 2))
+                        + " kWh"
+                    )
+                    logging.info(
+                        "   "
+                        + "Ambient Energy Input to "
+                        + self.get_first_node_flow(inflow2)
+                        + ": "
+                        + str(round(inflow2.sum(), 2))
+                        + " kWh"
+                    )
+                    logging.info(
+                        "   "
+                        + "Energy Output to "
+                        + self.get_last_node_flow(outflow1)
+                        + ": "
+                        + str(round(outflow1.sum(), 2))
+                        + " kWh"
+                    )
 
-                if comp_type == 'link':
+            if comp_type == "transformer":
+                if inflow2 is None:
+                    logging.info(
+                        "   "
+                        + "Total Energy Output to"
+                        + self.get_last_node_flow(outflow1)
+                        + ": "
+                        + str(round(outflow1.sum(), 2))
+                        + " kWh"
+                    )
+                    if outflow2 is not None:
+                        logging.info(
+                            "   "
+                            + "Total Energy Output to"
+                            + self.get_last_node_flow(outflow2)
+                            + ": "
+                            + str(round(outflow2.sum(), 2))
+                            + " kWh"
+                        )
+                else:
+                    logging.info(
+                        "   "
+                        + "Electricity Energy Input to "
+                        + self.get_first_node_flow(inflow1)
+                        + ": "
+                        + str(round(inflow1.sum(), 2))
+                        + " kWh"
+                    )
+                    if transformer_type == "absorption_heat_transformer":
+                        logging.info(
+                            "   "
+                            + "Heat Input to"
+                            + self.get_last_node_flow(inflow2)
+                            + ": "
+                            + str(round(inflow2.sum(), 2))
+                            + " kWh"
+                        )
+                    elif transformer_type == "compression_heat_transformer":
+                        logging.info(
+                            "   "
+                            + "Ambient Energy Input to"
+                            + self.get_last_node_flow(inflow2)
+                            + ": "
+                            + str(round(inflow2.sum(), 2))
+                            + " kWh"
+                        )
+                    logging.info(
+                        "   "
+                        + "Total Energy Output to"
+                        + self.get_last_node_flow(outflow1)
+                        + ": "
+                        + str(round(outflow1.sum(), 2))
+                        + " kWh"
+                    )
+                logging.info("   " + "Max. Capacity: " + str(capacity) + " kW")
+
+                if comp_type == "storage":
+                    logging.info(
+                        "   "
+                        + "Energy Output from "
+                        + self.get_first_node_flow(outflow1)
+                        + ": "
+                        + str(round(outflow1.sum(), 2))
+                        + "kWh"
+                    )
+                    logging.info(
+                        "   "
+                        + "Energy Input to "
+                        + self.get_last_node_flow(outflow1)
+                        + ": "
+                        + str(round(inflow1.sum(), 2))
+                        + " kWh"
+                    )
+
+                if comp_type == "link":
                     if capacity is None:
-                        logging.info('   ' + 'Total Energy Output to '
-                                     + self.get_last_node_flow(outflow1) + ': '
-                                     + str(round(outflow1.sum(), 2)) + ' kWh')
-                        logging.info('   ' + 'Total Energy Output to '
-                                     + self.get_last_node_flow(outflow2) + ': '
-                                     + str(round(outflow2.sum(), 2)) + ' kWh')
-                        logging.info('   ' + 'Max. Capacity to '
-                                     + self.get_last_node_flow(outflow1) + ': '
-                                     + str(round(outflow1.max(), 2)) + ' kW')
-                        logging.info('   ' + 'Max. Capacity to '
-                                     + self.get_last_node_flow(outflow2) + ': '
-                                     + str(round(outflow2.max(), 2)) + ' kW')
+                        logging.info(
+                            "   "
+                            + "Total Energy Output to "
+                            + self.get_last_node_flow(outflow1)
+                            + ": "
+                            + str(round(outflow1.sum(), 2))
+                            + " kWh"
+                        )
+                        logging.info(
+                            "   "
+                            + "Total Energy Output to "
+                            + self.get_last_node_flow(outflow2)
+                            + ": "
+                            + str(round(outflow2.sum(), 2))
+                            + " kWh"
+                        )
+                        logging.info(
+                            "   "
+                            + "Max. Capacity to "
+                            + self.get_last_node_flow(outflow1)
+                            + ": "
+                            + str(round(outflow1.max(), 2))
+                            + " kW"
+                        )
+                        logging.info(
+                            "   "
+                            + "Max. Capacity to "
+                            + self.get_last_node_flow(outflow2)
+                            + ": "
+                            + str(round(outflow2.max(), 2))
+                            + " kW"
+                        )
                     else:
-                        logging.info('   ' + 'Total Energy Output to '
-                                     + self.get_last_node_flow(outflow1) + ': '
-                                     + str(round(outflow1.sum(), 2)) + ' kWh')
-                        logging.info('   ' + 'Max. Capacity to '
-                                     + self.get_last_node_flow(outflow1) + ': '
-                                     + str(round(capacity, 2)) + ' kW')
+                        logging.info(
+                            "   "
+                            + "Total Energy Output to "
+                            + self.get_last_node_flow(outflow1)
+                            + ": "
+                            + str(round(outflow1.sum(), 2))
+                            + " kWh"
+                        )
+                        logging.info(
+                            "   "
+                            + "Max. Capacity to "
+                            + self.get_last_node_flow(outflow1)
+                            + ": "
+                            + str(round(capacity, 2))
+                            + " kW"
+                        )
             if investment is not None:
-                logging.info('   ' + 'Investment Capacity: '
-                             + str(round(investment, 2)) + ' kW')
+                logging.info(
+                    "   " + "Investment Capacity: " + str(round(investment, 2)) + " kW"
+                )
             if periodical_costs is not None:
-                logging.info('   ' + 'Periodical costs: '
-                             + str(round(periodical_costs, 2))
-                             + ' cost units p.a.')
-            logging.info('   ' + 'Variable Costs: '
-                         + str(round(variable_costs, 2)) + ' cost units')
+                logging.info(
+                    "   "
+                    + "Periodical costs: "
+                    + str(round(periodical_costs, 2))
+                    + " cost units p.a."
+                )
+            logging.info(
+                "   "
+                + "Variable Costs: "
+                + str(round(variable_costs, 2))
+                + " cost units"
+            )
 
     @staticmethod
     def insert_line_end_of_component():
-        logging.info(
-            '   ' + '--------------------------------------------------------')
+        logging.info("   " + "--------------------------------------------------------")
 
-    def __init__(self, nodes_data: dict, optimization_model: solph.Model,
-                 energy_system: solph.EnergySystem, result_path: str,
-                 console_log: bool):
+    def __init__(
+        self,
+        nodes_data: dict,
+        optimization_model: solph.Model,
+        energy_system: solph.EnergySystem,
+        result_path: str,
+        console_log: bool,
+    ):
         """
             Returns a list of all defined components with the following
             information:
@@ -505,21 +651,23 @@ class Results:
         """
 
         components_dict = {
-            "sinks": nodes_data['sinks'],
-            "buses_e": nodes_data['buses'],
-            "sources": nodes_data['sources'],
-            "buses_s": nodes_data['buses'],
-            "transformers": nodes_data['transformers'],
-            "storages": nodes_data['storages'],
-            "links": nodes_data['links']
+            "sinks": nodes_data["sinks"],
+            "buses_e": nodes_data["buses"],
+            "sources": nodes_data["sources"],
+            "buses_s": nodes_data["buses"],
+            "transformers": nodes_data["transformers"],
+            "storages": nodes_data["storages"],
+            "links": nodes_data["links"],
         }
         # create excess and shortage sheet
-        components_dict['buses_e'] = components_dict['buses_e'].drop(
-            components_dict['buses_e']
-            [components_dict['buses_e']['excess'] == 0].index)
-        components_dict['buses_s'] = components_dict['buses_s'].drop(
-            components_dict['buses_s']
-            [components_dict['buses_s']['shortage'] == 0].index)
+        components_dict["buses_e"] = components_dict["buses_e"].drop(
+            components_dict["buses_e"][components_dict["buses_e"]["excess"] == 0].index
+        )
+        components_dict["buses_s"] = components_dict["buses_s"].drop(
+            components_dict["buses_s"][
+                components_dict["buses_s"]["shortage"] == 0
+            ].index
+        )
 
         investments_to_be_made = {}
         total_periodical_costs = 0
@@ -538,213 +686,228 @@ class Results:
             periodical_costs = None
             constraint_costs = None
             transformer_type = None
-           
-            if i != 'buses_e' and i != 'buses_s' and console_log:
+
+            if i != "buses_e" and i != "buses_s" and console_log:
                 self.log_category(i.upper())
             for j, comp in components_dict[i].iterrows():
-                if comp['active']:
+                if comp["active"]:
                     # needed due to the structure of thermal flat plate
-                    if i == 'sources' and comp[
-                            'technology'] in ['solar_thermal_flat_plate',
-                                              'concentrated_solar_power']:
-                        comp['label'] = comp['label'] + '_collector'
+                    if i == "sources" and comp["technology"] in [
+                        "solar_thermal_flat_plate",
+                        "concentrated_solar_power",
+                    ]:
+                        comp["label"] = comp["label"] + "_collector"
 
-                    if i == 'buses_e':
+                    if i == "buses_e":
                         if console_log:
-                            logging.info('   ' + comp['label'] + '_excess')
+                            logging.info("   " + comp["label"] + "_excess")
                         excess_or_shortage = "excess"
-                    elif i == 'buses_s':
+                    elif i == "buses_s":
                         if console_log:
-                            logging.info('   ' + comp['label'] + '_shortage')
+                            logging.info("   " + comp["label"] + "_shortage")
                         excess_or_shortage = "shortage"
                     else:
                         if console_log:
-                            logging.info('   ' + comp['label'])
+                            logging.info("   " + comp["label"])
                         excess_or_shortage = None
-                    component = solph.views.node(self.results, comp['label'])
-                    
+                    component = solph.views.node(self.results, comp["label"])
+
                     # create class intern dataframes consisting the flows
                     # of given component
-                    self.create_flow_dataframes(comp, component,
-                                                excess_or_shortage)
-                    
-                    if i != 'buses_s' and i != 'buses_e' and i != "sinks":
+                    self.create_flow_dataframes(comp, component, excess_or_shortage)
+
+                    if i != "buses_s" and i != "buses_e" and i != "sinks":
                         # get the investment on component out of results
                         # of the optimization
                         # (excluding sinks, excess sinks and shortage sources)
                         investment = self.get_comp_investment(comp, i[:-1])
                         if investment > 0:
-                            investments_to_be_made[comp['label']] = \
-                               (str(round(investment, 2)) + ' kW')
+                            investments_to_be_made[comp["label"]] = (
+                                str(round(investment, 2)) + " kW"
+                            )
                         # calculate periodical costs
-                        periodical_costs = \
-                            self.calc_periodical_costs(comp, investment)
+                        periodical_costs = self.calc_periodical_costs(comp, investment)
                         total_periodical_costs += periodical_costs
                         # calculate variable costs
                         variable_costs = self.calc_variable_costs(comp, i)
                         total_variable_costs += variable_costs
                         # calculate constraint costs
                         constraint_costs = self.calc_constraint_costs(
-                            comp, comp_type=i[:-1], investment=investment)
+                            comp, comp_type=i[:-1], investment=investment
+                        )
                         total_constraint_costs += constraint_costs
                     # sinks
-                    if i == "sinks" or i == 'buses_e':
-                        # the following values do not apply to sinks 
+                    if i == "sinks" or i == "buses_e":
+                        # the following values do not apply to sinks
                         periodical_costs = None
                         investment = None
                         # excess sink
-                        if i == 'buses_e':
-                            comp_label = comp['label'] + '_excess'
+                        if i == "buses_e":
+                            comp_label = comp["label"] + "_excess"
                             # calculation of excess costs
-                            variable_costs = \
-                                self.calc_variable_costs(comp, 'excess')
+                            variable_costs = self.calc_variable_costs(comp, "excess")
                             total_variable_costs += variable_costs
                             # calculation of excess constraint costs
                             constraint_costs = self.calc_constraint_costs(
-                                comp, comp_type="excess")
+                                comp, comp_type="excess"
+                            )
                             total_constraint_costs += constraint_costs
                         # demand sink
                         else:
                             total_demand += self.comp_input1.sum()
-                            comp_label = comp['label']
+                            comp_label = comp["label"]
                             variable_costs = None
                             constraint_costs = None
                         capacity = round(self.comp_input1.max(), 2)
                         self.df_result_table[comp_label] = self.comp_input1
                     # sources
-                    elif i == "sources" or i == 'buses_s':
+                    elif i == "sources" or i == "buses_s":
                         total_usage += self.comp_output1.sum()
-                        comp_input = \
-                            comp['input'] if 'input' in comp else 'None'
+                        comp_input = comp["input"] if "input" in comp else "None"
                         # shortage source
-                        if i == 'buses_s':
+                        if i == "buses_s":
                             # calculation of excess costs
-                            variable_costs = \
-                                self.calc_variable_costs(comp, 'shortage')
+                            variable_costs = self.calc_variable_costs(comp, "shortage")
                             total_variable_costs += variable_costs
 
                             # calculation of excess constraint costs
                             constraint_costs = self.calc_constraint_costs(
-                                comp, comp_type="shortage")
+                                comp, comp_type="shortage"
+                            )
                             total_constraint_costs += constraint_costs
                             # the following values do not apply to
-                            # shortage-sources 
+                            # shortage-sources
                             periodical_costs = None
                             investment = None
                         # Non-thermal-sources and shortage sources
-                        if comp_input in [0, 'None', 'none']:
-                            if i != 'buses_s':
-                                comp_label = comp['label']
+                        if comp_input in [0, "None", "none"]:
+                            if i != "buses_s":
+                                comp_label = comp["label"]
                             else:
-                                comp_label = comp['label'] + '_shortage'
-                            self.df_result_table[comp_label] = \
-                                self.comp_output1
+                                comp_label = comp["label"] + "_shortage"
+                            self.df_result_table[comp_label] = self.comp_output1
                             capacity = round(self.comp_output1.max(), 2)
                         # thermal-sources
                         else:
                             self.df_result_table[
-                                comp['label'] + '_el_input'] = \
-                                self.comp_input1
+                                comp["label"] + "_el_input"
+                            ] = self.comp_input1
                             self.df_result_table[
-                                comp['label'] + '_solar_input'] = \
-                                self.comp_input2
+                                comp["label"] + "_solar_input"
+                            ] = self.comp_input2
                             self.df_result_table[
-                                comp['label'] + '_heat_output'] = \
-                                self.comp_output1
-                            comp_label = comp['label']
+                                comp["label"] + "_heat_output"
+                            ] = self.comp_output1
+                            comp_label = comp["label"]
                             capacity = round(self.comp_input2.max(), 2)
                     # transformers
                     elif i == "transformers":
-                        comp_label = comp['label']
+                        comp_label = comp["label"]
                         capacity = round(self.comp_output1.max(), 2)
-                        if comp['transformer type'] == 'ExtractionTurbineCHP':
+                        if comp["transformer type"] == "ExtractionTurbineCHP":
                             logging.info(
-                                '   ' + 'WARNING: ExtractionTurbineCHP are '
-                                + 'currently not a part of this model '
-                                + 'generator, but will be added later.')
+                                "   "
+                                + "WARNING: ExtractionTurbineCHP are "
+                                + "currently not a part of this model "
+                                + "generator, but will be added later."
+                            )
 
-                        elif comp['transformer type'] == 'OffsetTransformer':
+                        elif comp["transformer type"] == "OffsetTransformer":
                             logging.info(
-                                '   ' + 'WARNING: OffsetTransformer are '
-                                + 'currently not a part of this model '
-                                + 'generator, but will be added later.')
+                                "   "
+                                + "WARNING: OffsetTransformer are "
+                                + "currently not a part of this model "
+                                + "generator, but will be added later."
+                            )
 
-                        elif comp['transformer type'] == 'GenericTransformer' \
-                                or comp['transformer type'] == 'GenericCHP':
-
-                            self.df_result_table[comp['label'] + '_input'] = \
-                                self.comp_input1
-                            self.df_result_table[comp['label'] + '_output1'] =\
-                                self.comp_output1
-
-                            if comp['output2'] not in [0, 'None', 'none']:
-                                self.df_result_table[
-                                    comp['label'] + '_output2'] = \
-                                    self.comp_output2
-
-                        elif comp['transformer type'] == \
-                                'CompressionHeatTransformer' or \
-                                comp['transformer type'] == \
-                                'AbsorptionHeatTransformer':
+                        elif (
+                            comp["transformer type"] == "GenericTransformer"
+                            or comp["transformer type"] == "GenericCHP"
+                        ):
 
                             self.df_result_table[
-                                comp['label'] + '_el_input'] = self.comp_input1
-                            
-                            transformer_type = comp['transformer type']
-                            
-                            if comp['transformer type'] == \
-                                    'AbsorptionHeatTransformer':
+                                comp["label"] + "_input"
+                            ] = self.comp_input1
+                            self.df_result_table[
+                                comp["label"] + "_output1"
+                            ] = self.comp_output1
+
+                            if comp["output2"] not in [0, "None", "none"]:
                                 self.df_result_table[
-                                    comp['label'] + '_heat_input'] = \
-                                    self.comp_input2
+                                    comp["label"] + "_output2"
+                                ] = self.comp_output2
+
+                        elif (
+                            comp["transformer type"] == "CompressionHeatTransformer"
+                            or comp["transformer type"] == "AbsorptionHeatTransformer"
+                        ):
+
+                            self.df_result_table[
+                                comp["label"] + "_el_input"
+                            ] = self.comp_input1
+
+                            transformer_type = comp["transformer type"]
+
+                            if comp["transformer type"] == "AbsorptionHeatTransformer":
+                                self.df_result_table[
+                                    comp["label"] + "_heat_input"
+                                ] = self.comp_input2
                             else:
                                 self.df_result_table[
-                                    comp['label'] + '_ambient_input'] = \
-                                    self.comp_input2
+                                    comp["label"] + "_ambient_input"
+                                ] = self.comp_input2
 
-                            if comp['mode'] == 'chiller':
+                            if comp["mode"] == "chiller":
                                 self.df_result_table[
-                                    comp['label'] + '_cooling_output'] = \
-                                    self.comp_output1
-                            if comp['mode'] == 'heat_pump':
+                                    comp["label"] + "_cooling_output"
+                                ] = self.comp_output1
+                            if comp["mode"] == "heat_pump":
                                 self.df_result_table[
-                                    comp['label'] + '_heat_output'] = \
-                                    self.comp_output1
+                                    comp["label"] + "_heat_output"
+                                ] = self.comp_output1
                     # storages
                     elif i == "storages":
-                        comp_label = comp['label']
-                        self.df_result_table[comp['label'] + '_capacity'] = \
-                            self.comp_capacity
-                        self.df_result_table[comp['label'] + '_input'] = \
-                            self.comp_input1
-                        self.df_result_table[comp['label'] + '_output'] = \
-                            self.comp_output1
+                        comp_label = comp["label"]
+                        self.df_result_table[
+                            comp["label"] + "_capacity"
+                        ] = self.comp_capacity
+                        self.df_result_table[
+                            comp["label"] + "_input"
+                        ] = self.comp_input1
+                        self.df_result_table[
+                            comp["label"] + "_output"
+                        ] = self.comp_output1
                         capacity = round(self.comp_capacity.max(), 2)
 
                     # links
                     elif i == "links":
-                        comp_label = comp['label']
-                        self.df_result_table[comp['label'] + '_input1'] = \
-                            self.comp_input1
-                        self.df_result_table[comp['label'] + '_output1'] = \
-                            self.comp_output1
-                        if comp['(un)directed'] == 'undirected':
-                            self.df_result_table[comp['label'] + '_input2'] = \
-                                self.comp_input2
-                            self.df_result_table[comp['label'] + '_output2'] =\
-                                self.comp_output2
+                        comp_label = comp["label"]
+                        self.df_result_table[
+                            comp["label"] + "_input1"
+                        ] = self.comp_input1
+                        self.df_result_table[
+                            comp["label"] + "_output1"
+                        ] = self.comp_output1
+                        if comp["(un)directed"] == "undirected":
+                            self.df_result_table[
+                                comp["label"] + "_input2"
+                            ] = self.comp_input2
+                            self.df_result_table[
+                                comp["label"] + "_output2"
+                            ] = self.comp_output2
 
-                            capacity = round(max(self.comp_output1.max(),
-                                                 self.comp_output2.max()), 2)
+                            capacity = round(
+                                max(self.comp_output1.max(), self.comp_output2.max()), 2
+                            )
                         else:
                             capacity = round(self.comp_output1.max(), 2)
                     else:
                         raise ValueError("Error with technology" + i)
-                    if i in ['buses_e', 'buses_s']:
-                        if i == 'buses_e':
-                            comp_type = 'sink'
+                    if i in ["buses_e", "buses_s"]:
+                        if i == "buses_e":
+                            comp_type = "sink"
                         else:
-                            comp_type = 'source'
+                            comp_type = "source"
                     else:
                         comp_type = i[:-1]
 
@@ -755,9 +918,11 @@ class Results:
                         variable_costs=variable_costs,
                         periodical_costs=periodical_costs,
                         investment=investment,
-                        maxinvest=round(comp['max. investment capacity'], 2) if 'max. investment capacity' in comp
-                        else '---',
-                        constraints=constraint_costs)
+                        maxinvest=round(comp["max. investment capacity"], 2)
+                        if "max. investment capacity" in comp
+                        else "---",
+                        constraints=constraint_costs,
+                    )
                     if console_log:
                         self.console_logging(
                             comp_type=comp_type,
@@ -765,62 +930,103 @@ class Results:
                             variable_costs=variable_costs,
                             periodical_costs=periodical_costs,
                             investment=investment,
-                            transformer_type=transformer_type)
+                            transformer_type=transformer_type,
+                        )
 
                         self.insert_line_end_of_component()
         # SUMMARY
         meta_results = solph.processing.meta_results(optimization_model)
-        meta_results_objective = meta_results['objective']
+        meta_results_objective = meta_results["objective"]
         if console_log:
             self.log_category("SUMMARY")
-            logging.info('   ' + 'Total System Costs:             '
-                         + str(round(meta_results_objective, 1))
-                         + ' cost units')
-            logging.info('   ' + 'Total Constraint Costs:         '
-                         + str(round(total_constraint_costs)) + ' cost units')
-            logging.info('   ' + 'Total Variable Costs:           '
-                         + str(round(total_variable_costs)) + ' cost units')
-            logging.info('   ' + 'Total Periodical Costs (p.a.):  '
-                         + str(round(total_periodical_costs))
-                         + ' cost units p.a.')
-            logging.info('   ' + 'Total Energy Demand:            '
-                         + str(round(total_demand)) + ' kWh')
-            logging.info('   ' + 'Total Energy Usage:             '
-                         + str(round(total_usage)) + ' kWh')
+            logging.info(
+                "   "
+                + "Total System Costs:             "
+                + str(round(meta_results_objective, 1))
+                + " cost units"
+            )
+            logging.info(
+                "   "
+                + "Total Constraint Costs:         "
+                + str(round(total_constraint_costs))
+                + " cost units"
+            )
+            logging.info(
+                "   "
+                + "Total Variable Costs:           "
+                + str(round(total_variable_costs))
+                + " cost units"
+            )
+            logging.info(
+                "   "
+                + "Total Periodical Costs (p.a.):  "
+                + str(round(total_periodical_costs))
+                + " cost units p.a."
+            )
+            logging.info(
+                "   "
+                + "Total Energy Demand:            "
+                + str(round(total_demand))
+                + " kWh"
+            )
+            logging.info(
+                "   "
+                + "Total Energy Usage:             "
+                + str(round(total_usage))
+                + " kWh"
+            )
             # creating the list of investments to be made
             self.insert_line_end_of_component()
-            logging.info('   ' + 'Investments to be made:')
+            logging.info("   " + "Investments to be made:")
             investment_objects = list(investments_to_be_made.keys())
             for i in range(len(investment_objects)):
-                logging.info('   - ' + investment_objects[i] + ': '
-                             + investments_to_be_made[investment_objects[i]])
-            logging.info('   ' + 56 * "*" + "\n")
+                logging.info(
+                    "   - "
+                    + investment_objects[i]
+                    + ": "
+                    + investments_to_be_made[investment_objects[i]]
+                )
+            logging.info("   " + 56 * "*" + "\n")
 
         # Importing time system parameters from the scenario
-        ts = next(nodes_data['energysystem'].iterrows())[1]
-        temp_resolution = ts['temporal resolution']
-        start_date = ts['start date']
-        end_date = ts['end date']
+        ts = next(nodes_data["energysystem"].iterrows())[1]
+        temp_resolution = ts["temporal resolution"]
+        start_date = ts["start date"]
+        end_date = ts["end date"]
 
         df_summary = pd.DataFrame(
-            [[start_date, end_date, temp_resolution,
-              round(meta_results_objective, 2),
-              round(total_constraint_costs, 2),
-              round(total_variable_costs, 2),
-              round(total_periodical_costs, 2), round(total_demand, 2),
-              round(total_usage, 2)]],
-            columns=['Start Date', 'End Date', 'Resolution',
-                     'Total System Costs', 'Total Constraint Costs',
-                     'Total Variable Costs', 'Total Periodical Costs',
-                     'Total Energy Demand', 'Total Energy Usage'])
+            [
+                [
+                    start_date,
+                    end_date,
+                    temp_resolution,
+                    round(meta_results_objective, 2),
+                    round(total_constraint_costs, 2),
+                    round(total_variable_costs, 2),
+                    round(total_periodical_costs, 2),
+                    round(total_demand, 2),
+                    round(total_usage, 2),
+                ]
+            ],
+            columns=[
+                "Start Date",
+                "End Date",
+                "Resolution",
+                "Total System Costs",
+                "Total Constraint Costs",
+                "Total Variable Costs",
+                "Total Periodical Costs",
+                "Total Energy Demand",
+                "Total Energy Usage",
+            ],
+        )
 
         # Dataframes are exported as csv for further processing
-        self.df_list_of_components.to_csv(result_path + '/components.csv',
-                                          index=False)
+        self.df_list_of_components.to_csv(result_path + "/components.csv", index=False)
 
-        df_result_table = self.df_result_table.rename_axis('date')
-        df_result_table.to_csv(result_path + '/results.csv')
+        df_result_table = self.df_result_table.rename_axis("date")
+        df_result_table.to_csv(result_path + "/results.csv")
 
-        df_summary.to_csv(result_path + '/summary.csv', index=False)
+        df_summary.to_csv(result_path + "/summary.csv", index=False)
 
-        logging.info('   ' + 'Successfully prepared results...')
+        logging.info("   " + "Successfully prepared results...")

@@ -9,8 +9,9 @@ import numpy as np
 import pandas as pd
 
 
-def logarithmic_profile(wind_speed, wind_speed_height, hub_height,
-                        roughness_length, obstacle_height=0.0):
+def logarithmic_profile(
+    wind_speed, wind_speed_height, hub_height, roughness_length, obstacle_height=0.0
+):
     r"""
     Calculates the wind speed at hub height using a logarithmic wind profile.
 
@@ -79,17 +80,13 @@ def logarithmic_profile(wind_speed, wind_speed_height, hub_height,
             + "speed data of a greater height is needed."
         )
     # Return np.array if wind_speed is np.array
-    if isinstance(wind_speed, np.ndarray) and isinstance(
-        roughness_length, pd.Series
-    ):
+    if isinstance(wind_speed, np.ndarray) and isinstance(roughness_length, pd.Series):
         roughness_length = np.array(roughness_length)
 
     return (
         wind_speed
         * np.log((hub_height - 0.7 * obstacle_height) / roughness_length)
-        / np.log(
-            (wind_speed_height - 0.7 * obstacle_height) / roughness_length
-        )
+        / np.log((wind_speed_height - 0.7 * obstacle_height) / roughness_length)
     )
 
 

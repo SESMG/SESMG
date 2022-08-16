@@ -36,9 +36,7 @@ def defaultdb():
         "postgresql+oedialect://openenergy-platform.org"
     )
     defaultdb.engine = engine
-    session = (
-        getattr(defaultdb, "session", None) or sessionmaker(bind=engine)()
-    )
+    session = getattr(defaultdb, "session", None) or sessionmaker(bind=engine)()
     defaultdb.session = session
     metadata = sqla.MetaData(schema="model_draft", bind=engine, reflect=False)
     return {"session": session, "db": ofr.mapped_classes(metadata)}
@@ -146,13 +144,10 @@ class Weather:
         )
 
         location_ids = [
-            l.id
-            for l in chain(self.locations.values(), *self.regions.values())
+            l.id for l in chain(self.locations.values(), *self.regions.values())
         ]
 
-        self.locations = {
-            k: to_shape(self.locations[k].point) for k in self.locations
-        }
+        self.locations = {k: to_shape(self.locations[k].point) for k in self.locations}
         self.locations.update(
             {
                 (p.x, p.y): p
@@ -173,18 +168,12 @@ class Weather:
         }
 
         series = sorted(
-            session.query(
-                db["Series"], db["Variable"], db["Timespan"], db["Location"]
-            )
+            session.query(db["Series"], db["Variable"], db["Timespan"], db["Location"])
             .join(db["Series"].variable)
             .join(db["Series"].timespan)
             .join(db["Series"].location)
             .filter((db["Series"].location_id.in_(location_ids)))
-            .filter(
-                None
-                if variables is None
-                else db["Variable"].name.in_(variables)
-            )
+            .filter(None if variables is None else db["Variable"].name.in_(variables))
             .filter(
                 None
                 if heights is None
@@ -246,10 +235,7 @@ class Weather:
                     or (
                         isinstance(self.series[k][-1][2], Number)
                         and isinstance(self.series[k][-2][2], Number)
-                        and (
-                            abs(self.series[k][-1][2] - self.series[k][-2][2])
-                            <= 0.5
-                        )
+                        and (abs(self.series[k][-1][2] - self.series[k][-2][2]) <= 0.5)
                     )
                 )
                 else self.series[k]
@@ -299,8 +285,7 @@ class Weather:
         return instance
 
     def location(self, point: Point):
-        """ Get the measurement location closest to the given `point`.
-        """
+        """Get the measurement location closest to the given `point`."""
         point = WKTE(point.to_wkt(), srid=4326)
         return (
             self.session.query(self.db["Location"])
@@ -309,8 +294,7 @@ class Weather:
         )
 
     def within(self, region=None):
-        """ Get all measurement locations within the given `region`.
-        """
+        """Get all measurement locations within the given `region`."""
         region = WKTE(region.to_wkt(), srid=4326)
         return (
             self.session.query(self.db["Location"])
@@ -365,9 +349,7 @@ class Weather:
                             # where also not converted, so we have to do this
                             # manually, too.
                             pd.to_datetime(v, utc=True) if n in [0, 1] else v
-                            for k, v in sorted(
-                                s[n].items(), key=lambda kv: int(kv[0])
-                            )
+                            for k, v in sorted(s[n].items(), key=lambda kv: int(kv[0]))
                         ]
                         for n in s.index
                     ]
@@ -381,8 +363,7 @@ class Weather:
             columns = sorted(set((n, h) for (xy, n, h) in self.series))
             index = sorted(xy for xy in set(xy for (xy, n, h) in self.series))
             data = {
-                (n, h): [self.series[xy, n, h] for xy in index]
-                for (n, h) in columns
+                (n, h): [self.series[xy, n, h] for xy in index] for (n, h) in columns
             }
             return DF(index=pd.MultiIndex.from_tuples(index), data=data)
 
@@ -447,9 +428,7 @@ class Weather:
                         "temperature",
                         "wind_speed",
                     ]
-                    for h in self.variables[TRANSLATIONS[lib][v][0][0]][
-                        "heights"
-                    ]
+                    for h in self.variables[TRANSLATIONS[lib][v][0][0]]["heights"]
                 ]
                 if lib == "windpowerlib"
                 else [(v,) for v in self.variables]
@@ -462,9 +441,7 @@ class Weather:
                 .interpolate()[series["dhi"].index]
             )
             series["pressure"] = (
-                series["pressure"]
-                .resample("15min")
-                .interpolate()[series["dhi"].index]
+                series["pressure"].resample("15min").interpolate()[series["dhi"].index]
             )
             ws = series["wind_speed"]
             for k in series["wind_speed"].keys():

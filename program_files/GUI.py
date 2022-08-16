@@ -13,39 +13,39 @@ from program_files.urban_district_upscaling import urban_district_upscaling_GUI
 
 def create_elements(sheet, elements, texts, values, first_row):
     """
-        Creates a block of tk-inter elements. The elements are created
-        from an input dictionary. The tk-inter output
-        has the following structure:
-    
-        TEXT 1 | TEXT 2 | TEXT 3 | INPUT FIELD   | TEXT 4
-        ...    | ...    | ...    | ...           | ...
-               |        |        | UPDATE BUTTON |
-    
-        The block will have the number of lines that the input
-        dictionary elements have. By pressing the "UPDATE BUTTON"
-        the value "TEXT 2" will be replaced with the input given with
-        the input field.
-    
-        ---
-    
-        Input variables:
-    
-        sheet: sheet within the window, where the element block will be
-        placed
-    
-        elements: dictionary containing elements wich will be shown
-        within this tk-inter block. Structure of the dictionary
-            has to be as follows: elements =
-            {'rowname':['text 1', 'text 2', 'text 3', 'text 4']}
-    
-        texts: list, where the elements of column 3 (TEXT 4) will be
-        saved. Required for data updates.
-    
-        values: list, where the elements of column 1 (TEXT 2) will be
-        saved. Required for data updates.
-    
-        first_row: top line of the window sheet where the block should
-        be positioned.
+    Creates a block of tk-inter elements. The elements are created
+    from an input dictionary. The tk-inter output
+    has the following structure:
+
+    TEXT 1 | TEXT 2 | TEXT 3 | INPUT FIELD   | TEXT 4
+    ...    | ...    | ...    | ...           | ...
+           |        |        | UPDATE BUTTON |
+
+    The block will have the number of lines that the input
+    dictionary elements have. By pressing the "UPDATE BUTTON"
+    the value "TEXT 2" will be replaced with the input given with
+    the input field.
+
+    ---
+
+    Input variables:
+
+    sheet: sheet within the window, where the element block will be
+    placed
+
+    elements: dictionary containing elements wich will be shown
+    within this tk-inter block. Structure of the dictionary
+        has to be as follows: elements =
+        {'rowname':['text 1', 'text 2', 'text 3', 'text 4']}
+
+    texts: list, where the elements of column 3 (TEXT 4) will be
+    saved. Required for data updates.
+
+    values: list, where the elements of column 1 (TEXT 2) will be
+    saved. Required for data updates.
+
+    first_row: top line of the window sheet where the block should
+    be positioned.
 
     """
 
@@ -55,63 +55,79 @@ def create_elements(sheet, elements, texts, values, first_row):
     for i in range(len(elements)):
         row = i + first_row + 1
 
-        variable_name = Label(sheet, text=elements[element_keys[i]][0], font='Helvetica 10')
+        variable_name = Label(
+            sheet, text=elements[element_keys[i]][0], font="Helvetica 10"
+        )
         variable_name.grid(column=0, row=row, sticky="W")
 
-        variable_value = Label(sheet, text=str(elements[element_keys[i]][1]), font='Helvetica 10')
+        variable_value = Label(
+            sheet, text=str(elements[element_keys[i]][1]), font="Helvetica 10"
+        )
         values.append(variable_value)
         values[i].grid(column=1, row=row)
 
-        variable_unit = Label(sheet, text=str(elements[element_keys[i]][2]), font='Helvetica 10')
+        variable_unit = Label(
+            sheet, text=str(elements[element_keys[i]][2]), font="Helvetica 10"
+        )
         variable_unit.grid(column=2, row=row, sticky="W")
 
-        variable_text = Entry(sheet, width=20, font='Helvetica 10')
+        variable_text = Entry(sheet, width=20, font="Helvetica 10")
         texts.append(variable_text)
         texts[i].grid(column=3, row=row)
 
-        variable_format = Label(sheet, text=elements[element_keys[i]][3], font='Helvetica 10')
+        variable_format = Label(
+            sheet, text=elements[element_keys[i]][3], font="Helvetica 10"
+        )
         variable_format.grid(column=4, row=row, sticky="W")
 
 
 def create_main_frame_elements(elements, sheet, first_row, file_paths, frame):
-    """ Creates a block of tk-inter elements. The elements are created from an input dictionary. The tk-inter output
-       has the following structure:
+    """Creates a block of tk-inter elements. The elements are created from an input dictionary. The tk-inter output
+    has the following structure:
 
-       TEXT 1 | BUTTON | TEXT 2 |
-       ...    | ...    | ...    |
+    TEXT 1 | BUTTON | TEXT 2 |
+    ...    | ...    | ...    |
 
-       The block will have the number of lines that the input dictionary elements have. By pressing the "BUTTONS"
-       stored functions will be executed.
+    The block will have the number of lines that the input dictionary elements have. By pressing the "BUTTONS"
+    stored functions will be executed.
 
-       ---
+    ---
 
-       Input variables:
+    Input variables:
 
-       sheet: sheet within the window, where the element block will be placed
+    sheet: sheet within the window, where the element block will be placed
 
-       elements: dictionary containing elements wich will be shown within this tk-inter block.
-       Structure of the dictionary has to be as follows:
-            elements = {'rowname':['text 1', function to be executed, 'text 2'}
+    elements: dictionary containing elements wich will be shown within this tk-inter block.
+    Structure of the dictionary has to be as follows:
+         elements = {'rowname':['text 1', function to be executed, 'text 2'}
 
-       frame: sheet within the window, where the element block will be placed
+    frame: sheet within the window, where the element block will be placed
 
-       file_paths: dictionary where the values of TEXT 2 can be saved. Required for later changes.
+    file_paths: dictionary where the values of TEXT 2 can be saved. Required for later changes.
 
-       first_row: top line of the window sheet where the block should be positioned.
+    first_row: top line of the window sheet where the block should be positioned.
 
-       """
+    """
     element_keys = [i for i in elements.keys()]
 
     for i in range(len(elements)):
         row = i + first_row + 1
 
-        label_name = Label(sheet, text=elements[element_keys[i]][0], font='Helvetica 10')
+        label_name = Label(
+            sheet, text=elements[element_keys[i]][0], font="Helvetica 10"
+        )
         label_name.grid(column=0, row=row, sticky="W")
 
-        button = Button(frame, text=elements[element_keys[i]][2], command=elements[element_keys[i]][1])
+        button = Button(
+            frame,
+            text=elements[element_keys[i]][2],
+            command=elements[element_keys[i]][1],
+        )
         button.grid(column=3, row=row)
 
-        label_comment = Label(sheet, text=elements[element_keys[i]][3], font='Helvetica 10')
+        label_comment = Label(
+            sheet, text=elements[element_keys[i]][3], font="Helvetica 10"
+        )
         file_paths.append(label_comment)
         file_paths[i].grid(column=4, row=row, columnspan=7, sticky="W")
 
@@ -127,17 +143,18 @@ def update_values(texts_input, rows, input_elements, input_values):
 
 
 def data_path():
-    print('placeholder')
+    print("placeholder")
 
 
 def getFolderPath():
     """
-        opens a file dialog and sets the selected path for the variable
-        "scenario_path"
+    opens a file dialog and sets the selected path for the variable
+    "scenario_path"
     """
 
     path = filedialog.askopenfilename(
-            filetypes=(("Spreadsheet Files", "*.xlsx"), ("all files", "*.*")))
+        filetypes=(("Spreadsheet Files", "*.xlsx"), ("all files", "*.*"))
+    )
 
     gui_variables["scenario_path"].set(path)
     print(gui_variables["scenario_path"].get())
@@ -147,8 +164,8 @@ def getFolderPath():
 
 def getSavePath():
     """
-        opens a file dialog and sets the selected path for the variable
-        "save_path"
+    opens a file dialog and sets the selected path for the variable
+    "save_path"
     """
 
     path = filedialog.askdirectory()
@@ -158,24 +175,22 @@ def getSavePath():
 
 
 def show_graph():
-    """ creates and shows a graph of the energy system given by a Spreadsheet
-        - the created graphs are saved in /results/graphs"""
-    from program_files import (create_energy_system,
-                               create_graph)
+    """creates and shows a graph of the energy system given by a Spreadsheet
+    - the created graphs are saved in /results/graphs"""
+    from program_files import create_energy_system, create_graph
 
     # DEFINES PATH OF INPUT DATA
     scenario_file = gui_variables["scenario_path"].get()
 
     # DEFINES PATH OF OUTPUT DATA
     if sys.platform.startswith("win"):
-        result_path = os.path.join(os.path.dirname(__file__)
-                                   + '/results/graphs')
-    elif sys.platform.startswith('darwin'):
+        result_path = os.path.join(os.path.dirname(__file__) + "/results/graphs")
+    elif sys.platform.startswith("darwin"):
         result_path = os.path.dirname(os.path.abspath(__file__))
-        result_path = result_path + '/results/graphs'
+        result_path = result_path + "/results/graphs"
     elif sys.platform.startswith("linux"):
         result_path = os.path.dirname(os.path.abspath(__file__))
-        result_path = result_path + '/results/graphs'
+        result_path = result_path + "/results/graphs"
         subprocess.call("chmod +x " + result_path, shell=True)
     else:
         raise ValueError("unsupported operating system")
@@ -184,27 +199,32 @@ def show_graph():
     nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
 
     # PRINTS A GRAPH OF THE ENERGY SYSTEM
-    create_graph.create_graph(filepath=result_path,
-                              nodes_data=nodes_data,
-                              show=gui_variables["graph_state"],
-                              legend=False)
+    create_graph.create_graph(
+        filepath=result_path,
+        nodes_data=nodes_data,
+        show=gui_variables["graph_state"],
+        legend=False,
+    )
 
 
 def save_settings():
     dict_to_save = {}
     for key, value in gui_variables.items():
         dict_to_save.update({key: value.get()})
-    with open('program_files/technical_data/gui_settings.csv', 'w',
-              newline='') as csv_file:
+    with open(
+        "program_files/technical_data/gui_settings.csv", "w", newline=""
+    ) as csv_file:
         writer = csv.writer(csv_file)
         for key, value in dict_to_save.items():
             writer.writerow([key, value])
 
-            
+
 def reload_settings():
-    with open(os.path.dirname(os.path.join(__file__)) + "/technical_data/"
-              + 'gui_settings.csv') \
-            as csv_file:
+    with open(
+        os.path.dirname(os.path.join(__file__))
+        + "/technical_data/"
+        + "gui_settings.csv"
+    ) as csv_file:
         reader = csv.reader(csv_file)
         dict_to_reload = dict(reader)
     for key, value in dict_to_reload.items():
@@ -212,55 +232,65 @@ def reload_settings():
 
 
 def execute_sesmg():
-    """ 1. Creates the folder where the results will be saved
-        2. Excecutes the optimization algorithm """
+    """1. Creates the folder where the results will be saved
+    2. Excecutes the optimization algorithm"""
     if gui_variables["scenario_path"].get() != "No scenario selected.":
         # save the choices made in the GUI
         save_settings()
-                
+
         scenario_name = os.path.basename(gui_variables["scenario_path"].get())
         gui_variables["save_path"].set(
-                str(os.path.join(gui_variables["save_path_directory"].get())
-                    + '/' + scenario_name[:-5]
-                    + str(datetime.now().strftime('_%Y-%m-%d--%H-%M-%S'))))
+            str(
+                os.path.join(gui_variables["save_path_directory"].get())
+                + "/"
+                + scenario_name[:-5]
+                + str(datetime.now().strftime("_%Y-%m-%d--%H-%M-%S"))
+            )
+        )
         os.mkdir(gui_variables["save_path"].get())
 
         timeseries_season = gui_variables["timeseries_season"].get()
-        timeseries_prep_param = [gui_variables["timeseries_algorithm"].get(),
-                                 gui_variables["timeseries_cluster"].get(),
-                                 gui_variables["timeseries_criterion"].get(),
-                                 gui_variables["timeseries_period"].get(),
-                                 0 if timeseries_season == 'none'
-                                 else timeseries_season]
+        timeseries_prep_param = [
+            gui_variables["timeseries_algorithm"].get(),
+            gui_variables["timeseries_cluster"].get(),
+            gui_variables["timeseries_criterion"].get(),
+            gui_variables["timeseries_period"].get(),
+            0 if timeseries_season == "none" else timeseries_season,
+        ]
 
-        sesmg_main(scenario_file=gui_variables["scenario_path"].get(),
-                   result_path=gui_variables["save_path"].get(),
-                   num_threads=gui_variables["num_threads"].get(),
-                   timeseries_prep=timeseries_prep_param,
-                   # time_prep.get(),
-                   # timeseries_value = 1
-                   # if timeseries_entry.get() == 'aggregation quote'
-                   # else timeseries_entry.get(),
-                   graph=True if gui_variables["graph_state"].get() == 1
-                   else False,
-                   criterion_switch=True if
-                   gui_variables["criterion_state"].get() == 1 else False,
-                   xlsx_results=True if
-                   gui_variables["xlsx_select_state"].get() == 1 else False,
-                   console_results=True if
-                   gui_variables["console_select_state"].get() == 1 else False,
-                   solver=gui_variables["solver_select"].get())
+        sesmg_main(
+            scenario_file=gui_variables["scenario_path"].get(),
+            result_path=gui_variables["save_path"].get(),
+            num_threads=gui_variables["num_threads"].get(),
+            timeseries_prep=timeseries_prep_param,
+            # time_prep.get(),
+            # timeseries_value = 1
+            # if timeseries_entry.get() == 'aggregation quote'
+            # else timeseries_entry.get(),
+            graph=True if gui_variables["graph_state"].get() == 1 else False,
+            criterion_switch=True
+            if gui_variables["criterion_state"].get() == 1
+            else False,
+            xlsx_results=True
+            if gui_variables["xlsx_select_state"].get() == 1
+            else False,
+            console_results=True
+            if gui_variables["console_select_state"].get() == 1
+            else False,
+            solver=gui_variables["solver_select"].get(),
+        )
         if gui_variables["plotly_select_state"].get() == 1:
             show_results()
     else:
-        print('Please select scenario first!')
-        comments[2].configure(text='Please select scenario first!')
+        print("Please select scenario first!")
+        comments[2].configure(text="Please select scenario first!")
 
 
 def get_pid():
-    """ Returns the ID of the running process on Port 8050 """
+    """Returns the ID of the running process on Port 8050"""
     import socket
     import errno
+
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         # Checks if port 8050 can be reached
@@ -291,28 +321,29 @@ def get_pid():
             pid = pidslist[1]
         return pid
     else:
-        return ''
+        return ""
 
 
 def show_results():
     """
-        executes the external program, which executes a plotl.
-        dash app for displaying interactive results.
+    executes the external program, which executes a plotl.
+    dash app for displaying interactive results.
     """
-    if gui_variables["save_path"].get() == '':
-        raise SystemError('No optimization since the last restart'
-                          ' please select a result folder!')
+    if gui_variables["save_path"].get() == "":
+        raise SystemError(
+            "No optimization since the last restart" " please select a result folder!"
+        )
 
     # Determines the ID of a still running process on port 8050.
     pid = get_pid()
     # Checks if the ID is not an empty return (no process available)
-    if pid != '':
+    if pid != "":
         if sys.platform.startswith("win"):
-            command = 'taskkill /F /PID ' + pid
+            command = "taskkill /F /PID " + pid
         elif sys.platform.startswith("darwin"):
-            command = 'kill ' + pid
+            command = "kill " + pid
         elif sys.platform.startswith("linux"):
-            command = 'kill ' + pid
+            command = "kill " + pid
         # Kills the still running process on port 8050
         subprocess.call(command, shell=True)
     else:
@@ -325,37 +356,51 @@ def show_results():
 
     # Starts the new Plotly Dash Server for Windows
     if sys.platform.startswith("win"):
-        subprocess.call("Scripts\python.exe"
-                        + " program_files/Interactive_Results.py "
-                        + 'r"' + gui_variables["save_path"].get() + '"',
-                        timeout=10, shell=True)
+        subprocess.call(
+            "Scripts\python.exe"
+            + " program_files/Interactive_Results.py "
+            + 'r"'
+            + gui_variables["save_path"].get()
+            + '"',
+            timeout=10,
+            shell=True,
+        )
     # Starts the new Plotly Dash Server for MACOS
     elif sys.platform.startswith("darwin"):
         IR_PATH = os.path.dirname(os.path.abspath(__file__))
-        subprocess.call("python3 " + IR_PATH + "/Interactive_Results.py "
-                        + str(gui_variables["save_path"].get()),
-                        timeout=10, shell=True)
+        subprocess.call(
+            "python3 "
+            + IR_PATH
+            + "/Interactive_Results.py "
+            + str(gui_variables["save_path"].get()),
+            timeout=10,
+            shell=True,
+        )
     elif sys.platform.startswith("linux"):
         IR_PATH = os.path.dirname(os.path.abspath(__file__))
-        subprocess.call("python3 " + IR_PATH + "/Interactive_Results.py "
-                        + str(gui_variables["save_path"].get()),
-                        timeout=10, shell=True)
+        subprocess.call(
+            "python3 "
+            + IR_PATH
+            + "/Interactive_Results.py "
+            + str(gui_variables["save_path"].get()),
+            timeout=10,
+            shell=True,
+        )
 
 
 def create_heading(frame, text, column, row, sticky, bold=False):
     if bold:
-        font = 'Helvetica 10 bold'
+        font = "Helvetica 10 bold"
     else:
-        font = 'Helvetica 10'
-    Label(frame, text=text, font=font)\
-        .grid(column=column, row=row, sticky=sticky)
+        font = "Helvetica 10"
+    Label(frame, text=text, font=font).grid(column=column, row=row, sticky=sticky)
 
 
 def create_option_menu(frame, variable, options, column, row):
     DMenu = OptionMenu(frame, variable, *options)
     DMenu.grid(column=column, row=row)
-    
-    
+
+
 def create_checkbox(frame, variable, column, row):
     checkbox = Checkbutton(frame, variable=variable)
     checkbox.grid(column=column, row=row)
@@ -366,169 +411,215 @@ def create_checkbox(frame, variable, column, row):
 ############
 window = Tk()
 window.title("SESMG - Spreadsheet Energy System Model Generator")
-window.geometry('1200x1050')
+window.geometry("1200x1050")
 tab_control = ttk.Notebook(window)
-tab_control.pack(expand=1, fill='both')
+tab_control.pack(expand=1, fill="both")
 tab_control.pressed_index = None
 
 gui_variables = {
-    "scenario_path": StringVar(window, 'scenario_v0.2.0.xlsx'),
-    "save_path_directory": StringVar(window,
-                                     str(os.path.join(
-                                             os.path.dirname(
-                                                     os.path.dirname(__file__)
-                                             ), 'results'))),
-    "save_path": StringVar(window, ''),
+    "scenario_path": StringVar(window, "scenario_v0.2.0.xlsx"),
+    "save_path_directory": StringVar(
+        window, str(os.path.join(os.path.dirname(os.path.dirname(__file__)), "results"))
+    ),
+    "save_path": StringVar(window, ""),
     "num_threads": IntVar(window, 2),
-    "timeseries_algorithm": StringVar(window, 'none'),
-    "timeseries_cluster": StringVar(window, 'none'),
-    "timeseries_criterion": StringVar(window, 'none'),
-    "timeseries_period": StringVar(window, 'none'),
-    "timeseries_season": StringVar(window, 'none'),
+    "timeseries_algorithm": StringVar(window, "none"),
+    "timeseries_cluster": StringVar(window, "none"),
+    "timeseries_criterion": StringVar(window, "none"),
+    "timeseries_period": StringVar(window, "none"),
+    "timeseries_season": StringVar(window, "none"),
     "graph_state": IntVar(),
     "criterion_state": IntVar(),
-    "solver_select": StringVar(window, 'gurobi'),
+    "solver_select": StringVar(window, "gurobi"),
     "xlsx_select_state": IntVar(),
     "console_select_state": IntVar(),
-    "plotly_select_state": IntVar()
+    "plotly_select_state": IntVar(),
 }
 
 reload_settings()
 
 main_frame = ttk.Frame(window)
-tab_control.add(main_frame, text='Home')
+tab_control.add(main_frame, text="Home")
 
 # Headline
-create_heading(main_frame, 'Modeling', 0, 0, "w", True)
+create_heading(main_frame, "Modeling", 0, 0, "w", True)
 
 # Erstellung des ersten Element-Blocks
 # [label, function to be executed, button label, comment]
-selection_elements = {'row1': ['Select scenario file', getFolderPath, 'Change',
-                               gui_variables['scenario_path'].get()]}
+selection_elements = {
+    "row1": [
+        "Select scenario file",
+        getFolderPath,
+        "Change",
+        gui_variables["scenario_path"].get(),
+    ]
+}
 file_paths = []
-create_main_frame_elements(elements=selection_elements,
-                           sheet=main_frame,
-                           first_row=1,
-                           file_paths=file_paths,
-                           frame=main_frame)
+create_main_frame_elements(
+    elements=selection_elements,
+    sheet=main_frame,
+    first_row=1,
+    file_paths=file_paths,
+    frame=main_frame,
+)
 
 # TimeSeries Prep Menu
 row = 3
-timeseries_algorithm_list = ["none", "k_means", "averaging", "slicing A",
-                             "slicing B", "downsampling A", "downsampling B",
-                             "heuristic selection", "random sampling"]
+timeseries_algorithm_list = [
+    "none",
+    "k_means",
+    "averaging",
+    "slicing A",
+    "slicing B",
+    "downsampling A",
+    "downsampling B",
+    "heuristic selection",
+    "random sampling",
+]
 
-timeseries_cluster_criteria = ["temperature", "dhi", "el_demand_sum",
-                               "heat_demand_sum"]
+timeseries_cluster_criteria = ["temperature", "dhi", "el_demand_sum", "heat_demand_sum"]
 
 
-create_heading(main_frame, 'Timeseries Preparation', 0, row + 1, "w")
+create_heading(main_frame, "Timeseries Preparation", 0, row + 1, "w")
 column = 3
-create_heading(main_frame, 'Algorithm', column, row, "n")
-create_option_menu(main_frame, gui_variables['timeseries_algorithm'],
-                   timeseries_algorithm_list, column, row + 1)
+create_heading(main_frame, "Algorithm", column, row, "n")
+create_option_menu(
+    main_frame,
+    gui_variables["timeseries_algorithm"],
+    timeseries_algorithm_list,
+    column,
+    row + 1,
+)
 column += 1
 
-create_heading(main_frame, 'Index', column, row, "n")
-create_option_menu(main_frame, gui_variables["timeseries_cluster"],
-                   list(range(1, 365)), column, row + 1)
+create_heading(main_frame, "Index", column, row, "n")
+create_option_menu(
+    main_frame,
+    gui_variables["timeseries_cluster"],
+    list(range(1, 365)),
+    column,
+    row + 1,
+)
 column += 1
 
-create_heading(main_frame, 'Criterion', column, row, "n")
-create_option_menu(main_frame, gui_variables["timeseries_criterion"],
-                   timeseries_cluster_criteria, column, row + 1)
+create_heading(main_frame, "Criterion", column, row, "n")
+create_option_menu(
+    main_frame,
+    gui_variables["timeseries_criterion"],
+    timeseries_cluster_criteria,
+    column,
+    row + 1,
+)
 
 column += 1
 
-create_heading(main_frame, 'Period', column, row, "n")
-create_option_menu(main_frame, gui_variables["timeseries_period"],
-                   ["hours", "days", "weeks"], column, row + 1)
+create_heading(main_frame, "Period", column, row, "n")
+create_option_menu(
+    main_frame,
+    gui_variables["timeseries_period"],
+    ["hours", "days", "weeks"],
+    column,
+    row + 1,
+)
 column += 1
 
-create_heading(main_frame, 'Season', column, row, "n")
-create_option_menu(main_frame, gui_variables["timeseries_season"],
-                   [4, 12], column, row + 1)
+create_heading(main_frame, "Season", column, row, "n")
+create_option_menu(
+    main_frame, gui_variables["timeseries_season"], [4, 12], column, row + 1
+)
 
 
 ############################
 
 # Graph Checkbox
 row += 2
-create_heading(main_frame, 'Show Graph', 0, row, "w")
+create_heading(main_frame, "Show Graph", 0, row, "w")
 create_checkbox(main_frame, gui_variables["graph_state"], 3, row)
 
 # Criterion Switch Checkbox
 row += 1
-create_heading(main_frame, 'Switch Criteria', 0, row, "w")
+create_heading(main_frame, "Switch Criteria", 0, row, "w")
 create_checkbox(main_frame, gui_variables["criterion_state"], 3, row)
 
 # Solver Selection
 row += 1
-create_heading(main_frame, 'Optimization Solver', 0, row, "w")
-create_option_menu(main_frame, gui_variables["solver_select"],
-                   ["cbc", "gurobi"], 3, row)
+create_heading(main_frame, "Optimization Solver", 0, row, "w")
+create_option_menu(
+    main_frame, gui_variables["solver_select"], ["cbc", "gurobi"], 3, row
+)
 
 row += 1
 
 # result checkboxes
-create_heading(main_frame, 'Result processing parameters', 0, row, "w", True)
+create_heading(main_frame, "Result processing parameters", 0, row, "w", True)
 
 # xlsx_checkbox
 row += 1
-create_heading(main_frame, 'Create xlsx-files', 0, row, "w")
+create_heading(main_frame, "Create xlsx-files", 0, row, "w")
 create_checkbox(main_frame, gui_variables["xlsx_select_state"], 3, row)
 
 # console_checkbox
 row += 1
-create_heading(main_frame, 'Create console-log', 0, row, "w")
+create_heading(main_frame, "Create console-log", 0, row, "w")
 create_checkbox(main_frame, gui_variables["console_select_state"], 3, row)
 
 # plotly_checkbox
 row += 1
-create_heading(main_frame, 'Create plotly-dash', 0, row, "w")
+create_heading(main_frame, "Create plotly-dash", 0, row, "w")
 create_checkbox(main_frame, gui_variables["plotly_select_state"], 3, row)
 
 
 # Headline 2
 row += 1
-create_heading(main_frame, 'Execution', 0, row, "w", True)
+create_heading(main_frame, "Execution", 0, row, "w", True)
 
 # execution buttons
 row += 1
 # [Label, function to be executed, name of the button, comment]
 test = StringVar(window)
 execution_elements = {
-    'row2': ['Show Graph', show_graph, 'Execute', ''],
-    'row3': ['Optimize Model', execute_sesmg, 'Execute', test.get()],
-    'row4': ['Show Latest Results', show_results, 'Execute', '']}
+    "row2": ["Show Graph", show_graph, "Execute", ""],
+    "row3": ["Optimize Model", execute_sesmg, "Execute", test.get()],
+    "row4": ["Show Latest Results", show_results, "Execute", ""],
+}
 comments = []
 
-create_main_frame_elements(elements=execution_elements, 
-                           sheet=main_frame, 
-                           first_row=row,
-                           file_paths=comments, 
-                           frame=main_frame)
+create_main_frame_elements(
+    elements=execution_elements,
+    sheet=main_frame,
+    first_row=row,
+    file_paths=comments,
+    frame=main_frame,
+)
 
-row += (len(execution_elements) + 1)
-create_heading(main_frame, 'Results', 0, row, "w", True)
+row += len(execution_elements) + 1
+create_heading(main_frame, "Results", 0, row, "w", True)
 
 analyzing_elements = {
-    'row5': ['Select scenario result folder', getSavePath, 'Change',
-             gui_variables["save_path"].get()],
-    'row6': ['Start Plotly', show_results, 'Execute', '']}
+    "row5": [
+        "Select scenario result folder",
+        getSavePath,
+        "Change",
+        gui_variables["save_path"].get(),
+    ],
+    "row6": ["Start Plotly", show_results, "Execute", ""],
+}
 save_paths = []
-create_main_frame_elements(elements=analyzing_elements, sheet=main_frame,
-                           first_row=row,
-                           file_paths=save_paths, frame=main_frame)
+create_main_frame_elements(
+    elements=analyzing_elements,
+    sheet=main_frame,
+    first_row=row,
+    file_paths=save_paths,
+    frame=main_frame,
+)
 
 ###################
 # Upscaling Frame #
 ###################
 upscaling_frame = ttk.Frame(window)
-upscaling_frame1 = \
-    urban_district_upscaling_GUI.upscaling_frame_class(window,
-                                                       tab_control,
-                                                       upscaling_frame)
+upscaling_frame1 = urban_district_upscaling_GUI.upscaling_frame_class(
+    window, tab_control, upscaling_frame
+)
 
 ##############
 # DEMO Frame #
@@ -538,12 +629,16 @@ demo_frame1 = demo_tool.demo_frame_class(window, tab_control, demo_frame)
 # add picture
 if sys.platform.startswith("win"):
     img = PhotoImage(
-        file='program_files/Demo_Tool/v0.0.6_demo_scenario/DEMO_System.png')
+        file="program_files/Demo_Tool/v0.0.6_demo_scenario/DEMO_System.png"
+    )
 else:
-    img = PhotoImage(file=os.path.dirname(os.path.abspath(__file__))
-                     + '/Demo_Tool/v0.0.6_demo_scenario/DEMO_System.png')
+    img = PhotoImage(
+        file=os.path.dirname(os.path.abspath(__file__))
+        + "/Demo_Tool/v0.0.6_demo_scenario/DEMO_System.png"
+    )
 img = img.subsample(2, 2)
-lab = Label(master=demo_frame, image=img)\
-        .grid(column=0, columnspan=4, row=19, rowspan=40)
+lab = Label(master=demo_frame, image=img).grid(
+    column=0, columnspan=4, row=19, rowspan=40
+)
 
 window.mainloop()
