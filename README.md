@@ -73,6 +73,7 @@ run `$ sudo apt-get install graphviz`
 ## SESMG Features & Releases ![what-why](https://cs.adelaide.edu.au/~christoph/badges/content-what-why-brightgreen.svg) 
 
 ### Project Status 
+[![Documentation Status](https://readthedocs.org/projects/spreadsheet-energy-system-model-generator/badge/?version=latest)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/?badge=latest)
 [![Requirements Status](https://requires.io/github/chrklemm/SESMG/requirements.svg?branch=master)](https://requires.io/github/chrklemm/SESMG/requirements/?branch=master)
 
 ### Examples
