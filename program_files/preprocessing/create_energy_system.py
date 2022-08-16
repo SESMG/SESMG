@@ -71,14 +71,15 @@ def import_scenario(filepath: str) -> dict:
 
     # returns logging info
     logging.info('\t Spreadsheet scenario successfully imported.')
-    if nd["energysystem"].loc[1, "weather data lat"] not in ["None", "none"]:
-        logging.info('\t Start import weather data')
-        lat = nd["energysystem"].loc[1, "weather data lat"]
-        lon = nd["energysystem"].loc[1, "weather data lon"]
-        import_weather_data.create_weather_data_plot(lat, lon)
-        nd = import_weather_data.import_open_fred_windpowerlib(nd, lat, lon)
-        nd = import_weather_data.import_open_fred_pvlib(nd, lat, lon)
-    # returns nodes
+    if "weather data lat" in nd["energysystem"].keys():
+        if nd["energysystem"].loc[1, "weather data lat"] not in ["None", "none"]:
+            logging.info('\t Start import weather data')
+            lat = nd["energysystem"].loc[1, "weather data lat"]
+            lon = nd["energysystem"].loc[1, "weather data lon"]
+            import_weather_data.create_weather_data_plot(lat, lon)
+            nd = import_weather_data.import_open_fred_windpowerlib(nd, lat, lon)
+            nd = import_weather_data.import_open_fred_pvlib(nd, lat, lon)
+        # returns nodes
     return nd
 
 

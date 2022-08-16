@@ -748,10 +748,16 @@ class Sinks:
                         ep_costs = insul_type["periodical costs"] \
                                    * insul_type["area"] \
                                    / max(temp)
-                        ep_constr_costs = \
-                            insul_type["periodical constraint costs"] \
-                            * insul_type["area"] \
-                            / max(temp)
+                        if "periodical constraint costs" in insul_type.keys():
+                            ep_constr_costs = \
+                                insul_type["periodical constraint costs"] \
+                                * insul_type["area"] \
+                                / max(temp)
+                        elif "periodical_constraint_costs" in insul_type.keys():
+                            ep_constr_costs = \
+                                insul_type["periodical_constraint_costs"] \
+                                * insul_type["area"] \
+                                / max(temp)
                         self.energetic_renovation.loc[
                             num, "ep_costs_kW"] = ep_costs
                         self.energetic_renovation.loc[
@@ -1965,6 +1971,10 @@ class Links:
                     ep_costs = link['periodical costs'] / 2
                 else:
                     raise SystemError('Problem with periodical costs')
+                if 'variable output constraint costs' in link.keys():
+                    variable_constr_costs = link['variable output constraint costs']
+                elif "variable constraint costs" in link.keys():
+                    variable_constr_costs = link["variable constraint costs"]
                 nodes.append(solph.custom.Link(
                     label=link['label'],
                     inputs={self.busd[link['bus1']]: solph.Flow(),
@@ -1972,8 +1982,7 @@ class Links:
                     outputs={self.busd[link['bus2']]: solph.Flow(
                         variable_costs=
                         link['variable output costs'],
-                        emission_factor=
-                        link['variable output constraint costs'],
+                        emission_factor=variable_constr_costs,
                         investment=solph.Investment(
                             ep_costs=ep_costs,
                             periodical_constraint_costs=ep_constr_costs,
@@ -1994,8 +2003,7 @@ class Links:
                         self.busd[link['bus1']]: solph.Flow(
                             variable_costs=
                             link['variable output costs'],
-                            emission_factor=
-                            link['variable output constraint costs'],
+                            emission_factor=variable_constr_costs,
                             investment=solph.Investment(
                                 ep_costs=ep_costs,
                                 periodical_constraint_costs=ep_constr_costs,
