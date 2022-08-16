@@ -7,7 +7,7 @@
 import os
 import pandas as pd
 import logging
-from program_files.preprocessing import import_weather_data
+
 
 def import_scenario(filepath: str) -> dict:
     """
@@ -72,6 +72,8 @@ def import_scenario(filepath: str) -> dict:
     # returns logging info
     logging.info('\t Spreadsheet scenario successfully imported.')
     if "weather data lat" in nd["energysystem"].keys():
+        from program_files.preprocessing import import_weather_data
+        
         if nd["energysystem"].loc[1, "weather data lat"] not in ["None", "none"]:
             logging.info('\t Start import weather data')
             lat = nd["energysystem"].loc[1, "weather data lat"]
