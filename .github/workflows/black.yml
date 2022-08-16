@@ -1,9 +1,6 @@
 name: Black
 
-on:
-  push:
-    branches:
-      - dev_open_district_upscaling
+on: push
 
 jobs:
   run-linters:
