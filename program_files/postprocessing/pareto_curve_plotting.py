@@ -15,14 +15,16 @@ def create_pareto_plot(result_dfs: dict, result_path: str) -> None:
     costs = {"monetary": [], "emissions": []}
 
     for dataframe in result_dfs:
-        costs["monetary"].append(sum(dataframe["variable costs/CU"]) \
-                                 + sum(dataframe["periodical costs/CU"]))
+        costs["monetary"].append(
+            sum(dataframe["variable costs/CU"]) + sum(dataframe["periodical costs/CU"])
+        )
         costs["emissions"].append(sum(dataframe["constraints/CU"]))
-        
+
     # create pandas Dataframe from results' components.csv points
-    df1 = pd.DataFrame({"costs": costs["monetary"],
-                        "emissions": costs["emissions"]},
-                       columns=["costs", "emissions"])
+    df1 = pd.DataFrame(
+        {"costs": costs["monetary"], "emissions": costs["emissions"]},
+        columns=["costs", "emissions"],
+    )
     # clear the old plot
     plt.clf()
     # create the new plot
@@ -31,9 +33,10 @@ def create_pareto_plot(result_dfs: dict, result_path: str) -> None:
     plt.grid()
     # save the plot to result folder
     plt.savefig(result_path + "/pareto.jpeg")
-    
+
+
 if __name__ == "__main__":
-    create_pareto_plot(result_dfs={"1": pd.read_csv(""),
-                                   "0.5": pd.read_csv(""),
-                                   "0": pd.read_csv("")},
-                       result_path="")
+    create_pareto_plot(
+        result_dfs={"1": pd.read_csv(""), "0.5": pd.read_csv(""), "0": pd.read_csv("")},
+        result_path="",
+    )

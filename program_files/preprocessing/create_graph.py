@@ -17,15 +17,15 @@ from dhnx.optimization_oemof_heatpipe import HeatPipeline
 
 def linebreaks(text: str):
     """
-        Adds linebreaks a given string.
+    Adds linebreaks a given string.
 
-        Function which adds a line break to strings every ten
-        characters. Up to four strings are added.
+    Function which adds a line break to strings every ten
+    characters. Up to four strings are added.
 
-        :param text: string to which line breaks will be added
-        :type text: str
+    :param text: string to which line breaks will be added
+    :type text: str
 
-        Christian Klemm - christian.klemm@fh-muenster.de
+    Christian Klemm - christian.klemm@fh-muenster.de
     """
     text_length = len(text)
     if text_length > 10:
@@ -40,8 +40,9 @@ def linebreaks(text: str):
 
 
 class ESGraphRenderer:
-    def __init__(self, energy_system=None, filepath=None, legend=False,
-                 view=False) -> None:
+    def __init__(
+        self, energy_system=None, filepath=None, legend=False, view=False
+    ) -> None:
         """
             Render an oemof energy system using graphviz.
             
@@ -57,8 +58,7 @@ class ESGraphRenderer:
             :type legend: bool
         """
         self.busses = []
-        os.environ["PATH"] += \
-            os.pathsep + 'C:\\Program Files (x86)\\Graphviz2.38\\bin'
+        os.environ["PATH"] += os.pathsep + "C:\\Program Files (x86)\\Graphviz2.38\\bin"
 
         self.dot = graphviz.Digraph(format="png")
 
@@ -73,18 +73,20 @@ class ESGraphRenderer:
                 self.add_comp("Source", "trapezium", False, self.c)
                 self.add_comp("Transformer", "rectangle", False, self.c)
                 self.add_comp("Storage", "rectangle", True, self.c)
-                
+
         switch_dict = {
-            "<class 'oemof.solph.network.sink.Sink'>":
-                ["invtrapezium", False],
-            "<class 'oemof.solph.network.source.Source'>":
-                ["trapezium", False],
-            "<class 'oemof.solph.network.transformer.Transformer'>":
-                ["rectangle", False],
-            "<class 'oemof.solph.components.generic_storage.GenericStorage'>":
-                ["rectangle", True],
-            "<class 'oemof.solph.custom.link.Link'>":
-                ["rectangle", False]}
+            "<class 'oemof.solph.network.sink.Sink'>": ["invtrapezium", False],
+            "<class 'oemof.solph.network.source.Source'>": ["trapezium", False],
+            "<class 'oemof.solph.network.transformer.Transformer'>": [
+                "rectangle",
+                False,
+            ],
+            "<class 'oemof.solph.components.generic_storage.GenericStorage'>": [
+                "rectangle",
+                True,
+            ],
+            "<class 'oemof.solph.custom.link.Link'>": ["rectangle", False],
+        }
         # draw a node for each of the energy_system's component.
         # the shape depends on the component's type.
         for nd in energy_system.nodes:
@@ -103,7 +105,8 @@ class ESGraphRenderer:
                     str(nd.label),
                     switch_dict.get(str(type(nd)), "Invalid component")[0],
                     switch_dict.get(str(type(nd)), "Invalid component")[1],
-                    self.dot)
+                    self.dot,
+                )
         # draw the edges between the nodes based on each bus inputs/outputs
         for bus in self.busses:
             for component in bus.inputs:
@@ -112,13 +115,19 @@ class ESGraphRenderer:
             for component in bus.outputs:
                 # draw an arrow from the bus to the component
                 self.connect(bus, component)
-                
+
         self.render(filepath, view)
 
     def add_comp(self, label, shape, dashed, subgraph):
-        subgraph.node(linebreaks(label), shape=shape, fontsize="10",
-                      fixedsize='shape', width='1.1', height='0.7',
-                      style="dashed" if dashed else "")
+        subgraph.node(
+            linebreaks(label),
+            shape=shape,
+            fontsize="10",
+            fixedsize="shape",
+            width="1.1",
+            height="0.7",
+            style="dashed" if dashed else "",
+        )
 
     def connect(self, a, b):
         """Draw an arrow from node a to node b
@@ -144,4 +153,4 @@ class ESGraphRenderer:
 
     def render(self, filepath, show):
         """Call the render method of the DiGraph instance"""
-        self.dot.render(filepath + '/graph.gv', view=show)
+        self.dot.render(filepath + "/graph.gv", view=show)

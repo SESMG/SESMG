@@ -11,26 +11,30 @@ transf_GK_WGS84 = Transformer.from_crs("EPSG:31466", "EPSG:4326")
 
 def convert_dh_street_sections_list(street_sec):
     """
-        Convert street sections Dataframe to Gaussian Kruger (GK)
-        to reduce redundancy.
+    Convert street sections Dataframe to Gaussian Kruger (GK)
+    to reduce redundancy.
 
-        :param street_sec: Dataframe holding start and end points
-                                of the streets under investigation
-        :type street_sec: pd.Dataframe
-        :return: **street_sections** (pd.Dataframe) - holding converted
-                                                        points
+    :param street_sec: Dataframe holding start and end points
+                            of the streets under investigation
+    :type street_sec: pd.Dataframe
+    :return: **street_sections** (pd.Dataframe) - holding converted
+                                                    points
     """
     # iterating threw the given street points and converting each active
     # one to EPSG31466
     for num, street in street_sec[street_sec["active"] == 1].iterrows():
-        (street_sec.at[num, "lat. 1st intersection"],
-         street_sec.at[num, "lon. 1st intersection"]) \
-            = transf_WGS84_GK.transform(street["lat. 1st intersection"],
-                                        street["lon. 1st intersection"])
-        (street_sec.at[num, "lat. 2nd intersection"],
-         street_sec.at[num, "lon. 2nd intersection"]) \
-            = transf_WGS84_GK.transform(street["lat. 2nd intersection"],
-                                        street["lon. 2nd intersection"])
+        (
+            street_sec.at[num, "lat. 1st intersection"],
+            street_sec.at[num, "lon. 1st intersection"],
+        ) = transf_WGS84_GK.transform(
+            street["lat. 1st intersection"], street["lon. 1st intersection"]
+        )
+        (
+            street_sec.at[num, "lat. 2nd intersection"],
+            street_sec.at[num, "lon. 2nd intersection"],
+        ) = transf_WGS84_GK.transform(
+            street["lat. 2nd intersection"], street["lon. 2nd intersection"]
+        )
     return street_sec
 
 
@@ -86,15 +90,16 @@ def calc_perpendicular_distance_line_point(p1, p2, p3, converted=False):
         # pnt 4 is the closest point on the street to the house
         pnt4 = road_part_limit1 + vec_direction * t
         perp_foot = numpy.array([float(pnt4[0]), float(pnt4[1])])
-        perp_foot[0], perp_foot[1] = transf_GK_WGS84.transform(perp_foot[0],
-                                                               perp_foot[1])
+        perp_foot[0], perp_foot[1] = transf_GK_WGS84.transform(
+            perp_foot[0], perp_foot[1]
+        )
         house[0], house[1] = transf_GK_WGS84.transform(house[0], house[1])
         # arithmetic mean of latitudes
         lat = (perp_foot[0] + house[0]) / 2
         # distance calculation
         dx = 111.3 * (perp_foot[1] - house[1]) * numpy.cos(numpy.deg2rad(lat))
         dy = 111.3 * (perp_foot[0] - house[0])
-        distance = math.sqrt(dx ** 2 + dy ** 2) * 1000
+        distance = math.sqrt(dx**2 + dy**2) * 1000
         return [perp_foot[0], perp_foot[1], distance, t[0]]
     else:
         return []
@@ -118,20 +123,20 @@ def get_nearest_perp_foot_point(building, streets, index, building_type):
                                            of the perpendicular foot point
     """
     foot_points = []
-    (lat, lon) = transf_WGS84_GK.transform(float(building["lat"]),
-                                           float(building["lon"]))
+    (lat, lon) = transf_WGS84_GK.transform(
+        float(building["lat"]), float(building["lon"])
+    )
     for num, street in streets[streets["active"] == 1].iterrows():
         # calculation of perpendicular foot point if it is within the
         # limits of the route
         perp_foot_point = calc_perpendicular_distance_line_point(
-            [street["lat. 1st intersection"],
-             street["lon. 1st intersection"]],
-            [street["lat. 2nd intersection"],
-             street["lon. 2nd intersection"]],
-            [lat, lon], True)
+            [street["lat. 1st intersection"], street["lon. 1st intersection"]],
+            [street["lat. 2nd intersection"], street["lon. 2nd intersection"]],
+            [lat, lon],
+            True,
+        )
         if perp_foot_point:
-            foot_points.append(perp_foot_point
-                               + [street["street section name"]])
+            foot_points.append(perp_foot_point + [street["street section name"]])
     # check if more than one result was found
     if len(foot_points) > 1:
         # iterate threw the results to find the nearest
@@ -167,18 +172,18 @@ def calc_street_lengths(connection_points: list) -> list:
     ordered_road_section_points = []
     for point in range(0, len(connection_points) - 1):
         # Calculation of the mean latitude
-        lat = (connection_points[point][1]
-               + connection_points[point + 1][1]) / 2
+        lat = (connection_points[point][1] + connection_points[point + 1][1]) / 2
         # Calculation of the x distance according to:
         # (lon1 - lon2) * 111.3km * cos(lat)
-        dx = 111.3 * (connection_points[point][2]
-                      - connection_points[point + 1][2]) \
-                   * numpy.cos(numpy.deg2rad(lat))
+        dx = (
+            111.3
+            * (connection_points[point][2] - connection_points[point + 1][2])
+            * numpy.cos(numpy.deg2rad(lat))
+        )
         # Calculation of the y distance according to: (lat1 - lat2) * 111.3km
-        dy = 111.3 * (connection_points[point][1]
-                      - connection_points[point + 1][1])
+        dy = 111.3 * (connection_points[point][1] - connection_points[point + 1][1])
         # Calculation of the actual distance and conversion to meters
-        distance = math.sqrt(dx ** 2 + dy ** 2) * 1000
+        distance = math.sqrt(dx**2 + dy**2) * 1000
         # append the calculated distance and the information of the two
         # forks to the list of the ordered_road_section_points
         # Structure of the list
@@ -187,12 +192,14 @@ def calc_street_lengths(connection_points: list) -> list:
         # 3. (lat1, lon1)
         # 4. (lat2, lon2)
         ordered_road_section_points.append(
-            ["{} - {}".format(connection_points[point][0],
-                              connection_points[point + 1][0]),
-             distance,
-             (connection_points[point][1],
-              connection_points[point][2]),
-             (connection_points[point + 1][1],
-              connection_points[point + 1][2])])
+            [
+                "{} - {}".format(
+                    connection_points[point][0], connection_points[point + 1][0]
+                ),
+                distance,
+                (connection_points[point][1], connection_points[point][2]),
+                (connection_points[point + 1][1], connection_points[point + 1][2]),
+            ]
+        )
 
     return ordered_road_section_points

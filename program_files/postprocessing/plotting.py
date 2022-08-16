@@ -11,9 +11,13 @@ def get_dataframe_from_nodes_data(nodes_data):
     for key in nodes_data.keys():
         # extract the relevant frames from spreadsheet and set their
         # index
-        if key not in ["energysystem", "timeseries",
-                       "weather data", "district heating",
-                       "competition constraints"]:
+        if key not in [
+            "energysystem",
+            "timeseries",
+            "weather data",
+            "district heating",
+            "competition constraints",
+        ]:
             nodes_data[key].set_index("label", inplace=True, drop=False)
             if counter == 0:
                 df_1 = nodes_data[key].copy()
@@ -31,14 +35,15 @@ def get_value(label, column, dataframe):
 def get_pv_st_dir(c_dict, value, comp_type, comp):
     # TODO wie stellen wir fest ob -180 - 180 oder 0 - 360
     #  genutzt wurde
-    dir_dict = {"_north_east": [22.5, 67.5],
-                "_east": [67.5, 112.5],
-                "_south_east": [112.5, 157.5],
-                "_south": [157.5, 202.5],
-                "_south_west": [202.5, 247.5],
-                "_west": [247.5, 292.5],
-                "_north_west": [292.5, 237.5],
-                }
+    dir_dict = {
+        "_north_east": [22.5, 67.5],
+        "_east": [67.5, 112.5],
+        "_south_east": [112.5, 157.5],
+        "_south": [157.5, 202.5],
+        "_south_west": [202.5, 247.5],
+        "_west": [247.5, 292.5],
+        "_north_west": [292.5, 237.5],
+    }
     test = False
     for dire in dir_dict:
         if not dir_dict[dire][0] <= comp["Azimuth"] < dir_dict[dire][1]:

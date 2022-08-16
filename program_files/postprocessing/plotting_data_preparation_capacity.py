@@ -5,119 +5,133 @@ import seaborn as sns
 
 def pv_st_capacity(components_df, pv_st, dataframe, capacities_dict):
     from program_files.postprocessing.plotting import get_pv_st_dir
+
     if pv_st == "photovoltaic":
         comp_type = "PV"
     else:
         comp_type = "ST"
     df_pv_or_st = components_df[(components_df.isin([str(pv_st)])).any(axis=1)]
     for num, comp in df_pv_or_st.iterrows():
-        value_cap = dataframe.loc[dataframe["ID"].str.contains(
-                comp["label"])]["capacity/kW"].values
+        value_cap = dataframe.loc[dataframe["ID"].str.contains(comp["label"])][
+            "capacity/kW"
+        ].values
         value_cap = float(value_cap[0]) if value_cap.size > 0 else 0
         capacities_dict[comp_type].append(value_cap)
 
-        capacities_dict = get_pv_st_dir(capacities_dict, value_cap,
-                                        comp_type, comp)
+        capacities_dict = get_pv_st_dir(capacities_dict, value_cap, comp_type, comp)
     return capacities_dict
 
 
 def create_capacity_plots(dataframes: dict, nodes_data, result_path):
-    from program_files.postprocessing.plotting import \
-        get_dataframe_from_nodes_data
+    from program_files.postprocessing.plotting import get_dataframe_from_nodes_data
+
     capacities = pd.DataFrame()
     capacities_dict = {}
     emissions_100_percent = sum(dataframes["1"]["constraints/CU"])
     for key in dataframes:
         capacities_dict.update(
-                {"run": str(key),
-                 "PV_north": [],
-                 "PV_north_east": [],
-                 "PV_east": [],
-                 "PV_south_east": [],
-                 "PV_south": [],
-                 "PV_south_west": [],
-                 "PV_west": [],
-                 "PV_north_west": [],
-                 "PV": [],
-                 "ASHP": [],
-                 "GCHP": [],
-                 "Electric_heating": [],
-                 "Battery": [],
-                 "ST": [],
-                 "Gasheating": [],
-                 "DH": [],
-                 "Thermalstorage": [],
-                 "ST_north": [],
-                 "ST_north_east": [],
-                 "ST_east": [],
-                 "ST_south_east": [],
-                 "ST_south": [],
-                 "ST_south_west": [],
-                 "ST_west": [],
-                 "ST_north_west": [],
-                 "reductionco2": sum(dataframes[key]["constraints/CU"])
-                    / emissions_100_percent})
+            {
+                "run": str(key),
+                "PV_north": [],
+                "PV_north_east": [],
+                "PV_east": [],
+                "PV_south_east": [],
+                "PV_south": [],
+                "PV_south_west": [],
+                "PV_west": [],
+                "PV_north_west": [],
+                "PV": [],
+                "ASHP": [],
+                "GCHP": [],
+                "Electric_heating": [],
+                "Battery": [],
+                "ST": [],
+                "Gasheating": [],
+                "DH": [],
+                "Thermalstorage": [],
+                "ST_north": [],
+                "ST_north_east": [],
+                "ST_east": [],
+                "ST_south_east": [],
+                "ST_south": [],
+                "ST_south_west": [],
+                "ST_west": [],
+                "ST_north_west": [],
+                "reductionco2": sum(dataframes[key]["constraints/CU"])
+                / emissions_100_percent,
+            }
+        )
         dataframe = dataframes[key].copy()
         dataframe.reset_index(inplace=True, drop=False)
         components_df = get_dataframe_from_nodes_data(nodes_data)
         # PV-System
-        capacities_dict = pv_st_capacity(components_df.copy(), "photovoltaic",
-                                         dataframe, capacities_dict)
+        capacities_dict = pv_st_capacity(
+            components_df.copy(), "photovoltaic", dataframe, capacities_dict
+        )
         # ST-System
-        capacities_dict = pv_st_capacity(components_df,
-                                         "solar_thermal_flat_plate", dataframe,
-                                         capacities_dict)
-        
-        df_hp = components_df[(components_df.isin([
-            "CompressionHeatTransformer"])).any(
-                axis=1)]
-        df_hp = pd.concat([df_hp, (components_df.isin([
-             "AbsorptionHeatTransformer"])).any(axis=1)])
+        capacities_dict = pv_st_capacity(
+            components_df, "solar_thermal_flat_plate", dataframe, capacities_dict
+        )
+
+        df_hp = components_df[
+            (components_df.isin(["CompressionHeatTransformer"])).any(axis=1)
+        ]
+        df_hp = pd.concat(
+            [df_hp, (components_df.isin(["AbsorptionHeatTransformer"])).any(axis=1)]
+        )
         for num, comp in df_hp.iterrows():
             if comp["heat source"] == "Ground":
-                value = dataframe.loc[dataframe["ID"].str.startswith(
-                        comp["label"])]["capacity/kW"].values
+                value = dataframe.loc[dataframe["ID"].str.startswith(comp["label"])][
+                    "capacity/kW"
+                ].values
                 value = float(value[0]) if value.size > 0 else 0
                 capacities_dict["GCHP"].append(value)
             elif comp["heat source"] == "Air":
-                value = dataframe.loc[dataframe["ID"].str.startswith(
-                        comp["label"])]["capacity/kW"].values
+                value = dataframe.loc[dataframe["ID"].str.startswith(comp["label"])][
+                    "capacity/kW"
+                ].values
                 value = float(value[0]) if value.size > 0 else 0
                 capacities_dict["ASHP"].append(value)
-                
+
         # generic transformer dataframe
-        df_gen_transformer = components_df[(components_df.isin([
-            'GenericTransformer'])).any(axis=1)]
+        df_gen_transformer = components_df[
+            (components_df.isin(["GenericTransformer"])).any(axis=1)
+        ]
         for num, comp in df_gen_transformer.iterrows():
             if "elec" in comp["input"] and "central" not in comp["label"]:
-                value = dataframe.loc[dataframe["ID"].str.startswith(
-                        comp["label"])]["capacity/kW"].values
+                value = dataframe.loc[dataframe["ID"].str.startswith(comp["label"])][
+                    "capacity/kW"
+                ].values
                 value = float(value[0]) if value.size > 0 else 0
                 capacities_dict["Electric_heating"].append(value)
             elif "gas" in comp["input"] and "central" not in comp["label"]:
-                value = dataframe.loc[dataframe["ID"].str.startswith(
-                        comp["label"])]["capacity/kW"].values
+                value = dataframe.loc[dataframe["ID"].str.startswith(comp["label"])][
+                    "capacity/kW"
+                ].values
                 value = float(value[0]) if value.size > 0 else 0
                 capacities_dict["Gasheating"].append(value)
-        
-        df_storage = components_df[(components_df.isin([
-            'Generic'])).any(axis=1)]
+
+        df_storage = components_df[(components_df.isin(["Generic"])).any(axis=1)]
         for num, comp in df_storage.iterrows():
             if "elec" in comp["bus"] and "central" not in comp["label"]:
-                value = dataframe.loc[dataframe["ID"].str.startswith(
-                        comp["label"])]["capacity/kW"].values
+                value = dataframe.loc[dataframe["ID"].str.startswith(comp["label"])][
+                    "capacity/kW"
+                ].values
                 value = float(value[0]) if value.size > 0 else 0
                 capacities_dict["Battery"].append(value)
             elif "heat" in comp["bus"] and "central" not in comp["label"]:
-                value = dataframe.loc[dataframe["ID"].str.startswith(
-                        comp["label"])]["capacity/kW"].values
+                value = dataframe.loc[dataframe["ID"].str.startswith(comp["label"])][
+                    "capacity/kW"
+                ].values
                 value = float(value[0]) if value.size > 0 else 0
                 capacities_dict["Thermalstorage"].append(value)
-                
-        capacities_dict["DH"] += list(dataframe.loc[dataframe[
-            "ID"].str.startswith("dh_heat_house_station")][
-                                          "capacity/kW"].values)
-        
+
+        capacities_dict["DH"] += list(
+            dataframe.loc[dataframe["ID"].str.startswith("dh_heat_house_station")][
+                "capacity/kW"
+            ].values
+        )
+
         for i in capacities_dict:
             if i != "run" and i != "reductionco2":
                 capacities_dict[i] = sum(capacities_dict[i])
@@ -156,12 +170,17 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
             "ST": [capacities.ST, axs[2]],
             "Gasheating": [capacities.Gasheating, axs[2]],
             "DH": [capacities.DH, axs[2]],
-            "Thermalstorage": [capacities.Thermalstorage, axs[2]]}
+            "Thermalstorage": [capacities.Thermalstorage, axs[2]],
+        }
         for plot in plot_dict:
             sns.lineplot(
-                x=capacities.reductionco2, y=plot_dict[plot][0], marker="o",
-                palette="Spectral", label=plot,
-                ax=plot_dict[plot][1])
+                x=capacities.reductionco2,
+                y=plot_dict[plot][0],
+                marker="o",
+                palette="Spectral",
+                label=plot,
+                ax=plot_dict[plot][1],
+            )
 
         axs[0].invert_xaxis()
         axs[0].set_xlabel("Emission-reduced Scenario")

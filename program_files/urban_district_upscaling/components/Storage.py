@@ -1,60 +1,73 @@
 storage_dict = {
-    "battery": ['_battery_storage', '_battery_storage', '_electricity_bus'],
-    "thermal": ['_thermal_storage', '_thermal_storage', '_heat_bus'],
+    "battery": ["_battery_storage", "_battery_storage", "_electricity_bus"],
+    "thermal": ["_thermal_storage", "_thermal_storage", "_heat_bus"],
     "h2_storage": ["_h2_storage", "_h2_storage", "_h2_bus"],
-    "naturalgas_storage": ["_naturalgas_storage", "_naturalgas_storage",
-                           "_naturalgas_bus"]}
+    "naturalgas_storage": [
+        "_naturalgas_storage",
+        "_naturalgas_storage",
+        "_naturalgas_bus",
+    ],
+}
 
 
-def create_storage(building_id: str, storage_type: str,
-                   de_centralized: str, sheets, bus=None):
+def create_storage(
+    building_id: str, storage_type: str, de_centralized: str, sheets, bus=None
+):
     """
-        Sets the specific parameters for a battery, and creates them
-        afterwards.
+    Sets the specific parameters for a battery, and creates them
+    afterwards.
 
-        :param building_id: building label
-        :type building_id: str
-        :param storage_type:
-        :type storage_type: str
-        :param de_centralized:
-        :type de_centralized: str
-        :param bus:
-        :type bus: str
-        :param sheets:
-        :type sheets:
+    :param building_id: building label
+    :type building_id: str
+    :param storage_type:
+    :type storage_type: str
+    :param de_centralized:
+    :type de_centralized: str
+    :param bus:
+    :type bus: str
+    :param sheets:
+    :type sheets:
     """
-    from program_files.urban_district_upscaling.pre_processing \
-        import create_standard_parameter_comp
-    
+    from program_files.urban_district_upscaling.pre_processing import (
+        create_standard_parameter_comp,
+    )
+
     return create_standard_parameter_comp(
         specific_param={
-            'label': str(building_id) + storage_dict.get(storage_type)[1],
-            'comment': 'automatically_created',
-            'bus':  str(building_id) + storage_dict.get(storage_type)[2]
-            if bus is None else bus},
+            "label": str(building_id) + storage_dict.get(storage_type)[1],
+            "comment": "automatically_created",
+            "bus": str(building_id) + storage_dict.get(storage_type)[2]
+            if bus is None
+            else bus,
+        },
         standard_parameter_info=[
-            de_centralized + storage_dict.get(storage_type)[0], "storages",
-            "comment"], sheets=sheets)
-    
-    
+            de_centralized + storage_dict.get(storage_type)[0],
+            "storages",
+            "comment",
+        ],
+        sheets=sheets,
+    )
+
+
 def building_storages(building, true_bools, sheets):
     """
-        TODO
-        :param building:
-        :type building:
-        :param true_bools:
-        :type true_bools:
-        :param sheets:
-        :type sheets:
+    TODO
+    :param building:
+    :type building:
+    :param true_bools:
+    :type true_bools:
+    :param sheets:
+    :type sheets:
     """
-    build_storage_dict = {'battery storage': "battery",
-                          'thermal storage': "thermal"}
+    build_storage_dict = {"battery storage": "battery", "thermal storage": "thermal"}
     for storage in build_storage_dict:
         if building[storage] in true_bools:
             sheets = create_storage(
-                building_id=building["label"], sheets=sheets,
+                building_id=building["label"],
+                sheets=sheets,
                 storage_type=build_storage_dict[storage],
-                de_centralized="building")
+                de_centralized="building",
+            )
     return sheets
 
 
@@ -81,7 +94,8 @@ def storage_clustering(building, sheets_clustering, storage_parameter, sheets):
         if str(building[0]) in label and label in sheets["storages"].index:
             if label.split("_")[1] in ["battery", "thermal"]:
                 storage_parameter, sheets = cluster_storage_information(
-                    storage, storage_parameter, label.split("_")[1], sheets)
+                    storage, storage_parameter, label.split("_")[1], sheets
+                )
     # return the collected data to the main clustering method
     return storage_parameter, sheets
 
@@ -129,28 +143,36 @@ def create_cluster_storage(type, cluster, storage_parameters, sheets):
     :param type:
     :return:
     """
-    from program_files.urban_district_upscaling.pre_processing \
-        import append_component, read_standard_parameters
+    from program_files.urban_district_upscaling.pre_processing import (
+        append_component,
+        read_standard_parameters,
+    )
 
     specific_dict = {
         "label": str(cluster) + storage_dict.get(type)[0],
         "comment": "automatically created",
-        "bus": str(cluster) + storage_dict.get(type)[2]}
+        "bus": str(cluster) + storage_dict.get(type)[2],
+    }
     standard_param, standard_keys = read_standard_parameters(
-        "building" + storage_dict.get(type)[0], "storages", "comment")
+        "building" + storage_dict.get(type)[0], "storages", "comment"
+    )
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
         specific_dict[standard_keys[i]] = standard_param[standard_keys[i]]
-    specific_dict.update({
-        "periodical costs":
-            storage_parameters[type][2] / storage_parameters[type][0],
-        "periodical constraint costs":
-            storage_parameters[type][3] / storage_parameters[type][0],
-        "max. investment capacity": storage_parameters[type][1]})
+    specific_dict.update(
+        {
+            "periodical costs": storage_parameters[type][2]
+            / storage_parameters[type][0],
+            "periodical constraint costs": storage_parameters[type][3]
+            / storage_parameters[type][0],
+            "max. investment capacity": storage_parameters[type][1],
+        }
+    )
 
     if type == "thermal":
-        specific_dict["variable output costs"] = \
+        specific_dict["variable output costs"] = (
             storage_parameters[type][4] / storage_parameters[type][0]
+        )
     # produce a pandas series out of the dict above due to easier
     # appending
     return append_component(sheets, "storages", specific_dict)

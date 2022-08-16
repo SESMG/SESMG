@@ -1,5 +1,4 @@
-def create_standard_parameter_bus(label: str, bus_type: str, sheets,
-                                  cords=None):
+def create_standard_parameter_bus(label: str, bus_type: str, sheets, cords=None):
     """
         creates a bus with standard_parameters, based on the standard
         parameters given in the "standard_parameters" dataset and adds
@@ -23,20 +22,22 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets,
         :type dh: str
     """
     from program_files import read_standard_parameters, append_component
+
     # define individual values
-    bus_dict = {'label': label}
+    bus_dict = {"label": label}
     # extracts the bus specific standard values from the
     # standard_parameters dataset
-    standard_param, standard_keys = \
-        read_standard_parameters(bus_type, "buses", "bus_type")
+    standard_param, standard_keys = read_standard_parameters(
+        bus_type, "buses", "bus_type"
+    )
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
         bus_dict[standard_keys[i]] = standard_param[standard_keys[i]]
     # defines rather a district heating connection is possible
     if cords is not None:
-        bus_dict.update({"district heating conn.": cords[2],
-                         "lat": cords[0],
-                         "lon": cords[1]})
+        bus_dict.update(
+            {"district heating conn.": cords[2], "lat": cords[0], "lon": cords[1]}
+        )
     else:
         bus_dict.update({"district heating conn.": "0"})
     # appends the new created component to buses sheet
@@ -55,16 +56,20 @@ def create_cluster_elec_buses(building, cluster, sheets):
         :type cluster: str
     """
     from . import Link
+
     # ELEC BUSES
     # get building type to specify bus type to be created
-    if "RES" in building[2] and str(cluster) + "_res_electricity_bus" \
-            not in list(sheets["buses"]["label"]):
+    if "RES" in building[2] and str(cluster) + "_res_electricity_bus" not in list(
+        sheets["buses"]["label"]
+    ):
         bus_type = "_res_"
-    elif "COM" in building[2] and str(cluster) + "_com_electricity_bus" \
-            not in list(sheets["buses"]["label"]):
+    elif "COM" in building[2] and str(cluster) + "_com_electricity_bus" not in list(
+        sheets["buses"]["label"]
+    ):
         bus_type = "_com_"
-    elif "IND" in building[2] and str(cluster) + "_ind_electricity_bus" \
-            not in list(sheets["buses"]["label"]):
+    elif "IND" in building[2] and str(cluster) + "_ind_electricity_bus" not in list(
+        sheets["buses"]["label"]
+    ):
         bus_type = "_ind_"
     else:
         bus_type = None
@@ -74,25 +79,27 @@ def create_cluster_elec_buses(building, cluster, sheets):
         sheets = create_standard_parameter_bus(
             label=str(cluster) + bus_type + "electricity_bus",
             bus_type="building" + bus_type + "electricity_bus",
-            sheets=sheets)
+            sheets=sheets,
+        )
         # reset index to label to ensure further attachments
         sheets["buses"].set_index("label", inplace=True, drop=False)
-        
+
         # Creates a Bus connecting the cluster electricity bus with
         # the res electricity bus
         sheets = Link.create_link(
             label=str(cluster) + bus_type + "electricity_link",
             bus_1=str(cluster) + "_electricity_bus",
             bus_2=str(cluster) + bus_type + "electricity_bus",
-            link_type='building_pv_building_link', sheets=sheets)
+            link_type="building_pv_building_link",
+            sheets=sheets,
+        )
         # reset index to label to ensure further attachments
         sheets["links"].set_index("label", inplace=True, drop=False)
-        
+
     return sheets
 
 
-def create_cluster_averaged_bus(sink_parameters, cluster, type,
-                                sheets, standard_param):
+def create_cluster_averaged_bus(sink_parameters, cluster, type, sheets, standard_param):
     """
 
     :param sink_parameters:
@@ -100,30 +107,35 @@ def create_cluster_averaged_bus(sink_parameters, cluster, type,
     :param type:
     :return:
     """
-    bus_parameters = standard_param.parse('buses', index_col='bus_type')
+    bus_parameters = standard_param.parse("buses", index_col="bus_type")
     if type != "gas":
-        type1, type2, type3, type4 = "hp_elec", "hp_electricity", \
-                                     "hp_electricity", "electricity"
+        type1, type2, type3, type4 = (
+            "hp_elec",
+            "hp_electricity",
+            "hp_electricity",
+            "electricity",
+        )
     else:
         type1, type2, type3, type4 = "gas", "res_gas", "com_gas", "gas"
 
     # calculate cluster's total heat demand
-    total_annual_demand = \
-        (sink_parameters[4] + sink_parameters[5] + sink_parameters[6])
+    total_annual_demand = sink_parameters[4] + sink_parameters[5] + sink_parameters[6]
     # create standard_parameter gas bus
     sheets = create_standard_parameter_bus(
         label=str(cluster) + "_" + type1 + "_bus",
-        bus_type='building_' + type2 + '_bus',
-        sheets=sheets)
+        bus_type="building_" + type2 + "_bus",
+        sheets=sheets,
+    )
     # reindex for further attachments
     sheets["buses"].set_index("label", inplace=True, drop=False)
     # recalculate gas bus shortage costs building type weighted
     costs_type = "shortage costs"
-    sheets["buses"].loc[(str(cluster) + "_" + type1 + "_bus"), costs_type] = \
-        ((sink_parameters[4] / total_annual_demand)
-         * bus_parameters.loc["building_" + type2 + "_bus"][costs_type]
-         + (sink_parameters[5] / total_annual_demand)
-         * bus_parameters.loc["building_" + type3 + "_bus"][costs_type]
-         + (sink_parameters[6] / total_annual_demand)
-         * bus_parameters.loc["building_ind_" + type4 + "_bus"][costs_type])
+    sheets["buses"].loc[(str(cluster) + "_" + type1 + "_bus"), costs_type] = (
+        (sink_parameters[4] / total_annual_demand)
+        * bus_parameters.loc["building_" + type2 + "_bus"][costs_type]
+        + (sink_parameters[5] / total_annual_demand)
+        * bus_parameters.loc["building_" + type3 + "_bus"][costs_type]
+        + (sink_parameters[6] / total_annual_demand)
+        * bus_parameters.loc["building_ind_" + type4 + "_bus"][costs_type]
+    )
     return sheets

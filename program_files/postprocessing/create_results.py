@@ -10,10 +10,8 @@ import pandas as pd
 from oemof import solph
 from matplotlib import pyplot as plt
 import os
-from program_files.postprocessing.create_results_collecting_data \
-    import collect_data
-from program_files.postprocessing.create_results_prepare_data \
-    import prepare_data
+from program_files.postprocessing.create_results_collecting_data import collect_data
+from program_files.postprocessing.create_results_prepare_data import prepare_data
 import csv
 
 
@@ -40,23 +38,22 @@ def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str):
     # Writes a spreadsheet containing the input and output flows into
     # every bus of the energy system for every timestep of the
     # timesystem
-    for i, b in nodes_data['buses'].iterrows():
-        if b['active']:
-            file_path = \
-                os.path.join(filepath, 'results_' + b['label'] + '.xlsx')
-            node_results = solph.views.node(results, b['label'])
-            df = node_results['sequences']
+    for i, b in nodes_data["buses"].iterrows():
+        if b["active"]:
+            file_path = os.path.join(filepath, "results_" + b["label"] + ".xlsx")
+            node_results = solph.views.node(results, b["label"])
+            df = node_results["sequences"]
             df.head(2)
             with pd.ExcelWriter(file_path) as writer:  # doctest: +SKIP
-                df.to_excel(writer, sheet_name=b['label'])
+                df.to_excel(writer, sheet_name=b["label"])
             # returns logging info
-            logging.info('   ' + 'Results saved as xlsx for ' + b['label'])
+            logging.info("   " + "Results saved as xlsx for " + b["label"])
     # Bus xlsx-files for district heating busses
     results_copy = results.copy()
     components = []
     # iterate threw result keys to find district heating buses
     for i in results.keys():
-        if 'tag1=' not in str(i):
+        if "tag1=" not in str(i):
             results_copy.pop(i)
     # determine only the district heating buses from result_copy
     for i in results_copy.keys():
@@ -68,23 +65,22 @@ def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str):
                 components.append(i[1])
     for component in components:
         # renaming label for better file names
-        label = str(component).replace("infrastructure_heat_bus",
-                                       "districtheating")
+        label = str(component).replace("infrastructure_heat_bus", "districtheating")
         label = label.replace("consumers_heat_bus", "districtheating")
         label = label.replace("producers_heat_bus", "districtheating")
-        file_path = \
-            os.path.join(filepath, 'results_' + str(label) + '.xlsx')
+        file_path = os.path.join(filepath, "results_" + str(label) + ".xlsx")
         node_results = solph.views.node(results, str(component))
-        df = node_results['sequences']
+        df = node_results["sequences"]
         df.head(2)
         with pd.ExcelWriter(file_path) as writer:  # doctest: +SKIP
             df.to_excel(writer, sheet_name=label)
         # returns logging info
-        logging.info('\t Results saved as xlsx for ' + str(label))
+        logging.info("\t Results saved as xlsx for " + str(label))
 
 
-def charts(nodes_data: dict, optimization_model: solph.Model,
-           energy_system: solph.EnergySystem):
+def charts(
+    nodes_data: dict, optimization_model: solph.Model, energy_system: solph.EnergySystem
+):
     """
         Plots model results.
 
@@ -107,31 +103,34 @@ def charts(nodes_data: dict, optimization_model: solph.Model,
     esys = energy_system
     results = solph.processing.results(optimization_model)
 
-    for i, b in nodes_data['buses'].iterrows():
-        if b['active']:
-            logging.info('   ' + "******************************************"
-                         + "***************")
-            logging.info('   ' + 'RESULTS: ' + b['label'])
+    for i, b in nodes_data["buses"].iterrows():
+        if b["active"]:
+            logging.info(
+                "   " + "******************************************" + "***************"
+            )
+            logging.info("   " + "RESULTS: " + b["label"])
 
-            bus = solph.views.node(results, b['label'])
-            logging.info('   ' + bus['sequences'].sum())
+            bus = solph.views.node(results, b["label"])
+            logging.info("   " + bus["sequences"].sum())
             fig, ax = plt.subplots(figsize=(10, 5))
-            bus['sequences'].plot(ax=ax)
-            ax.legend(loc='upper center', prop={'size': 8},
-                      bbox_to_anchor=(0.5, 1.4), ncol=2)
+            bus["sequences"].plot(ax=ax)
+            ax.legend(
+                loc="upper center", prop={"size": 8}, bbox_to_anchor=(0.5, 1.4), ncol=2
+            )
             fig.subplots_adjust(top=0.7)
             plt.show()
 
-    esys.results['main'] = solph.processing.results(optimization_model)
-    esys.results['meta'] = solph.processing.meta_results(optimization_model)
+    esys.results["main"] = solph.processing.results(optimization_model)
+    esys.results["meta"] = solph.processing.meta_results(optimization_model)
     esys.dump(dpath=None, filename=None)
 
 
 class Results:
     """
-        Class for preparing Plotly results and logging the results of
-        Cbc-Solver
+    Class for preparing Plotly results and logging the results of
+    Cbc-Solver
     """
+
     results = None
     esys = None
     comp_capacity = None
@@ -140,26 +139,32 @@ class Results:
 
     @staticmethod
     def get_first_node_flow(flow):
-        """ returns begin of the flow, used to log where the flow comes from"""
+        """returns begin of the flow, used to log where the flow comes from"""
         flow_name = str(flow.name)
         flow_name = flow_name[2:-10]
-        flow_name = flow_name.split(',')
+        flow_name = flow_name.split(",")
         return flow_name[0]
 
     @staticmethod
     def get_last_node_flow(flow):
-        """ returns end of the flow, used to log where the flow goes to"""
+        """returns end of the flow, used to log where the flow goes to"""
         flow_name = str(flow.name)
         flow_name = flow_name[2:-10]
-        flow_name = flow_name.split(',')
+        flow_name = flow_name.split(",")
         return flow_name[1]
 
-    def console_logging(self, comp_type, capacity=None, variable_costs=None,
-                        periodical_costs=None, investment=None,
-                        transformer_type=None):
+    def console_logging(
+        self,
+        comp_type,
+        capacity=None,
+        variable_costs=None,
+        periodical_costs=None,
+        investment=None,
+        transformer_type=None,
+    ):
         """
-            consists of the different console logging entries and logs
-            the one for the given component
+        consists of the different console logging entries and logs
+        the one for the given component
         """
 
         inflow1 = self.comp_input1
@@ -167,101 +172,197 @@ class Results:
         outflow1 = self.comp_output1
         outflow2 = self.comp_output2
 
-        if comp_type == 'sink':
-            logging.info('   ' + 'Total Energy Demand: ' + str(inflow1.sum())
-                         + ' kWh')
+        if comp_type == "sink":
+            logging.info("   " + "Total Energy Demand: " + str(inflow1.sum()) + " kWh")
         else:
-            if comp_type == 'source':
-                if inflow1 is None or \
-                        'shortage' in self.get_first_node_flow(outflow1):
-                    logging.info('   ' + 'Total Energy Input: '
-                                 + str(outflow1.sum()) + ' kWh')
-                    logging.info('   ' + 'Max. Capacity: ' + str(capacity)
-                                 + ' kW')
-                else:
-                    logging.info('   ' + 'Input from '
-                                 + self.get_first_node_flow(inflow1) + ': '
-                                 + str(round(inflow1.sum(), 2)) + ' kWh')
-                    logging.info('   ' + 'Ambient Energy Input to '
-                                 + self.get_first_node_flow(inflow2) + ': '
-                                 + str(round(inflow2.sum(), 2)) + ' kWh')
-                    logging.info('   ' + 'Energy Output to '
-                                 + self.get_last_node_flow(outflow1) + ': '
-                                 + str(round(outflow1.sum(), 2)) + ' kWh')
-
-            if comp_type == 'transformer':
-                if inflow2 is None:
-                    logging.info('   ' + 'Total Energy Output to'
-                                 + self.get_last_node_flow(outflow1) + ': '
-                                 + str(round(outflow1.sum(), 2)) + ' kWh')
-                    if outflow2 is not None:
-                        logging.info('   ' + 'Total Energy Output to'
-                                     + self.get_last_node_flow(outflow2) + ': '
-                                     + str(round(outflow2.sum(), 2)) + ' kWh')
-                else:
-                    logging.info('   ' + 'Electricity Energy Input to '
-                                 + self.get_first_node_flow(inflow1) + ': '
-                                 + str(round(inflow1.sum(), 2)) + ' kWh')
-                    if transformer_type == 'absorption_heat_transformer':
-                        logging.info('   ' + 'Heat Input to'
-                                     + self.get_last_node_flow(inflow2) + ': '
-                                     + str(round(inflow2.sum(), 2)) + ' kWh')
-                    elif transformer_type == 'compression_heat_transformer':
-                        logging.info('   ' + 'Ambient Energy Input to'
-                                     + self.get_last_node_flow(inflow2) + ': '
-                                     + str(round(inflow2.sum(), 2)) + ' kWh')
-                    logging.info('   ' + 'Total Energy Output to'
-                                 + self.get_last_node_flow(outflow1) + ': '
-                                 + str(round(outflow1.sum(), 2)) + ' kWh')
-                logging.info('   ' + 'Max. Capacity: ' + str(capacity) + ' kW')
-
-                if comp_type == 'storage':
+            if comp_type == "source":
+                if inflow1 is None or "shortage" in self.get_first_node_flow(outflow1):
                     logging.info(
-                        '   ' + 'Energy Output from '
-                        + self.get_first_node_flow(outflow1) + ': '
-                        + str(round(outflow1.sum(), 2)) + 'kWh')
-                    logging.info('   ' + 'Energy Input to '
-                                 + self.get_last_node_flow(outflow1) + ': '
-                                 + str(round(inflow1.sum(), 2)) + ' kWh')
+                        "   " + "Total Energy Input: " + str(outflow1.sum()) + " kWh"
+                    )
+                    logging.info("   " + "Max. Capacity: " + str(capacity) + " kW")
+                else:
+                    logging.info(
+                        "   "
+                        + "Input from "
+                        + self.get_first_node_flow(inflow1)
+                        + ": "
+                        + str(round(inflow1.sum(), 2))
+                        + " kWh"
+                    )
+                    logging.info(
+                        "   "
+                        + "Ambient Energy Input to "
+                        + self.get_first_node_flow(inflow2)
+                        + ": "
+                        + str(round(inflow2.sum(), 2))
+                        + " kWh"
+                    )
+                    logging.info(
+                        "   "
+                        + "Energy Output to "
+                        + self.get_last_node_flow(outflow1)
+                        + ": "
+                        + str(round(outflow1.sum(), 2))
+                        + " kWh"
+                    )
 
-                if comp_type == 'link':
+            if comp_type == "transformer":
+                if inflow2 is None:
+                    logging.info(
+                        "   "
+                        + "Total Energy Output to"
+                        + self.get_last_node_flow(outflow1)
+                        + ": "
+                        + str(round(outflow1.sum(), 2))
+                        + " kWh"
+                    )
+                    if outflow2 is not None:
+                        logging.info(
+                            "   "
+                            + "Total Energy Output to"
+                            + self.get_last_node_flow(outflow2)
+                            + ": "
+                            + str(round(outflow2.sum(), 2))
+                            + " kWh"
+                        )
+                else:
+                    logging.info(
+                        "   "
+                        + "Electricity Energy Input to "
+                        + self.get_first_node_flow(inflow1)
+                        + ": "
+                        + str(round(inflow1.sum(), 2))
+                        + " kWh"
+                    )
+                    if transformer_type == "absorption_heat_transformer":
+                        logging.info(
+                            "   "
+                            + "Heat Input to"
+                            + self.get_last_node_flow(inflow2)
+                            + ": "
+                            + str(round(inflow2.sum(), 2))
+                            + " kWh"
+                        )
+                    elif transformer_type == "compression_heat_transformer":
+                        logging.info(
+                            "   "
+                            + "Ambient Energy Input to"
+                            + self.get_last_node_flow(inflow2)
+                            + ": "
+                            + str(round(inflow2.sum(), 2))
+                            + " kWh"
+                        )
+                    logging.info(
+                        "   "
+                        + "Total Energy Output to"
+                        + self.get_last_node_flow(outflow1)
+                        + ": "
+                        + str(round(outflow1.sum(), 2))
+                        + " kWh"
+                    )
+                logging.info("   " + "Max. Capacity: " + str(capacity) + " kW")
+
+                if comp_type == "storage":
+                    logging.info(
+                        "   "
+                        + "Energy Output from "
+                        + self.get_first_node_flow(outflow1)
+                        + ": "
+                        + str(round(outflow1.sum(), 2))
+                        + "kWh"
+                    )
+                    logging.info(
+                        "   "
+                        + "Energy Input to "
+                        + self.get_last_node_flow(outflow1)
+                        + ": "
+                        + str(round(inflow1.sum(), 2))
+                        + " kWh"
+                    )
+
+                if comp_type == "link":
                     if capacity is None:
-                        logging.info('   ' + 'Total Energy Output to '
-                                     + self.get_last_node_flow(outflow1) + ': '
-                                     + str(round(outflow1.sum(), 2)) + ' kWh')
-                        logging.info('   ' + 'Total Energy Output to '
-                                     + self.get_last_node_flow(outflow2) + ': '
-                                     + str(round(outflow2.sum(), 2)) + ' kWh')
-                        logging.info('   ' + 'Max. Capacity to '
-                                     + self.get_last_node_flow(outflow1) + ': '
-                                     + str(round(outflow1.max(), 2)) + ' kW')
-                        logging.info('   ' + 'Max. Capacity to '
-                                     + self.get_last_node_flow(outflow2) + ': '
-                                     + str(round(outflow2.max(), 2)) + ' kW')
+                        logging.info(
+                            "   "
+                            + "Total Energy Output to "
+                            + self.get_last_node_flow(outflow1)
+                            + ": "
+                            + str(round(outflow1.sum(), 2))
+                            + " kWh"
+                        )
+                        logging.info(
+                            "   "
+                            + "Total Energy Output to "
+                            + self.get_last_node_flow(outflow2)
+                            + ": "
+                            + str(round(outflow2.sum(), 2))
+                            + " kWh"
+                        )
+                        logging.info(
+                            "   "
+                            + "Max. Capacity to "
+                            + self.get_last_node_flow(outflow1)
+                            + ": "
+                            + str(round(outflow1.max(), 2))
+                            + " kW"
+                        )
+                        logging.info(
+                            "   "
+                            + "Max. Capacity to "
+                            + self.get_last_node_flow(outflow2)
+                            + ": "
+                            + str(round(outflow2.max(), 2))
+                            + " kW"
+                        )
                     else:
-                        logging.info('   ' + 'Total Energy Output to '
-                                     + self.get_last_node_flow(outflow1) + ': '
-                                     + str(round(outflow1.sum(), 2)) + ' kWh')
-                        logging.info('   ' + 'Max. Capacity to '
-                                     + self.get_last_node_flow(outflow1) + ': '
-                                     + str(round(capacity, 2)) + ' kW')
+                        logging.info(
+                            "   "
+                            + "Total Energy Output to "
+                            + self.get_last_node_flow(outflow1)
+                            + ": "
+                            + str(round(outflow1.sum(), 2))
+                            + " kWh"
+                        )
+                        logging.info(
+                            "   "
+                            + "Max. Capacity to "
+                            + self.get_last_node_flow(outflow1)
+                            + ": "
+                            + str(round(capacity, 2))
+                            + " kW"
+                        )
             if investment is not None:
-                logging.info('   ' + 'Investment Capacity: '
-                             + str(round(investment, 2)) + ' kW')
+                logging.info(
+                    "   " + "Investment Capacity: " + str(round(investment, 2)) + " kW"
+                )
             if periodical_costs is not None:
-                logging.info('   ' + 'Periodical costs: '
-                             + str(round(periodical_costs, 2))
-                             + ' cost units p.a.')
-            logging.info('   ' + 'Variable Costs: '
-                         + str(round(variable_costs, 2)) + ' cost units')
+                logging.info(
+                    "   "
+                    + "Periodical costs: "
+                    + str(round(periodical_costs, 2))
+                    + " cost units p.a."
+                )
+            logging.info(
+                "   "
+                + "Variable Costs: "
+                + str(round(variable_costs, 2))
+                + " cost units"
+            )
 
     @staticmethod
     def insert_line_end_of_component():
-        logging.info('\t' + 56 * '-')
+        logging.info("\t" + 56 * "-")
 
-    def __init__(self, nd: dict, optimization_model: solph.Model,
-                 energy_system: solph.EnergySystem, result_path: str,
-                 console_log: bool, cluster_dh: bool):
+    def __init__(
+        self,
+        nd: dict,
+        optimization_model: solph.Model,
+        energy_system: solph.EnergySystem,
+        result_path: str,
+        console_log: bool,
+        cluster_dh: bool,
+    ):
         """
             Returns a list of all defined components with the following
             information:
@@ -323,65 +424,109 @@ class Results:
         self.results = solph.processing.results(optimization_model)
         self.df_result_table = pd.DataFrame()
 
-        comp_dict, total_demand = \
-            collect_data(nd, self.results, self.esys)
-        
-        loc, total_periodical_costs, total_variable_costs, \
-            total_constraint_costs, df_result_table, total_demand = \
-            prepare_data(comp_dict, total_demand, nd, result_path,
-                         self.df_result_table)
+        comp_dict, total_demand = collect_data(nd, self.results, self.esys)
+
+        (
+            loc,
+            total_periodical_costs,
+            total_variable_costs,
+            total_constraint_costs,
+            df_result_table,
+            total_demand,
+        ) = prepare_data(comp_dict, total_demand, nd, result_path, self.df_result_table)
         # SUMMARY
         meta_results = solph.processing.meta_results(optimization_model)
-        meta_results_objective = meta_results['objective']
+        meta_results_objective = meta_results["objective"]
         if console_log:
             self.log_category("SUMMARY")
-            logging.info('   ' + 'Total System Costs:             '
-                         + str(round(meta_results_objective, 1))
-                         + ' cost units')
-            logging.info('   ' + 'Total Constraint Costs:         '
-                         + str(round(total_constraint_costs)) + ' cost units')
-            logging.info('   ' + 'Total Variable Costs:           '
-                         + str(round(total_variable_costs)) + ' cost units')
-            logging.info('   ' + 'Total Periodical Costs (p.a.):  '
-                         + str(round(total_periodical_costs))
-                         + ' cost units p.a.')
-            logging.info('   ' + 'Total Energy Demand:            '
-                         + str(round(total_demand)) + ' kWh')
-            logging.info('   ' + 'Total Energy Usage:             '
-                         + str(round(total_usage)) + ' kWh')
+            logging.info(
+                "   "
+                + "Total System Costs:             "
+                + str(round(meta_results_objective, 1))
+                + " cost units"
+            )
+            logging.info(
+                "   "
+                + "Total Constraint Costs:         "
+                + str(round(total_constraint_costs))
+                + " cost units"
+            )
+            logging.info(
+                "   "
+                + "Total Variable Costs:           "
+                + str(round(total_variable_costs))
+                + " cost units"
+            )
+            logging.info(
+                "   "
+                + "Total Periodical Costs (p.a.):  "
+                + str(round(total_periodical_costs))
+                + " cost units p.a."
+            )
+            logging.info(
+                "   "
+                + "Total Energy Demand:            "
+                + str(round(total_demand))
+                + " kWh"
+            )
+            logging.info(
+                "   "
+                + "Total Energy Usage:             "
+                + str(round(total_usage))
+                + " kWh"
+            )
             # creating the list of investments to be made
             self.insert_line_end_of_component()
-            logging.info('   ' + 'Investments to be made:')
+            logging.info("   " + "Investments to be made:")
             investment_objects = list(investments_to_be_made.keys())
             for i in range(len(investment_objects)):
-                logging.info('   - ' + investment_objects[i] + ': '
-                             + investments_to_be_made[investment_objects[i]])
-            logging.info('   ' + 56 * "*" + "\n")
+                logging.info(
+                    "   - "
+                    + investment_objects[i]
+                    + ": "
+                    + investments_to_be_made[investment_objects[i]]
+                )
+            logging.info("   " + 56 * "*" + "\n")
 
         # Importing time system parameters from the scenario
-        ts = next(nd['energysystem'].iterrows())[1]
-        temp_resolution = ts['temporal resolution']
-        start_date = ts['start date']
-        end_date = ts['end date']
+        ts = next(nd["energysystem"].iterrows())[1]
+        temp_resolution = ts["temporal resolution"]
+        start_date = ts["start date"]
+        end_date = ts["end date"]
 
         df_summary = pd.DataFrame(
-            [[start_date, end_date, temp_resolution,
-              round(meta_results_objective, 2),
-              round(total_constraint_costs, 2),
-              round(total_variable_costs, 2),
-              round(total_periodical_costs, 2), round(total_demand, 2),
-              round(total_usage, 2)]],
-            columns=['Start Date', 'End Date', 'Resolution',
-                     'Total System Costs', 'Total Constraint Costs',
-                     'Total Variable Costs', 'Total Periodical Costs',
-                     'Total Energy Demand', 'Total Energy Usage'])
+            [
+                [
+                    start_date,
+                    end_date,
+                    temp_resolution,
+                    round(meta_results_objective, 2),
+                    round(total_constraint_costs, 2),
+                    round(total_variable_costs, 2),
+                    round(total_periodical_costs, 2),
+                    round(total_demand, 2),
+                    round(total_usage, 2),
+                ]
+            ],
+            columns=[
+                "Start Date",
+                "End Date",
+                "Resolution",
+                "Total System Costs",
+                "Total Constraint Costs",
+                "Total Variable Costs",
+                "Total Periodical Costs",
+                "Total Energy Demand",
+                "Total Energy Usage",
+            ],
+        )
 
         # Dataframes are exported as csv for further processing
-        loc.to_csv(result_path + '/components.csv', index=False)
+        loc.to_csv(result_path + "/components.csv", index=False)
 
-        df_result_table = df_result_table.rename_axis('date')
-        df_result_table.to_csv(result_path + '/results.csv')
+        df_result_table = df_result_table.rename_axis("date")
+        df_result_table.to_csv(result_path + "/results.csv")
 
-        df_summary.to_csv(result_path + '/summary.csv', index=False)
+        df_summary.to_csv(result_path + "/summary.csv", index=False)
 
-        logging.info('   ' + 'Successfully prepared results...')
+        logging.info("   " + "Successfully prepared results...")
