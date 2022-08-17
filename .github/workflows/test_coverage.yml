@@ -3,7 +3,7 @@ name: Test coverage
 on:
   push:
     branches:
-      - dev_open_district_upscaling
+      - master
   pull_request:
 
 jobs:
