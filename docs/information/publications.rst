@@ -5,8 +5,8 @@ The SESMG is/was used within the following publications, theses and projects.
 
 Your publication/thesis/project is missing? Contact us!
 
-Publications
-------------
+Papers and Conference Proceedings
+---------------------------------
 
 - Quest, Gemina; Arendt, Rosalie; Klemm, Christian; Bach, Vanessa; Budde, Janik; Vennemann, Peter & Finkbeiner, Matthias (2022): "**Integrated Life Cycle Assessment (LCA) of Power and Heat Supply for a Neighborhood: A Case Study of Herne, Germany**", *Energies*, 15(16), 5900, `https://doi.org/10.3390/en15165900<https://doi.org/10.3390/en15165900>`_.
 
@@ -18,19 +18,30 @@ Publications
 
 - Klemm, Christian & Vennemann, Peter (2021). "**Modeling and optimization of multi-energy systems in mixed-use districts: A review of existing methods and approaches**". *Renewable and Sustainable Energy Reviews*, 135, 110206, `https://doi.org/10.1016/j.rser.2020.110206 <https://doi.org/10.1016/j.rser.2020.110206>`_.
 
+
 Theses
 ------
-- Budde, Janik (2022): "**Residential load profile tools - A review and comparison of applied tools**" (Project Thesis), Münster University of Applied Sciences.
+- Budde, Janik (2022): "**Residential load profile tools - A review and comparison of applied tools**" (Project Thesis), Münster University of Applied Sciences.  `Mail <mailto:janik.budde\@fh-muenster.de>`_
 
-- Becker, Gregor (2022): "**Bereitstellung von Open Source Software in der Energiewirtschaft - Ein Leitfaden**" (Bachelor Thesis), Münster University of Applied Sciences.
+- Becker, Gregor (2022): "**Bereitstellung von Open Source Software in der Energiewirtschaft - Ein Leitfaden**" (Bachelor Thesis), Münster University of Applied Sciences.  `Mail <mailto:gregor.becker\@fh-muenster.de>`_
 
 - Kerkeling, Pascal (2021): "**Energetische Optimierung eines kleinen gemischten Quartiers**" (Bachelor Thesis), Münster University of Applied Sciences.
 
 - Sivabalasingam, Piriyanha (2021): "**Fortschreibung des Energiekonzeptes für ein Quartier mit Hilfe des Open Energy Modelling Frameworks**" (Master Thesis), Münster University of Applied Sciences.
 
-- Budde, Janik (2020): "**Wärmepumpen in Stadtquartieren - Untersuchung anhand eines Quartiers in Herne**" (Bachelor Thesis), Münster University of Applied Sciences.
+- Budde, Janik (2020): "**Wärmepumpen in Stadtquartieren - Untersuchung anhand eines Quartiers in Herne**" (Bachelor Thesis), Münster University of Applied Sciences.  `Mail <mailto:janik.budde\@fh-muenster.de>`_
 
-- Klemm, Christian (2020): "**Modelling and Optimization of Multi-Energy Systems in Mixed-Use Districts: An Exemplary Application**" (Master Thesis), Münster University of Applied Sciences.
+- Klemm, Christian (2020): "**Modelling and Optimization of Multi-Energy Systems in Mixed-Use Districts: An Exemplary Application**" (Master Thesis), Münster University of Applied Sciences. `Mail <mailto:christian.klemm\@fh-muenster.de>`_
+
+Presentations
+-------------
+
+- Oemof Usermeetings Presentations
+
+Others
+------
+
+- Parameter Sheets
 
 
 Projects
