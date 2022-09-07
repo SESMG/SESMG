@@ -36,19 +36,16 @@ Theses
 Presentations
 -------------
 
-- Oemof Usermeetings Presentations
+- Budde, Janik (2022): Spreadsheet Energy System Model Generator, SESMG (J. Budde), oemof user meeting (Flensburg, 18 – 20 MAY 2022), `Available here <https://oemof.org/wp-content/uploads/2022/05/2022-05-18_sesmg_janik_budde.pdf>`_.
 
+- Becker, Gregor (2022): district heating modeling tools (G. Becker), oemof user meeting (Flensburg, 18 – 20 MAY 2022), `Available here <https://oemof.org/wp-content/uploads/2022/06/2022-05-18_Vortrag_Flensburg_Gregor_Becker.pdf>`_.
 
-- Budde, Janik (2022): Spreadsheet Energy System Model Generator, SESMG (J. Budde), oemof user meeting (Flensburg, 18 – 20 MAY 2022), <https://oemof.org/wp-content/uploads/2022/05/2022-05-18_sesmg_janik_budde.pdf>`_.
-
-- Becker, Gregor (2022): district heating modeling tools (G. Becker), oemof user meeting (Flensburg, 18 – 20 MAY 2022), <https://oemof.org/wp-content/uploads/2022/06/2022-05-18_Vortrag_Flensburg_Gregor_Becker.pdf>`_.
-
-- Klemm, Christian (2022): Model-Based Run-Time and Memory Usage Optimization, oemof user meeting (Flensburg, 18 – 20 MAY 2022), <https://oemof.org/wp-content/uploads/2022/05/2022-05-09_ModelBasedRuntimeOptimization.pdf>`_.
+- Klemm, Christian (2022): Model-Based Run-Time and Memory Usage Optimization, oemof user meeting (Flensburg, 18 – 20 MAY 2022), `Available here <https://oemof.org/wp-content/uploads/2022/05/2022-05-09_ModelBasedRuntimeOptimization.pdf>`_.
 
 Others
 ------
 
-- Klemm, Christian; Budde, Janik; Becker, Gregor; Tockloth, Jan N. & Vennemann, Peter: Energy system model structure and parameters, <https://doi.org/10.5281/zenodo.6974401>`_.
+- Klemm, Christian; Budde, Janik; Becker, Gregor; Tockloth, Jan N. & Vennemann, Peter: Energy system model structure and parameters, several versions, `https://doi.org/10.5281/zenodo.6974401 <https://doi.org/10.5281/zenodo.6974401>`_.
 
 
 Projects
