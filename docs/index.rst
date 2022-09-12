@@ -93,6 +93,7 @@ Further Information
 	
 	information/publications
 	information/links
+	information/citation
 	information/license
 	information/contact
 	information/acknowledgements
