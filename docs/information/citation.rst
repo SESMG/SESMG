@@ -7,13 +7,15 @@ Please cite the SESMG in the following way:
 
 Bibtex:
 
-``@software{Klemm_SESMG_2022,
-author = {Klemm, Christian and Becker, Gregor and Budde, Janik and Tockloth, Jan and Vennemann, Peter},
-doi = {10.5281/zenodo.5412026},
-month = {8},
-title = {{SESMG}},
-url = {https://github.com/chrklemm/SESMG},
-version = {0.3.0},
-year = {2022}
-}``
+<code> 
+@software{Klemm_SESMG_2022, <br />
+author = {Klemm, Christian and Becker, Gregor and Budde, Janik and Tockloth, Jan and Vennemann, Peter},<br />
+doi = {10.5281/zenodo.5412026},<br />
+month = {8},<br />
+title = {{SESMG}},<br />
+url = {https://github.com/chrklemm/SESMG},<br />
+version = {0.3.0},<br />
+year = {2022}<br />
+}
+</code>
 
