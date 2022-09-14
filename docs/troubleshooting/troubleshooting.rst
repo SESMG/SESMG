@@ -45,14 +45,6 @@ Error I-002: port 443
 **Debugging:** Reinstall the package manually in the virtual environment as follows: 1. open a terminal 2. navigate to your SESMG folder 3. navigate to the scripts-subfolder: ``cd Scripts`` 4. start the virtual environment: ``start /b activate.bat`` 5. install the missing package as follows: ```pip install --default-timeout=100 'PACKAGE-NAME``` (see also `here <https://stackoverflow.com/questions/43298872/how-to-solve-readtimeouterror-httpsconnectionpoolhost-pypi-python-org-port>`_)
 
 
-Error I-XXX: Vorlage
-----------------------------------
-**Error Message:** 
-**Possible Error Cause:** 
-**Debugging:** 
-
-
-
 Modeling
 ===============================
 
@@ -74,4 +66,14 @@ Make sure that the displayed system can stay in balance.
    :file: ../troubleshooting/troubleshooting-modelling.csv
    :header-rows: 1
           
+
+
+
+Error M-023: nearest foot point
+----------------------------------
+**Error Message:** 
+``... get nearest_perp_foot_point foot_point.extend(foot_points[0])
+IndexError: list index out of range``
+**Possible Error Cause:** The producer could not be connected to the defined heat network. This is probably due to the fact that a right-angled connection to the producer is not possible to the defined pipes.
+**Debugging:** Make sure that the producers can be connected to the heat network with a right angle. It is possible that the producer is too far away from the network.
 
