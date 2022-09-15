@@ -11,7 +11,7 @@ start /b activate.bat
 @echo download and install required python packages
 @echo #############################################
 
-pip install pandas==0.25.3
+
 pip install numpy==1.17.4
 pip install tables==3.5.2
 pip install openpyxl==3.0.0
@@ -44,6 +44,7 @@ pip install oemof.solph==0.4.1
 pip install numpy==1.17.4
 pip install werkzeug==2.0.3
 pip install flask==2.1.3
+pip install pandas==1.0.0
 
 @echo ######################
 @echo Installation completed
