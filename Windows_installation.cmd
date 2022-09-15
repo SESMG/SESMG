@@ -4,18 +4,22 @@
 @echo ################################
 
 @echo off
-set /p PYVERSION="Enter your Python Version here."
-@echo %PYVERSION% 
+set /p PYVERSION="Enter your Python Version here:"
 
 py -%PYVERSION% -m venv .
+
 cd Scripts/
 start /b activate.bat
+
+pip install pipwin
+pipwin install gdal 
+pipwin install fiona 
 
 @echo #############################################
 @echo download and install required python packages
 @echo #############################################
 
-pip install -r requirements.txt
+pip install -r ..\requirements.txt
 
 @echo ######################
 @echo Installation completed
