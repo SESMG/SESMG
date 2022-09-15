@@ -40,7 +40,8 @@ def create_source(source_type, roof_num, building, sheets, st_output=None):
         "existing capacity": 0,
         "min. investment capacity": 0,
         "output": str(source_param[1]) + switch_dict.get(source_type)[1]
-        if not st_output else st_output,
+        if not st_output
+        else st_output,
         "Azimuth": source_param[2],
         "Surface Tilt": source_param[3],
         "Latitude": source_param[4],
@@ -86,13 +87,12 @@ def create_timeseries_source(sheets, label, output):
         "Surface Tilt": 0,
         "Latitude": 0,
         "Longitude": 0,
-        "input": 0
+        "input": 0,
     }
 
     # extracts the st source specific standard values from the
     # standard_parameters dataset
-    param, keys = read_standard_parameters("timeseries_source", "sources",
-                                           "comment")
+    param, keys = read_standard_parameters("timeseries_source", "sources", "comment")
     for i in range(len(keys)):
         source_dict[keys[i]] = param[keys[i]]
 
@@ -153,7 +153,7 @@ def create_sources(building, clustering, sheets, st_output=None):
                 roof_num=roof_num,
                 building=building,
                 sheets=sheets,
-                st_output=st_output
+                st_output=st_output,
             )
 
             if not clustering and building[column] == "pv&st":

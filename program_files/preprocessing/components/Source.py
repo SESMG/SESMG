@@ -239,7 +239,7 @@ class Sources:
         # TODO
         # calculates global horizontal irradiance from diffuse (dhi)
         # and direct irradiance and adds it to the weather data frame
-        #self.weather_data["ghi"] = self.weather_data.dirhi + self.weather_data.dhi
+        # self.weather_data["ghi"] = self.weather_data.dirhi + self.weather_data.dhi
 
         # changes names of data columns,
         # so it fits the needs of the feedinlib
@@ -362,7 +362,7 @@ class Sources:
         # TODO
         # calculates global horizontal irradiance from diffuse (dhi)
         # and direct irradiance (dirhi) and adds it to the weather data frame
-        #weather_data["ghi"] = weather_data["dirhi"] + weather_data["dhi"]
+        # weather_data["ghi"] = weather_data["dirhi"] + weather_data["dhi"]
 
         # precalculations for flat plate collectors, calculates total
         # irradiance on collector, efficiency and heat output

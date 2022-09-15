@@ -33,34 +33,42 @@ def set_esys_data(nodes_data, location, variables):
     end_date = str(end_date)[:10]
     # set variables set to download
     heights = [10]
-    return {"start": str(nodes_data["energysystem"].loc[1, "start date"])[:10],
-            "stop": end_date, "locations": [location],
-            "heights": heights, "variables": variables}
+    return {
+        "start": str(nodes_data["energysystem"].loc[1, "start date"])[:10],
+        "stop": end_date,
+        "locations": [location],
+        "heights": heights,
+        "variables": variables,
+    }
 
 
 def import_open_fred_weather_data(nodes_data, lat, lon):
     # location of area under investigation
     location = Point(lon, lat)
     # get windpower weather data from OPEN Fred
-    wind_df = Weather(**set_esys_data(nodes_data, location, "windpowerlib"),
-                      **defaultdb()).df(location=location, lib="windpowerlib")
+    wind_df = Weather(
+        **set_esys_data(nodes_data, location, "windpowerlib"), **defaultdb()
+    ).df(location=location, lib="windpowerlib")
     # meaning the half hour values
     wind_df = wind_df.resample("1h").mean()
     wind_df.reset_index(drop=True, inplace=True)
 
     # get pv system weather data from OPEN Fred
-    pv_df = Weather(**set_esys_data(nodes_data, location, "pvlib"),
-                    **defaultdb()).df(location=location, lib="pvlib")
+    pv_df = Weather(**set_esys_data(nodes_data, location, "pvlib"), **defaultdb()).df(
+        location=location, lib="pvlib"
+    )
     # resample pv system data from quarter-hourly to hourly resolution
     pv_df = pv_df.resample("1h").mean()
     pv_df.reset_index(drop=True, inplace=True)
     # create weather data sheet
-    wind_data = {"pressure": "pressure", "z0": "roughness_length",
-                 "windspeed": "wind_speed"}
+    wind_data = {
+        "pressure": "pressure",
+        "z0": "roughness_length",
+        "windspeed": "wind_speed",
+    }
     for label in wind_data:
         nodes_data["weather data"][label] = wind_df[wind_data[label]].copy()
-    pv_data = {"dhi": "dhi", "dni": "dni", "ghi": "ghi",
-               "temperature": "temp_air"}
+    pv_data = {"dhi": "dhi", "dni": "dni", "ghi": "ghi", "temperature": "temp_air"}
     for label in pv_data:
         nodes_data["weather data"][label] = pv_df[pv_data[label]].copy()
     nodes_data["weather data"].to_csv("weather.csv")

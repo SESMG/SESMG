@@ -99,7 +99,7 @@ def create_transformer(
         sheets = Bus.create_standard_parameter_bus(
             label=str(building_id) + "_gas_bus", bus_type=bus, sheets=sheets
         )
-    
+
     if not transf_dict.get(transformer_type)[2] == output:
         output1 = str(building_id) + transf_dict.get(transformer_type)[2]
     else:
