@@ -86,8 +86,7 @@ def import_scenario(filepath: str) -> dict:
         lat = nd["energysystem"].loc[1, "weather data lat"]
         lon = nd["energysystem"].loc[1, "weather data lon"]
         import_weather_data.create_weather_data_plot(lat, lon)
-        nd = import_weather_data.import_open_fred_windpowerlib(nd, lat, lon)
-        nd = import_weather_data.import_open_fred_pvlib(nd, lat, lon)
+        nd = import_weather_data.import_open_fred_weather_data(nd, lat, lon)
     # returns nodes
     return nd
 

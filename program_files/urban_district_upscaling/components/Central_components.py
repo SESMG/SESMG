@@ -1,5 +1,5 @@
 def create_central_heat_component(
-    comp_type, bus, central_elec_bus, central_chp, sheets
+    comp_type, bus, central_elec_bus, central_chp, sheets, area
 ):
     """
     In this method, all heat supply systems are calculated for a
@@ -15,9 +15,10 @@ def create_central_heat_component(
     :param sheets:
     :return:
     """
-    from program_files import Bus, Transformer, Storage
-
-    if comp_type in ["naturalgas_chp", "biogas_chp"]:
+    from program_files import Storage
+    print(comp_type)
+    if comp_type in ["naturalgas_chp", "biogas_chp", "pellet_chp",
+                     "woodchips_chp"]:
         sheets = create_central_chp(
             gas_type=comp_type.split("_")[0],
             output=bus,
@@ -27,33 +28,26 @@ def create_central_heat_component(
     # central natural gas heating plant
     if comp_type == "naturalgas_heating_plant":
         sheets = create_central_gas_heating_transformer(
-            gas_type="naturalgas", output=bus, central_chp=central_chp, sheets=sheets
+            gas_type="naturalgas", output=bus, central_chp=central_chp,
+            sheets=sheets
         )
     # central swhp
     central_heatpump_indicator = 0
-    if comp_type == "swhp_transformer" or comp_type == "ashp_transformer":
+    if comp_type == "swhp_transformer" or comp_type == "ashp_transformer" \
+            or comp_type == "gchp_transformer":
+        specification_dict = {"swhp_transformer": "swhp",
+                              "ashp_transformer": "ashp",
+                              "gchp_transformer": "gchp"}
         sheets = create_central_heatpump(
-            specification="swhp" if comp_type == "swhp_transformer" else "ashp",
+            specification=specification_dict.get(comp_type),
             create_bus=True if central_heatpump_indicator == 0 else False,
             output=bus,
             central_elec_bus=central_elec_bus,
             sheets=sheets,
+            area=area
         )
         central_heatpump_indicator += 1
-
-    # central biomass plant
-    if comp_type == "biomass_plant":
-        # biomass bus
-        sheets = Bus.create_standard_parameter_bus(
-            label="central_biomass_bus", bus_type="central_biomass_bus", sheets=sheets
-        )
-
-        sheets = Transformer.create_transformer(
-            building_id="central",
-            output=bus,
-            sheets=sheets,
-            transformer_type="central_biomass_transformer",
-        )
+        
     # create central thermal storage
     if comp_type == "thermal_storage":
         sheets = Storage.create_storage(
@@ -85,64 +79,132 @@ def central_comp(central, true_bools, sheets):
         :type true_bools:
         :param sheets:
         :type sheets:
-        :param standard_parameters:
-        :type standard_parameters:
+        :param central_elec_bus:
+        :type central_elec_bus:
     """
-    from program_files import Bus, Storage
-
-    j = next(central.iterrows())[1]
+    from program_files import Bus, Storage, Source, Link, \
+        get_central_comp_active_status
+    central_elec_bus = False
     # creation of the bus for the local power exchange
-    if j["electricity_bus"] in true_bools:
+    if get_central_comp_active_status(central, "electricity_exchange"):
         sheets = Bus.create_standard_parameter_bus(
             label="central_electricity_bus",
             bus_type="central_electricity_bus",
             sheets=sheets,
         )
+        central_elec_bus = True
+
+    # create central pv systems
+    for num, pv in central.loc[((central["technology"] == "st")
+                                | (central["technology"] == "pv&st"))
+                               & (central["active"] == 1)].iterrows():
+        if len(central.loc[(central["component"] == pv["dh_connection"])
+                           & (central["active"] == 1)]) >= 1:
+            # create pv bus
+            sheets = Bus.create_standard_parameter_bus(
+                    label=pv["component"] + "_pv_bus",
+                    bus_type="central_pv_bus",
+                    sheets=sheets,
+            )
+            # house electricity bus
+            sheets = Bus.create_standard_parameter_bus(
+                    label=(pv["component"] + "_electricity_bus"),
+                    bus_type="building_com_electricity_bus",
+                    sheets=sheets,
+            )
+    
+            if central_elec_bus:
+                # link from pv bus to central electricity bus
+                sheets = Link.create_link(
+                        label=pv["component"] + "pv_central_electricity_link",
+                        bus_1=pv["component"] + "_pv_bus",
+                        bus_2="central_electricity_bus",
+                        link_type="building_pv_central_link",
+                        sheets=sheets,
+                )
+                # link from central elec bus to building electricity bus
+                sheets = Link.create_link(
+                        label=pv["component"] + "central_electricity_link",
+                        bus_1="central_electricity_bus",
+                        bus_2=pv["component"] + "_electricity_bus",
+                        link_type="building_central_building_link",
+                        sheets=sheets)
+    
+            sheets = Source.create_sources(
+                    {"label": pv["component"],
+                     "building type": "central",
+                     "st or pv %1d" % 1: str(pv["technology"]),
+                     "azimuth (°) {}".format(1): pv["azimuth"],
+                     "surface tilt (°) {}".format(1): pv["surface tilt"],
+                     "latitude": pv["lat."],
+                     "longitude": pv["lon."],
+                     "roof area (m²) {}".format(1): pv["area (m2)"],
+                     "roof area (m²) {}".format(2): 0},
+                    False,
+                    sheets,
+                    "central_" + pv["dh_connection"] + "_bus")
 
     # central heat supply
-    if j["central_heat_supply"] in true_bools:
-        num = 1
-        column_1 = "heat_input_{}".format(str(num))
-        while str(column_1) in list(j.keys()) and j[str(column_1)] in true_bools:
+    if True in (central.loc[central["technology"] == "heat_input_bus"][
+            "active"] == 1).values:
+        for num, bus in central.loc[(central["technology"] == "heat_input_bus")
+                                    & (central["active"] == 1)].iterrows():
             # create bus which would be used as producer bus in
             # district heating network
             sheets = Bus.create_standard_parameter_bus(
-                label="central_heat_input{}_bus".format(num),
-                bus_type="central_heat_input_bus",
-                cords=[
-                    j["lat.heat_input-{}".format(num)],
-                    j["lon.heat_input-{}".format(num)],
-                    "dh-system",
-                ],
-                sheets=sheets,
+                    label="central_{}_bus".format(bus["component"]),
+                    bus_type="central_heat_input_bus",
+                    cords=[bus["lat."], bus["lon."], "dh-system"],
+                    sheets=sheets,
             )
-            column = "connected_components_heat_input{}".format(num)
+            central_chp = \
+                True if len(central.loc[
+                                (central["technology"].str.contains("chp"))
+                                & (central["active"] == 1)].values) >= 1 \
+                else False
             # create components connected to the producer bus
-            for comp in str(j[column]).split(","):
-                if j[comp] in true_bools:
+            for num, comp in central.loc[central["dh_connection"] == bus[
+                    "component"]].iterrows():
+                if comp["active"] in true_bools:
                     sheets = create_central_heat_component(
-                        comp_type=comp,
-                        bus="central_heat_input{}_bus".format(num),
-                        central_elec_bus=True
-                        if j["electricity_bus"] in true_bools
-                        else False,
-                        central_chp=True
-                        if j["naturalgas_chp"] in true_bools
-                        else False,
+                        comp_type=comp["technology"],
+                        bus="central_{}_bus".format(bus["component"]),
+                        central_elec_bus=central_elec_bus,
+                        central_chp=central_chp,
                         sheets=sheets,
-                    )
-            num += 1
-            column_1 = "heat_input_{}".format(str(num))
-
+                        area=comp["area (m2)"] if comp["technology"]
+                        == "gchp_transformer" else "0")
+                    
     # central battery storage
-    if j["battery_storage"] in true_bools:
+    if central.loc[(central["technology"] == "battery")][
+            "active"].values[0] == 1:
         sheets = Storage.create_storage(
             building_id="central",
             storage_type="battery",
             de_centralized="central",
             sheets=sheets,
         )
-
+        
+    if central.loc[(central["technology"] == "timeseries_source")][
+            "active"].values[0] == 1:
+        # house electricity bus
+        sheets = Bus.create_standard_parameter_bus(
+                label=("screw_turbine_" + "_electricity_bus"),
+                bus_type="central_pv_bus",
+                sheets=sheets,
+        )
+    
+        if central_elec_bus:
+            # link from pv bus to central electricity bus
+            sheets = Link.create_link(
+                    label="screw_turbine_" + "pv_central_electricity_link",
+                    bus_1="screw_turbine_" + "_electricity_bus",
+                    bus_2="central_electricity_bus",
+                    link_type="building_pv_central_link",
+                    sheets=sheets,
+            )
+        sheets = Source.create_timeseries_source(
+                sheets, "screw_turbine", "screw_turbine_" + "_electricity_bus")
     return sheets
 
 
@@ -156,7 +218,6 @@ def create_power_to_gas_system(bus, sheets):
     :type sheets:
     """
     from program_files import Bus, Transformer, Storage, Link
-
     for bus_type in ["central_h2_bus", "central_naturalgas_bus"]:
         if bus_type not in sheets["buses"]["label"].to_list():
             # h2 bus
@@ -196,8 +257,7 @@ def create_power_to_gas_system(bus, sheets):
 
 
 def create_central_heatpump(
-    specification, create_bus, central_elec_bus, output, sheets
-):
+    specification, create_bus, central_elec_bus, output, sheets, area):
     """
      In this method, a central heatpump unit with specified gas type
      is created, for this purpose the necessary data set is obtained
@@ -216,6 +276,8 @@ def create_central_heatpump(
      :type output:
      :param sheets:
      :type sheets:
+     :param area:
+     :type area: str
      :return: bool
     """
     from program_files import Bus, Transformer, Link
@@ -245,6 +307,7 @@ def create_central_heatpump(
         specific=specification,
         transformer_type="central_" + specification + "_transformer",
         sheets=sheets,
+        area=area
     )
 
 

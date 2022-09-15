@@ -1,4 +1,4 @@
-def create_source(source_type, roof_num, building, sheets):
+def create_source(source_type, roof_num, building, sheets, st_output=None):
     """
         TODO DOCSTRINGTEXT
         :param source_type: define rather a photovoltaic or a \
@@ -39,7 +39,8 @@ def create_source(source_type, roof_num, building, sheets):
         + switch_dict.get(source_type)[0],
         "existing capacity": 0,
         "min. investment capacity": 0,
-        "output": str(source_param[1]) + switch_dict.get(source_type)[1],
+        "output": str(source_param[1]) + switch_dict.get(source_type)[1]
+        if not st_output else st_output,
         "Azimuth": source_param[2],
         "Surface Tilt": source_param[3],
         "Latitude": source_param[4],
@@ -56,6 +57,44 @@ def create_source(source_type, roof_num, building, sheets):
     source_dict["max. investment capacity"] = (
         param["Capacity per Area (kW/m2)"] * source_param[6]
     )
+
+    return append_component(sheets, "sources", source_dict)
+
+
+def create_timeseries_source(sheets, label, output):
+    """
+        TODO DOCSTRINGTEXT
+        :param source_type: define rather a photovoltaic or a \
+            solarthermal source has to be created
+        :type source_type: str
+        :param roof_num: roof part number
+        :type roof_num:
+        :param building:
+        :type building:
+        :param sheets:
+        :type sheets:
+        """
+    from program_files import append_component, read_standard_parameters
+
+    # technical parameters
+    source_dict = {
+        "label": label,
+        "existing capacity": 0,
+        "min. investment capacity": 0,
+        "output": output,
+        "Azimuth": 0,
+        "Surface Tilt": 0,
+        "Latitude": 0,
+        "Longitude": 0,
+        "input": 0
+    }
+
+    # extracts the st source specific standard values from the
+    # standard_parameters dataset
+    param, keys = read_standard_parameters("timeseries_source", "sources",
+                                           "comment")
+    for i in range(len(keys)):
+        source_dict[keys[i]] = param[keys[i]]
 
     return append_component(sheets, "sources", source_dict)
 
@@ -93,7 +132,7 @@ def create_competition_constraint(limit, label, roof_num, sheets):
     return append_component(sheets, "competition constraints", constraint_dict)
 
 
-def create_sources(building, clustering, sheets):
+def create_sources(building, clustering, sheets, st_output=None):
     """ """
     # create pv-sources and solar thermal-sources including area
     # competition
@@ -114,6 +153,7 @@ def create_sources(building, clustering, sheets):
                 roof_num=roof_num,
                 building=building,
                 sheets=sheets,
+                st_output=st_output
             )
 
             if not clustering and building[column] == "pv&st":
@@ -280,7 +320,7 @@ def create_cluster_sources(source_param, cluster, sheets):
                     sheets = create_competition_constraint(
                         limit=param_dict["roof area (m²) {}".format(azimuth[:-4])],
                         label=cluster,
-                        roof_num=azimuth[:-4],
+                        roof_num=int(azimuth[:-4]),
                         sheets=sheets,
                     )
                 # parameter that aren't type dependent

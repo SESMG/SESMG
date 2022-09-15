@@ -99,16 +99,19 @@ def create_transformer(
         sheets = Bus.create_standard_parameter_bus(
             label=str(building_id) + "_gas_bus", bus_type=bus, sheets=sheets
         )
+    
+    if not transf_dict.get(transformer_type)[2] == output:
+        output1 = str(building_id) + transf_dict.get(transformer_type)[2]
+    else:
+        output1 = output
     return create_standard_parameter_comp(
         specific_param={
             "label": str(building_id) + transf_dict.get(transformer_type)[0],
             "comment": "automatically_created",
             "input": str(building_id) + transf_dict.get(transformer_type)[1],
-            "output": (str(building_id) + transf_dict.get(transformer_type)[2])
-            if output == "None"
-            else output,
+            "output": output1,
             "output2": transf_dict.get(transformer_type)[3],
-            "area": area,
+            "area": float(area),
         },
         standard_parameter_info=[transformer_type, "transformers", "comment"],
         sheets=sheets,
