@@ -87,3 +87,12 @@ Error M-024: KeyError: 'lon'
 **Possible Error Cause:** No heat source bus has been correctly defined for the heat network.
 **Debugging:** make sure the heat source bus has been defined correctly, especially the columns "district heating conn.", "lat", and "lon".
 
+
+Error M-025: "left_on" OR "left_index"
+----------------------------------
+**Error Message:** 
+``... pandas.errors.MergeError: Can only pass argument "left_on" OR "left_index" not both.``
+**Possible Error Cause:** You are using an incompatible version of the pandas-package.
+**Debugging:** Install pandas version 1.0.0 in the virtual environment used for the SESMG
+
+
