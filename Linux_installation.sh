@@ -17,7 +17,7 @@ echo ---------------------------------------------
 echo download and install required python packages
 echo ---------------------------------------------
 
-pip3 install pandas==0.25.3
+
 pip3 install numpy==1.17.4
 pip3 install tables==3.5.2
 pip3 install openpyxl==3.0.0
@@ -36,6 +36,9 @@ pip3 install xlrd==1.2.0
 pip3 install tables
 pip3 install Pyomo==5.7.1
 pip3 install xlsxwriter
+pip3 install pandas==1.0.0
+
+
 sudo mv feedinlib lib/python3.7/site-packages
 sudo mv windpowerlib lib/python3.7/site-packages
 echo ----------------------
