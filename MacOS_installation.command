@@ -14,7 +14,7 @@ echo ---------------------------------------------
 brew install cbc
 brew install postgresql
 brew install geos
-bin/pip3 install pandas==0.25.3
+
 bin/pip3 install numpy==1.17.4
 bin/pip3 install tables==3.5.2
 bin/pip3 install openpyxl==3.0.0
@@ -47,6 +47,7 @@ bin/pip3 install oemof.solph==0.4.1
 bin/pip3 install numpy==1.17.4
 bin/pip3 install werkzeug==2.0.3
 bin/pip3 install flask==2.1.3
+bin/pip3 install pandas==1.0.0
 brew install graphviz
 mv feedinlib lib/python3.7/site-packages
 mv windpowerlib lib/python3.7/site-packages
