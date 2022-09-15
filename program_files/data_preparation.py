@@ -92,7 +92,7 @@ def calculate_cluster_means(data_set, cluster_number: int, cluster_labels, perio
     # Define pandas Dataframe for final data_set
     prep_data_set = pd.DataFrame()
     # Loop for every column of the weather data set
-    for i in range(len(column_names) - 1):
+    for i in range(len(column_names)):
         # Extract individual weather data set for the current weather
         # data column
         data_set_column = extract_single_periods(
