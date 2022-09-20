@@ -372,10 +372,9 @@ def adapt_dhnx_style():
     thermal_network.components["pipes"].index = thermal_network.components["pipes"][
         "id"
     ]
-    thermal_network.components["producers"].index = \
-    thermal_network.components["producers"][
-        "id"
-    ]
+    thermal_network.components["producers"].index = thermal_network.components[
+        "producers"
+    ]["id"]
 
 
 def create_components(nodes_data):
@@ -760,37 +759,37 @@ def district_heating(
                 for i in ["consumers", "pipes", "producers", "forks"]:
                     thermal_network.components[i].to_csv(result_path + "/" + i + ".csv")
 
-            #    static_map = dhnx.plotting.StaticMap(thermal_network)
-            #    static_map.draw(background_map=False)
-            #    plt.title("Given network")
-            #    plt.scatter(
-            #        thermal_network.components.consumers["lon"],
-            #        thermal_network.components.consumers["lat"],
-            #        color="tab:green",
-            #        label="consumers",
-            #        zorder=2.5,
-            #        s=50,
-            #    )
-            #    plt.scatter(
-            #        thermal_network.components.producers["lon"],
-            #        thermal_network.components.producers["lat"],
-            #        color="tab:red",
-            #        label="producers",
-            #        zorder=2.5,
-            #        s=50,
-            #    )
-            #    plt.scatter(
-            #        thermal_network.components.forks["lon"],
-            #        thermal_network.components.forks["lat"],
-            #        color="tab:grey",
-            #        label="forks",
-            #        zorder=2.5,
-            #        s=50,
-            #    )
-            #    plt.text(-2, 32, "P0", fontsize=14)
-            #    plt.text(82, 0, "P1", fontsize=14)
-            #    plt.legend()
-            #    plt.savefig(result_path + "/district_heating.jpeg")
+                #    static_map = dhnx.plotting.StaticMap(thermal_network)
+                #    static_map.draw(background_map=False)
+                #    plt.title("Given network")
+                #    plt.scatter(
+                #        thermal_network.components.consumers["lon"],
+                #        thermal_network.components.consumers["lat"],
+                #        color="tab:green",
+                #        label="consumers",
+                #        zorder=2.5,
+                #        s=50,
+                #    )
+                #    plt.scatter(
+                #        thermal_network.components.producers["lon"],
+                #        thermal_network.components.producers["lat"],
+                #        color="tab:red",
+                #        label="producers",
+                #        zorder=2.5,
+                #        s=50,
+                #    )
+                #    plt.scatter(
+                #        thermal_network.components.forks["lon"],
+                #        thermal_network.components.forks["lat"],
+                #        color="tab:grey",
+                #        label="forks",
+                #        zorder=2.5,
+                #        s=50,
+                #    )
+                #    plt.text(-2, 32, "P0", fontsize=14)
+                #    plt.text(82, 0, "P1", fontsize=14)
+                #    plt.legend()
+                #    plt.savefig(result_path + "/district_heating.jpeg")
                 dh = True
     else:
         for i in ["consumers", "pipes", "producers", "forks"]:
