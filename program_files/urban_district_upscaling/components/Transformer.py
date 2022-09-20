@@ -3,11 +3,7 @@ transf_dict = {
     "building_ashp_transformer": ["ashp", "hp_elec", "heat", "None"],
     "building_gasheating_transformer": ["gasheating", "gas", "heat", "None"],
     "building_electricheating_transformer": [
-        "electricheating",
-        "electricity",
-        "heat",
-        "None",
-    ],
+        "electricheating", "electricity", "heat","None"]
 }
 
 
@@ -24,43 +20,23 @@ def create_transformer(
     from program_files import create_standard_parameter_comp
     from program_files import Bus
 
-    transf_dict.update(
-        {
-            "central_"
-            + specific
-            + "_chp": [label + "_chp", label, label + "_elec", output],
-            "central_"
-            + specific
-            + "_heating_plant_transformer": [
-                label + "_heating_plant",
-                specific,
-                output,
-                "None",
-            ],
-            "central_"
-            + specific
-            + "_transformer": [specific, "heatpump_elec", output, "None"],
-            "central_biomass_transformer": ["biomass", "biomass", output, "None"],
-            "central_electrolysis_transformer": [
-                "_electrolysis_transformer",
-                "_electricity_bus",
-                "_h2_bus",
-                "None",
-            ],
-            "central_methanization_transformer": [
-                "_methanization_transformer",
-                "_h2_bus",
-                "_naturalgas_bus",
-                "None",
-            ],
-            "central_fuelcell_transformer": [
-                "_fuelcell_transformer",
-                "_h2_bus",
-                "_electricity_bus",
-                output,
-            ],
-        }
-    )
+    transf_dict.update({
+        "central_" + specific + "_chp":
+            [label + "_chp", label, label + "_elec", output],
+        "central_" + specific + "_heating_plant_transformer":
+            [label + "_heating_plant", label, output, "None"],
+        "central_" + specific + "_transformer":
+            [label + "_heatpump", "heatpump_elec", output, "None"],
+        # TODO
+        "central_biomass_transformer":
+            ["biomass", "biomass", output, "None"],
+        "central_electrolysis_transformer":
+            [label + "_electrolysis", "electricity", "h2", "None"],
+        "central_methanization_transformer":
+            [label + "_methanization", "h2", "naturalgas", "None"],
+        "central_fuelcell_transformer":
+            [label + "_fuelcell", "h2", "electricity", output]})
+    
     if building_type is not None:
         if building_type == "RES":
             bus = "building_res_gas_bus"
@@ -74,18 +50,18 @@ def create_transformer(
         )
 
     if not transf_dict.get(transf_type)[2] == output:
-        output1 = str(building_id) + "_" + transf_dict.get(transf_type)[2] + "_bus"
+        output1 = str(building_id) + "_" + transf_dict.get(transf_type)[2] + \
+                  "_bus"
     else:
         output1 = output
-
+        
     return create_standard_parameter_comp(
         specific_param={
-            "label": building_id
-            + "_"
-            + transf_dict.get(transf_type)[0]
-            + "_transformer",
+            "label": building_id + "_" + transf_dict.get(transf_type)[0]
+                     + "_transformer",
             "comment": "automatically_created",
-            "input": building_id + "_" + transf_dict.get(transf_type)[1] + "_bus",
+            "input": building_id + "_" + transf_dict.get(transf_type)[1]
+                     + "_bus",
             "output": output1,
             "output2": transf_dict.get(transf_type)[3],
             "area": float(area),
