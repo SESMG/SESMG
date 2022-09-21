@@ -86,7 +86,7 @@ Error M-001: KeyError sequences (sources)
 
 **Debugging:** For all components  make sure that 1) each column is filled correctly  and 2) the first component of a sheet is entered in the row directly below the header row  and that there are no blank rows between the individual components of a sheet
 
-Error M-002: solver did not exit normally
+Error M-002: solver did not exit normally I
 ----------------------------------
 **Error Message:** ::
 
@@ -117,7 +117,7 @@ Error M-004: Memory Error
 
 **Debugging:** Take the following measures gradually until the error no longer occurs: (1) Restart the used Python interpreter (2) Close unnecessary programs on the computer (3) Make sure that python 64 bit version is used (Python 32 bit can manage only 2 GB of memory). (4) Start the program on a computer with a higher memory.
 
-Error M-005: 
+Error M-005:  time module
 ----------------------------------
 **Error Message:** ::
 
@@ -127,7 +127,7 @@ Error M-005:
 
 **Debugging:** Use Pyhton 3.7.6
 
-Error M-006: 
+Error M-006: shapes
 ----------------------------------
 **Error Message:** :: 
 
@@ -138,7 +138,7 @@ Error M-006:
 **Debugging:** Make sure that the number of weather data points corresponds to the time steps of the model (At hourly resolution  one year has 8760 time steps). When simulating a leap year  it is recommended limiting the time horizon to 8760 hours.
 
 
-Error M-007: 
+Error M-007: solver did not exit normally II
 ----------------------------------
 **Error Message:** ::
 
@@ -148,7 +148,7 @@ Error M-007:
 
 **Debugging:** Make sure that all necessary cells of the spreadsheet have been filled in.
 
-Error M-008: 
+Error M-008: KeyError component
 ----------------------------------
 **Error Message:** ::
 
@@ -159,7 +159,7 @@ Error M-008:
 
 **Debugging:** Check that all bus references are correct. Also check for typos.
 
-Error M-009: 
+Error M-009: Type Error
 ----------------------------------
 **Error Message:** ::
 
@@ -169,7 +169,7 @@ Error M-009:
 
 **Debugging:** Make sure to use the ""annual demand"" column for SLP and Richardson sinks and the ""nominal value"" column for time series sinks.
 
-Error M-010: 
+Error M-010: Variable Type Attribute
 ----------------------------------
 **Error Message:** ::
 
@@ -179,7 +179,7 @@ Error M-010:
 
 **Debugging:** Make sure that all excess/sortage prices consist of real numbers. Also check for typos.
 
-Error M-011: 
+Error M-011: Investment Flow
 ----------------------------------
 **Error Message:** ::
 
@@ -189,19 +189,19 @@ Error M-011:
 
 **Debugging:** No action needed, the modeling process is not effected.
 
-Error M-012: 
+Error M-012: Key Error (Index)
 ----------------------------------
-**Error Message:** ::
+**Error Message** (example): ::
 
-   KeyError: 'Index \'(''<oemof.solph.network.source.Source: \'ID_phtovoltaic_electricity_source\'>' ''<oemof.solph.network.bus.Bus: \'ID_pv_bus\'>'' 0)\' is not valid for indexed component \'flow\''
+   KeyError: 'Index \'(''<oemof.solph.network.source.Source: \'ID_phtovoltaic_electricity_source\'>' ''<oemof.solph.network.bus.Bus: \'ID_pv_bus\'>'' 0)\' is not valid for indexed component \'flow\'' 
 
 **Possible Error Cause:** You probably named the busses incorrectly.
 
 **Debugging:** Check if all busses are named correctly.
 
-Error M-013: 
+Error M-013: Key error (source)
 ----------------------------------
-**Error Message:** ::
+**Error Message** (example): ::
 
    KeyError: 'ID_photovoltaik_electricity_source'
 
@@ -209,7 +209,7 @@ Error M-013:
 
 **Debugging:** Make sure that if you have disabled pv sources - you do the same for the competition constraint.
 
-Error M-014: 
+Error M-014: User Warning Condition Infeasible
 ----------------------------------
 **Error Message:** ::
 
@@ -219,7 +219,7 @@ Error M-014:
 
 **Debugging:** make sure that the sources are able to insert enough energy to the system
 
-Error M-015: 
+Error M-015: Flow NaN-Values
 ----------------------------------
 **Error Message:** ::
 
@@ -229,7 +229,7 @@ Error M-015:
 
 **Debugging:** Make sure you have not used any special characters (e.g., use m3 instead of m³)
 
-Error M-016: 
+Error M-016: Dyn Function H0
 ----------------------------------
 **Error Message:** ::
 
@@ -239,7 +239,7 @@ Error M-016:
 
 **Debugging:** make sure you are using feedinlib==0.0.12
 
-Error M-017: 
+Error M-017: Create Flow Data Frames
 ----------------------------------
 **Error Message:** ::
 
@@ -249,7 +249,7 @@ Error M-017:
 
 **Debugging:** check and correct the transformer types entered to the sheet
 
-Error M-018: 
+Error M-018: Assertion Error
 ----------------------------------
 **Error Message:** ::
 
@@ -259,7 +259,7 @@ Error M-018:
 
 **Debugging:** Add a full year weather data set to the weather data sheet.
 
-Error M-019: 
+Error M-019: Duplicates
 ----------------------------------
 **Error Message:** ::
 
@@ -269,7 +269,7 @@ Error M-019:
 
 **Debugging:** rename at least one of the components
 
-Error M-020: 
+Error M-020: Value Error Length Mismatch
 ----------------------------------
 **Error Message:** ::
 
@@ -279,7 +279,7 @@ Error M-020:
 
 **Debugging:** Activate necessary excesses sinks and shortages sources. 
 
-Error M-021: 
+Error M-021: Solver Returned Non-Zero Return Code
 ----------------------------------
 **Error Message:** ::
 
@@ -289,7 +289,7 @@ Error M-021:
 
 **Debugging:** reinstall the pyomo-package: 1. open a terminal 2. navigate to your SESMG folder 3. navigate to the scripts-subfolder: "cd Scripts" 4. start the virtual environment: ``start /b activate.bat`` 5. reinstall pyomo: ``pip install pyomo==5.7.1``
 
-Error M-022: 
+Error M-022: Key Error (sequences) II
 ----------------------------------
 **Error Message:** ::
 
