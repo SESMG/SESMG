@@ -38,7 +38,9 @@ Installation
 
 Error I-001: numpy.generic objects
 ----------------------------------
-**Error Message:** Cannot interpret attribute 'dtype' of 'numpy.generic' objects' as a data type
+**Error Message:** ::
+
+   Cannot interpret attribute 'dtype' of 'numpy.generic' objects' as a data type
 
 **Possible Error Cause:** possible module (e.g., demandlib) not actual
 
@@ -46,7 +48,9 @@ Error I-001: numpy.generic objects
 
 Error I-002: port 443
 ----------------------------------
-**Error Message:** HTTPSConnectionPool(host='pypi.python.org' port=443), due to a timeout
+**Error Message:** ::
+
+   HTTPSConnectionPool(host='pypi.python.org' port=443), due to a timeout
 
 **Possible Error Cause:** A package named in the error message was not installed correctly
 
@@ -80,8 +84,9 @@ Make sure that the displayed system can stay in balance.
 Error M-023: nearest foot point
 ----------------------------------
 **Error Message:** 
-:code: `... get nearest_perp_foot_point foot_point.extend(foot_points[0])
-IndexError: list index out of range`
+   
+   ... get nearest_perp_foot_point foot_point.extend(foot_points[0])
+   IndexError: list index out of range
 
 **Possible Error Cause:** The producer could not be connected to the defined heat network. This is probably due to the fact that a right-angled connection to the producer is not possible to the defined pipes.
 **Debugging:** Make sure that the producers can be connected to the heat network with a right angle. It is possible that the producer is too far away from the network.
@@ -102,8 +107,9 @@ Error M-024: KeyError: 'lon'
 
 Error M-025: "left_on" OR "left_index"
 ----------------------------------
-**Error Message:** 
-:code: `... pandas.errors.MergeError: Can only pass argument "left_on" OR "left_index" not both.`
+**Error Message:** ::
+
+   ... pandas.errors.MergeError: Can only pass argument "left_on" OR "left_index" not both.
 
 **Possible Error Cause:** You are using an incompatible version of the pandas-package.
 
