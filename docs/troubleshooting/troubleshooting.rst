@@ -60,7 +60,8 @@ Error I-002: port 443
 Modeling
 ===============================
 
-**General debugging**:
+General debugging
+----------------------------------
 
 Pay attention to the correct spelling:
 
@@ -79,6 +80,111 @@ Make sure that the displayed system can stay in balance.
    :header-rows: 1
           
 
+Error M-001: KeyError sequences (sources)
+----------------------------------
+**Error Message:** ::
+
+   flowsum = source['sequences'].sum() KeyError: 'sequences'
+
+**Possible Error Cause:** A system component was entered incorrectly in the input file.
+
+**Debugging:** For all components  make sure that 1) each column is filled correctly  and 2) the first component of a sheet is entered in the row directly below the header row  and that there are no blank rows between the individual components of a sheet
+
+Error M-002: solver did not exit normally
+----------------------------------
+**Error Message:** ::
+
+   ApplicationError: Solver (cbc) did not exit normally
+
+**Possible Error Cause:** A system component was entered incorrectly in the input file.
+
+**Debugging:** For all components  make sure that 1) each column is filled correctly  and 2) the first component of a sheet is entered in the row directly below the header row  and that there are no blank rows between the individual components of a sheet
+
+
+Error M-003: KeyError sequences (results)
+----------------------------------
+**Error Message:** ::
+
+   df = node_results['sequences'] KeyError: 'sequences'
+
+**Possible Error Cause:** The implemented model probably has an circuit. For example  the excess sink of a bus could achieve higher selling prices than buying from a shortage source. In theory  this could generate an infinitely large profit. Such a model cannot be solved.
+
+**Debugging:** Make sure  there are no circuits within the model.
+
+Error M-004: Memory Error
+----------------------------------
+**Error Message:** ::
+
+   Memory Error
+
+**Possible Error Cause:** The available memory is not sufficient to solve the model.
+
+**Debugging:** Take the following measures gradually until the error no longer occurs: (1) Restart the used Python interpreter (2) Close unnecessary programs on the computer (3) Make sure that python 64 bit version is used (Python 32 bit can manage only 2 GB of memory). (4)Start the program on a computer with a higher memory.
+
+Error M-005: 
+----------------------------------
+**Error Message:** ::
+
+   AttributeError: module 'time' has no attribute 'clock'
+
+**Possible Error Cause:** You are using a Python version not compatible with oemof.
+
+**Debugging:** Use Pyhton 3.7.6
+
+Error M-0: 
+----------------------------------
+**Error Message:** ::
+
+   error message line 1
+   error message line 2
+
+**Possible Error Cause:** 
+
+**Debugging:** 
+
+Error M-0: 
+----------------------------------
+**Error Message:** ::
+
+   error message line 1
+   error message line 2
+
+**Possible Error Cause:** 
+
+**Debugging:** 
+
+Error M-0: 
+----------------------------------
+**Error Message:** ::
+
+   error message line 1
+   error message line 2
+
+**Possible Error Cause:** 
+
+**Debugging:** 
+
+Error M-0: 
+----------------------------------
+**Error Message:** ::
+
+   error message line 1
+   error message line 2
+
+**Possible Error Cause:** 
+
+**Debugging:** 
+
+Error M-0: 
+----------------------------------
+**Error Message:** ::
+
+   error message line 1
+   error message line 2
+
+**Possible Error Cause:** 
+
+**Debugging:** 
 
 
 Error M-023: nearest foot point
