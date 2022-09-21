@@ -72,9 +72,8 @@ Make sure that the displayed system can stay in balance.
 Error M-023: nearest foot point
 ----------------------------------
 **Error Message:** 
-``... get nearest_perp_foot_point foot_point.extend(foot_points[0])
-
-IndexError: list index out of range``
+:code: `... get nearest_perp_foot_point foot_point.extend(foot_points[0])
+IndexError: list index out of range`
 
 **Possible Error Cause:** The producer could not be connected to the defined heat network. This is probably due to the fact that a right-angled connection to the producer is not possible to the defined pipes.
 **Debugging:** Make sure that the producers can be connected to the heat network with a right angle. It is possible that the producer is too far away from the network.
@@ -83,22 +82,24 @@ IndexError: list index out of range``
 Error M-024: KeyError: 'lon'
 ----------------------------------
 **Error Message:** 
-``... in get_loc
+:code: ``... in get_loc
 
 raise KeyError(key) from err
 
 KeyError: 'lon' ``
 
 **Possible Error Cause:** No heat source bus has been correctly defined for the heat network.
+
 **Debugging:** make sure the heat source bus has been defined correctly, especially the columns "district heating conn.", "lat", and "lon".
 
 
 Error M-025: "left_on" OR "left_index"
 ----------------------------------
 **Error Message:** 
-``... pandas.errors.MergeError: Can only pass argument "left_on" OR "left_index" not both.``
+:code: `... pandas.errors.MergeError: Can only pass argument "left_on" OR "left_index" not both.`
 
 **Possible Error Cause:** You are using an incompatible version of the pandas-package.
+
 **Debugging:** Install pandas version 1.0.0 in the virtual environment used for the SESMG
 
 
