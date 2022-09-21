@@ -74,11 +74,7 @@ Make sure that the displayed system can stay in balance.
 - The use of excess-sinks and shortage-sources can help to keep the system in balance.
 
 **Your error message is not included? Help us and all users by reporting your error message - with or without a solution!. Thank you!**
-
-.. csv-table:: 
-   :file: ../troubleshooting/troubleshooting-modelling.csv
-   :header-rows: 1
-          
+         
 
 Error M-001: KeyError sequences (sources)
 ----------------------------------
@@ -131,7 +127,7 @@ Error M-005:
 
 **Debugging:** Use Pyhton 3.7.6
 
-Error M-0: 
+Error M-006: 
 ----------------------------------
 **Error Message:** :: 
 
@@ -142,186 +138,166 @@ Error M-0:
 **Debugging:** Make sure that the number of weather data points corresponds to the time steps of the model (At hourly resolution  one year has 8760 time steps). When simulating a leap year  it is recommended limiting the time horizon to 8760 hours.
 
 
-Error M-0: 
+Error M-007: 
 ----------------------------------
 **Error Message:** ::
 
-   ValueError: pyutilib.common._exceptions.ApplicationError: Solver (cbc) did not exit normally,"A value for the use of the investment module (e.g.  ""min Investment Capacity"") was not filled in.",Make sure that all necessary cells of the spreadsheet have been filled in.
+   ValueError: pyutilib.common._exceptions.ApplicationError: Solver (cbc) did not exit normally
 
+**Possible Error Cause:** "A value for the use of the investment module (e.g. "min Investment Capacity") was not filled in."
 
-**Possible Error Cause:** 
+**Debugging:** Make sure that all necessary cells of the spreadsheet have been filled in.
 
-**Debugging:** 
-
-Error M-0: 
+Error M-008: 
 ----------------------------------
 **Error Message:** ::
 
-   KeyError: '__any component name__',Incorrectly assigned bus name for the input or output of a component,Check that all bus references are correct. Also check for typos.
+   KeyError: '__any component name__'
 
 
-**Possible Error Cause:** 
+**Possible Error Cause:** Incorrectly assigned bus name for the input or output of a component
 
-**Debugging:** 
+**Debugging:** Check that all bus references are correct. Also check for typos.
 
-Error M-0: 
+Error M-009: 
 ----------------------------------
 **Error Message:** ::
 
-   TypeError: ufunc 'true_divide' not supported for the input types  and the inputs could not be safely coerced to any supported types according to the casting rule ''safe'',"The column ""annual demand"" was not filled in correctly for a sink.","Make sure to use the ""annual demand"" column for SLP and Richardson sinks and the ""nominal value"" column for time series sinks."
+   TypeError: ufunc 'true_divide' not supported for the input types  and the inputs could not be safely coerced to any supported types according to the casting rule ''safe''
 
-**Possible Error Cause:** 
+**Possible Error Cause:** "The column ""annual demand"" was not filled in correctly for a sink."
 
-**Debugging:** 
+**Debugging:** Make sure to use the ""annual demand"" column for SLP and Richardson sinks and the ""nominal value"" column for time series sinks.
 
-Error M-0: 
+Error M-010: 
 ----------------------------------
 **Error Message:** ::
 
-   AttributeError: 'str' object has no attribute 'is_variable_type',The cost value for an activated excess sink or shortage source was not correctly specified in the bus sheet,Make sure that all excess/sortage prices consist of real numbers. Also check for typos.
+   AttributeError: 'str' object has no attribute 'is_variable_type'
 
+**Possible Error Cause:** The cost value for an activated excess sink or shortage source was not correctly specified in the bus sheet
 
-**Possible Error Cause:** 
+**Debugging:** Make sure that all excess/sortage prices consist of real numbers. Also check for typos.
 
-**Debugging:** 
-
-Error M-0: 
+Error M-011: 
 ----------------------------------
 **Error Message:** ::
 
-   Implicitly replacing the Component attribute equate_InvestmentFlow.invest[districtheat_undirected_link districtheat_bus]_InvestmentFlow.invest[ districtheat_undirected_link heat_bus] (type=<class 'pyomo.core.base.constraint.SimpleConstraint'>) on block Model with a new Component (type=<class 'pyomo.core.base.constraint.AbstractSimpleConstraint'>). This is usually indicative of a modelling error. To avoid this warning  use block.del_component() and block.add_component().,,This is no user error because this error is due to the way undirected links are implemented
+   Implicitly replacing the Component attribute equate_InvestmentFlow.invest[districtheat_undirected_link districtheat_bus]_InvestmentFlow.invest[ districtheat_undirected_link heat_bus] (type=<class 'pyomo.core.base.constraint.SimpleConstraint'>) on block Model with a new Component (type=<class 'pyomo.core.base.constraint.AbstractSimpleConstraint'>). This is usually indicative of a modelling error. To avoid this warning  use block.del_component() and block.add_component().
 
+**Possible Error Cause:** This is no user error because this error is due to the way undirected links are implemented
 
+**Debugging:** No action needed, the modeling process is not effected.
 
-**Possible Error Cause:** 
-
-**Debugging:** 
-
-Error M-0: 
+Error M-012: 
 ----------------------------------
 **Error Message:** ::
 
-   KeyError: 'Index \'(''<oemof.solph.network.source.Source: \'ID_phtovoltaic_electricity_source\'>' ''<oemof.solph.network.bus.Bus: \'ID_pv_bus\'>'' 0)\' is not valid for indexed component \'flow\'', You probably named the busses incorrectly., Check if all busses are named correctly.
+   KeyError: 'Index \'(''<oemof.solph.network.source.Source: \'ID_phtovoltaic_electricity_source\'>' ''<oemof.solph.network.bus.Bus: \'ID_pv_bus\'>'' 0)\' is not valid for indexed component \'flow\''
 
+**Possible Error Cause:** You probably named the busses incorrectly.
 
+**Debugging:** Check if all busses are named correctly.
 
-**Possible Error Cause:** 
-
-**Debugging:** 
-
-Error M-0: 
+Error M-013: 
 ----------------------------------
 **Error Message:** ::
 
-   KeyError: 'ID_photovoltaik_electricity_source', In this case - PV sources were deactivated although they were still addressed in the area competition, Make sure that if you have disabled pv sources - you do the same for the competition constraint.
+   KeyError: 'ID_photovoltaik_electricity_source'
 
+**Possible Error Cause:** In this case - PV sources were deactivated although they were still addressed in the area competition
 
+**Debugging:** Make sure that if you have disabled pv sources - you do the same for the competition constraint.
 
-**Possible Error Cause:** 
-
-**Debugging:** 
-
-Error M-0: 
+Error M-014: 
 ----------------------------------
 **Error Message:** ::
 
-   UserWarning: Optimization ended with status warning and termination condition infeasible, the model is not solvable - probably because not enough energy is inserted to sattisfy the energy demand, make sure that the sources are able to insert enough energy to the system
+   UserWarning: Optimization ended with status warning and termination condition infeasible
 
+**Possible Error Cause:** the model is not solvable - probably because not enough energy is inserted to sattisfy the energy demand
 
+**Debugging:** make sure that the sources are able to insert enough energy to the system
 
-**Possible Error Cause:** 
-
-**Debugging:** 
-
-Error M-0: 
+Error M-015: 
 ----------------------------------
 **Error Message:** ::
 
-   Flow: ID_electricity_to_ID_hp_electricity_bus-ID_electricity_bus. This could be caused by NaN-values in your input data.,You have probably used not allowed special characters (e.g. m³), Make sure you have not used any special characters (e.g., use m3 instead of m³)
+   Flow: ID_electricity_to_ID_hp_electricity_bus-ID_electricity_bus. This could be caused by NaN-values in your input data.
 
+**Possible Error Cause:** You have probably used not allowed special characters (e.g. m³)
 
+**Debugging:** Make sure you have not used any special characters (e.g., use m3 instead of m³)
 
-**Possible Error Cause:** 
-
-**Debugging:** 
-
-Error M-0: 
+Error M-016: 
 ----------------------------------
 **Error Message:** ::
 
-   FutureWarning: Current default for 'dyn_function_h0' is 'False'. This is about to change to 'True'. Set 'False' explicitly to retain the current behaviour.,  the wrong version of the feedinlib is used, make sure you are using feedinlib==0.0.12
+   FutureWarning: Current default for 'dyn_function_h0' is 'False'. This is about to change to 'True'. Set 'False' explicitly to retain the current behaviour.
 
+**Possible Error Cause:** the wrong version of the feedinlib is used
 
+**Debugging:** make sure you are using feedinlib==0.0.12
 
-**Possible Error Cause:** 
-
-**Debugging:** 
-
-Error M-0: 
+Error M-017: 
 ----------------------------------
 **Error Message:** ::
 
-   AttributeError: 
+   in create_flow_dataframes for index; value in component['sequences'].sum().items(): KeyError: 'sequences',
 
+**Possible Error Cause:** You have probably entered an invalid "transformer type" within the transformers sheet
 
-**Possible Error Cause:** 
+**Debugging:** check and correct the transformer types entered to the sheet
 
-**Debugging:** 
-
-Error M-0: 
+Error M-018: 
 ----------------------------------
 **Error Message:** ::
 
-   AttributeError: 
+   ... AssertionError: Time discretization of irradiance is different from timestep 3600seconds. You need to change the resolution; first!
 
+**Possible Error Cause:** For the application of the richardson tool a weather dataset of a full year is required
 
-**Possible Error Cause:** 
+**Debugging:** Add a full year weather data set to the weather data sheet.
 
-**Debugging:** 
-
-Error M-0: 
+Error M-019: 
 ----------------------------------
 **Error Message:** ::
 
-   AttributeError: 
+   Possible duplicate uids/labels?
 
+**Possible Error Cause:** two components of the model are having the same name
 
-**Possible Error Cause:** 
+**Debugging:** rename at least one of the components
 
-**Debugging:** 
-
-Error M-0: 
+Error M-020: 
 ----------------------------------
 **Error Message:** ::
 
-   AttributeError: 
+   ValueError: Length mismatch: Expected axis has 1 elements; new values have 8760 elements Flow: ID_pv_to_ID_electricity_link-ID_pv_bus. This could be caused by NaN-values in your input data.
 
+**Possible Error Cause:** The model probably isn't solvable, because of wrong energybalance.
 
-**Possible Error Cause:** 
+**Debugging:** Activate necessary excesses sinks and shortages sources. 
 
-**Debugging:** 
-
-Error M-0: 
+Error M-021: 
 ----------------------------------
 **Error Message:** ::
 
-   AttributeError: 
-
-
+   ERROR: Solver (gurobi) returned non-zero return code (1)
+ 
 **Possible Error Cause:** 
 
-**Debugging:** 
+**Debugging:** reinstall the pyomo-package: 1. open a terminal 2. navigate to your SESMG folder 3. navigate to the scripts-subfolder: "cd Scripts" 4. start the virtual environment: ``start /b activate.bat`` 5. reinstall pyomo: ``pip install pyomo==5.7.1``
 
-Error M-0: 
+Error M-022: 
 ----------------------------------
 **Error Message:** ::
 
-   AttributeError: 
+   df = node_results['sequences'] KeyError: 'sequences'  
 
+**Possible Error Cause:** The model may possibly have an over or under supply. This will break the calculation.
 
-**Possible Error Cause:** 
-
-**Debugging:** 
+**Debugging:** The bus of the oversupply or undersupply can be localized by activating excess or shortage.
 
 
 Error M-023: nearest foot point
