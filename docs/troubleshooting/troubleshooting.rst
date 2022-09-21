@@ -119,7 +119,7 @@ Error M-004: Memory Error
 
 **Possible Error Cause:** The available memory is not sufficient to solve the model.
 
-**Debugging:** Take the following measures gradually until the error no longer occurs: (1) Restart the used Python interpreter (2) Close unnecessary programs on the computer (3) Make sure that python 64 bit version is used (Python 32 bit can manage only 2 GB of memory). (4)Start the program on a computer with a higher memory.
+**Debugging:** Take the following measures gradually until the error no longer occurs: (1) Restart the used Python interpreter (2) Close unnecessary programs on the computer (3) Make sure that python 64 bit version is used (Python 32 bit can manage only 2 GB of memory). (4) Start the program on a computer with a higher memory.
 
 Error M-005: 
 ----------------------------------
@@ -133,10 +133,21 @@ Error M-005:
 
 Error M-0: 
 ----------------------------------
+**Error Message:** :: 
+
+   ValueError: operands could not be broadcast together with shapes (8784 ) (8760 )
+
+**Possible Error Cause:** The weather dataset contains the wrong number of data points for using feedinlib.
+
+**Debugging:** Make sure that the number of weather data points corresponds to the time steps of the model (At hourly resolution  one year has 8760 time steps). When simulating a leap year  it is recommended limiting the time horizon to 8760 hours.
+
+
+Error M-0: 
+----------------------------------
 **Error Message:** ::
 
-   error message line 1
-   error message line 2
+   ValueError: pyutilib.common._exceptions.ApplicationError: Solver (cbc) did not exit normally,"A value for the use of the investment module (e.g.  ""min Investment Capacity"") was not filled in.",Make sure that all necessary cells of the spreadsheet have been filled in.
+
 
 **Possible Error Cause:** 
 
@@ -146,8 +157,8 @@ Error M-0:
 ----------------------------------
 **Error Message:** ::
 
-   error message line 1
-   error message line 2
+   KeyError: '__any component name__',Incorrectly assigned bus name for the input or output of a component,Check that all bus references are correct. Also check for typos.
+
 
 **Possible Error Cause:** 
 
@@ -157,8 +168,7 @@ Error M-0:
 ----------------------------------
 **Error Message:** ::
 
-   error message line 1
-   error message line 2
+   TypeError: ufunc 'true_divide' not supported for the input types  and the inputs could not be safely coerced to any supported types according to the casting rule ''safe'',"The column ""annual demand"" was not filled in correctly for a sink.","Make sure to use the ""annual demand"" column for SLP and Richardson sinks and the ""nominal value"" column for time series sinks."
 
 **Possible Error Cause:** 
 
@@ -168,8 +178,8 @@ Error M-0:
 ----------------------------------
 **Error Message:** ::
 
-   error message line 1
-   error message line 2
+   AttributeError: 'str' object has no attribute 'is_variable_type',The cost value for an activated excess sink or shortage source was not correctly specified in the bus sheet,Make sure that all excess/sortage prices consist of real numbers. Also check for typos.
+
 
 **Possible Error Cause:** 
 
@@ -179,8 +189,135 @@ Error M-0:
 ----------------------------------
 **Error Message:** ::
 
-   error message line 1
-   error message line 2
+   Implicitly replacing the Component attribute equate_InvestmentFlow.invest[districtheat_undirected_link districtheat_bus]_InvestmentFlow.invest[ districtheat_undirected_link heat_bus] (type=<class 'pyomo.core.base.constraint.SimpleConstraint'>) on block Model with a new Component (type=<class 'pyomo.core.base.constraint.AbstractSimpleConstraint'>). This is usually indicative of a modelling error. To avoid this warning  use block.del_component() and block.add_component().,,This is no user error because this error is due to the way undirected links are implemented
+
+
+
+**Possible Error Cause:** 
+
+**Debugging:** 
+
+Error M-0: 
+----------------------------------
+**Error Message:** ::
+
+   KeyError: 'Index \'(''<oemof.solph.network.source.Source: \'ID_phtovoltaic_electricity_source\'>' ''<oemof.solph.network.bus.Bus: \'ID_pv_bus\'>'' 0)\' is not valid for indexed component \'flow\'', You probably named the busses incorrectly., Check if all busses are named correctly.
+
+
+
+**Possible Error Cause:** 
+
+**Debugging:** 
+
+Error M-0: 
+----------------------------------
+**Error Message:** ::
+
+   KeyError: 'ID_photovoltaik_electricity_source', In this case - PV sources were deactivated although they were still addressed in the area competition, Make sure that if you have disabled pv sources - you do the same for the competition constraint.
+
+
+
+**Possible Error Cause:** 
+
+**Debugging:** 
+
+Error M-0: 
+----------------------------------
+**Error Message:** ::
+
+   UserWarning: Optimization ended with status warning and termination condition infeasible, the model is not solvable - probably because not enough energy is inserted to sattisfy the energy demand, make sure that the sources are able to insert enough energy to the system
+
+
+
+**Possible Error Cause:** 
+
+**Debugging:** 
+
+Error M-0: 
+----------------------------------
+**Error Message:** ::
+
+   Flow: ID_electricity_to_ID_hp_electricity_bus-ID_electricity_bus. This could be caused by NaN-values in your input data.,You have probably used not allowed special characters (e.g. m³), Make sure you have not used any special characters (e.g., use m3 instead of m³)
+
+
+
+**Possible Error Cause:** 
+
+**Debugging:** 
+
+Error M-0: 
+----------------------------------
+**Error Message:** ::
+
+   FutureWarning: Current default for 'dyn_function_h0' is 'False'. This is about to change to 'True'. Set 'False' explicitly to retain the current behaviour.,  the wrong version of the feedinlib is used, make sure you are using feedinlib==0.0.12
+
+
+
+**Possible Error Cause:** 
+
+**Debugging:** 
+
+Error M-0: 
+----------------------------------
+**Error Message:** ::
+
+   AttributeError: 
+
+
+**Possible Error Cause:** 
+
+**Debugging:** 
+
+Error M-0: 
+----------------------------------
+**Error Message:** ::
+
+   AttributeError: 
+
+
+**Possible Error Cause:** 
+
+**Debugging:** 
+
+Error M-0: 
+----------------------------------
+**Error Message:** ::
+
+   AttributeError: 
+
+
+**Possible Error Cause:** 
+
+**Debugging:** 
+
+Error M-0: 
+----------------------------------
+**Error Message:** ::
+
+   AttributeError: 
+
+
+**Possible Error Cause:** 
+
+**Debugging:** 
+
+Error M-0: 
+----------------------------------
+**Error Message:** ::
+
+   AttributeError: 
+
+
+**Possible Error Cause:** 
+
+**Debugging:** 
+
+Error M-0: 
+----------------------------------
+**Error Message:** ::
+
+   AttributeError: 
+
 
 **Possible Error Cause:** 
 
