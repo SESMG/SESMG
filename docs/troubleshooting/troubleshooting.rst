@@ -13,18 +13,18 @@ Were you able to solve a bug that was not listed here yet? Help other users and 
 
 4. Find the "Installation", or "Modeling" section, depending on what type of error you want to add.
 
-5. Copy the following text block to the end of the respective section and modify the text to describe your error::
+5. Copy the following text block to the end of the respective section and modify the text to describe your error:
 
-   Error M-XXX: Error-Name
-   ----------------------------------
-   **Error Message:** ::
+Error M-XXX: Error-Name
+----------------------------------
+**Error Message:** ::
 
-      error message line 1
-      error message line 2
+   error message line 1
+   error message line 2
 
-   **Possible Error Cause:** explain the error cause
+**Possible Error Cause:** explain the error cause
 
-   **Debugging:** explain how to solve the error
+**Debugging:** explain how to solve the error
    
 6. Click "Create pull request"
 
