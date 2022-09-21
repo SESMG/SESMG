@@ -81,12 +81,11 @@ IndexError: list index out of range`
 
 Error M-024: KeyError: 'lon'
 ----------------------------------
-**Error Message:** 
-:code: ``... in get_loc
+**Error Message:** ::
 
-raise KeyError(key) from err
-
-KeyError: 'lon' ``
+   ... in get_loc
+   raise KeyError(key) from err
+   KeyError: 'lon' 
 
 **Possible Error Cause:** No heat source bus has been correctly defined for the heat network.
 
