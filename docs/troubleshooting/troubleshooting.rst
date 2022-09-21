@@ -7,22 +7,30 @@ Contributing to the troubleshooting
 
 Were you able to solve a bug that was not listed here yet? Help other users and report it by following these simple steps:
 
-1. Open https://github.com/chrklemm/SESMG/tree/master/docs/troubleshooting
+1. Open https://github.com/chrklemm/SESMG/edit/master/docs/troubleshooting/troubleshooting.rst
 
-2. Open "troubleshooting-installation.csv" or "troubleshooting-modelling.csv", depending on whether your error concerns the installation or the modeling process.
+2. Click on the pencil icon in the upper right corner to edit the file.
 
-3. Click on the pencil icon in the upper right corner to edit the file.
+4. Find the "Installation", or "Modeling" section, depending on what type of error you want to add.
 
-4. Add a line to the csv file describing your problem. The line consists of three columns "Error Message", "Possible Error Cause" and "Debugging". The columns are separated by commas. Do not use any other commas in your error description.
+5. Copy the following text block to the end of the respective section and modify the text to describe your error::
 
-5. Describe below what you have changed and click "propse changes".
+   Error M-XXX: Error-Name
+   ----------------------------------
+   **Error Message:** ::
 
+      error message line 1
+      error message line 2
+
+   **Possible Error Cause:** explain the error cause
+
+   **Debugging:** explain how to solve the error
+   
 6. Click "Create pull request"
 
 7. Name your pull request and click "create pull request".
 
 8. That's it, thanks for your contribution!
-
 
 
 Installation
