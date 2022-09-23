@@ -455,6 +455,7 @@ data time system should be in conformity with the model’s time system, defined
 - **dhi**: diffuse horizontal irradiance in W/m\ :sup:`2`
 - **dirhi**: direct horizontal irradiance in W/m\ :sup:`2`
 - **pressure**: air pressure in Pa
+- **temperature**: air temperature in °C
 - **windspeed**: wind speed, measured at 10 m height, in unit m/s
 - **z0**: roughness length of the environment in units m
 - **ground_temp**: constant ground temperature at 100 m depth
