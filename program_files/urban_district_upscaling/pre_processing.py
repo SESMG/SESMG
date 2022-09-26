@@ -108,22 +108,22 @@ def create_buses(building, central_elec_bus: bool, gchps, sheets):
     """
     hp_elec_bus = (
         True
-        if (building["parcel"] != 0 and building["gchp"] not in ["No", "no", 0])
+        if (building["parcel ID"] != 0 and building["gchp"] not in ["No", "no", 0])
         or building["ashp"] not in ["No", "no", 0]
         else False
     )
 
-    gchp = True if building["parcel"] != 0 else False
+    gchp = True if building["parcel ID"] != 0 else False
 
     gchp_heat_bus = (
-        (building["parcel"][-9:] + "_heat_bus")
-        if (building["parcel"] != 0 and building["parcel"][-9:] in gchps)
+        (building["parcel ID"][-9:] + "_heat_bus")
+        if (building["parcel ID"] != 0 and building["parcel"][-9:] in gchps)
         else None
     )
 
     gchp_elec_bus = (
-        (building["parcel"][-9:] + "_hp_elec_bus")
-        if (building["parcel"] != 0 and building["parcel"][-9:] in gchps)
+        (building["parcel ID"][-9:] + "_hp_elec_bus")
+        if (building["parcel ID"] != 0 and building["parcel"][-9:] in gchps)
         else None
     )
 
@@ -162,7 +162,7 @@ def create_buses(building, central_elec_bus: bool, gchps, sheets):
             label=str(building["label"]) + "_heat_bus",
             bus_type="building_heat_bus",
             sheets=sheets,
-            cords=[building["latitude"], building["longitude"], "1"],
+            cords=[building["latitude"], building["longitude"], 1],
         )
 
     if hp_elec_bus:
@@ -236,29 +236,37 @@ def load_input_data(plain_sheet, standard_parameter_path, pre_scenario):
     columns = {}
     # get keys from plain scenario
     plain_sheet = pd.ExcelFile(plain_sheet)
-    # load standard parameters from standard parameter file
-    standard_parameters = pd.ExcelFile(standard_parameter_path)
-    # import the sheet which is filled by the user
-    pre_scenario_pd = pd.ExcelFile(pre_scenario)
-
-    for i in range(1, len(plain_sheet.sheet_names)):
-        if plain_sheet.sheet_names[i] not in ["weather data", "time series"]:
-            columns[plain_sheet.sheet_names[i]] = plain_sheet.parse(
-                plain_sheet.sheet_names[i]
-            ).keys()
+    # get columns from plain sheet
+    for sheet in plain_sheet.sheet_names:
+        if sheet not in ["weather data", "time series"]:
+            columns[sheet] = plain_sheet.parse(sheet).keys()
+            
     # append worksheets' names to the list of worksheets
     worksheets = [column for column in columns.keys()]
     # get spreadsheet units from plain sheet
     for sheet in worksheets:
         sheets.update({sheet: pd.DataFrame(columns=(columns[sheet]))})
         units_series = pd.Series(data={a: "x" for a in sheets[sheet].keys()})
-        sheets[sheet] = pd.concat([sheets[sheet], pd.DataFrame([units_series])])
+        sheets[sheet] = pd.concat(
+                [sheets[sheet], pd.DataFrame([units_series])])
     worksheets += ["weather data", "time series"]
+    
+    # load standard parameters from standard parameter file
+    standard_parameters = pd.ExcelFile(standard_parameter_path)
+    # import the sheet which is filled by the user
+    pre_scenario_pd = pd.ExcelFile(pre_scenario)
 
     # get the input sheets
-    tool = pre_scenario_pd.parse("tool")
-    parcel = pre_scenario_pd.parse("parcel")
-    central = pre_scenario_pd.parse("central")
+    building_data = pre_scenario_pd.parse("1 - building data")
+    building_inv_data = pre_scenario_pd.parse("2 - building investment data")
+    building_data.set_index("label", inplace=True, drop=True)
+    building_inv_data.set_index("label", inplace=True, drop=True)
+    tool = building_data.join(building_inv_data, how="inner")
+    tool.reset_index(inplace=True, drop=False)
+    tool = tool.drop(0)
+    parcel = pre_scenario_pd.parse("2.1 - gchp areas")
+    central = pre_scenario_pd.parse("3 - central investment data")
+    central = central.drop(0)
 
     return sheets, central, parcel, tool, worksheets
 
@@ -396,12 +404,23 @@ def urban_district_upscaling_pre_processing(
         "district heating",
     ]:
         if sheet_tbc not in pd.ExcelFile(paths[0]).sheet_names:
-            sheets[sheet_tbc] = standard_parameters.parse(
-                sheet_tbc,
-                parse_dates=["timestamp"]
-                if sheet_tbc in ["weather data", "time series"]
-                else [],
-            )
+            if sheet_tbc in standard_parameters.sheet_names:
+                sheets[sheet_tbc] = standard_parameters.parse(
+                    sheet_tbc,
+                    parse_dates=["timestamp"]
+                    if sheet_tbc in ["weather data", "time series"]
+                    else [],
+                )
+            if "4 - time series data" in pd.ExcelFile(paths[0]).sheet_names:
+                sheets["weather data"] = pd.ExcelFile(paths[0]).parse(
+                    "4 - time series data",
+                    parse_dates=["timestamp"])
+                sheets["time series"] = pd.ExcelFile(paths[0]).parse(
+                    "4 - time series data",
+                    parse_dates=["timestamp"])
+            if "3.1 - streets" in pd.ExcelFile(paths[0]).sheet_names:
+                sheets["district heating"] = pd.ExcelFile(paths[0]).parse(
+                    "3.1 - streets")
         else:
             sheets[sheet_tbc] = pd.ExcelFile(paths[0]).parse(
                 sheet_tbc,

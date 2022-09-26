@@ -346,7 +346,6 @@ def least_cost_model(
     #                om.InvestmentFlow.invest[p, busd[z['bus1']]] = 0
     #                setattr(om, z['label'] + "input_constraint",
     #                        po.Constraint(om.TIMESTEPS, expr=input_rule))
-    print(om.flows)
     logging.info(
         "   " + "******************************************************" + "***"
     )

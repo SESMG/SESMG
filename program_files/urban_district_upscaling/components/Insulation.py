@@ -46,35 +46,35 @@ def create_building_insulation(building, sheets, standard_parameters):
         "temperature indoor": 20,
         "heat limit temperature": 15,
     }
-    if building["windows"]:
+    if building["area windows"]:
         window_dict = param_dict.copy()
         window_dict.update(
             {
                 "label": str(building["label"]) + "_window",
                 "U-value old": u_values["window"][0],
                 "U-value new": u_values["window"][1],
-                "area": building["windows"],
+                "area": building["area windows"],
                 "periodical costs": u_values["window"][2],
                 "periodical constraint costs": u_values["window"][3],
             }
         )
         sheets = append_component(sheets, "insulation", window_dict)
 
-    if building["walls_wo_windows"]:
+    if building["area outer wall"]:
         wall_dict = param_dict.copy()
         wall_dict.update(
             {
                 "label": str(building["label"]) + "_wall",
                 "U-value old": u_values["outer wall"][0],
                 "U-value new": u_values["outer wall"][1],
-                "area": building["walls_wo_windows"],
+                "area": building["area outer wall"],
                 "periodical costs": u_values["outer wall"][2],
                 "periodical constraint costs": u_values["outer wall"][3],
             }
         )
         sheets = append_component(sheets, "insulation", wall_dict)
 
-    if building["roof area"]:
+    if building["area roof"]:
         u_value_new = u_values["roof"][4 if roof == "flat roof" else 1]
         periodical_costs = u_values["roof"][5 if roof == "flat roof" else 2]
         periodical_constr = u_values["roof"][3 if roof != "flat roof" else 6]
@@ -84,7 +84,7 @@ def create_building_insulation(building, sheets, standard_parameters):
                 "label": str(building["label"]) + "_roof",
                 "U-value old": u_values["roof"][0],
                 "U-value new": u_value_new,
-                "area": building["roof area"],
+                "area": building["area roof"],
                 "periodical costs": periodical_costs,
                 "periodical constraint costs": periodical_constr,
             }

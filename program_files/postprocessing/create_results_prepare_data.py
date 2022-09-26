@@ -22,7 +22,10 @@ def add_component_to_loc(label, comp_dict, df_list_of_components, maxinvest="---
     adds the given component with its parameters to
     list of components (loc)
     """
-
+    if str(type(comp_dict[4])) not in ["<class 'float'>", "<class 'int'>"]:
+        capacity = max(comp_dict[4])
+    else:
+        capacity = comp_dict[4]
     df_list_of_components = pd.concat(
         [
             df_list_of_components,
@@ -30,22 +33,17 @@ def add_component_to_loc(label, comp_dict, df_list_of_components, maxinvest="---
                 [
                     [
                         label,
-                        comp_dict[8],
-                        round(sum(comp_dict[0]), 1),
-                        round(sum(comp_dict[1]), 1),
-                        round(sum(comp_dict[2]), 1),
-                        round(sum(comp_dict[3]), 1),
-                        round(
-                            max(
-                                comp_dict[0] if sum(comp_dict[2]) == 0 else comp_dict[2]
-                            ),
-                            1,
-                        ),
-                        round(comp_dict[6], 1),
-                        round(comp_dict[5], 1),
-                        round(comp_dict[4], 1),
+                        comp_dict[10],
+                        round(sum(comp_dict[0]), 2),
+                        round(sum(comp_dict[1]), 2),
+                        round(sum(comp_dict[2]), 2),
+                        round(sum(comp_dict[3]), 2),
+                        round(capacity, 2),
+                        round(comp_dict[8], 2),
+                        round(comp_dict[6], 2),
+                        round(comp_dict[5], 2),
                         maxinvest,
-                        round(comp_dict[7], 1),
+                        round(comp_dict[9], 2),
                     ]
                 ],
                 columns=copt,
@@ -104,10 +102,14 @@ def get_dh_label(label, param):
 
 
 def append_flows(label, comp_dict, df_result_table):
-    flow_type_dict = {0: "_input1", 1: "_input2", 2: "_output1", 3: "_output2"}
+    flow_type_dict = {0: "_input1", 1: "_input2", 2: "_output1", 3: "_output2",
+                      4: "_capacity"}
     for flow in flow_type_dict:
-        if sum(comp_dict[flow]) != 0:
-            df_result_table.loc[:, label + flow_type_dict[flow]] = comp_dict[flow]
+        if str(type(comp_dict[flow])) not in ["<class 'float'>",
+                                              "<class 'int'>"]:
+            if sum(comp_dict[flow]) != 0:
+                df_result_table.loc[:, label + flow_type_dict[flow]] = \
+                    comp_dict[flow]
     return df_result_table
 
 
@@ -121,34 +123,22 @@ def prepare_loc(comp_dict, df_result_table, df_list_of_components):
             label=label,
             comp_dict=comp_dict[label],
             df_list_of_components=df_list_of_components,
-            maxinvest="---",
+            maxinvest=comp_dict[label][7]
         )
-        total_periodical_costs += comp_dict[label][5]
-        total_variable_costs += comp_dict[label][6]
-        total_constraint_costs += comp_dict[label][7]
+        total_periodical_costs += comp_dict[label][6]
+        total_variable_costs += comp_dict[label][8]
+        total_constraint_costs += comp_dict[label][9]
 
-    return (
-        df_list_of_components,
-        total_periodical_costs,
-        total_variable_costs,
-        total_constraint_costs,
-        df_result_table,
-    )
+    return df_list_of_components, total_periodical_costs, \
+        total_variable_costs, total_constraint_costs, df_result_table
 
 
 def prepare_data(comp_dict, total_demand, nd, result_path, df_result_table):
     df_list_of_components = pd.DataFrame(columns=copt)
-    pipe_data = pd.read_csv(result_path + "/pipes.csv")
     for label in comp_dict.copy():
         if "insulation" in label:
-            sink = str(
-                nd["insulation"]
-                .loc[nd["insulation"]["label"] == label[11:]]["sink"]
-                .values[0]
-            )
-            comp_dict[str(sink)][0] -= comp_dict[label][2]
             total_demand -= sum(comp_dict[label][2])
-            comp_dict.pop(label)
+            comp_dict[label][-1] = "insulation"
         elif "high_temp" in label or "low_temp" in label:
             comp_dict.pop(label)
         elif "collector" in label and label[:-10] in list(nd["sources"]["label"]):
@@ -156,6 +146,11 @@ def prepare_data(comp_dict, total_demand, nd, result_path, df_result_table):
                 comp_dict[label[:-10]][i] = comp_dict[label][i]
             comp_dict.pop(label)
         elif comp_dict[label][8] == "dh":
+            pipe_data = pd.read_csv(result_path + "/pipes.csv")
             comp_dict[get_dh_label(label, pipe_data)] = comp_dict.pop(label)
-
-    return prepare_loc(comp_dict, df_result_table, df_list_of_components), total_demand
+    df_list_of_components, total_periodical_costs, \
+        total_variable_costs, total_constraint_costs, df_result_table = \
+        prepare_loc(comp_dict, df_result_table, df_list_of_components)
+    return df_list_of_components, total_periodical_costs, \
+        total_variable_costs, total_constraint_costs, df_result_table,\
+        total_demand
