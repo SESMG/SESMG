@@ -61,20 +61,20 @@ def get_investment(nd, esys, results, comp_type):
 
 def calc_periodical_costs(nd, investment, comp_type, cost_type):
     """
-        method to calculate the component's periodical costs for the
-        first optimization criterion (cost_type = costs) or the second
-        optimization criterion (cost_type = emissions)
-        
-        :param nd: component under investigation
-        :type nd: TODO
-        :param investment: TODO
-        :type investment: float
-        :param comp_type: TODO
-        :type comp_type: str
-        :param cost_type: TODO
-        :type cost_type: str
-        
-        :return: TODO
+    method to calculate the component's periodical costs for the
+    first optimization criterion (cost_type = costs) or the second
+    optimization criterion (cost_type = emissions)
+
+    :param nd: component under investigation
+    :type nd: TODO
+    :param investment: TODO
+    :type investment: float
+    :param comp_type: TODO
+    :type comp_type: str
+    :param cost_type: TODO
+    :type cost_type: str
+
+    :return: TODO
     """
     ep_costs = 0
     offset = 0
@@ -128,30 +128,34 @@ def calc_variable_costs(nd, comp_dict, attr):
             # than 0 the sum is multiplied with the for this input/output
             # defined costs factor which is searched by the method getattr
             if sum(type_dict[flow_type][i + 1]) > 0:
-                costs += \
-                    sum(type_dict[flow_type][i + 1]
-                        * getattr(type_dict[flow_type][0][list(
-                            type_dict[flow_type][0].keys())[i]], attr))
+                costs += sum(
+                    type_dict[flow_type][i + 1]
+                    * getattr(
+                        type_dict[flow_type][0][
+                            list(type_dict[flow_type][0].keys())[i]
+                        ],
+                        attr,
+                    )
+                )
 
     return costs
 
 
 def get_comp_type(nd) -> str:
     """
-        method to declare the component type's short form for the list
-        of components (loc)
-        
-        :param nd: component under investigation
-        :type nd: TODO
-        
-        :return: TODO
+    method to declare the component type's short form for the list
+    of components (loc)
+
+    :param nd: component under investigation
+    :type nd: TODO
+
+    :return: TODO
     """
     type_dict = {
         "<class 'dhnx.optimization_oemof_heatpipe.HeatPipeline'>": "dh",
         "<class 'oemof.solph.network.sink.Sink'>": "sink",
         "<class 'oemof.solph.network.source.Source'>": "source",
-        "<class 'oemof.solph.components.generic_storage.GenericStorage'>":
-            "storage",
+        "<class 'oemof.solph.components.generic_storage.GenericStorage'>": "storage",
         "<class 'oemof.solph.custom.link.Link'>": "link",
         "<class 'oemof.solph.network.transformer.Transformer'>": "transformer",
     }
@@ -179,28 +183,27 @@ def get_capacities(comp_type: str, comp_dict: dict, results, label: str):
     # maximum of the first output if there ist one or the maximum of the
     # first input
     if comp_type != "storage":
-        comp_dict += \
-            [max(comp_dict[0] if sum(comp_dict[2]) == 0 else comp_dict[2])]
+        comp_dict += [max(comp_dict[0] if sum(comp_dict[2]) == 0 else comp_dict[2])]
     # if the component type is storage the storage content which is part
     # of the oemof results object is used to determine the capacity
     else:
         component = solph.views.node(results, label)
-        capacity = component['sequences'][((label, 'None'), 'storage_content')]
+        capacity = component["sequences"][((label, "None"), "storage_content")]
         comp_dict += [capacity]
     return comp_dict
 
 
 def get_max_invest(comp_type: str, nd):
     """
-        get the maximum investment capacity for the specified component
-        (nd)
-        
-        :param comp_type: str holding the component's type
-        :type comp_type: str
-        :param nd: component under consideration
-        :type nd: TODO
-        
-        :return: TODO
+    get the maximum investment capacity for the specified component
+    (nd)
+
+    :param comp_type: str holding the component's type
+    :type comp_type: str
+    :param nd: component under consideration
+    :type nd: TODO
+
+    :return: TODO
     """
     max_invest = None
     # get the comp_type dependent investment variable from the component
@@ -230,19 +233,22 @@ def change_heatpipelines_label(comp_label: str, result_path: str) -> str:
         :return: TODO
     """
     # get the energy system's pipes
-    pipes_esys = pd.read_csv(result_path + "/pipes.csv",
-                             index_col="id")
+    pipes_esys = pd.read_csv(result_path + "/pipes.csv", index_col="id")
     # cut the "infrastructure_ from the pipes label
     loc_label = str(comp_label)[20:]
     # get the heatpipes nodes
     pipe_nodes = loc_label.split("_")[1].split("-")
     # search for the specified pipe in the list of pipes
     pipe = pipes_esys.loc[
-        ((pipes_esys["from_node"] == pipe_nodes[0] + "-" + pipe_nodes[1]) &
-         (pipes_esys["to_node"] == pipe_nodes[2] + "-" + pipe_nodes[3])) |
-        ((pipes_esys["to_node"] == pipe_nodes[0] + "-" + pipe_nodes[1]) &
-         (pipes_esys["from_node"] == pipe_nodes[2] + "-" + pipe_nodes[3]))
-        ]
+        (
+            (pipes_esys["from_node"] == pipe_nodes[0] + "-" + pipe_nodes[1])
+            & (pipes_esys["to_node"] == pipe_nodes[2] + "-" + pipe_nodes[3])
+        )
+        | (
+            (pipes_esys["to_node"] == pipe_nodes[0] + "-" + pipe_nodes[1])
+            & (pipes_esys["from_node"] == pipe_nodes[2] + "-" + pipe_nodes[3])
+        )
+    ]
     # build the new label for the heatpipe part
     street = str(pipe["street"].values[0])
     loc_label = street + "_" + loc_label
@@ -250,7 +256,7 @@ def change_heatpipelines_label(comp_label: str, result_path: str) -> str:
     loc_label = loc_label.replace("producers-", "p")
     loc_label = loc_label.replace("consumers-", "c")
     return loc_label
-    
+
 
 def collect_data(nodes_data, results, esys, result_path):
     """
@@ -294,50 +300,60 @@ def collect_data(nodes_data, results, esys, result_path):
             # get component flows from each component except buses
             comp_dict.update({loc_label: []})
             # get component flows attributes
-            comp_input1, comp_input2, comp_output1, comp_output2 = \
-                get_flows(nd, results, esys)
+            comp_input1, comp_input2, comp_output1, comp_output2 = get_flows(
+                nd, results, esys
+            )
             # append them to the to returned dict comp_dict
-            comp_dict[loc_label] += [comp_input1, comp_input2,
-                                     comp_output1, comp_output2]
+            comp_dict[loc_label] += [
+                comp_input1,
+                comp_input2,
+                comp_output1,
+                comp_output2,
+            ]
             # get the nodes capacity
-            comp_dict[loc_label] = \
-                get_capacities(comp_type, comp_dict[loc_label],
-                               results, comp_label)
+            comp_dict[loc_label] = get_capacities(
+                comp_type, comp_dict[loc_label], results, comp_label
+            )
             # investment and periodical costs
-            if not (isinstance(nd, Source) and "shortage" in nd.label)\
-                    and not isinstance(nd, Sink):
+            if not (
+                isinstance(nd, Source) and "shortage" in nd.label
+            ) and not isinstance(nd, Sink):
                 # get investment
                 investment = get_investment(nd, esys, results, comp_type)
                 comp_dict[loc_label].append(investment)
                 # get periodical costs
-                periodical_costs = \
-                    calc_periodical_costs(nd, investment, comp_type, "costs")
+                periodical_costs = calc_periodical_costs(
+                    nd, investment, comp_type, "costs"
+                )
                 comp_dict[loc_label].append(periodical_costs)
                 max_invest = get_max_invest(comp_type, nd)
                 comp_dict[loc_label].append(max_invest)
-                
+
             # for uninvestable components set investment and periodical costs
             # to 0 in comp_dict
             else:
                 comp_dict[loc_label] += [0, 0, 0]
-            if not (isinstance(nd, Sink)
-                    and nd.label in list(nodes_data["sinks"]["label"])):
+            if not (
+                isinstance(nd, Sink) and nd.label in list(nodes_data["sinks"]["label"])
+            ):
                 # calculate the variable costs of the first optimization
                 # criterion
-                variable_costs = \
-                    calc_variable_costs(nd, comp_dict[loc_label],
-                                        "variable_costs")
+                variable_costs = calc_variable_costs(
+                    nd, comp_dict[loc_label], "variable_costs"
+                )
                 comp_dict[loc_label].append(variable_costs)
                 # calculate the variable costs of the second optimization
                 # criterion
                 constraint_costs = calc_variable_costs(
-                    nd, comp_dict[loc_label], "emission_factor")
+                    nd, comp_dict[loc_label], "emission_factor"
+                )
                 # if there is an investment in the node under investigation
                 # calculate the periodical costs of the second optimization
                 # criterion
                 if investment:
                     constraint_costs += calc_periodical_costs(
-                            nd, investment, comp_type, "emissions")
+                        nd, investment, comp_type, "emissions"
+                    )
                 # append the costs of the second optimization criterion to the
                 # dict to be returned
                 comp_dict[loc_label].append(constraint_costs)

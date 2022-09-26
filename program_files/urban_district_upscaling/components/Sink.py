@@ -45,23 +45,20 @@ def create_sinks(building, standard_parameters, sheets):
         sinks_standard_param.set_index("sink_type", inplace=True)
         standard_param = standard_parameters.parse("ElecDemand")
         specific_demands = {}
-        
+
         if building_type in ["SFB", "MFB"]:
             if not building["electricity demand"]:
                 for i in standard_param.columns:
                     if building_type in i:
                         specific_demands[i[4:]] = [standard_param.loc[1, i]]
                 if building["occupants per unit"] <= 5:
-                    column = str(int(building["occupants per unit"])) \
-                             + " person"
-                    demand_el = (specific_demands[column][0]
-                                 * building["units"])
+                    column = str(int(building["occupants per unit"])) + " person"
+                    demand_el = specific_demands[column][0] * building["units"]
                 else:
                     # specific elec demand per person linearised for
                     # more than 5
                     demand_el_specific = (specific_demands[5][0]) / 5
-                    occupants = building["occupants per unit"] \
-                                * building["units"]
+                    occupants = building["occupants per unit"] * building["units"]
                     demand_el = demand_el_specific * occupants
             else:
                 demand_el = building["electricity demand"] * area
@@ -70,14 +67,16 @@ def create_sinks(building, standard_parameters, sheets):
             if not building["electricity demand"]:
                 demand_el_specific = standard_param.loc[1, building_type]
                 net_floor_area = (
-                    area * sinks_standard_param.loc[building_type
-                                                    + "_electricity_sink"]
-                    ["net_floor_area / area"])
+                    area
+                    * sinks_standard_param.loc[building_type + "_electricity_sink"][
+                        "net_floor_area / area"
+                    ]
+                )
                 demand_el = demand_el_specific * net_floor_area
             else:
                 demand_el = building["electricity demand"] * area
             sink_type = "COM"
-            
+
         # TODO was machen wir mit IND
 
         sheets = create_standard_parameter_sink(
@@ -98,13 +97,13 @@ def create_sinks(building, standard_parameters, sheets):
         )
         units = str(int(building["units"])) if building["units"] < 12 else "> 12"
         if building_type in ["SFB", "MFB"]:
-            specific_heat_demand = \
-                standard_param.loc[yoc][units + " unit(s)"]
+            specific_heat_demand = standard_param.loc[yoc][units + " unit(s)"]
             sink_type = "RES"
         else:
             specific_heat_demand = standard_param.loc[yoc][building_type]
             sink_type = "COM"
-        net_floor_area = (area
+        net_floor_area = (
+            area
             * sinks_standard_param.loc[sink_type + "_heat_sink"][
                 "net_floor_area / area"
             ]
@@ -112,7 +111,7 @@ def create_sinks(building, standard_parameters, sheets):
         demand_heat = specific_heat_demand * net_floor_area
         if building["heat demand"]:
             demand_heat = building["heat demand"] * area
-            
+
         sheets = create_standard_parameter_sink(
             sink_type=sink_type + "_heat_sink",
             label=str(building["label"]) + "_heat_demand",

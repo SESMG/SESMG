@@ -240,17 +240,16 @@ def load_input_data(plain_sheet, standard_parameter_path, pre_scenario):
     for sheet in plain_sheet.sheet_names:
         if sheet not in ["weather data", "time series"]:
             columns[sheet] = plain_sheet.parse(sheet).keys()
-            
+
     # append worksheets' names to the list of worksheets
     worksheets = [column for column in columns.keys()]
     # get spreadsheet units from plain sheet
     for sheet in worksheets:
         sheets.update({sheet: pd.DataFrame(columns=(columns[sheet]))})
         units_series = pd.Series(data={a: "x" for a in sheets[sheet].keys()})
-        sheets[sheet] = pd.concat(
-                [sheets[sheet], pd.DataFrame([units_series])])
+        sheets[sheet] = pd.concat([sheets[sheet], pd.DataFrame([units_series])])
     worksheets += ["weather data", "time series"]
-    
+
     # load standard parameters from standard parameter file
     standard_parameters = pd.ExcelFile(standard_parameter_path)
     # import the sheet which is filled by the user
@@ -413,14 +412,15 @@ def urban_district_upscaling_pre_processing(
                 )
             if "4 - time series data" in pd.ExcelFile(paths[0]).sheet_names:
                 sheets["weather data"] = pd.ExcelFile(paths[0]).parse(
-                    "4 - time series data",
-                    parse_dates=["timestamp"])
+                    "4 - time series data", parse_dates=["timestamp"]
+                )
                 sheets["time series"] = pd.ExcelFile(paths[0]).parse(
-                    "4 - time series data",
-                    parse_dates=["timestamp"])
+                    "4 - time series data", parse_dates=["timestamp"]
+                )
             if "3.1 - streets" in pd.ExcelFile(paths[0]).sheet_names:
                 sheets["district heating"] = pd.ExcelFile(paths[0]).parse(
-                    "3.1 - streets")
+                    "3.1 - streets"
+                )
         else:
             sheets[sheet_tbc] = pd.ExcelFile(paths[0]).parse(
                 sheet_tbc,

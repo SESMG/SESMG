@@ -102,14 +102,17 @@ def get_dh_label(label, param):
 
 
 def append_flows(label, comp_dict, df_result_table):
-    flow_type_dict = {0: "_input1", 1: "_input2", 2: "_output1", 3: "_output2",
-                      4: "_capacity"}
+    flow_type_dict = {
+        0: "_input1",
+        1: "_input2",
+        2: "_output1",
+        3: "_output2",
+        4: "_capacity",
+    }
     for flow in flow_type_dict:
-        if str(type(comp_dict[flow])) not in ["<class 'float'>",
-                                              "<class 'int'>"]:
+        if str(type(comp_dict[flow])) not in ["<class 'float'>", "<class 'int'>"]:
             if sum(comp_dict[flow]) != 0:
-                df_result_table.loc[:, label + flow_type_dict[flow]] = \
-                    comp_dict[flow]
+                df_result_table.loc[:, label + flow_type_dict[flow]] = comp_dict[flow]
     return df_result_table
 
 
@@ -123,14 +126,19 @@ def prepare_loc(comp_dict, df_result_table, df_list_of_components):
             label=label,
             comp_dict=comp_dict[label],
             df_list_of_components=df_list_of_components,
-            maxinvest=comp_dict[label][7]
+            maxinvest=comp_dict[label][7],
         )
         total_periodical_costs += comp_dict[label][6]
         total_variable_costs += comp_dict[label][8]
         total_constraint_costs += comp_dict[label][9]
 
-    return df_list_of_components, total_periodical_costs, \
-        total_variable_costs, total_constraint_costs, df_result_table
+    return (
+        df_list_of_components,
+        total_periodical_costs,
+        total_variable_costs,
+        total_constraint_costs,
+        df_result_table,
+    )
 
 
 def prepare_data(comp_dict, total_demand, nd, result_path, df_result_table):
@@ -148,9 +156,18 @@ def prepare_data(comp_dict, total_demand, nd, result_path, df_result_table):
         elif comp_dict[label][8] == "dh":
             pipe_data = pd.read_csv(result_path + "/pipes.csv")
             comp_dict[get_dh_label(label, pipe_data)] = comp_dict.pop(label)
-    df_list_of_components, total_periodical_costs, \
-        total_variable_costs, total_constraint_costs, df_result_table = \
-        prepare_loc(comp_dict, df_result_table, df_list_of_components)
-    return df_list_of_components, total_periodical_costs, \
-        total_variable_costs, total_constraint_costs, df_result_table,\
-        total_demand
+    (
+        df_list_of_components,
+        total_periodical_costs,
+        total_variable_costs,
+        total_constraint_costs,
+        df_result_table,
+    ) = prepare_loc(comp_dict, df_result_table, df_list_of_components)
+    return (
+        df_list_of_components,
+        total_periodical_costs,
+        total_variable_costs,
+        total_constraint_costs,
+        df_result_table,
+        total_demand,
+    )
