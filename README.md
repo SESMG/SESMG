@@ -20,8 +20,8 @@ viewed and analyzed using a browser-based results output.)
 ### Step 1) Download Python 3.7 
 
 - go to the Python download page
-- chose a Python version (e.g., “Python 3.7.6”) and click “download”
-- download the operating system specific installer (e.g., “Windows x86-64 executable installer”)
+- chose a Python version (e.g. “Python 3.7.6”) and click “download”
+- download the operating system specific installer (e.g. “Windows x86-64 executable installer”)
 - execute the installer on your computer
 
 Linux only: 
