@@ -34,8 +34,7 @@ def check_for_link_storage(nd, nodes_data: pandas.DataFrame) -> str:
 
 
 def get_sequence(flow, component, nd, output_flow, esys):
-    """
-    """
+    """ """
     return_list = []
     flow = list(flow) if len(list(flow)) != 0 else None
     if flow:
@@ -226,9 +225,7 @@ def get_capacities(comp_type: str, comp_dict: dict, results, label: str):
     # maximum of the first output if there ist one or the maximum of the
     # first input
     if comp_type != "storage":
-        comp_dict += [max(comp_dict[0]
-                          if sum(comp_dict[2]) == 0
-                          else comp_dict[2])]
+        comp_dict += [max(comp_dict[0] if sum(comp_dict[2]) == 0 else comp_dict[2])]
     # if the component type is storage the storage content which is part
     # of the oemof results object is used to determine the capacity
     else:
@@ -240,15 +237,15 @@ def get_capacities(comp_type: str, comp_dict: dict, results, label: str):
 
 def get_max_invest(comp_type: str, nd):
     """
-        get the maximum investment capacity for the specified component
-        (nd)
-    
-        :param comp_type: str holding the component's type
-        :type comp_type: str
-        :param nd: component under consideration
-        :type nd: different oemof solph components
-    
-        :return: TODO
+    get the maximum investment capacity for the specified component
+    (nd)
+
+    :param comp_type: str holding the component's type
+    :type comp_type: str
+    :param nd: component under consideration
+    :type nd: different oemof solph components
+
+    :return: TODO
     """
     max_invest = None
     # get the comp_type dependent investment variable from the component
