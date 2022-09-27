@@ -17,7 +17,7 @@ thermal_net = dhnx.network.ThermalNetwork()
 
 
 directory_path = os.path.dirname(os.path.abspath(__file__))
-# TODO move district heating parameters into the standard parameter file 
+# TODO move district heating parameters into the standard parameter file
 component_param = pd.read_csv(
     os.path.dirname(os.path.dirname(directory_path))
     + "/technical_data/district_heating/component_parameters.csv",
@@ -27,8 +27,8 @@ component_param = pd.read_csv(
 
 def clear_thermal_net():
     """
-        Method used to clear the pandas dataframes of thermal network
-        that might consist of old information.
+    Method used to clear the pandas dataframes of thermal network
+    that might consist of old information.
     """
     for i in ["forks", "consumers", "pipes", "producers"]:
         thermal_net.components[i] = pd.DataFrame()
@@ -58,8 +58,8 @@ def create_fork(point: list, label: int, bus=None):
         fork_dict.update({"bus": bus})
     # create consumers forks pandas Dataframe for thermal network
     thermal_net.components["forks"] = pd.concat(
-        [thermal_net.components["forks"],
-         pd.DataFrame([pd.Series(data=fork_dict)])])
+        [thermal_net.components["forks"], pd.DataFrame([pd.Series(data=fork_dict)])]
+    )
 
 
 def append_pipe(from_node: str, to_node: str, length: float, street: str):
@@ -90,12 +90,11 @@ def append_pipe(from_node: str, to_node: str, length: float, street: str):
         "street": street,
     }
     thermal_net.components["pipes"] = pd.concat(
-        [thermal_net.components["pipes"],
-         pd.DataFrame([pd.Series(data=pipe_dict)])])
+        [thermal_net.components["pipes"], pd.DataFrame([pd.Series(data=pipe_dict)])]
+    )
 
 
-def remove_redundant_sinks(
-        oemof_opti_model: optimization.OemofInvestOptimizationModel):
+def remove_redundant_sinks(oemof_opti_model: optimization.OemofInvestOptimizationModel):
     """
         Within the dhnx algorithm empty sinks are created,
         which are removed in this method.
@@ -374,18 +373,14 @@ def adapt_dhnx_style():
             thermal_net.components["pipes"].replace(
                 to_replace=p["id"], value=p["id"][5:], inplace=True
             )
-    thermal_net.components["consumers"].index = thermal_net.components[
-        "consumers"
-    ]["id"]
-    thermal_net.components["forks"].index = thermal_net.components["forks"][
+    thermal_net.components["consumers"].index = thermal_net.components["consumers"][
         "id"
     ]
-    thermal_net.components["pipes"].index = thermal_net.components["pipes"][
+    thermal_net.components["forks"].index = thermal_net.components["forks"]["id"]
+    thermal_net.components["pipes"].index = thermal_net.components["pipes"]["id"]
+    thermal_net.components["producers"].index = thermal_net.components["producers"][
         "id"
     ]
-    thermal_net.components["producers"].index = thermal_net.components[
-        "producers"
-    ]["id"]
 
 
 def create_components(nodes_data):
