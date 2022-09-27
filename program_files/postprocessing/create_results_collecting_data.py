@@ -35,9 +35,7 @@ def check_for_link_storage(nd, nodes_data: pandas.DataFrame) -> str:
 
 
 def get_sequence(flow, component, nd, output_flow, esys):
-    """
-    
-    """
+    """ """
     return_list = []
     flow = list(flow) if len(list(flow)) != 0 else None
     if flow:
@@ -58,9 +56,7 @@ def get_sequence(flow, component, nd, output_flow, esys):
 
 
 def get_flows(nd, results, esys):
-    """
-        
-    """
+    """ """
     result_list = []
     component = solph.views.node(results, str(nd.label))
     for flow in [nd.inputs, nd.outputs]:
@@ -70,8 +66,7 @@ def get_flows(nd, results, esys):
     return result_list[0][0], result_list[1][0], result_list[2][0], result_list[3][0]
 
 
-def get_investment(nd, esys: solph.EnergySystem,
-                   results, comp_type: str) -> float:
+def get_investment(nd, esys: solph.EnergySystem, results, comp_type: str) -> float:
     """
         method used to obtain the component investment, this is
         calculated differently for storages compared to the other
@@ -109,20 +104,20 @@ def get_investment(nd, esys: solph.EnergySystem,
 
 def calc_periodical_costs(nd, investment, comp_type, cost_type):
     """
-        method to calculate the component's periodical costs for the
-        first optimization criterion (cost_type = costs) or the second
-        optimization criterion (cost_type = emissions)
-    
-        :param nd: component under investigation
-        :type nd: TODO
-        :param investment: TODO
-        :type investment: float
-        :param comp_type: TODO
-        :type comp_type: str
-        :param cost_type: TODO
-        :type cost_type: str
-    
-        :return: TODO
+    method to calculate the component's periodical costs for the
+    first optimization criterion (cost_type = costs) or the second
+    optimization criterion (cost_type = emissions)
+
+    :param nd: component under investigation
+    :type nd: TODO
+    :param investment: TODO
+    :type investment: float
+    :param comp_type: TODO
+    :type comp_type: str
+    :param cost_type: TODO
+    :type cost_type: str
+
+    :return: TODO
     """
     ep_costs = 0
     offset = 0
