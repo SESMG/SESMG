@@ -8,7 +8,7 @@ import pandas
 
 def check_for_link_storage(nd, nodes_data: pandas.DataFrame) -> str:
     """
-        since there are component specific decisions (e. g. capacity)
+        since there are component specific decisions (e.g. capacity)
         especially for storages and links the component type of the
         investigated component (nd) is collected within this method
         
@@ -18,52 +18,109 @@ def check_for_link_storage(nd, nodes_data: pandas.DataFrame) -> str:
             components data from the input Excel File
         :type nodes_data: pandas.DataFrame
         
-        :return: - str, containing the component type e. g. storage or \
-            link
+        :return: - **return_str** (str) - containing the component type\
+            e.g. storage or link
     """
+    return_str = ""
     # get the component's row from the input file (nodes_data)
     row = nodes_data.loc[nodes_data["label"] == nd.label]
     # decide rather the investigated component is an undirected link
     # ("link"), a storage (storage) or another component ("")
     if str(row["(un)directed"]) == "undirected" and isinstance(nd, Link):
-        return "link"
+        return_str = "link"
     if isinstance(nd, GenericStorage):
-        return "storage"
-    else:
-        return ""
+        return_str = "storage"
+    return return_str
 
 
-def get_sequence(flow, component, nd, output_flow, esys):
+def get_sequence(flow, component: dict, nd, output_flow: bool,
+                 esys: solph.EnergySystem) -> list:
     """
+        method to get the in- and outflow's sequences from the oemof
+        produced structures
+        
+        :param flow: oemof in or output data that essentially represent\
+            the properties of the edges of the graph.
+        :type flow: oemof.network.Inputs or Outputs
+        :param component: energy system node's information
+        :type component: dict
+        :param nd: component under investigation
+        :type nd: different oemof solph components
+        :param output_flow: boolean which decides rather the cosindered\
+            flows (flow) are output flows
+        :type output_flow: bool
+        :param esys: oemof energy system variable holding the energy \
+            system status before optimization used to reduce the
+            dependency of the correctness of user's input
+        :type esys: solph.EnergySystem
+        
+        :return - **return_list**(list) - list containing the found \
+            flows sequences
     """
     return_list = []
     flow = list(flow) if len(list(flow)) != 0 else None
     if flow:
+        # create the index tuple(s) for the flow sequence to be found in
+        # the list of flows
         attr1 = (str(flow[0].label), str(nd.label))
         attr2 = (str(flow[1].label), str(nd.label)) if len(flow) == 2 else ()
+        # if the considered flows are output flows revert the tuple
+        # structure
         if output_flow:
             attr1 = attr1[::-1]
             attr2 = attr2[::-1]
+        # iterate threw the created tuples
         for i in [attr1, attr2]:
+            # search the created tuple in the components sequences
             if i != ():
                 return_list.append([component["sequences"][(i, "flow")]])
+            # create an empty sequence (timesteps * 0) if the considered
+            # tuple is empty
             else:
                 return_list.append([len(esys.timeindex) * [0]])
+    # create two empty sequences timesteps * 0 if the flow parameter is
+    # empty
     else:
         return_list.append([len(esys.timeindex) * [0]])
         return_list.append([len(esys.timeindex) * [0]])
+    # return the found sequences
     return return_list
 
 
-def get_flows(nd, results, esys):
-    """ """
+def get_flows(nd, results, esys: solph.EnergySystem):
+    """
+        method to get component's (nd) in- and outflows
+        
+        :param nd: component under investigation
+        :type nd: different oemof solph components
+        :param results: oemof result object holding the return of the \
+            chosen solver
+        :type results: TODO
+        :param esys: oemof energy system variable holding the energy \
+            system status before optimization used to reduce the
+            dependency of the correctness of user's input
+        :type esys: solph.EnergySystem
+        
+        :return: TODO
+    """
     result_list = []
-    component = solph.views.node(results, str(nd.label))
+    # get component information from the oemof result object based on
+    # their label
+    component = solph.views.node(results=results, node=str(nd.label))
+    # iterate threw in and outputs to get the result's flow sequences
+    # result list [0]: inflow 1, [1] inflow 2, [2] outflow 1,
+    # [3] outflow 2
     for flow in [nd.inputs, nd.outputs]:
         result_list += get_sequence(
-            flow, component, nd, True if flow == nd.outputs else False, esys
+            flow=flow,
+            component=component,
+            nd=nd,
+            output_flow=True if flow == nd.outputs else False,
+            esys=esys
         )
-    return result_list[0][0], result_list[1][0], result_list[2][0], result_list[3][0]
+    # return the flow series
+    return result_list[0][0], result_list[1][0], \
+        result_list[2][0], result_list[3][0]
 
 
 def get_investment(nd, esys: solph.EnergySystem, results, comp_type: str) -> float:
