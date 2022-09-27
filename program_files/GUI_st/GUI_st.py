@@ -123,16 +123,31 @@ def main_input_sb_timeseries():
     # Header
     st.subheader("Timeseries Preparation")
     
+    # TimeSeries Preparation
+    # Choosable Algorithms
+    timeseries_algorithm_list = \
+        ["none", "k_means", "k_medoids", "averaging", "slicing A",
+         "slicing B", "downsampling A", "downsampling B",
+         "heuristic selection", "random sampling"]
+    # Choosable clustering crtieria
+    timeseries_cluster_criteria = \
+        ["none", "temperature", "dhi", "el_demand_sum", "heat_demand_sum"]
+    # Timeseries Index Range
+    timeseries_index_range_start = ["none"]
+    timeseries_index_range_values = [i for i in range(1, 366)]
+    timeseries_index_range = timeseries_index_range_start + timeseries_index_range_values
+        
+    
     # Choosing Timeseries Parameters - Algorithm
-    st.selectbox("Algorithm", ("None", "Option A", "Option B"))
+    st.selectbox("Algorithm", timeseries_algorithm_list)
     # Choosing Timeseries Parameters - Index
-    st.selectbox("Index", ("None", "Option A", "Option B"))
+    st.selectbox("Index", timeseries_index_range)
     # Choosing Timeseries Parameters - Criterion
-    st.selectbox("Criterion", ("None", "Option A", "Option B"))
+    st.selectbox("Criterion", timeseries_cluster_criteria)
     # Choosing Timeseries Parameters - Period
-    st.selectbox("Period", ("None", "Option A", "Option B"))
+    st.selectbox("Period", ["none","hours", "days", "weeks"])
     # Choosing Timeseries Parameters - Season
-    st.selectbox("Season", ("None", "Option A", "Option B"))
+    st.selectbox("Season", ["none",4,12])
     
   
   
