@@ -19,7 +19,7 @@ brew install cbc
 brew install geos
 brew install graphviz
 
-bin/python3 setup.py
+bin/pip3 -r requirements.txt
 
 mkdir files_deviant_operating_system
 mv Linux_installation.sh files_deviant_operating_system
