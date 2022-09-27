@@ -3,12 +3,30 @@ from oemof.network.network import Bus, Sink, Source
 from oemof.solph.custom import Link
 from oemof.solph.components import GenericStorage
 from dhnx.optimization_oemof_heatpipe import HeatPipeline
-import pandas as pd
+import pandas
 
 
-def check_for_link_storage(nd, nodes_data):
-    link_row = nodes_data.loc[nodes_data["label"] == nd.label]
-    if str(link_row["(un)directed"]) == "undirected" and isinstance(nd, Link):
+def check_for_link_storage(nd, nodes_data: pandas.DataFrame) -> str:
+    """
+        since there are component specific decisions (e. g. capacity)
+        especially for storages and links the component type of the
+        investigated component (nd) is collected within this method
+        
+        :param nd: component under investigation
+        :type nd: different oemof solph components
+        :param nodes_data: Dataframe containing all energy system \
+            components data from the input Excel File
+        :type nodes_data: pandas.DataFrame
+        
+        :return: - str, containing the component type e. g. storage or \
+            link
+    """
+    print(type(nd))
+    # get the component's row from the input file (nodes_data)
+    row = nodes_data.loc[nodes_data["label"] == nd.label]
+    # decide rather the investigated component is an undirected link
+    # ("link"), a storage (storage) or another component ("")
+    if str(row["(un)directed"]) == "undirected" and isinstance(nd, Link):
         return "link"
     if isinstance(nd, GenericStorage):
         return "storage"
@@ -17,6 +35,9 @@ def check_for_link_storage(nd, nodes_data):
 
 
 def get_sequence(flow, component, nd, output_flow, esys):
+    """
+    
+    """
     return_list = []
     flow = list(flow) if len(list(flow)) != 0 else None
     if flow:
@@ -37,6 +58,9 @@ def get_sequence(flow, component, nd, output_flow, esys):
 
 
 def get_flows(nd, results, esys):
+    """
+        
+    """
     result_list = []
     component = solph.views.node(results, str(nd.label))
     for flow in [nd.inputs, nd.outputs]:
@@ -46,13 +70,37 @@ def get_flows(nd, results, esys):
     return result_list[0][0], result_list[1][0], result_list[2][0], result_list[3][0]
 
 
-def get_investment(nd, esys, results, comp_type):
-    """ """
+def get_investment(nd, esys: solph.EnergySystem,
+                   results, comp_type: str) -> float:
+    """
+        method used to obtain the component investment, this is
+        calculated differently for storages compared to the other
+        components
+        
+        :param nd: component under investigation
+        :type nd: different oemof solph components
+        :param esys: oemof energy system variable holding the energy \
+            system status before optimization used to reduce the
+            dependency of the correctness of user's input
+        :type esys: solph.EnergySystem
+        :param results: oemof result object holding the return of the \
+            chosen solver
+        :type results: TODO
+        :param comp_type: str holding the component's type
+        :type comp_type: str
+        
+        :return: - float containing the investment value of the \
+            considered component (nd)
+    """
+    # get the component from the energy system's variables
     component_node = esys.groups[str(nd.label)]
+    # get the ouput bus which is depending on the component type since
+    # the investment of storages is taken on storage content
     if comp_type != "storage":
         bus_node = esys.groups[str(list(nd.outputs)[0].label)]
     else:
         bus_node = None
+    # get the specified flows investment variable
     if "invest" in results[component_node, bus_node]["scalars"]:
         return results[component_node, bus_node]["scalars"]["invest"]
     else:
@@ -61,20 +109,20 @@ def get_investment(nd, esys, results, comp_type):
 
 def calc_periodical_costs(nd, investment, comp_type, cost_type):
     """
-    method to calculate the component's periodical costs for the
-    first optimization criterion (cost_type = costs) or the second
-    optimization criterion (cost_type = emissions)
-
-    :param nd: component under investigation
-    :type nd: TODO
-    :param investment: TODO
-    :type investment: float
-    :param comp_type: TODO
-    :type comp_type: str
-    :param cost_type: TODO
-    :type cost_type: str
-
-    :return: TODO
+        method to calculate the component's periodical costs for the
+        first optimization criterion (cost_type = costs) or the second
+        optimization criterion (cost_type = emissions)
+    
+        :param nd: component under investigation
+        :type nd: TODO
+        :param investment: TODO
+        :type investment: float
+        :param comp_type: TODO
+        :type comp_type: str
+        :param cost_type: TODO
+        :type cost_type: str
+    
+        :return: TODO
     """
     ep_costs = 0
     offset = 0
@@ -233,7 +281,7 @@ def change_heatpipelines_label(comp_label: str, result_path: str) -> str:
         :return: TODO
     """
     # get the energy system's pipes
-    pipes_esys = pd.read_csv(result_path + "/pipes.csv", index_col="id")
+    pipes_esys = pandas.read_csv(result_path + "/pipes.csv", index_col="id")
     # cut the "infrastructure_ from the pipes label
     loc_label = str(comp_label)[20:]
     # get the heatpipes nodes
