@@ -33,8 +33,9 @@ def check_for_link_storage(nd, nodes_data: pandas.DataFrame) -> str:
     return return_str
 
 
-def get_sequence(flow, component: dict, nd, output_flow: bool,
-                 esys: solph.EnergySystem) -> list:
+def get_sequence(
+    flow, component: dict, nd, output_flow: bool, esys: solph.EnergySystem
+) -> list:
     """
         method to get the in- and outflow's sequences from the oemof
         produced structures
@@ -116,11 +117,10 @@ def get_flows(nd, results, esys: solph.EnergySystem):
             component=component,
             nd=nd,
             output_flow=True if flow == nd.outputs else False,
-            esys=esys
+            esys=esys,
         )
     # return the flow series
-    return result_list[0][0], result_list[1][0], \
-        result_list[2][0], result_list[3][0]
+    return result_list[0][0], result_list[1][0], result_list[2][0], result_list[3][0]
 
 
 def get_investment(nd, esys: solph.EnergySystem, results, comp_type: str) -> float:
