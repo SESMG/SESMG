@@ -21,7 +21,6 @@ def check_for_link_storage(nd, nodes_data: pandas.DataFrame) -> str:
         :return: - str, containing the component type e. g. storage or \
             link
     """
-    print(type(nd))
     # get the component's row from the input file (nodes_data)
     row = nodes_data.loc[nodes_data["label"] == nd.label]
     # decide rather the investigated component is an undirected link
@@ -35,7 +34,8 @@ def check_for_link_storage(nd, nodes_data: pandas.DataFrame) -> str:
 
 
 def get_sequence(flow, component, nd, output_flow, esys):
-    """ """
+    """
+    """
     return_list = []
     flow = list(flow) if len(list(flow)) != 0 else None
     if flow:
@@ -226,7 +226,9 @@ def get_capacities(comp_type: str, comp_dict: dict, results, label: str):
     # maximum of the first output if there ist one or the maximum of the
     # first input
     if comp_type != "storage":
-        comp_dict += [max(comp_dict[0] if sum(comp_dict[2]) == 0 else comp_dict[2])]
+        comp_dict += [max(comp_dict[0]
+                          if sum(comp_dict[2]) == 0
+                          else comp_dict[2])]
     # if the component type is storage the storage content which is part
     # of the oemof results object is used to determine the capacity
     else:
@@ -238,15 +240,15 @@ def get_capacities(comp_type: str, comp_dict: dict, results, label: str):
 
 def get_max_invest(comp_type: str, nd):
     """
-    get the maximum investment capacity for the specified component
-    (nd)
-
-    :param comp_type: str holding the component's type
-    :type comp_type: str
-    :param nd: component under consideration
-    :type nd: TODO
-
-    :return: TODO
+        get the maximum investment capacity for the specified component
+        (nd)
+    
+        :param comp_type: str holding the component's type
+        :type comp_type: str
+        :param nd: component under consideration
+        :type nd: different oemof solph components
+    
+        :return: TODO
     """
     max_invest = None
     # get the comp_type dependent investment variable from the component
@@ -273,7 +275,8 @@ def change_heatpipelines_label(comp_label: str, result_path: str) -> str:
             for the energy system's pipes data
         :type result_path: str
         
-        :return: TODO
+        :return: - **loc_label** (str) - string containig the easy \
+            readable label for the list of components (loc)
     """
     # get the energy system's pipes
     pipes_esys = pandas.read_csv(result_path + "/pipes.csv", index_col="id")
@@ -295,9 +298,12 @@ def change_heatpipelines_label(comp_label: str, result_path: str) -> str:
     # build the new label for the heatpipe part
     street = str(pipe["street"].values[0])
     loc_label = street + "_" + loc_label
+    # replace forks, producers and consumers by their first letters to
+    # shorten the labels.
     loc_label = loc_label.replace("forks-", "f")
     loc_label = loc_label.replace("producers-", "p")
     loc_label = loc_label.replace("consumers-", "c")
+    # return the new formed label
     return loc_label
 
 
