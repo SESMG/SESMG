@@ -78,6 +78,7 @@ def buses(nd: dict, nodes: list) -> dict:
                     emission_factor=b["shortage constraint costs"],
                 )
             }
-            nodes.append(Source(label=b["label"] + "_shortage", outputs=outputs))
+            nodes.append(Source(label=b["label"] + "_shortage",
+                                outputs=outputs))
     # Returns the list of buses as result of the function
     return busd
