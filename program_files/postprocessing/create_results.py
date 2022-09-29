@@ -424,7 +424,9 @@ class Results:
         self.results = solph.processing.results(optimization_model)
         self.df_result_table = pd.DataFrame()
 
-        comp_dict, total_demand = collect_data(nd, self.results, self.esys)
+        comp_dict, total_demand, total_usage = collect_data(
+            nd, self.results, self.esys, result_path
+        )
 
         (
             loc,

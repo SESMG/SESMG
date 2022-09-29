@@ -3,56 +3,156 @@ from oemof.network.network import Bus, Sink, Source
 from oemof.solph.custom import Link
 from oemof.solph.components import GenericStorage
 from dhnx.optimization_oemof_heatpipe import HeatPipeline
-import pandas as pd
+import pandas
 
 
-def check_for_link_storage(nd, nodes_data):
-    link_row = nodes_data.loc[nodes_data["label"] == nd.label]
-    if str(link_row["(un)directed"]) == "undirected" and isinstance(nd, Link):
-        return "link"
+def check_for_link_storage(nd, nodes_data: pandas.DataFrame) -> str:
+    """
+        since there are component specific decisions (e.g. capacity)
+        especially for storages and links the component type of the
+        investigated component (nd) is collected within this method
+        
+        :param nd: component under investigation
+        :type nd: different oemof solph components
+        :param nodes_data: Dataframe containing all energy system \
+            components data from the input Excel File
+        :type nodes_data: pandas.DataFrame
+        
+        :return: - **return_str** (str) - containing the component type\
+            e.g. storage or link
+    """
+    return_str = ""
+    # get the component's row from the input file (nodes_data)
+    row = nodes_data.loc[nodes_data["label"] == nd.label]
+    # decide rather the investigated component is an undirected link
+    # ("link"), a storage (storage) or another component ("")
+    if str(row["(un)directed"]) == "undirected" and isinstance(nd, Link):
+        return_str = "link"
     if isinstance(nd, GenericStorage):
-        return "storage"
-    else:
-        return ""
+        return_str = "storage"
+    return return_str
 
 
-def get_sequence(flow, component, nd, output_flow, esys):
+def get_sequence(
+    flow, component: dict, nd, output_flow: bool, esys: solph.EnergySystem
+) -> list:
+    """
+        method to get the in- and outflow's sequences from the oemof
+        produced structures
+        
+        :param flow: oemof in or output data that essentially represent\
+            the properties of the edges of the graph.
+        :type flow: oemof.network.Inputs or Outputs
+        :param component: energy system node's information
+        :type component: dict
+        :param nd: component under investigation
+        :type nd: different oemof solph components
+        :param output_flow: boolean which decides rather the cosindered\
+            flows (flow) are output flows
+        :type output_flow: bool
+        :param esys: oemof energy system variable holding the energy \
+            system status before optimization used to reduce the
+            dependency of the correctness of user's input
+        :type esys: solph.EnergySystem
+        
+        :return - **return_list**(list) - list containing the found \
+            flows sequences
+    """
     return_list = []
     flow = list(flow) if len(list(flow)) != 0 else None
     if flow:
+        # create the index tuple(s) for the flow sequence to be found in
+        # the list of flows
         attr1 = (str(flow[0].label), str(nd.label))
         attr2 = (str(flow[1].label), str(nd.label)) if len(flow) == 2 else ()
+        # if the considered flows are output flows revert the tuple
+        # structure
         if output_flow:
             attr1 = attr1[::-1]
             attr2 = attr2[::-1]
+        # iterate threw the created tuples
         for i in [attr1, attr2]:
+            # search the created tuple in the components sequences
             if i != ():
                 return_list.append([component["sequences"][(i, "flow")]])
+            # create an empty sequence (timesteps * 0) if the considered
+            # tuple is empty
             else:
                 return_list.append([len(esys.timeindex) * [0]])
+    # create two empty sequences timesteps * 0 if the flow parameter is
+    # empty
     else:
         return_list.append([len(esys.timeindex) * [0]])
         return_list.append([len(esys.timeindex) * [0]])
+    # return the found sequences
     return return_list
 
 
-def get_flows(nd, results, esys):
+def get_flows(nd, results, esys: solph.EnergySystem):
+    """
+        method to get component's (nd) in- and outflows
+        
+        :param nd: component under investigation
+        :type nd: different oemof solph components
+        :param results: oemof result object holding the return of the \
+            chosen solver
+        :type results: TODO
+        :param esys: oemof energy system variable holding the energy \
+            system status before optimization used to reduce the
+            dependency of the correctness of user's input
+        :type esys: solph.EnergySystem
+        
+        :return: TODO
+    """
     result_list = []
-    component = solph.views.node(results, str(nd.label))
+    # get component information from the oemof result object based on
+    # their label
+    component = solph.views.node(results=results, node=str(nd.label))
+    # iterate threw in and outputs to get the result's flow sequences
+    # result list [0]: inflow 1, [1] inflow 2, [2] outflow 1,
+    # [3] outflow 2
     for flow in [nd.inputs, nd.outputs]:
         result_list += get_sequence(
-            flow, component, nd, True if flow == nd.outputs else False, esys
+            flow=flow,
+            component=component,
+            nd=nd,
+            output_flow=True if flow == nd.outputs else False,
+            esys=esys,
         )
+    # return the flow series
     return result_list[0][0], result_list[1][0], result_list[2][0], result_list[3][0]
 
 
-def get_investment(nd, esys, results, comp_type):
-    """ """
+def get_investment(nd, esys: solph.EnergySystem, results, comp_type: str) -> float:
+    """
+        method used to obtain the component investment, this is
+        calculated differently for storages compared to the other
+        components
+        
+        :param nd: component under investigation
+        :type nd: different oemof solph components
+        :param esys: oemof energy system variable holding the energy \
+            system status before optimization used to reduce the
+            dependency of the correctness of user's input
+        :type esys: solph.EnergySystem
+        :param results: oemof result object holding the return of the \
+            chosen solver
+        :type results: TODO
+        :param comp_type: str holding the component's type
+        :type comp_type: str
+        
+        :return: - float containing the investment value of the \
+            considered component (nd)
+    """
+    # get the component from the energy system's variables
     component_node = esys.groups[str(nd.label)]
+    # get the ouput bus which is depending on the component type since
+    # the investment of storages is taken on storage content
     if comp_type != "storage":
         bus_node = esys.groups[str(list(nd.outputs)[0].label)]
     else:
         bus_node = None
+    # get the specified flows investment variable
     if "invest" in results[component_node, bus_node]["scalars"]:
         return results[component_node, bus_node]["scalars"]["invest"]
     else:
@@ -201,7 +301,7 @@ def get_max_invest(comp_type: str, nd):
     :param comp_type: str holding the component's type
     :type comp_type: str
     :param nd: component under consideration
-    :type nd: TODO
+    :type nd: different oemof solph components
 
     :return: TODO
     """
@@ -230,10 +330,11 @@ def change_heatpipelines_label(comp_label: str, result_path: str) -> str:
             for the energy system's pipes data
         :type result_path: str
         
-        :return: TODO
+        :return: - **loc_label** (str) - string containig the easy \
+            readable label for the list of components (loc)
     """
     # get the energy system's pipes
-    pipes_esys = pd.read_csv(result_path + "/pipes.csv", index_col="id")
+    pipes_esys = pandas.read_csv(result_path + "/pipes.csv", index_col="id")
     # cut the "infrastructure_ from the pipes label
     loc_label = str(comp_label)[20:]
     # get the heatpipes nodes
@@ -252,9 +353,12 @@ def change_heatpipelines_label(comp_label: str, result_path: str) -> str:
     # build the new label for the heatpipe part
     street = str(pipe["street"].values[0])
     loc_label = street + "_" + loc_label
+    # replace forks, producers and consumers by their first letters to
+    # shorten the labels.
     loc_label = loc_label.replace("forks-", "f")
     loc_label = loc_label.replace("producers-", "p")
     loc_label = loc_label.replace("consumers-", "c")
+    # return the new formed label
     return loc_label
 
 

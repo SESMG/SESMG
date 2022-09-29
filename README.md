@@ -17,7 +17,7 @@ viewed and analyzed using a browser-based results output.)
 
 ## Quick Start ![how](https://cs.adelaide.edu.au/~christoph/badges/content-how-green.svg)
 
-### Step 1) Download Python 3.7 
+### Step 1) Download Python 3.7 or newer (Python 3.10 was not tested yet)
 
 - go to the Python download page
 - chose a Python version (e.g. “Python 3.7.6”) and click “download”

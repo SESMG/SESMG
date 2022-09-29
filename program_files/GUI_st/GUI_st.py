@@ -13,11 +13,18 @@ from PIL import Image
 import os
 
 
+#### Test ####
+def button():
+    main_result_graph(True)
 
+#def form_callback():
+#    st.write(st.session_state.my_slider)
+#    st.write(st.session_state.my_checkbox)
 
-
-    
-
+#with st.form(key='my_form'):
+#    slider_input = st.slider('My slider', 0, 10, 5, key='my_slider')
+#    checkbox_input = st.checkbox('Yes or No', key='my_checkbox')
+#    submit_button = st.form_submit_button(label='Submit', on_click=form_callback)
 
 
 ####################################
@@ -25,7 +32,7 @@ import os
 ####################################
 
 
-def main_page():    
+def main_page(submitted_vis_structure=False):    
     """
     Function to create the result page of the main SESMG application.
     """
@@ -34,7 +41,11 @@ def main_page():
     
     with mr_page: 
         st.title("Spredsheet Energy System Model Generator - Result Overview")   
-
+    
+    if submitted_vis_structure:
+        st.write('SSSDASDS')
+        
+    
     main_result_graph()
     
     main_result_summary()
@@ -94,8 +105,8 @@ def main_input_create_model_structure():
 
     with st.sidebar.form("Visualization"):
         
-        submitted_vis_structure = st.form_submit_button("Visualize model")
-    
+        submitted_vis_structure = st.form_submit_button(label="Visualize model", on_click=button)
+        return submitted_vis_structure
 
 
 def main_input_sb_modelling():
@@ -111,7 +122,7 @@ def main_input_sb_modelling():
     st.checkbox("Switch Criteria")
     
     # Choosing Solver
-    st.selectbox("Optimization Solver", ("Option A", "Option B"))
+    st.selectbox("Optimization Solver", ("cbc", "gurobi"))
     
 
 
@@ -126,28 +137,28 @@ def main_input_sb_timeseries():
     # TimeSeries Preparation
     # Choosable Algorithms
     timeseries_algorithm_list = \
-        ["none", "k_means", "k_medoids", "averaging", "slicing A",
+        ["None", "k_means", "k_medoids", "averaging", "slicing A",
          "slicing B", "downsampling A", "downsampling B",
          "heuristic selection", "random sampling"]
     # Choosable clustering crtieria
-    timeseries_cluster_criteria = \
-        ["none", "temperature", "dhi", "el_demand_sum", "heat_demand_sum"]
+    timeseries_cluster_criteria_list = \
+        ["None", "temperature", "dhi", "el_demand_sum", "heat_demand_sum"]
     # Timeseries Index Range
-    timeseries_index_range_start = ["none"]
+    timeseries_index_range_start = ["None"]
     timeseries_index_range_values = [i for i in range(1, 366)]
-    timeseries_index_range = timeseries_index_range_start + timeseries_index_range_values
+    timeseries_index_range_list = timeseries_index_range_start + timeseries_index_range_values
         
     
     # Choosing Timeseries Parameters - Algorithm
     st.selectbox("Algorithm", timeseries_algorithm_list)
     # Choosing Timeseries Parameters - Index
-    st.selectbox("Index", timeseries_index_range)
+    st.selectbox("Index", timeseries_index_range_list)
     # Choosing Timeseries Parameters - Criterion
-    st.selectbox("Criterion", timeseries_cluster_criteria)
+    st.selectbox("Criterion", timeseries_cluster_criteria_list)
     # Choosing Timeseries Parameters - Period
-    st.selectbox("Period", ["none","hours", "days", "weeks"])
+    st.selectbox("Period", ["None","hours", "days", "weeks"])
     # Choosing Timeseries Parameters - Season
-    st.selectbox("Season", ["none",4,12])
+    st.selectbox("Season", ["None",4,12])
     
   
   
@@ -169,10 +180,11 @@ def main_input_sb_processing():
 ########### Result Functions ##########
 
 
-def main_result_graph():
+def main_result_graph(test=False):
     """
     Function to display the energy systems structure.
     """
+
     
     # Header
     st.subheader("The structure of the modelled energy system:")
@@ -180,7 +192,9 @@ def main_result_graph():
     # Importing and printing the Energy System Graph
     es_graph = Image.open(os.path.dirname(__file__) + "/graph.gv.png", "r")
     st.image(es_graph, caption = "Filename oÄ?",)
-
+    
+    if test:
+        st.image(es_graph, caption = "Gregor oÄ?",)
 
 
 def main_result_summary():
