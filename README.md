@@ -1,18 +1,18 @@
-# Spreadsheet Energy System Model Generator (SESMG) ![what-why](https://cs.adelaide.edu.au/~christoph/badges/content-what-why-brightgreen.svg) ![how](https://cs.adelaide.edu.au/~christoph/badges/content-how-green.svg) [![codecov](https://codecov.io/gh/chrklemm/SESMG/branch/master/graph/badge.svg?token=70AHZEB2IN)](https://codecov.io/gh/chrklemm/SESMG)
+# Spreadsheet Energy System Model Generator (SESMG) ![what-why](https://cs.adelaide.edu.au/~christoph/badges/content-what-why-brightgreen.svg) ![how](https://cs.adelaide.edu.au/~christoph/badges/content-how-green.svg) 
 
 
 ## Status Badges
 
 | Badge                                                                                                                                                                                                                 | Description                                                                          | Target Value                                             |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|----------------------------------------------------------|
-| [![codecov](https://codecov.io/gh/chrklemm/SESMG/branch/master/graph/badge.svg?token=70AHZEB2IN)]                                                                                                                     | Indicates the test coverage of the code (Tool 1).                                    | min. 60 % (https://doi.org/10.1371/journal.pcbi.1009481) |
+| [![codecov](https://codecov.io/gh/chrklemm/SESMG/branch/dev/graph/badge.svg?token=70AHZEB2IN)](https://codecov.io/gh/chrklemm/SESMG)                                                                                                                     | Indicates the test coverage of the code (Tool 1).                                    | min. 60 % (https://doi.org/10.1371/journal.pcbi.1009481) |
 | [![Test Coverage](https://api.codeclimate.com/v1/badges/5654620e2adb1eb286da/test_coverage)](https://codeclimate.com/github/chrklemm/SESMG/test_coverage)                                                             | Indicates the test coverage of the code (Tool 2).                                    | min. 60 % (https://doi.org/10.1371/journal.pcbi.1009481) |
 | [![Maintainability](https://api.codeclimate.com/v1/badges/5654620e2adb1eb286da/maintainability)](https://codeclimate.com/github/chrklemm/SESMG/maintainability)                                                       | Indicates the effort for the maintenance of the code.                                |                                                          |
 | [![Requirements Status](https://requires.io/github/chrklemm/SESMG/requirements.svg?branch=dev)](https://requires.io/github/chrklemm/SESMG/requirements/?branch=dev)                                                   | Indicates the currency of the used packages and dependencies.                        | 'up to date'                                             |
 | [![Documentation Status](https://readthedocs.org/projects/spreadsheet-energy-system-model-generator/badge/?version=latest)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/?badge=latest) | Indicates if the automated process for the creation of the documentation is working. | 'passing'                                                |
 
 
-
+## Software Description
 
 The **SESMG** provides a spreadsheet interface to the Open Energy Modeling Framework (oemof), allowing modeling and optimization of urban energy systems based a spreadsheet.
 
