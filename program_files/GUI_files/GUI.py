@@ -372,7 +372,8 @@ class GUI(MethodsGUI):
                 self.frames[1],
                 os.path.join(
                     os.path.dirname(os.path.dirname(__file__))
-                    + "/urban_district_upscaling/", r"pre_scenario.xlsx",
+                    + "/urban_district_upscaling/",
+                    r"pre_scenario.xlsx",
                 ),
             ),
             "standard_parameter_path": StringVar(
