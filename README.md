@@ -1,4 +1,18 @@
-# Spreadsheet Energy System Model Generator (SESMG) ![what-why](https://cs.adelaide.edu.au/~christoph/badges/content-what-why-brightgreen.svg) ![how](https://cs.adelaide.edu.au/~christoph/badges/content-how-green.svg)
+# Spreadsheet Energy System Model Generator (SESMG) ![what-why](https://cs.adelaide.edu.au/~christoph/badges/content-what-why-brightgreen.svg) ![how](https://cs.adelaide.edu.au/~christoph/badges/content-how-green.svg) [![codecov](https://codecov.io/gh/chrklemm/SESMG/branch/master/graph/badge.svg?token=70AHZEB2IN)](https://codecov.io/gh/chrklemm/SESMG)
+
+
+## Status Badges
+
+| Badge                                                                                                                                                                                                                 | Description                                                                          | Target Value                                             |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|----------------------------------------------------------|
+| [![codecov](https://codecov.io/gh/chrklemm/SESMG/branch/master/graph/badge.svg?token=70AHZEB2IN)]                                                                                                                     | Indicates the test coverage of the code (Tool 1).                                    | min. 60 % (https://doi.org/10.1371/journal.pcbi.1009481) |
+| [![Test Coverage](https://api.codeclimate.com/v1/badges/5654620e2adb1eb286da/test_coverage)](https://codeclimate.com/github/chrklemm/SESMG/test_coverage)                                                             | Indicates the test coverage of the code (Tool 2).                                    | min. 60 % (https://doi.org/10.1371/journal.pcbi.1009481) |
+| [![Maintainability](https://api.codeclimate.com/v1/badges/5654620e2adb1eb286da/maintainability)](https://codeclimate.com/github/chrklemm/SESMG/maintainability)                                                       | Indicates the effort for the maintenance of the code.                                |                                                          |
+| [![Requirements Status](https://requires.io/github/chrklemm/SESMG/requirements.svg?branch=dev)](https://requires.io/github/chrklemm/SESMG/requirements/?branch=dev)                                                   | Indicates the currency of the used packages and dependencies.                        | 'up to date'                                             |
+| [![Documentation Status](https://readthedocs.org/projects/spreadsheet-energy-system-model-generator/badge/?version=latest)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/?badge=latest) | Indicates if the automated process for the creation of the documentation is working. | 'passing'                                                |
+
+
+
 
 The **SESMG** provides a spreadsheet interface to the Open Energy Modeling Framework (oemof), allowing modeling and optimization of urban energy systems based a spreadsheet.
 
@@ -70,13 +84,6 @@ run `$ sudo apt-get install graphviz`
 
 
 ## SESMG Features & Releases ![what-why](https://cs.adelaide.edu.au/~christoph/badges/content-what-why-brightgreen.svg) 
-
-### Project Status 
-[![Maintainability](https://api.codeclimate.com/v1/badges/d82c7d94f8f421db19ce/maintainability)](https://codeclimate.com/github/GregorBecker/SESMG/maintainability)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/GregorBecker/SESMG/badges/quality-score.png?b=dev_open_district_upscaling)](https://scrutinizer-ci.com/g/GregorBecker/SESMG/?branch=dev_open_district_upscaling)
-[![codecov](https://codecov.io/gh/GregorBecker/SESMG/branch/dev_open_district_upscaling/graph/badge.svg?token=9UW00ZSDYC)](https://codecov.io/gh/GregorBecker/SESMG)
-[![Coverage Status](https://coveralls.io/repos/github/GregorBecker/SESMG/badge.svg?branch=dev_open_district_upscaling)](https://coveralls.io/github/GregorBecker/SESMG?branch=dev_open_district_upscaling)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/d82c7d94f8f421db19ce/test_coverage)](https://codeclimate.com/github/GregorBecker/SESMG/test_coverage)
 
 ### Examples
 Examples are stored in a separate GIT-Repository: https://github.com/chrklemm/SESMG_Examples
