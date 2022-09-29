@@ -371,21 +371,24 @@ class GUI(MethodsGUI):
             "pre_scenario_path": StringVar(
                 self.frames[1],
                 os.path.join(
-                    os.path.dirname(__file__) + "/urban_district_upscaling/",
+                    os.path.dirname(os.path.dirname(__file__))
+                    + "/urban_district_upscaling/",
                     r"pre_scenario.xlsx",
                 ),
             ),
             "standard_parameter_path": StringVar(
                 self.frames[1],
                 os.path.join(
-                    os.path.dirname(__file__) + "/urban_district_upscaling/",
+                    os.path.dirname(os.path.dirname(__file__))
+                    + "/urban_district_upscaling/",
                     r"standard_parameters.xlsx",
                 ),
             ),
             "scenario_name": StringVar(
                 self.frames[1],
                 os.path.join(
-                    os.path.dirname(__file__) + "/urban_district_upscaling/",
+                    os.path.dirname(os.path.dirname(__file__))
+                    + "/urban_district_upscaling/",
                     r"auto_generated_scenario.xlsx",
                 ),
             ),
