@@ -20,7 +20,7 @@ def test_create_fork():
         import create_fork
     import dhnx
     thermal_net = dhnx.network.ThermalNetwork()
-    create_fork(["x", 10, 10, "x", 0.5, "test"], 1, "testbus", thermal_net)
+    create_fork(["x", 10, 10, "x", 0.5, "test"], 1, thermal_net, "testbus")
     assert 10 == int(thermal_net.components["forks"]["lat"])
     assert 10 == int(thermal_net.components["forks"]["lon"])
     assert 0.5 == float(thermal_net.components["forks"]["t"])
