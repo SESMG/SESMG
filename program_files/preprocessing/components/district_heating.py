@@ -24,7 +24,8 @@ component_param = pd.read_csv(
 )
 
 
-def concat_on_thermal_net_components(comp_type: str, new_dict: dict, thermal_net) -> None:
+def concat_on_thermal_net_components(comp_type: str, new_dict: dict,
+                                     thermal_net) -> None:
     """
     outsourced the concatenation which is part of several algorithm
     steps
@@ -35,6 +36,8 @@ def concat_on_thermal_net_components(comp_type: str, new_dict: dict, thermal_net
     :param new_dict: holds the information of the new component to be \
         appended on an existing DataFrame
     :type new_dict: dict
+    :param thermal_net: TODO
+    :type thermal_net: dhnx.network.ThermalNetwork
     """
     # create consumers forks pandas Dataframe for thermal network
     thermal_net.components[comp_type] = pd.concat(
@@ -77,24 +80,27 @@ def create_fork(point: list, label: int, thermal_net, bus=None):
     concat_on_thermal_net_components("forks", fork_dict, thermal_net)
 
 
-def append_pipe(from_node: str, to_node: str, length: float, street: str):
+def append_pipe(from_node: str, to_node: str, length: float, street: str,
+                thermal_net):
     """
-        method which is used to append the heatpipeline specified by the
-        methods parameter to the list of pipes
-        (thermal_net.components["pipes"])
-        
-        :param from_node: definition of the first edge of the \
-            heatpipeline to be appended to the list of pipes
-        :type from_node: str
-        :param to_node: definition of the second edge of the \
-            heatpipeline to be appended to the list of pipes
-        :type from_node: str
-        :param length: definition of the length of the heatpipeline to \
-            be appended to the list of pipes
-        :type length: float
-        :param street: defintion of the street in which the \
-            heatpipeline will be layed
-        :type street: str
+    method which is used to append the heatpipeline specified by the
+    methods parameter to the list of pipes
+    (thermal_net.components["pipes"])
+    
+    :param from_node: definition of the first edge of the \
+        heatpipeline to be appended to the list of pipes
+    :type from_node: str
+    :param to_node: definition of the second edge of the \
+        heatpipeline to be appended to the list of pipes
+    :type from_node: str
+    :param length: definition of the length of the heatpipeline to \
+        be appended to the list of pipes
+    :type length: float
+    :param street: defintion of the street in which the \
+        heatpipeline will be layed
+    :type street: str
+    :param thermal_net: TODO
+    :type thermal_net: dhnx.network.ThermalNetwork
     """
     pipe_dict = {
         "id": "pipe-{}".format(len(thermal_net.components["pipes"]) + 1),
