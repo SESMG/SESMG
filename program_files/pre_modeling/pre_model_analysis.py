@@ -49,11 +49,23 @@ def technical_pre_selection(components_xlsx, result_components):
     '''deactivates investment-components for which no investments has been carried out and additionally returns a list
     of deactivated components'''
     list_of_deactivated_components = []
+    result_components.set_index('ID', inplace=True)
     for i,scenario_component in components_xlsx.iterrows():
-        if float(result_components.iloc[i]['max. invest./kW']) > 0:
-            if str(result_components.iloc[i]['investment/kW']) == '0.0':
-                components_xlsx.at[i, 'active'] = 0
-                list_of_deactivated_components.append(str(scenario_component['label']))
+        if scenario_component['label'] in result_components.index.values:
+            #print(result_components.loc[scenario_component['label']])
+            if float(result_components.loc[scenario_component['label']]['max. invest./kW']) > 0:
+
+                if str(result_components.loc[scenario_component['label']]['investment/kW']) == '0.0':
+                    components_xlsx.at[i, 'active'] = 0
+                    list_of_deactivated_components.append(str(scenario_component['label']))
+                    print(scenario_component['label'])
+
+
+
+        # if float(result_components.iloc[i]['max. invest./kW']) > 0:
+        #     if str(result_components.iloc[i]['investment/kW']) == '0.0':
+        #         components_xlsx.at[i, 'active'] = 0
+        #         list_of_deactivated_components.append(str(scenario_component['label']))
 
     return list_of_deactivated_components
 
@@ -63,10 +75,16 @@ def tightening_investment_boundaries(components_xlsx, result_components, boundar
     'tightens investment boundaries'
     list_of_adapted_components = []
     for i,scenario_component in components_xlsx.iterrows():
-        if float(result_components.iloc[i]['max. invest./kW']) > 0:
-            if result_components.iloc[i]['investment/kW']*boundary_factor < result_components.iloc[i]['max. invest./kW']:
-                components_xlsx.at[i, 'max. investment capacity'] = float(result_components.iloc[i]['investment/kW'])*boundary_factor
-                list_of_adapted_components.append(str(scenario_component['label']))
+        if scenario_component['label'] in result_components.index.values:
+            if float(result_components.loc[scenario_component['label']]['max. invest./kW']) > 0:
+                if result_components.loc[scenario_component['label']]['investment/kW'] * boundary_factor < result_components.loc[scenario_component['label']][
+                    'max. invest./kW']:
+                    components_xlsx.at[i, 'max. investment capacity'] = float(result_components.loc[scenario_component['label']]['investment/kW'])*boundary_factor
+                    list_of_adapted_components.append(str(scenario_component['label']))
+        # if float(result_components.iloc[i]['max. invest./kW']) > 0:
+        #     if result_components.iloc[i]['investment/kW']*boundary_factor < result_components.iloc[i]['max. invest./kW']:
+        #         components_xlsx.at[i, 'max. investment capacity'] = float(result_components.iloc[i]['investment/kW'])*boundary_factor
+        #         list_of_adapted_components.append(str(scenario_component['label']))
 
 def update_component_scenario_sheet(updated_data, scenario_sheet_name, updated_scenario_path):
     'updates the original data within the updated scenario sheet'
@@ -208,7 +226,7 @@ def update_model_according_pre_model_results(scenario_path, results_components_p
     print('Scenario updated according to the results of the pre-model.')
 
 
-update_model_according_pre_model_results(scenario_path= 'scenario.xlsx',
-                                         results_components_path = 'results/components.csv',
-                                         updated_scenario_path = 'updated_scenario.xlsx',
+update_model_according_pre_model_results(scenario_path= '20220928_model_V2_reduced.xlsx',
+                                         results_components_path = '20220928_model_V2_reduced_2022-09-29--15-25-03/components.csv',
+                                         updated_scenario_path = 'updated_20220914_auto_generated_scenario.xlsx',
                                          investment_boundary_factor = 5)
