@@ -14,8 +14,8 @@ import os
 
 
 #### Test ####
-def button():
-    main_result_graph(True)
+#def button():
+#    main_result_graph(True)
 
 #def form_callback():
 #    st.write(st.session_state.my_slider)
@@ -105,7 +105,7 @@ def main_input_create_model_structure():
 
     with st.sidebar.form("Visualization"):
         
-        submitted_vis_structure = st.form_submit_button(label="Visualize model", on_click=button)
+        submitted_vis_structure = st.form_submit_button(label="Visualize model")
         return submitted_vis_structure
 
 
@@ -187,7 +187,7 @@ def main_result_graph(test=False):
 
     
     # Header
-    st.subheader("The structure of the modelled energy system:")
+    st.subheader("The structure of the modeled energy system:")
     
     # Importing and printing the Energy System Graph
     es_graph = Image.open(os.path.dirname(__file__) + "/graph.gv.png", "r")
@@ -267,47 +267,7 @@ def demo_result_page():
 
 
 
-####################################
-######## STREAMLIT SETTINGS ########
-####################################
 
-
-def st_settings_global():
-    """
-    Function to define settings for the Streamlit GUI.
-
-    """
-    
-    # Global page settings
-    st.set_page_config(
-        page_title=('SESMG'),
-        layout='wide', 
-        menu_items={'Get Help': 'https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/',
-                    'Report a Bug': 'https://github.com/chrklemm/SESMG/issues'})
-
-
-
-####################################
-########### RUN THE APP ############
-####################################
-
-# Import settings
-st_settings_global()
-
-app_mode = st.sidebar.selectbox(
-    "Choose the app mode",
-    ["Main SESMG Application", 
-     "Urban District Upscaling Tool", 
-     "SESMG Demo Tool"])
-
-
-if app_mode == "Main SESMG Application":
-    main_page()
-    main_sidebar()
-elif app_mode == "Urban District Upscaling Tool":
-    udu_result_page()
-elif app_mode == "SESMG Demo Tool":
-    demo_result_page()
     
     
     
