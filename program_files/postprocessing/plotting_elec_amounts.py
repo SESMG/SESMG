@@ -1,35 +1,83 @@
-import pandas as pd
-import pandas as pd
+import pandas
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 
-def pv_elec_amount(components_df, pv_st, dataframe, amounts_dict):
+def pv_elec_amount(components_df: pandas.DataFrame, pv_st: str,
+                   dataframe: pandas.DataFrame, amounts_dict: dict):
+    """
+    method which is used to get the pv system earnings in total and
+    azimuth specific as well as the output buses for later excess
+    calculations
+    
+    :param components_df: dataframe containing the nodes data's entries
+    :type components_df: pandas.DataFrame
+    :param pv_st: str defining rather the algorithm searches for \
+        photovoltaic or solar thermal entries
+    :param dataframe: dataframe containing the considered pareto \
+        point's result (components.csv)
+    :type dataframe: pandas.DataFrame
+    :param amounts_dict: dictionary holding the collected electricity \
+        amounts for all pareto points
+    :type amounts_dict: dict
+    
+    :return: TODO
+    
+    """
     from program_files.postprocessing.plotting import get_pv_st_dir, get_value
 
     pv_buses = []
+    # get all photovoltaic entries from nodes data sources
     df_pv_or_st = components_df[(components_df.isin([str(pv_st)])).any(axis=1)]
+    # get the components outputs and append them on the total pv
+    # earnings as well as the azimuth specific dict entry (using
+    # get_pv_st_dir) which is located in the plotting main file
     for num, comp in df_pv_or_st.iterrows():
         value_am = get_value(comp["label"], "output 1/kWh", dataframe)
         amounts_dict["PV"].append(value_am)
         # TODO wie stellen wir fest ob -180 - 180 oder 0 - 360
         #  genutzt wurde
         amounts_dict = get_pv_st_dir(amounts_dict, value_am, "PV", comp)
+        # collect all output buses of the energy system's pv system to
+        # calculate the pv excess
         if comp["output"] not in pv_buses:
             pv_buses.append(comp["output"])
     return amounts_dict, pv_buses
 
 
-def create_elec_amount_plots(dataframes: dict, nodes_data, result_path, sink_known):
+def create_elec_amount_plots(
+        dataframes: dict, nodes_data: pandas.DataFrame, result_path: str,
+        sink_known: dict) -> None:
+    """
+    main function of the algorithm to plot an energy amount plot after
+    running an pareto optimization
+    
+    :param dataframes: dictionary which holds the results of the pareto\
+        optimization - structure {str(share of emission reduction \
+        between 0 and 1): pandas.DataFrame(components.csv)}
+    :type dataframes: dict
+    :param nodes_data: DataFrame containing all components defined \
+        within the input scenario file
+    :type nodes_data: pandas.DataFrame
+    :param result_path: str which defines the folder where the \
+        elec_amount plot will be saved
+    :type result_path: str
+    :param sink_known: dictionary which defines the type of the energy \
+        system's sinks structure {sink_label: [bool(elec), bool(heat), \
+        bool(cooling)]}
+    """
     from program_files.postprocessing.plotting import (
         get_dataframe_from_nodes_data,
         get_value,
     )
-
-    elec_amounts = pd.DataFrame()
+    # data frame to plot the amounts using matplotlib
+    elec_amounts = pandas.DataFrame()
     elec_amounts_dict = {}
+    # get the emissions of the monetary cheapest scenario ("1")
     emissions_100_percent = sum(dataframes["1"]["constraints/CU"])
+    # iterate threw the pareto points
     for key in dataframes:
+        # define all energy system technologies to be searched within
+        # the results file components.csv
         elec_amounts_dict.update(
             {
                 "run": str(key),
@@ -70,29 +118,36 @@ def create_elec_amount_plots(dataframes: dict, nodes_data, result_path, sink_kno
         dataframe = dataframes[key].copy()
         dataframe.reset_index(inplace=True, drop=False)
         components_df = get_dataframe_from_nodes_data(nodes_data)
-        # PV-System
+        # get the PV-Systems' amounts using pv_elec amount method above
         elec_amounts_dict, pv_buses = pv_elec_amount(
             components_df.copy(), "photovoltaic", dataframe, elec_amounts_dict
         )
+        # append the pv_excess on the elec amounts dict
         for bus in pv_buses:
             elec_amounts_dict["PV_excess"].append(
                 get_value(str(bus) + "_excess", "input 1/kWh", dataframe)
             )
-
+        # get the energy system's solar thermal flat plates from nodes
+        # data
         df_st = components_df[
             (components_df.isin([str("solar_thermal_flat_plate")])).any(axis=1)
         ]
+        # append the electric consumption of the solar thermal flat
+        # plates on the elec amount dict
         for num, comp in df_st.iterrows():
             elec_amounts_dict["ST_elec"].append(
                 get_value(comp["label"], "input 1/kWh", dataframe)
             )
-
+        # get the energy system's heat pumps from nodes data
         df_hp = components_df[
             (components_df.isin(["CompressionHeatTransformer"])).any(axis=1)
         ]
-        df_hp = pd.concat(
-            [df_hp, (components_df.isin(["AbsorptionHeatTransformer"])).any(axis=1)]
+        df_hp = pandas.concat([
+            df_hp,
+            (components_df.isin(["AbsorptionHeatTransformer"])).any(axis=1)]
         )
+        # append the electric consumption of the heat pumps on the elec
+        # amounts dict
         for num, comp in df_hp.iterrows():
             if comp["heat source"] == "Ground":
                 elec_amounts_dict["GCHP"].append(
@@ -103,9 +158,9 @@ def create_elec_amount_plots(dataframes: dict, nodes_data, result_path, sink_kno
                     get_value(comp["label"], "input 1/kWh", dataframe)
                 )
 
-        # sink dataframe
+        # get the energy system's sinks from nodes data
         df_sinks = components_df[(components_df["annual demand"].notna())]
-        df_sinks = pd.concat(
+        df_sinks = pandas.concat(
             [df_sinks, components_df[(components_df["nominal value"].notna())]]
         ).drop_duplicates()
         # collect the amount of electricity demand
@@ -115,50 +170,64 @@ def create_elec_amount_plots(dataframes: dict, nodes_data, result_path, sink_kno
                     get_value(sink["label"], "input 1/kWh", dataframe)
                 )
 
-        # generic transformer dataframe
+        # get the energy system's generic transformers from nodes data
         df_gen_transformer = components_df[
             (components_df.isin(["GenericTransformer"])).any(axis=1)
         ]
+        # append the electric consumption of electric heating systems
+        # on the elec amounts dict
         for num, comp in df_gen_transformer.iterrows():
             if "elec" in comp["input"] and "central" not in comp["label"]:
                 elec_amounts_dict["Electric_heating"].append(
                     get_value(comp["label"], "input 1/kWh", dataframe)
                 )
-
-        df_storage = components_df[(components_df.isin(["Generic"])).any(axis=1)]
+        # get the energy system's generic storages from nodes data
+        df_storage = components_df[
+            (components_df.isin(["Generic"])).any(axis=1)]
+        # append the electric losses and output of generic battery
+        # storages on the elec amounts dict
         for num, comp in df_storage.iterrows():
             if "elec" in comp["bus"] and "central" not in comp["label"]:
                 value = get_value(comp["label"], "output 1/kWh", dataframe)
                 elec_amounts_dict["Battery_output"].append(value)
                 input_val = get_value(comp["label"], "input 1/kWh", dataframe)
                 elec_amounts_dict["Battery_losses"].append(input_val - value)
-
+        # get the energy system's shortage buses
         df_buses = components_df[(components_df["shortage"] == 1)]
+        # append the imported elec amount on elec amounts dict
         for num, comp in df_buses.iterrows():
             if "elec" in comp["label"]:
                 elec_amounts_dict["grid_import"].append(
-                    get_value(comp["label"] + "_shortage", "output 1/kWh", dataframe)
+                    get_value(comp["label"] + "_shortage",
+                              "output 1/kWh", dataframe)
                 )
+        # get the energy system's links
         df_links = components_df[(components_df["bus1"].notna())]
+        # append the electricity transport from pv systems to local
+        # market on the elec amounts dict
         for num, link in df_links.iterrows():
             # pvbus -> local electricity market
             if link["bus1"] in pv_buses and "central" in link["bus2"]:
                 elec_amounts_dict["PV_to_Central"].append(
                     get_value(link["label"], "output 1/kWh", dataframe)
                 )
-
+        # iterate threw the elec amounts dict and append the summed
+        # entries on the elec amounts pandas dataframe
         for i in elec_amounts_dict:
             if i != "run" and i != "reductionco2":
                 elec_amounts_dict[i] = sum(elec_amounts_dict[i])
-        series = pd.Series(data=elec_amounts_dict)
-        elec_amounts = pd.concat([elec_amounts, pd.DataFrame([series])])
+        series = pandas.Series(data=elec_amounts_dict)
+        elec_amounts = pandas.concat(
+            [elec_amounts, pandas.DataFrame([series])])
         elec_amounts.set_index("reductionco2", inplace=True, drop=False)
         elec_amounts = elec_amounts.sort_values("run")
-
+    # clear the old plot
     plt.clf()
     fig, axs = plt.subplots(4, sharex="all")
     fig.set_size_inches(18.5, 15.5)
     elec_amounts.set_index("run", inplace=True, drop=False)
+    # create the elec amounts plot with 4 subplots (consumption,
+    # usage of pv elec amount, pv earnings, central elec)
     plot_dict = {
         axs[0]: {
             "SLP_DEMAND": elec_amounts.Electricity_Demand,
@@ -185,7 +254,8 @@ def create_elec_amount_plots(dataframes: dict, nodes_data, result_path, sink_kno
             "PV_north_east": elec_amounts.PV_north_east,
             "PV_north": elec_amounts.PV_north,
         },
-        axs[3]: {"central_elec_production": elec_amounts.central_elec_production},
+        axs[3]: {"central_elec_production":
+                 elec_amounts.central_elec_production},
     }
     for plot in plot_dict:
         plot.stackplot(
@@ -203,4 +273,5 @@ def create_elec_amount_plots(dataframes: dict, nodes_data, result_path, sink_kno
     axs[3].legend(loc="upper left")
     axs[3].set_ylabel("Electricity Amount in kWh")
     axs[3].invert_xaxis()
+    # save the created plot
     plt.savefig(result_path + "/elec_amounts.svg")
