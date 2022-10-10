@@ -87,6 +87,7 @@ def create_sinks(building, standard_parameters, sheets):
             sink_input=str(building["label"]) + "_electricity_bus",
             annual_demand=demand_el,
             sheets=sheets,
+            standard_parameters=standard_parameters
         )
 
         # heat demand
@@ -120,6 +121,7 @@ def create_sinks(building, standard_parameters, sheets):
             sink_input=str(building["label"]) + "_heat_bus",
             annual_demand=demand_heat,
             sheets=sheets,
+            standard_parameters=standard_parameters
         )
 
     return sheets
