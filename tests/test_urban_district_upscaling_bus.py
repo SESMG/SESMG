@@ -5,7 +5,7 @@ from program_files.urban_district_upscaling.components import Bus
 
 def test_create_standard_parameter_bus():
     # import standard parameter
-    standard_parameters = pandas.ExcelFile("../program_files/urban_district_upscaling/standard_parameters.xlsx")
+    standard_parameters = pandas.ExcelFile(r"/program_files/urban_district_upscaling/standard_parameters.xlsx")
     sheets = {"buses": pandas.DataFrame()}
     # create a standard_parameter building res electricity bus
     sheets = Bus.create_standard_parameter_bus(
