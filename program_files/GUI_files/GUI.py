@@ -184,7 +184,7 @@ class GUI(MethodsGUI):
                 self.gui_variables["timeseries_cluster"].get(),
                 self.gui_variables["timeseries_criterion"].get(),
                 self.gui_variables["timeseries_period"].get(),
-                0 if timeseries_season == "none" else timeseries_season,
+                0 if timeseries_season == "None" else timeseries_season,
             ]
             limits = self.gui_variables["limits_pareto"].get().split(",")
             print(limits)
@@ -353,11 +353,11 @@ class GUI(MethodsGUI):
             ),
             "save_path": StringVar(self.frames[0], ""),
             "num_threads": IntVar(self.frames[0], 2),
-            "timeseries_algorithm": StringVar(self.frames[0], "none"),
-            "timeseries_cluster": StringVar(self.frames[0], "none"),
-            "timeseries_criterion": StringVar(self.frames[0], "none"),
-            "timeseries_period": StringVar(self.frames[0], "none"),
-            "timeseries_season": StringVar(self.frames[0], "none"),
+            "timeseries_algorithm": StringVar(self.frames[0], "None"),
+            "timeseries_cluster": StringVar(self.frames[0], "None"),
+            "timeseries_criterion": StringVar(self.frames[0], "None"),
+            "timeseries_period": StringVar(self.frames[0], "None"),
+            "timeseries_season": StringVar(self.frames[0], "None"),
             "graph_state": IntVar(),
             "criterion_state": IntVar(),
             "solver_select": StringVar(self.frames[0], "gurobi"),
@@ -417,7 +417,7 @@ class GUI(MethodsGUI):
 
         # TimeSeries Prep Menu
         timeseries_algorithm_list = [
-            "none",
+            "None",
             "k_means",
             "k_medoids",
             "averaging",

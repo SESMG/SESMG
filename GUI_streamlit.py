@@ -10,6 +10,7 @@ import streamlit as st
 import pandas as pd
 from PIL import Image
 import os
+from datetime import datetime 
 
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 
@@ -81,7 +82,7 @@ def main_application_sesmg():
         # Checkboxes Modeling
         st.checkbox("Show Graph")
         input_criterion_switch = st.checkbox("Switch Criteria")
-        input_num_threads = st.slider("Choose the number of threads to use on your machine.")
+        input_num_threads = st.slider("Number of threads",min_value=1,max_value=35, help="Number of threads to use on your machine")
 
 
         
@@ -208,31 +209,28 @@ def main_application_sesmg():
             st.write(timeseries_prep_param)
             st.write(scenario_input_sheet_path)
             
-            #sesmg_main(
- #               scenario_file = scenario_input_sheet,
-                
-  #              result_path = self.gui_variables["save_path"].get(),
-                
-            # GB: wo ist die Eingabe dafür?    
-   #             num_threads = self.gui_variables["num_threads"].get(),
-                
-                #timeseries_prep = timeseries_prep_param,
-                
-            # GB: das ersetzen wir, durch das gesonderte Erstellen und Darstellen des Graphen, richtig?
-    #            graph = self.__get_cb_state(
-    #                    self.gui_variables["graph_state"]),
-                
-                #criterion_switch = input_criterion_switch,
-                
-                #xlsx_results = input_xlsx_results,
-                
-                #console_results = input_console_results
-                
-                #solver = input_solver
-                
-                #district_heating_path = district_heating_precalc,
-                
-                #cluster_dh = input_cluster_dh
+            res_folder_path = os.path.join(os.path.dirname(__file__),'results')
+            res_path = res_folder_path \
+                        + '/' \
+                        + scenario_input_sheet_path.split("/")[-1][:-5] \
+                        + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
+            os.mkdir(res_path)
+            
+    
+            sesmg_main(
+                scenario_file=scenario_input_sheet_path,
+                result_path=res_path,
+                num_threads=input_num_threads,
+                timeseries_prep=timeseries_prep_param,
+#TODO: Implementieren 
+                graph=False,
+                criterion_switch=input_criterion_switch,
+                xlsx_results=input_xlsx_results,
+                console_results=input_console_results,
+                solver=input_solver,
+                district_heating_path=district_heating_precalc_path,
+                cluster_dh=input_cluster_dh
+                )
                         
             
         else:

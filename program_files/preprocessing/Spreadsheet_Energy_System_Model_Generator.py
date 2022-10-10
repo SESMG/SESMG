@@ -163,7 +163,7 @@ def sesmg_main(
         result_path=result_path,
     )
 
-    if timeseries_prep[0] != "none":
+    if timeseries_prep[0] != "None":
         scenario_file = result_path + "/modified_scenario.xlsx"
 
     # CREATES AN ENERGYSYSTEM AS DEFINED IN THE SCENARIO FILE

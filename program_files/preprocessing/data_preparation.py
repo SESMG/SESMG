@@ -68,7 +68,7 @@ def calculate_k_means_clusters(
         weather data set belongs to which cluster
 
     """
-    if cluster_criterion == "none":
+    if cluster_criterion == "None":
         raise ValueError("Criterion has to be not none!")
     else:
         cluster_vectors = extract_single_periods(
@@ -1431,7 +1431,7 @@ def timeseries_preparation(
     cluster_period = timeseries_prep_param[3]
     cluster_seasons = int(timeseries_prep_param[4])
 
-    if data_prep != "none":
+    if data_prep != "None":
         # Adapting Standard Load Profile-Sinks
         slp_sink_adaption(nodes_data)
 
@@ -1519,7 +1519,7 @@ def timeseries_preparation(
         )
 
     # ADAPTS THE PARAMETERS OF THE ENERGY SYSTEM
-    if data_prep != "none":
+    if data_prep != "None":
         path = result_path + "/modified_scenario.xlsx"
         writer = pd.ExcelWriter(path, engine="xlsxwriter")
         nodes_data["weather data"].to_excel(writer, sheet_name="weather data")
