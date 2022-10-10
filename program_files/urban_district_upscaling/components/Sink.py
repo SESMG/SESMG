@@ -65,7 +65,6 @@ def create_sinks(building, standard_parameters, sheets):
                     demand_el = demand_el_specific * occupants
             else:
                 demand_el = building["electricity demand"] * area
-            sink_type = "RES"
         else:
             if not building["electricity demand"]:
                 demand_el_specific = standard_param.loc[1, building_type]
@@ -78,12 +77,11 @@ def create_sinks(building, standard_parameters, sheets):
                 demand_el = demand_el_specific * net_floor_area
             else:
                 demand_el = building["electricity demand"] * area
-            sink_type = "COM"
 
         # TODO was machen wir mit IND
 
         sheets = create_standard_parameter_sink(
-            sink_type=sink_type + "_electricity_sink",
+            sink_type=building_type + "_electricity_sink",
             label=str(building["label"]) + "_electricity_demand",
             sink_input=str(building["label"]) + "_electricity_bus",
             annual_demand=demand_el,
@@ -102,13 +100,11 @@ def create_sinks(building, standard_parameters, sheets):
         units = str(int(building["units"])) if building["units"] < 12 else "> 12"
         if building_type in ["SFB", "MFB"]:
             specific_heat_demand = standard_param.loc[yoc][units + " unit(s)"]
-            sink_type = "RES"
         else:
             specific_heat_demand = standard_param.loc[yoc][building_type]
-            sink_type = "COM"
         net_floor_area = (
             area
-            * sinks_standard_param.loc[sink_type + "_heat_sink"][
+            * sinks_standard_param.loc[building_type + "_heat_sink"][
                 "net_floor_area / area"
             ]
         )
@@ -117,7 +113,7 @@ def create_sinks(building, standard_parameters, sheets):
             demand_heat = building["heat demand"] * area
 
         sheets = create_standard_parameter_sink(
-            sink_type=sink_type + "_heat_sink",
+            sink_type=building_type + "_heat_sink",
             label=str(building["label"]) + "_heat_demand",
             sink_input=str(building["label"]) + "_heat_bus",
             annual_demand=demand_heat,

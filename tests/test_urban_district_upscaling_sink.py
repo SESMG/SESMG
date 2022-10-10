@@ -55,7 +55,7 @@ def test_create_standard_parameter_sink():
 def test_create_sinks():
     # import standard parameter
     standard_parameters = pandas.ExcelFile(
-        r"program_files/urban_district_upscaling/standard_parameters.xlsx")
+        r"../program_files/urban_district_upscaling/standard_parameters.xlsx")
     sheets = {"sinks": pandas.DataFrame()}
     building = {
         "label": "test",
@@ -136,6 +136,33 @@ def test_create_sinks():
     # the given electricity demand is 100 kWh / (sqm * a)
     assert float(sink["annual demand"]) == 175 * 100 * 0.9
 
+    building = {
+        "label": "test3",
+        "building type": "COM_Office",
+        "gross building area": 100,
+        "occupants per unit": 6,
+        "units": 1,
+        "electricity demand": 0,
+        "year of construction": 1980,
+        "heat demand": 0
+    }
+    
+    # create a standard_parameter building res electricity bus
+    sheets = Sink.create_sinks(
+            building=building,
+            sheets=sheets,
+            standard_parameters=standard_parameters)
+    # check annual demand column
+    sink = sheets["sinks"].loc[
+        sheets["sinks"]["label"] == "test3_electricity_demand"]
+    # the given electricity demand is 1000 kWh / (occupant * a)
+    assert float(sink["annual demand"]) == 17 * 100 * 0.85
+    # check annual demand column
+    sink = sheets["sinks"].loc[
+        sheets["sinks"]["label"] == "test3_heat_demand"]
+    # the given electricity demand is 100 kWh / (sqm * a)
+    assert float(sink["annual demand"]) == 136.3 * 100 * 0.85
+    
 
 def test_sink_clustering():
     pass
