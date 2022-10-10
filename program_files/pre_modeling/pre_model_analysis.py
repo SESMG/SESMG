@@ -7,7 +7,7 @@ def filter_result_component_types(components, type):
     filtered_components = components[(components.type == type)]
     return(filtered_components)
 
-def update_component_investment_decisions(pre_model_results, scenario_path, results_components_path, updated_scenario_path, scenario_type_name, result_type_name, boundary_factor):
+def update_component_investment_decisions(pre_model_results, scenario_path, results_components_path, updated_scenario_path, scenario_type_name, result_type_name, boundary_factor, investment_boundaries=True):
     '''adapts investment decision depending on the results of a pre-model and returns new dataset plus list of
     deactivated components'''
     components = pre_model_results
@@ -41,7 +41,8 @@ def update_component_investment_decisions(pre_model_results, scenario_path, resu
 
     else:
         list_of_deactivated_components = technical_pre_selection(components_xlsx, result_components)
-        tightening_investment_boundaries(components_xlsx, result_components, boundary_factor)
+        if investment_boundaries == True:
+            tightening_investment_boundaries(components_xlsx, result_components, boundary_factor)
 
         return components_xlsx, list_of_deactivated_components
 
@@ -52,13 +53,10 @@ def technical_pre_selection(components_xlsx, result_components):
     result_components.set_index('ID', inplace=True)
     for i,scenario_component in components_xlsx.iterrows():
         if scenario_component['label'] in result_components.index.values:
-            #print(result_components.loc[scenario_component['label']])
             if float(result_components.loc[scenario_component['label']]['max. invest./kW']) > 0:
-
                 if str(result_components.loc[scenario_component['label']]['investment/kW']) == '0.0':
                     components_xlsx.at[i, 'active'] = 0
                     list_of_deactivated_components.append(str(scenario_component['label']))
-                    print(scenario_component['label'])
 
 
 
@@ -77,9 +75,9 @@ def tightening_investment_boundaries(components_xlsx, result_components, boundar
     for i,scenario_component in components_xlsx.iterrows():
         if scenario_component['label'] in result_components.index.values:
             if float(result_components.loc[scenario_component['label']]['max. invest./kW']) > 0:
-                if result_components.loc[scenario_component['label']]['investment/kW'] * boundary_factor < result_components.loc[scenario_component['label']][
-                    'max. invest./kW']:
-                    components_xlsx.at[i, 'max. investment capacity'] = float(result_components.loc[scenario_component['label']]['investment/kW'])*boundary_factor
+                if (float(result_components.loc[scenario_component['label']]['investment/kW']) * boundary_factor) <= float(result_components.loc[scenario_component['label']][
+                    'max. invest./kW']):
+                    components_xlsx.at[i, 'max. investment capacity'] = float(result_components.loc[scenario_component['label']]['investment/kW']) * boundary_factor
                     list_of_adapted_components.append(str(scenario_component['label']))
         # if float(result_components.iloc[i]['max. invest./kW']) > 0:
         #     if result_components.iloc[i]['investment/kW']*boundary_factor < result_components.iloc[i]['max. invest./kW']:
@@ -88,6 +86,10 @@ def tightening_investment_boundaries(components_xlsx, result_components, boundar
 
 def update_component_scenario_sheet(updated_data, scenario_sheet_name, updated_scenario_path):
     'updates the original data within the updated scenario sheet'
+
+    if scenario_sheet_name in ['buses', 'district heating', 'sources', 'transformers', 'storages', 'links']:
+        # adding an empty row at the top of the dataframe (replacing the unit row in the original scenario file)
+        updated_data = pd.DataFrame([[0 for x in range(len(updated_data.columns))]], columns=updated_data.columns).append(updated_data)
 
     with pd.ExcelWriter(updated_scenario_path, engine="openpyxl", mode="a", if_sheet_exists="replace") as writer:
         updated_data.to_excel(writer, scenario_sheet_name, index=False)
@@ -127,35 +129,37 @@ def dh_technical_pre_selection(components_xlsx, result_components):
 def bus_technical_pre_selection(components_xlsx, result_components):
     bus_xlsx = components_xlsx
 
-    # todo: creates list of heating buses for which an investment has been carried out
+    # creates list of heating buses for which an investment has been carried out
     dh_investment_list = []
+    print(result_components)
     for i, dh_section in result_components.iterrows():
-        if dh_section['investment/kW']:
+        if str(dh_section['investment/kW']) not in ['0.0', '---']:
             #dh_investment_string = dh_investment_string + str(dh_section['ID'])
             if 'dh_heat_house_station' in dh_section['ID']:
                 if str(dh_section['investment/kW']) != '0.0':
                     section_name = dh_section['ID'].split('dh_heat_house_station_')
                     dh_investment_list.append(section_name[1])
             elif 'producer' in dh_section['ID']:
-                if str(dh_section['investment/kW']) != '0.0':
+                if str(dh_section['investment/kW']) not in ['0.0', '---']:
                     section_name = dh_section['ID'].split('producer')
                     section_name = section_name[1].split('_Diameter_')
                     dh_investment_list.append(section_name[0])
-    print(dh_investment_list)
     print("WARNING: IF THE ORIGINAL BUS NAME CONTAINED THE STRING 'dh_heat_house_station_' THIS ANALYSIS IS NOT VALID!")
     print("WARNING: IF THE ORIGINAL BUS NAME CONTAINED THE STRING 'producer' THIS ANALYSIS IS NOT VALID!")
     print("WARNING: IF THE ORIGINAL BUS NAME CONTAINED THE STRING '_Diameter_' THIS ANALYSIS IS NOT VALID!")
+    print(dh_investment_list)
+    print(len(dh_investment_list))
 
-    # todo: deactivates those heating bus dh connections for which no investment has been carried out
     # deactivate those street section for which no investment has been carried out
     for i, dh_bus in bus_xlsx.iterrows():
 
-        if str(dh_bus['label']) not in dh_investment_list and str(dh_bus['label'])[0:9] not in dh_investment_list and dh_bus['district heating conn.']:
-            print(dh_bus['label'])
-            bus_xlsx.at[i, 'district heating conn.'] = 0
+        if str(dh_bus['label']) not in dh_investment_list and str(dh_bus['label'])[0:9] not in dh_investment_list:# and dh_bus['district heating conn.']:
+            bus_xlsx.at[i, 'district heating conn.'] = '0'
         # if str(dh_bus['label'])[0:9] not in dh_investment_list and dh_bus['district heating conn.']:
         #     print(str(dh_bus['label'])[0:9])
         #     bus_xlsx.at[i, 'district heating conn.'] = 0
+        elif len(dh_investment_list) < 2:
+            bus_xlsx.at[i, 'district heating conn.'] = '0'
 
 def insulation_technical_pre_selection(components_xlsx, result_components):
     '''deactivates district heating investment decisions for which no investments has been carried out '''
@@ -173,9 +177,23 @@ def insulation_technical_pre_selection(components_xlsx, result_components):
             components_xlsx.at[i, 'active'] = 0
 
 def update_model_according_pre_model_results(scenario_path, results_components_path, updated_scenario_path,
-                                             investment_boundary_factor):
-    '''Carries out technical pre-selection and tightens investment boundaries for a scenario, based on a previously
-    performed pre-model.'''
+                                             investment_boundary_factor, investment_boundaries):
+    '''
+        Carries out technical pre-selection and tightens investment boundaries for a scenario, based on a previously
+        performed pre-model.
+
+        :param scenario_path: file path of the pre-model-scenario-file which shall be adapted
+        :type scenario_path: str
+        :param results_components_path: folder path of the pre-model-results on which base the scenario shall be adapted
+        :type results_components_path: str
+        :param updated_scenario_path: file path, where the adapted scenario shall be saved
+        :type updated_scenario_path: str
+        :param investment_boundary_factor: the investment boundaries will be tightenend to the respective investemnt de-
+                                            cision of the pre-run multiplicated by this factor.
+        :type investment_boundary_factor: int
+        :param investment_boundaries: decision whether tightening of the investment boundaries should be carried out
+        :type investment_boundaries: bool
+    '''
 
     # IMPORT ORIGINAL SCENARIO
     scenario_xlsx = pd.read_excel(scenario_path, sheet_name=None)
@@ -211,7 +229,8 @@ def update_model_according_pre_model_results(scenario_path, results_components_p
             updated_scenario_path=updated_scenario_path,
             scenario_type_name=scenario_type_name,
             result_type_name=result_type_name,
-            boundary_factor=investment_boundary_factor)
+            boundary_factor=investment_boundary_factor,
+            investment_boundaries = investment_boundaries)
         complete_list_of_deactivated_components = complete_list_of_deactivated_components + list_of_deactivated_components
         # save updated data
         update_component_scenario_sheet(updated_data=updated_components,
@@ -228,5 +247,6 @@ def update_model_according_pre_model_results(scenario_path, results_components_p
 
 update_model_according_pre_model_results(scenario_path= '20220928_model_V2_reduced.xlsx',
                                          results_components_path = '20220928_model_V2_reduced_2022-09-29--15-25-03/components.csv',
-                                         updated_scenario_path = 'updated_20220914_auto_generated_scenario.xlsx',
-                                         investment_boundary_factor = 5)
+                                         updated_scenario_path = 'updated_20220928_model_V2_reduced.xlsx',
+                                         investment_boundary_factor = 1000,
+                                         investment_boundaries = False)
