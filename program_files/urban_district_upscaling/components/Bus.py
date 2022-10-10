@@ -1,25 +1,22 @@
-def create_standard_parameter_bus(label: str, bus_type: str, sheets, cords=None):
+def create_standard_parameter_bus(label: str, bus_type: str, sheets,
+                                  standard_parameters, cords=None):
     """
-        creates a bus with standard_parameters, based on the standard
-        parameters given in the "standard_parameters" dataset and adds
-        it to the "sheets"-output dataset.
+    creates a bus with standard_parameters, based on the standard
+    parameters given in the "standard_parameters" dataset and adds
+    it to the "sheets"-output dataset.
 
-        :param label: label, the created bus will be given
-        :type label: str
-        :param bus_type: defines, which set of standard param. will be
-                         given to the dict
-        :type bus_type: str
-        :param sheets:
-        :type sheets:
-        :param standard_parameters:
-        :type standard_parameters:
-        :param cords: latitude / longitude / dh column of the given bus\
-            used to connect a producer bus to district heating network
-        :type cords: list
-        :param dh: string which can be "dh-system" (for searching the
-                   nearest point on heat network or "street-1/2" if the
-                   bus has to be connected to a specific intersection
-        :type dh: str
+    :param label: label, the created bus will be given
+    :type label: str
+    :param bus_type: defines, which set of standard param. will be
+                     given to the dict
+    :type bus_type: str
+    :param sheets:
+    :type sheets:
+    :param standard_parameters:
+    :type standard_parameters:
+    :param cords: latitude / longitude / dh column of the given bus\
+        used to connect a producer bus to district heating network
+    :type cords: list
     """
     from program_files import read_standard_parameters, append_component
 
@@ -28,7 +25,7 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets, cords=None)
     # extracts the bus specific standard values from the
     # standard_parameters dataset
     standard_param, standard_keys = read_standard_parameters(
-        bus_type, "buses", "bus_type"
+        bus_type, "buses", "bus_type", standard_parameters
     )
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):

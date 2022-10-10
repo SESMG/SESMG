@@ -30,7 +30,7 @@ def append_component(sheets, sheet: str, comp_parameter: dict):
     return sheets
 
 
-def read_standard_parameters(name, param_type, index):
+def read_standard_parameters(name, param_type, index, standard_parameters):
     """
         searches the right entry within the standard parameter sheet
 
@@ -51,12 +51,16 @@ def read_standard_parameters(name, param_type, index):
     standard_param_df = standard_parameters.parse(param_type)
     # reset the dataframes index to the index variable set in args
     standard_param_df.set_index(index, inplace=True)
-    # locate the row labeled name
-    standard_param = standard_param_df.loc[name]
-    # get the keys of the located row
-    standard_keys = standard_param.keys().tolist()
-    # return parameters and keys
-    return standard_param, standard_keys
+    if name in list(standard_param_df.index):
+        # locate the row labeled name
+        standard_param = standard_param_df.loc[name]
+        # get the keys of the located row
+        standard_keys = standard_param.keys().tolist()
+        # return parameters and keys
+        return standard_param, standard_keys
+    else:
+        raise ValueError
+        #raise ValueError("Unsupported component name: " + str(name))
 
 
 def create_standard_parameter_comp(
