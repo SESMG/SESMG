@@ -87,10 +87,10 @@ def test_create_sinks():
         "label": "test1",
         "building type": "SFB",
         "gross building area": 100,
-        "occupants per unit": 5,
+        "occupants per unit": 0,
         "units": 1,
         "electricity demand": 100,
-        "year of construction": 2000,
+        "year of construction": 0,
         "heat demand": 100
     }
     # create a standard_parameter building res electricity bus
@@ -108,6 +108,33 @@ def test_create_sinks():
         sheets["sinks"]["label"] == "test1_heat_demand"]
     # the given electricity demand is 100 kWh / (sqm * a)
     assert float(sink["annual demand"]) == 100 * 100
+
+    building = {
+        "label": "test2",
+        "building type": "SFB",
+        "gross building area": 100,
+        "occupants per unit": 6,
+        "units": 1,
+        "electricity demand": 0,
+        "year of construction": 1980,
+        "heat demand": 0
+    }
+    
+    # create a standard_parameter building res electricity bus
+    sheets = Sink.create_sinks(
+            building=building,
+            sheets=sheets,
+            standard_parameters=standard_parameters)
+    # check annual demand column
+    sink = sheets["sinks"].loc[
+        sheets["sinks"]["label"] == "test2_electricity_demand"]
+    # the given electricity demand is 1000 kWh / (occupant * a)
+    assert float(sink["annual demand"]) == 1000 * 6 * 1
+    # check annual demand column
+    sink = sheets["sinks"].loc[
+        sheets["sinks"]["label"] == "test2_heat_demand"]
+    # the given electricity demand is 100 kWh / (sqm * a)
+    assert float(sink["annual demand"]) == 175 * 100 * 0.9
 
 
 def test_sink_clustering():

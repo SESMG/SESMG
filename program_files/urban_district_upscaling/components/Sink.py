@@ -59,8 +59,9 @@ def create_sinks(building, standard_parameters, sheets):
                 else:
                     # specific elec demand per person linearised for
                     # more than 5
-                    demand_el_specific = (specific_demands[5][0]) / 5
-                    occupants = building["occupants per unit"] * building["units"]
+                    demand_el_specific = (specific_demands["5 person"][0]) / 5
+                    occupants = building["occupants per unit"] \
+                                * building["units"]
                     demand_el = demand_el_specific * occupants
             else:
                 demand_el = building["electricity demand"] * area
