@@ -1,5 +1,6 @@
 def create_standard_parameter_sink(
-    sink_type: str, label: str, sink_input: str, annual_demand: int, sheets
+    sink_type: str, label: str, sink_input: str, annual_demand: int, sheets,
+    standard_parameters
 ):
     """
     creates a sink with standard_parameters, based on the standard
@@ -29,6 +30,7 @@ def create_standard_parameter_sink(
         },
         standard_parameter_info=[sink_type, "sinks", "sink_type"],
         sheets=sheets,
+        standard_parameters=standard_parameters
     )
 
 

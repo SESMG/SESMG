@@ -60,12 +60,11 @@ def read_standard_parameters(name, param_type, index, standard_parameters):
         return standard_param, standard_keys
     else:
         raise ValueError
-        #raise ValueError("Unsupported component name: " + str(name))
 
 
 def create_standard_parameter_comp(
-    specific_param: dict, standard_parameter_info: list, sheets
-):
+    specific_param: dict, standard_parameter_info: list, sheets,
+    standard_parameters):
     """
         creates a storage with standard_parameters, based on the
         standard parameters given in the "standard_parameters" dataset
@@ -89,6 +88,7 @@ def create_standard_parameter_comp(
         standard_parameter_info[0],
         standard_parameter_info[1],
         standard_parameter_info[2],
+        standard_parameters
     )
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
