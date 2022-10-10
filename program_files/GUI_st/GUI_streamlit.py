@@ -11,21 +11,16 @@ import pandas as pd
 from PIL import Image
 import os
 
+from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 
-# from program_files.Spreadsheet_Energy_System_Model_Generator import (
- #   sesmg_main,
-#)
+# from GUI_files.GUI import *
 
-#from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
-#    import \
-#        sesmg_main
 
 
 
 ####################################
 ###### Main SESMG Application ######
 ####################################
-
 
 
 
@@ -52,7 +47,11 @@ def main_application_sesmg():
     #     st.write(dataframe)
     #'''
     
-    scenario_input_sheet_path = st.sidebar.text_input("Type in path to your scenario input sheet.") 
+    scenario_input_sheet_path = st.sidebar.text_input(
+        "Type in path to your scenario input sheet.",
+        help="Give the full path from your main directory ending with \
+                /inputscenario.xlsx . \
+                You can choose the filenames and directorties as you want.") 
     
     ###### Run Model Visualization #####
     # Function to create and display the model structure without optimizung the system.
@@ -62,7 +61,7 @@ def main_application_sesmg():
         submitted_vis_structure = st.form_submit_button(label="Visualize model")
     
     
-    ########## Modelrum Parameter Input ##########
+    ########## Modelrun Parameter Input ##########
     # Creating Frame as st.form_submit_button
     with st.sidebar.form("Input Parameters"):
         
@@ -82,6 +81,9 @@ def main_application_sesmg():
         # Checkboxes Modeling
         st.checkbox("Show Graph")
         input_criterion_switch = st.checkbox("Switch Criteria")
+        input_num_threads = st.slider("Choose the number of threads to use on your machine.")
+
+
         
         # Choosing Solver
         input_solver = st.selectbox("Optimization Solver", ("cbc", "gurobi"))
@@ -96,8 +98,6 @@ def main_application_sesmg():
         # Checkboxes Modeling
         input_xlsx_results = st.checkbox("Create xlsx-files")
         input_console_results = st.checkbox("Create console-log")
-  # GB: kann das raus?      
-        st.checkbox("Create plotly-dash")
         input_cluster_dh = st.checkbox("Clustering Distric Heating Network")
         
         ####################################
