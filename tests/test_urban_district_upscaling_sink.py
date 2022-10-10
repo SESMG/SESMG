@@ -55,7 +55,7 @@ def test_create_standard_parameter_sink():
 def test_create_sinks():
     # import standard parameter
     standard_parameters = pandas.ExcelFile(
-        r"../program_files/urban_district_upscaling/standard_parameters.xlsx")
+        r"program_files/urban_district_upscaling/standard_parameters.xlsx")
     sheets = {"sinks": pandas.DataFrame()}
     building = {
         "label": "test",
