@@ -48,8 +48,8 @@ def create_elec_amount_plots(
         dataframes: dict, nodes_data: pandas.DataFrame, result_path: str,
         sink_known: dict) -> None:
     """
-    main function of the algorithm to plot an energy amount plot after
-    running an pareto optimization
+    main function of the algorithm to plot an electricity amount plot
+    after running an pareto optimization
     
     :param dataframes: dictionary which holds the results of the pareto\
         optimization - structure {str(share of emission reduction \
@@ -68,6 +68,7 @@ def create_elec_amount_plots(
     from program_files.postprocessing.plotting import (
         get_dataframe_from_nodes_data,
         get_value,
+        dict_to_dataframe
     )
     # data frame to plot the amounts using matplotlib
     elec_amounts = pandas.DataFrame()
@@ -78,6 +79,17 @@ def create_elec_amount_plots(
     for key in dataframes:
         # define all energy system technologies to be searched within
         # the results file components.csv
+        if key != "0":
+            reductionco2 = (
+                sum(dataframes[key]["constraints/CU"]) / emissions_100_percent
+                )
+        else:
+            reductionco2 = ((
+                sum(dataframes[key]["periodical costs/CU"])
+                + sum(dataframes[key]["variable costs/CU"])
+                )
+                / emissions_100_percent
+                )
         elec_amounts_dict.update(
             {
                 "run": str(key),
@@ -102,22 +114,13 @@ def create_elec_amount_plots(
                 "ST_elec": [],
                 "Battery_output": [],
                 "central_elec_production": [],
-                "reductionco2": (
-                    sum(dataframes[key]["constraints/CU"]) / emissions_100_percent
-                )
-                if key != "0"
-                else (
-                    (
-                        sum(dataframes[key]["periodical costs/CU"])
-                        + sum(dataframes[key]["variable costs/CU"])
-                    )
-                    / emissions_100_percent
-                ),
+                "reductionco2": reductionco2
             }
         )
         dataframe = dataframes[key].copy()
         dataframe.reset_index(inplace=True, drop=False)
         components_df = get_dataframe_from_nodes_data(nodes_data)
+        
         # get the PV-Systems' amounts using pv_elec amount method above
         elec_amounts_dict, pv_buses = pv_elec_amount(
             components_df.copy(), "photovoltaic", dataframe, elec_amounts_dict
@@ -127,6 +130,7 @@ def create_elec_amount_plots(
             elec_amounts_dict["PV_excess"].append(
                 get_value(str(bus) + "_excess", "input 1/kWh", dataframe)
             )
+        
         # get the energy system's solar thermal flat plates from nodes
         # data
         df_st = components_df[
@@ -138,6 +142,7 @@ def create_elec_amount_plots(
             elec_amounts_dict["ST_elec"].append(
                 get_value(comp["label"], "input 1/kWh", dataframe)
             )
+        
         # get the energy system's heat pumps from nodes data
         df_hp = components_df[
             (components_df.isin(["CompressionHeatTransformer"])).any(axis=1)
@@ -181,6 +186,7 @@ def create_elec_amount_plots(
                 elec_amounts_dict["Electric_heating"].append(
                     get_value(comp["label"], "input 1/kWh", dataframe)
                 )
+        
         # get the energy system's generic storages from nodes data
         df_storage = components_df[
             (components_df.isin(["Generic"])).any(axis=1)]
@@ -192,6 +198,7 @@ def create_elec_amount_plots(
                 elec_amounts_dict["Battery_output"].append(value)
                 input_val = get_value(comp["label"], "input 1/kWh", dataframe)
                 elec_amounts_dict["Battery_losses"].append(input_val - value)
+        
         # get the energy system's shortage buses
         df_buses = components_df[(components_df["shortage"] == 1)]
         # append the imported elec amount on elec amounts dict
@@ -201,6 +208,7 @@ def create_elec_amount_plots(
                     get_value(comp["label"] + "_shortage",
                               "output 1/kWh", dataframe)
                 )
+        
         # get the energy system's links
         df_links = components_df[(components_df["bus1"].notna())]
         # append the electricity transport from pv systems to local
@@ -213,14 +221,7 @@ def create_elec_amount_plots(
                 )
         # iterate threw the elec amounts dict and append the summed
         # entries on the elec amounts pandas dataframe
-        for i in elec_amounts_dict:
-            if i != "run" and i != "reductionco2":
-                elec_amounts_dict[i] = sum(elec_amounts_dict[i])
-        series = pandas.Series(data=elec_amounts_dict)
-        elec_amounts = pandas.concat(
-            [elec_amounts, pandas.DataFrame([series])])
-        elec_amounts.set_index("reductionco2", inplace=True, drop=False)
-        elec_amounts = elec_amounts.sort_values("run")
+        elec_amounts = dict_to_dataframe(elec_amounts_dict, elec_amounts)
     # clear the old plot
     plt.clf()
     fig, axs = plt.subplots(4, sharex="all")
@@ -274,4 +275,4 @@ def create_elec_amount_plots(
     axs[3].set_ylabel("Electricity Amount in kWh")
     axs[3].invert_xaxis()
     # save the created plot
-    plt.savefig(result_path + "/elec_amounts.svg")
+    plt.savefig(result_path + "/elec_amounts.jpeg")

@@ -1,4 +1,4 @@
-import pandas as pd
+import pandas
 import matplotlib.pyplot as plt
 
 
@@ -15,17 +15,40 @@ def st_heat_amount(components_df, pv_st, dataframe, amounts_dict):
     return amounts_dict
 
 
-def create_heat_amount_plots(dataframes: dict, nodes_data, result_path, sink_known):
-    """ """
+def create_heat_amount_plots(dataframes: dict, nodes_data: pandas.DataFrame,
+                             result_path: str, sink_known: dict):
+    """
+    main function of the algorithm to plot an heat amount plot after
+    running an pareto optimization
+    
+    :param dataframes: dictionary which holds the results of the pareto\
+        optimization - structure {str(share of emission reduction \
+        between 0 and 1): pandas.DataFrame(components.csv)}
+    :type dataframes: dict
+    :param nodes_data: DataFrame containing all components defined \
+        within the input scenario file
+    :type nodes_data: pandas.DataFrame
+    :param result_path: str which defines the folder where the \
+        elec_amount plot will be saved
+    :type result_path: str
+    :param sink_known: dictionary which defines the type of the energy \
+        system's sinks structure {sink_label: [bool(elec), bool(heat), \
+        bool(cooling)]}
+    """
     from program_files.postprocessing.plotting import (
         get_dataframe_from_nodes_data,
         get_value,
+        dict_to_dataframe
     )
-
-    heat_amounts = pd.DataFrame()
+    # data frame to plot the amounts using matplotlib
+    heat_amounts = pandas.DataFrame()
     heat_amounts_dict = {}
+    # get the emissions of the monetary cheapest scenario ("1")
     emissions_100_percent = sum(dataframes["1"]["constraints/CU"])
+    # iterate threw the pareto points
     for key in dataframes:
+        # define all energy system technologies to be searched within
+        # the results file components.csv
         heat_amounts_dict.update(
             {
                 "run": str(key),
@@ -66,17 +89,22 @@ def create_heat_amount_plots(dataframes: dict, nodes_data, result_path, sink_kno
         dataframe.reset_index(inplace=True, drop=False)
         components_df = get_dataframe_from_nodes_data(nodes_data)
         # TODO concentrated solar power
+        # get the ST-Systems' amounts using st_heat_amount method above
         heat_amounts_dict = st_heat_amount(
-            components_df, "solar_thermal_flat_plate", dataframe, heat_amounts_dict
+            components_df, "solar_thermal_flat_plate", dataframe,
+            heat_amounts_dict
         )
-        # heat pump dataframe
+        
+        # get the energy system's heat pumps from nodes data
         df_hp = components_df[
             (components_df.isin(["CompressionHeatTransformer"])).any(axis=1)
         ]
-        df_hp = pd.concat(
-            [df_hp, (components_df.isin(["AbsorptionHeatTransformer"])).any(axis=1)]
+        df_hp = pandas.concat(
+            [df_hp,
+             (components_df.isin(["AbsorptionHeatTransformer"])).any(axis=1)]
         )
-        # collect electric input flow of Heat Pumps
+        # append the heat production of the heat pumps on the heat
+        # amounts dict
         for num, comp in df_hp.iterrows():
             if comp["heat source"] == "Ground":
                 heat_amounts_dict["GCHP"].append(
@@ -87,28 +115,30 @@ def create_heat_amount_plots(dataframes: dict, nodes_data, result_path, sink_kno
                 heat_amounts_dict["ASHP"].append(
                     get_value(comp["label"], "output 1/kWh", dataframe)
                 )
-        # sink dataframe
+                
+        # get the energy system's sinks from nodes data
         df_sinks = components_df[(components_df["annual demand"].notna())]
-        df_sinks = pd.concat(
+        df_sinks = pandas.concat(
             [df_sinks, components_df[(components_df["nominal value"].notna())]]
         ).drop_duplicates()
-        # collect the amount of electricity demand
+        # collect the amount of heat demand
         for num, sink in df_sinks.iterrows():
             if sink_known[sink["label"]][1]:
                 heat_amounts_dict["Heat_Demand"].append(
                     get_value(sink["label"], "input 1/kWh", dataframe)
                 )
-
+        # get the energy system's generic storages from nodes data
         df_storage = components_df[(components_df.isin(["Generic"])).any(axis=1)]
         for num, storage in df_storage.iterrows():
-            # collect thermalstorage output and losses of an active
-            # storage
+            # append the heat losses and output of generic thermal
+            # storages on the heat amounts dict
             if "heat" in storage["bus"] and "central" not in storage["bus"]:
                 value = get_value(storage["label"], "output 1/kWh", dataframe)
                 heat_amounts_dict["Thermalstorage_output"].append(value)
                 input_val = get_value(storage["label"], "input 1/kWh", dataframe)
                 heat_amounts_dict["Thermalstorage_losses"].append(input_val - value)
-        # generic transformer dataframe
+        
+        # get the energy system's generic transformers from nodes data
         df_gen_transformer = components_df[
             (components_df.isin(["GenericTransformer"])).any(axis=1)
         ]
@@ -131,30 +161,28 @@ def create_heat_amount_plots(dataframes: dict, nodes_data, result_path, sink_kno
                 heat_amounts_dict["Gasheating"].append(
                     get_value(transformer["label"], "output 1/kWh", dataframe)
                 )
+        # get the energy system's insulations from nodes data
         df_insulation = components_df[components_df["U-value new"].notna()]
-        # collects insulation output flows
         for num, insulation in df_insulation.iterrows():
             cap_sink = get_value(insulation["sink"], "capacity/kW", dataframe)
             cap_insulation = get_value(insulation["label"], "capacity/kW", dataframe)
             value_sink = get_value(insulation["sink"], "input 1/kWh", dataframe)
+            # append the heat savings of the insulations on the heat
+            # amounts dict
             if cap_insulation != 0 and cap_sink != 0:
                 heat_amounts_dict["Insulation"].append(
                     ((cap_insulation * value_sink) / cap_sink)
                 )
-
+        # append the transported heat amounts of the district heating
+        # network to the heat amounts dict
         heat_amounts_dict["DH"] += list(
             dataframe.loc[dataframe["ID"].str.startswith("dh_heat_house_station")][
                 "output 1/kWh"
             ].values
         )
 
-        for i in heat_amounts_dict:
-            if i != "run" and i != "reductionco2":
-                heat_amounts_dict[i] = sum(heat_amounts_dict[i])
-        series = pd.Series(data=heat_amounts_dict)
-        heat_amounts = pd.concat([heat_amounts, pd.DataFrame([series])])
-        heat_amounts.set_index("reductionco2", inplace=True, drop=False)
-        heat_amounts = heat_amounts.sort_values("run")
+        heat_amounts = dict_to_dataframe(heat_amounts_dict, heat_amounts)
+        
     # HEAT PLOT
     fig, axs = plt.subplots(3, sharex="all")
     fig.set_size_inches(18.5, 15.5)

@@ -2,7 +2,7 @@
 # TODO ENERGIEMENGEN
 # TODO ENERGIEMENGEN DER SENKEN OPTIONAL NACH SEKTOR SELEKTIEREN SODASS
 #  UNTERSCHEIDUNG IM PLOT MÖGLICH IST
-import pandas as pd
+import pandas
 
 
 def get_dataframe_from_nodes_data(nodes_data):
@@ -23,7 +23,7 @@ def get_dataframe_from_nodes_data(nodes_data):
                 df_1 = nodes_data[key].copy()
                 counter += 1
             elif counter != 0 and df_1 is not None:
-                df_1 = pd.concat([df_1, nodes_data[key]], ignore_index=True)
+                df_1 = pandas.concat([df_1, nodes_data[key]], ignore_index=True)
     return df_1[df_1["active"] == 1]
 
 
@@ -54,3 +54,14 @@ def get_pv_st_dir(c_dict, value, comp_type, comp):
     if not test:
         c_dict[comp_type + "_north"].append(value)
     return c_dict
+
+
+def dict_to_dataframe(amounts_dict, return_df):
+    for i in amounts_dict:
+        if i != "run" and i != "reductionco2":
+            amounts_dict[i] = sum(amounts_dict[i])
+    series = pandas.Series(data=amounts_dict)
+    return_df = pandas.concat([return_df, pd.DataFrame([series])])
+    return_df.set_index("reductionco2", inplace=True, drop=False)
+    return_df = return_df.sort_values("run")
+    return return_df
