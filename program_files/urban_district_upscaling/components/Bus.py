@@ -33,7 +33,8 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets,
     # defines rather a district heating connection is possible
     if cords is not None:
         bus_dict.update(
-            {"district heating conn.": cords[2], "lat": cords[0], "lon": cords[1]}
+            {"district heating conn.": cords[2],
+             "lat": cords[0], "lon": cords[1]}
         )
     else:
         bus_dict.update({"district heating conn.": 0})
