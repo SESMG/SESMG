@@ -32,7 +32,7 @@ def test_create_standard_parameter_sink():
         sinks["sink_type"] == "RES_electricity_sink"][
         "fixed"][0]
     # check load profile
-    assert float(sheets["sinks"]["load profile"][0]) == sinks.loc[
+    assert str(sheets["sinks"]["load profile"][0]) == sinks.loc[
         sinks["sink_type"] == "RES_electricity_sink"]["load profile"][0]
     # check nominal value
     assert float(sheets["sinks"]["nominal value"][0]) == sinks.loc[
