@@ -17,7 +17,7 @@ def create_building_insulation(building, sheets, standard_parameters):
     yoc = building["year of construction"]
     roof = building["rooftype"]
 
-    standard_param = standard_parameters.parse("insulation")
+    standard_param = standard_parameters.parse("7_insulation")
     standard_param.set_index("year of construction", inplace=True)
     if int(yoc) <= 1918:  # TODO
         yoc = "<1918"

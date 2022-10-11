@@ -1,4 +1,5 @@
-def create_link(label: str, bus_1: str, bus_2: str, link_type: str, sheets):
+def create_link(label: str, bus_1: str, bus_2: str, link_type: str, sheets,
+                standard_parameters):
     """
     creates a link with standard_parameters, based on the standard
     parameters given in the "standard_parameters" dataset and adds
@@ -20,8 +21,9 @@ def create_link(label: str, bus_1: str, bus_2: str, link_type: str, sheets):
 
     return create_standard_parameter_comp(
         specific_param={"label": label, "bus1": bus_1, "bus2": bus_2},
-        standard_parameter_info=[link_type, "links", "link_type"],
+        standard_parameter_info=[link_type, "6_links", "link_type"],
         sheets=sheets,
+        standard_parameters=standard_parameters
     )
 
 

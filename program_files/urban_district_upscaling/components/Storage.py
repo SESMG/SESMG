@@ -11,7 +11,8 @@ storage_dict = {
 
 
 def create_storage(
-    building_id: str, storage_type: str, de_centralized: str, sheets, bus=None
+    building_id: str, storage_type: str, de_centralized: str, sheets,
+    standard_parameters, bus=None
 ):
     """
     Sets the specific parameters for a battery, and creates them
@@ -42,14 +43,15 @@ def create_storage(
         },
         standard_parameter_info=[
             de_centralized + storage_dict.get(storage_type)[0],
-            "storages",
+            "5_storages",
             "comment",
         ],
         sheets=sheets,
+        standard_parameters=standard_parameters
     )
 
 
-def building_storages(building, true_bools, sheets):
+def building_storages(building, true_bools, sheets, standard_parameters):
     """
     TODO
     :param building:
@@ -67,6 +69,7 @@ def building_storages(building, true_bools, sheets):
                 sheets=sheets,
                 storage_type=build_storage_dict[storage],
                 de_centralized="building",
+                standard_parameters=standard_parameters
             )
     return sheets
 

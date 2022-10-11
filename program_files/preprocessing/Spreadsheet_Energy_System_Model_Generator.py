@@ -163,7 +163,7 @@ def sesmg_main(
         result_path=result_path,
     )
 
-    if timeseries_prep[0] != "None":
+    if timeseries_prep[0] != "none":
         scenario_file = result_path + "/modified_scenario.xlsx"
 
     # CREATES AN ENERGYSYSTEM AS DEFINED IN THE SCENARIO FILE
@@ -207,10 +207,18 @@ def sesmg_main(
     t3.join()
     t4.join()
     t5.join()
-
+    
+    # exergy district heating network
     nodes = district_heating.district_heating(
-        nodes_data, nodes, busd, district_heating_path, result_path, cluster_dh
+        nodes_data, nodes, busd, district_heating_path, result_path, cluster_dh, False
     )
+    
+    # anergy district heating network
+    # nodes = district_heating.district_heating(
+    #    nodes_data, nodes, busd, district_heating_path, result_path,
+    #    cluster_dh, True
+    #)
+    
 
     # ADDS THE COMPONENTS TO THE ENERGYSYSTEM
     esys.add(*nodes)

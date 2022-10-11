@@ -1,4 +1,5 @@
-def create_source(source_type, roof_num, building, sheets, st_output=None):
+def create_source(source_type, roof_num, building, sheets, standard_parameters,
+                  st_output=None):
     """
         TODO DOCSTRINGTEXT
         :param source_type: define rather a photovoltaic or a \
@@ -16,11 +17,11 @@ def create_source(source_type, roof_num, building, sheets, st_output=None):
     source_param = [
         str(roof_num),
         building["label"],
-        building["azimuth (°) {}".format(roof_num)],
-        building["surface tilt (°) {}".format(roof_num)],
+        building["azimuth {}".format(roof_num)],
+        building["surface tilt {}".format(roof_num)],
         building["latitude"],
         building["longitude"],
-        building["roof area (m²) {}".format(roof_num)],
+        building["roof area {}".format(roof_num)],
     ]
     switch_dict = {
         "fixed photovoltaic source": ["_pv_source", "_pv_bus", 0],
@@ -51,7 +52,8 @@ def create_source(source_type, roof_num, building, sheets, st_output=None):
 
     # extracts the st source specific standard values from the
     # standard_parameters dataset
-    param, keys = read_standard_parameters(source_type, "sources", "comment")
+    param, keys = read_standard_parameters(source_type, "3_sources", "comment",
+                                           standard_parameters)
     for i in range(len(keys)):
         source_dict[keys[i]] = param[keys[i]]
 
@@ -99,7 +101,8 @@ def create_timeseries_source(sheets, label, output):
     return append_component(sheets, "sources", source_dict)
 
 
-def create_competition_constraint(limit, label, roof_num, sheets):
+def create_competition_constraint(limit, label, roof_num, sheets,
+                                  standard_parameters):
     """
     TODO DOCSTRINGTEXT
     :param limit:
@@ -114,10 +117,11 @@ def create_competition_constraint(limit, label, roof_num, sheets):
     from program_files import append_component, read_standard_parameters
 
     pv_param, pv_keys = read_standard_parameters(
-        "fixed photovoltaic source", "sources", "comment"
+        "fixed photovoltaic source", "3_sources", "comment",
+        standard_parameters
     )
     st_param, st_keys = read_standard_parameters(
-        "solar_thermal_collector", "sources", "comment"
+        "solar_thermal_collector", "3_sources", "comment", standard_parameters
     )
     # define individual values
     constraint_dict = {
@@ -132,12 +136,13 @@ def create_competition_constraint(limit, label, roof_num, sheets):
     return append_component(sheets, "competition constraints", constraint_dict)
 
 
-def create_sources(building, clustering, sheets, st_output=None):
+def create_sources(building, clustering, sheets, standard_parameters,
+                   st_output=None):
     """ """
     # create pv-sources and solar thermal-sources including area
     # competition
     roof_num = 1
-    while building["roof area (m²) %1d" % roof_num]:
+    while building["roof area %1d" % roof_num]:
         column = "st or pv %1d" % roof_num
         if building[column] == "pv&st":
             sheets = create_source(
@@ -145,6 +150,7 @@ def create_sources(building, clustering, sheets, st_output=None):
                 roof_num=roof_num,
                 building=building,
                 sheets=sheets,
+                standard_parameters=standard_parameters
             )
 
         if building["building type"] not in ["0", 0]:
@@ -154,6 +160,7 @@ def create_sources(building, clustering, sheets, st_output=None):
                 building=building,
                 sheets=sheets,
                 st_output=st_output,
+                standard_parameters=standard_parameters
             )
 
             if not clustering and building[column] == "pv&st":
@@ -161,7 +168,8 @@ def create_sources(building, clustering, sheets, st_output=None):
                     roof_num=roof_num,
                     label=building["label"],
                     sheets=sheets,
-                    limit=building["roof area (m²) %1d" % roof_num],
+                    limit=building["roof area %1d" % roof_num],
+                    standard_parameters=standard_parameters
                 )
 
         roof_num += 1

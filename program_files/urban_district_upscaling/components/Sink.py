@@ -28,7 +28,7 @@ def create_standard_parameter_sink(
             "input": sink_input,
             "annual demand": annual_demand,
         },
-        standard_parameter_info=[sink_type, "sinks", "sink_type"],
+        standard_parameter_info=[sink_type, "2_sinks", "sink_type"],
         sheets=sheets,
         standard_parameters=standard_parameters
     )
@@ -43,9 +43,9 @@ def create_sinks(building, standard_parameters, sheets):
     if building_type:
         area = building["gross building area"]
         # get sinks standard parameters
-        sinks_standard_param = standard_parameters.parse("sinks")
+        sinks_standard_param = standard_parameters.parse("2_sinks")
         sinks_standard_param.set_index("sink_type", inplace=True)
-        standard_param = standard_parameters.parse("ElecDemand")
+        standard_param = standard_parameters.parse("2_2_electricity")
         specific_demands = {}
 
         if building_type in ["SFB", "MFB"]:
@@ -90,7 +90,7 @@ def create_sinks(building, standard_parameters, sheets):
         )
 
         # heat demand
-        standard_param = standard_parameters.parse("HeatDemand")
+        standard_param = standard_parameters.parse("2_1_heat")
         standard_param.set_index("year of construction", inplace=True)
         yoc = (
             int(building["year of construction"])

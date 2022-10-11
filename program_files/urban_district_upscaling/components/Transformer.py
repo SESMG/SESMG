@@ -2,6 +2,7 @@ transf_dict = {
     "building_gchp_transformer": ["gchp", "hp_elec", "heat", "None"],
     "building_ashp_transformer": ["ashp", "hp_elec", "heat", "None"],
     "building_gasheating_transformer": ["gasheating", "gas", "heat", "None"],
+    "building_oilheating_transformer": ["oilheating", "oil", "heat", "None"],
     "building_electricheating_transformer": [
         "electricheating",
         "electricity",
@@ -15,6 +16,7 @@ def create_transformer(
     building_id: str,
     transf_type,
     sheets,
+    standard_parameters,
     building_type=None,
     area="0",
     label="None",
@@ -66,13 +68,22 @@ def create_transformer(
     if building_type is not None:
         if building_type == "RES":
             bus = "building_res_gas_bus"
+            oil_bus = "building_res_oil_bus"
         elif building_type == "IND":
             bus = "building_ind_gas_bus"
+            oil_bus = "building_ind_oil_bus"
         else:
             bus = "building_com_gas_bus"
+            oil_bus = "building_com_oil_bus"
             # building gas bus
         sheets = Bus.create_standard_parameter_bus(
-            label=str(building_id) + "_gas_bus", bus_type=bus, sheets=sheets
+            label=str(building_id) + "_gas_bus", bus_type=bus, sheets=sheets,
+            standard_parameters=standard_parameters
+        )
+        sheets = Bus.create_standard_parameter_bus(
+                label=str(building_id) + "_oil_bus", bus_type=oil_bus,
+                sheets=sheets,
+                standard_parameters=standard_parameters
         )
 
     if not transf_dict.get(transf_type)[2] == output:
@@ -92,12 +103,14 @@ def create_transformer(
             "output2": transf_dict.get(transf_type)[3],
             "area": float(area),
         },
-        standard_parameter_info=[transf_type, "transformers", "comment"],
+        standard_parameter_info=[transf_type, "4_transformers", "comment"],
         sheets=sheets,
+        standard_parameters=standard_parameters
     )
 
 
-def building_transformer(building, p2g_link, true_bools, sheets):
+def building_transformer(building, p2g_link, true_bools, sheets,
+                         standard_parameters):
     """
     TODO
     :param building:
@@ -115,6 +128,7 @@ def building_transformer(building, p2g_link, true_bools, sheets):
         "ashp": [None, "building_ashp_transformer"],
         "gas heating": [building["building type"], "building_gasheating_transformer"],
         "electric heating": [None, "building_electricheating_transformer"],
+        "oil heating": [building["building type"], "building_oilheating_transformer"]
     }
     for transf in build_transf_dict:
         # creates air source heat-pumps
@@ -124,6 +138,7 @@ def building_transformer(building, p2g_link, true_bools, sheets):
                 building_type=build_transf_dict[transf][0],
                 transf_type=build_transf_dict[transf][1],
                 sheets=sheets,
+                standard_parameters=standard_parameters
             )
             if transf == "gas heating" and p2g_link:
                 sheets = Link.create_link(
@@ -132,6 +147,7 @@ def building_transformer(building, p2g_link, true_bools, sheets):
                     bus_2=building["label"] + "_gas_bus",
                     link_type="central_naturalgas_building_link",
                     sheets=sheets,
+                    standard_parameters=standard_parameters
                 )
     return sheets
 

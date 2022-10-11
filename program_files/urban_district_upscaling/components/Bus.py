@@ -25,7 +25,7 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets,
     # extracts the bus specific standard values from the
     # standard_parameters dataset
     standard_param, standard_keys = read_standard_parameters(
-        bus_type, "buses", "bus_type", standard_parameters
+        bus_type, "1_buses", "bus_type", standard_parameters
     )
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):

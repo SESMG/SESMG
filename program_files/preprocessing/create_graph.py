@@ -12,7 +12,7 @@ import os
 import graphviz
 from oemof.network.network import Bus, Sink, Source, Transformer
 from oemof.solph.components import GenericStorage
-from dhnx.optimization_oemof_heatpipe import HeatPipeline
+from dhnx.optimization.oemof_heatpipe import HeatPipeline
 
 
 def linebreaks(text: str):

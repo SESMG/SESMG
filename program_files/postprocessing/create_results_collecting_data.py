@@ -2,7 +2,7 @@ import oemof.solph as solph
 from oemof.network.network import Bus, Sink, Source
 from oemof.solph.custom import Link
 from oemof.solph.components import GenericStorage
-from dhnx.optimization_oemof_heatpipe import HeatPipeline
+from dhnx.optimization.oemof_heatpipe import HeatPipeline
 import pandas
 
 
