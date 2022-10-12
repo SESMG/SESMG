@@ -430,6 +430,7 @@ class GUI(MethodsGUI):
         ]
 
         timeseries_cluster_criteria = [
+            "None",
             "temperature",
             "dhi",
             "el_demand_sum",
@@ -440,8 +441,8 @@ class GUI(MethodsGUI):
             "Algortihm": ("timeseries_algorithm", timeseries_algorithm_list),
             "Index": ("timeseries_cluster", list(range(1, 365))),
             "Criterion": ("timeseries_criterion", timeseries_cluster_criteria),
-            "Period": ("timeseries_period", ["hours", "days", "weeks"]),
-            "Season": ("timeseries_season", [4, 12]),
+            "Period": ("timeseries_period", ["None", "hours", "days", "weeks"]),
+            "Season": ("timeseries_season", ["None", 4, 12]),
         }
 
         row = 4

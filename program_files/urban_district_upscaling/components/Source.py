@@ -153,7 +153,7 @@ def create_sources(building, clustering, sheets, standard_parameters,
                 standard_parameters=standard_parameters
             )
 
-        if building["building type"] not in ["0", 0]:
+        if building["building type"] not in ["0", 0] and building[column] != 0:
             sheets = create_source(
                 source_type="solar_thermal_collector",
                 roof_num=roof_num,

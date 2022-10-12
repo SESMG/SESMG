@@ -66,7 +66,7 @@ def create_transformer(
     )
 
     if building_type is not None:
-        if building_type == "RES":
+        if building_type in ["SFB", "MFB", "0", 0]:
             bus = "building_res_gas_bus"
             oil_bus = "building_res_oil_bus"
         elif building_type == "IND":
@@ -76,18 +76,20 @@ def create_transformer(
             bus = "building_com_gas_bus"
             oil_bus = "building_com_oil_bus"
             # building gas bus
-        sheets = Bus.create_standard_parameter_bus(
-            label=str(building_id) + "_gas_bus", bus_type=bus, sheets=sheets,
-            standard_parameters=standard_parameters
-        )
-        sheets = Bus.create_standard_parameter_bus(
+        if transf_type == "building_gasheating_transformer":
+            sheets = Bus.create_standard_parameter_bus(
+                label=str(building_id) + "_gas_bus", bus_type=bus,
+                sheets=sheets, standard_parameters=standard_parameters
+            )
+        if transf_type == "building_oilheating_transformer":
+            sheets = Bus.create_standard_parameter_bus(
                 label=str(building_id) + "_oil_bus", bus_type=oil_bus,
-                sheets=sheets,
-                standard_parameters=standard_parameters
-        )
+                sheets=sheets, standard_parameters=standard_parameters
+            )
 
     if not transf_dict.get(transf_type)[2] == output:
-        output1 = str(building_id) + "_" + transf_dict.get(transf_type)[2] + "_bus"
+        output1 = str(building_id) + "_" \
+                  + transf_dict.get(transf_type)[2] + "_bus"
     else:
         output1 = output
 

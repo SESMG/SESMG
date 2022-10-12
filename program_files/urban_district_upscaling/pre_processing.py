@@ -122,13 +122,13 @@ def create_buses(building, central_elec_bus: bool, gchps, sheets,
 
     gchp_heat_bus = (
         (building["parcel ID"][-9:] + "_heat_bus")
-        if (building["parcel ID"] != 0 and building["parcel"][-9:] in gchps)
+        if (building["parcel ID"] != 0 and building["parcel ID"][-9:] in gchps)
         else None
     )
 
     gchp_elec_bus = (
         (building["parcel ID"][-9:] + "_hp_elec_bus")
-        if (building["parcel ID"] != 0 and building["parcel"][-9:] in gchps)
+        if (building["parcel ID"] != 0 and building["parcel ID"][-9:] in gchps)
         else None
     )
 
@@ -138,7 +138,7 @@ def create_buses(building, central_elec_bus: bool, gchps, sheets,
         if building["st or pv %1d" % roof_num] == "pv&st":
             pv_bus = True
 
-    if building["building type"] == "RES":
+    if building["building type"] in ["SFB", "MFB", "0", 0]:
         bus = "building_res_electricity_bus"
     elif building["building type"] == "IND":
         bus = "building_ind_electricity_bus"
@@ -169,7 +169,9 @@ def create_buses(building, central_elec_bus: bool, gchps, sheets,
             label=str(building["label"]) + "_heat_bus",
             bus_type="building_heat_bus",
             sheets=sheets,
-            cords=[building["latitude"], building["longitude"], 1],
+            cords=[building["latitude"],
+                   building["longitude"],
+                   1 if building["central heat"] not in ["No", "no", 0, "0"] else 0],
             standard_parameters=standard_parameters
         )
 
@@ -372,7 +374,6 @@ def urban_district_upscaling_pre_processing(
         central, true_bools, sheets, standard_parameters)
 
     gchps, sheets = create_gchp(tool, parcel, sheets)
-
     for num, building in tool[tool["active"] == 1].iterrows():
         sheets = create_buses(
             building=building,
