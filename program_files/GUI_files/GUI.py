@@ -13,7 +13,7 @@ from program_files.GUI_files.MethodsGUI import MethodsGUI
 import program_files.postprocessing.merge_partial_results as merge_partial_results
 import program_files.postprocessing.plotting as plotting
 from program_files.preprocessing.create_energy_system import import_scenario
-
+from program_files.preprocessing.pre_model_analysis import update_model_according_pre_model_results
 
 def get_pid():
     """Returns the ID of the running process on Port 8050"""
@@ -204,6 +204,89 @@ class GUI(MethodsGUI):
                 print(result_folders["1"])
                 # create new folder in which the results will be stored
                 os.mkdir(self.gui_variables["save_path"].get())
+                
+                # Todo: to be inlcuded into the GUI
+                # Parameters required for pre-modeling
+                pre_modeling = False
+                pre_model_timeseries_prep_param = ['averaging', '300', 'dhi', 'days', '12']
+                investment_boundaries = False
+                investment_boundary_factor = 10
+
+                if pre_modeling == False:
+                    sesmg_main(
+                            scenario_file=scenario,
+                            result_path=self.gui_variables["save_path"].get(),
+                            num_threads=self.gui_variables["num_threads"].get(),
+                            timeseries_prep=timeseries_prep_param,
+                            graph=self.__get_cb_state(
+                                    self.gui_variables["graph_state"]),
+                            criterion_switch=self.__get_cb_state(
+                                    self.gui_variables["criterion_state"]),
+                            xlsx_results=self.__get_cb_state(
+                                    self.gui_variables["xlsx_select_state"]),
+                            console_results=self.__get_cb_state(
+                                    self.gui_variables["console_select_state"]),
+                            solver=self.gui_variables["solver_select"].get(),
+                            district_heating_path=self.gui_variables[
+                                "dh_path"].get(),
+                            cluster_dh=self.gui_variables["cluster_dh"].get())
+
+                # If pre-modeling is activated a second run will be carried out
+                elif pre_modeling == True:
+
+                    # Create Sub-Folders in the results-repository
+                    os.mkdir(str(self.gui_variables["save_path"].get())+'/pre_model_results')
+
+                    # Start Pre-Modeling Run
+                    print('STARTING PRE-MODEL')
+                    sesmg_main(
+                        scenario_file=scenario,
+                        result_path=str(self.gui_variables["save_path"].get())+'/pre_model_results',
+                        num_threads=self.gui_variables["num_threads"].get(),
+                        timeseries_prep=pre_model_timeseries_prep_param,
+                        graph=self.__get_cb_state(
+                            self.gui_variables["graph_state"]),
+                        criterion_switch=self.__get_cb_state(
+                            self.gui_variables["criterion_state"]),
+                        xlsx_results=self.__get_cb_state(
+                            self.gui_variables["xlsx_select_state"]),
+                        console_results=self.__get_cb_state(
+                            self.gui_variables["console_select_state"]),
+                        solver=self.gui_variables["solver_select"].get(),
+                        district_heating_path=self.gui_variables[
+                            "dh_path"].get(),
+                        cluster_dh=self.gui_variables["cluster_dh"].get())
+
+                    # create updated scenario for main-modeling run
+                    print('UPDATING DATA BASED ON PRE-MODEL RESULTS')
+                    update_model_according_pre_model_results(
+                        scenario_path= scenario,
+                        results_components_path = str(self.gui_variables["save_path"].get())+'/pre_model_results/components.csv',
+                        updated_scenario_path = str(self.gui_variables["save_path"].get())+'/updated_scenario.xlsx',
+                        investment_boundary_factor = investment_boundary_factor,
+                        investment_boundaries = investment_boundaries)
+
+                    # start main-modeling run
+                    print('STARTING MAIN-MODEL')
+                    sesmg_main(
+                        scenario_file=str(self.gui_variables["save_path"].get())+'/updated_scenario.xlsx',
+                        result_path=str(self.gui_variables["save_path"].get()),
+                        num_threads=self.gui_variables["num_threads"].get(),
+                        timeseries_prep=timeseries_prep_param,
+                        graph=self.__get_cb_state(
+                            self.gui_variables["graph_state"]),
+                        criterion_switch=self.__get_cb_state(
+                            self.gui_variables["criterion_state"]),
+                        xlsx_results=self.__get_cb_state(
+                            self.gui_variables["xlsx_select_state"]),
+                        console_results=self.__get_cb_state(
+                            self.gui_variables["console_select_state"]),
+                        solver=self.gui_variables["solver_select"].get(),
+                        district_heating_path=self.gui_variables[
+                            "dh_path"].get(),
+                        cluster_dh=self.gui_variables["cluster_dh"].get())
+                
+                
                 # execute SESMG algorithm
                 sesmg_main(
                     scenario_file=scenario,
