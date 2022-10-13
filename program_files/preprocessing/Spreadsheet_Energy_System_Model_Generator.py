@@ -98,7 +98,7 @@ from program_files.preprocessing.components import (
 )
 from program_files.postprocessing import create_results
 from program_files.processing import optimize_model
-from program_files.preprocessing.create_energy_system import import_scenario
+from program_files.preprocessing.pre_model_analysis import update_model_according_pre_model_results
 
 def sesmg_main(
     scenario_file: str,
