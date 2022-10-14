@@ -69,7 +69,7 @@ Different possibilities of time series simplification are applicable, for this t
 Pre-Modeling
 ------------
 
-If this function is activated, the model is split into two model-runs. In a temporally simplified pre-model, potentially irrelevant investment decisions are identified and removed from the main model run ("technical pre-selection", see [1]). Optionally, the investment boundaries for the investment decisions remaining in the model can be adjusted with the freely selectable _investment_boundary_factor_ ("tightening of technical boundaries", see [2]). The pre-run and main run are automatically executed one after the other.
+If this function is activated, the model is split into two model-runs. In a temporally simplified pre-model, potentially irrelevant investment decisions are identified and removed from the main model run ("technical pre-selection", see [1]). Optionally, the investment boundaries for the investment decisions remaining in the model can be adjusted with the freely selectable _investment_boundary_factor_ ("tightening of technical boundaries", see [1]). The pre-run and main run are automatically executed one after the other.
 
 Available Algorithms
 --------------------
