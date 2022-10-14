@@ -41,7 +41,7 @@ The functions under the topic **Results** are used to analyze results older then
  .. note::
 	The detailed modelling results are also stored within the "results" folder.
 
-Timeseries preperation 
+Model Simplification
 ======================
 
 Using the timeseries preparation-options, the modeled time system can be reduced so that not all time steps are considered with the modeling. Such a simplification allows shorter runtimes, but may lead to a reduction in the quality of the results [1].
@@ -64,6 +64,12 @@ Different possibilities of time series simplification are applicable, for this t
 * **Period**: Time periods which are clustered together (weeks, days, hours)
 
 * **Season**: Time periods within which clustering takes place (year, seasons, months)
+
+
+Pre-Modeling
+------------
+
+If this function is activated, the model is split into two model-runs. In a temporally simplified pre-model, potentially irrelevant investment decisions are identified and removed from the main model run ("technical pre-selection", see [1]). Optionally, the investment boundaries for the investment decisions remaining in the model can be adjusted with the freely selectable _investment_boundary_factor_ ("tightening of technical boundaries", see [2]). The pre-run and main run are automatically executed one after the other.
 
 Available Algorithms
 --------------------
@@ -121,8 +127,6 @@ random sampling
 "In random sampling, a predetermined number of random periods (e.g. days or weeks) are selected and used as representatives." [1] "The python library ``random'' is utilized. To ensure reproducability, a ``seed'' is defined, so that with each run the same random periods will be selected. Furthermore, a random time series of e.g. 10 periods thereby automatically makes up 10 periods of a random time series of, e.g. 20 periods" [1]
 
 
-
-
 Further Adjustments
 -------------------
 
@@ -140,6 +144,6 @@ Depending on the simplification applied, further adjustments to the energy syste
 
 References
 ==========
-[1] Klemm C. *Model-based run-time and memory optimization for a mixed-used multi-energy system model with high spatial resolution*, unpublished at the time of publication of this documentation, 2022.
+[1] Klemm C. *Model-based run-time and memory optimization for a mixed-use multi-energy system model with high spatial resolution*, preprint submitted to 'Applied Energy', `Available here <https://www.researchgate.net/publication/361634152_Model-based_run-time_and_memory_optimization_for_a_mixed-use_multi-energy_system_model_with_high_spatial_resolution>`_ , 2022.
 
 [2] Green, Richard, Iain Staffell, and Nicholas Vasilakos. *Divide and Conquer? k-Means Clustering of Demand Data Allows Rapid and Accurate Simulations of the British Electricity System.* IEEE Transactions on Engineering Management 61.2 (2014): 251-260.
