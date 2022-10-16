@@ -98,7 +98,7 @@ from program_files.preprocessing.components import (
 )
 from program_files.postprocessing import create_results
 from program_files.processing import optimize_model
-
+from program_files.preprocessing.pre_model_analysis import update_model_according_pre_model_results
 
 def sesmg_main(
     scenario_file: str,
@@ -245,3 +245,51 @@ def sesmg_main(
 
     logging.info("\t " + 56 * "-")
     logging.info("\t Modelling and optimization successfully completed!")
+    
+    
+def sesmg_main_including_premodel(scenario_file: str, result_path: str, num_threads: int,
+               graph: bool, criterion_switch: bool, xlsx_results: bool,
+               console_results: bool, timeseries_prep: list, solver: str,
+               cluster_dh, pre_model_timeseries_prep: list, investment_boundaries: bool,
+               investment_boundary_factor: int, pre_model_path: str, district_heating_path=None):
+    # Create Sub-Folders in the results-repository
+    os.mkdir(pre_model_path)
+    # Start Pre-Modeling Run
+    print('STARTING PRE-MODEL')
+    sesmg_main(
+        scenario_file=scenario_file,
+        result_path=pre_model_path,
+        num_threads=num_threads,
+        timeseries_prep=pre_model_timeseries_prep,
+        graph=graph,
+        criterion_switch=criterion_switch,
+        xlsx_results=xlsx_results,
+        console_results=console_results,
+        solver=solver,
+        district_heating_path=district_heating_path,
+        cluster_dh=cluster_dh)
+
+    # create updated scenario for main-modeling run
+    print('UPDATING DATA BASED ON PRE-MODEL RESULTS')
+    update_model_according_pre_model_results(
+        scenario_path=scenario_file,
+        results_components_path=pre_model_path + '/components.csv',
+        updated_scenario_path=result_path + '/updated_scenario.xlsx',
+        investment_boundary_factor=investment_boundary_factor,
+        investment_boundaries=investment_boundaries)
+
+    # start main-modeling run
+    print('STARTING MAIN-MODEL')
+    sesmg_main(
+        scenario_file=result_path + '/updated_scenario.xlsx',
+        result_path=result_path,
+        num_threads=num_threads,
+        timeseries_prep=timeseries_prep,
+        graph=graph,
+        criterion_switch=criterion_switch,
+        xlsx_results=xlsx_results,
+        console_results=console_results,
+        solver=solver,
+        district_heating_path=district_heating_path,
+        cluster_dh=cluster_dh)
+    

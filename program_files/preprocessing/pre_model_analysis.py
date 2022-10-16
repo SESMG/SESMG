@@ -245,8 +245,8 @@ def update_model_according_pre_model_results(scenario_path, results_components_p
     print('Scenario updated according to the results of the pre-model.')
 
 
-update_model_according_pre_model_results(scenario_path= '20220928_model_V2_reduced.xlsx',
-                                         results_components_path = '20220928_model_V2_reduced_2022-09-29--15-25-03/components.csv',
-                                         updated_scenario_path = 'updated_20220928_model_V2_reduced.xlsx',
-                                         investment_boundary_factor = 1000,
-                                         investment_boundaries = False)
+# update_model_according_pre_model_results(scenario_path= '20220928_model_V2_reduced.xlsx',
+#                                          results_components_path = '20220928_model_V2_reduced_2022-09-29--15-25-03/components.csv',
+#                                          updated_scenario_path = 'updated_20220928_model_V2_reduced.xlsx',
+#                                          investment_boundary_factor = 1000,
+#                                          investment_boundaries = False)
