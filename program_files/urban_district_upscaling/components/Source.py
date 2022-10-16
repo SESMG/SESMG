@@ -1,5 +1,5 @@
 def create_source(source_type, roof_num, building, sheets, standard_parameters,
-                  st_output=None):
+                  st_output=None, central=False):
     """
         TODO DOCSTRINGTEXT
         :param source_type: define rather a photovoltaic or a \
@@ -31,6 +31,18 @@ def create_source(source_type, roof_num, building, sheets, standard_parameters,
             str(source_param[1]) + "_electricity_bus",
         ],
     }
+    
+    standard_param = standard_parameters.parse("3_sources")
+    if not central:
+        standard_param = standard_param.loc[
+            standard_param["comment"] == "solar_thermal_collector"]
+    else:
+        standard_param = standard_param.loc[
+            standard_param["comment"] == "central_solar_thermal_collector"]
+    temp_inlet = (
+        (building["flow temperature"]
+         - (2 * float(standard_param["Temperature Difference"])))
+        if source_type == "solar_thermal_collector" else 0)
 
     # technical parameters
     source_dict = {
@@ -48,7 +60,10 @@ def create_source(source_type, roof_num, building, sheets, standard_parameters,
         "Latitude": source_param[4],
         "Longitude": source_param[5],
         "input": switch_dict.get(source_type)[2],
+        "Temperature Inlet": temp_inlet,
     }
+    if central:
+        source_type = "central_solar_thermal_collector"
 
     # extracts the st source specific standard values from the
     # standard_parameters dataset
@@ -137,7 +152,7 @@ def create_competition_constraint(limit, label, roof_num, sheets,
 
 
 def create_sources(building, clustering, sheets, standard_parameters,
-                   st_output=None):
+                   st_output=None, central=False):
     """ """
     # create pv-sources and solar thermal-sources including area
     # competition
@@ -160,7 +175,8 @@ def create_sources(building, clustering, sheets, standard_parameters,
                 building=building,
                 sheets=sheets,
                 st_output=st_output,
-                standard_parameters=standard_parameters
+                standard_parameters=standard_parameters,
+                central=central
             )
 
             if not clustering and building[column] == "pv&st":

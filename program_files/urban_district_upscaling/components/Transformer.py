@@ -17,6 +17,7 @@ def create_transformer(
     transf_type,
     sheets,
     standard_parameters,
+    flow_temp,
     building_type=None,
     area="0",
     label="None",
@@ -104,6 +105,7 @@ def create_transformer(
             "output": output1,
             "output2": transf_dict.get(transf_type)[3],
             "area": float(area),
+            "temperature high": flow_temp
         },
         standard_parameter_info=[transf_type, "4_transformers", "comment"],
         sheets=sheets,
@@ -140,7 +142,8 @@ def building_transformer(building, p2g_link, true_bools, sheets,
                 building_type=build_transf_dict[transf][0],
                 transf_type=build_transf_dict[transf][1],
                 sheets=sheets,
-                standard_parameters=standard_parameters
+                standard_parameters=standard_parameters,
+                flow_temp=building["flow temperature"]
             )
             if transf == "gas heating" and p2g_link:
                 sheets = Link.create_link(

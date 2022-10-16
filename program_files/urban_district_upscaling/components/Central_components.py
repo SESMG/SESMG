@@ -1,5 +1,5 @@
 def create_central_heat_component(label, comp_type, bus, exchange_buses,
-                                  sheets, area, standard_parameters):
+                                  sheets, area, standard_parameters, flow_temp):
     """
     In this method, all heat supply systems are calculated for a
     heat input into the district heat network.
@@ -71,7 +71,8 @@ def create_central_heat_component(label, comp_type, bus, exchange_buses,
             central_elec_bus=exchange_buses["electricity_exchange"],
             sheets=sheets,
             area=area,
-            standard_parameters=standard_parameters
+            standard_parameters=standard_parameters,
+            flow_temp=flow_temp
         )
         central_heatpump_indicator += 1
 
@@ -187,11 +188,16 @@ def central_comp(central, true_bools, sheets, standard_parameters):
                     "longitude": pv["longitude"],
                     "roof area {}".format(1): pv["area"],
                     "roof area {}".format(2): 0,
+                    "flow temperature": float(
+                        central.loc[(central["label"] == pv["dh_connection"])
+                                    & (central["active"] == 1)][
+                            "flow temperature"])
                 },
                 clustering=False,
                 sheets=sheets,
                 st_output="central_" + pv["dh_connection"] + "_bus",
-                standard_parameters=standard_parameters
+                standard_parameters=standard_parameters,
+                central=True
             )
 
     # central heat supply
@@ -227,7 +233,8 @@ def central_comp(central, true_bools, sheets, standard_parameters):
                         area=comp["area"]
                         if comp["technology"] == "gchp_transformer"
                         else "0",
-                        standard_parameters=standard_parameters
+                        standard_parameters=standard_parameters,
+                        flow_temp=bus["flow temperature"]
                     )
 
     # central battery storage
@@ -298,7 +305,8 @@ def create_power_to_gas_system(label, bus, sheets, standard_parameters):
             transf_type=transformer,
             output=bus,
             sheets=sheets,
-            standard_parameters=standard_parameters
+            standard_parameters=standard_parameters,
+            flow_temp=0
         )
 
     # storages
@@ -319,7 +327,7 @@ def create_power_to_gas_system(label, bus, sheets, standard_parameters):
 
 def create_central_heatpump(
     label, specification, create_bus, central_elec_bus, output, sheets, area,
-    standard_parameters
+    standard_parameters, flow_temp
 ):
     """
      In this method, a central heatpump unit with specified gas type
@@ -374,7 +382,8 @@ def create_central_heatpump(
         transf_type="central_" + specification + "_transformer",
         sheets=sheets,
         area=area,
-        standard_parameters=standard_parameters
+        standard_parameters=standard_parameters,
+        flow_temp=flow_temp
     )
 
 
@@ -427,7 +436,8 @@ def create_central_gas_heating_transformer(
         output=output,
         sheets=sheets,
         transf_type="central_" + gas_type + "_heating_plant_transformer",
-        standard_parameters=standard_parameters
+        standard_parameters=standard_parameters,
+        flow_temp=0
     )
 
 
@@ -498,5 +508,6 @@ def create_central_chp(
         specific=gas_type,
         output=output,
         sheets=sheets,
-        standard_parameters=standard_parameters
+        standard_parameters=standard_parameters,
+        flow_temp=0
     )
