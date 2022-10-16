@@ -136,7 +136,7 @@ def get_nearest_perp_foot_point(building, streets, index, building_type):
             True,
         )
         if perp_foot_point:
-            foot_points.append(perp_foot_point + [street["street section name"]])
+            foot_points.append(perp_foot_point + [street["label"]])
     # check if more than one result was found
     if len(foot_points) > 1:
         # iterate threw the results to find the nearest

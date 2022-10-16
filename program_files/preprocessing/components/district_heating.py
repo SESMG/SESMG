@@ -299,7 +299,7 @@ def create_supply_line(streets):
                         street["lon. 1st intersection"],
                         0,
                         0.0,
-                        street["street section name"],
+                        street["label"],
                     ]
                 )
             if (
@@ -314,11 +314,11 @@ def create_supply_line(streets):
                         street["lon. 2nd intersection"],
                         0,
                         1.0,
-                        street["street section name"],
+                        street["label"],
                     ]
                 )
             if "street" in point:
-                if point["street"] == street["street section name"]:
+                if point["street"] == street["label"]:
                     road_section.append(
                         [
                             point["id"],
@@ -326,12 +326,12 @@ def create_supply_line(streets):
                             point["lon"],
                             0,
                             point["t"],
-                            street["street section name"],
+                            street["label"],
                         ]
                     )
 
         # Order Connection points on the currently considered road section
-        pipes.update({street["street section name"]: calc_street_lengths(road_section)})
+        pipes.update({street["label"]: calc_street_lengths(road_section)})
 
     for street in pipes:
         for pipe in pipes[street]:
@@ -637,7 +637,7 @@ def add_excess_shortage_to_dh(
             lon = None
             for i, street in nodes_data["district heating"].iterrows():
                 if street["active"]:
-                    if street["street section name"] == conn_point[0]:
+                    if street["label"] == conn_point[0]:
                         if conn_point[1] == "1":
                             lat = street["lat. 1st intersection"]
                             lon = street["lon. 1st intersection"]

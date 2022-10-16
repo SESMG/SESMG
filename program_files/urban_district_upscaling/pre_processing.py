@@ -359,7 +359,40 @@ def urban_district_upscaling_pre_processing(
     sheets, central, parcel, tool, worksheets = load_input_data(
         paths[3], paths[1], paths[0]
     )
-
+    
+    for sheet_tbc in [
+        "energysystem",
+        "weather data",
+        "time series",
+        "district heating",
+    ]:
+        if sheet_tbc not in pd.ExcelFile(paths[0]).sheet_names:
+            if sheet_tbc in standard_parameters.sheet_names:
+                sheets[sheet_tbc] = standard_parameters.parse(
+                    sheet_tbc,
+                    parse_dates=["timestamp"]
+                    if sheet_tbc in ["weather data", "time series"]
+                    else [],
+                )
+            if "4 - time series data" in pd.ExcelFile(paths[0]).sheet_names:
+                sheets["weather data"] = pd.ExcelFile(paths[0]).parse(
+                    "4 - time series data", parse_dates=["timestamp"]
+                )
+                sheets["time series"] = pd.ExcelFile(paths[0]).parse(
+                    "4 - time series data", parse_dates=["timestamp"]
+                )
+            if "3.1 - streets" in pd.ExcelFile(paths[0]).sheet_names:
+                sheets["district heating"] = pd.ExcelFile(paths[0]).parse(
+                    "3.1 - streets"
+                )
+        else:
+            sheets[sheet_tbc] = pd.ExcelFile(paths[0]).parse(
+                sheet_tbc,
+                parse_dates=["timestamp"]
+                if sheet_tbc in ["weather data", "time series"]
+                else [],
+            )
+    
     # set variable for central heating / electricity if activated to
     # decide rather a house can be connected to the central heat
     # network / central electricity network or not
@@ -417,42 +450,7 @@ def urban_district_upscaling_pre_processing(
             central_electricity_network,
             clustering_dh,
         )
-    for sheet_tbc in [
-        "energysystem",
-        "weather data",
-        "time series",
-        "district heating",
-    ]:
-        if sheet_tbc not in pd.ExcelFile(paths[0]).sheet_names:
-            print(sheet_tbc)
-            print(standard_parameters.sheet_names)
-            if sheet_tbc in standard_parameters.sheet_names:
-                print("test")
-                sheets[sheet_tbc] = standard_parameters.parse(
-                    sheet_tbc,
-                    parse_dates=["timestamp"]
-                    if sheet_tbc in ["weather data", "time series"]
-                    else [],
-                )
-            if "4 - time series data" in pd.ExcelFile(paths[0]).sheet_names:
-                sheets["weather data"] = pd.ExcelFile(paths[0]).parse(
-                    "4 - time series data", parse_dates=["timestamp"]
-                )
-                sheets["time series"] = pd.ExcelFile(paths[0]).parse(
-                    "4 - time series data", parse_dates=["timestamp"]
-                )
-            if "3.1 - streets" in pd.ExcelFile(paths[0]).sheet_names:
-                sheets["district heating"] = pd.ExcelFile(paths[0]).parse(
-                    "3.1 - streets"
-                )
-        else:
-            sheets[sheet_tbc] = pd.ExcelFile(paths[0]).parse(
-                sheet_tbc,
-                parse_dates=["timestamp"]
-                if sheet_tbc in ["weather data", "time series"]
-                else [],
-            )
-
+    
     # open the new excel file and add all the created components
     j = 0
     writer = pd.ExcelWriter(paths[2], engine="xlsxwriter")
