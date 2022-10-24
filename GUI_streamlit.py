@@ -12,7 +12,8 @@ from PIL import Image
 import os
 from datetime import datetime 
 
-from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
+# from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
+# from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main_including_premodel
 
 from program_files.GUI_st.GUI_st_US import *
 from program_files.GUI_st.GUI_st_mainpage import *
@@ -46,6 +47,7 @@ def st_settings_global():
 # Import settings
 st_settings_global()
 
+
 app_mode = st.sidebar.selectbox(
     "Choose the app mode",
     ["Main SESMG Application", 
@@ -65,10 +67,6 @@ elif app_mode == "SESMG Demo Tool":
     
     
     
-
-
-
-
 
 
 

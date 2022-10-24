@@ -12,7 +12,7 @@ from PIL import Image
 import os
 from datetime import datetime 
 
-from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
+# from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 
 from program_files.GUI_st.GUI_st_US import *
 
@@ -35,15 +35,6 @@ def main_application_sesmg():
         
     # Header
     st.sidebar.title("Upload Scenario File")
-    
-    #'''
-    #### Fileuploader not able to print file path
-    ## Upload Scenario Sheet File 
-    #scenario_input_sheet = st.sidebar.file_uploader("Select Scenario File")
-    #if scenario_input_sheet is not None:
-    #     dataframe = pd.read_excel(scenario_input_sheet)
-    #     st.write(dataframe)
-    #'''
     
     scenario_input_sheet_path = st.sidebar.text_input(
         "Type in path to your scenario input sheet.",
@@ -68,6 +59,7 @@ def main_application_sesmg():
             
         # Header
         st.title("Input Parameters")
+    
         
         ####################################
         # Input Processing Parameters
@@ -82,6 +74,7 @@ def main_application_sesmg():
         input_num_threads = st.slider("Number of threads",min_value=1,max_value=35, help="Number of threads to use on your machine")
         # Choosing Solver
         input_solver = st.selectbox("Optimization Solver", ("cbc", "gurobi"))
+
 
         ####################################
         # Input Preprocessing Parameters
@@ -106,7 +99,7 @@ def main_application_sesmg():
         timeseries_index_range_list = timeseries_index_range_start + timeseries_index_range_values
         
         # Timeseries preparation input inside an expander. 
-        with st.expander("Timeseries Preparation"):
+        with st.expander("Timeseries Simplification"):
             # Choosing Timeseries Parameters - Algorithm
             input_timeseries_algorithm = st.selectbox("Algorithm", timeseries_algorithm_list)
             # Choosing Timeseries Parameters - Index
@@ -119,10 +112,35 @@ def main_application_sesmg():
             input_timeseries_season = st.selectbox("Season", ["None",4,12])
         
         
+        # Pre-Model setting and pre-model timeseries preparation input inside an expander.
+        with st.expander("Pre-Modeling Settings"):
+            
+            # Checkbox to activate the pre-modeling
+            input_activate_premodeling = st.checkbox("Activate Pre-Modeling")
+            
+            # Activate functions to reduce the maximum design capacity
+            input_premodeling_invest_boundaries = st.checkbox("Investment Boundaries Tightening")
+            # Slider to set the tightening factor for maximum design capacity
+            input_premodeling_tightening_factor = st.slider("Investment Tightening Factor", min_value=1, max_value=100)
+            
+            # Choosing Pre-Model Timeseries Parameters - Algorithm
+            input_premodeling_timeseries_algorithm = st.selectbox("Algorithm (Pre-Model)", timeseries_algorithm_list)
+            # Choosing Pre-Model Timeseries Parameters - Index
+            input_premodeling_timeseries_cluster_index = st.selectbox("Index (Pre-Model)", timeseries_index_range_list)
+            # Choosing Pre-Model Timeseries Parameters - Cluster Criterion
+            input_premodeling_timeseries_criterion = st.selectbox("Cluster Criterion (Pre-Model)", timeseries_cluster_criteria_list)
+            # Choosing Pre-Model Timeseries Parameters - Period
+            input_premodeling_timeseries_period = st.selectbox("Period (Pre-Model)", ["None","hours", "days", "weeks"])
+            # Choosing Pre-Model Timeseries Parameters - Season
+            input_premodeling_timeseries_season = st.selectbox("Season (Pre-Model)", ["None",4,12])
+ 
+        
+        
+        
         # Checkboxes Modeling
         input_cluster_dh = st.checkbox("Clustering District Heating Network")
         
-        ### Function to upload the Distrct Heating Precalulation inside an expander.
+        ### Function to upload the distrct heating precalulation inside an expander.
         with st.expander("Advanced District Heating Precalculation"):
             #'''
             #### Fileuploader not able to print file path
@@ -156,9 +174,7 @@ def main_application_sesmg():
             input_pareto_points = st.multiselect("Pareto Points", options=pareto_options)
             input_pareto_points.sort(reverse=True)
         
-
-
-            
+           
         
     ####################################
     ############ Result Page ###########
@@ -206,7 +222,7 @@ def main_application_sesmg():
         
         if scenario_input_sheet_path is not "":
             
-            
+            # Creating the timeseries preperation settings list for the main model
             timeseries_prep_param = \
                 [input_timeseries_algorithm,
                  input_timeseries_cluster_index,
@@ -214,9 +230,18 @@ def main_application_sesmg():
                  input_timeseries_period,
                  0 if input_timeseries_season == "None" else input_timeseries_season]
             
+            # Creating the timeseries preperation settings list for the pre-model
+            pre_model_timeseries_prep_param = \
+                [input_premodeling_timeseries_algorithm,
+                 input_premodeling_timeseries_cluster_index,
+                 input_premodeling_timeseries_criterion,
+                 input_premodeling_timeseries_period,
+                 0 if input_premodeling_timeseries_season == "None" else input_premodeling_timeseries_season]
+            
             st.write(timeseries_prep_param)
             st.write(scenario_input_sheet_path)
             
+            # Setting the path where to safe the modeling results
             res_folder_path = os.path.join(os.path.dirname(__file__),'results')
             res_path = res_folder_path \
                         + '/' \
@@ -224,29 +249,57 @@ def main_application_sesmg():
                         + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
             os.mkdir(res_path)
             
-    
-            sesmg_main(
-                scenario_file=scenario_input_sheet_path,
-                result_path=res_path,
-                num_threads=input_num_threads,
-                timeseries_prep=timeseries_prep_param,
-#TODO: Implementieren 
-                graph=False,
-                criterion_switch=input_criterion_switch,
-                xlsx_results=input_xlsx_results,
-                console_results=input_console_results,
-                solver=input_solver,
-                district_heating_path=district_heating_precalc_path,
-                cluster_dh=input_cluster_dh
-                )
-                        
+            # Setting the path where to safe the pre-modeling results
+            premodeling_res_folder_path = os.path.join(os.path.dirname(__file__),'pre_model_results')
+            premodeling_res_path = premodeling_res_folder_path \
+                        + '/' \
+                        + scenario_input_sheet_path.split("/")[-1][:-5] \
+                        + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
+            os.mkdir(premodeling_res_path)
+            
+            
+            # Staring the Model Run without a Pre-Model
+            if input_activate_premodeling == False:
+                sesmg_main(
+                    scenario_file=scenario_input_sheet_path,
+                    result_path=res_path,
+                    num_threads=input_num_threads,
+                    timeseries_prep=timeseries_prep_param,
+    #TODO: Implementieren 
+                    graph=False,
+                    criterion_switch=input_criterion_switch,
+                    xlsx_results=input_xlsx_results,
+                    console_results=input_console_results,
+                    solver=input_solver,
+                    district_heating_path=district_heating_precalc_path,
+                    cluster_dh=input_cluster_dh
+                    )
+                
+            # Staring the Model Run with a Pre-Model           
+            else: 
+                sesmg_main_including_premodel(
+                    scenario_file=scenario_input_sheet_path,
+                    result_path=res_path,
+                    num_threads=input_num_threads,
+                    timeseries_prep=timeseries_prep_param,
+    #TODO: Implementieren 
+                    graph=False,
+                    criterion_switch=input_criterion_switch,
+                    xlsx_results=input_xlsx_results,
+                    console_results=input_console_results,
+                    solver=input_solver,
+                    district_heating_path=district_heating_precalc_path,
+                    cluster_dh=input_cluster_dh,
+                    pre_model_timeseries_prep=pre_model_timeseries_prep_param,
+                    investment_boundaries = input_premodeling_invest_boundaries,
+                    investment_boundary_factor = input_premodeling_tightening_factor,
+                    pre_model_path=premodeling_res_path
+                    )
+                
             
         else:
              st.write(input_pareto_points)
              
-    
-        
-    
 
 
 
@@ -275,58 +328,6 @@ def demo_result_page():
     
     with demo_page:
         st.title("Hier wird das Demotool platziert.")
-
-
-
-
-
-####################################
-######## STREAMLIT SETTINGS ########
-####################################
-
-
-def st_settings_global():
-    """
-    Function to define settings for the Streamlit GUI.
-
-    """
-    
-    # Global page settings
-    st.set_page_config(
-        page_title=('SESMG'),
-        layout='wide', 
-        menu_items={'Get Help': 'https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/',
-                    'Report a Bug': 'https://github.com/chrklemm/SESMG/issues'})
-
-
-
-####################################
-########### RUN THE APP ############
-####################################
-
-# Import settings
-st_settings_global()
-
-app_mode = st.sidebar.selectbox(
-    "Choose the app mode",
-    [
-     "Urban District Upscaling Tool",
-     "Main SESMG Application", 
-     "Advanced Model Results",
-     "SESMG Demo Tool"])
-
-
-if app_mode == "Main SESMG Application":
-    main_application_sesmg()
-elif app_mode == "Urban District Upscaling Tool":
-    us_application()
-elif app_mode == "Advanced Model Results":
-    advanced_result_page()
-elif app_mode == "SESMG Demo Tool":
-    demo_result_page()
-    
-    
-    
 
 
 
