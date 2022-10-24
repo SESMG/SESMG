@@ -182,7 +182,7 @@ def create_heat_amount_plots(dataframes: dict, nodes_data: pandas.DataFrame,
         )
 
         heat_amounts = dict_to_dataframe(heat_amounts_dict, heat_amounts)
-        
+    heat_amounts.to_csv(result_path + "heat_amounts.csv")
     # HEAT PLOT
     fig, axs = plt.subplots(3, sharex="all")
     fig.set_size_inches(18.5, 15.5)
