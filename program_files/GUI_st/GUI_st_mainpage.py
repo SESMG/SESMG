@@ -62,22 +62,22 @@ def main_application_sesmg():
     
         
         ####################################
-        # Input Processing Parameters
+        # Input processing parameters
         # Functions to input the modelling parameters.
         
         # Header
         st.subheader("Processing Parameters")
 
-        # Checkboxes Processing Graph
+        # Checkboxes processing graph
         st.checkbox("Show Graph")
-        # Slider Number of Threads
+        # Slider number of threads
         input_num_threads = st.slider("Number of threads",min_value=1,max_value=35, help="Number of threads to use on your machine")
-        # Choosing Solver
+        # Choosing solver
         input_solver = st.selectbox("Optimization Solver", ("cbc", "gurobi"))
 
 
         ####################################
-        # Input Preprocessing Parameters
+        # Input preprocessing parameters
         # Functions to input the preprocessing parameters.
         
         # Header
@@ -100,15 +100,15 @@ def main_application_sesmg():
         
         # Timeseries preparation input inside an expander. 
         with st.expander("Timeseries Simplification"):
-            # Choosing Timeseries Parameters - Algorithm
+            # Choosing timeseries parameters - algorithm
             input_timeseries_algorithm = st.selectbox("Algorithm", timeseries_algorithm_list)
-            # Choosing Timeseries Parameters - Index
+            # Choosing timeseries parameters - index
             input_timeseries_cluster_index = st.selectbox("Index", timeseries_index_range_list)
-            # Choosing Timeseries Parameters - Cluster Criterion
+            # Choosing timeseries parameters - cluster criterion
             input_timeseries_criterion = st.selectbox("Cluster Criterion", timeseries_cluster_criteria_list)
-            # Choosing Timeseries Parameters - Period
+            # Choosing timeseries parameters - period
             input_timeseries_period = st.selectbox("Period", ["None","hours", "days", "weeks"])
-            # Choosing Timeseries Parameters - Season
+            # Choosing timeseries parameters - season
             input_timeseries_season = st.selectbox("Season", ["None",4,12])
         
         
@@ -123,21 +123,20 @@ def main_application_sesmg():
             # Slider to set the tightening factor for maximum design capacity
             input_premodeling_tightening_factor = st.slider("Investment Tightening Factor", min_value=1, max_value=100)
             
-            # Choosing Pre-Model Timeseries Parameters - Algorithm
+            # Choosing pre-model timeseries parameters - algorithm
             input_premodeling_timeseries_algorithm = st.selectbox("Algorithm (Pre-Model)", timeseries_algorithm_list)
-            # Choosing Pre-Model Timeseries Parameters - Index
+            # Choosing pre-model timeseries parameters - index
             input_premodeling_timeseries_cluster_index = st.selectbox("Index (Pre-Model)", timeseries_index_range_list)
-            # Choosing Pre-Model Timeseries Parameters - Cluster Criterion
+            # Choosing pre-model timeseries parameters - cluster criterion
             input_premodeling_timeseries_criterion = st.selectbox("Cluster Criterion (Pre-Model)", timeseries_cluster_criteria_list)
-            # Choosing Pre-Model Timeseries Parameters - Period
+            # Choosing pre-model timeseries parameters - period
             input_premodeling_timeseries_period = st.selectbox("Period (Pre-Model)", ["None","hours", "days", "weeks"])
-            # Choosing Pre-Model Timeseries Parameters - Season
+            # Choosing pre-model timeseries parameters - season
             input_premodeling_timeseries_season = st.selectbox("Season (Pre-Model)", ["None",4,12])
  
         
-        
-        
-        # Checkboxes Modeling
+               
+        # Checkboxes modeling while using district heating clustering.
         input_cluster_dh = st.checkbox("Clustering District Heating Network")
         
         ### Function to upload the distrct heating precalulation inside an expander.
@@ -157,7 +156,7 @@ def main_application_sesmg():
         # Header
         st.subheader("Postprocessing Parameters")
        
-        # Input Result Processing Parameters
+        # Input result processing parameters
         input_xlsx_results = st.checkbox("Create xlsx-files")
         input_console_results = st.checkbox("Create console-log")
 
@@ -167,10 +166,10 @@ def main_application_sesmg():
             
             input_criterion_switch = st.checkbox("Switch Criteria")
             
-            # List of Pareto Points wich can be chosen.
+            # List of pareto points wich can be chosen.
             pareto_options = [100 - 5*i for i in range(1,20)]
             
-            # Multiselect Element
+            # Multiselect element
             input_pareto_points = st.multiselect("Pareto Points", options=pareto_options)
             input_pareto_points.sort(reverse=True)
         
@@ -185,7 +184,7 @@ def main_application_sesmg():
     # Header
     st.subheader("The structure of the modeled energy system:")
     
-    # Importing and printing the Energy System Graph
+    # Importing and printing the energy system graph
     es_graph = Image.open(os.path.dirname(__file__) + "/graph.gv.png", "r")
     st.image(es_graph, caption="Beispielgraph.",)
     
@@ -217,7 +216,7 @@ def main_application_sesmg():
     
     
     ####################################
-    # Starting Process if "Start Optimization"-Button is clicked
+    # Starting process if "Start Optimization"-button is clicked
     if submitted_optimization:
         
         if scenario_input_sheet_path is not "":
@@ -248,7 +247,8 @@ def main_application_sesmg():
                         + scenario_input_sheet_path.split("/")[-1][:-5] \
                         + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
             os.mkdir(res_path)
-            
+
+# HIER NOCHMAL ANSEHEN WIE / WO DIE DATEI GESPEICHERT WERDEN SOLL            
             # Setting the path where to safe the pre-modeling results
             premodeling_res_folder_path = os.path.join(os.path.dirname(__file__),'pre_model_results')
             premodeling_res_path = premodeling_res_folder_path \
@@ -258,7 +258,7 @@ def main_application_sesmg():
             os.mkdir(premodeling_res_path)
             
             
-            # Staring the Model Run without a Pre-Model
+            # Staring the model run without a pre-model
             if input_activate_premodeling == False:
                 sesmg_main(
                     scenario_file=scenario_input_sheet_path,
@@ -275,7 +275,7 @@ def main_application_sesmg():
                     cluster_dh=input_cluster_dh
                     )
                 
-            # Staring the Model Run with a Pre-Model           
+            # Staring the model run with a pre-model           
             else: 
                 sesmg_main_including_premodel(
                     scenario_file=scenario_input_sheet_path,
