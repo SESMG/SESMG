@@ -226,3 +226,23 @@ def create_heat_amount_plots(dataframes: dict, nodes_data: pandas.DataFrame,
     axs[2].set_ylabel("Heat Amount in kWh")
     axs[2].set_xlabel("Emission-reduced Scenario")
     plt.savefig(result_path + "/heat_amounts.jpeg")
+
+
+if __name__ == "__main__":
+    from program_files.preprocessing.create_energy_system import \
+        import_scenario
+    import pandas as pd
+
+    create_heat_amount_plots(
+            {"1": pd.read_csv(""),
+             "0.75": pd.read_csv(""),
+             "0.5": pd.read_csv(""),
+             "0.25": pd.read_csv(""),
+             "0": pd.read_csv("")},
+            # scenario file path
+            import_scenario(""),
+            # result path
+            "",
+            # sink types dict {label: [bool(elec), bool(heat), bool(cooling)]}
+            {}
+    )

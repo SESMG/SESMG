@@ -188,5 +188,20 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
         axs[1].set_ylabel("installed capacity in kW")
         axs[2].set_ylabel("installed capacity in kW")
         axs[2].legend(loc="upper right")
-        axs[2].set_ylim([0, 25000])
-        plt.savefig(result_path + "/capacities.svg")
+        axs[2].set_ylim([0, 300])
+        plt.savefig(result_path + "/capacities.jpeg")
+
+
+if __name__ == "__main__":
+    from program_files.preprocessing.create_energy_system import import_scenario
+    create_capacity_plots(
+        {"1": pd.read_csv(""),
+         "0.75": pd.read_csv(""),
+         "0.5": pd.read_csv(""),
+         "0.25": pd.read_csv(""),
+         "0": pd.read_csv("")},
+        # scenario file path
+        import_scenario(""),
+        # result_path
+        ""
+    )

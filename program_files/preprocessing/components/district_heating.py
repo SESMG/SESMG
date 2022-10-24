@@ -445,30 +445,59 @@ def calc_heat_pipe_attributes(oemof_opti_model, anergy_or_exergy):
         if str(type(a)) == "<class 'oemof.solph.network.bus.Bus'>":
             pass
         else:
-            ep_costs = getattr(
-                a.outputs[list(a.outputs.keys())[0]].investment, "ep_costs"
-            )
-            label = a.label.tag3
-            length = ep_costs / float(
-                invest_data.loc[invest_data["label_3"] == label]["capex_pipes"]
+            label = a.label.tag3	
+            if int(invest_data.loc[invest_data["label_3"] == label]["nonconvex"]) == 0:
+                ep_costs = getattr(
+                    a.outputs[list(a.outputs.keys())[0]].investment, "ep_costs"
+                )
+                length = ep_costs / float(
+                    invest_data.loc[invest_data["label_3"] == label]["capex_pipes"]
+                )
+                setattr(
+                        a.outputs[list(a.outputs.keys())[0]].investment,
+                        "periodical_constraint_costs",
+                        length
+                        * float(
+                                invest_data.loc[
+                                    invest_data["label_3"] == label][
+                                    "periodical_constraint_costs"
+                                ]
+                        ),
+                )
+            else:
+                fix_costs = getattr(
+                    a.outputs[list(a.outputs.keys())[0]].investment, "offset"
+                )
+                length = fix_costs / float(
+                    invest_data.loc[invest_data["label_3"] == label]["fix_costs"]
+                )
+                
+            setattr(
+                    a.outputs[list(a.outputs.keys())[0]].investment,
+                    "periodical_constraint_costs",
+                    length
+                    * float(
+                            invest_data.loc[
+                                invest_data["label_3"] == label][
+                                "periodical_constraint_costs"
+                            ]
+                    ),
             )
             setattr(
-                a.outputs[list(a.outputs.keys())[0]].investment,
-                "periodical_constraint_costs",
-                length
-                * float(
-                    invest_data.loc[invest_data["label_3"] == label][
-                        "periodical_constraint_costs"
-                    ]
-                ),
+                    a.outputs[list(a.outputs.keys())[0]].investment,
+                    "fix_constraint_costs",
+                    length
+                    * float(
+                            invest_data.loc[
+                                invest_data["label_3"] == label][
+                                "fix_constraint_costs"
+                            ]
+                    ),
             )
+            
             setattr(a.inputs[list(a.inputs.keys())[0]], "emission_factor", 0)
             setattr(a.outputs[list(a.outputs.keys())[0]], "emission_factor", 0)
-            setattr(
-                a.outputs[list(a.outputs.keys())[0]].investment,
-                "fix_constraint_costs",
-                0,
-            )
+            
     return oemof_opti_model
 
 

@@ -270,7 +270,8 @@ def central_comp(central, true_bools, sheets, standard_parameters):
                 standard_parameters=standard_parameters
             )
         sheets = Source.create_timeseries_source(
-            sheets, "screw_turbine", "screw_turbine_" + "_electricity_bus"
+            sheets, "screw_turbine", "screw_turbine_" + "_electricity_bus",
+            standard_parameters
         )
     return sheets
 

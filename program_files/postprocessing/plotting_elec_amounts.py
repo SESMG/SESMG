@@ -277,3 +277,21 @@ def create_elec_amount_plots(
     axs[3].invert_xaxis()
     # save the created plot
     plt.savefig(result_path + "/elec_amounts.jpeg")
+
+
+if __name__ == "__main__":
+    from program_files.preprocessing.create_energy_system import import_scenario
+    import pandas as pd
+    create_elec_amount_plots(
+        {"1": pd.read_csv(""),
+         "0.75": pd.read_csv(""),
+         "0.5": pd.read_csv(""),
+         "0.25": pd.read_csv(""),
+         "0": pd.read_csv("")},
+        # scenario file path
+        import_scenario(""),
+        # result path
+        "",
+        # sink types dict {label: [bool(elec), bool(heat), bool(cooling)]}
+        {}
+    )

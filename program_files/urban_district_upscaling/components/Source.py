@@ -79,7 +79,7 @@ def create_source(source_type, roof_num, building, sheets, standard_parameters,
     return append_component(sheets, "sources", source_dict)
 
 
-def create_timeseries_source(sheets, label, output):
+def create_timeseries_source(sheets, label, output, standard_parameters):
     """
         TODO DOCSTRINGTEXT
         :param source_type: define rather a photovoltaic or a \
@@ -109,7 +109,7 @@ def create_timeseries_source(sheets, label, output):
 
     # extracts the st source specific standard values from the
     # standard_parameters dataset
-    param, keys = read_standard_parameters("timeseries_source", "sources", "comment")
+    param, keys = read_standard_parameters("timeseries_source", "3_sources", "comment", standard_parameters)
     for i in range(len(keys)):
         source_dict[keys[i]] = param[keys[i]]
 
