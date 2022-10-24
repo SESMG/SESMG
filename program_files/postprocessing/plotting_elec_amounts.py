@@ -227,6 +227,7 @@ def create_elec_amount_plots(
     fig, axs = plt.subplots(4, sharex="all")
     fig.set_size_inches(18.5, 15.5)
     elec_amounts.set_index("run", inplace=True, drop=False)
+    elec_amounts.to_csv(result_path + "elec_amounts.csv")
     # create the elec amounts plot with 4 subplots (consumption,
     # usage of pv elec amount, pv earnings, central elec)
     plot_dict = {
