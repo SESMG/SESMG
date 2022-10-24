@@ -140,7 +140,7 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
         capacities = pd.concat([capacities, pd.DataFrame([series])])
         capacities.set_index("reductionco2", inplace=True, drop=False)
         capacities = capacities.sort_values("run")
-
+        capacities.csv(result_path + "capacities.csv")
         plt.clf()
         fig, axs = plt.subplots(3, sharex="all")
         fig.set_size_inches(18.5, 15.5)
