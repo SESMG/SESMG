@@ -65,9 +65,9 @@ def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str):
                 components.append(i[1])
     for component in components:
         # renaming label for better file names
-        label = str(component).replace("infrastructure_heat_bus", "districtheating")
-        label = label.replace("consumers_heat_bus", "districtheating")
-        label = label.replace("producers_heat_bus", "districtheating")
+        label = str(component).replace("infrastructure_heat_bus", "dh")
+        label = label.replace("consumers_heat_bus", "dh")
+        label = label.replace("producers_heat_bus", "dh")
         file_path = os.path.join(filepath, "results_" + str(label) + ".xlsx")
         node_results = solph.views.node(results, str(component))
         df = node_results["sequences"]

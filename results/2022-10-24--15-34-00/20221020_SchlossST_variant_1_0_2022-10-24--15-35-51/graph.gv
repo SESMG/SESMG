@@ -1,0 +1,7156 @@
+digraph {
+	subgraph cluster_1 {
+		color=black
+		label=Legends
+		Bus [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+		Sink [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+		Source [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+		"Transform-
+er" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+		Storage [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	}
+	"central_e-
+lectricity-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_p-
+v_sys_pv_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_p-
+v_sys_pv_b-
+us_excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"central_p-
+v_sys_elec-
+tricity_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_p-
+v_sys_elec-
+tricity_bu-
+s_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_h-
+eat_input_-
+1_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_h-
+eatpump_el-
+ec_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_h-
+eatpump_el-
+ec_bus_sho-
+rtage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_h-
+eat_input_-
+2_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_T-
+ischlerei_-
+ng_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_T-
+ischlerei_-
+ng_bus_sho-
+rtage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_T-
+ischlerei_-
+ng_elec_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_T-
+ischlerei_-
+ng_elec_bu-
+s_excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"central_T-
+ischlerei_-
+pe_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_T-
+ischlerei_-
+pe_bus_sho-
+rtage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_T-
+ischlerei_-
+pe_elec_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_T-
+ischlerei_-
+pe_elec_bu-
+s_excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"central_T-
+ischlerei_-
+wc_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_T-
+ischlerei_-
+wc_bus_sho-
+rtage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_T-
+ischlerei_-
+wc_elec_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_T-
+ischlerei_-
+wc_elec_bu-
+s_excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"central_T-
+ischlerei_-
+ng2_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_T-
+ischlerei_-
+ng2_bus_sh-
+ortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_T-
+ischlerei_-
+pe2_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_T-
+ischlerei_-
+pe2_bus_sh-
+ortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_T-
+ischlerei_-
+wc2_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_T-
+ischlerei_-
+wc2_bus_sh-
+ortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_h-
+2_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_h-
+2_bus_shor-
+tage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_n-
+aturalgas_-
+bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_h-
+eat_input_-
+3_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_S-
+chloss_ng_-
+bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_S-
+chloss_ng_-
+bus_shorta-
+ge" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_S-
+chloss_ng_-
+elec_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_S-
+chloss_ng_-
+elec_bus_e-
+xcess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"central_S-
+chloss_pe_-
+bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_S-
+chloss_pe_-
+bus_shorta-
+ge" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_S-
+chloss_pe_-
+elec_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_S-
+chloss_pe_-
+elec_bus_e-
+xcess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"central_S-
+chloss_wc_-
+bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_S-
+chloss_wc_-
+bus_shorta-
+ge" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_S-
+chloss_wc_-
+elec_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_S-
+chloss_wc_-
+elec_bus_e-
+xcess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"central_S-
+chloss_ng2-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_S-
+chloss_ng2-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_S-
+chloss_pe2-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_S-
+chloss_pe2-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_S-
+chloss_wc2-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_S-
+chloss_wc2-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_h-
+eat_input_-
+4_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_K-
+ommende_ng-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_K-
+ommende_ng-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_K-
+ommende_ng-
+_elec_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_K-
+ommende_ng-
+_elec_bus_-
+excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"central_K-
+ommende_pe-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_K-
+ommende_pe-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_K-
+ommende_pe-
+_elec_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_K-
+ommende_pe-
+_elec_bus_-
+excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"central_K-
+ommende_wc-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_K-
+ommende_wc-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_K-
+ommende_wc-
+_elec_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_K-
+ommende_wc-
+_elec_bus_-
+excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"central_K-
+ommende_ng-
+2_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_K-
+ommende_ng-
+2_bus_shor-
+tage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_K-
+ommende_pe-
+2_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_K-
+ommende_pe-
+2_bus_shor-
+tage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_K-
+ommende_wc-
+2_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_K-
+ommende_wc-
+2_bus_shor-
+tage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"screw_tur-
+bine__elec-
+tricity_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"screw_tur-
+bine__elec-
+tricity_bu-
+s_excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"01Schloss-
+_electrici-
+ty_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"01Schloss-
+_electrici-
+ty_bus_sho-
+rtage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"01Schloss-
+_heat_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"01Schloss-
+_hp_elec_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"01Schloss-
+_hp_elec_b-
+us_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"01Schloss-
+_gas_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"01Schloss-
+_gas_bus_s-
+hortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"02Nebenge-
+baeude_ele-
+ctricity_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"02Nebenge-
+baeude_ele-
+ctricity_b-
+us_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"02Nebenge-
+baeude_hea-
+t_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"02Nebenge-
+baeude_hp_-
+elec_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"02Nebenge-
+baeude_hp_-
+elec_bus_s-
+hortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"02Nebenge-
+baeude_pv_-
+bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"02Nebenge-
+baeude_pv_-
+bus_excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"02Nebenge-
+baeude_gas-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"02Nebenge-
+baeude_gas-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"03Kommend-
+e1B_electr-
+icity_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"03Kommend-
+e1B_electr-
+icity_bus_-
+shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"03Kommend-
+e1B_heat_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"03Kommend-
+e1B_hp_ele-
+c_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"03Kommend-
+e1B_hp_ele-
+c_bus_shor-
+tage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"03Kommend-
+e1B_pv_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"03Kommend-
+e1B_pv_bus-
+_excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"03Kommend-
+e1B_gas_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"03Kommend-
+e1B_gas_bu-
+s_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"04Kommend-
+e2_electri-
+city_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"04Kommend-
+e2_electri-
+city_bus_s-
+hortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"04Kommend-
+e2_pv_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"04Kommend-
+e2_pv_bus_-
+excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"05Kommend-
+e3_electri-
+city_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"05Kommend-
+e3_electri-
+city_bus_s-
+hortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"05Kommend-
+e3_heat_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"05Kommend-
+e3_hp_elec-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"05Kommend-
+e3_hp_elec-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"05Kommend-
+e3_pv_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"05Kommend-
+e3_pv_bus_-
+excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"05Kommend-
+e3_gas_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"05Kommend-
+e3_gas_bus-
+_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"06Kommend-
+e4_electri-
+city_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"06Kommend-
+e4_electri-
+city_bus_s-
+hortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"06Kommend-
+e4_heat_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"06Kommend-
+e4_hp_elec-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"06Kommend-
+e4_hp_elec-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"06Kommend-
+e4_pv_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"06Kommend-
+e4_pv_bus_-
+excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"06Kommend-
+e4_gas_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"06Kommend-
+e4_gas_bus-
+_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"07Kommend-
+e5_electri-
+city_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"07Kommend-
+e5_electri-
+city_bus_s-
+hortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"07Kommend-
+e5_heat_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"07Kommend-
+e5_hp_elec-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"07Kommend-
+e5_hp_elec-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"07Kommend-
+e5_pv_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"07Kommend-
+e5_pv_bus_-
+excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"07Kommend-
+e5_gas_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"07Kommend-
+e5_gas_bus-
+_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"08Kommend-
+e6_electri-
+city_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"08Kommend-
+e6_electri-
+city_bus_s-
+hortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"08Kommend-
+e6_heat_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"08Kommend-
+e6_hp_elec-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"08Kommend-
+e6_hp_elec-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"08Kommend-
+e6_pv_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"08Kommend-
+e6_pv_bus_-
+excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"08Kommend-
+e6_gas_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"08Kommend-
+e6_gas_bus-
+_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"09Kommend-
+e7_electri-
+city_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"09Kommend-
+e7_electri-
+city_bus_s-
+hortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"09Kommend-
+e7_heat_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"09Kommend-
+e7_hp_elec-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"09Kommend-
+e7_hp_elec-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"09Kommend-
+e7_pv_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"09Kommend-
+e7_pv_bus_-
+excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"09Kommend-
+e7_gas_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"09Kommend-
+e7_gas_bus-
+_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"10Kommend-
+e8_electri-
+city_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"10Kommend-
+e8_electri-
+city_bus_s-
+hortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"10Kommend-
+e8_heat_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"10Kommend-
+e8_hp_elec-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"10Kommend-
+e8_hp_elec-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"10Kommend-
+e8_pv_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"10Kommend-
+e8_pv_bus_-
+excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"10Kommend-
+e8_gas_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"10Kommend-
+e8_gas_bus-
+_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"11Kommend-
+e9_electri-
+city_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"11Kommend-
+e9_electri-
+city_bus_s-
+hortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"11Kommend-
+e9_heat_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"11Kommend-
+e9_hp_elec-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"11Kommend-
+e9_hp_elec-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"11Kommend-
+e9_pv_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"11Kommend-
+e9_pv_bus_-
+excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"11Kommend-
+e9_gas_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"11Kommend-
+e9_gas_bus-
+_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"12Kommend-
+e10_electr-
+icity_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"12Kommend-
+e10_electr-
+icity_bus_-
+shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"12Kommend-
+e10_heat_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"12Kommend-
+e10_hp_ele-
+c_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"12Kommend-
+e10_hp_ele-
+c_bus_shor-
+tage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"12Kommend-
+e10_pv_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"12Kommend-
+e10_pv_bus-
+_excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"12Kommend-
+e10_gas_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"12Kommend-
+e10_gas_bu-
+s_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"13Kommend-
+e1112_elec-
+tricity_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"13Kommend-
+e1112_elec-
+tricity_bu-
+s_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"13Kommend-
+e1112_heat-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"13Kommend-
+e1112_hp_e-
+lec_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"13Kommend-
+e1112_hp_e-
+lec_bus_sh-
+ortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"13Kommend-
+e1112_pv_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"13Kommend-
+e1112_pv_b-
+us_excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"13Kommend-
+e1112_gas_-
+bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"13Kommend-
+e1112_gas_-
+bus_shorta-
+ge" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"14Kommend-
+e13_electr-
+icity_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"14Kommend-
+e13_electr-
+icity_bus_-
+shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"14Kommend-
+e13_heat_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"14Kommend-
+e13_hp_ele-
+c_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"14Kommend-
+e13_hp_ele-
+c_bus_shor-
+tage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"14Kommend-
+e13_pv_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"14Kommend-
+e13_pv_bus-
+_excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"14Kommend-
+e13_gas_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"14Kommend-
+e13_gas_bu-
+s_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"17Muehle_-
+electricit-
+y_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"17Muehle_-
+electricit-
+y_bus_shor-
+tage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"17Muehle_-
+heat_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"17Muehle_-
+hp_elec_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"17Muehle_-
+hp_elec_bu-
+s_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"17Muehle_-
+pv_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"17Muehle_-
+pv_bus_exc-
+ess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"17Muehle_-
+gas_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"17Muehle_-
+gas_bus_sh-
+ortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"19Hotel_e-
+lectricity-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"19Hotel_e-
+lectricity-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"19Hotel_h-
+eat_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"19Hotel_h-
+p_elec_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"19Hotel_h-
+p_elec_bus-
+_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"19Hotel_p-
+v_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"19Hotel_p-
+v_bus_exce-
+ss" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"19Hotel_g-
+as_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"19Hotel_g-
+as_bus_sho-
+rtage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"20Wohngeb-
+auede_elec-
+tricity_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"20Wohngeb-
+auede_elec-
+tricity_bu-
+s_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"20Wohngeb-
+auede_heat-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"20Wohngeb-
+auede_hp_e-
+lec_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"20Wohngeb-
+auede_hp_e-
+lec_bus_sh-
+ortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"20Wohngeb-
+auede_pv_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"20Wohngeb-
+auede_pv_b-
+us_excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"20Wohngeb-
+auede_gas_-
+bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"20Wohngeb-
+auede_gas_-
+bus_shorta-
+ge" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"01Schloss-
+_electrici-
+ty_demand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"01Schloss-
+_heat_dema-
+nd" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"01Schloss-
+_electric_-
+vehicle" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"02Nebenge-
+baeude_ele-
+ctricity_d-
+emand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"02Nebenge-
+baeude_hea-
+t_demand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"03Kommend-
+e1B_electr-
+icity_dema-
+nd" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"03Kommend-
+e1B_heat_d-
+emand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"05Kommend-
+e3_electri-
+city_demand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"05Kommend-
+e3_heat_de-
+mand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"06Kommend-
+e4_electri-
+city_demand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"06Kommend-
+e4_heat_de-
+mand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"07Kommend-
+e5_electri-
+city_demand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"07Kommend-
+e5_heat_de-
+mand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"08Kommend-
+e6_electri-
+city_demand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"08Kommend-
+e6_heat_de-
+mand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"09Kommend-
+e7_electri-
+city_demand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"09Kommend-
+e7_heat_de-
+mand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"10Kommend-
+e8_electri-
+city_demand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"10Kommend-
+e8_heat_de-
+mand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"11Kommend-
+e9_electri-
+city_demand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"11Kommend-
+e9_heat_de-
+mand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"12Kommend-
+e10_electr-
+icity_dema-
+nd" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"12Kommend-
+e10_heat_d-
+emand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"13Kommend-
+e1112_elec-
+tricity_de-
+mand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"13Kommend-
+e1112_heat-
+_demand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"14Kommend-
+e13_electr-
+icity_dema-
+nd" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"14Kommend-
+e13_heat_d-
+emand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"17Muehle_-
+electricit-
+y_demand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"17Muehle_-
+heat_demand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"19Hotel_e-
+lectricity-
+_demand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"19Hotel_h-
+eat_demand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"20Wohngeb-
+auede_elec-
+tricity_de-
+mand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"20Wohngeb-
+auede_heat-
+_demand" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"central_p-
+v_syspv_ce-
+ntral_elec-
+tricity_li-
+nk" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_p-
+v_syscentr-
+al_electri-
+city_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_h-
+eatpump_el-
+ectricity_-
+link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_T-
+ischlerei_-
+ng_elec_ce-
+ntral_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_T-
+ischlerei_-
+pe_elec_ce-
+ntral_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_T-
+ischlerei_-
+wc_elec_ce-
+ntral_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_S-
+chloss_ng_-
+elec_centr-
+al_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_S-
+chloss_pe_-
+elec_centr-
+al_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_S-
+chloss_wc_-
+elec_centr-
+al_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_K-
+ommende_ng-
+_elec_cent-
+ral_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_K-
+ommende_pe-
+_elec_cent-
+ral_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_K-
+ommende_wc-
+_elec_cent-
+ral_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"screw_tur-
+bine_pv_ce-
+ntral_elec-
+tricity_li-
+nk" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"01Schloss-
+central_el-
+ectricity_-
+link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"01Schloss-
+_gchp_buil-
+ding_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_n-
+aturalgas_-
+01Schlossl-
+ink" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"02Nebenge-
+baeudecent-
+ral_electr-
+icity_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"02Nebenge-
+baeude_gch-
+p_building-
+_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"02Nebenge-
+baeudepv_0-
+2Nebengeba-
+eude_elect-
+ricity_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"02Nebenge-
+baeudepv_c-
+entral_ele-
+ctricity_l-
+ink" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_n-
+aturalgas_-
+02Nebengeb-
+aeudelink" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"03Kommend-
+e1Bcentral-
+_electrici-
+ty_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"03Kommend-
+e1B_gchp_b-
+uilding_li-
+nk" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"03Kommend-
+e1Bpv_03Ko-
+mmende1B_e-
+lectricity-
+_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"03Kommend-
+e1Bpv_cent-
+ral_electr-
+icity_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_n-
+aturalgas_-
+03Kommende-
+1Blink" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"04Kommend-
+e2central_-
+electricit-
+y_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"04Kommend-
+e2pv_04Kom-
+mende2_ele-
+ctricity_l-
+ink" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"04Kommend-
+e2pv_centr-
+al_electri-
+city_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"05Kommend-
+e3central_-
+electricit-
+y_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"05Kommend-
+e3_gchp_bu-
+ilding_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"05Kommend-
+e3pv_05Kom-
+mende3_ele-
+ctricity_l-
+ink" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"05Kommend-
+e3pv_centr-
+al_electri-
+city_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_n-
+aturalgas_-
+05Kommende-
+3link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"06Kommend-
+e4central_-
+electricit-
+y_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"06Kommend-
+e4_gchp_bu-
+ilding_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"06Kommend-
+e4pv_06Kom-
+mende4_ele-
+ctricity_l-
+ink" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"06Kommend-
+e4pv_centr-
+al_electri-
+city_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_n-
+aturalgas_-
+06Kommende-
+4link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"07Kommend-
+e5central_-
+electricit-
+y_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"07Kommend-
+e5_gchp_bu-
+ilding_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"07Kommend-
+e5pv_07Kom-
+mende5_ele-
+ctricity_l-
+ink" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"07Kommend-
+e5pv_centr-
+al_electri-
+city_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_n-
+aturalgas_-
+07Kommende-
+5link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"08Kommend-
+e6central_-
+electricit-
+y_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"08Kommend-
+e6_gchp_bu-
+ilding_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"08Kommend-
+e6pv_08Kom-
+mende6_ele-
+ctricity_l-
+ink" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"08Kommend-
+e6pv_centr-
+al_electri-
+city_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_n-
+aturalgas_-
+08Kommende-
+6link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"09Kommend-
+e7central_-
+electricit-
+y_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_t-
+hermal_sto-
+rageFreif_-
+thermal_st-
+orage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"central_t-
+hermal_sto-
+rageTisch_-
+thermal_st-
+orage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"central_h-
+2_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"central_n-
+aturalgas_-
+storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"central_t-
+hermal_sto-
+rageSchlo_-
+thermal_st-
+orage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"central_t-
+hermal_sto-
+rageK_ther-
+mal_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"central_b-
+attery_sto-
+rage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"01Schloss-
+_battery_s-
+torage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"01Schloss-
+_thermal_s-
+torage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"02Nebenge-
+baeude_bat-
+tery_stora-
+ge" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"02Nebenge-
+baeude_the-
+rmal_stora-
+ge" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"03Kommend-
+e1B_batter-
+y_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"03Kommend-
+e1B_therma-
+l_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"05Kommend-
+e3_battery-
+_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"05Kommend-
+e3_thermal-
+_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"06Kommend-
+e4_battery-
+_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"06Kommend-
+e4_thermal-
+_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"07Kommend-
+e5_battery-
+_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"07Kommend-
+e5_thermal-
+_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"08Kommend-
+e6_battery-
+_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"08Kommend-
+e6_thermal-
+_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"09Kommend-
+e7_battery-
+_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"09Kommend-
+e7_thermal-
+_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"10Kommend-
+e8_battery-
+_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"10Kommend-
+e8_thermal-
+_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"11Kommend-
+e9_battery-
+_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"11Kommend-
+e9_thermal-
+_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"12Kommend-
+e10_batter-
+y_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"12Kommend-
+e10_therma-
+l_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"13Kommend-
+e1112_batt-
+ery_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"13Kommend-
+e1112_ther-
+mal_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"14Kommend-
+e13_batter-
+y_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"14Kommend-
+e13_therma-
+l_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"17Muehle_-
+battery_st-
+orage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"17Muehle_-
+thermal_st-
+orage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"19Hotel_b-
+attery_sto-
+rage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"19Hotel_t-
+hermal_sto-
+rage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"20Wohngeb-
+auede_batt-
+ery_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"20Wohngeb-
+auede_ther-
+mal_storage" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	"09Kommend-
+e7_gchp_bu-
+ilding_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"09Kommend-
+e7pv_09Kom-
+mende7_ele-
+ctricity_l-
+ink" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"09Kommend-
+e7pv_centr-
+al_electri-
+city_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_n-
+aturalgas_-
+09Kommende-
+7link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"10Kommend-
+e8central_-
+electricit-
+y_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"10Kommend-
+e8_gchp_bu-
+ilding_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"10Kommend-
+e8pv_10Kom-
+mende8_ele-
+ctricity_l-
+ink" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"10Kommend-
+e8pv_centr-
+al_electri-
+city_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_n-
+aturalgas_-
+10Kommende-
+8link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"11Kommend-
+e9central_-
+electricit-
+y_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"11Kommend-
+e9_gchp_bu-
+ilding_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"11Kommend-
+e9pv_11Kom-
+mende9_ele-
+ctricity_l-
+ink" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"11Kommend-
+e9pv_centr-
+al_electri-
+city_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_n-
+aturalgas_-
+11Kommende-
+9link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"12Kommend-
+e10central-
+_electrici-
+ty_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"12Kommend-
+e10_gchp_b-
+uilding_li-
+nk" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"12Kommend-
+e10pv_12Ko-
+mmende10_e-
+lectricity-
+_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"12Kommend-
+e10pv_cent-
+ral_electr-
+icity_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_n-
+aturalgas_-
+12Kommende-
+10link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"13Kommend-
+e1112centr-
+al_electri-
+city_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"13Kommend-
+e1112_gchp-
+_building_-
+link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"13Kommend-
+e1112pv_13-
+Kommende11-
+12_electri-
+city_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"13Kommend-
+e1112pv_ce-
+ntral_elec-
+tricity_li-
+nk" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_n-
+aturalgas_-
+13Kommende-
+1112link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"14Kommend-
+e13central-
+_electrici-
+ty_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"14Kommend-
+e13_gchp_b-
+uilding_li-
+nk" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"14Kommend-
+e13pv_14Ko-
+mmende13_e-
+lectricity-
+_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"14Kommend-
+e13pv_cent-
+ral_electr-
+icity_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_n-
+aturalgas_-
+14Kommende-
+13link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"17Muehlec-
+entral_ele-
+ctricity_l-
+ink" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"17Muehle_-
+gchp_build-
+ing_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"17Muehlep-
+v_17Muehle-
+_electrici-
+ty_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"17Muehlep-
+v_central_-
+electricit-
+y_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_n-
+aturalgas_-
+17Muehleli-
+nk" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"19Hotelce-
+ntral_elec-
+tricity_li-
+nk" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"19Hotel_g-
+chp_buildi-
+ng_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"19Hotelpv-
+_19Hotel_e-
+lectricity-
+_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"19Hotelpv-
+_central_e-
+lectricity-
+_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_n-
+aturalgas_-
+19Hotellink" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"20Wohngeb-
+auedecentr-
+al_electri-
+city_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"20Wohngeb-
+auede_gchp-
+_building_-
+link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"20Wohngeb-
+auedepv_20-
+Wohngebaue-
+de_electri-
+city_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"20Wohngeb-
+auedepv_ce-
+ntral_elec-
+tricity_li-
+nk" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_n-
+aturalgas_-
+20Wohngeba-
+uedelink" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_g-
+chp_freifl-
+aeche_S_he-
+atpump_tra-
+nsformer_low_temp_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_g-
+chp_freifl-
+aeche_S_he-
+atpump_tra-
+nsformer_low_temp_ground_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_g-
+chp_freifl-
+aeche_S_he-
+atpump_tra-
+nsformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_T-
+ischlerei_-
+ng_chp_tra-
+nsformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_T-
+ischlerei_-
+pe_chp_tra-
+nsformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_T-
+ischlerei_-
+wc_chp_tra-
+nsformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_T-
+ischlerei_-
+swhp_heatp-
+ump_transf-
+ormer_low_temp_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_T-
+ischlerei_-
+swhp_heatp-
+ump_transf-
+ormer_low_temp_water_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_T-
+ischlerei_-
+swhp_heatp-
+ump_transf-
+ormer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_T-
+ischlerei_-
+ng2_heatin-
+g_plant_tr-
+ansformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_T-
+ischlerei_-
+pe2_heatin-
+g_plant_tr-
+ansformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_T-
+ischlerei_-
+wc2_heatin-
+g_plant_tr-
+ansformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_T-
+ischlerei_-
+p2g_electr-
+olysis_tra-
+nsformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_T-
+ischlerei_-
+p2g_methan-
+ization_tr-
+ansformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_T-
+ischlerei_-
+p2g_fuelce-
+ll_transfo-
+rmer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_S-
+chloss_ng_-
+chp_transf-
+ormer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_S-
+chloss_pe_-
+chp_transf-
+ormer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_S-
+chloss_wc_-
+chp_transf-
+ormer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_S-
+chloss_ng2-
+_heating_p-
+lant_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_S-
+chloss_pe2-
+_heating_p-
+lant_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_S-
+chloss_wc2-
+_heating_p-
+lant_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_S-
+chloss_p2g-
+_electroly-
+sis_transf-
+ormer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_S-
+chloss_p2g-
+_methaniza-
+tion_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_S-
+chloss_p2g-
+_fuelcell_-
+transformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_K-
+ommende_ng-
+_chp_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_K-
+ommende_pe-
+_chp_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_K-
+ommende_wc-
+_chp_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_g-
+chp_freifl-
+aeche_K_he-
+atpump_tra-
+nsformer_low_temp_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_g-
+chp_freifl-
+aeche_K_he-
+atpump_tra-
+nsformer_low_temp_ground_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_g-
+chp_freifl-
+aeche_K_he-
+atpump_tra-
+nsformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_K-
+ommende_ng-
+2_heating_-
+plant_tran-
+sformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_K-
+ommende_pe-
+2_heating_-
+plant_tran-
+sformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_K-
+ommende_wc-
+2_heating_-
+plant_tran-
+sformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_K-
+ommende_p2-
+g_electrol-
+ysis_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_K-
+ommende_p2-
+g_methaniz-
+ation_tran-
+sformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_K-
+ommende_p2-
+g_fuelcell-
+_transform-
+er" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"01Schloss-
+_ashp_tran-
+sformer_lo-
+w_temp_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"01Schloss-
+_ashp_tran-
+sformer_lo-
+w_temp_air-
+_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"01Schloss-
+_ashp_tran-
+sformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"01Schloss-
+_gasheatin-
+g_transfor-
+mer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"01Schloss-
+_electrich-
+eating_tra-
+nsformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"02Nebenge-
+baeude_ash-
+p_transfor-
+mer_low_te-
+mp_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"02Nebenge-
+baeude_ash-
+p_transfor-
+mer_low_te-
+mp_air_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"02Nebenge-
+baeude_ash-
+p_transfor-
+mer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"02Nebenge-
+baeude_gas-
+heating_tr-
+ansformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"02Nebenge-
+baeude_ele-
+ctricheati-
+ng_transfo-
+rmer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"03Kommend-
+e1B_ashp_t-
+ransformer-
+_low_temp_-
+bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"03Kommend-
+e1B_ashp_t-
+ransformer-
+_low_temp_-
+air_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"03Kommend-
+e1B_ashp_t-
+ransformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"03Kommend-
+e1B_gashea-
+ting_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"03Kommend-
+e1B_electr-
+icheating_-
+transformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"05Kommend-
+e3_ashp_tr-
+ansformer_-
+low_temp_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"05Kommend-
+e3_ashp_tr-
+ansformer_-
+low_temp_a-
+ir_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"05Kommend-
+e3_ashp_tr-
+ansformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"05Kommend-
+e3_gasheat-
+ing_transf-
+ormer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"05Kommend-
+e3_electri-
+cheating_t-
+ransformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"06Kommend-
+e4_ashp_tr-
+ansformer_-
+low_temp_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"06Kommend-
+e4_ashp_tr-
+ansformer_-
+low_temp_a-
+ir_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"06Kommend-
+e4_ashp_tr-
+ansformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"06Kommend-
+e4_gasheat-
+ing_transf-
+ormer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"06Kommend-
+e4_electri-
+cheating_t-
+ransformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"07Kommend-
+e5_ashp_tr-
+ansformer_-
+low_temp_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"07Kommend-
+e5_ashp_tr-
+ansformer_-
+low_temp_a-
+ir_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"07Kommend-
+e5_ashp_tr-
+ansformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"07Kommend-
+e5_gasheat-
+ing_transf-
+ormer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"07Kommend-
+e5_electri-
+cheating_t-
+ransformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"08Kommend-
+e6_ashp_tr-
+ansformer_-
+low_temp_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"08Kommend-
+e6_ashp_tr-
+ansformer_-
+low_temp_a-
+ir_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"08Kommend-
+e6_ashp_tr-
+ansformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"08Kommend-
+e6_gasheat-
+ing_transf-
+ormer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"08Kommend-
+e6_electri-
+cheating_t-
+ransformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"09Kommend-
+e7_ashp_tr-
+ansformer_-
+low_temp_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"09Kommend-
+e7_ashp_tr-
+ansformer_-
+low_temp_a-
+ir_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"09Kommend-
+e7_ashp_tr-
+ansformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"09Kommend-
+e7_gasheat-
+ing_transf-
+ormer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"09Kommend-
+e7_electri-
+cheating_t-
+ransformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"10Kommend-
+e8_ashp_tr-
+ansformer_-
+low_temp_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"10Kommend-
+e8_ashp_tr-
+ansformer_-
+low_temp_a-
+ir_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"10Kommend-
+e8_ashp_tr-
+ansformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"10Kommend-
+e8_gasheat-
+ing_transf-
+ormer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"10Kommend-
+e8_electri-
+cheating_t-
+ransformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"11Kommend-
+e9_ashp_tr-
+ansformer_-
+low_temp_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"11Kommend-
+e9_ashp_tr-
+ansformer_-
+low_temp_a-
+ir_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"11Kommend-
+e9_ashp_tr-
+ansformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"11Kommend-
+e9_gasheat-
+ing_transf-
+ormer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"11Kommend-
+e9_electri-
+cheating_t-
+ransformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"12Kommend-
+e10_ashp_t-
+ransformer-
+_low_temp_-
+bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"12Kommend-
+e10_ashp_t-
+ransformer-
+_low_temp_-
+air_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"12Kommend-
+e10_ashp_t-
+ransformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"12Kommend-
+e10_gashea-
+ting_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"12Kommend-
+e10_electr-
+icheating_-
+transformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"13Kommend-
+e1112_ashp-
+_transform-
+er_low_tem-
+p_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"13Kommend-
+e1112_ashp-
+_transform-
+er_low_tem-
+p_air_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"13Kommend-
+e1112_ashp-
+_transform-
+er" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"13Kommend-
+e1112_gash-
+eating_tra-
+nsformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"13Kommend-
+e1112_elec-
+tricheatin-
+g_transfor-
+mer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"14Kommend-
+e13_ashp_t-
+ransformer-
+_low_temp_-
+bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"14Kommend-
+e13_ashp_t-
+ransformer-
+_low_temp_-
+air_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"14Kommend-
+e13_ashp_t-
+ransformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"14Kommend-
+e13_gashea-
+ting_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"14Kommend-
+e13_electr-
+icheating_-
+transformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"17Muehle_-
+ashp_trans-
+former_low-
+_temp_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"17Muehle_-
+ashp_trans-
+former_low-
+_temp_air_-
+source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"17Muehle_-
+ashp_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"17Muehle_-
+gasheating-
+_transform-
+er" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"17Muehle_-
+electriche-
+ating_tran-
+sformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"19Hotel_a-
+shp_transf-
+ormer_low_-
+temp_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"19Hotel_a-
+shp_transf-
+ormer_low_-
+temp_air_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"19Hotel_a-
+shp_transf-
+ormer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"19Hotel_g-
+asheating_-
+transformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"19Hotel_e-
+lectrichea-
+ting_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"20Wohngeb-
+auede_ashp-
+_transform-
+er_low_tem-
+p_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"20Wohngeb-
+auede_ashp-
+_transform-
+er_low_tem-
+p_air_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"20Wohngeb-
+auede_ashp-
+_transform-
+er" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"20Wohngeb-
+auede_gash-
+eating_tra-
+nsformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"20Wohngeb-
+auede_elec-
+tricheatin-
+g_transfor-
+mer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_p-
+v_sys_1_pv-
+_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_p-
+v_sys_1_so-
+larthermal-
+_source_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"central_p-
+v_sys_1_so-
+larthermal-
+_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"central_p-
+v_sys_1_so-
+larthermal-
+_source_co-
+llector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"screw_tur-
+bine" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"02Nebenge-
+baeude_1_p-
+v_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"02Nebenge-
+baeude_1_s-
+olartherma-
+l_source_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"02Nebenge-
+baeude_1_s-
+olartherma-
+l_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"02Nebenge-
+baeude_1_s-
+olartherma-
+l_source_c-
+ollector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"02Nebenge-
+baeude_2_p-
+v_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"02Nebenge-
+baeude_2_s-
+olartherma-
+l_source_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"02Nebenge-
+baeude_2_s-
+olartherma-
+l_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"02Nebenge-
+baeude_2_s-
+olartherma-
+l_source_c-
+ollector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"02Nebenge-
+baeude_3_p-
+v_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"02Nebenge-
+baeude_3_s-
+olartherma-
+l_source_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"02Nebenge-
+baeude_3_s-
+olartherma-
+l_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"02Nebenge-
+baeude_3_s-
+olartherma-
+l_source_c-
+ollector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"03Kommend-
+e1B_1_pv_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"03Kommend-
+e1B_1_sola-
+rthermal_s-
+ource_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"03Kommend-
+e1B_1_sola-
+rthermal_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"03Kommend-
+e1B_1_sola-
+rthermal_s-
+ource_coll-
+ector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"03Kommend-
+e1B_2_pv_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"03Kommend-
+e1B_2_sola-
+rthermal_s-
+ource_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"03Kommend-
+e1B_2_sola-
+rthermal_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"03Kommend-
+e1B_2_sola-
+rthermal_s-
+ource_coll-
+ector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"04Kommend-
+e2_1_pv_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"05Kommend-
+e3_1_pv_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"05Kommend-
+e3_1_solar-
+thermal_so-
+urce_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"05Kommend-
+e3_1_solar-
+thermal_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"05Kommend-
+e3_1_solar-
+thermal_so-
+urce_colle-
+ctor" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"06Kommend-
+e4_1_pv_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"06Kommend-
+e4_1_solar-
+thermal_so-
+urce_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"06Kommend-
+e4_1_solar-
+thermal_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"06Kommend-
+e4_1_solar-
+thermal_so-
+urce_colle-
+ctor" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"07Kommend-
+e5_1_pv_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"07Kommend-
+e5_1_solar-
+thermal_so-
+urce_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"07Kommend-
+e5_1_solar-
+thermal_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"07Kommend-
+e5_1_solar-
+thermal_so-
+urce_colle-
+ctor" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"07Kommend-
+e5_2_pv_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"07Kommend-
+e5_2_solar-
+thermal_so-
+urce_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"07Kommend-
+e5_2_solar-
+thermal_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"07Kommend-
+e5_2_solar-
+thermal_so-
+urce_colle-
+ctor" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"07Kommend-
+e5_3_pv_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"07Kommend-
+e5_3_solar-
+thermal_so-
+urce_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"07Kommend-
+e5_3_solar-
+thermal_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"07Kommend-
+e5_3_solar-
+thermal_so-
+urce_colle-
+ctor" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"08Kommend-
+e6_1_pv_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"08Kommend-
+e6_1_solar-
+thermal_so-
+urce_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"08Kommend-
+e6_1_solar-
+thermal_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"08Kommend-
+e6_1_solar-
+thermal_so-
+urce_colle-
+ctor" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"09Kommend-
+e7_1_pv_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"09Kommend-
+e7_1_solar-
+thermal_so-
+urce_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"09Kommend-
+e7_1_solar-
+thermal_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"09Kommend-
+e7_1_solar-
+thermal_so-
+urce_colle-
+ctor" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"10Kommend-
+e8_1_pv_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"10Kommend-
+e8_1_solar-
+thermal_so-
+urce_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"10Kommend-
+e8_1_solar-
+thermal_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"10Kommend-
+e8_1_solar-
+thermal_so-
+urce_colle-
+ctor" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"11Kommend-
+e9_1_pv_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"11Kommend-
+e9_1_solar-
+thermal_so-
+urce_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"11Kommend-
+e9_1_solar-
+thermal_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"11Kommend-
+e9_1_solar-
+thermal_so-
+urce_colle-
+ctor" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"12Kommend-
+e10_1_pv_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"12Kommend-
+e10_1_sola-
+rthermal_s-
+ource_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"12Kommend-
+e10_1_sola-
+rthermal_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"12Kommend-
+e10_1_sola-
+rthermal_s-
+ource_coll-
+ector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"12Kommend-
+e10_2_pv_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"12Kommend-
+e10_2_sola-
+rthermal_s-
+ource_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"12Kommend-
+e10_2_sola-
+rthermal_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"12Kommend-
+e10_2_sola-
+rthermal_s-
+ource_coll-
+ector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"12Kommend-
+e10_3_pv_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"12Kommend-
+e10_3_sola-
+rthermal_s-
+ource_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"12Kommend-
+e10_3_sola-
+rthermal_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"12Kommend-
+e10_3_sola-
+rthermal_s-
+ource_coll-
+ector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"12Kommend-
+e10_4_pv_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"12Kommend-
+e10_4_sola-
+rthermal_s-
+ource_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"12Kommend-
+e10_4_sola-
+rthermal_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"12Kommend-
+e10_4_sola-
+rthermal_s-
+ource_coll-
+ector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"13Kommend-
+e1112_1_pv-
+_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"13Kommend-
+e1112_1_so-
+larthermal-
+_source_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"13Kommend-
+e1112_1_so-
+larthermal-
+_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"13Kommend-
+e1112_1_so-
+larthermal-
+_source_co-
+llector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"13Kommend-
+e1112_2_pv-
+_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"13Kommend-
+e1112_2_so-
+larthermal-
+_source_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"13Kommend-
+e1112_2_so-
+larthermal-
+_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"13Kommend-
+e1112_2_so-
+larthermal-
+_source_co-
+llector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"14Kommend-
+e13_1_pv_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"14Kommend-
+e13_1_sola-
+rthermal_s-
+ource_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"14Kommend-
+e13_1_sola-
+rthermal_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"14Kommend-
+e13_1_sola-
+rthermal_s-
+ource_coll-
+ector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"17Muehle_-
+1_pv_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"17Muehle_-
+1_solarthe-
+rmal_sourc-
+e_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"17Muehle_-
+1_solarthe-
+rmal_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"17Muehle_-
+1_solarthe-
+rmal_sourc-
+e_collector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"17Muehle_-
+2_pv_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"17Muehle_-
+2_solarthe-
+rmal_sourc-
+e_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"17Muehle_-
+2_solarthe-
+rmal_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"17Muehle_-
+2_solarthe-
+rmal_sourc-
+e_collector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"17Muehle_-
+3_pv_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"17Muehle_-
+3_solarthe-
+rmal_sourc-
+e_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"17Muehle_-
+3_solarthe-
+rmal_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"17Muehle_-
+3_solarthe-
+rmal_sourc-
+e_collector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"19Hotel_1-
+_pv_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"19Hotel_1-
+_solarther-
+mal_source-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"19Hotel_1-
+_solarther-
+mal_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"19Hotel_1-
+_solarther-
+mal_source-
+_collector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"19Hotel_2-
+_pv_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"19Hotel_2-
+_solarther-
+mal_source-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"19Hotel_2-
+_solarther-
+mal_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"19Hotel_2-
+_solarther-
+mal_source-
+_collector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"20Wohngeb-
+auede_1_pv-
+_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"20Wohngeb-
+auede_1_so-
+larthermal-
+_source_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"20Wohngeb-
+auede_1_so-
+larthermal-
+_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"20Wohngeb-
+auede_1_so-
+larthermal-
+_source_co-
+llector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"20Wohngeb-
+auede_2_pv-
+_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"20Wohngeb-
+auede_2_so-
+larthermal-
+_source_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"20Wohngeb-
+auede_2_so-
+larthermal-
+_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"20Wohngeb-
+auede_2_so-
+larthermal-
+_source_co-
+llector" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"consumers-
+_heat_bus_-
+consumers--
+0_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"consumers-
+_heat_bus_-
+consumers--
+1_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"consumers-
+_heat_bus_-
+consumers--
+2_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"consumers-
+_heat_bus_-
+consumers--
+3_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"consumers-
+_heat_bus_-
+consumers--
+4_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"consumers-
+_heat_bus_-
+consumers--
+5_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"consumers-
+_heat_bus_-
+consumers--
+6_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"consumers-
+_heat_bus_-
+consumers--
+7_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"consumers-
+_heat_bus_-
+consumers--
+8_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"consumers-
+_heat_bus_-
+consumers--
+9_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"consumers-
+_heat_bus_-
+consumers--
+10_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"consumers-
+_heat_bus_-
+consumers--
+11_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"consumers-
+_heat_bus_-
+consumers--
+12_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"consumers-
+_heat_bus_-
+consumers--
+13_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"consumers-
+_heat_bus_-
+consumers--
+14_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"consumers-
+_heat_bus_-
+consumers--
+15_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"producers-
+_heat_bus_-
+producers--
+0_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"producers-
+_heat_bus_-
+producers--
+1_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"producers-
+_heat_bus_-
+producers--
+2_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"producers-
+_heat_bus_-
+producers--
+3_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"dh-network" [label="dh-network" shape=hexagon]
+	"dh_heat_h-
+ouse_stati-
+on_01Schlo-
+ss" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"dh_heat_h-
+ouse_stati-
+on_02Neben-
+gebaeude" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"dh_heat_h-
+ouse_stati-
+on_03Komme-
+nde1B" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"dh_heat_h-
+ouse_stati-
+on_05Komme-
+nde3" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"dh_heat_h-
+ouse_stati-
+on_06Komme-
+nde4" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"dh_heat_h-
+ouse_stati-
+on_07Komme-
+nde5" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"dh_heat_h-
+ouse_stati-
+on_08Komme-
+nde6" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"dh_heat_h-
+ouse_stati-
+on_09Komme-
+nde7" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"dh_heat_h-
+ouse_stati-
+on_10Komme-
+nde8" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"dh_heat_h-
+ouse_stati-
+on_11Komme-
+nde9" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"dh_heat_h-
+ouse_stati-
+on_12Komme-
+nde10" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"dh_heat_h-
+ouse_stati-
+on_13Komme-
+nde1112" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"dh_heat_h-
+ouse_stati-
+on_14Komme-
+nde13" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"dh_heat_h-
+ouse_stati-
+on_17Muehle" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"dh_heat_h-
+ouse_stati-
+on_19Hotel" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"dh_heat_h-
+ouse_stati-
+on_20Wohng-
+ebauede" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_h-
+eat_input_-
+1_bus_dh_s-
+ource_link-
+_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_h-
+eat_input_-
+2_bus_dh_s-
+ource_link-
+_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_h-
+eat_input_-
+3_bus_dh_s-
+ource_link-
+_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"central_h-
+eat_input_-
+4_bus_dh_s-
+ource_link-
+_exergy" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"02Nebenge-
+baeudepv_c-
+entral_ele-
+ctricity_l-
+ink" -> "central_e-
+lectricity-
+_bus"
+	"14Kommend-
+e13pv_cent-
+ral_electr-
+icity_link" -> "central_e-
+lectricity-
+_bus"
+	"04Kommend-
+e2pv_centr-
+al_electri-
+city_link" -> "central_e-
+lectricity-
+_bus"
+	"central_S-
+chloss_p2g-
+_fuelcell_-
+transformer" -> "central_e-
+lectricity-
+_bus"
+	"central_K-
+ommende_wc-
+_elec_cent-
+ral_link" -> "central_e-
+lectricity-
+_bus"
+	"10Kommend-
+e8pv_centr-
+al_electri-
+city_link" -> "central_e-
+lectricity-
+_bus"
+	"central_K-
+ommende_pe-
+_elec_cent-
+ral_link" -> "central_e-
+lectricity-
+_bus"
+	"central_S-
+chloss_pe_-
+elec_centr-
+al_link" -> "central_e-
+lectricity-
+_bus"
+	"06Kommend-
+e4pv_centr-
+al_electri-
+city_link" -> "central_e-
+lectricity-
+_bus"
+	"08Kommend-
+e6pv_centr-
+al_electri-
+city_link" -> "central_e-
+lectricity-
+_bus"
+	"central_T-
+ischlerei_-
+wc_elec_ce-
+ntral_link" -> "central_e-
+lectricity-
+_bus"
+	"central_b-
+attery_sto-
+rage" -> "central_e-
+lectricity-
+_bus"
+	"12Kommend-
+e10pv_cent-
+ral_electr-
+icity_link" -> "central_e-
+lectricity-
+_bus"
+	"09Kommend-
+e7pv_centr-
+al_electri-
+city_link" -> "central_e-
+lectricity-
+_bus"
+	"central_T-
+ischlerei_-
+pe_elec_ce-
+ntral_link" -> "central_e-
+lectricity-
+_bus"
+	"central_p-
+v_syspv_ce-
+ntral_elec-
+tricity_li-
+nk" -> "central_e-
+lectricity-
+_bus"
+	"central_T-
+ischlerei_-
+ng_elec_ce-
+ntral_link" -> "central_e-
+lectricity-
+_bus"
+	"central_K-
+ommende_ng-
+_elec_cent-
+ral_link" -> "central_e-
+lectricity-
+_bus"
+	"central_K-
+ommende_p2-
+g_fuelcell-
+_transform-
+er" -> "central_e-
+lectricity-
+_bus"
+	"11Kommend-
+e9pv_centr-
+al_electri-
+city_link" -> "central_e-
+lectricity-
+_bus"
+	"screw_tur-
+bine_pv_ce-
+ntral_elec-
+tricity_li-
+nk" -> "central_e-
+lectricity-
+_bus"
+	"07Kommend-
+e5pv_centr-
+al_electri-
+city_link" -> "central_e-
+lectricity-
+_bus"
+	"20Wohngeb-
+auedepv_ce-
+ntral_elec-
+tricity_li-
+nk" -> "central_e-
+lectricity-
+_bus"
+	"05Kommend-
+e3pv_centr-
+al_electri-
+city_link" -> "central_e-
+lectricity-
+_bus"
+	"central_T-
+ischlerei_-
+p2g_fuelce-
+ll_transfo-
+rmer" -> "central_e-
+lectricity-
+_bus"
+	"13Kommend-
+e1112pv_ce-
+ntral_elec-
+tricity_li-
+nk" -> "central_e-
+lectricity-
+_bus"
+	"19Hotelpv-
+_central_e-
+lectricity-
+_link" -> "central_e-
+lectricity-
+_bus"
+	"central_S-
+chloss_wc_-
+elec_centr-
+al_link" -> "central_e-
+lectricity-
+_bus"
+	"central_S-
+chloss_ng_-
+elec_centr-
+al_link" -> "central_e-
+lectricity-
+_bus"
+	"17Muehlep-
+v_central_-
+electricit-
+y_link" -> "central_e-
+lectricity-
+_bus"
+	"03Kommend-
+e1Bpv_cent-
+ral_electr-
+icity_link" -> "central_e-
+lectricity-
+_bus"
+	"central_e-
+lectricity-
+_bus" -> "central_p-
+v_syscentr-
+al_electri-
+city_link"
+	"central_e-
+lectricity-
+_bus" -> "central_h-
+eatpump_el-
+ectricity_-
+link"
+	"central_e-
+lectricity-
+_bus" -> "01Schloss-
+central_el-
+ectricity_-
+link"
+	"central_e-
+lectricity-
+_bus" -> "02Nebenge-
+baeudecent-
+ral_electr-
+icity_link"
+	"central_e-
+lectricity-
+_bus" -> "03Kommend-
+e1Bcentral-
+_electrici-
+ty_link"
+	"central_e-
+lectricity-
+_bus" -> "04Kommend-
+e2central_-
+electricit-
+y_link"
+	"central_e-
+lectricity-
+_bus" -> "05Kommend-
+e3central_-
+electricit-
+y_link"
+	"central_e-
+lectricity-
+_bus" -> "06Kommend-
+e4central_-
+electricit-
+y_link"
+	"central_e-
+lectricity-
+_bus" -> "07Kommend-
+e5central_-
+electricit-
+y_link"
+	"central_e-
+lectricity-
+_bus" -> "08Kommend-
+e6central_-
+electricit-
+y_link"
+	"central_e-
+lectricity-
+_bus" -> "09Kommend-
+e7central_-
+electricit-
+y_link"
+	"central_e-
+lectricity-
+_bus" -> "central_b-
+attery_sto-
+rage"
+	"central_e-
+lectricity-
+_bus" -> "10Kommend-
+e8central_-
+electricit-
+y_link"
+	"central_e-
+lectricity-
+_bus" -> "11Kommend-
+e9central_-
+electricit-
+y_link"
+	"central_e-
+lectricity-
+_bus" -> "12Kommend-
+e10central-
+_electrici-
+ty_link"
+	"central_e-
+lectricity-
+_bus" -> "13Kommend-
+e1112centr-
+al_electri-
+city_link"
+	"central_e-
+lectricity-
+_bus" -> "14Kommend-
+e13central-
+_electrici-
+ty_link"
+	"central_e-
+lectricity-
+_bus" -> "17Muehlec-
+entral_ele-
+ctricity_l-
+ink"
+	"central_e-
+lectricity-
+_bus" -> "19Hotelce-
+ntral_elec-
+tricity_li-
+nk"
+	"central_e-
+lectricity-
+_bus" -> "20Wohngeb-
+auedecentr-
+al_electri-
+city_link"
+	"central_e-
+lectricity-
+_bus" -> "central_T-
+ischlerei_-
+p2g_electr-
+olysis_tra-
+nsformer"
+	"central_e-
+lectricity-
+_bus" -> "central_S-
+chloss_p2g-
+_electroly-
+sis_transf-
+ormer"
+	"central_e-
+lectricity-
+_bus" -> "central_K-
+ommende_p2-
+g_electrol-
+ysis_trans-
+former"
+	"central_p-
+v_sys_1_pv-
+_source" -> "central_p-
+v_sys_pv_b-
+us"
+	"central_p-
+v_sys_pv_b-
+us" -> "central_p-
+v_sys_pv_b-
+us_excess"
+	"central_p-
+v_sys_pv_b-
+us" -> "central_p-
+v_syspv_ce-
+ntral_elec-
+tricity_li-
+nk"
+	"central_p-
+v_syscentr-
+al_electri-
+city_link" -> "central_p-
+v_sys_elec-
+tricity_bus"
+	"central_p-
+v_sys_elec-
+tricity_bu-
+s_shortage" -> "central_p-
+v_sys_elec-
+tricity_bus"
+	"central_p-
+v_sys_elec-
+tricity_bus" -> "central_p-
+v_sys_1_so-
+larthermal-
+_source_co-
+llector"
+	"central_p-
+v_sys_1_so-
+larthermal-
+_source_co-
+llector" -> "central_h-
+eat_input_-
+1_bus"
+	"central_g-
+chp_freifl-
+aeche_S_he-
+atpump_tra-
+nsformer" -> "central_h-
+eat_input_-
+1_bus"
+	"central_t-
+hermal_sto-
+rageFreif_-
+thermal_st-
+orage" -> "central_h-
+eat_input_-
+1_bus"
+	"central_h-
+eat_input_-
+1_bus" -> "central_t-
+hermal_sto-
+rageFreif_-
+thermal_st-
+orage"
+	"central_h-
+eat_input_-
+1_bus" -> "central_h-
+eat_input_-
+1_bus_dh_s-
+ource_link-
+_exergy"
+	"central_h-
+eatpump_el-
+ectricity_-
+link" -> "central_h-
+eatpump_el-
+ec_bus"
+	"central_h-
+eatpump_el-
+ec_bus_sho-
+rtage" -> "central_h-
+eatpump_el-
+ec_bus"
+	"central_h-
+eatpump_el-
+ec_bus" -> "central_g-
+chp_freifl-
+aeche_S_he-
+atpump_tra-
+nsformer"
+	"central_h-
+eatpump_el-
+ec_bus" -> "central_T-
+ischlerei_-
+swhp_heatp-
+ump_transf-
+ormer"
+	"central_h-
+eatpump_el-
+ec_bus" -> "central_g-
+chp_freifl-
+aeche_K_he-
+atpump_tra-
+nsformer"
+	"central_T-
+ischlerei_-
+ng_chp_tra-
+nsformer" -> "central_h-
+eat_input_-
+2_bus"
+	"central_T-
+ischlerei_-
+ng2_heatin-
+g_plant_tr-
+ansformer" -> "central_h-
+eat_input_-
+2_bus"
+	"central_t-
+hermal_sto-
+rageTisch_-
+thermal_st-
+orage" -> "central_h-
+eat_input_-
+2_bus"
+	"central_T-
+ischlerei_-
+p2g_fuelce-
+ll_transfo-
+rmer" -> "central_h-
+eat_input_-
+2_bus"
+	"central_T-
+ischlerei_-
+pe2_heatin-
+g_plant_tr-
+ansformer" -> "central_h-
+eat_input_-
+2_bus"
+	"central_T-
+ischlerei_-
+swhp_heatp-
+ump_transf-
+ormer" -> "central_h-
+eat_input_-
+2_bus"
+	"central_T-
+ischlerei_-
+pe_chp_tra-
+nsformer" -> "central_h-
+eat_input_-
+2_bus"
+	"central_T-
+ischlerei_-
+wc_chp_tra-
+nsformer" -> "central_h-
+eat_input_-
+2_bus"
+	"central_T-
+ischlerei_-
+wc2_heatin-
+g_plant_tr-
+ansformer" -> "central_h-
+eat_input_-
+2_bus"
+	"central_h-
+eat_input_-
+2_bus" -> "central_t-
+hermal_sto-
+rageTisch_-
+thermal_st-
+orage"
+	"central_h-
+eat_input_-
+2_bus" -> "central_h-
+eat_input_-
+2_bus_dh_s-
+ource_link-
+_exergy"
+	"central_T-
+ischlerei_-
+ng_bus_sho-
+rtage" -> "central_T-
+ischlerei_-
+ng_bus"
+	"central_T-
+ischlerei_-
+ng_bus" -> "central_T-
+ischlerei_-
+ng_chp_tra-
+nsformer"
+	"central_T-
+ischlerei_-
+ng_chp_tra-
+nsformer" -> "central_T-
+ischlerei_-
+ng_elec_bus"
+	"central_T-
+ischlerei_-
+ng_elec_bus" -> "central_T-
+ischlerei_-
+ng_elec_bu-
+s_excess"
+	"central_T-
+ischlerei_-
+ng_elec_bus" -> "central_T-
+ischlerei_-
+ng_elec_ce-
+ntral_link"
+	"central_T-
+ischlerei_-
+pe_bus_sho-
+rtage" -> "central_T-
+ischlerei_-
+pe_bus"
+	"central_T-
+ischlerei_-
+pe_bus" -> "central_T-
+ischlerei_-
+pe_chp_tra-
+nsformer"
+	"central_T-
+ischlerei_-
+pe_chp_tra-
+nsformer" -> "central_T-
+ischlerei_-
+pe_elec_bus"
+	"central_T-
+ischlerei_-
+pe_elec_bus" -> "central_T-
+ischlerei_-
+pe_elec_bu-
+s_excess"
+	"central_T-
+ischlerei_-
+pe_elec_bus" -> "central_T-
+ischlerei_-
+pe_elec_ce-
+ntral_link"
+	"central_T-
+ischlerei_-
+wc_bus_sho-
+rtage" -> "central_T-
+ischlerei_-
+wc_bus"
+	"central_T-
+ischlerei_-
+wc_bus" -> "central_T-
+ischlerei_-
+wc_chp_tra-
+nsformer"
+	"central_T-
+ischlerei_-
+wc_chp_tra-
+nsformer" -> "central_T-
+ischlerei_-
+wc_elec_bus"
+	"central_T-
+ischlerei_-
+wc_elec_bus" -> "central_T-
+ischlerei_-
+wc_elec_bu-
+s_excess"
+	"central_T-
+ischlerei_-
+wc_elec_bus" -> "central_T-
+ischlerei_-
+wc_elec_ce-
+ntral_link"
+	"central_T-
+ischlerei_-
+ng2_bus_sh-
+ortage" -> "central_T-
+ischlerei_-
+ng2_bus"
+	"central_T-
+ischlerei_-
+ng2_bus" -> "central_T-
+ischlerei_-
+ng2_heatin-
+g_plant_tr-
+ansformer"
+	"central_T-
+ischlerei_-
+pe2_bus_sh-
+ortage" -> "central_T-
+ischlerei_-
+pe2_bus"
+	"central_T-
+ischlerei_-
+pe2_bus" -> "central_T-
+ischlerei_-
+pe2_heatin-
+g_plant_tr-
+ansformer"
+	"central_T-
+ischlerei_-
+wc2_bus_sh-
+ortage" -> "central_T-
+ischlerei_-
+wc2_bus"
+	"central_T-
+ischlerei_-
+wc2_bus" -> "central_T-
+ischlerei_-
+wc2_heatin-
+g_plant_tr-
+ansformer"
+	"central_S-
+chloss_p2g-
+_electroly-
+sis_transf-
+ormer" -> "central_h-
+2_bus"
+	"central_T-
+ischlerei_-
+p2g_electr-
+olysis_tra-
+nsformer" -> "central_h-
+2_bus"
+	"central_h-
+2_storage" -> "central_h-
+2_bus"
+	"central_K-
+ommende_p2-
+g_electrol-
+ysis_trans-
+former" -> "central_h-
+2_bus"
+	"central_h-
+2_bus_shor-
+tage" -> "central_h-
+2_bus"
+	"central_h-
+2_bus" -> "central_h-
+2_storage"
+	"central_h-
+2_bus" -> "central_T-
+ischlerei_-
+p2g_methan-
+ization_tr-
+ansformer"
+	"central_h-
+2_bus" -> "central_T-
+ischlerei_-
+p2g_fuelce-
+ll_transfo-
+rmer"
+	"central_h-
+2_bus" -> "central_S-
+chloss_p2g-
+_methaniza-
+tion_trans-
+former"
+	"central_h-
+2_bus" -> "central_S-
+chloss_p2g-
+_fuelcell_-
+transformer"
+	"central_h-
+2_bus" -> "central_K-
+ommende_p2-
+g_methaniz-
+ation_tran-
+sformer"
+	"central_h-
+2_bus" -> "central_K-
+ommende_p2-
+g_fuelcell-
+_transform-
+er"
+	"central_T-
+ischlerei_-
+p2g_methan-
+ization_tr-
+ansformer" -> "central_n-
+aturalgas_-
+bus"
+	"central_S-
+chloss_p2g-
+_methaniza-
+tion_trans-
+former" -> "central_n-
+aturalgas_-
+bus"
+	"central_n-
+aturalgas_-
+storage" -> "central_n-
+aturalgas_-
+bus"
+	"central_K-
+ommende_p2-
+g_methaniz-
+ation_tran-
+sformer" -> "central_n-
+aturalgas_-
+bus"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+01Schlossl-
+ink"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+02Nebengeb-
+aeudelink"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+03Kommende-
+1Blink"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+05Kommende-
+3link"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+06Kommende-
+4link"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+07Kommende-
+5link"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+08Kommende-
+6link"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+storage"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+09Kommende-
+7link"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+10Kommende-
+8link"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+11Kommende-
+9link"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+12Kommende-
+10link"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+13Kommende-
+1112link"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+14Kommende-
+13link"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+17Muehleli-
+nk"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+19Hotellink"
+	"central_n-
+aturalgas_-
+bus" -> "central_n-
+aturalgas_-
+20Wohngeba-
+uedelink"
+	"central_t-
+hermal_sto-
+rageSchlo_-
+thermal_st-
+orage" -> "central_h-
+eat_input_-
+3_bus"
+	"central_S-
+chloss_wc_-
+chp_transf-
+ormer" -> "central_h-
+eat_input_-
+3_bus"
+	"central_S-
+chloss_p2g-
+_fuelcell_-
+transformer" -> "central_h-
+eat_input_-
+3_bus"
+	"central_S-
+chloss_pe2-
+_heating_p-
+lant_trans-
+former" -> "central_h-
+eat_input_-
+3_bus"
+	"central_S-
+chloss_ng_-
+chp_transf-
+ormer" -> "central_h-
+eat_input_-
+3_bus"
+	"central_S-
+chloss_pe_-
+chp_transf-
+ormer" -> "central_h-
+eat_input_-
+3_bus"
+	"central_S-
+chloss_ng2-
+_heating_p-
+lant_trans-
+former" -> "central_h-
+eat_input_-
+3_bus"
+	"central_S-
+chloss_wc2-
+_heating_p-
+lant_trans-
+former" -> "central_h-
+eat_input_-
+3_bus"
+	"central_h-
+eat_input_-
+3_bus" -> "central_t-
+hermal_sto-
+rageSchlo_-
+thermal_st-
+orage"
+	"central_h-
+eat_input_-
+3_bus" -> "central_h-
+eat_input_-
+3_bus_dh_s-
+ource_link-
+_exergy"
+	"central_S-
+chloss_ng_-
+bus_shorta-
+ge" -> "central_S-
+chloss_ng_-
+bus"
+	"central_S-
+chloss_ng_-
+bus" -> "central_S-
+chloss_ng_-
+chp_transf-
+ormer"
+	"central_S-
+chloss_ng_-
+chp_transf-
+ormer" -> "central_S-
+chloss_ng_-
+elec_bus"
+	"central_S-
+chloss_ng_-
+elec_bus" -> "central_S-
+chloss_ng_-
+elec_bus_e-
+xcess"
+	"central_S-
+chloss_ng_-
+elec_bus" -> "central_S-
+chloss_ng_-
+elec_centr-
+al_link"
+	"central_S-
+chloss_pe_-
+bus_shorta-
+ge" -> "central_S-
+chloss_pe_-
+bus"
+	"central_S-
+chloss_pe_-
+bus" -> "central_S-
+chloss_pe_-
+chp_transf-
+ormer"
+	"central_S-
+chloss_pe_-
+chp_transf-
+ormer" -> "central_S-
+chloss_pe_-
+elec_bus"
+	"central_S-
+chloss_pe_-
+elec_bus" -> "central_S-
+chloss_pe_-
+elec_bus_e-
+xcess"
+	"central_S-
+chloss_pe_-
+elec_bus" -> "central_S-
+chloss_pe_-
+elec_centr-
+al_link"
+	"central_S-
+chloss_wc_-
+bus_shorta-
+ge" -> "central_S-
+chloss_wc_-
+bus"
+	"central_S-
+chloss_wc_-
+bus" -> "central_S-
+chloss_wc_-
+chp_transf-
+ormer"
+	"central_S-
+chloss_wc_-
+chp_transf-
+ormer" -> "central_S-
+chloss_wc_-
+elec_bus"
+	"central_S-
+chloss_wc_-
+elec_bus" -> "central_S-
+chloss_wc_-
+elec_bus_e-
+xcess"
+	"central_S-
+chloss_wc_-
+elec_bus" -> "central_S-
+chloss_wc_-
+elec_centr-
+al_link"
+	"central_S-
+chloss_ng2-
+_bus_short-
+age" -> "central_S-
+chloss_ng2-
+_bus"
+	"central_S-
+chloss_ng2-
+_bus" -> "central_S-
+chloss_ng2-
+_heating_p-
+lant_trans-
+former"
+	"central_S-
+chloss_pe2-
+_bus_short-
+age" -> "central_S-
+chloss_pe2-
+_bus"
+	"central_S-
+chloss_pe2-
+_bus" -> "central_S-
+chloss_pe2-
+_heating_p-
+lant_trans-
+former"
+	"central_S-
+chloss_wc2-
+_bus_short-
+age" -> "central_S-
+chloss_wc2-
+_bus"
+	"central_S-
+chloss_wc2-
+_bus" -> "central_S-
+chloss_wc2-
+_heating_p-
+lant_trans-
+former"
+	"central_t-
+hermal_sto-
+rageK_ther-
+mal_storage" -> "central_h-
+eat_input_-
+4_bus"
+	"central_g-
+chp_freifl-
+aeche_K_he-
+atpump_tra-
+nsformer" -> "central_h-
+eat_input_-
+4_bus"
+	"central_K-
+ommende_wc-
+2_heating_-
+plant_tran-
+sformer" -> "central_h-
+eat_input_-
+4_bus"
+	"central_K-
+ommende_ng-
+_chp_trans-
+former" -> "central_h-
+eat_input_-
+4_bus"
+	"central_K-
+ommende_pe-
+2_heating_-
+plant_tran-
+sformer" -> "central_h-
+eat_input_-
+4_bus"
+	"central_K-
+ommende_p2-
+g_fuelcell-
+_transform-
+er" -> "central_h-
+eat_input_-
+4_bus"
+	"central_K-
+ommende_wc-
+_chp_trans-
+former" -> "central_h-
+eat_input_-
+4_bus"
+	"central_K-
+ommende_pe-
+_chp_trans-
+former" -> "central_h-
+eat_input_-
+4_bus"
+	"central_K-
+ommende_ng-
+2_heating_-
+plant_tran-
+sformer" -> "central_h-
+eat_input_-
+4_bus"
+	"central_h-
+eat_input_-
+4_bus" -> "central_t-
+hermal_sto-
+rageK_ther-
+mal_storage"
+	"central_h-
+eat_input_-
+4_bus" -> "central_h-
+eat_input_-
+4_bus_dh_s-
+ource_link-
+_exergy"
+	"central_K-
+ommende_ng-
+_bus_short-
+age" -> "central_K-
+ommende_ng-
+_bus"
+	"central_K-
+ommende_ng-
+_bus" -> "central_K-
+ommende_ng-
+_chp_trans-
+former"
+	"central_K-
+ommende_ng-
+_chp_trans-
+former" -> "central_K-
+ommende_ng-
+_elec_bus"
+	"central_K-
+ommende_ng-
+_elec_bus" -> "central_K-
+ommende_ng-
+_elec_bus_-
+excess"
+	"central_K-
+ommende_ng-
+_elec_bus" -> "central_K-
+ommende_ng-
+_elec_cent-
+ral_link"
+	"central_K-
+ommende_pe-
+_bus_short-
+age" -> "central_K-
+ommende_pe-
+_bus"
+	"central_K-
+ommende_pe-
+_bus" -> "central_K-
+ommende_pe-
+_chp_trans-
+former"
+	"central_K-
+ommende_pe-
+_chp_trans-
+former" -> "central_K-
+ommende_pe-
+_elec_bus"
+	"central_K-
+ommende_pe-
+_elec_bus" -> "central_K-
+ommende_pe-
+_elec_bus_-
+excess"
+	"central_K-
+ommende_pe-
+_elec_bus" -> "central_K-
+ommende_pe-
+_elec_cent-
+ral_link"
+	"central_K-
+ommende_wc-
+_bus_short-
+age" -> "central_K-
+ommende_wc-
+_bus"
+	"central_K-
+ommende_wc-
+_bus" -> "central_K-
+ommende_wc-
+_chp_trans-
+former"
+	"central_K-
+ommende_wc-
+_chp_trans-
+former" -> "central_K-
+ommende_wc-
+_elec_bus"
+	"central_K-
+ommende_wc-
+_elec_bus" -> "central_K-
+ommende_wc-
+_elec_bus_-
+excess"
+	"central_K-
+ommende_wc-
+_elec_bus" -> "central_K-
+ommende_wc-
+_elec_cent-
+ral_link"
+	"central_K-
+ommende_ng-
+2_bus_shor-
+tage" -> "central_K-
+ommende_ng-
+2_bus"
+	"central_K-
+ommende_ng-
+2_bus" -> "central_K-
+ommende_ng-
+2_heating_-
+plant_tran-
+sformer"
+	"central_K-
+ommende_pe-
+2_bus_shor-
+tage" -> "central_K-
+ommende_pe-
+2_bus"
+	"central_K-
+ommende_pe-
+2_bus" -> "central_K-
+ommende_pe-
+2_heating_-
+plant_tran-
+sformer"
+	"central_K-
+ommende_wc-
+2_bus_shor-
+tage" -> "central_K-
+ommende_wc-
+2_bus"
+	"central_K-
+ommende_wc-
+2_bus" -> "central_K-
+ommende_wc-
+2_heating_-
+plant_tran-
+sformer"
+	"screw_tur-
+bine" -> "screw_tur-
+bine__elec-
+tricity_bus"
+	"screw_tur-
+bine__elec-
+tricity_bus" -> "screw_tur-
+bine__elec-
+tricity_bu-
+s_excess"
+	"screw_tur-
+bine__elec-
+tricity_bus" -> "screw_tur-
+bine_pv_ce-
+ntral_elec-
+tricity_li-
+nk"
+	"01Schloss-
+_electrici-
+ty_bus_sho-
+rtage" -> "01Schloss-
+_electrici-
+ty_bus"
+	"01Schloss-
+central_el-
+ectricity_-
+link" -> "01Schloss-
+_electrici-
+ty_bus"
+	"01Schloss-
+_battery_s-
+torage" -> "01Schloss-
+_electrici-
+ty_bus"
+	"01Schloss-
+_electrici-
+ty_bus" -> "01Schloss-
+_electrici-
+ty_demand"
+	"01Schloss-
+_electrici-
+ty_bus" -> "01Schloss-
+_electric_-
+vehicle"
+	"01Schloss-
+_electrici-
+ty_bus" -> "01Schloss-
+_gchp_buil-
+ding_link"
+	"01Schloss-
+_electrici-
+ty_bus" -> "01Schloss-
+_battery_s-
+torage"
+	"01Schloss-
+_electrici-
+ty_bus" -> "01Schloss-
+_electrich-
+eating_tra-
+nsformer"
+	"dh_heat_h-
+ouse_stati-
+on_01Schlo-
+ss" -> "01Schloss-
+_heat_bus"
+	"01Schloss-
+_electrich-
+eating_tra-
+nsformer" -> "01Schloss-
+_heat_bus"
+	"01Schloss-
+_ashp_tran-
+sformer" -> "01Schloss-
+_heat_bus"
+	"01Schloss-
+_gasheatin-
+g_transfor-
+mer" -> "01Schloss-
+_heat_bus"
+	"01Schloss-
+_thermal_s-
+torage" -> "01Schloss-
+_heat_bus"
+	"01Schloss-
+_heat_bus" -> "01Schloss-
+_heat_dema-
+nd"
+	"01Schloss-
+_heat_bus" -> "01Schloss-
+_thermal_s-
+torage"
+	"01Schloss-
+_hp_elec_b-
+us_shortage" -> "01Schloss-
+_hp_elec_b-
+us"
+	"01Schloss-
+_gchp_buil-
+ding_link" -> "01Schloss-
+_hp_elec_b-
+us"
+	"01Schloss-
+_hp_elec_b-
+us" -> "01Schloss-
+_ashp_tran-
+sformer"
+	"central_n-
+aturalgas_-
+01Schlossl-
+ink" -> "01Schloss-
+_gas_bus"
+	"01Schloss-
+_gas_bus_s-
+hortage" -> "01Schloss-
+_gas_bus"
+	"01Schloss-
+_gas_bus" -> "01Schloss-
+_gasheatin-
+g_transfor-
+mer"
+	"02Nebenge-
+baeudepv_0-
+2Nebengeba-
+eude_elect-
+ricity_link" -> "02Nebenge-
+baeude_ele-
+ctricity_b-
+us"
+	"02Nebenge-
+baeude_ele-
+ctricity_b-
+us_shortage" -> "02Nebenge-
+baeude_ele-
+ctricity_b-
+us"
+	"02Nebenge-
+baeudecent-
+ral_electr-
+icity_link" -> "02Nebenge-
+baeude_ele-
+ctricity_b-
+us"
+	"02Nebenge-
+baeude_bat-
+tery_stora-
+ge" -> "02Nebenge-
+baeude_ele-
+ctricity_b-
+us"
+	"02Nebenge-
+baeude_ele-
+ctricity_b-
+us" -> "02Nebenge-
+baeude_ele-
+ctricity_d-
+emand"
+	"02Nebenge-
+baeude_ele-
+ctricity_b-
+us" -> "02Nebenge-
+baeude_gch-
+p_building-
+_link"
+	"02Nebenge-
+baeude_ele-
+ctricity_b-
+us" -> "02Nebenge-
+baeude_bat-
+tery_stora-
+ge"
+	"02Nebenge-
+baeude_ele-
+ctricity_b-
+us" -> "02Nebenge-
+baeude_ele-
+ctricheati-
+ng_transfo-
+rmer"
+	"02Nebenge-
+baeude_ele-
+ctricity_b-
+us" -> "02Nebenge-
+baeude_1_s-
+olartherma-
+l_source_c-
+ollector"
+	"02Nebenge-
+baeude_ele-
+ctricity_b-
+us" -> "02Nebenge-
+baeude_2_s-
+olartherma-
+l_source_c-
+ollector"
+	"02Nebenge-
+baeude_ele-
+ctricity_b-
+us" -> "02Nebenge-
+baeude_3_s-
+olartherma-
+l_source_c-
+ollector"
+	"02Nebenge-
+baeude_2_s-
+olartherma-
+l_source_c-
+ollector" -> "02Nebenge-
+baeude_hea-
+t_bus"
+	"dh_heat_h-
+ouse_stati-
+on_02Neben-
+gebaeude" -> "02Nebenge-
+baeude_hea-
+t_bus"
+	"02Nebenge-
+baeude_ash-
+p_transfor-
+mer" -> "02Nebenge-
+baeude_hea-
+t_bus"
+	"02Nebenge-
+baeude_the-
+rmal_stora-
+ge" -> "02Nebenge-
+baeude_hea-
+t_bus"
+	"02Nebenge-
+baeude_gas-
+heating_tr-
+ansformer" -> "02Nebenge-
+baeude_hea-
+t_bus"
+	"02Nebenge-
+baeude_3_s-
+olartherma-
+l_source_c-
+ollector" -> "02Nebenge-
+baeude_hea-
+t_bus"
+	"02Nebenge-
+baeude_ele-
+ctricheati-
+ng_transfo-
+rmer" -> "02Nebenge-
+baeude_hea-
+t_bus"
+	"02Nebenge-
+baeude_1_s-
+olartherma-
+l_source_c-
+ollector" -> "02Nebenge-
+baeude_hea-
+t_bus"
+	"02Nebenge-
+baeude_hea-
+t_bus" -> "02Nebenge-
+baeude_hea-
+t_demand"
+	"02Nebenge-
+baeude_hea-
+t_bus" -> "02Nebenge-
+baeude_the-
+rmal_stora-
+ge"
+	"02Nebenge-
+baeude_gch-
+p_building-
+_link" -> "02Nebenge-
+baeude_hp_-
+elec_bus"
+	"02Nebenge-
+baeude_hp_-
+elec_bus_s-
+hortage" -> "02Nebenge-
+baeude_hp_-
+elec_bus"
+	"02Nebenge-
+baeude_hp_-
+elec_bus" -> "02Nebenge-
+baeude_ash-
+p_transfor-
+mer"
+	"02Nebenge-
+baeude_1_p-
+v_source" -> "02Nebenge-
+baeude_pv_-
+bus"
+	"02Nebenge-
+baeude_2_p-
+v_source" -> "02Nebenge-
+baeude_pv_-
+bus"
+	"02Nebenge-
+baeude_3_p-
+v_source" -> "02Nebenge-
+baeude_pv_-
+bus"
+	"02Nebenge-
+baeude_pv_-
+bus" -> "02Nebenge-
+baeude_pv_-
+bus_excess"
+	"02Nebenge-
+baeude_pv_-
+bus" -> "02Nebenge-
+baeudepv_0-
+2Nebengeba-
+eude_elect-
+ricity_link"
+	"02Nebenge-
+baeude_pv_-
+bus" -> "02Nebenge-
+baeudepv_c-
+entral_ele-
+ctricity_l-
+ink"
+	"02Nebenge-
+baeude_gas-
+_bus_short-
+age" -> "02Nebenge-
+baeude_gas-
+_bus"
+	"central_n-
+aturalgas_-
+02Nebengeb-
+aeudelink" -> "02Nebenge-
+baeude_gas-
+_bus"
+	"02Nebenge-
+baeude_gas-
+_bus" -> "02Nebenge-
+baeude_gas-
+heating_tr-
+ansformer"
+	"03Kommend-
+e1B_batter-
+y_storage" -> "03Kommend-
+e1B_electr-
+icity_bus"
+	"03Kommend-
+e1B_electr-
+icity_bus_-
+shortage" -> "03Kommend-
+e1B_electr-
+icity_bus"
+	"03Kommend-
+e1Bcentral-
+_electrici-
+ty_link" -> "03Kommend-
+e1B_electr-
+icity_bus"
+	"03Kommend-
+e1Bpv_03Ko-
+mmende1B_e-
+lectricity-
+_link" -> "03Kommend-
+e1B_electr-
+icity_bus"
+	"03Kommend-
+e1B_electr-
+icity_bus" -> "03Kommend-
+e1B_electr-
+icity_dema-
+nd"
+	"03Kommend-
+e1B_electr-
+icity_bus" -> "03Kommend-
+e1B_gchp_b-
+uilding_li-
+nk"
+	"03Kommend-
+e1B_electr-
+icity_bus" -> "03Kommend-
+e1B_batter-
+y_storage"
+	"03Kommend-
+e1B_electr-
+icity_bus" -> "03Kommend-
+e1B_electr-
+icheating_-
+transformer"
+	"03Kommend-
+e1B_electr-
+icity_bus" -> "03Kommend-
+e1B_1_sola-
+rthermal_s-
+ource_coll-
+ector"
+	"03Kommend-
+e1B_electr-
+icity_bus" -> "03Kommend-
+e1B_2_sola-
+rthermal_s-
+ource_coll-
+ector"
+	"03Kommend-
+e1B_electr-
+icheating_-
+transformer" -> "03Kommend-
+e1B_heat_b-
+us"
+	"dh_heat_h-
+ouse_stati-
+on_03Komme-
+nde1B" -> "03Kommend-
+e1B_heat_b-
+us"
+	"03Kommend-
+e1B_1_sola-
+rthermal_s-
+ource_coll-
+ector" -> "03Kommend-
+e1B_heat_b-
+us"
+	"03Kommend-
+e1B_ashp_t-
+ransformer" -> "03Kommend-
+e1B_heat_b-
+us"
+	"03Kommend-
+e1B_gashea-
+ting_trans-
+former" -> "03Kommend-
+e1B_heat_b-
+us"
+	"03Kommend-
+e1B_2_sola-
+rthermal_s-
+ource_coll-
+ector" -> "03Kommend-
+e1B_heat_b-
+us"
+	"03Kommend-
+e1B_therma-
+l_storage" -> "03Kommend-
+e1B_heat_b-
+us"
+	"03Kommend-
+e1B_heat_b-
+us" -> "03Kommend-
+e1B_heat_d-
+emand"
+	"03Kommend-
+e1B_heat_b-
+us" -> "03Kommend-
+e1B_therma-
+l_storage"
+	"03Kommend-
+e1B_hp_ele-
+c_bus_shor-
+tage" -> "03Kommend-
+e1B_hp_ele-
+c_bus"
+	"03Kommend-
+e1B_gchp_b-
+uilding_li-
+nk" -> "03Kommend-
+e1B_hp_ele-
+c_bus"
+	"03Kommend-
+e1B_hp_ele-
+c_bus" -> "03Kommend-
+e1B_ashp_t-
+ransformer"
+	"03Kommend-
+e1B_1_pv_s-
+ource" -> "03Kommend-
+e1B_pv_bus"
+	"03Kommend-
+e1B_2_pv_s-
+ource" -> "03Kommend-
+e1B_pv_bus"
+	"03Kommend-
+e1B_pv_bus" -> "03Kommend-
+e1B_pv_bus-
+_excess"
+	"03Kommend-
+e1B_pv_bus" -> "03Kommend-
+e1Bpv_03Ko-
+mmende1B_e-
+lectricity-
+_link"
+	"03Kommend-
+e1B_pv_bus" -> "03Kommend-
+e1Bpv_cent-
+ral_electr-
+icity_link"
+	"central_n-
+aturalgas_-
+03Kommende-
+1Blink" -> "03Kommend-
+e1B_gas_bus"
+	"03Kommend-
+e1B_gas_bu-
+s_shortage" -> "03Kommend-
+e1B_gas_bus"
+	"03Kommend-
+e1B_gas_bus" -> "03Kommend-
+e1B_gashea-
+ting_trans-
+former"
+	"04Kommend-
+e2central_-
+electricit-
+y_link" -> "04Kommend-
+e2_electri-
+city_bus"
+	"04Kommend-
+e2pv_04Kom-
+mende2_ele-
+ctricity_l-
+ink" -> "04Kommend-
+e2_electri-
+city_bus"
+	"04Kommend-
+e2_electri-
+city_bus_s-
+hortage" -> "04Kommend-
+e2_electri-
+city_bus"
+	"04Kommend-
+e2_1_pv_so-
+urce" -> "04Kommend-
+e2_pv_bus"
+	"04Kommend-
+e2_pv_bus" -> "04Kommend-
+e2_pv_bus_-
+excess"
+	"04Kommend-
+e2_pv_bus" -> "04Kommend-
+e2pv_04Kom-
+mende2_ele-
+ctricity_l-
+ink"
+	"04Kommend-
+e2_pv_bus" -> "04Kommend-
+e2pv_centr-
+al_electri-
+city_link"
+	"05Kommend-
+e3pv_05Kom-
+mende3_ele-
+ctricity_l-
+ink" -> "05Kommend-
+e3_electri-
+city_bus"
+	"05Kommend-
+e3central_-
+electricit-
+y_link" -> "05Kommend-
+e3_electri-
+city_bus"
+	"05Kommend-
+e3_electri-
+city_bus_s-
+hortage" -> "05Kommend-
+e3_electri-
+city_bus"
+	"05Kommend-
+e3_battery-
+_storage" -> "05Kommend-
+e3_electri-
+city_bus"
+	"05Kommend-
+e3_electri-
+city_bus" -> "05Kommend-
+e3_electri-
+city_demand"
+	"05Kommend-
+e3_electri-
+city_bus" -> "05Kommend-
+e3_gchp_bu-
+ilding_link"
+	"05Kommend-
+e3_electri-
+city_bus" -> "05Kommend-
+e3_battery-
+_storage"
+	"05Kommend-
+e3_electri-
+city_bus" -> "05Kommend-
+e3_electri-
+cheating_t-
+ransformer"
+	"05Kommend-
+e3_electri-
+city_bus" -> "05Kommend-
+e3_1_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"05Kommend-
+e3_1_solar-
+thermal_so-
+urce_colle-
+ctor" -> "05Kommend-
+e3_heat_bus"
+	"05Kommend-
+e3_gasheat-
+ing_transf-
+ormer" -> "05Kommend-
+e3_heat_bus"
+	"05Kommend-
+e3_electri-
+cheating_t-
+ransformer" -> "05Kommend-
+e3_heat_bus"
+	"05Kommend-
+e3_ashp_tr-
+ansformer" -> "05Kommend-
+e3_heat_bus"
+	"dh_heat_h-
+ouse_stati-
+on_05Komme-
+nde3" -> "05Kommend-
+e3_heat_bus"
+	"05Kommend-
+e3_thermal-
+_storage" -> "05Kommend-
+e3_heat_bus"
+	"05Kommend-
+e3_heat_bus" -> "05Kommend-
+e3_heat_de-
+mand"
+	"05Kommend-
+e3_heat_bus" -> "05Kommend-
+e3_thermal-
+_storage"
+	"05Kommend-
+e3_hp_elec-
+_bus_short-
+age" -> "05Kommend-
+e3_hp_elec-
+_bus"
+	"05Kommend-
+e3_gchp_bu-
+ilding_link" -> "05Kommend-
+e3_hp_elec-
+_bus"
+	"05Kommend-
+e3_hp_elec-
+_bus" -> "05Kommend-
+e3_ashp_tr-
+ansformer"
+	"05Kommend-
+e3_1_pv_so-
+urce" -> "05Kommend-
+e3_pv_bus"
+	"05Kommend-
+e3_pv_bus" -> "05Kommend-
+e3_pv_bus_-
+excess"
+	"05Kommend-
+e3_pv_bus" -> "05Kommend-
+e3pv_05Kom-
+mende3_ele-
+ctricity_l-
+ink"
+	"05Kommend-
+e3_pv_bus" -> "05Kommend-
+e3pv_centr-
+al_electri-
+city_link"
+	"central_n-
+aturalgas_-
+05Kommende-
+3link" -> "05Kommend-
+e3_gas_bus"
+	"05Kommend-
+e3_gas_bus-
+_shortage" -> "05Kommend-
+e3_gas_bus"
+	"05Kommend-
+e3_gas_bus" -> "05Kommend-
+e3_gasheat-
+ing_transf-
+ormer"
+	"06Kommend-
+e4_battery-
+_storage" -> "06Kommend-
+e4_electri-
+city_bus"
+	"06Kommend-
+e4pv_06Kom-
+mende4_ele-
+ctricity_l-
+ink" -> "06Kommend-
+e4_electri-
+city_bus"
+	"06Kommend-
+e4central_-
+electricit-
+y_link" -> "06Kommend-
+e4_electri-
+city_bus"
+	"06Kommend-
+e4_electri-
+city_bus_s-
+hortage" -> "06Kommend-
+e4_electri-
+city_bus"
+	"06Kommend-
+e4_electri-
+city_bus" -> "06Kommend-
+e4_electri-
+city_demand"
+	"06Kommend-
+e4_electri-
+city_bus" -> "06Kommend-
+e4_gchp_bu-
+ilding_link"
+	"06Kommend-
+e4_electri-
+city_bus" -> "06Kommend-
+e4_battery-
+_storage"
+	"06Kommend-
+e4_electri-
+city_bus" -> "06Kommend-
+e4_electri-
+cheating_t-
+ransformer"
+	"06Kommend-
+e4_electri-
+city_bus" -> "06Kommend-
+e4_1_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"06Kommend-
+e4_ashp_tr-
+ansformer" -> "06Kommend-
+e4_heat_bus"
+	"dh_heat_h-
+ouse_stati-
+on_06Komme-
+nde4" -> "06Kommend-
+e4_heat_bus"
+	"06Kommend-
+e4_1_solar-
+thermal_so-
+urce_colle-
+ctor" -> "06Kommend-
+e4_heat_bus"
+	"06Kommend-
+e4_gasheat-
+ing_transf-
+ormer" -> "06Kommend-
+e4_heat_bus"
+	"06Kommend-
+e4_thermal-
+_storage" -> "06Kommend-
+e4_heat_bus"
+	"06Kommend-
+e4_electri-
+cheating_t-
+ransformer" -> "06Kommend-
+e4_heat_bus"
+	"06Kommend-
+e4_heat_bus" -> "06Kommend-
+e4_heat_de-
+mand"
+	"06Kommend-
+e4_heat_bus" -> "06Kommend-
+e4_thermal-
+_storage"
+	"06Kommend-
+e4_gchp_bu-
+ilding_link" -> "06Kommend-
+e4_hp_elec-
+_bus"
+	"06Kommend-
+e4_hp_elec-
+_bus_short-
+age" -> "06Kommend-
+e4_hp_elec-
+_bus"
+	"06Kommend-
+e4_hp_elec-
+_bus" -> "06Kommend-
+e4_ashp_tr-
+ansformer"
+	"06Kommend-
+e4_1_pv_so-
+urce" -> "06Kommend-
+e4_pv_bus"
+	"06Kommend-
+e4_pv_bus" -> "06Kommend-
+e4_pv_bus_-
+excess"
+	"06Kommend-
+e4_pv_bus" -> "06Kommend-
+e4pv_06Kom-
+mende4_ele-
+ctricity_l-
+ink"
+	"06Kommend-
+e4_pv_bus" -> "06Kommend-
+e4pv_centr-
+al_electri-
+city_link"
+	"06Kommend-
+e4_gas_bus-
+_shortage" -> "06Kommend-
+e4_gas_bus"
+	"central_n-
+aturalgas_-
+06Kommende-
+4link" -> "06Kommend-
+e4_gas_bus"
+	"06Kommend-
+e4_gas_bus" -> "06Kommend-
+e4_gasheat-
+ing_transf-
+ormer"
+	"07Kommend-
+e5pv_07Kom-
+mende5_ele-
+ctricity_l-
+ink" -> "07Kommend-
+e5_electri-
+city_bus"
+	"07Kommend-
+e5_battery-
+_storage" -> "07Kommend-
+e5_electri-
+city_bus"
+	"07Kommend-
+e5central_-
+electricit-
+y_link" -> "07Kommend-
+e5_electri-
+city_bus"
+	"07Kommend-
+e5_electri-
+city_bus_s-
+hortage" -> "07Kommend-
+e5_electri-
+city_bus"
+	"07Kommend-
+e5_electri-
+city_bus" -> "07Kommend-
+e5_electri-
+city_demand"
+	"07Kommend-
+e5_electri-
+city_bus" -> "07Kommend-
+e5_gchp_bu-
+ilding_link"
+	"07Kommend-
+e5_electri-
+city_bus" -> "07Kommend-
+e5_battery-
+_storage"
+	"07Kommend-
+e5_electri-
+city_bus" -> "07Kommend-
+e5_electri-
+cheating_t-
+ransformer"
+	"07Kommend-
+e5_electri-
+city_bus" -> "07Kommend-
+e5_1_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"07Kommend-
+e5_electri-
+city_bus" -> "07Kommend-
+e5_2_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"07Kommend-
+e5_electri-
+city_bus" -> "07Kommend-
+e5_3_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"07Kommend-
+e5_2_solar-
+thermal_so-
+urce_colle-
+ctor" -> "07Kommend-
+e5_heat_bus"
+	"dh_heat_h-
+ouse_stati-
+on_07Komme-
+nde5" -> "07Kommend-
+e5_heat_bus"
+	"07Kommend-
+e5_3_solar-
+thermal_so-
+urce_colle-
+ctor" -> "07Kommend-
+e5_heat_bus"
+	"07Kommend-
+e5_electri-
+cheating_t-
+ransformer" -> "07Kommend-
+e5_heat_bus"
+	"07Kommend-
+e5_1_solar-
+thermal_so-
+urce_colle-
+ctor" -> "07Kommend-
+e5_heat_bus"
+	"07Kommend-
+e5_thermal-
+_storage" -> "07Kommend-
+e5_heat_bus"
+	"07Kommend-
+e5_gasheat-
+ing_transf-
+ormer" -> "07Kommend-
+e5_heat_bus"
+	"07Kommend-
+e5_ashp_tr-
+ansformer" -> "07Kommend-
+e5_heat_bus"
+	"07Kommend-
+e5_heat_bus" -> "07Kommend-
+e5_heat_de-
+mand"
+	"07Kommend-
+e5_heat_bus" -> "07Kommend-
+e5_thermal-
+_storage"
+	"07Kommend-
+e5_gchp_bu-
+ilding_link" -> "07Kommend-
+e5_hp_elec-
+_bus"
+	"07Kommend-
+e5_hp_elec-
+_bus_short-
+age" -> "07Kommend-
+e5_hp_elec-
+_bus"
+	"07Kommend-
+e5_hp_elec-
+_bus" -> "07Kommend-
+e5_ashp_tr-
+ansformer"
+	"07Kommend-
+e5_2_pv_so-
+urce" -> "07Kommend-
+e5_pv_bus"
+	"07Kommend-
+e5_3_pv_so-
+urce" -> "07Kommend-
+e5_pv_bus"
+	"07Kommend-
+e5_1_pv_so-
+urce" -> "07Kommend-
+e5_pv_bus"
+	"07Kommend-
+e5_pv_bus" -> "07Kommend-
+e5_pv_bus_-
+excess"
+	"07Kommend-
+e5_pv_bus" -> "07Kommend-
+e5pv_07Kom-
+mende5_ele-
+ctricity_l-
+ink"
+	"07Kommend-
+e5_pv_bus" -> "07Kommend-
+e5pv_centr-
+al_electri-
+city_link"
+	"07Kommend-
+e5_gas_bus-
+_shortage" -> "07Kommend-
+e5_gas_bus"
+	"central_n-
+aturalgas_-
+07Kommende-
+5link" -> "07Kommend-
+e5_gas_bus"
+	"07Kommend-
+e5_gas_bus" -> "07Kommend-
+e5_gasheat-
+ing_transf-
+ormer"
+	"08Kommend-
+e6pv_08Kom-
+mende6_ele-
+ctricity_l-
+ink" -> "08Kommend-
+e6_electri-
+city_bus"
+	"08Kommend-
+e6central_-
+electricit-
+y_link" -> "08Kommend-
+e6_electri-
+city_bus"
+	"08Kommend-
+e6_battery-
+_storage" -> "08Kommend-
+e6_electri-
+city_bus"
+	"08Kommend-
+e6_electri-
+city_bus_s-
+hortage" -> "08Kommend-
+e6_electri-
+city_bus"
+	"08Kommend-
+e6_electri-
+city_bus" -> "08Kommend-
+e6_electri-
+city_demand"
+	"08Kommend-
+e6_electri-
+city_bus" -> "08Kommend-
+e6_gchp_bu-
+ilding_link"
+	"08Kommend-
+e6_electri-
+city_bus" -> "08Kommend-
+e6_battery-
+_storage"
+	"08Kommend-
+e6_electri-
+city_bus" -> "08Kommend-
+e6_electri-
+cheating_t-
+ransformer"
+	"08Kommend-
+e6_electri-
+city_bus" -> "08Kommend-
+e6_1_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"08Kommend-
+e6_electri-
+cheating_t-
+ransformer" -> "08Kommend-
+e6_heat_bus"
+	"08Kommend-
+e6_gasheat-
+ing_transf-
+ormer" -> "08Kommend-
+e6_heat_bus"
+	"08Kommend-
+e6_ashp_tr-
+ansformer" -> "08Kommend-
+e6_heat_bus"
+	"dh_heat_h-
+ouse_stati-
+on_08Komme-
+nde6" -> "08Kommend-
+e6_heat_bus"
+	"08Kommend-
+e6_thermal-
+_storage" -> "08Kommend-
+e6_heat_bus"
+	"08Kommend-
+e6_1_solar-
+thermal_so-
+urce_colle-
+ctor" -> "08Kommend-
+e6_heat_bus"
+	"08Kommend-
+e6_heat_bus" -> "08Kommend-
+e6_heat_de-
+mand"
+	"08Kommend-
+e6_heat_bus" -> "08Kommend-
+e6_thermal-
+_storage"
+	"08Kommend-
+e6_hp_elec-
+_bus_short-
+age" -> "08Kommend-
+e6_hp_elec-
+_bus"
+	"08Kommend-
+e6_gchp_bu-
+ilding_link" -> "08Kommend-
+e6_hp_elec-
+_bus"
+	"08Kommend-
+e6_hp_elec-
+_bus" -> "08Kommend-
+e6_ashp_tr-
+ansformer"
+	"08Kommend-
+e6_1_pv_so-
+urce" -> "08Kommend-
+e6_pv_bus"
+	"08Kommend-
+e6_pv_bus" -> "08Kommend-
+e6_pv_bus_-
+excess"
+	"08Kommend-
+e6_pv_bus" -> "08Kommend-
+e6pv_08Kom-
+mende6_ele-
+ctricity_l-
+ink"
+	"08Kommend-
+e6_pv_bus" -> "08Kommend-
+e6pv_centr-
+al_electri-
+city_link"
+	"central_n-
+aturalgas_-
+08Kommende-
+6link" -> "08Kommend-
+e6_gas_bus"
+	"08Kommend-
+e6_gas_bus-
+_shortage" -> "08Kommend-
+e6_gas_bus"
+	"08Kommend-
+e6_gas_bus" -> "08Kommend-
+e6_gasheat-
+ing_transf-
+ormer"
+	"09Kommend-
+e7_battery-
+_storage" -> "09Kommend-
+e7_electri-
+city_bus"
+	"09Kommend-
+e7pv_09Kom-
+mende7_ele-
+ctricity_l-
+ink" -> "09Kommend-
+e7_electri-
+city_bus"
+	"09Kommend-
+e7_electri-
+city_bus_s-
+hortage" -> "09Kommend-
+e7_electri-
+city_bus"
+	"09Kommend-
+e7central_-
+electricit-
+y_link" -> "09Kommend-
+e7_electri-
+city_bus"
+	"09Kommend-
+e7_electri-
+city_bus" -> "09Kommend-
+e7_electri-
+city_demand"
+	"09Kommend-
+e7_electri-
+city_bus" -> "09Kommend-
+e7_battery-
+_storage"
+	"09Kommend-
+e7_electri-
+city_bus" -> "09Kommend-
+e7_gchp_bu-
+ilding_link"
+	"09Kommend-
+e7_electri-
+city_bus" -> "09Kommend-
+e7_electri-
+cheating_t-
+ransformer"
+	"09Kommend-
+e7_electri-
+city_bus" -> "09Kommend-
+e7_1_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"dh_heat_h-
+ouse_stati-
+on_09Komme-
+nde7" -> "09Kommend-
+e7_heat_bus"
+	"09Kommend-
+e7_ashp_tr-
+ansformer" -> "09Kommend-
+e7_heat_bus"
+	"09Kommend-
+e7_electri-
+cheating_t-
+ransformer" -> "09Kommend-
+e7_heat_bus"
+	"09Kommend-
+e7_1_solar-
+thermal_so-
+urce_colle-
+ctor" -> "09Kommend-
+e7_heat_bus"
+	"09Kommend-
+e7_thermal-
+_storage" -> "09Kommend-
+e7_heat_bus"
+	"09Kommend-
+e7_gasheat-
+ing_transf-
+ormer" -> "09Kommend-
+e7_heat_bus"
+	"09Kommend-
+e7_heat_bus" -> "09Kommend-
+e7_heat_de-
+mand"
+	"09Kommend-
+e7_heat_bus" -> "09Kommend-
+e7_thermal-
+_storage"
+	"09Kommend-
+e7_hp_elec-
+_bus_short-
+age" -> "09Kommend-
+e7_hp_elec-
+_bus"
+	"09Kommend-
+e7_gchp_bu-
+ilding_link" -> "09Kommend-
+e7_hp_elec-
+_bus"
+	"09Kommend-
+e7_hp_elec-
+_bus" -> "09Kommend-
+e7_ashp_tr-
+ansformer"
+	"09Kommend-
+e7_1_pv_so-
+urce" -> "09Kommend-
+e7_pv_bus"
+	"09Kommend-
+e7_pv_bus" -> "09Kommend-
+e7_pv_bus_-
+excess"
+	"09Kommend-
+e7_pv_bus" -> "09Kommend-
+e7pv_09Kom-
+mende7_ele-
+ctricity_l-
+ink"
+	"09Kommend-
+e7_pv_bus" -> "09Kommend-
+e7pv_centr-
+al_electri-
+city_link"
+	"central_n-
+aturalgas_-
+09Kommende-
+7link" -> "09Kommend-
+e7_gas_bus"
+	"09Kommend-
+e7_gas_bus-
+_shortage" -> "09Kommend-
+e7_gas_bus"
+	"09Kommend-
+e7_gas_bus" -> "09Kommend-
+e7_gasheat-
+ing_transf-
+ormer"
+	"10Kommend-
+e8pv_10Kom-
+mende8_ele-
+ctricity_l-
+ink" -> "10Kommend-
+e8_electri-
+city_bus"
+	"10Kommend-
+e8_battery-
+_storage" -> "10Kommend-
+e8_electri-
+city_bus"
+	"10Kommend-
+e8central_-
+electricit-
+y_link" -> "10Kommend-
+e8_electri-
+city_bus"
+	"10Kommend-
+e8_electri-
+city_bus_s-
+hortage" -> "10Kommend-
+e8_electri-
+city_bus"
+	"10Kommend-
+e8_electri-
+city_bus" -> "10Kommend-
+e8_electri-
+city_demand"
+	"10Kommend-
+e8_electri-
+city_bus" -> "10Kommend-
+e8_battery-
+_storage"
+	"10Kommend-
+e8_electri-
+city_bus" -> "10Kommend-
+e8_gchp_bu-
+ilding_link"
+	"10Kommend-
+e8_electri-
+city_bus" -> "10Kommend-
+e8_electri-
+cheating_t-
+ransformer"
+	"10Kommend-
+e8_electri-
+city_bus" -> "10Kommend-
+e8_1_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"10Kommend-
+e8_thermal-
+_storage" -> "10Kommend-
+e8_heat_bus"
+	"dh_heat_h-
+ouse_stati-
+on_10Komme-
+nde8" -> "10Kommend-
+e8_heat_bus"
+	"10Kommend-
+e8_gasheat-
+ing_transf-
+ormer" -> "10Kommend-
+e8_heat_bus"
+	"10Kommend-
+e8_ashp_tr-
+ansformer" -> "10Kommend-
+e8_heat_bus"
+	"10Kommend-
+e8_1_solar-
+thermal_so-
+urce_colle-
+ctor" -> "10Kommend-
+e8_heat_bus"
+	"10Kommend-
+e8_electri-
+cheating_t-
+ransformer" -> "10Kommend-
+e8_heat_bus"
+	"10Kommend-
+e8_heat_bus" -> "10Kommend-
+e8_heat_de-
+mand"
+	"10Kommend-
+e8_heat_bus" -> "10Kommend-
+e8_thermal-
+_storage"
+	"10Kommend-
+e8_hp_elec-
+_bus_short-
+age" -> "10Kommend-
+e8_hp_elec-
+_bus"
+	"10Kommend-
+e8_gchp_bu-
+ilding_link" -> "10Kommend-
+e8_hp_elec-
+_bus"
+	"10Kommend-
+e8_hp_elec-
+_bus" -> "10Kommend-
+e8_ashp_tr-
+ansformer"
+	"10Kommend-
+e8_1_pv_so-
+urce" -> "10Kommend-
+e8_pv_bus"
+	"10Kommend-
+e8_pv_bus" -> "10Kommend-
+e8_pv_bus_-
+excess"
+	"10Kommend-
+e8_pv_bus" -> "10Kommend-
+e8pv_10Kom-
+mende8_ele-
+ctricity_l-
+ink"
+	"10Kommend-
+e8_pv_bus" -> "10Kommend-
+e8pv_centr-
+al_electri-
+city_link"
+	"10Kommend-
+e8_gas_bus-
+_shortage" -> "10Kommend-
+e8_gas_bus"
+	"central_n-
+aturalgas_-
+10Kommende-
+8link" -> "10Kommend-
+e8_gas_bus"
+	"10Kommend-
+e8_gas_bus" -> "10Kommend-
+e8_gasheat-
+ing_transf-
+ormer"
+	"11Kommend-
+e9central_-
+electricit-
+y_link" -> "11Kommend-
+e9_electri-
+city_bus"
+	"11Kommend-
+e9_battery-
+_storage" -> "11Kommend-
+e9_electri-
+city_bus"
+	"11Kommend-
+e9pv_11Kom-
+mende9_ele-
+ctricity_l-
+ink" -> "11Kommend-
+e9_electri-
+city_bus"
+	"11Kommend-
+e9_electri-
+city_bus_s-
+hortage" -> "11Kommend-
+e9_electri-
+city_bus"
+	"11Kommend-
+e9_electri-
+city_bus" -> "11Kommend-
+e9_electri-
+city_demand"
+	"11Kommend-
+e9_electri-
+city_bus" -> "11Kommend-
+e9_battery-
+_storage"
+	"11Kommend-
+e9_electri-
+city_bus" -> "11Kommend-
+e9_gchp_bu-
+ilding_link"
+	"11Kommend-
+e9_electri-
+city_bus" -> "11Kommend-
+e9_electri-
+cheating_t-
+ransformer"
+	"11Kommend-
+e9_electri-
+city_bus" -> "11Kommend-
+e9_1_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"11Kommend-
+e9_1_solar-
+thermal_so-
+urce_colle-
+ctor" -> "11Kommend-
+e9_heat_bus"
+	"11Kommend-
+e9_thermal-
+_storage" -> "11Kommend-
+e9_heat_bus"
+	"dh_heat_h-
+ouse_stati-
+on_11Komme-
+nde9" -> "11Kommend-
+e9_heat_bus"
+	"11Kommend-
+e9_ashp_tr-
+ansformer" -> "11Kommend-
+e9_heat_bus"
+	"11Kommend-
+e9_gasheat-
+ing_transf-
+ormer" -> "11Kommend-
+e9_heat_bus"
+	"11Kommend-
+e9_electri-
+cheating_t-
+ransformer" -> "11Kommend-
+e9_heat_bus"
+	"11Kommend-
+e9_heat_bus" -> "11Kommend-
+e9_heat_de-
+mand"
+	"11Kommend-
+e9_heat_bus" -> "11Kommend-
+e9_thermal-
+_storage"
+	"11Kommend-
+e9_gchp_bu-
+ilding_link" -> "11Kommend-
+e9_hp_elec-
+_bus"
+	"11Kommend-
+e9_hp_elec-
+_bus_short-
+age" -> "11Kommend-
+e9_hp_elec-
+_bus"
+	"11Kommend-
+e9_hp_elec-
+_bus" -> "11Kommend-
+e9_ashp_tr-
+ansformer"
+	"11Kommend-
+e9_1_pv_so-
+urce" -> "11Kommend-
+e9_pv_bus"
+	"11Kommend-
+e9_pv_bus" -> "11Kommend-
+e9_pv_bus_-
+excess"
+	"11Kommend-
+e9_pv_bus" -> "11Kommend-
+e9pv_11Kom-
+mende9_ele-
+ctricity_l-
+ink"
+	"11Kommend-
+e9_pv_bus" -> "11Kommend-
+e9pv_centr-
+al_electri-
+city_link"
+	"central_n-
+aturalgas_-
+11Kommende-
+9link" -> "11Kommend-
+e9_gas_bus"
+	"11Kommend-
+e9_gas_bus-
+_shortage" -> "11Kommend-
+e9_gas_bus"
+	"11Kommend-
+e9_gas_bus" -> "11Kommend-
+e9_gasheat-
+ing_transf-
+ormer"
+	"12Kommend-
+e10_batter-
+y_storage" -> "12Kommend-
+e10_electr-
+icity_bus"
+	"12Kommend-
+e10_electr-
+icity_bus_-
+shortage" -> "12Kommend-
+e10_electr-
+icity_bus"
+	"12Kommend-
+e10pv_12Ko-
+mmende10_e-
+lectricity-
+_link" -> "12Kommend-
+e10_electr-
+icity_bus"
+	"12Kommend-
+e10central-
+_electrici-
+ty_link" -> "12Kommend-
+e10_electr-
+icity_bus"
+	"12Kommend-
+e10_electr-
+icity_bus" -> "12Kommend-
+e10_electr-
+icity_dema-
+nd"
+	"12Kommend-
+e10_electr-
+icity_bus" -> "12Kommend-
+e10_batter-
+y_storage"
+	"12Kommend-
+e10_electr-
+icity_bus" -> "12Kommend-
+e10_gchp_b-
+uilding_li-
+nk"
+	"12Kommend-
+e10_electr-
+icity_bus" -> "12Kommend-
+e10_electr-
+icheating_-
+transformer"
+	"12Kommend-
+e10_electr-
+icity_bus" -> "12Kommend-
+e10_1_sola-
+rthermal_s-
+ource_coll-
+ector"
+	"12Kommend-
+e10_electr-
+icity_bus" -> "12Kommend-
+e10_2_sola-
+rthermal_s-
+ource_coll-
+ector"
+	"12Kommend-
+e10_electr-
+icity_bus" -> "12Kommend-
+e10_3_sola-
+rthermal_s-
+ource_coll-
+ector"
+	"12Kommend-
+e10_electr-
+icity_bus" -> "12Kommend-
+e10_4_sola-
+rthermal_s-
+ource_coll-
+ector"
+	"12Kommend-
+e10_gashea-
+ting_trans-
+former" -> "12Kommend-
+e10_heat_b-
+us"
+	"12Kommend-
+e10_4_sola-
+rthermal_s-
+ource_coll-
+ector" -> "12Kommend-
+e10_heat_b-
+us"
+	"dh_heat_h-
+ouse_stati-
+on_12Komme-
+nde10" -> "12Kommend-
+e10_heat_b-
+us"
+	"12Kommend-
+e10_2_sola-
+rthermal_s-
+ource_coll-
+ector" -> "12Kommend-
+e10_heat_b-
+us"
+	"12Kommend-
+e10_1_sola-
+rthermal_s-
+ource_coll-
+ector" -> "12Kommend-
+e10_heat_b-
+us"
+	"12Kommend-
+e10_electr-
+icheating_-
+transformer" -> "12Kommend-
+e10_heat_b-
+us"
+	"12Kommend-
+e10_3_sola-
+rthermal_s-
+ource_coll-
+ector" -> "12Kommend-
+e10_heat_b-
+us"
+	"12Kommend-
+e10_ashp_t-
+ransformer" -> "12Kommend-
+e10_heat_b-
+us"
+	"12Kommend-
+e10_therma-
+l_storage" -> "12Kommend-
+e10_heat_b-
+us"
+	"12Kommend-
+e10_heat_b-
+us" -> "12Kommend-
+e10_heat_d-
+emand"
+	"12Kommend-
+e10_heat_b-
+us" -> "12Kommend-
+e10_therma-
+l_storage"
+	"12Kommend-
+e10_gchp_b-
+uilding_li-
+nk" -> "12Kommend-
+e10_hp_ele-
+c_bus"
+	"12Kommend-
+e10_hp_ele-
+c_bus_shor-
+tage" -> "12Kommend-
+e10_hp_ele-
+c_bus"
+	"12Kommend-
+e10_hp_ele-
+c_bus" -> "12Kommend-
+e10_ashp_t-
+ransformer"
+	"12Kommend-
+e10_2_pv_s-
+ource" -> "12Kommend-
+e10_pv_bus"
+	"12Kommend-
+e10_4_pv_s-
+ource" -> "12Kommend-
+e10_pv_bus"
+	"12Kommend-
+e10_1_pv_s-
+ource" -> "12Kommend-
+e10_pv_bus"
+	"12Kommend-
+e10_3_pv_s-
+ource" -> "12Kommend-
+e10_pv_bus"
+	"12Kommend-
+e10_pv_bus" -> "12Kommend-
+e10_pv_bus-
+_excess"
+	"12Kommend-
+e10_pv_bus" -> "12Kommend-
+e10pv_12Ko-
+mmende10_e-
+lectricity-
+_link"
+	"12Kommend-
+e10_pv_bus" -> "12Kommend-
+e10pv_cent-
+ral_electr-
+icity_link"
+	"central_n-
+aturalgas_-
+12Kommende-
+10link" -> "12Kommend-
+e10_gas_bus"
+	"12Kommend-
+e10_gas_bu-
+s_shortage" -> "12Kommend-
+e10_gas_bus"
+	"12Kommend-
+e10_gas_bus" -> "12Kommend-
+e10_gashea-
+ting_trans-
+former"
+	"13Kommend-
+e1112centr-
+al_electri-
+city_link" -> "13Kommend-
+e1112_elec-
+tricity_bus"
+	"13Kommend-
+e1112_elec-
+tricity_bu-
+s_shortage" -> "13Kommend-
+e1112_elec-
+tricity_bus"
+	"13Kommend-
+e1112pv_13-
+Kommende11-
+12_electri-
+city_link" -> "13Kommend-
+e1112_elec-
+tricity_bus"
+	"13Kommend-
+e1112_batt-
+ery_storage" -> "13Kommend-
+e1112_elec-
+tricity_bus"
+	"13Kommend-
+e1112_elec-
+tricity_bus" -> "13Kommend-
+e1112_elec-
+tricity_de-
+mand"
+	"13Kommend-
+e1112_elec-
+tricity_bus" -> "13Kommend-
+e1112_batt-
+ery_storage"
+	"13Kommend-
+e1112_elec-
+tricity_bus" -> "13Kommend-
+e1112_gchp-
+_building_-
+link"
+	"13Kommend-
+e1112_elec-
+tricity_bus" -> "13Kommend-
+e1112_elec-
+tricheatin-
+g_transfor-
+mer"
+	"13Kommend-
+e1112_elec-
+tricity_bus" -> "13Kommend-
+e1112_1_so-
+larthermal-
+_source_co-
+llector"
+	"13Kommend-
+e1112_elec-
+tricity_bus" -> "13Kommend-
+e1112_2_so-
+larthermal-
+_source_co-
+llector"
+	"13Kommend-
+e1112_ashp-
+_transform-
+er" -> "13Kommend-
+e1112_heat-
+_bus"
+	"13Kommend-
+e1112_ther-
+mal_storage" -> "13Kommend-
+e1112_heat-
+_bus"
+	"13Kommend-
+e1112_gash-
+eating_tra-
+nsformer" -> "13Kommend-
+e1112_heat-
+_bus"
+	"13Kommend-
+e1112_1_so-
+larthermal-
+_source_co-
+llector" -> "13Kommend-
+e1112_heat-
+_bus"
+	"dh_heat_h-
+ouse_stati-
+on_13Komme-
+nde1112" -> "13Kommend-
+e1112_heat-
+_bus"
+	"13Kommend-
+e1112_2_so-
+larthermal-
+_source_co-
+llector" -> "13Kommend-
+e1112_heat-
+_bus"
+	"13Kommend-
+e1112_elec-
+tricheatin-
+g_transfor-
+mer" -> "13Kommend-
+e1112_heat-
+_bus"
+	"13Kommend-
+e1112_heat-
+_bus" -> "13Kommend-
+e1112_heat-
+_demand"
+	"13Kommend-
+e1112_heat-
+_bus" -> "13Kommend-
+e1112_ther-
+mal_storage"
+	"13Kommend-
+e1112_hp_e-
+lec_bus_sh-
+ortage" -> "13Kommend-
+e1112_hp_e-
+lec_bus"
+	"13Kommend-
+e1112_gchp-
+_building_-
+link" -> "13Kommend-
+e1112_hp_e-
+lec_bus"
+	"13Kommend-
+e1112_hp_e-
+lec_bus" -> "13Kommend-
+e1112_ashp-
+_transform-
+er"
+	"13Kommend-
+e1112_1_pv-
+_source" -> "13Kommend-
+e1112_pv_b-
+us"
+	"13Kommend-
+e1112_2_pv-
+_source" -> "13Kommend-
+e1112_pv_b-
+us"
+	"13Kommend-
+e1112_pv_b-
+us" -> "13Kommend-
+e1112_pv_b-
+us_excess"
+	"13Kommend-
+e1112_pv_b-
+us" -> "13Kommend-
+e1112pv_13-
+Kommende11-
+12_electri-
+city_link"
+	"13Kommend-
+e1112_pv_b-
+us" -> "13Kommend-
+e1112pv_ce-
+ntral_elec-
+tricity_li-
+nk"
+	"13Kommend-
+e1112_gas_-
+bus_shorta-
+ge" -> "13Kommend-
+e1112_gas_-
+bus"
+	"central_n-
+aturalgas_-
+13Kommende-
+1112link" -> "13Kommend-
+e1112_gas_-
+bus"
+	"13Kommend-
+e1112_gas_-
+bus" -> "13Kommend-
+e1112_gash-
+eating_tra-
+nsformer"
+	"14Kommend-
+e13pv_14Ko-
+mmende13_e-
+lectricity-
+_link" -> "14Kommend-
+e13_electr-
+icity_bus"
+	"14Kommend-
+e13_electr-
+icity_bus_-
+shortage" -> "14Kommend-
+e13_electr-
+icity_bus"
+	"14Kommend-
+e13central-
+_electrici-
+ty_link" -> "14Kommend-
+e13_electr-
+icity_bus"
+	"14Kommend-
+e13_batter-
+y_storage" -> "14Kommend-
+e13_electr-
+icity_bus"
+	"14Kommend-
+e13_electr-
+icity_bus" -> "14Kommend-
+e13_electr-
+icity_dema-
+nd"
+	"14Kommend-
+e13_electr-
+icity_bus" -> "14Kommend-
+e13_batter-
+y_storage"
+	"14Kommend-
+e13_electr-
+icity_bus" -> "14Kommend-
+e13_gchp_b-
+uilding_li-
+nk"
+	"14Kommend-
+e13_electr-
+icity_bus" -> "14Kommend-
+e13_electr-
+icheating_-
+transformer"
+	"14Kommend-
+e13_electr-
+icity_bus" -> "14Kommend-
+e13_1_sola-
+rthermal_s-
+ource_coll-
+ector"
+	"14Kommend-
+e13_electr-
+icheating_-
+transformer" -> "14Kommend-
+e13_heat_b-
+us"
+	"14Kommend-
+e13_ashp_t-
+ransformer" -> "14Kommend-
+e13_heat_b-
+us"
+	"14Kommend-
+e13_therma-
+l_storage" -> "14Kommend-
+e13_heat_b-
+us"
+	"dh_heat_h-
+ouse_stati-
+on_14Komme-
+nde13" -> "14Kommend-
+e13_heat_b-
+us"
+	"14Kommend-
+e13_gashea-
+ting_trans-
+former" -> "14Kommend-
+e13_heat_b-
+us"
+	"14Kommend-
+e13_1_sola-
+rthermal_s-
+ource_coll-
+ector" -> "14Kommend-
+e13_heat_b-
+us"
+	"14Kommend-
+e13_heat_b-
+us" -> "14Kommend-
+e13_heat_d-
+emand"
+	"14Kommend-
+e13_heat_b-
+us" -> "14Kommend-
+e13_therma-
+l_storage"
+	"14Kommend-
+e13_gchp_b-
+uilding_li-
+nk" -> "14Kommend-
+e13_hp_ele-
+c_bus"
+	"14Kommend-
+e13_hp_ele-
+c_bus_shor-
+tage" -> "14Kommend-
+e13_hp_ele-
+c_bus"
+	"14Kommend-
+e13_hp_ele-
+c_bus" -> "14Kommend-
+e13_ashp_t-
+ransformer"
+	"14Kommend-
+e13_1_pv_s-
+ource" -> "14Kommend-
+e13_pv_bus"
+	"14Kommend-
+e13_pv_bus" -> "14Kommend-
+e13_pv_bus-
+_excess"
+	"14Kommend-
+e13_pv_bus" -> "14Kommend-
+e13pv_14Ko-
+mmende13_e-
+lectricity-
+_link"
+	"14Kommend-
+e13_pv_bus" -> "14Kommend-
+e13pv_cent-
+ral_electr-
+icity_link"
+	"central_n-
+aturalgas_-
+14Kommende-
+13link" -> "14Kommend-
+e13_gas_bus"
+	"14Kommend-
+e13_gas_bu-
+s_shortage" -> "14Kommend-
+e13_gas_bus"
+	"14Kommend-
+e13_gas_bus" -> "14Kommend-
+e13_gashea-
+ting_trans-
+former"
+	"17Muehle_-
+battery_st-
+orage" -> "17Muehle_-
+electricit-
+y_bus"
+	"17Muehlep-
+v_17Muehle-
+_electrici-
+ty_link" -> "17Muehle_-
+electricit-
+y_bus"
+	"17Muehlec-
+entral_ele-
+ctricity_l-
+ink" -> "17Muehle_-
+electricit-
+y_bus"
+	"17Muehle_-
+electricit-
+y_bus_shor-
+tage" -> "17Muehle_-
+electricit-
+y_bus"
+	"17Muehle_-
+electricit-
+y_bus" -> "17Muehle_-
+electricit-
+y_demand"
+	"17Muehle_-
+electricit-
+y_bus" -> "17Muehle_-
+battery_st-
+orage"
+	"17Muehle_-
+electricit-
+y_bus" -> "17Muehle_-
+gchp_build-
+ing_link"
+	"17Muehle_-
+electricit-
+y_bus" -> "17Muehle_-
+electriche-
+ating_tran-
+sformer"
+	"17Muehle_-
+electricit-
+y_bus" -> "17Muehle_-
+1_solarthe-
+rmal_sourc-
+e_collector"
+	"17Muehle_-
+electricit-
+y_bus" -> "17Muehle_-
+2_solarthe-
+rmal_sourc-
+e_collector"
+	"17Muehle_-
+electricit-
+y_bus" -> "17Muehle_-
+3_solarthe-
+rmal_sourc-
+e_collector"
+	"17Muehle_-
+gasheating-
+_transform-
+er" -> "17Muehle_-
+heat_bus"
+	"17Muehle_-
+ashp_trans-
+former" -> "17Muehle_-
+heat_bus"
+	"17Muehle_-
+2_solarthe-
+rmal_sourc-
+e_collector" -> "17Muehle_-
+heat_bus"
+	"17Muehle_-
+1_solarthe-
+rmal_sourc-
+e_collector" -> "17Muehle_-
+heat_bus"
+	"dh_heat_h-
+ouse_stati-
+on_17Muehle" -> "17Muehle_-
+heat_bus"
+	"17Muehle_-
+thermal_st-
+orage" -> "17Muehle_-
+heat_bus"
+	"17Muehle_-
+electriche-
+ating_tran-
+sformer" -> "17Muehle_-
+heat_bus"
+	"17Muehle_-
+3_solarthe-
+rmal_sourc-
+e_collector" -> "17Muehle_-
+heat_bus"
+	"17Muehle_-
+heat_bus" -> "17Muehle_-
+heat_demand"
+	"17Muehle_-
+heat_bus" -> "17Muehle_-
+thermal_st-
+orage"
+	"17Muehle_-
+gchp_build-
+ing_link" -> "17Muehle_-
+hp_elec_bus"
+	"17Muehle_-
+hp_elec_bu-
+s_shortage" -> "17Muehle_-
+hp_elec_bus"
+	"17Muehle_-
+hp_elec_bus" -> "17Muehle_-
+ashp_trans-
+former"
+	"17Muehle_-
+1_pv_source" -> "17Muehle_-
+pv_bus"
+	"17Muehle_-
+2_pv_source" -> "17Muehle_-
+pv_bus"
+	"17Muehle_-
+3_pv_source" -> "17Muehle_-
+pv_bus"
+	"17Muehle_-
+pv_bus" -> "17Muehle_-
+pv_bus_exc-
+ess"
+	"17Muehle_-
+pv_bus" -> "17Muehlep-
+v_17Muehle-
+_electrici-
+ty_link"
+	"17Muehle_-
+pv_bus" -> "17Muehlep-
+v_central_-
+electricit-
+y_link"
+	"17Muehle_-
+gas_bus_sh-
+ortage" -> "17Muehle_-
+gas_bus"
+	"central_n-
+aturalgas_-
+17Muehleli-
+nk" -> "17Muehle_-
+gas_bus"
+	"17Muehle_-
+gas_bus" -> "17Muehle_-
+gasheating-
+_transform-
+er"
+	"19Hotelpv-
+_19Hotel_e-
+lectricity-
+_link" -> "19Hotel_e-
+lectricity-
+_bus"
+	"19Hotelce-
+ntral_elec-
+tricity_li-
+nk" -> "19Hotel_e-
+lectricity-
+_bus"
+	"19Hotel_b-
+attery_sto-
+rage" -> "19Hotel_e-
+lectricity-
+_bus"
+	"19Hotel_e-
+lectricity-
+_bus_short-
+age" -> "19Hotel_e-
+lectricity-
+_bus"
+	"19Hotel_e-
+lectricity-
+_bus" -> "19Hotel_e-
+lectricity-
+_demand"
+	"19Hotel_e-
+lectricity-
+_bus" -> "19Hotel_b-
+attery_sto-
+rage"
+	"19Hotel_e-
+lectricity-
+_bus" -> "19Hotel_g-
+chp_buildi-
+ng_link"
+	"19Hotel_e-
+lectricity-
+_bus" -> "19Hotel_e-
+lectrichea-
+ting_trans-
+former"
+	"19Hotel_e-
+lectricity-
+_bus" -> "19Hotel_1-
+_solarther-
+mal_source-
+_collector"
+	"19Hotel_e-
+lectricity-
+_bus" -> "19Hotel_2-
+_solarther-
+mal_source-
+_collector"
+	"19Hotel_e-
+lectrichea-
+ting_trans-
+former" -> "19Hotel_h-
+eat_bus"
+	"19Hotel_2-
+_solarther-
+mal_source-
+_collector" -> "19Hotel_h-
+eat_bus"
+	"19Hotel_a-
+shp_transf-
+ormer" -> "19Hotel_h-
+eat_bus"
+	"dh_heat_h-
+ouse_stati-
+on_19Hotel" -> "19Hotel_h-
+eat_bus"
+	"19Hotel_t-
+hermal_sto-
+rage" -> "19Hotel_h-
+eat_bus"
+	"19Hotel_g-
+asheating_-
+transformer" -> "19Hotel_h-
+eat_bus"
+	"19Hotel_1-
+_solarther-
+mal_source-
+_collector" -> "19Hotel_h-
+eat_bus"
+	"19Hotel_h-
+eat_bus" -> "19Hotel_h-
+eat_demand"
+	"19Hotel_h-
+eat_bus" -> "19Hotel_t-
+hermal_sto-
+rage"
+	"19Hotel_g-
+chp_buildi-
+ng_link" -> "19Hotel_h-
+p_elec_bus"
+	"19Hotel_h-
+p_elec_bus-
+_shortage" -> "19Hotel_h-
+p_elec_bus"
+	"19Hotel_h-
+p_elec_bus" -> "19Hotel_a-
+shp_transf-
+ormer"
+	"19Hotel_1-
+_pv_source" -> "19Hotel_p-
+v_bus"
+	"19Hotel_2-
+_pv_source" -> "19Hotel_p-
+v_bus"
+	"19Hotel_p-
+v_bus" -> "19Hotel_p-
+v_bus_exce-
+ss"
+	"19Hotel_p-
+v_bus" -> "19Hotelpv-
+_19Hotel_e-
+lectricity-
+_link"
+	"19Hotel_p-
+v_bus" -> "19Hotelpv-
+_central_e-
+lectricity-
+_link"
+	"19Hotel_g-
+as_bus_sho-
+rtage" -> "19Hotel_g-
+as_bus"
+	"central_n-
+aturalgas_-
+19Hotellink" -> "19Hotel_g-
+as_bus"
+	"19Hotel_g-
+as_bus" -> "19Hotel_g-
+asheating_-
+transformer"
+	"20Wohngeb-
+auedecentr-
+al_electri-
+city_link" -> "20Wohngeb-
+auede_elec-
+tricity_bus"
+	"20Wohngeb-
+auedepv_20-
+Wohngebaue-
+de_electri-
+city_link" -> "20Wohngeb-
+auede_elec-
+tricity_bus"
+	"20Wohngeb-
+auede_batt-
+ery_storage" -> "20Wohngeb-
+auede_elec-
+tricity_bus"
+	"20Wohngeb-
+auede_elec-
+tricity_bu-
+s_shortage" -> "20Wohngeb-
+auede_elec-
+tricity_bus"
+	"20Wohngeb-
+auede_elec-
+tricity_bus" -> "20Wohngeb-
+auede_elec-
+tricity_de-
+mand"
+	"20Wohngeb-
+auede_elec-
+tricity_bus" -> "20Wohngeb-
+auede_batt-
+ery_storage"
+	"20Wohngeb-
+auede_elec-
+tricity_bus" -> "20Wohngeb-
+auede_gchp-
+_building_-
+link"
+	"20Wohngeb-
+auede_elec-
+tricity_bus" -> "20Wohngeb-
+auede_elec-
+tricheatin-
+g_transfor-
+mer"
+	"20Wohngeb-
+auede_elec-
+tricity_bus" -> "20Wohngeb-
+auede_1_so-
+larthermal-
+_source_co-
+llector"
+	"20Wohngeb-
+auede_elec-
+tricity_bus" -> "20Wohngeb-
+auede_2_so-
+larthermal-
+_source_co-
+llector"
+	"20Wohngeb-
+auede_gash-
+eating_tra-
+nsformer" -> "20Wohngeb-
+auede_heat-
+_bus"
+	"20Wohngeb-
+auede_ther-
+mal_storage" -> "20Wohngeb-
+auede_heat-
+_bus"
+	"dh_heat_h-
+ouse_stati-
+on_20Wohng-
+ebauede" -> "20Wohngeb-
+auede_heat-
+_bus"
+	"20Wohngeb-
+auede_ashp-
+_transform-
+er" -> "20Wohngeb-
+auede_heat-
+_bus"
+	"20Wohngeb-
+auede_1_so-
+larthermal-
+_source_co-
+llector" -> "20Wohngeb-
+auede_heat-
+_bus"
+	"20Wohngeb-
+auede_elec-
+tricheatin-
+g_transfor-
+mer" -> "20Wohngeb-
+auede_heat-
+_bus"
+	"20Wohngeb-
+auede_2_so-
+larthermal-
+_source_co-
+llector" -> "20Wohngeb-
+auede_heat-
+_bus"
+	"20Wohngeb-
+auede_heat-
+_bus" -> "20Wohngeb-
+auede_heat-
+_demand"
+	"20Wohngeb-
+auede_heat-
+_bus" -> "20Wohngeb-
+auede_ther-
+mal_storage"
+	"20Wohngeb-
+auede_hp_e-
+lec_bus_sh-
+ortage" -> "20Wohngeb-
+auede_hp_e-
+lec_bus"
+	"20Wohngeb-
+auede_gchp-
+_building_-
+link" -> "20Wohngeb-
+auede_hp_e-
+lec_bus"
+	"20Wohngeb-
+auede_hp_e-
+lec_bus" -> "20Wohngeb-
+auede_ashp-
+_transform-
+er"
+	"20Wohngeb-
+auede_2_pv-
+_source" -> "20Wohngeb-
+auede_pv_b-
+us"
+	"20Wohngeb-
+auede_1_pv-
+_source" -> "20Wohngeb-
+auede_pv_b-
+us"
+	"20Wohngeb-
+auede_pv_b-
+us" -> "20Wohngeb-
+auede_pv_b-
+us_excess"
+	"20Wohngeb-
+auede_pv_b-
+us" -> "20Wohngeb-
+auedepv_20-
+Wohngebaue-
+de_electri-
+city_link"
+	"20Wohngeb-
+auede_pv_b-
+us" -> "20Wohngeb-
+auedepv_ce-
+ntral_elec-
+tricity_li-
+nk"
+	"central_n-
+aturalgas_-
+20Wohngeba-
+uedelink" -> "20Wohngeb-
+auede_gas_-
+bus"
+	"20Wohngeb-
+auede_gas_-
+bus_shorta-
+ge" -> "20Wohngeb-
+auede_gas_-
+bus"
+	"20Wohngeb-
+auede_gas_-
+bus" -> "20Wohngeb-
+auede_gash-
+eating_tra-
+nsformer"
+	"central_g-
+chp_freifl-
+aeche_S_he-
+atpump_tra-
+nsformer_low_temp_ground_source" -> "central_g-
+chp_freifl-
+aeche_S_he-
+atpump_tra-
+nsformer_low_temp_bus"
+	"central_g-
+chp_freifl-
+aeche_S_he-
+atpump_tra-
+nsformer_low_temp_bus" -> "central_g-
+chp_freifl-
+aeche_S_he-
+atpump_tra-
+nsformer"
+	"central_T-
+ischlerei_-
+swhp_heatp-
+ump_transf-
+ormer_low_temp_water_source" -> "central_T-
+ischlerei_-
+swhp_heatp-
+ump_transf-
+ormer_low_temp_bus"
+	"central_T-
+ischlerei_-
+swhp_heatp-
+ump_transf-
+ormer_low_temp_bus" -> "central_T-
+ischlerei_-
+swhp_heatp-
+ump_transf-
+ormer"
+	"central_g-
+chp_freifl-
+aeche_K_he-
+atpump_tra-
+nsformer_low_temp_ground_source" -> "central_g-
+chp_freifl-
+aeche_K_he-
+atpump_tra-
+nsformer_low_temp_bus"
+	"central_g-
+chp_freifl-
+aeche_K_he-
+atpump_tra-
+nsformer_low_temp_bus" -> "central_g-
+chp_freifl-
+aeche_K_he-
+atpump_tra-
+nsformer"
+	"01Schloss-
+_ashp_tran-
+sformer_lo-
+w_temp_air-
+_source" -> "01Schloss-
+_ashp_tran-
+sformer_lo-
+w_temp_bus"
+	"01Schloss-
+_ashp_tran-
+sformer_lo-
+w_temp_bus" -> "01Schloss-
+_ashp_tran-
+sformer"
+	"02Nebenge-
+baeude_ash-
+p_transfor-
+mer_low_te-
+mp_air_source" -> "02Nebenge-
+baeude_ash-
+p_transfor-
+mer_low_te-
+mp_bus"
+	"02Nebenge-
+baeude_ash-
+p_transfor-
+mer_low_te-
+mp_bus" -> "02Nebenge-
+baeude_ash-
+p_transfor-
+mer"
+	"03Kommend-
+e1B_ashp_t-
+ransformer-
+_low_temp_-
+air_source" -> "03Kommend-
+e1B_ashp_t-
+ransformer-
+_low_temp_-
+bus"
+	"03Kommend-
+e1B_ashp_t-
+ransformer-
+_low_temp_-
+bus" -> "03Kommend-
+e1B_ashp_t-
+ransformer"
+	"05Kommend-
+e3_ashp_tr-
+ansformer_-
+low_temp_a-
+ir_source" -> "05Kommend-
+e3_ashp_tr-
+ansformer_-
+low_temp_b-
+us"
+	"05Kommend-
+e3_ashp_tr-
+ansformer_-
+low_temp_b-
+us" -> "05Kommend-
+e3_ashp_tr-
+ansformer"
+	"06Kommend-
+e4_ashp_tr-
+ansformer_-
+low_temp_a-
+ir_source" -> "06Kommend-
+e4_ashp_tr-
+ansformer_-
+low_temp_b-
+us"
+	"06Kommend-
+e4_ashp_tr-
+ansformer_-
+low_temp_b-
+us" -> "06Kommend-
+e4_ashp_tr-
+ansformer"
+	"07Kommend-
+e5_ashp_tr-
+ansformer_-
+low_temp_a-
+ir_source" -> "07Kommend-
+e5_ashp_tr-
+ansformer_-
+low_temp_b-
+us"
+	"07Kommend-
+e5_ashp_tr-
+ansformer_-
+low_temp_b-
+us" -> "07Kommend-
+e5_ashp_tr-
+ansformer"
+	"08Kommend-
+e6_ashp_tr-
+ansformer_-
+low_temp_a-
+ir_source" -> "08Kommend-
+e6_ashp_tr-
+ansformer_-
+low_temp_b-
+us"
+	"08Kommend-
+e6_ashp_tr-
+ansformer_-
+low_temp_b-
+us" -> "08Kommend-
+e6_ashp_tr-
+ansformer"
+	"09Kommend-
+e7_ashp_tr-
+ansformer_-
+low_temp_a-
+ir_source" -> "09Kommend-
+e7_ashp_tr-
+ansformer_-
+low_temp_b-
+us"
+	"09Kommend-
+e7_ashp_tr-
+ansformer_-
+low_temp_b-
+us" -> "09Kommend-
+e7_ashp_tr-
+ansformer"
+	"10Kommend-
+e8_ashp_tr-
+ansformer_-
+low_temp_a-
+ir_source" -> "10Kommend-
+e8_ashp_tr-
+ansformer_-
+low_temp_b-
+us"
+	"10Kommend-
+e8_ashp_tr-
+ansformer_-
+low_temp_b-
+us" -> "10Kommend-
+e8_ashp_tr-
+ansformer"
+	"11Kommend-
+e9_ashp_tr-
+ansformer_-
+low_temp_a-
+ir_source" -> "11Kommend-
+e9_ashp_tr-
+ansformer_-
+low_temp_b-
+us"
+	"11Kommend-
+e9_ashp_tr-
+ansformer_-
+low_temp_b-
+us" -> "11Kommend-
+e9_ashp_tr-
+ansformer"
+	"12Kommend-
+e10_ashp_t-
+ransformer-
+_low_temp_-
+air_source" -> "12Kommend-
+e10_ashp_t-
+ransformer-
+_low_temp_-
+bus"
+	"12Kommend-
+e10_ashp_t-
+ransformer-
+_low_temp_-
+bus" -> "12Kommend-
+e10_ashp_t-
+ransformer"
+	"13Kommend-
+e1112_ashp-
+_transform-
+er_low_tem-
+p_air_source" -> "13Kommend-
+e1112_ashp-
+_transform-
+er_low_tem-
+p_bus"
+	"13Kommend-
+e1112_ashp-
+_transform-
+er_low_tem-
+p_bus" -> "13Kommend-
+e1112_ashp-
+_transform-
+er"
+	"14Kommend-
+e13_ashp_t-
+ransformer-
+_low_temp_-
+air_source" -> "14Kommend-
+e13_ashp_t-
+ransformer-
+_low_temp_-
+bus"
+	"14Kommend-
+e13_ashp_t-
+ransformer-
+_low_temp_-
+bus" -> "14Kommend-
+e13_ashp_t-
+ransformer"
+	"17Muehle_-
+ashp_trans-
+former_low-
+_temp_air_-
+source" -> "17Muehle_-
+ashp_trans-
+former_low-
+_temp_bus"
+	"17Muehle_-
+ashp_trans-
+former_low-
+_temp_bus" -> "17Muehle_-
+ashp_trans-
+former"
+	"19Hotel_a-
+shp_transf-
+ormer_low_-
+temp_air_s-
+ource" -> "19Hotel_a-
+shp_transf-
+ormer_low_-
+temp_bus"
+	"19Hotel_a-
+shp_transf-
+ormer_low_-
+temp_bus" -> "19Hotel_a-
+shp_transf-
+ormer"
+	"20Wohngeb-
+auede_ashp-
+_transform-
+er_low_tem-
+p_air_source" -> "20Wohngeb-
+auede_ashp-
+_transform-
+er_low_tem-
+p_bus"
+	"20Wohngeb-
+auede_ashp-
+_transform-
+er_low_tem-
+p_bus" -> "20Wohngeb-
+auede_ashp-
+_transform-
+er"
+	"central_p-
+v_sys_1_so-
+larthermal-
+_source" -> "central_p-
+v_sys_1_so-
+larthermal-
+_source_bus"
+	"central_p-
+v_sys_1_so-
+larthermal-
+_source_bus" -> "central_p-
+v_sys_1_so-
+larthermal-
+_source_co-
+llector"
+	"02Nebenge-
+baeude_1_s-
+olartherma-
+l_source" -> "02Nebenge-
+baeude_1_s-
+olartherma-
+l_source_b-
+us"
+	"02Nebenge-
+baeude_1_s-
+olartherma-
+l_source_b-
+us" -> "02Nebenge-
+baeude_1_s-
+olartherma-
+l_source_c-
+ollector"
+	"02Nebenge-
+baeude_2_s-
+olartherma-
+l_source" -> "02Nebenge-
+baeude_2_s-
+olartherma-
+l_source_b-
+us"
+	"02Nebenge-
+baeude_2_s-
+olartherma-
+l_source_b-
+us" -> "02Nebenge-
+baeude_2_s-
+olartherma-
+l_source_c-
+ollector"
+	"02Nebenge-
+baeude_3_s-
+olartherma-
+l_source" -> "02Nebenge-
+baeude_3_s-
+olartherma-
+l_source_b-
+us"
+	"02Nebenge-
+baeude_3_s-
+olartherma-
+l_source_b-
+us" -> "02Nebenge-
+baeude_3_s-
+olartherma-
+l_source_c-
+ollector"
+	"03Kommend-
+e1B_1_sola-
+rthermal_s-
+ource" -> "03Kommend-
+e1B_1_sola-
+rthermal_s-
+ource_bus"
+	"03Kommend-
+e1B_1_sola-
+rthermal_s-
+ource_bus" -> "03Kommend-
+e1B_1_sola-
+rthermal_s-
+ource_coll-
+ector"
+	"03Kommend-
+e1B_2_sola-
+rthermal_s-
+ource" -> "03Kommend-
+e1B_2_sola-
+rthermal_s-
+ource_bus"
+	"03Kommend-
+e1B_2_sola-
+rthermal_s-
+ource_bus" -> "03Kommend-
+e1B_2_sola-
+rthermal_s-
+ource_coll-
+ector"
+	"05Kommend-
+e3_1_solar-
+thermal_so-
+urce" -> "05Kommend-
+e3_1_solar-
+thermal_so-
+urce_bus"
+	"05Kommend-
+e3_1_solar-
+thermal_so-
+urce_bus" -> "05Kommend-
+e3_1_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"06Kommend-
+e4_1_solar-
+thermal_so-
+urce" -> "06Kommend-
+e4_1_solar-
+thermal_so-
+urce_bus"
+	"06Kommend-
+e4_1_solar-
+thermal_so-
+urce_bus" -> "06Kommend-
+e4_1_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"07Kommend-
+e5_1_solar-
+thermal_so-
+urce" -> "07Kommend-
+e5_1_solar-
+thermal_so-
+urce_bus"
+	"07Kommend-
+e5_1_solar-
+thermal_so-
+urce_bus" -> "07Kommend-
+e5_1_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"07Kommend-
+e5_2_solar-
+thermal_so-
+urce" -> "07Kommend-
+e5_2_solar-
+thermal_so-
+urce_bus"
+	"07Kommend-
+e5_2_solar-
+thermal_so-
+urce_bus" -> "07Kommend-
+e5_2_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"07Kommend-
+e5_3_solar-
+thermal_so-
+urce" -> "07Kommend-
+e5_3_solar-
+thermal_so-
+urce_bus"
+	"07Kommend-
+e5_3_solar-
+thermal_so-
+urce_bus" -> "07Kommend-
+e5_3_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"08Kommend-
+e6_1_solar-
+thermal_so-
+urce" -> "08Kommend-
+e6_1_solar-
+thermal_so-
+urce_bus"
+	"08Kommend-
+e6_1_solar-
+thermal_so-
+urce_bus" -> "08Kommend-
+e6_1_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"09Kommend-
+e7_1_solar-
+thermal_so-
+urce" -> "09Kommend-
+e7_1_solar-
+thermal_so-
+urce_bus"
+	"09Kommend-
+e7_1_solar-
+thermal_so-
+urce_bus" -> "09Kommend-
+e7_1_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"10Kommend-
+e8_1_solar-
+thermal_so-
+urce" -> "10Kommend-
+e8_1_solar-
+thermal_so-
+urce_bus"
+	"10Kommend-
+e8_1_solar-
+thermal_so-
+urce_bus" -> "10Kommend-
+e8_1_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"11Kommend-
+e9_1_solar-
+thermal_so-
+urce" -> "11Kommend-
+e9_1_solar-
+thermal_so-
+urce_bus"
+	"11Kommend-
+e9_1_solar-
+thermal_so-
+urce_bus" -> "11Kommend-
+e9_1_solar-
+thermal_so-
+urce_colle-
+ctor"
+	"12Kommend-
+e10_1_sola-
+rthermal_s-
+ource" -> "12Kommend-
+e10_1_sola-
+rthermal_s-
+ource_bus"
+	"12Kommend-
+e10_1_sola-
+rthermal_s-
+ource_bus" -> "12Kommend-
+e10_1_sola-
+rthermal_s-
+ource_coll-
+ector"
+	"12Kommend-
+e10_2_sola-
+rthermal_s-
+ource" -> "12Kommend-
+e10_2_sola-
+rthermal_s-
+ource_bus"
+	"12Kommend-
+e10_2_sola-
+rthermal_s-
+ource_bus" -> "12Kommend-
+e10_2_sola-
+rthermal_s-
+ource_coll-
+ector"
+	"12Kommend-
+e10_3_sola-
+rthermal_s-
+ource" -> "12Kommend-
+e10_3_sola-
+rthermal_s-
+ource_bus"
+	"12Kommend-
+e10_3_sola-
+rthermal_s-
+ource_bus" -> "12Kommend-
+e10_3_sola-
+rthermal_s-
+ource_coll-
+ector"
+	"12Kommend-
+e10_4_sola-
+rthermal_s-
+ource" -> "12Kommend-
+e10_4_sola-
+rthermal_s-
+ource_bus"
+	"12Kommend-
+e10_4_sola-
+rthermal_s-
+ource_bus" -> "12Kommend-
+e10_4_sola-
+rthermal_s-
+ource_coll-
+ector"
+	"13Kommend-
+e1112_1_so-
+larthermal-
+_source" -> "13Kommend-
+e1112_1_so-
+larthermal-
+_source_bus"
+	"13Kommend-
+e1112_1_so-
+larthermal-
+_source_bus" -> "13Kommend-
+e1112_1_so-
+larthermal-
+_source_co-
+llector"
+	"13Kommend-
+e1112_2_so-
+larthermal-
+_source" -> "13Kommend-
+e1112_2_so-
+larthermal-
+_source_bus"
+	"13Kommend-
+e1112_2_so-
+larthermal-
+_source_bus" -> "13Kommend-
+e1112_2_so-
+larthermal-
+_source_co-
+llector"
+	"14Kommend-
+e13_1_sola-
+rthermal_s-
+ource" -> "14Kommend-
+e13_1_sola-
+rthermal_s-
+ource_bus"
+	"14Kommend-
+e13_1_sola-
+rthermal_s-
+ource_bus" -> "14Kommend-
+e13_1_sola-
+rthermal_s-
+ource_coll-
+ector"
+	"17Muehle_-
+1_solarthe-
+rmal_source" -> "17Muehle_-
+1_solarthe-
+rmal_sourc-
+e_bus"
+	"17Muehle_-
+1_solarthe-
+rmal_sourc-
+e_bus" -> "17Muehle_-
+1_solarthe-
+rmal_sourc-
+e_collector"
+	"17Muehle_-
+2_solarthe-
+rmal_source" -> "17Muehle_-
+2_solarthe-
+rmal_sourc-
+e_bus"
+	"17Muehle_-
+2_solarthe-
+rmal_sourc-
+e_bus" -> "17Muehle_-
+2_solarthe-
+rmal_sourc-
+e_collector"
+	"17Muehle_-
+3_solarthe-
+rmal_source" -> "17Muehle_-
+3_solarthe-
+rmal_sourc-
+e_bus"
+	"17Muehle_-
+3_solarthe-
+rmal_sourc-
+e_bus" -> "17Muehle_-
+3_solarthe-
+rmal_sourc-
+e_collector"
+	"19Hotel_1-
+_solarther-
+mal_source" -> "19Hotel_1-
+_solarther-
+mal_source-
+_bus"
+	"19Hotel_1-
+_solarther-
+mal_source-
+_bus" -> "19Hotel_1-
+_solarther-
+mal_source-
+_collector"
+	"19Hotel_2-
+_solarther-
+mal_source" -> "19Hotel_2-
+_solarther-
+mal_source-
+_bus"
+	"19Hotel_2-
+_solarther-
+mal_source-
+_bus" -> "19Hotel_2-
+_solarther-
+mal_source-
+_collector"
+	"20Wohngeb-
+auede_1_so-
+larthermal-
+_source" -> "20Wohngeb-
+auede_1_so-
+larthermal-
+_source_bus"
+	"20Wohngeb-
+auede_1_so-
+larthermal-
+_source_bus" -> "20Wohngeb-
+auede_1_so-
+larthermal-
+_source_co-
+llector"
+	"20Wohngeb-
+auede_2_so-
+larthermal-
+_source" -> "20Wohngeb-
+auede_2_so-
+larthermal-
+_source_bus"
+	"20Wohngeb-
+auede_2_so-
+larthermal-
+_source_bus" -> "20Wohngeb-
+auede_2_so-
+larthermal-
+_source_co-
+llector"
+	"dh-network" -> "consumers-
+_heat_bus_-
+consumers--
+0_exergy"
+	"consumers-
+_heat_bus_-
+consumers--
+0_exergy" -> "dh_heat_h-
+ouse_stati-
+on_01Schlo-
+ss"
+	"dh-network" -> "consumers-
+_heat_bus_-
+consumers--
+1_exergy"
+	"consumers-
+_heat_bus_-
+consumers--
+1_exergy" -> "dh_heat_h-
+ouse_stati-
+on_02Neben-
+gebaeude"
+	"dh-network" -> "consumers-
+_heat_bus_-
+consumers--
+2_exergy"
+	"consumers-
+_heat_bus_-
+consumers--
+2_exergy" -> "dh_heat_h-
+ouse_stati-
+on_03Komme-
+nde1B"
+	"dh-network" -> "consumers-
+_heat_bus_-
+consumers--
+3_exergy"
+	"consumers-
+_heat_bus_-
+consumers--
+3_exergy" -> "dh_heat_h-
+ouse_stati-
+on_05Komme-
+nde3"
+	"dh-network" -> "consumers-
+_heat_bus_-
+consumers--
+4_exergy"
+	"consumers-
+_heat_bus_-
+consumers--
+4_exergy" -> "dh_heat_h-
+ouse_stati-
+on_06Komme-
+nde4"
+	"dh-network" -> "consumers-
+_heat_bus_-
+consumers--
+5_exergy"
+	"consumers-
+_heat_bus_-
+consumers--
+5_exergy" -> "dh_heat_h-
+ouse_stati-
+on_07Komme-
+nde5"
+	"dh-network" -> "consumers-
+_heat_bus_-
+consumers--
+6_exergy"
+	"consumers-
+_heat_bus_-
+consumers--
+6_exergy" -> "dh_heat_h-
+ouse_stati-
+on_08Komme-
+nde6"
+	"dh-network" -> "consumers-
+_heat_bus_-
+consumers--
+7_exergy"
+	"consumers-
+_heat_bus_-
+consumers--
+7_exergy" -> "dh_heat_h-
+ouse_stati-
+on_09Komme-
+nde7"
+	"dh-network" -> "consumers-
+_heat_bus_-
+consumers--
+8_exergy"
+	"consumers-
+_heat_bus_-
+consumers--
+8_exergy" -> "dh_heat_h-
+ouse_stati-
+on_10Komme-
+nde8"
+	"dh-network" -> "consumers-
+_heat_bus_-
+consumers--
+9_exergy"
+	"consumers-
+_heat_bus_-
+consumers--
+9_exergy" -> "dh_heat_h-
+ouse_stati-
+on_11Komme-
+nde9"
+	"dh-network" -> "consumers-
+_heat_bus_-
+consumers--
+10_exergy"
+	"consumers-
+_heat_bus_-
+consumers--
+10_exergy" -> "dh_heat_h-
+ouse_stati-
+on_12Komme-
+nde10"
+	"dh-network" -> "consumers-
+_heat_bus_-
+consumers--
+11_exergy"
+	"consumers-
+_heat_bus_-
+consumers--
+11_exergy" -> "dh_heat_h-
+ouse_stati-
+on_13Komme-
+nde1112"
+	"dh-network" -> "consumers-
+_heat_bus_-
+consumers--
+12_exergy"
+	"consumers-
+_heat_bus_-
+consumers--
+12_exergy" -> "dh_heat_h-
+ouse_stati-
+on_14Komme-
+nde13"
+	"dh-network" -> "consumers-
+_heat_bus_-
+consumers--
+13_exergy"
+	"consumers-
+_heat_bus_-
+consumers--
+13_exergy" -> "dh_heat_h-
+ouse_stati-
+on_17Muehle"
+	"dh-network" -> "consumers-
+_heat_bus_-
+consumers--
+14_exergy"
+	"consumers-
+_heat_bus_-
+consumers--
+14_exergy" -> "dh_heat_h-
+ouse_stati-
+on_19Hotel"
+	"dh-network" -> "consumers-
+_heat_bus_-
+consumers--
+15_exergy"
+	"consumers-
+_heat_bus_-
+consumers--
+15_exergy" -> "dh_heat_h-
+ouse_stati-
+on_20Wohng-
+ebauede"
+	"central_h-
+eat_input_-
+1_bus_dh_s-
+ource_link-
+_exergy" -> "producers-
+_heat_bus_-
+producers--
+0_exergy"
+	"producers-
+_heat_bus_-
+producers--
+0_exergy" -> "dh-network"
+	"central_h-
+eat_input_-
+2_bus_dh_s-
+ource_link-
+_exergy" -> "producers-
+_heat_bus_-
+producers--
+1_exergy"
+	"producers-
+_heat_bus_-
+producers--
+1_exergy" -> "dh-network"
+	"central_h-
+eat_input_-
+3_bus_dh_s-
+ource_link-
+_exergy" -> "producers-
+_heat_bus_-
+producers--
+2_exergy"
+	"producers-
+_heat_bus_-
+producers--
+2_exergy" -> "dh-network"
+	"central_h-
+eat_input_-
+4_bus_dh_s-
+ource_link-
+_exergy" -> "producers-
+_heat_bus_-
+producers--
+3_exergy"
+	"producers-
+_heat_bus_-
+producers--
+3_exergy" -> "dh-network"
+}

@@ -1,0 +1,17 @@
+id,id,lat,lon,component_type,P_heat_max,input,label,street
+0,0,52.145624,7.342117,Consumer,1,01Schloss_heat_bus,01Schloss_heat_bus,StrasseBB
+1,1,52.146434,7.34113,Consumer,1,02Nebengebaeude_heat_bus,02Nebengebaeude_heat_bus,StrasseNGA
+2,2,52.143342,7.34098,Consumer,1,03Kommende1B_heat_bus,03Kommende1B_heat_bus,StrasseK13
+3,3,52.143269,7.341349,Consumer,1,05Kommende3_heat_bus,05Kommende3_heat_bus,StrasseK11
+4,4,52.14325,7.341606,Consumer,1,06Kommende4_heat_bus,06Kommende4_heat_bus,StrasseK11
+5,5,52.143182,7.341682,Consumer,1,07Kommende5_heat_bus,07Kommende5_heat_bus,StrasseK9
+6,6,52.143,7.341448,Consumer,1,08Kommende6_heat_bus,08Kommende6_heat_bus,StrasseK8
+7,7,52.142946,7.341484,Consumer,1,09Kommende7_heat_bus,09Kommende7_heat_bus,StrasseK8
+8,8,52.142898,7.341534,Consumer,1,10Kommende8_heat_bus,10Kommende8_heat_bus,StrasseK1
+9,9,52.142823,7.341595,Consumer,1,11Kommende9_heat_bus,11Kommende9_heat_bus,StrasseK1
+10,10,52.142714,7.340839,Consumer,1,12Kommende10_heat_bus,12Kommende10_heat_bus,StrasseK3
+11,11,52.142908,7.341031,Consumer,1,13Kommende1112_heat_bus,13Kommende1112_heat_bus,StrasseK5
+12,12,52.143004,7.34101,Consumer,1,14Kommende13_heat_bus,14Kommende13_heat_bus,StrasseK6
+13,13,52.146666,7.342088,Consumer,1,17Muehle_heat_bus,17Muehle_heat_bus,StrasseAM2
+14,14,52.14689,7.34163,Consumer,1,19Hotel_heat_bus,19Hotel_heat_bus,StrasseAM1
+15,15,52.14689,7.34163,Consumer,1,20Wohngebauede_heat_bus,20Wohngebauede_heat_bus,StrasseAM1

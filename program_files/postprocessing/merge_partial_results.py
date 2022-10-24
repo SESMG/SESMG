@@ -130,7 +130,7 @@ def run_pareto(
     if not pre_modeling:
         sesmg_main(
             scenario_file=scenario,
-            result_path=gui_variables["save_path"].get(),
+            result_path=save_path,
             num_threads=gui_variables["num_threads"].get(),
             timeseries_prep=timeseries_prep_param,
             graph=__get_cb_state(gui_variables["graph_state"]),

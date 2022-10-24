@@ -83,11 +83,11 @@ import os
 import pandas as pd
 from threading import *
 import sys
-from program_files.preprocessing import (create_objects,
-                                         create_energy_system,
-                                         create_graph,
-                                         data_preparation,
-                                         district_heating)
+from program_files.preprocessing import (create_energy_system,
+                                         data_preparation)
+from program_files.preprocessing.components import (
+    district_heating, Bus, Source, Sink, Transformer, Storage, Link)
+from program_files.preprocessing.create_graph import ESGraphRenderer
 from program_files.postprocessing import create_results
 from program_files.processing import optimize_model
 from program_files.preprocessing.pre_model_analysis import update_model_according_pre_model_results
@@ -158,35 +158,29 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
 
     # CREATES BUS OBJECTS, EXCESS SINKS, AND SHORTAGE SOURCES AS DEFINED IN THE
     # SCENARIO FILE AND ADDS THEM TO THE lIST OF COMPONENTS
-    busd = create_objects.buses(nodes_data=nodes_data, nodes=nodes)
+    busd = Bus.buses(nd=nodes_data, nodes=nodes)
     # PARALLEL CREATION OF ALL OBJECTS OF THE SCENARIO FILE
-    
+
     # CREATES SOURCE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
-    t1 = Thread(target=create_objects.Sources,
-                args=(nodes_data, nodes, busd, time_series, weather_data))
+    t1 = Thread(target=Source.Sources, args=(nodes_data, nodes, busd))
     t1.start()
     # CREATES SINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
-    t2 = Thread(target=create_objects.Sinks, args=(nodes_data, busd,
-                                                   nodes, time_series,
-                                                   weather_data,
-                                                   nodes_data["insulation"]))
+    t2 = Thread(target=Sink.Sinks, args=(nodes_data, busd, nodes))
     t2.start()
     # CREATES TRANSFORMER OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM
     # TO THE lIST OF COMPONENTS
-    t3 = Thread(target=create_objects.Transformers, args=(nodes_data,
-                                                              nodes,
-                                                              busd,
-                                                              weather_data))
+    t3 = Thread(target=Transformer.Transformers,
+                args=(nodes_data, nodes, busd))
     t3.start()
     # CREATES STORAGE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
-    t4 = Thread(target=create_objects.Storages, args=(nodes_data, nodes, busd))
+    t4 = Thread(target=Storage.Storages, args=(nodes_data, nodes, busd))
     t4.start()
     # CREATES LINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
     # THE lIST OF COMPONENTS
-    t5 = Thread(target=create_objects.Links, args=(nodes_data, nodes, busd,))
+    t5 = Thread(target=Link.Links, args=(nodes_data, nodes, busd))
     t5.start()
 
     # WAIT UNTIL THE THREADS HAVE DONE THEIR JOBS
@@ -198,13 +192,11 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     
     nodes = district_heating.district_heating(nodes_data, nodes, busd,
                                               district_heating_path,
-                                              result_path, cluster_dh)
+                                              result_path, cluster_dh, False)
     # ADDS THE COMPONENTS TO THE ENERGYSYSTEM
     esys.add(*nodes)
-
-    # PRINTS A GRAPH OF THE ENERGY SYSTEM
-    create_graph.create_graph(filepath=result_path, nodes_data=nodes_data,
-                              show=graph)
+    ESGraphRenderer(energy_system=esys, filepath=result_path, view=graph,
+                    legend=True)
 
     # OPTIMIZES THE ENERGYSYSTEM AND RETURNS THE OPTIMIZED ENERGY SYSTEM
     om = optimize_model.least_cost_model(esys, num_threads, nodes_data, busd,

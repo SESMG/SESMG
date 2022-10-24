@@ -61,7 +61,7 @@ def dict_to_dataframe(amounts_dict, return_df):
         if i != "run" and i != "reductionco2":
             amounts_dict[i] = sum(amounts_dict[i])
     series = pandas.Series(data=amounts_dict)
-    return_df = pandas.concat([return_df, pd.DataFrame([series])])
+    return_df = pandas.concat([return_df, pandas.DataFrame([series])])
     return_df.set_index("reductionco2", inplace=True, drop=False)
     return_df = return_df.sort_values("run")
     return return_df

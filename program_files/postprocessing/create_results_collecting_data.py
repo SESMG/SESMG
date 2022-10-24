@@ -223,7 +223,7 @@ def calc_variable_costs(nd, comp_dict, attr):
         "outputs": [nd.outputs, comp_dict[2], comp_dict[3]],
     }
     for flow_type in type_dict:
-        for i in range(0, 1):
+        for i in range(0, 2):
             # if the sum of the flow stored in comp_dict 0 to 3 is more
             # than 0 the sum is multiplied with the for this input/output
             # defined costs factor which is searched by the method getattr
