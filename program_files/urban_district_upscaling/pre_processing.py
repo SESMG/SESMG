@@ -313,7 +313,7 @@ def create_gchp(tool, parcel, sheets):
         build_parcel = tool[
             (tool["active"] == 1)
             & (tool["gchp"].isin(["Yes", "yes", 1]))
-            & (tool["parcel"] == parcel["ID parcel"])
+            & (tool["parcel ID"] == parcel["ID parcel"])
         ]
         if not build_parcel.empty:
             gchps.update({parcel["ID parcel"][-9:]: parcel["gchp area (m²)"]})
