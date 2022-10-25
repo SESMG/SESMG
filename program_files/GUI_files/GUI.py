@@ -188,7 +188,7 @@ class GUI(MethodsGUI):
 
             # Todo: to be inlcuded into the GUI
             # Parameters required for pre-modeling
-            pre_modeling = True
+            pre_modeling = False
             pre_model_timeseries_prep_param = ['averaging', '300', 'dhi',
                                                'days', '12']
             investment_boundaries = False
