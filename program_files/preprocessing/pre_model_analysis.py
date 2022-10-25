@@ -123,7 +123,7 @@ def dh_technical_pre_selection(components_xlsx, result_components):
 
     # deactivate those street section for which no investment has been carried out
     for i, dh_section in components_xlsx.iterrows():
-        if dh_section['street section name'] not in dh_investment_list:
+        if dh_section['label'] not in dh_investment_list:
             components_xlsx.at[i, 'active'] = 0
 
 def bus_technical_pre_selection(components_xlsx, result_components):
