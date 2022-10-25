@@ -188,7 +188,7 @@ class GUI(MethodsGUI):
 
             # Todo: to be inlcuded into the GUI
             # Parameters required for pre-modeling
-            pre_modeling = False
+            pre_modeling = True
             pre_model_timeseries_prep_param = ['averaging', '300', 'dhi',
                                                'days', '12']
             investment_boundaries = False
@@ -218,7 +218,7 @@ class GUI(MethodsGUI):
                     # create new folder in which the results will be stored
                     os.mkdir(self.gui_variables["save_path"].get())
     
-                    if not pre_modeling:
+                    if pre_modeling == False:
                         sesmg_main(
                                 scenario_file=scenario,
                                 result_path=self.gui_variables["save_path"].get(),
@@ -238,7 +238,7 @@ class GUI(MethodsGUI):
                                 cluster_dh=self.gui_variables["cluster_dh"].get())
     
                     # If pre-modeling is activated a second run will be carried out
-                    elif pre_modeling:
+                    elif pre_modeling == True:
                         sesmg_main_including_premodel(
                             scenario_file=scenario,
                             result_path=self.gui_variables["save_path"].get(),
