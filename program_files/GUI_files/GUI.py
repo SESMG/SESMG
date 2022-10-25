@@ -262,26 +262,26 @@ class GUI(MethodsGUI):
                             pre_model_path=pre_model_path)
                     
                     
-                    # execute SESMG algorithm
-                    sesmg_main(
-                        scenario_file=scenario,
-                        result_path=self.gui_variables["save_path"].get(),
-                        num_threads=self.gui_variables["num_threads"].get(),
-                        timeseries_prep=timeseries_prep_param,
-                        graph=self.__get_cb_state(self.gui_variables["graph_state"]),
-                        criterion_switch=self.__get_cb_state(
-                            self.gui_variables["criterion_state"]
-                        ),
-                        xlsx_results=self.__get_cb_state(
-                            self.gui_variables["xlsx_select_state"]
-                        ),
-                        console_results=self.__get_cb_state(
-                            self.gui_variables["console_select_state"]
-                        ),
-                        solver=self.gui_variables["solver_select"].get(),
-                        district_heating_path=self.gui_variables["dh_path"].get(),
-                        cluster_dh=self.gui_variables["cluster_dh"].get(),
-                    )
+                    # # execute SESMG algorithm
+                    # sesmg_main(
+                    #     scenario_file=scenario,
+                    #     result_path=self.gui_variables["save_path"].get(),
+                    #     num_threads=self.gui_variables["num_threads"].get(),
+                    #     timeseries_prep=timeseries_prep_param,
+                    #     graph=self.__get_cb_state(self.gui_variables["graph_state"]),
+                    #     criterion_switch=self.__get_cb_state(
+                    #         self.gui_variables["criterion_state"]
+                    #     ),
+                    #     xlsx_results=self.__get_cb_state(
+                    #         self.gui_variables["xlsx_select_state"]
+                    #     ),
+                    #     console_results=self.__get_cb_state(
+                    #         self.gui_variables["console_select_state"]
+                    #     ),
+                    #     solver=self.gui_variables["solver_select"].get(),
+                    #     district_heating_path=self.gui_variables["dh_path"].get(),
+                    #     cluster_dh=self.gui_variables["cluster_dh"].get(),
+                    # )
                 #if len(limits) > 1 or limits[0] != "":
                 #    print("100% scenarios finished")
                 #    constraints = merge_partial_results.get_constraints(result_folders)
