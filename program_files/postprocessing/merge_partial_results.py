@@ -305,13 +305,10 @@ def create_transformation_scenarios(constraints, scenario_names, directory, limi
         }
         files[str(counter)].append(directory + "/" + scenario_names.split("/")[-1][:-5] + "_" + str(counter) + ".xlsx")
         writer = pd.ExcelWriter(
-            directory + "/" + scenario_names.split("/")[-1][:-5] + "_" + str(counter) + ".xlsx", engine="xlsxwriter"
-        )
-        nd["energysystem"].loc[1, "constraint cost limit"] = float(
-            constraint
-        )
+            directory + "/" + scenario_names.split("/")[-1][:-5] + "_" + str(counter) + ".xlsx", engine="xlsxwriter")
+        nd["energysystem"].loc[1, "constraint cost limit"] = float(constraint)
         for i in nd.keys():
-            nd[i].to_excel(writer, sheet_name=str(i))
+            nd[i].to_excel(writer, sheet_name=str(i), index=False)
         writer.save()
         #os.system("mv " + result_path + " " + path)
         print(files)
