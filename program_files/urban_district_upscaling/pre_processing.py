@@ -322,16 +322,20 @@ def create_gchp(tool, parcel, sheets):
         sheets = Transformer.create_transformer(
             building_id=gchp,
             area=gchps[gchp],
-            transformer_type="building_gchp_transformer",
+            transf_type="building_gchp_transformer",
             sheets=sheets,
+            flow_temp=60,
+            standard_parameters=standard_parameters
         )
         sheets = Bus.create_standard_parameter_bus(
             label=gchp + "_hp_elec_bus",
             bus_type="building_hp_electricity_bus",
             sheets=sheets,
+            standard_parameters=standard_parameters
         )
         sheets = Bus.create_standard_parameter_bus(
-            label=gchp + "_heat_bus", bus_type="building_heat_bus", sheets=sheets
+            label=gchp + "_heat_bus", bus_type="building_heat_bus", sheets=sheets,
+            standard_parameters=standard_parameters
         )
     return gchps, sheets
 
