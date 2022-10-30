@@ -431,6 +431,8 @@ def create_components(nodes_data, anergy_or_exergy):
             + "/"
             + str(start_date[0:4])
         ),
+        # TODO add to GUI
+        bidirectional_pipes=True,
         frequence=(str(frequency[0])).upper(),
         label_5="anergy" if anergy_or_exergy else "exergy"
     )
