@@ -211,7 +211,7 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
                            console_log=console_results, cluster_dh=cluster_dh)
 
     logging.info('\t ' + 56 * '-')
-    logging.info('\t Modelling and optimization successfully completed!')
+    logging.info('\t Modeling and optimization successfully completed!')
 
 
 def sesmg_main_including_premodel(scenario_file: str, result_path: str, num_threads: int,
