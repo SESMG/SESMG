@@ -425,7 +425,13 @@ def create_components(nodes_data, anergy_or_exergy):
         },
         "network": {
             "pipes": nodes_data["pipe types"].loc[
-                nodes_data["pipe types"]["anergy_or_exergy"] == ("anergy" if anergy_or_exergy else "exergy")]
+                (nodes_data["pipe types"]["anergy_or_exergy"] == (
+                    "anergy" if anergy_or_exergy else "exergy"))
+                & (nodes_data["pipe types"]["distribution_pipe"] == 1)],
+            "pipes_houses": nodes_data["pipe types"].loc[(
+                nodes_data["pipe types"]["anergy_or_exergy"] == (
+                    "anergy" if anergy_or_exergy else "exergy"))
+                & (nodes_data["pipe types"]["building_pipe"] == 1)]
         },
     }
     # start dhnx algorithm to create dh components
