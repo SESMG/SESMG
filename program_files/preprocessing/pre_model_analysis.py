@@ -147,11 +147,11 @@ def bus_technical_pre_selection(components_xlsx, result_components):
     print("WARNING: IF THE ORIGINAL BUS NAME CONTAINED THE STRING '_Diameter_' THIS ANALYSIS IS NOT VALID!")
 
     # deactivate those bus connections for which no investment has been carried out
-        if str(dh_bus['district heating conn.']) not in ['0.0','0','0.00','---']:
-            if str(dh_bus['label']) not in dh_investment_list and str(dh_bus['label'])[0:9] not in dh_investment_list and dh_bus['label'].split('_')[0] not in dh_investment_list:# and dh_bus['district heating conn.']:
-                bus_xlsx.at[i, 'district heating conn.'] = '0'
-            elif len(dh_investment_list) < 2:
-                bus_xlsx.at[i, 'district heating conn.'] = 0
+    if str(dh_bus['district heating conn.']) not in ['0.0','0','0.00','---']:
+        if str(dh_bus['label']) not in dh_investment_list and str(dh_bus['label'])[0:9] not in dh_investment_list and dh_bus['label'].split('_')[0] not in dh_investment_list:# and dh_bus['district heating conn.']:
+            bus_xlsx.at[i, 'district heating conn.'] = '0'
+        elif len(dh_investment_list) < 2:
+            bus_xlsx.at[i, 'district heating conn.'] = 0
 
 def insulation_technical_pre_selection(components_xlsx, result_components):
     '''deactivates district heating investment decisions for which no investments has been carried out '''
