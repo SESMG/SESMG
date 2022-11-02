@@ -114,10 +114,7 @@ def dh_technical_pre_selection(components_xlsx, result_components):
     dh_investment_list = []
     for i, dh_section in result_components.iterrows():
         if dh_section['investment/kW']:
-            #dh_investment_string = dh_investment_string + str(dh_section['ID'])
             if 'dh_heat_house_station' not in dh_section['ID']:
-                #print(dh_section['ID'])
-                #print(dh_section['investment/kW'])
                 if str(dh_section['investment/kW']) not in ['0.0','0','0.00','---']:
                     section_name = dh_section['ID'].split('_Diameter')
                     dh_investment_list.append(section_name[0])
@@ -127,27 +124,15 @@ def dh_technical_pre_selection(components_xlsx, result_components):
     for i, dh_section in components_xlsx.iterrows():
         if str(dh_section['label']) not in dh_investment_list:
             components_xlsx.at[i, 'active'] = 0
-            #print(str(dh_section['label'].split('_')[0]))
-            #print(str(dh_section['label'])+' deactivated')
-            print('test1')
-            print(dh_investment_list)
 
 def bus_technical_pre_selection(components_xlsx, result_components):
     bus_xlsx = components_xlsx
 
     # creates list of heating buses for which an investment has been carried out
     dh_investment_list = []
-    print('test2')
-    print(result_components)
     for i, dh_section in result_components.iterrows():
-        print('HIER')
-        print(dh_section['ID'])
         if str(dh_section['investment/kW']) not in ['0.0','0','0.00','---']:
             if 'dh_heat_house_station' in dh_section['ID']:
-                print('ping1')
-                #if str(dh_section['investment/kW']) != '0.0':
-                    # print(dh_section['ID'])
-                    # print(dh_section['investment/kW'])
                 section_name = dh_section['ID'].split('dh_heat_house_station_')
                 dh_investment_list.append(section_name[1])
 
@@ -155,32 +140,16 @@ def bus_technical_pre_selection(components_xlsx, result_components):
             if 'dh_source_link' in dh_section['ID']:
                 # if str(dh_section['investment/kW']) not in ['0.0','0','0.00','---']:
                 section_name = dh_section['ID'].split('_dh_source_link_')[0]
-                print(section_name)
-                #section_name = section_name[1].split('_Diameter_')
                 dh_investment_list.append(section_name)
     print("WARNING: IF THE ORIGINAL BUS NAME CONTAINED THE STRING 'dh_heat_house_station' THIS ANALYSIS IS NOT VALID!")
     print("WARNING: IF THE ORIGINAL BUS NAME CONTAINED THE STRING 'dh_source_link' THIS ANALYSIS IS NOT VALID!")
     print("WARNING: IF THE ORIGINAL BUS NAME ARE DUPLICATES BEFORE USING '_' ANALYSIS IS NOT VALID!")
     print("WARNING: IF THE ORIGINAL BUS NAME CONTAINED THE STRING '_Diameter_' THIS ANALYSIS IS NOT VALID!")
-    print(dh_investment_list)
-    print('test3')
-    print(len(dh_investment_list))
 
     # deactivate those bus connections for which no investment has been carried out
-    for i, dh_bus in bus_xlsx.iterrows():
-
-        # print('TEST HIER')
-        # print(str(dh_bus['label']))
-        # print(str(dh_bus['label'])[0:9])
-        # print(str(dh_bus['label'].split('_')[0]))
         if str(dh_bus['district heating conn.']) not in ['0.0','0','0.00','---']:
-            print(dh_bus['label'])
             if str(dh_bus['label']) not in dh_investment_list and str(dh_bus['label'])[0:9] not in dh_investment_list and dh_bus['label'].split('_')[0] not in dh_investment_list:# and dh_bus['district heating conn.']:
                 bus_xlsx.at[i, 'district heating conn.'] = '0'
-                print(str(dh_bus['label'])+' deactivated')
-            # if str(dh_bus['label'])[0:9] not in dh_investment_list and dh_bus['district heating conn.']:
-            #     print(str(dh_bus['label'])[0:9])
-            #     bus_xlsx.at[i, 'district heating conn.'] = 0
             elif len(dh_investment_list) < 2:
                 bus_xlsx.at[i, 'district heating conn.'] = 0
 
@@ -198,7 +167,6 @@ def insulation_technical_pre_selection(components_xlsx, result_components):
     for i, insulation in components_xlsx.iterrows():
         if str('insulation-'+insulation['label']) not in insulation_investment_list:
             components_xlsx.at[i, 'active'] = 0
-            #print(str(insulation['label'])+' deactivated')
 
 def update_model_according_pre_model_results(scenario_path, results_components_path, updated_scenario_path,
                                              investment_boundary_factor, investment_boundaries):
