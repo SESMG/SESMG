@@ -8,7 +8,7 @@ Your publication/thesis/project is missing? Contact us!
 Papers and Conference Proceedings
 ---------------------------------
 
-- Quest, Gemina; Arendt, Rosalie; Klemm, Christian; Bach, Vanessa; Budde, Janik; Vennemann, Peter & Finkbeiner, Matthias (2022): "**Integrated Life Cycle Assessment (LCA) of Power and Heat Supply for a Neighborhood: A Case Study of Herne, Germany**", *Energies*, 15(16), 5900, `https://doi.org/10.3390/en15165900<https://doi.org/10.3390/en15165900>`_.
+- Quest, Gemina; Arendt, Rosalie; Klemm, Christian; Bach, Vanessa; Budde, Janik; Vennemann, Peter & Finkbeiner, Matthias (2022): "**Integrated Life Cycle Assessment (LCA) of Power and Heat Supply for a Neighborhood: A Case Study of Herne, Germany**", *Energies*, 15(16), 5900, `https://doi.org/10.3390/en15165900 <https://doi.org/10.3390/en15165900>`_.
 
 - Klemm, Christian; Wiese, Frauke & Vennemann, Peter (2022): "**Model-based run-time and memory optimization for a mixed-use multi-energy system model with high spatial resolution**" (preprint), `https://www.researchgate.net/publication/361634152_Model-based_run-time_and_memory_optimization_for_a_mixed-use_multi-energy_system_model_with_high_spatial_resolution <https://www.researchgate.net/publication/361634152_Model-based_run-time_and_memory_optimization_for_a_mixed-use_multi-energy_system_model_with_high_spatial_resolution>`_.
 
