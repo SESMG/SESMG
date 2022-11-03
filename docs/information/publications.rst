@@ -21,6 +21,9 @@ Papers and Conference Proceedings
 
 Theses
 ------
+
+- Petereit, Vincent (2022): "**Wirtschaftlichkeitsanalyse der Wasserstoffnutzung in Quartieren**" (Bachelor Thesis), Münster University of Applied Sciences. `Mail <mailto:vincent.petereit@fh-muenster.de>`_
+
 - Budde, Janik (2022): "**Residential load profile tools - A review and comparison of applied tools**" (Project Thesis), Münster University of Applied Sciences.  `Mail <mailto:janik.budde\@fh-muenster.de>`_
 
 - Becker, Gregor (2022): "**Bereitstellung von Open Source Software in der Energiewirtschaft - Ein Leitfaden**" (Bachelor Thesis), Münster University of Applied Sciences.  `Mail <mailto:gregor.becker\@fh-muenster.de>`_
