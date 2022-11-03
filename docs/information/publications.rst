@@ -24,6 +24,8 @@ Theses
 
 - Petereit, Vincent (2022): "**Wirtschaftlichkeitsanalyse der Wasserstoffnutzung in Quartieren**" (Bachelor Thesis), Münster University of Applied Sciences. `Mail <mailto:vincent.petereit@fh-muenster.de>`_
 
+- Brüggemann, Vincent (2022): "**Energiesystemmodellierung des Lämmerhofs Mannhagen**" (Bachelor Thesis), Münster University of Applied Sciences. `Mail <mailto:vb011388@fh-muenster.de>`_
+
 - Budde, Janik (2022): "**Residential load profile tools - A review and comparison of applied tools**" (Project Thesis), Münster University of Applied Sciences.  `Mail <mailto:janik.budde\@fh-muenster.de>`_
 
 - Becker, Gregor (2022): "**Bereitstellung von Open Source Software in der Energiewirtschaft - Ein Leitfaden**" (Bachelor Thesis), Münster University of Applied Sciences.  `Mail <mailto:gregor.becker\@fh-muenster.de>`_
@@ -39,16 +41,16 @@ Theses
 Presentations
 -------------
 
-- Budde, Janik (2022): Spreadsheet Energy System Model Generator, SESMG (J. Budde), oemof user meeting (Flensburg, 18 – 20 MAY 2022), `Available here <https://oemof.org/wp-content/uploads/2022/05/2022-05-18_sesmg_janik_budde.pdf>`_.
+- Budde, Janik (2022): "**Spreadsheet Energy System Model Generator, SESMG**" (J. Budde), oemof user meeting (Flensburg, 18 – 20 MAY 2022), `Available here <https://oemof.org/wp-content/uploads/2022/05/2022-05-18_sesmg_janik_budde.pdf>`_.
 
-- Becker, Gregor (2022): district heating modeling tools (G. Becker), oemof user meeting (Flensburg, 18 – 20 MAY 2022), `Available here <https://oemof.org/wp-content/uploads/2022/06/2022-05-18_Vortrag_Flensburg_Gregor_Becker.pdf>`_.
+- Becker, Gregor (2022): "**district heating modeling tools**" (G. Becker), oemof user meeting (Flensburg, 18 – 20 MAY 2022), `Available here <https://oemof.org/wp-content/uploads/2022/06/2022-05-18_Vortrag_Flensburg_Gregor_Becker.pdf>`_.
 
-- Klemm, Christian (2022): Model-Based Run-Time and Memory Usage Optimization, oemof user meeting (Flensburg, 18 – 20 MAY 2022), `Available here <https://oemof.org/wp-content/uploads/2022/05/2022-05-09_ModelBasedRuntimeOptimization.pdf>`_.
+- Klemm, Christian (2022): "**Model-Based Run-Time and Memory Usage Optimization**", oemof user meeting (Flensburg, 18 – 20 MAY 2022), `Available here <https://oemof.org/wp-content/uploads/2022/05/2022-05-09_ModelBasedRuntimeOptimization.pdf>`_.
 
 Others
 ------
 
-- Klemm, Christian; Budde, Janik; Becker, Gregor; Tockloth, Jan N. & Vennemann, Peter: Energy system model structure and parameters, several versions, `https://doi.org/10.5281/zenodo.6974401 <https://doi.org/10.5281/zenodo.6974401>`_.
+- Klemm, Christian; Budde, Janik; Becker, Gregor; Tockloth, Jan N. & Vennemann, Peter: "**Energy system model structure and parameters**", several versions, `https://doi.org/10.5281/zenodo.6974401 <https://doi.org/10.5281/zenodo.6974401>`_.
 
 
 Projects
