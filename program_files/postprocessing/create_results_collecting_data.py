@@ -253,6 +253,7 @@ def get_comp_type(nd) -> str:
     """
     type_dict = {
         "<class 'dhnx.optimization_oemof_heatpipe.HeatPipeline'>": "dh",
+        "<class 'dhnx.optimization.oemof_heatpipe.HeatPipeline'>": "dh",
         "<class 'oemof.solph.network.sink.Sink'>": "sink",
         "<class 'oemof.solph.network.source.Source'>": "source",
         "<class 'oemof.solph.components.generic_storage.GenericStorage'>": "storage",

@@ -71,31 +71,17 @@ def criterion_switch_dh(directory):
     standard_parameter = pd.ExcelFile(path)
     # get columns from plain sheet
     for sheet in standard_parameter.sheet_names:
-        if sheet not in ["8_pipe_types", "8_1_other"]:
+        if sheet not in ["8_1_other"]:
             columns[sheet] = standard_parameter.parse(sheet)
     
-    component_param = standard_parameter.parse("8_pipe_types",
-                                               index_col="label_3")
     other_param = standard_parameter.parse("8_1_other", index_col="label")
     writer = pd.ExcelWriter(path, engine="xlsxwriter")
-    
-    fix_costs = component_param.loc[:, "fix_costs"]
-    component_param.loc[:, "fix_costs"] = \
-        component_param.loc[:, "fix_constraint_costs"]
-    component_param.loc[:, "fix_constraint_costs"] = fix_costs
-
-    periodical_costs = component_param.loc[:, "capex_pipes"].copy()
-    component_param.loc[:, "capex_pipes"] = \
-        component_param.loc[:, "periodical_constraint_costs"]
-    component_param.loc[:, "periodical_constraint_costs"] = periodical_costs
     
     costs = other_param.loc[:, "costs"].copy()
     other_param.loc[:, "costs"] = \
         other_param.loc[:, "constraint costs"]
     other_param.loc[:, "constraint costs"] = costs
-    component_param.reset_index(inplace=True, drop=False)
     other_param.reset_index(inplace=True, drop=False)
-    component_param.to_excel(writer, "8_pipe_types", index=False)
     other_param.to_excel(writer, "8_1_other", index=False)
     for sheet in columns:
         columns[sheet].to_excel(writer, sheet, index=False)
@@ -302,16 +288,14 @@ def create_transformation_scenarios(constraints, scenario_names, directory, limi
             "competition constraints": xls.parse("competition constraints"),
             "insulation": xls.parse("insulation"),
             "district heating": xls.parse("district heating"),
+            "pipe types": xls.parse("pipe types")
         }
         files[str(counter)].append(directory + "/" + scenario_names.split("/")[-1][:-5] + "_" + str(counter) + ".xlsx")
         writer = pd.ExcelWriter(
-            directory + "/" + scenario_names.split("/")[-1][:-5] + "_" + str(counter) + ".xlsx", engine="xlsxwriter"
-        )
-        nd["energysystem"].loc[1, "constraint cost limit"] = float(
-            constraint
-        )
+            directory + "/" + scenario_names.split("/")[-1][:-5] + "_" + str(counter) + ".xlsx", engine="xlsxwriter")
+        nd["energysystem"].loc[1, "constraint cost limit"] = float(constraint)
         for i in nd.keys():
-            nd[i].to_excel(writer, sheet_name=str(i))
+            nd[i].to_excel(writer, sheet_name=str(i), index=False)
         writer.save()
         #os.system("mv " + result_path + " " + path)
         print(files)
