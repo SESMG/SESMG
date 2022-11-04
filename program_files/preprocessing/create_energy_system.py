@@ -58,7 +58,6 @@ def import_scenario(filepath: str) -> dict:
             "competition constraints": xls.parse("competition constraints"),
             "insulation": xls.parse("insulation"),
             "district heating": xls.parse("district heating"),
-            "pipe types": xls.parse("pipe types")
         }
         # delete spreadsheet row within technology or units specific parameters
         list = [
@@ -72,11 +71,9 @@ def import_scenario(filepath: str) -> dict:
             "competition constraints",
             "insulation",
             "district heating",
-            "pipe types"
         ]
         for i in list:
-            if len(nd[i]) > 0:
-                nd[i] = nd[i].drop(index=0)
+            nd[i] = nd[i].drop(index=0)
 
     # error message, if no nodes are provided
     if not nd:

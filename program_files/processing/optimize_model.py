@@ -56,13 +56,11 @@ def constraint_optimization_against_two_values(
     limit_name1 = "invest_limit_" + "nonconvex_constraints"
     # Setting the equation representing the sum of the nonconvex
     # emissions
-    print(getattr(invest_flows2[inflow, outflow], "fix_constraint_costs")
-          for (inflow, outflow) in invest_flows2)
     setattr(
         om,
         limit_name1,
         po.Expression(
-            expr=max(
+            expr=sum(
                 getattr(invest_flows2[inflow, outflow], "fix_constraint_costs")
                 for (inflow, outflow) in invest_flows2
             )
@@ -137,7 +135,7 @@ def constraint_optimization_against_two_values(
             expr=(
                 (
                     getattr(om, limit_name)
-                    #+ getattr(om, limit_name1)
+                    + getattr(om, limit_name1)
                     + getattr(om, limit_name2)
                     + getattr(om, limit_name4)
                     + getattr(om, limit_name3)
@@ -354,6 +352,6 @@ def least_cost_model(
     logging.info("   " + "Starting Optimization with " + solver + "-Solver")
 
     # solving the linear problem using the given solver
-    om.solve(solver=solver, cmdline_options={"threads": num_threads, "NumericFocus": 3}, solve_kwargs={"tee": True})
+    om.solve(solver=solver, cmdline_options={"threads": num_threads})
     logging.info("\t Memory Usage during processing:" + str(memory_usage()))
     return om

@@ -38,6 +38,7 @@ pip3 install xlrd==1.2.0
 pip3 install Pyomo==5.7.1
 pip3 install basemap==1.3.3
 pip3 install xlsxwriter
+pip3 install dhnx
 pip3 install pyproj
 pip3 install sympy
 pip3 install numpy==1.17.4
@@ -50,7 +51,6 @@ pip3 install numpy==1.17.4
 pip3 install werkzeug==2.0.3
 pip3 install flask==2.1.3
 pip3 install pandas==1.0.0
-pip3 install Https://github.com/GregorBecker/DHNx/archive/refs/heads/dev.zip 
 
 sudo mv feedinlib lib/python3.7/site-packages
 sudo mv windpowerlib lib/python3.7/site-packages

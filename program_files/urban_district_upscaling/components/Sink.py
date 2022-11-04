@@ -118,10 +118,10 @@ def create_heat_sink(building, building_type, area, sheets,
 def create_sink_ev(building, sheets, standard_parameters):
     from program_files import create_standard_parameter_comp
 
-    # 
+    print(sheets["time series"].loc[:, "electric_vehicle.fix"])
     sheets["time series"].loc[:, building['label'] + "_electric_vehicle.fix"] \
-        = sheets["time series"].loc[:, "electric_vehicle.fix"] \
-        * building["distance of electric vehicles"]
+        = sheets["time series"].loc[:, "electric_vehicle.fix"]
+    print(sheets["time series"])
     return create_standard_parameter_comp(
         specific_param={
             "label": building["label"] + "_electric_vehicle",

@@ -15,6 +15,10 @@ thermal_net = dhnx.network.ThermalNetwork()
 
 # get heat network components from standard_parameters file
 pre_processing = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+standard_parameter = pd.ExcelFile(os.path.dirname(pre_processing)
+                                  + "/urban_district_upscaling/"
+                                    "standard_parameters.xlsx")
+component_param = standard_parameter.parse("8_1_other", index_col="label")
 
 
 def concat_on_thermal_net_components(comp_type: str, new_dict: dict,
@@ -382,18 +386,9 @@ def create_components(nodes_data, anergy_or_exergy):
     """
     frequency = nodes_data["energysystem"]["temporal resolution"].values
     start_date = str(nodes_data["energysystem"]["start date"].values[0])
-
-    # changes names of data columns,
-    # so it fits the needs of the feedinlib
-    name_dc = {"min. investment capacity": "cap_min",
-               "max. investment capacity": "cap_max",
-               "periodical costs": "capex_pipes",
-               "fix investment costs": "fix_costs",
-               "periodical constraint costs": "periodical_constraint_costs",
-               "fix investment constraint costs": "fix_constraint_costs"}
-    nodes_data["pipe types"] = nodes_data["pipe types"].rename(columns=name_dc)
-
     # set standard investment options that do not require user modification
+    print(standard_parameter.parse("8_pipe_types").loc[
+                standard_parameter.parse("8_pipe_types")["anergy_or_exergy"] == ("anergy" if anergy_or_exergy else "exergy")])
     invest_opt = {
         "consumers": {
             "bus": pd.DataFrame(
@@ -420,14 +415,8 @@ def create_components(nodes_data, anergy_or_exergy):
             "source": pd.DataFrame({"label_2": "heat", "active": 0}, index=[0]),
         },
         "network": {
-            "pipes": nodes_data["pipe types"].loc[
-                (nodes_data["pipe types"]["anergy_or_exergy"] == (
-                    "anergy" if anergy_or_exergy else "exergy"))
-                & (nodes_data["pipe types"]["distribution_pipe"] == 1)],
-            "pipes_houses": nodes_data["pipe types"].loc[(
-                nodes_data["pipe types"]["anergy_or_exergy"] == (
-                    "anergy" if anergy_or_exergy else "exergy"))
-                & (nodes_data["pipe types"]["building_pipe"] == 1)]
+            "pipes": standard_parameter.parse("8_pipe_types").loc[
+                standard_parameter.parse("8_pipe_types")["anergy_or_exergy"] == ("anergy" if anergy_or_exergy else "exergy")]
         },
     }
     # start dhnx algorithm to create dh components
@@ -442,39 +431,35 @@ def create_components(nodes_data, anergy_or_exergy):
             + "/"
             + str(start_date[0:4])
         ),
-        # TODO add to GUI
-        bidirectional_pipes=True,
         frequence=(str(frequency[0])).upper(),
         label_5="anergy" if anergy_or_exergy else "exergy"
     )
     return oemof_opti_model
 
 
-def calc_heat_pipe_attributes(oemof_opti_model, anergy_or_exergy, nodes_data):
+def calc_heat_pipe_attributes(oemof_opti_model, anergy_or_exergy):
+    invest_data = standard_parameter.parse("8_pipe_types").loc[
+        standard_parameter.parse("8_pipe_types")[
+            "anergy_or_exergy"] == ("anergy" if anergy_or_exergy else "exergy")]
     for a in oemof_opti_model.nodes:
         if str(type(a)) == "<class 'oemof.solph.network.bus.Bus'>":
             pass
         else:
             label = a.label.tag3	
-            if int(nodes_data["pipe types"].loc[
-                       nodes_data["pipe types"]["label_3"] == label][
-                       "nonconvex"]) == 0:
+            if int(invest_data.loc[invest_data["label_3"] == label]["nonconvex"]) == 0:
                 ep_costs = getattr(
                     a.outputs[list(a.outputs.keys())[0]].investment, "ep_costs"
                 )
                 length = ep_costs / float(
-                    nodes_data["pipe types"].loc[
-                        nodes_data["pipe types"]["label_3"] == label][
-                        "capex_pipes"]
+                    invest_data.loc[invest_data["label_3"] == label]["capex_pipes"]
                 )
                 setattr(
                         a.outputs[list(a.outputs.keys())[0]].investment,
                         "periodical_constraint_costs",
                         length
                         * float(
-                                nodes_data["pipe types"].loc[
-                                    nodes_data["pipe types"][
-                                        "label_3"] == label][
+                                invest_data.loc[
+                                    invest_data["label_3"] == label][
                                     "periodical_constraint_costs"
                                 ]
                         ),
@@ -484,8 +469,7 @@ def calc_heat_pipe_attributes(oemof_opti_model, anergy_or_exergy, nodes_data):
                     a.outputs[list(a.outputs.keys())[0]].investment, "offset"
                 )
                 length = fix_costs / float(
-                    nodes_data["pipe types"].loc[
-                        nodes_data["pipe types"]["label_3"] == label]["fix_costs"]
+                    invest_data.loc[invest_data["label_3"] == label]["fix_costs"]
                 )
                 
             setattr(
@@ -493,8 +477,8 @@ def calc_heat_pipe_attributes(oemof_opti_model, anergy_or_exergy, nodes_data):
                     "periodical_constraint_costs",
                     length
                     * float(
-                            nodes_data["pipe types"].loc[
-                                nodes_data["pipe types"]["label_3"] == label][
+                            invest_data.loc[
+                                invest_data["label_3"] == label][
                                 "periodical_constraint_costs"
                             ]
                     ),
@@ -504,8 +488,8 @@ def calc_heat_pipe_attributes(oemof_opti_model, anergy_or_exergy, nodes_data):
                     "fix_constraint_costs",
                     length
                     * float(
-                            nodes_data["pipe types"].loc[
-                                nodes_data["pipe types"]["label_3"] == label][
+                            invest_data.loc[
+                                invest_data["label_3"] == label][
                                 "fix_constraint_costs"
                             ]
                     ),
@@ -517,7 +501,7 @@ def calc_heat_pipe_attributes(oemof_opti_model, anergy_or_exergy, nodes_data):
     return oemof_opti_model
 
 
-def connect_dh_to_system(oemof_opti_model, busd, nodes_data):
+def connect_dh_to_system(oemof_opti_model, busd):
     """
         Method which creates links to connect the scenario based
         created sinks to the thermal network components created before.
@@ -530,7 +514,7 @@ def connect_dh_to_system(oemof_opti_model, busd, nodes_data):
             model within connection to the main model
     """
     oemof_opti_model = remove_redundant_sinks(oemof_opti_model)
-    oemof_opti_model = calc_heat_pipe_attributes(oemof_opti_model, False, nodes_data)
+    oemof_opti_model = calc_heat_pipe_attributes(oemof_opti_model, False)
     
     # create link to connect consumers heat bus to the dh-system
     for num, consumer in thermal_net.components["consumers"].iterrows():
@@ -544,9 +528,10 @@ def connect_dh_to_system(oemof_opti_model, busd, nodes_data):
             busd[consumer["input"]]: solph.Flow(
                 investment=solph.Investment(
                     ep_costs=float(
-                        nodes_data["pipe types"].loc[nodes_data["pipe types"]["label_3"] == "dh_heatstation"]["capex_pipes"]),
+                        component_param.loc["dh_heatstation"]["costs"]),
                     periodical_constraint_costs=float(
-                        nodes_data["pipe types"].loc[nodes_data["pipe types"]["label_3"] == "dh_heatstation"]["periodical_constraint_costs"]),
+                        component_param.loc["dh_heatstation"][
+                            "constraint costs"]),
                     minimum=0,
                     maximum=999 * len(consumer["input"]),
                     existing=0,
@@ -558,7 +543,7 @@ def connect_dh_to_system(oemof_opti_model, busd, nodes_data):
         
         conversion_factors = {
             (label, busd[consumer["input"]]): float(
-                nodes_data["pipe types"].loc[nodes_data["pipe types"]["label_3"] == "dh_heatstation"]["efficiency"])
+                component_param.loc["dh_heatstation"]["efficiency"])
         }
         
         oemof_opti_model.nodes.append(
@@ -574,7 +559,7 @@ def connect_dh_to_system(oemof_opti_model, busd, nodes_data):
     return oemof_opti_model
 
 
-def connect_anergy_to_system(oemof_opti_model, busd, nodes_data):
+def connect_anergy_to_system(oemof_opti_model, busd):
     """
         Method which creates links to connect the scenario based
         created sinks to the thermal network components created before.
@@ -589,7 +574,7 @@ def connect_anergy_to_system(oemof_opti_model, busd, nodes_data):
     import oemof.thermal.compression_heatpumps_and_chillers as cmpr_hp_chiller
 
     oemof_opti_model = remove_redundant_sinks(oemof_opti_model)
-    oemof_opti_model = calc_heat_pipe_attributes(oemof_opti_model, True, nodes_data)
+    oemof_opti_model = calc_heat_pipe_attributes(oemof_opti_model, True)
 
     # create link to connect consumers heat bus to the dh-system
     for num, consumer in thermal_net.components["consumers"].iterrows():
@@ -614,10 +599,11 @@ def connect_anergy_to_system(oemof_opti_model, busd, nodes_data):
             busd[consumer["input"]]: solph.Flow(
                     investment=solph.Investment(
                             ep_costs=float(
-                                nodes_data["pipe types"].loc[nodes_data["pipe types"]["label_3"] == "anergy_heat_pump"]["capex_pipes"]),
+                                    component_param.loc["anergy_heat_pump"][
+                                        "costs"]),
                             periodical_constraint_costs=float(
-                                    nodes_data["pipe types"].loc[nodes_data["pipe types"]["label_3"] == "anergy_heat_pump"][
-                                        "periodical_constraint_costs"]),
+                                    component_param.loc["anergy_heat_pump"][
+                                        "constraint costs"]),
                             minimum=0,
                             maximum=999 * len(consumer["input"]),
                             existing=0,
@@ -809,9 +795,9 @@ def create_connect_dhnx(nodes_data, busd, clustering=False,
     else:
         # connect non dh and dh system using links to represent losses
         if anergy_or_exergy:
-            connect_anergy_to_system(oemof_opti_model, busd, nodes_data)
+            connect_anergy_to_system(oemof_opti_model, busd)
         else:
-            connect_dh_to_system(oemof_opti_model, busd, nodes_data)
+            connect_dh_to_system(oemof_opti_model, busd)
     # remove dhnx flows that are not used due to deletion of sinks
     for i in range(len(oemof_opti_model.nodes)):
         outputs = oemof_opti_model.nodes[i].outputs.copy()

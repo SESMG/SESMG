@@ -1524,8 +1524,6 @@ def change_optimization_criterion(nodes_data: dict):
              else 'excess constraint costs' if x == 'excess costs'
              else 'shortage costs' if x == 'shortage constraint costs'
              else 'shortage constraint costs' if x == 'shortage costs'
-             else 'fix investment costs' if x == 'fix investment constraint costs'
-             else 'fix investment constraint costs' if x == 'fix investment costs'
              else x for x in column_names_list]
 
         nd[scenario_sheet].columns = column_names_list
