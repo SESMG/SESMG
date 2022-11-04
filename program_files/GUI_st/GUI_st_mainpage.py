@@ -24,8 +24,61 @@ from program_files.GUI_st.GUI_st_US import *
 ####################################
 
 
-def main_application_sesmg():    
+
+# initial_session_dict
+
+# if "scenario_input_sheet_path" not in st.session_state: 
+#     st.session_state["scenario_input_sheet_path"] = False
+
+
+
+def main_output_result_overview():    
+    ####################################
+    ############ Result Page ###########
     
+    ########## Show Model Graph ########
+    #Function to display the energy systems structure.
+    
+    # Header
+    st.subheader("The structure of the modeled energy system:")
+    
+    # Importing and printing the energy system graph
+    es_graph = Image.open(os.path.dirname(__file__) + "/graph.gv.png", "r")
+    st.image(es_graph, caption="Beispielgraph.",)
+    
+    
+    ########## Result Summary ########
+    # Functions to display a summary of the modeled energy system.
+    
+    # Import summary csv and create dataframe
+    df_summary = pd.read_csv(os.path.dirname(__file__) + "/summary.csv")
+    
+    # Display and import time series values
+    #time1, time2 = st.columns(2)
+    #time1.metric(label="Start Date", value=str(df_summary['Start Date']))
+    #time2.metric(label="End Date", value=str(df_summary['End Date']))
+    #time3.metric(label="Temporal Resolution", value=str(df_summary['Resolution']))            
+    '''Hier Problem mit Darstellung des Typs Datetime'''
+    
+    # Display and import simulated cost values from summary dataframe
+    cost1, cost2, cost3, cost4 = st.columns(4)
+    cost1.metric(label="Total System Costs", value=round(df_summary['Total System Costs'],1), delta="1.2 °F")
+    cost2.metric(label="Total Constraint Costs", value=round(df_summary['Total Constraint Costs'],1), delta="1.2 °F")
+    cost3.metric(label="Total Variable Costs", value=round(df_summary['Total Variable Costs'],1), delta="-1.2 °F")
+    cost4.metric(label="Total Periodical Costs", value=round(df_summary['Total Periodical Costs'],1), delta="1.2 °F")
+    
+    # Display and import simulated energy values from summary dataframe
+    ener1, ener2 = st.columns(2)
+    ener1.metric(label="Total Energy Demand", value=round(df_summary['Total Energy Demand'],1), delta="1.2 °F")
+    ener2.metric(label="Total Energy Usage", value=round(df_summary['Total Energy Usage'],1), delta="1.2 °F")   
+
+
+
+
+
+
+def main_application_sesmg():    
+
         
     ####################################
     ############## Sidebar #############
@@ -34,13 +87,15 @@ def main_application_sesmg():
     # Functions to upload the scenario sheet file.
         
     # Header
-    st.sidebar.title("Upload Scenario File")
+    st.sidebar.title("Upload Model Definition File")
     
     scenario_input_sheet_path = st.sidebar.text_input(
-        "Type in path to your scenario input sheet.",
+        "Type in path to your model definition sheet.",
         help="Give the full path from your main directory ending with \
-                /inputscenario.xlsx . \
-                You can choose the filenames and directorties as you want.") 
+                /modeldefinition_name.xlsx . \
+                You can choose the filenames and directorties as you want.",
+                value=st.session_state.scenario_input_sheet_path)
+                
     
     # ###### Run Model Visualization #####
     # # Function to create and display the model structure without optimizung the system.
@@ -173,51 +228,14 @@ def main_application_sesmg():
             input_pareto_points = st.multiselect("Pareto Points", options=pareto_options)
             input_pareto_points.sort(reverse=True)
         
-           
-        
-    ####################################
-    ############ Result Page ###########
-    
-    ########## Show Model Graph ########
-    #Function to display the energy systems structure.
-    
-    # Header
-    st.subheader("The structure of the modeled energy system:")
-    
-    # Importing and printing the energy system graph
-    es_graph = Image.open(os.path.dirname(__file__) + "/graph.gv.png", "r")
-    st.image(es_graph, caption="Beispielgraph.",)
-    
-    
-    ########## Result Summary ########
-    # Functions to display a summary of the modeled energy system.
-    
-    # Import summary csv and create dataframe
-    df_summary = pd.read_csv(os.path.dirname(__file__) + "/summary.csv")
-    
-    # Display and import time series values
-    #time1, time2 = st.columns(2)
-    #time1.metric(label="Start Date", value=str(df_summary['Start Date']))
-    #time2.metric(label="End Date", value=str(df_summary['End Date']))
-    #time3.metric(label="Temporal Resolution", value=str(df_summary['Resolution']))            
-    '''Hier Problem mit Darstellung des Typs Datetime'''
-    
-    # Display and import simulated cost values from summary dataframe
-    cost1, cost2, cost3, cost4 = st.columns(4)
-    cost1.metric(label="Total System Costs", value=round(df_summary['Total System Costs'],1), delta="1.2 °F")
-    cost2.metric(label="Total Constraint Costs", value=round(df_summary['Total Constraint Costs'],1), delta="1.2 °F")
-    cost3.metric(label="Total Variable Costs", value=round(df_summary['Total Variable Costs'],1), delta="-1.2 °F")
-    cost4.metric(label="Total Periodical Costs", value=round(df_summary['Total Periodical Costs'],1), delta="1.2 °F")
-    
-    # Display and import simulated energy values from summary dataframe
-    ener1, ener2 = st.columns(2)
-    ener1.metric(label="Total Energy Demand", value=round(df_summary['Total Energy Demand'],1), delta="1.2 °F")
-    ener2.metric(label="Total Energy Usage", value=round(df_summary['Total Energy Usage'],1), delta="1.2 °F")        
     
     
     ####################################
     # Starting process if "Start Optimization"-button is clicked
     if submitted_optimization:
+        
+        st.session_state["scenario_input_sheet_path"] = scenario_input_sheet_path
+        
         
         if scenario_input_sheet_path is not "":
             
@@ -298,7 +316,8 @@ def main_application_sesmg():
                 
             
         else:
-             st.write(input_pareto_points)
+            result()
+            st.write("Session State")
              
 
 
