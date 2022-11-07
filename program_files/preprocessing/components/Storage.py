@@ -62,6 +62,7 @@ class Storages:
                 min_storage_level=storage_levels[0],
                 max_storage_level=storage_levels[1],
                 loss_rate=loss_rate,
+                initial_storage_level=s["initial capacity"],
                 fixed_losses_relative=fixed_losses[0],
                 fixed_losses_absolute=fixed_losses[1],
                 inflow_conversion_factor=s["efficiency inflow"],
