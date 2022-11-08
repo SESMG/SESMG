@@ -57,8 +57,10 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
                 "ST_south_west": [],
                 "ST_west": [],
                 "ST_north_west": [],
-                "reductionco2": sum(dataframes[key]["constraints/CU"])
-                / emissions_100_percent,
+                "reductionco2": (sum(dataframes[key]["constraints/CU"])
+                / emissions_100_percent) if key != "0" else
+                ((sum(dataframes[key]["variable costs/CU"]) + sum(dataframes[key]["periodical costs/CU"]))
+                / emissions_100_percent),
             }
         )
         dataframe = dataframes[key].copy()
