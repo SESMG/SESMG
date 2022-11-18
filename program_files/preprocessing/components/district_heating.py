@@ -379,6 +379,16 @@ def create_components(nodes_data, anergy_or_exergy):
     """
     frequency = nodes_data["energysystem"]["temporal resolution"].values
     start_date = str(nodes_data["energysystem"]["start date"].values[0])
+    # changes names of data columns,
+    # so it fits the needs of the feedinlib
+    name_dc = {"min. investment capacity": "cap_min",
+               "max. investment capacity": "cap_max",
+               "periodical costs": "capex_pipes",
+               "fix investment costs": "fix_costs",
+               "periodical constraint costs": "periodical_constraint_costs",
+               "fix investment constraint costs": "fix_constraint_costs"}
+    nodes_data["pipe types"] = nodes_data["pipe types"].rename(columns=name_dc)
+      
     # set standard investment options that do not require user modification
     invest_opt = {
         "consumers": {
