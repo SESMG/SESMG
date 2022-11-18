@@ -371,10 +371,15 @@ def urban_district_upscaling_pre_processing(
         "weather data",
         "time series",
         "district heating",
-    ]:
-        if sheet_tbc not in pd.ExcelFile(paths[0]).sheet_names:
-            if sheet_tbc in standard_parameters.sheet_names:
-                sheets[sheet_tbc] = standard_parameters.parse(
+           "8_pipe_types"
+     ]:
+         if sheet_tbc not in pd.ExcelFile(paths[0]).sheet_names:
+             if sheet_tbc in standard_parameters.sheet_names:
+                 if sheet_tbc == "8_pipe_types":
+                     sheet_name = "pipe types"
+                 else:
+                     sheet_name = sheet_tbc
+                 sheets[sheet_name] = standard_parameters.parse(
                     sheet_tbc,
                     parse_dates=["timestamp"]
                     if sheet_tbc in ["weather data", "time series"]
