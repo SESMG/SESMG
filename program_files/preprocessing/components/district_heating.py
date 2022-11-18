@@ -415,8 +415,8 @@ def create_components(nodes_data, anergy_or_exergy):
             "source": pd.DataFrame({"label_2": "heat", "active": 0}, index=[0]),
         },
         "network": {
-            "pipes": standard_parameter.parse("8_pipe_types").loc[
-                standard_parameter.parse("8_pipe_types")["anergy_or_exergy"] == ("anergy" if anergy_or_exergy else "exergy")]
+            "pipes": nodes_data["pipe types"].loc[(nodes_data["pipe types"]["anergy_or_exergy"] == ("anergy" if anergy_or_exergy else "exergy")) & (nodes_data["pipe types"]["distribution_pipe"] == 1)],
+            "pipes_houses": nodes_data["pipe types"].loc[(nodes_data["pipe types"]["anergy_or_exergy"] == ("anergy" if anergy_or_exergy else "exergy")) & (nodes_data["pipe types"]["building_pipe"] == 1)],
         },
     }
     # start dhnx algorithm to create dh components
