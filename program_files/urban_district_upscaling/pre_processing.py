@@ -265,7 +265,7 @@ def load_input_data(plain_sheet, standard_parameter_path, pre_scenario):
         sheets.update({sheet: pd.DataFrame(columns=(columns[sheet]))})
         units_series = pd.Series(data={a: "x" for a in sheets[sheet].keys()})
         sheets[sheet] = pd.concat([sheets[sheet], pd.DataFrame([units_series])])
-    worksheets += ["weather data", "time series"]
+    worksheets += ["weather data", "time series", "pipe types"]
 
     # load standard parameters from standard parameter file
     standard_parameters = pd.ExcelFile(standard_parameter_path)
@@ -371,20 +371,19 @@ def urban_district_upscaling_pre_processing(
         "weather data",
         "time series",
         "district heating",
-           "8_pipe_types"
-     ]:
-         if sheet_tbc not in pd.ExcelFile(paths[0]).sheet_names:
-             if sheet_tbc in standard_parameters.sheet_names:
-                 if sheet_tbc == "8_pipe_types":
-                     sheet_name = "pipe types"
-                 else:
-                     sheet_name = sheet_tbc
-                 sheets[sheet_name] = standard_parameters.parse(
+        "8_pipe_types"
+    ]:
+        if sheet_tbc not in pd.ExcelFile(paths[0]).sheet_names:
+            if sheet_tbc in standard_parameters.sheet_names:
+                if sheet_tbc == "8_pipe_types":
+                    sheet_name = "pipe types"
+                else:
+                    sheet_name = sheet_tbc
+                sheets[sheet_name] = standard_parameters.parse(
                     sheet_tbc,
                     parse_dates=["timestamp"]
                     if sheet_tbc in ["weather data", "time series"]
-                    else [],
-                )
+                    else [],)
             if "4 - time series data" in pd.ExcelFile(paths[0]).sheet_names:
                 sheets["weather data"] = pd.ExcelFile(paths[0]).parse(
                     "4 - time series data", parse_dates=["timestamp"]
@@ -394,7 +393,7 @@ def urban_district_upscaling_pre_processing(
                 )
             if "3.1 - streets" in pd.ExcelFile(paths[0]).sheet_names:
                 sheets["district heating"] = pd.ExcelFile(paths[0]).parse(
-                    "3.1 - streets"
+                     "3.1 - streets"
                 )
         else:
             sheets[sheet_tbc] = pd.ExcelFile(paths[0]).parse(
