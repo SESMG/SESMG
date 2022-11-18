@@ -254,7 +254,7 @@ def central_comp(central, true_bools, sheets, standard_parameters):
         # house electricity bus
         sheets = Bus.create_standard_parameter_bus(
             label=("screw_turbine_" + "_electricity_bus"),
-            bus_type="central_pv_bus",
+            bus_type="screw_turbine_bus",
             sheets=sheets,
             standard_parameters=standard_parameters
         )
