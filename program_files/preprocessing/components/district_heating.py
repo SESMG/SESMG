@@ -533,10 +533,10 @@ def connect_dh_to_system(oemof_opti_model, busd, nodes_data):
             busd[consumer["input"]]: solph.Flow(
                 investment=solph.Investment(
                     ep_costs=float(
-                        nodes_data["pipe types"].loc["dh_heatstation"]["costs"]),
+                        nodes_data["pipe types"].loc[nodes_data["pipe types"]["label_3"] == "dh_heatstation"]["capex_pipes"]),
                     periodical_constraint_costs=float(
-                        nodes_data["pipe types"].loc["dh_heatstation"][
-                            "constraint costs"]),
+                        nodes_data["pipe types"].loc[nodes_data["pipe types"]["label_3"] == "dh_heatstation"][
+                            "periodical_constraint_costs"]),
                     minimum=0,
                     maximum=999 * len(consumer["input"]),
                     existing=0,
@@ -548,7 +548,7 @@ def connect_dh_to_system(oemof_opti_model, busd, nodes_data):
         
         conversion_factors = {
             (label, busd[consumer["input"]]): float(
-                nodes_data["pipe types"].loc["dh_heatstation"]["efficiency"])
+                nodes_data["pipe types"].loc[nodes_data["pipe types"]["label_3"] =="dh_heatstation"]["efficiency"])
         }
         
         oemof_opti_model.nodes.append(
