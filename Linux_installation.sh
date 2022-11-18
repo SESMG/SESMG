@@ -38,7 +38,7 @@ pip3 install xlrd==1.2.0
 pip3 install Pyomo==5.7.1
 pip3 install basemap==1.3.3
 pip3 install xlsxwriter
-pip3 install dhnx
+pip3 install https://github.com/GregorBecker/DHNx/archive/refs/heads/dev.zip
 pip3 install pyproj
 pip3 install sympy
 pip3 install numpy==1.17.4
