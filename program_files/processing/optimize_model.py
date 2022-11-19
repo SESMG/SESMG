@@ -135,7 +135,7 @@ def constraint_optimization_against_two_values(
             expr=(
                 (
                     getattr(om, limit_name)
-                    + getattr(om, limit_name1)
+                    #+ getattr(om, limit_name1)
                     + getattr(om, limit_name2)
                     + getattr(om, limit_name4)
                     + getattr(om, limit_name3)
