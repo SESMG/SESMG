@@ -75,7 +75,8 @@ def import_scenario(filepath: str) -> dict:
             "pipe types"
         ]
         for i in list:
-            nd[i] = nd[i].drop(index=0)
+            if len(nd[i]) > 0:
+                nd[i] = nd[i].drop(index=0)
 
     # error message, if no nodes are provided
     if not nd:
