@@ -1127,11 +1127,14 @@ class Transformers:
     busd = None
 
     def create_transformer(self, tf, inputs, outputs, conversion_factors):
-        """ TODO Docstring missing """
-        self.nodes_transformer.append(solph.Transformer(
-                label=tf['label'], **inputs, **outputs, **conversion_factors))
-        logging.info('   ' + 'Transformer created: ' + tf['label'])
-    
+        """TODO Docstring missing"""
+        self.nodes_transformer.append(
+            solph.Transformer(
+                label=tf["label"], **inputs, **outputs, **conversion_factors
+            )
+        )
+        logging.info("   " + "Transformer created: " + tf["label"])
+
     def generic_transformer(self, tf: dict, two_input=False):
         """
         Creates a Generic Transformer object.
@@ -1212,18 +1215,26 @@ class Transformers:
         outputs = {"outputs": outputs}
 
         conversion_factors = {"conversion_factors": conversion_factors}
-        inputs = {"inputs": {self.busd[tf['input']]: solph.Flow(
-                variable_costs=tf['variable input costs'],
-                emission_factor=tf['variable input constraint costs'])
-        }}
+        inputs = {
+            "inputs": {
+                self.busd[tf["input"]]: solph.Flow(
+                    variable_costs=tf["variable input costs"],
+                    emission_factor=tf["variable input constraint costs"],
+                )
+            }
+        }
         if two_input:
-            inputs["inputs"].update({self.busd[tf["input2"]] : solph.Flow(
-                variable_costs=tf['variable input costs 2'],
-                emission_factor=tf['variable input constraint costs 2']
-            )})
-            conversion_factors["conversion_factors"].update({
-                self.busd[tf["input2"]]: tf["input2 / input"]
-            })
+            inputs["inputs"].update(
+                {
+                    self.busd[tf["input2"]]: solph.Flow(
+                        variable_costs=tf["variable input costs 2"],
+                        emission_factor=tf["variable input constraint costs 2"],
+                    )
+                }
+            )
+            conversion_factors["conversion_factors"].update(
+                {self.busd[tf["input2"]]: tf["input2 / input"]}
+            )
         self.create_transformer(tf, inputs, outputs, conversion_factors)
 
     def compression_heat_transformer(self, tf: dict, data):
@@ -1751,7 +1762,7 @@ class Transformers:
                 # Create Absorption Chiller
                 elif t["transformer type"] == "AbsorptionHeatTransformer":
                     self.absorption_heat_transformer(t, weather_data)
-                
+
                 elif t["transformer type"] == "GenericTwoInputTransformer":
                     self.generic_transformer(t, True)
                 # Error Message for invalid Transformers
