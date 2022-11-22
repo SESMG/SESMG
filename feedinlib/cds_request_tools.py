@@ -83,7 +83,10 @@ def _get_cds_data(
     ), "Need to specify at least 'variable', 'year' and 'month'"
 
     # Send the data request to the server
-    result = cds_client.retrieve(dataset_name, request,)
+    result = cds_client.retrieve(
+        dataset_name,
+        request,
+    )
 
     no_target_file_provided = target_file is None
     # Create a file in a secure way if a target filename was not provided
@@ -160,9 +163,7 @@ def _format_cds_request_datespan(start_date, end_date):
     return answer
 
 
-def _format_cds_request_area(
-    latitude_span=None, longitude_span=None, grid=None
-):
+def _format_cds_request_area(latitude_span=None, longitude_span=None, grid=None):
     """
     Format the area between two given latitude and longitude spans in order
     to submit a CDS request
@@ -275,12 +276,7 @@ def _format_cds_request_position(latitude, longitude, grid=None):
 
 
 def get_cds_data_from_datespan_and_position(
-    start_date,
-    end_date,
-    latitude=None,
-    longitude=None,
-    grid=None,
-    **cds_params
+    start_date, end_date, latitude=None, longitude=None, grid=None, **cds_params
 ):
     """
     Format request for data from the Climate Data Store (CDS)
@@ -334,9 +330,7 @@ def get_cds_data_from_datespan_and_position(
     # size
     # if both longitude and latitude are provided as number, select single
     # position
-    if isinstance(longitude, (int, float)) or isinstance(
-        latitude, (int, float)
-    ):
+    if isinstance(longitude, (int, float)) or isinstance(latitude, (int, float)):
         request_area = _format_cds_request_position(latitude, longitude, grid)
         cds_params.update(request_area)
     # if longitude or latitude is provided as list and the other one is either

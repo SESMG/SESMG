@@ -117,9 +117,9 @@ def format_windpowerlib(ds):
     # the time stamp given by ERA5 for mean values (probably) corresponds to
     # the end of the valid time interval; the following sets the time stamp
     # to the middle of the valid time interval
-    df['time'] = df.time - pd.Timedelta(minutes=60)
+    df["time"] = df.time - pd.Timedelta(minutes=60)
 
-    df.set_index(['time', 'latitude', 'longitude'], inplace=True)
+    df.set_index(["time", "latitude", "longitude"], inplace=True)
     df.sort_index(inplace=True)
     df = df.tz_localize("UTC", level=0)
 
@@ -190,9 +190,7 @@ def format_pvlib(ds):
     pvlib_vars = ["ghi", "dhi", "wind_speed", "temp_air"]
     ds_vars = list(ds.variables)
     drop_vars = [
-        _
-        for _ in ds_vars
-        if _ not in pvlib_vars + ["latitude", "longitude", "time"]
+        _ for _ in ds_vars if _ not in pvlib_vars + ["latitude", "longitude", "time"]
     ]
     ds = ds.drop(drop_vars)
 
@@ -202,9 +200,9 @@ def format_pvlib(ds):
     # the time stamp given by ERA5 for mean values (probably) corresponds to
     # the end of the valid time interval; the following sets the time stamp
     # to the middle of the valid time interval
-    df['time'] = df.time - pd.Timedelta(minutes=30)
+    df["time"] = df.time - pd.Timedelta(minutes=30)
 
-    df.set_index(['time', 'latitude', 'longitude'], inplace=True)
+    df.set_index(["time", "latitude", "longitude"], inplace=True)
     df.sort_index(inplace=True)
     df = df.tz_localize("UTC", level=0)
 
@@ -319,9 +317,7 @@ def select_geometry(ds, area):
     # formatted as xarray of bools
     logical_list = []
     for lon, lat in zip(inside_lon, inside_lat):
-        logical_list.append(
-            np.logical_and((ds.longitude == lon), (ds.latitude == lat))
-        )
+        logical_list.append(np.logical_and((ds.longitude == lon), (ds.latitude == lat)))
 
     # bind all conditions from the list
     cond = np.logical_or(*logical_list[:2])
@@ -332,9 +328,7 @@ def select_geometry(ds, area):
     return ds.where(cond)
 
 
-def weather_df_from_era5(
-    era5_netcdf_filename, lib, start=None, end=None, area=None
-):
+def weather_df_from_era5(era5_netcdf_filename, lib, start=None, end=None, area=None):
     """
     Gets ERA5 weather data from netcdf file and converts it to a pandas
     dataframe as required by the spcified lib.
@@ -384,8 +378,7 @@ def weather_df_from_era5(
         df = format_pvlib(ds)
     else:
         raise ValueError(
-            "Unknown value for `lib`. "
-            "It must be either 'pvlib' or 'windpowerlib'."
+            "Unknown value for `lib`. " "It must be either 'pvlib' or 'windpowerlib'."
         )
 
     # drop latitude and longitude from index in case a single location

@@ -11,10 +11,15 @@ import pandas as pd
 from windpowerlib import tools
 
 
-def smooth_power_curve(power_curve_wind_speeds, power_curve_values,
-                       block_width=0.5, wind_speed_range=15.0,
-                       standard_deviation_method='turbulence_intensity',
-                       mean_gauss=0, **kwargs):
+def smooth_power_curve(
+    power_curve_wind_speeds,
+    power_curve_values,
+    block_width=0.5,
+    wind_speed_range=15.0,
+    standard_deviation_method="turbulence_intensity",
+    mean_gauss=0,
+    **kwargs
+):
     r"""
     Smoothes a power curve by using a Gauss distribution.
 
@@ -138,10 +143,7 @@ def smooth_power_curve(power_curve_wind_speeds, power_curve_values,
         power_curve_wind_speeds = power_curve_wind_speeds.append(
             pd.Series(
                 power_curve_wind_speeds.iloc[-1]
-                + (
-                    power_curve_wind_speeds.iloc[5]
-                    - power_curve_wind_speeds.iloc[4]
-                ),
+                + (power_curve_wind_speeds.iloc[5] - power_curve_wind_speeds.iloc[4]),
                 index=[power_curve_wind_speeds.index[-1] + 1],
             )
         )
@@ -151,9 +153,7 @@ def smooth_power_curve(power_curve_wind_speeds, power_curve_values,
     for power_curve_wind_speed in power_curve_wind_speeds:
         # Create array of wind speeds for the sum
         wind_speeds_block = (
-            np.arange(
-                -wind_speed_range, wind_speed_range + block_width, block_width
-            )
+            np.arange(-wind_speed_range, wind_speed_range + block_width, block_width)
             + power_curve_wind_speed
         )
         # Get standard deviation for Gauss function
@@ -247,9 +247,7 @@ def wake_losses_to_power_curve(
         )
         # Add column with reduced power (nan values of efficiency are
         # interpolated)
-        df["reduced_power"] = df["value"] * df["efficiency"].interpolate(
-            method="index"
-        )
+        df["reduced_power"] = df["value"] * df["efficiency"].interpolate(method="index")
         reduced_power = df["reduced_power"].dropna()
         power_curve_df = pd.DataFrame(
             [reduced_power.index, reduced_power.values]

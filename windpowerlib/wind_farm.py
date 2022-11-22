@@ -149,8 +149,7 @@ class WindFarm(object):
                     )
         except KeyError:
             raise KeyError(
-                "Missing wind_turbine key/column in "
-                "wind_turbine_fleet parameter."
+                "Missing wind_turbine key/column in " "wind_turbine_fleet parameter."
             )
 
         # add columns for number of turbines and total capacity if they don't
@@ -190,16 +189,13 @@ class WindFarm(object):
             if np.isnan(row["total_capacity"]):
                 try:
                     self.wind_turbine_fleet.loc[ix, "total_capacity"] = (
-                        row["number_of_turbines"]
-                        * row["wind_turbine"].nominal_power
+                        row["number_of_turbines"] * row["wind_turbine"].nominal_power
                     )
                 except TypeError:
                     raise ValueError(
                         "Total capacity of turbines of type {turbine} cannot "
                         "be deduced. Please check if the nominal power of the "
-                        "wind turbine is set.".format(
-                            turbine=row["wind_turbine"]
-                        )
+                        "wind turbine is set.".format(turbine=row["wind_turbine"])
                     )
             else:
                 if (
@@ -213,8 +209,7 @@ class WindFarm(object):
                     < 1
                 ):
                     self.wind_turbine_fleet.loc[ix, "total_capacity"] = (
-                        row["number_of_turbines"]
-                        * row["wind_turbine"].nominal_power
+                        row["number_of_turbines"] * row["wind_turbine"].nominal_power
                     )
                     msg = (
                         "The provided total capacity of WindTurbine {0} has "
@@ -409,9 +404,7 @@ class WindFarm(object):
                 if power_curve.iloc[0]["wind_speed"] != 0.0:
                     power_curve = pd.concat(
                         [
-                            pd.DataFrame(
-                                data={"value": [0.0], "wind_speed": [0.0]}
-                            ),
+                            pd.DataFrame(data={"value": [0.0], "wind_speed": [0.0]}),
                             power_curve,
                         ],
                         join="inner",
@@ -447,9 +440,7 @@ class WindFarm(object):
                 axis=1,
             )
         # Aggregate all power curves
-        wind_farm_power_curve = pd.DataFrame(
-            df.interpolate(method="index").sum(axis=1)
-        )
+        wind_farm_power_curve = pd.DataFrame(df.interpolate(method="index").sum(axis=1))
         wind_farm_power_curve.columns = ["value"]
         wind_farm_power_curve.reset_index(inplace=True)
         # Apply power curve smoothing and consideration of wake losses
@@ -476,9 +467,7 @@ class WindFarm(object):
                     "Failing farm:\n {farm}"
                 )
                 raise ValueError(
-                    msg.format(
-                        model=wake_losses_model, farm=self, eff=self.efficiency
-                    )
+                    msg.format(model=wake_losses_model, farm=self, eff=self.efficiency)
                 )
         self.power_curve = wind_farm_power_curve
         return self

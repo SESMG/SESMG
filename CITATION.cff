@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Klemm"
+  given-names: "Christian"
+  orcid: "https://orcid.org/0000-0003-0801-4178"
+- family-names: "Becker"
+  given-names: "Gregor"
+  orcid: "https://orcid.org/0000-0001-8803-6873"
+- family-names: "Budde"
+  given-names: "Janik"
+  orcid: "https://orcid.org/0000-0002-1617-5900"
+- family-names: "Tockloth"
+  given-names: "Jan"
+  orcid: "https://orcid.org/0000-0003-2582-1043"
+- family-names: "Vennemann"
+  given-names: "Peter"
+  orcid: "https://orcid.org/0000-0002-0767-5014"
+title: "SESMG"
+version: 0.3.0
+doi: 10.5281/zenodo.5412026
+date-released: 2022-08-16
+url: "https://github.com/chrklemm/SESMG"

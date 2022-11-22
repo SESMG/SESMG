@@ -81,6 +81,7 @@ Further Information
 -------------------------------------------------
 * :doc:`information/publications`
 * :doc:`information/links`
+* :doc:`information/citation`
 * :doc:`information/license`
 * :doc:`information/contact`
 * :doc:`information/acknowledgements`
@@ -92,6 +93,7 @@ Further Information
 	
 	information/publications
 	information/links
+	information/citation
 	information/license
 	information/contact
 	information/acknowledgements

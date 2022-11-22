@@ -203,19 +203,13 @@ class WindTurbineCluster(object):
         # Create data frame from power curves of all wind farms
         df = pd.concat(
             [
-                farm.power_curve.set_index(["wind_speed"]).rename(
-                    columns={"value": i}
-                )
-                for farm, i in zip(
-                    self.wind_farms, list(range(len(self.wind_farms)))
-                )
+                farm.power_curve.set_index(["wind_speed"]).rename(columns={"value": i})
+                for farm, i in zip(self.wind_farms, list(range(len(self.wind_farms))))
             ],
             axis=1,
         )
         # Sum up power curves
-        cluster_power_curve = pd.DataFrame(
-            df.interpolate(method="index").sum(axis=1)
-        )
+        cluster_power_curve = pd.DataFrame(df.interpolate(method="index").sum(axis=1))
         cluster_power_curve.columns = ["value"]
         # Return wind speed (index) to a column of the data frame
         cluster_power_curve.reset_index(inplace=True)

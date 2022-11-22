@@ -46,8 +46,7 @@ class Base(ABC):
     """
 
     def __init__(self, **kwargs):
-        """
-        """
+        """ """
         self._power_plant_requires = kwargs.get("powerplant_requires", None)
         self._requires = kwargs.get("requires", None)
 
@@ -240,8 +239,7 @@ class Pvlib(PhotovoltaicModelBase):
     """
 
     def __init__(self, **kwargs):
-        """
-        """
+        """ """
         super().__init__(**kwargs)
         self.power_plant = None
 
@@ -543,8 +541,7 @@ class WindpowerlibTurbine(WindpowerModelBase):
     """
 
     def __init__(self, **kwargs):
-        """
-        """
+        """ """
         super().__init__(**kwargs)
         self.power_plant = None
 
@@ -747,8 +744,7 @@ class WindpowerlibTurbineCluster(WindpowerModelBase):
     """
 
     def __init__(self, **kwargs):
-        """
-        """
+        """ """
         super().__init__(**kwargs)
         self.power_plant = None
 
@@ -935,9 +931,7 @@ class WindpowerlibTurbineCluster(WindpowerModelBase):
             for ix, row in wind_turbine_fleet.iterrows():
                 turbine = row["wind_turbine"]
                 if not isinstance(turbine, WindpowerlibWindTurbine):
-                    if isinstance(
-                        turbine, feedinlib.powerplants.WindPowerPlant
-                    ):
+                    if isinstance(turbine, feedinlib.powerplants.WindPowerPlant):
                         turbine_data = turbine.parameters
                     elif isinstance(turbine, dict):
                         turbine_data = turbine
@@ -955,9 +949,7 @@ class WindpowerlibTurbineCluster(WindpowerModelBase):
                     # initializing windpowerlib.WindTurbine to check required
                     # power plant parameters
                     wind_turbine = WindpowerlibTurbine()
-                    wind_turbine._power_plant_requires_check(
-                        turbine_data.keys()
-                    )
+                    wind_turbine._power_plant_requires_check(turbine_data.keys())
                     wind_turbine_fleet.loc[
                         ix, "wind_turbine"
                     ] = wind_turbine.instantiate_turbine(**turbine_data)
@@ -1038,9 +1030,7 @@ class WindpowerlibTurbineCluster(WindpowerModelBase):
         """
         # wind farm calculation
         if "wind_turbine_fleet" in power_plant_parameters.keys():
-            self.power_plant = self.instantiate_windfarm(
-                **power_plant_parameters
-            )
+            self.power_plant = self.instantiate_windfarm(**power_plant_parameters)
         # wind cluster calculation
         else:
             self.power_plant = self.instantiate_turbine_cluster(
@@ -1093,9 +1083,7 @@ def get_power_plant_data(dataset, **kwargs):
     """
     dataset = dataset.lower()
     if dataset in ["sandiamod", "cecinverter"]:
-        return pvlib.pvsystem.retrieve_sam(
-            name=dataset, path=kwargs.get("path", None)
-        )
+        return pvlib.pvsystem.retrieve_sam(name=dataset, path=kwargs.get("path", None))
     elif dataset == "oedb_turbine_library":
         return get_turbine_types(
             turbine_library=kwargs.get("turbine_library", "local"),

@@ -67,8 +67,7 @@ class Base(ABC):
     """
 
     def __init__(self, **attributes):
-        """
-        """
+        """ """
         model = attributes.pop("model")
         if isinstance(model, type):
             model = model(**attributes)
@@ -207,8 +206,7 @@ class Photovoltaic(Base):
     """
 
     def __init__(self, model=Pvlib, **attributes):
-        """
-        """
+        """ """
         super().__init__(model=model, **attributes)
 
     def feedin(self, weather, scaling=None, **kwargs):
@@ -317,8 +315,7 @@ class WindPowerPlant(Base):
     """
 
     def __init__(self, model=WindpowerlibTurbine, **attributes):
-        """
-        """
+        """ """
         super().__init__(model=model, **attributes)
 
     def feedin(self, weather, scaling=None, **kwargs):
@@ -360,8 +357,7 @@ class WindPowerPlant(Base):
         # scale feed-in
         if scaling:
             feedin_scaling = {
-                "nominal_power": lambda feedin: feedin
-                / float(self.nominal_power)
+                "nominal_power": lambda feedin: feedin / float(self.nominal_power)
             }
             return feedin_scaling[scaling](feedin)
         return feedin

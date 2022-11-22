@@ -7,16 +7,25 @@ Contributing to the troubleshooting
 
 Were you able to solve a bug that was not listed here yet? Help other users and report it by following these simple steps:
 
-1. Open https://github.com/chrklemm/SESMG/tree/master/docs/troubleshooting
+1. Open https://github.com/chrklemm/SESMG/edit/master/docs/troubleshooting/troubleshooting.rst
 
-2. Open "troubleshooting-installation.csv" or "troubleshooting-modelling.csv", depending on whether your error concerns the installation or the modeling process.
+2. Click on the pencil icon in the upper right corner to edit the file.
 
-3. Click on the pencil icon in the upper right corner to edit the file.
+4. Find the "Installation", or "Modeling" section, depending on what type of error you want to add.
 
-4. Add a line to the csv file describing your problem. The line consists of three columns "Error Message", "Possible Error Cause" and "Debugging". The columns are separated by commas. Do not use any other commas in your error description.
+5. Copy the following text block to the end of the respective section and modify the text to describe your error:
 
-5. Describe below what you have changed and click "propse changes".
+Error M-XXX: Error-Name
+----------------------------------
+**Error Message:** ::
 
+   error message line 1
+   error message line 2
+
+**Possible Error Cause:** explain the error cause
+
+**Debugging:** explain how to solve the error
+   
 6. Click "Create pull request"
 
 7. Name your pull request and click "create pull request".
@@ -24,13 +33,14 @@ Were you able to solve a bug that was not listed here yet? Help other users and 
 8. That's it, thanks for your contribution!
 
 
-
 Installation
 ===============================
 
 Error I-001: numpy.generic objects
 ----------------------------------
-**Error Message:** Cannot interpret attribute 'dtype' of 'numpy.generic' objects' as a data type
+**Error Message:** ::
+
+   Cannot interpret attribute 'dtype' of 'numpy.generic' objects' as a data type
 
 **Possible Error Cause:** possible module (e.g., demandlib) not actual
 
@@ -38,25 +48,20 @@ Error I-001: numpy.generic objects
 
 Error I-002: port 443
 ----------------------------------
-**Error Message:** HTTPSConnectionPool(host='pypi.python.org' port=443), due to a timeout
+**Error Message:** ::
+
+   HTTPSConnectionPool(host='pypi.python.org' port=443), due to a timeout
 
 **Possible Error Cause:** A package named in the error message was not installed correctly
 
 **Debugging:** Reinstall the package manually in the virtual environment as follows: 1. open a terminal 2. navigate to your SESMG folder 3. navigate to the scripts-subfolder: ``cd Scripts`` 4. start the virtual environment: ``start /b activate.bat`` 5. install the missing package as follows: ```pip install --default-timeout=100 'PACKAGE-NAME``` (see also `here <https://stackoverflow.com/questions/43298872/how-to-solve-readtimeouterror-httpsconnectionpoolhost-pypi-python-org-port>`_)
 
 
-Error I-XXX: Vorlage
-----------------------------------
-**Error Message:** 
-**Possible Error Cause:** 
-**Debugging:** 
-
-
-
 Modeling
 ===============================
 
-**General debugging**:
+General debugging
+----------------------------------
 
 Pay attention to the correct spelling:
 
@@ -69,9 +74,264 @@ Make sure that the displayed system can stay in balance.
 - The use of excess-sinks and shortage-sources can help to keep the system in balance.
 
 **Your error message is not included? Help us and all users by reporting your error message - with or without a solution!. Thank you!**
+         
 
-.. csv-table:: 
-   :file: ../troubleshooting/troubleshooting-modelling.csv
-   :header-rows: 1
-          
+Error M-001: KeyError sequences (sources)
+----------------------------------
+**Error Message:** ::
+
+   flowsum = source['sequences'].sum() KeyError: 'sequences'
+
+**Possible Error Cause:** A system component was entered incorrectly in the input file.
+
+**Debugging:** For all components  make sure that 1) each column is filled correctly  and 2) the first component of a sheet is entered in the row directly below the header row  and that there are no blank rows between the individual components of a sheet
+
+Error M-002: solver did not exit normally I
+----------------------------------
+**Error Message:** ::
+
+   ApplicationError: Solver (cbc) did not exit normally
+
+**Possible Error Cause:** A system component was entered incorrectly in the input file.
+
+**Debugging:** For all components  make sure that 1) each column is filled correctly  and 2) the first component of a sheet is entered in the row directly below the header row  and that there are no blank rows between the individual components of a sheet
+
+
+Error M-003: KeyError sequences (results)
+----------------------------------
+**Error Message:** ::
+
+   df = node_results['sequences'] KeyError: 'sequences'
+
+**Possible Error Cause:** The implemented model probably has an circuit. For example  the excess sink of a bus could achieve higher selling prices than buying from a shortage source. In theory  this could generate an infinitely large profit. Such a model cannot be solved.
+
+**Debugging:** Make sure  there are no circuits within the model.
+
+Error M-004: Memory Error
+----------------------------------
+**Error Message:** ::
+
+   Memory Error
+
+**Possible Error Cause:** The available memory is not sufficient to solve the model.
+
+**Debugging:** Take the following measures gradually until the error no longer occurs: (1) Restart the used Python interpreter (2) Close unnecessary programs on the computer (3) Make sure that python 64 bit version is used (Python 32 bit can manage only 2 GB of memory). (4) Start the program on a computer with a higher memory.
+
+Error M-005:  time module
+----------------------------------
+**Error Message:** ::
+
+   AttributeError: module 'time' has no attribute 'clock'
+
+**Possible Error Cause:** You are using a Python version not compatible with oemof.
+
+**Debugging:** Use Pyhton 3.7.6
+
+Error M-006: shapes
+----------------------------------
+**Error Message:** :: 
+
+   ValueError: operands could not be broadcast together with shapes (8784 ) (8760 )
+
+**Possible Error Cause:** The weather dataset contains the wrong number of data points for using feedinlib.
+
+**Debugging:** Make sure that the number of weather data points corresponds to the time steps of the model (At hourly resolution  one year has 8760 time steps). When simulating a leap year  it is recommended limiting the time horizon to 8760 hours.
+
+
+Error M-007: solver did not exit normally II
+----------------------------------
+**Error Message:** ::
+
+   ValueError: pyutilib.common._exceptions.ApplicationError: Solver (cbc) did not exit normally
+
+**Possible Error Cause:** "A value for the use of the investment module (e.g. "min Investment Capacity") was not filled in."
+
+**Debugging:** Make sure that all necessary cells of the spreadsheet have been filled in.
+
+Error M-008: KeyError component
+----------------------------------
+**Error Message:** ::
+
+   KeyError: '__any component name__'
+
+
+**Possible Error Cause:** Incorrectly assigned bus name for the input or output of a component
+
+**Debugging:** Check that all bus references are correct. Also check for typos.
+
+Error M-009: Type Error
+----------------------------------
+**Error Message:** ::
+
+   TypeError: ufunc 'true_divide' not supported for the input types  and the inputs could not be safely coerced to any supported types according to the casting rule ''safe''
+
+**Possible Error Cause:** "The column ""annual demand"" was not filled in correctly for a sink."
+
+**Debugging:** Make sure to use the ""annual demand"" column for SLP and Richardson sinks and the ""nominal value"" column for time series sinks.
+
+Error M-010: Variable Type Attribute
+----------------------------------
+**Error Message:** ::
+
+   AttributeError: 'str' object has no attribute 'is_variable_type'
+
+**Possible Error Cause:** The cost value for an activated excess sink or shortage source was not correctly specified in the bus sheet
+
+**Debugging:** Make sure that all excess/sortage prices consist of real numbers. Also check for typos.
+
+Error M-011: Investment Flow
+----------------------------------
+**Error Message:** ::
+
+   Implicitly replacing the Component attribute equate_InvestmentFlow.invest[districtheat_undirected_link districtheat_bus]_InvestmentFlow.invest[ districtheat_undirected_link heat_bus] (type=<class 'pyomo.core.base.constraint.SimpleConstraint'>) on block Model with a new Component (type=<class 'pyomo.core.base.constraint.AbstractSimpleConstraint'>). This is usually indicative of a modelling error. To avoid this warning  use block.del_component() and block.add_component().
+
+**Possible Error Cause:** This is no user error because this error is due to the way undirected links are implemented
+
+**Debugging:** No action needed, the modeling process is not effected.
+
+Error M-012: Key Error (Index)
+----------------------------------
+**Error Message** (example): ::
+
+   KeyError: 'Index \'(''<oemof.solph.network.source.Source: \'ID_phtovoltaic_electricity_source\'>' ''<oemof.solph.network.bus.Bus: \'ID_pv_bus\'>'' 0)\' is not valid for indexed component \'flow\'' 
+
+**Possible Error Cause:** You probably named the busses incorrectly.
+
+**Debugging:** Check if all busses are named correctly.
+
+Error M-013: Key error (source)
+----------------------------------
+**Error Message** (example): ::
+
+   KeyError: 'ID_photovoltaik_electricity_source'
+
+**Possible Error Cause:** In this case - PV sources were deactivated although they were still addressed in the area competition
+
+**Debugging:** Make sure that if you have disabled pv sources - you do the same for the competition constraint.
+
+Error M-014: User Warning Condition Infeasible
+----------------------------------
+**Error Message:** ::
+
+   UserWarning: Optimization ended with status warning and termination condition infeasible
+
+**Possible Error Cause:** the model is not solvable - probably because not enough energy is inserted to sattisfy the energy demand
+
+**Debugging:** make sure that the sources are able to insert enough energy to the system
+
+Error M-015: Flow NaN-Values
+----------------------------------
+**Error Message:** ::
+
+   Flow: ID_electricity_to_ID_hp_electricity_bus-ID_electricity_bus. This could be caused by NaN-values in your input data.
+
+**Possible Error Cause:** You have probably used not allowed special characters (e.g. m³)
+
+**Debugging:** Make sure you have not used any special characters (e.g., use m3 instead of m³)
+
+Error M-016: Dyn Function H0
+----------------------------------
+**Error Message:** ::
+
+   FutureWarning: Current default for 'dyn_function_h0' is 'False'. This is about to change to 'True'. Set 'False' explicitly to retain the current behaviour.
+
+**Possible Error Cause:** the wrong version of the feedinlib is used
+
+**Debugging:** make sure you are using feedinlib==0.0.12
+
+Error M-017: Create Flow Data Frames
+----------------------------------
+**Error Message:** ::
+
+   in create_flow_dataframes for index; value in component['sequences'].sum().items(): KeyError: 'sequences',
+
+**Possible Error Cause:** You have probably entered an invalid "transformer type" within the transformers sheet
+
+**Debugging:** check and correct the transformer types entered to the sheet
+
+Error M-018: Assertion Error
+----------------------------------
+**Error Message:** ::
+
+   ... AssertionError: Time discretization of irradiance is different from timestep 3600seconds. You need to change the resolution; first!
+
+**Possible Error Cause:** For the application of the richardson tool a weather dataset of a full year is required
+
+**Debugging:** Add a full year weather data set to the weather data sheet.
+
+Error M-019: Duplicates
+----------------------------------
+**Error Message:** ::
+
+   Possible duplicate uids/labels?
+
+**Possible Error Cause:** two components of the model are having the same name
+
+**Debugging:** rename at least one of the components
+
+Error M-020: Value Error Length Mismatch
+----------------------------------
+**Error Message:** ::
+
+   ValueError: Length mismatch: Expected axis has 1 elements; new values have 8760 elements Flow: ID_pv_to_ID_electricity_link-ID_pv_bus. This could be caused by NaN-values in your input data.
+
+**Possible Error Cause:** The model probably isn't solvable, because of wrong energybalance.
+
+**Debugging:** Activate necessary excesses sinks and shortages sources. 
+
+Error M-021: Solver Returned Non-Zero Return Code
+----------------------------------
+**Error Message:** ::
+
+   ERROR: Solver (gurobi) returned non-zero return code (1)
+ 
+**Possible Error Cause:** 
+
+**Debugging:** reinstall the pyomo-package: 1. open a terminal 2. navigate to your SESMG folder 3. navigate to the scripts-subfolder: "cd Scripts" 4. start the virtual environment: ``start /b activate.bat`` 5. reinstall pyomo: ``pip install pyomo==5.7.1``
+
+Error M-022: Key Error (sequences) II
+----------------------------------
+**Error Message:** ::
+
+   df = node_results['sequences'] KeyError: 'sequences'  
+
+**Possible Error Cause:** The model may possibly have an over or under supply. This will break the calculation.
+
+**Debugging:** The bus of the oversupply or undersupply can be localized by activating excess or shortage.
+
+
+Error M-023: nearest foot point
+----------------------------------
+**Error Message:** 
+   
+   ... get nearest_perp_foot_point foot_point.extend(foot_points[0])
+   IndexError: list index out of range
+
+**Possible Error Cause:** The producer could not be connected to the defined heat network. This is probably due to the fact that a right-angled connection to the producer is not possible to the defined pipes.
+**Debugging:** Make sure that the producers can be connected to the heat network with a right angle. It is possible that the producer is too far away from the network.
+
+
+Error M-024: KeyError: 'lon'
+----------------------------------
+**Error Message:** ::
+
+   ... in get_loc
+   raise KeyError(key) from err
+   KeyError: 'lon' 
+
+**Possible Error Cause:** No heat source bus has been correctly defined for the heat network.
+
+**Debugging:** make sure the heat source bus has been defined correctly, especially the columns "district heating conn.", "lat", and "lon".
+
+
+Error M-025: "left_on" OR "left_index"
+----------------------------------
+**Error Message:** ::
+
+   ... pandas.errors.MergeError: Can only pass argument "left_on" OR "left_index" not both.
+
+**Possible Error Cause:** You are using an incompatible version of the pandas-package.
+
+**Debugging:** Install pandas version 1.0.0 in the virtual environment used for the SESMG
+
 
