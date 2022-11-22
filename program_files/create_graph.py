@@ -183,6 +183,9 @@ def create_graph(filepath: str, nodes_data: dict, show: bool, legend=False):
                     if b["output2"] not in [0, "None", "none"]:
                         dot.node(b["output2"], shape="ellipse", fontsize="10")
                         dot.edge(label, b["output2"])
+                    if b["input2"] not in [0, "None", "none"]:
+                        dot.node(b["input2"], shape="ellipse", fontsize="10")
+                        dot.edge(b["input2"], label)
                     if b["transformer type"] == "compression_heat_transformer":
                         # consideration of mode of operation
                         if b["mode"] == "heat_pump":
