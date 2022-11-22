@@ -3,7 +3,7 @@
 import setuptools
 import re
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 with open("README.md", encoding="utf-8") as f:
     long_description = f.read()
 
