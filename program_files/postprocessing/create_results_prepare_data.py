@@ -152,6 +152,8 @@ def prepare_data(comp_dict, total_demand, nd, result_path, df_result_table):
         elif "collector" in label and label[:-10] in list(nd["sources"]["label"]):
             for i in range(0, 3):
                 comp_dict[label[:-10]][i] = comp_dict[label][i]
+                comp_dict[label[:-10]][8] = comp_dict[label][8]
+                comp_dict[label[:-10]][9] = comp_dict[label][9]
             comp_dict.pop(label)
         elif comp_dict[label][8] == "dh":
             pipe_data = pd.read_csv(result_path + "/pipes.csv")
