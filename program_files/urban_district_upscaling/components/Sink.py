@@ -120,7 +120,8 @@ def create_sink_ev(building, sheets, standard_parameters):
 
     print(sheets["time series"].loc[:, "electric_vehicle.fix"])
     sheets["time series"].loc[:, building['label'] + "_electric_vehicle.fix"] \
-        = sheets["time series"].loc[:, "electric_vehicle.fix"]
+        = sheets["time series"].loc[:, "electric_vehicle.fix"] \
+        * building["distance of electric vehicles"]
     print(sheets["time series"])
     return create_standard_parameter_comp(
         specific_param={
