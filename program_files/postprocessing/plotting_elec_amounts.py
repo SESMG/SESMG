@@ -1,6 +1,6 @@
 import pandas
 import matplotlib.pyplot as plt
-
+import os
 
 def pv_elec_amount(components_df: pandas.DataFrame, pv_st: str,
                    dataframe: pandas.DataFrame, amounts_dict: dict):
@@ -107,19 +107,168 @@ def create_elec_amount_plots(
                 "Electricity_Demand": [],
                 "ASHP": [],
                 "GCHP": [],
+                "SWHP": [],
                 "Import_system_internal": [],
                 "grid_import": [],
                 "Electric_heating": [],
                 "Battery_losses": [],
                 "ST_elec": [],
                 "Battery_output": [],
-                "central_elec_production": [],
+                "fuelcell": [],
+                "central_wc_elec": [],
+                "central_ng_elec": [],
+                "central_bg_elec": [],
+                "central_pe_elec": [],
+                "central_wc_elec_excess": [],
+                "central_ng_elec_excess": [],
+                "central_bg_elec_excess": [],
+                "central_pe_elec_excess": [],
+                "central_elec": [],
+                "central_elec_excess": [],
+                "central_consumption": [],
                 "reductionco2": reductionco2
             }
         )
         dataframe = dataframes[key].copy()
         dataframe.reset_index(inplace=True, drop=False)
         components_df = get_dataframe_from_nodes_data(nodes_data)
+
+        # get the energy systems SLP electricity demand as well as the
+        # input buses of the sinks
+        df_sinks = components_df[(components_df["annual demand"].notna())]
+        df_sinks = pandas.concat(
+                [df_sinks,
+                 components_df[(components_df["nominal value"].notna())]]
+        ).drop_duplicates()
+        buses = []
+        for sink in sink_known:
+            if sink_known[sink][0] and sink in df_sinks["label"].values:
+                buses.append(df_sinks.loc[df_sinks["label"] == sink]["input"].values[0])
+                elec_amounts_dict["Electricity_Demand"].append(
+                        get_value(sink, "input 1/kWh", dataframe)
+                )
+
+        # get the energy system's links
+        df_links = components_df[(components_df["bus1"].notna())]
+        # Based on the buses representing the input of the sinks,
+        # further buses are searched via the links
+        link_buses = []
+        for num, link in df_links.iterrows():
+            if link["bus2"] in buses:
+                link_buses.append(link["bus1"])
+                
+        # search for duplicate buses in building link connections
+        seen = set()
+        central_buses = [x for x in link_buses if x in seen or seen.add(x)]
+        central_buses = list(dict.fromkeys(central_buses))
+        seen = set()
+        decentral_buses = [x for x in link_buses if x not in seen
+                           and not seen.add(x)]
+        decentral_buses = list(set(list(dict.fromkeys(decentral_buses)))
+                               - set(central_buses))
+        # get all components that are connected directly to the central
+        # elec bus
+        series_central_elec = pandas.Series()
+        for i in range(0, len(central_buses)):
+            series_central_elec = pandas.concat([series_central_elec,
+                components_df.loc[components_df["output"] == central_buses[i]]
+                ["label"]])
+            series_central_elec = pandas.concat([series_central_elec,
+                components_df.loc[components_df["output2"] == central_buses[i]]
+                ["label"]])
+        for i in series_central_elec.values:
+            output = get_value(i, "output 1/kWh", dataframe)
+            elec_amounts_dict["fuelcell"].append(output)
+
+        # Based on the central buses, further buses are searched via the links
+        link_buses = []
+        for num, link in df_links.iterrows():
+            if link["bus2"] in central_buses \
+                    and link["bus1"] not in decentral_buses:
+                link_buses.append(link["bus1"])
+        for j in ["output", "output2"]:
+            series_central_elec = pandas.Series()
+            for i in range(0, len(link_buses)):
+                series_central_elec = pandas.concat(
+                    [series_central_elec, components_df.loc[
+                        components_df[j] == link_buses[i]]["label"]])
+
+            for i in series_central_elec.values:
+                if str(components_df.loc[components_df["label"] == i]
+                       ["transformer type"].values[0]) == "GenericTransformer":
+                    # TODO since we do not differentiate the chp's fuel we
+                    # TODO have to use the label
+                    output = get_value(i,
+                                       "output 1/kWh" if j == "output"
+                                       else "output 2/kWh",
+                                       dataframe)
+                    if "wc" in i:
+                        elec_amounts_dict["central_wc_elec"].append(output)
+                        elec_amounts_dict["central_wc_elec_excess"].append(
+                                get_value(components_df.loc[
+                                              components_df["label"] == i]
+                                          [j].values[0] + "_excess",
+                                          "input 1/kWh",
+                                          dataframe)
+                        )
+                    elif "ng" in i:
+                        elec_amounts_dict["central_ng_elec"].append(output)
+                        elec_amounts_dict["central_ng_elec_excess"].append(
+                                get_value(components_df.loc[
+                                              components_df["label"] == i]
+                                          [j].values[0] + "_excess",
+                                          "input 1/kWh",
+                                          dataframe)
+                        )
+                    elif "bg" in i:
+                        elec_amounts_dict["central_bg_elec"].append(output)
+                        elec_amounts_dict["central_bg_elec_excess"].append(
+                                get_value(components_df.loc[
+                                              components_df["label"] == i]
+                                          [j].values[0] + "_excess",
+                                          "input 1/kWh",
+                                          dataframe)
+                        )
+                    elif "pe" in i:
+                        elec_amounts_dict["central_pe_elec"].append(output)
+                        elec_amounts_dict["central_pe_elec_excess"].append(
+                                get_value(components_df.loc[
+                                              components_df["label"] == i]
+                                          [j].values[0] + "_excess",
+                                          "input 1/kWh",
+                                          dataframe)
+                        )
+                    else:
+                        elec_amounts_dict["central_elec"].append(output)
+                        elec_amounts_dict["central_elec_excess"].append(
+                                get_value(components_df.loc[
+                                              components_df["label"] == i]
+                                          [j].values[0] + "_excess",
+                                          "input 1/kWh",
+                                          dataframe)
+                        )
+                # search for central timeseries source
+                if str(components_df.loc[components_df["label"] == i]
+                       ["technology"].values[0]) == "timeseries":
+                    output = get_value(i, "output 1/kWh", dataframe)
+                    elec_amounts_dict["central_elec"].append(output)
+                    elec_amounts_dict["central_elec_excess"].append(
+                        get_value(components_df.loc[
+                                      components_df["label"] == i]
+                                  ["output"].values[0] + "_excess",
+                                  "input 1/kWh",
+                                  dataframe)
+                    )
+        for i in range(0, len(central_buses)):
+            series_central_elec = pandas.concat([series_central_elec,
+                components_df.loc[components_df["input"] == central_buses[i]]
+                ["label"]])
+        for i in series_central_elec.values:
+            if str(components_df.loc[components_df["label"] == i]
+                   ["transformer type"].values[0]) == "GenericTransformer":
+                elec_amounts_dict["central_consumption"].append(
+                    get_value(i, "input 1/kWh", dataframe)
+                )
         
         # get the PV-Systems' amounts using pv_elec amount method above
         elec_amounts_dict, pv_buses = pv_elec_amount(
@@ -132,15 +281,17 @@ def create_elec_amount_plots(
             )
         
         # get the energy system's solar thermal flat plates from nodes
-        # data
+        # data TODO CSP
         df_st = components_df[
             (components_df.isin([str("solar_thermal_flat_plate")])).any(axis=1)
         ]
         # append the electric consumption of the solar thermal flat
         # plates on the elec amount dict
         for num, comp in df_st.iterrows():
+            input1 = get_value(comp["label"], "input 1/kWh", dataframe)
+            input2 = get_value(comp["label"], "input 2/kWh", dataframe)
             elec_amounts_dict["ST_elec"].append(
-                get_value(comp["label"], "input 1/kWh", dataframe)
+                input1 if input1 < input2 else input2
             )
         
         # get the energy system's heat pumps from nodes data
@@ -154,26 +305,32 @@ def create_elec_amount_plots(
         # append the electric consumption of the heat pumps on the elec
         # amounts dict
         for num, comp in df_hp.iterrows():
+            input1 = get_value(comp["label"], "input 1/kWh", dataframe)
+            input2 = get_value(comp["label"], "input 2/kWh", dataframe)
             if comp["heat source"] == "Ground":
                 elec_amounts_dict["GCHP"].append(
-                    get_value(comp["label"], "input 1/kWh", dataframe)
+                    input1 if input1 < input2 else input2
                 )
             elif comp["heat source"] == "Air":
                 elec_amounts_dict["ASHP"].append(
-                    get_value(comp["label"], "input 1/kWh", dataframe)
+                    input1 if input1 < input2 else input2
+                )
+            elif comp["heat source"] == "Water":
+                elec_amounts_dict["SWHP"].append(
+                    input1 if input1 < input2 else input2
                 )
 
         # get the energy system's sinks from nodes data
-        df_sinks = components_df[(components_df["annual demand"].notna())]
-        df_sinks = pandas.concat(
-            [df_sinks, components_df[(components_df["nominal value"].notna())]]
-        ).drop_duplicates()
-        # collect the amount of electricity demand
-        for num, sink in df_sinks.iterrows():
-            if sink_known[sink["label"]][0]:
-                elec_amounts_dict["Electricity_Demand"].append(
-                    get_value(sink["label"], "input 1/kWh", dataframe)
-                )
+        #df_sinks = components_df[(components_df["annual demand"].notna())]
+        #df_sinks = pandas.concat(
+        #    [df_sinks, components_df[(components_df["nominal value"].notna())]]
+        #).drop_duplicates()
+        ## collect the amount of electricity demand
+        #for num, sink in df_sinks.iterrows():
+        #    if sink_known[sink["label"]][0]:
+        #        elec_amounts_dict["Electricity_Demand"].append(
+        #            get_value(sink["label"], "input 1/kWh", dataframe)
+        #        )
 
         # get the energy system's generic transformers from nodes data
         df_gen_transformer = components_df[
@@ -227,7 +384,7 @@ def create_elec_amount_plots(
     fig, axs = plt.subplots(4, sharex="all")
     fig.set_size_inches(18.5, 15.5)
     elec_amounts.set_index("run", inplace=True, drop=False)
-    elec_amounts.to_csv(result_path + "elec_amounts.csv")
+    elec_amounts.to_csv(result_path + "/elec_amounts.csv")
     # create the elec amounts plot with 4 subplots (consumption,
     # usage of pv elec amount, pv earnings, central elec)
     plot_dict = {
@@ -256,8 +413,11 @@ def create_elec_amount_plots(
             "PV_north_east": elec_amounts.PV_north_east,
             "PV_north": elec_amounts.PV_north,
         },
-        axs[3]: {"central_elec_production":
-                 elec_amounts.central_elec_production},
+        axs[3]: {"central_wc_elec": elec_amounts.central_wc_elec,
+                 "central_ng_elec": elec_amounts.central_ng_elec,
+                 "central_bg_elec": elec_amounts.central_bg_elec,
+                 "central_pe_elec": elec_amounts.central_pe_elec,
+                 "central_elec": elec_amounts.central_elec},
     }
     for plot in plot_dict:
         plot.stackplot(
@@ -280,18 +440,70 @@ def create_elec_amount_plots(
 
 
 if __name__ == "__main__":
-    from program_files.preprocessing.create_energy_system import import_scenario
+    from program_files.preprocessing.create_energy_system import \
+        import_scenario
     import pandas as pd
+    
     create_elec_amount_plots(
-        {"1": pd.read_csv(""),
-         "0.75": pd.read_csv(""),
-         "0.5": pd.read_csv(""),
-         "0.25": pd.read_csv(""),
-         "0": pd.read_csv("")},
-        # scenario file path
-        import_scenario(""),
-        # result path
-        "",
-        # sink types dict {label: [bool(elec), bool(heat), bool(cooling)]}
-        {}
+            {"1": pd.read_csv(
+                    "/Users/gregor/sciebo/VM101/SESMG_20221111/results/2022"
+                    "-11-21--08-34-04/20221118_SchlossST_model_definition_v1_2022-11-21--08-34-04/components.csv"),
+             "0.75": pd.read_csv(
+                     "/Users/gregor/sciebo/VM101/SESMG_20221111/results"
+                     "/2022-11-21--08-34-04/20221118_SchlossST_model_definition_v1_0.25_2022-11-22--19-56-41/components.csv"),
+             "0.5": pd.read_csv(
+                     "/Users/gregor/sciebo/VM101/SESMG_20221111/results"
+                     "/2022-11-21--08-34-04/20221118_SchlossST_model_definition_v1_0.5_2022-11-21--16-13-43/components.csv"),
+             "0.25": pd.read_csv(
+                     "/Users/gregor/sciebo/VM101/SESMG_20221111/results"
+                     "/2022-11-21--08-34-04/20221118_SchlossST_model_definition_v1_0.75_2022-11-23--18-28-52/components.csv"),
+             "0": pd.read_csv(
+                     "/Users/gregor/sciebo/VM101/SESMG_20221111/results"
+                     "/2022-11-21--08-34-04/20221118_SchlossST_model_definition_v1_0_2022-11-21--12-44-46/components.csv")},
+            # scenario file path
+            import_scenario(
+                    "/Users/gregor/sciebo/VM101/SESMG_20221111/results/2022"
+                    "-11-21--08-34-04/20221118_SchlossST_model_definition_v1_0.75.xlsx"),
+            # result_path
+            str(os.path.dirname(__file__)),
+            # sink types dict {label: [bool(elec), bool(heat), bool(cooling)]}
+            {
+                "01Schloss_electricity_demand": [True, False, False],
+                "01Schloss_heat_demand": [False, True, False],
+                "01Schloss_electric_vehicle": [True, False, False],
+                "02Nebengebaeude_electricity_demand": [True, False, False],
+                "02Nebengebaeude_heat_demand": [False, True, False],
+                "03Kommende1B_electricity_demand": [True, False, False],
+                "03Kommende1B_heat_demand": [False, True, False],
+                "05Kommende3_electricity_demand": [True, False, False],
+                "05Kommende3_heat_demand": [False, True, False],
+                "06Kommende4_electricity_demand": [True, False, False],
+                "06Kommende4_heat_demand": [False, True, False],
+                "07Kommende5_electricity_demand": [True, False, False],
+                "07Kommende5_heat_demand": [False, True, False],
+                "08Kommende6_electricity_demand": [True, False, False],
+                "08Kommende6_heat_demand": [False, True, False],
+                "09Kommende7_electricity_demand": [True, False, False],
+                "09Kommende7_heat_demand": [False, True, False],
+                "10Kommende8_electricity_demand": [True, False, False],
+                "10Kommende8_heat_demand": [False, True, False],
+                "11Kommende9_electricity_demand": [True, False, False],
+                "11Kommende9_heat_demand": [False, True, False],
+                "12Kommende10_electricity_demand": [True, False, False],
+                "12Kommende10_heat_demand": [False, True, False],
+                "13Kommende1112_electricity_demand": [True, False, False],
+                "13Kommende1112_heat_demand": [False, True, False],
+                "14Kommende13_electricity_demand": [True, False, False],
+                "14Kommende13_heat_demand": [False, True, False],
+                "15TischlereiB_electricity_demand": [True, False, False],
+                "15TischlereiB_heat_demand": [False, True, False],
+                "16WGTischlereiB_electricity_demand": [True, False, False],
+                "16WGTischlereiB_heat_demand": [False, True, False],
+                "17Muehle_electricity_demand": [True, False, False],
+                "17Muehle_heat_demand": [False, True, False],
+                "19Hotel_electricity_demand": [True, False, False],
+                "19Hotel_heat_demand": [False, True, False],
+                "20Wohngebauede_electricity_demand": [True, False, False],
+                "20Wohngebauede_heat_demand": [False, True, False]
+            }
     )

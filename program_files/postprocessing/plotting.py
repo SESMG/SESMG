@@ -17,6 +17,7 @@ def get_dataframe_from_nodes_data(nodes_data):
             "weather data",
             "district heating",
             "competition constraints",
+            "pipe types"
         ]:
             nodes_data[key].set_index("label", inplace=True, drop=False)
             if counter == 0:
@@ -28,7 +29,7 @@ def get_dataframe_from_nodes_data(nodes_data):
 
 
 def get_value(label, column, dataframe):
-    value = dataframe.loc[dataframe["ID"].str.startswith(label)][column].values
+    value = dataframe.loc[dataframe["ID"] == label][column].values
     return float(value[0]) if value.size > 0 else 0
 
 
