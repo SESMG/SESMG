@@ -165,7 +165,7 @@ def create_heat_amount_plots(dataframes: dict, nodes_data: pandas.DataFrame,
         df_insulation = components_df[components_df["U-value new"].notna()]
         for num, insulation in df_insulation.iterrows():
             cap_sink = get_value(insulation["sink"], "capacity/kW", dataframe)
-            cap_insulation = get_value(insulation["label"], "capacity/kW", dataframe)
+            cap_insulation = get_value('insulation-'+insulation["label"], "capacity/kW", dataframe)
             value_sink = get_value(insulation["sink"], "input 1/kWh", dataframe)
             # append the heat savings of the insulations on the heat
             # amounts dict
@@ -234,15 +234,66 @@ if __name__ == "__main__":
     import pandas as pd
 
     create_heat_amount_plots(
-            {"1": pd.read_csv(""),
-             "0.75": pd.read_csv(""),
-             "0.5": pd.read_csv(""),
-             "0.25": pd.read_csv(""),
-             "0": pd.read_csv("")},
-            # scenario file path
-            import_scenario(""),
-            # result path
-            "",
-            # sink types dict {label: [bool(elec), bool(heat), bool(cooling)]}
-            {}
+        {"1": pd.read_csv(
+            r"C:\Users\klemm\Documents\Python\SESMG_dev_20221025\results\plotting_test/1/components.csv"),
+            # "0.75": pd.read_csv(
+            #         "/Users/gregor/sciebo/VM101/SESMG_20221111/results"
+            #         "/2022-11-21--08-34-04/20221118_SchlossST_model_definition_v1_0.25_2022-11-22--19-56-41/components.csv"),
+            # "0.5": pd.read_csv(
+            #         "/Users/gregor/sciebo/VM101/SESMG_20221111/results"
+            #         "/2022-11-21--08-34-04/20221118_SchlossST_model_definition_v1_0.5_2022-11-21--16-13-43/components.csv"),
+            "0.25": pd.read_csv(
+                r"C:\Users\klemm\Documents\Python\SESMG_dev_20221025\results\plotting_test/0.25/components.csv"),
+            "0": pd.read_csv(
+                r"C:\Users\klemm\Documents\Python\SESMG_dev_20221025\results\plotting_test/0/components.csv")},
+        # scenario file path
+        import_scenario(
+            r"C:\Users\klemm\Documents\Python\SESMG_dev_20221025\results\plotting_test/model_definition.xlsx"),
+        # result_path
+        r"C:\Users\klemm\Documents\Python\SESMG_dev_20221025\results\plotting_test",
+        # str(os.path.dirname(__file__)),
+        # sink types dict {label: [bool(elec), bool(heat), bool(cooling)]}
+        {
+            "L10000uen_electricity_demand": [True, False, False],
+            "L10000uen_heat_demand": [False, True, False],
+            "L10000uHQ_electricity_demand": [True, False, False],
+            "L10000uHQ_heat_demand": [False, True, False],
+            "L10000uoa_electricity_demand": [True, False, False],
+            "L10000uoa_heat_demand": [False, True, False],
+            "L10000w3x_electricity_demand": [True, False, False],
+            "L10000w3x_heat_demand": [False, True, False],
+            "L10000w72_electricity_demand": [True, False, False],
+            "L10000w72_heat_demand": [False, True, False],
+            "L10000wAj_electricity_demand": [True, False, False],
+            "L10000wAj_heat_demand": [False, True, False],
+            "L10000uXH_electricity_demand": [True, False, False],
+            "L10000uXH_heat_demand": [False, True, False],
+            "L10000vaf_electricity_demand": [True, False, False],
+            "L10000vaf_heat_demand": [False, True, False],
+            "L10000vkr_electricity_demand": [True, False, False],
+            "L10000vkr_heat_demand": [False, True, False],
+            "L10000vvc_electricity_demand": [True, False, False],
+            "L10000vvc_heat_demand": [False, True, False],
+            "L10000w7M_electricity_demand": [True, False, False],
+            "L10000w7M_heat_demand": [False, True, False],
+            "L10000wgs_electricity_demand": [True, False, False],
+            "L10000wgs_heat_demand": [False, True, False],
+            "COM2_electricity_demand": [True, False, False],
+            "COM2_heat_demand": [False, True, False],
+            "L10000w3Mw8q_electricity_demand": [True, False, False],
+            "L10000w3Mw8q_heat_demand": [False, True, False],
+            "L10000uIbxy6_electricity_demand": [True, False, False],
+            "L10000uIbxy6_heat_demand": [False, True, False],
+            "L10000vpGwAT_electricity_demand": [True, False, False],
+            "L10000vpGwAT_heat_demand": [False, True, False],
+            "L10000vIBxyG_electricity_demand": [True, False, False],
+            "L10000vIBxyG_heat_demand": [False, True, False],
+            "L10000uktvxr_electricity_demand": [True, False, False],
+            "L10000uktvxr_heat_demand": [False, True, False],
+            "L10000upovc1vK2_electricity_demand": [True, False, False],
+            "L10000upovc1vK2_heat_demand": [False, True, False],
+            "L10000vDGvrX_electricity_demand": [True, False, False],
+            "L10000vDGvrX_heat_demand": [False, True, False],
+
+        }
     )
