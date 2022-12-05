@@ -1,6 +1,6 @@
 import pandas
 import matplotlib.pyplot as plt
-
+import os
 
 def st_heat_amount(components_df, pv_st, dataframe, amounts_dict):
     from program_files.postprocessing.plotting import get_pv_st_dir, get_value
@@ -71,7 +71,19 @@ def create_heat_amount_plots(dataframes: dict, nodes_data: pandas.DataFrame,
                 "GCHP": [],
                 "ASHP": [],
                 "Insulation": [],
-                "central_heat_production": [],
+                "fuelcell": [],
+                "central_wc_heat": [],
+                "central_ng_heat": [],
+                "central_bg_heat": [],
+                "central_pe_heat": [],
+                "central_heat": [],
+                "central_SWHP": [],
+                "central_GCHP": [],
+                "central_wc_heat_chp": [],
+                "central_ng_heat_chp": [],
+                "central_bg_heat_chp": [],
+                "central_pe_heat_chp": [],
+                "central_heat_chp": [],
                 "reductionco2": (
                     sum(dataframes[key]["constraints/CU"]) / emissions_100_percent
                 )
@@ -180,9 +192,58 @@ def create_heat_amount_plots(dataframes: dict, nodes_data: pandas.DataFrame,
                 "output 1/kWh"
             ].values
         )
-
+        df_central_heat = components_df[components_df["district heating conn."]
+                                        == "dh-system"]
+        df_comp_heat = pandas.DataFrame()
+        for i in ["output", "output2"]:
+            for num, bus in df_central_heat.iterrows():
+               df_comp_heat = pandas.concat(
+                    [df_comp_heat,
+                     components_df.loc[components_df[i] == bus["label"]]])
+            for num, comp in df_comp_heat.iterrows():
+                if str(components_df.loc[components_df["label"] == comp["label"]]
+                       ["transformer type"].values[0]) == "GenericTransformer":
+                    # TODO since we do not differentiate the chp's fuel we
+                    # TODO have to use the label
+                    output = get_value(comp["label"],
+                                       "output 1/kWh" if i == "output"
+                                       else "output 2/kWh",
+                                       dataframe)
+                    if comp["output2"] != "None":
+                        if "wc" in comp["label"]:
+                            heat_amounts_dict["central_wc_heat_chp"].append(output)
+                        elif "ng" in comp["label"]:
+                            heat_amounts_dict["central_ng_heat_chp"].append(output)
+                        elif "bg" in comp["label"]:
+                            heat_amounts_dict["central_bg_heat_chp"].append(output)
+                        elif "pe" in comp["label"]:
+                            heat_amounts_dict["central_pe_heat_chp"].append(output)
+                        else:
+                            heat_amounts_dict["fuelcell"].append(output)
+                    else:
+                        if "wc" in comp["label"]:
+                            heat_amounts_dict["central_wc_heat"].append(output)
+                        elif "ng" in comp["label"]:
+                            heat_amounts_dict["central_ng_heat"].append(output)
+                        elif "bg" in comp["label"]:
+                            heat_amounts_dict["central_bg_heat"].append(output)
+                        elif "pe" in comp["label"]:
+                            heat_amounts_dict["central_pe_heat"].append(output)
+                        else:
+                            heat_amounts_dict["central_heat"].append(output)
+                if str(components_df.loc[
+                           components_df["label"] == comp["label"]]
+                       ["transformer type"].values[0]) == "CompressionHeatTransformer":
+                    output = get_value(comp["label"],
+                                       "output 1/kWh",
+                                       dataframe)
+                    if comp["heat source"] == "Water" and i == "output":
+                        heat_amounts_dict["central_SWHP"].append(output)
+                    elif comp["heat source"] == "Ground" and i == "output":
+                        heat_amounts_dict["central_GCHP"].append(output)
+                      
         heat_amounts = dict_to_dataframe(heat_amounts_dict, heat_amounts)
-    heat_amounts.to_csv(result_path + "heat_amounts.csv")
+    heat_amounts.to_csv(result_path + "/heat_amounts.csv")
     # HEAT PLOT
     fig, axs = plt.subplots(3, sharex="all")
     fig.set_size_inches(18.5, 15.5)
@@ -234,66 +295,79 @@ if __name__ == "__main__":
     import pandas as pd
 
     create_heat_amount_plots(
-        {"1": pd.read_csv(
-            r"C:\Users\klemm\Documents\Python\SESMG_dev_20221025\results\plotting_test/1/components.csv"),
-            # "0.75": pd.read_csv(
-            #         "/Users/gregor/sciebo/VM101/SESMG_20221111/results"
-            #         "/2022-11-21--08-34-04/20221118_SchlossST_model_definition_v1_0.25_2022-11-22--19-56-41/components.csv"),
-            # "0.5": pd.read_csv(
-            #         "/Users/gregor/sciebo/VM101/SESMG_20221111/results"
-            #         "/2022-11-21--08-34-04/20221118_SchlossST_model_definition_v1_0.5_2022-11-21--16-13-43/components.csv"),
-            "0.25": pd.read_csv(
-                r"C:\Users\klemm\Documents\Python\SESMG_dev_20221025\results\plotting_test/0.25/components.csv"),
-            "0": pd.read_csv(
-                r"C:\Users\klemm\Documents\Python\SESMG_dev_20221025\results\plotting_test/0/components.csv")},
-        # scenario file path
-        import_scenario(
-            r"C:\Users\klemm\Documents\Python\SESMG_dev_20221025\results\plotting_test/model_definition.xlsx"),
-        # result_path
-        r"C:\Users\klemm\Documents\Python\SESMG_dev_20221025\results\plotting_test",
-        # str(os.path.dirname(__file__)),
-        # sink types dict {label: [bool(elec), bool(heat), bool(cooling)]}
-        {
-            "L10000uen_electricity_demand": [True, False, False],
-            "L10000uen_heat_demand": [False, True, False],
-            "L10000uHQ_electricity_demand": [True, False, False],
-            "L10000uHQ_heat_demand": [False, True, False],
-            "L10000uoa_electricity_demand": [True, False, False],
-            "L10000uoa_heat_demand": [False, True, False],
-            "L10000w3x_electricity_demand": [True, False, False],
-            "L10000w3x_heat_demand": [False, True, False],
-            "L10000w72_electricity_demand": [True, False, False],
-            "L10000w72_heat_demand": [False, True, False],
-            "L10000wAj_electricity_demand": [True, False, False],
-            "L10000wAj_heat_demand": [False, True, False],
-            "L10000uXH_electricity_demand": [True, False, False],
-            "L10000uXH_heat_demand": [False, True, False],
-            "L10000vaf_electricity_demand": [True, False, False],
-            "L10000vaf_heat_demand": [False, True, False],
-            "L10000vkr_electricity_demand": [True, False, False],
-            "L10000vkr_heat_demand": [False, True, False],
-            "L10000vvc_electricity_demand": [True, False, False],
-            "L10000vvc_heat_demand": [False, True, False],
-            "L10000w7M_electricity_demand": [True, False, False],
-            "L10000w7M_heat_demand": [False, True, False],
-            "L10000wgs_electricity_demand": [True, False, False],
-            "L10000wgs_heat_demand": [False, True, False],
-            "COM2_electricity_demand": [True, False, False],
-            "COM2_heat_demand": [False, True, False],
-            "L10000w3Mw8q_electricity_demand": [True, False, False],
-            "L10000w3Mw8q_heat_demand": [False, True, False],
-            "L10000uIbxy6_electricity_demand": [True, False, False],
-            "L10000uIbxy6_heat_demand": [False, True, False],
-            "L10000vpGwAT_electricity_demand": [True, False, False],
-            "L10000vpGwAT_heat_demand": [False, True, False],
-            "L10000vIBxyG_electricity_demand": [True, False, False],
-            "L10000vIBxyG_heat_demand": [False, True, False],
-            "L10000uktvxr_electricity_demand": [True, False, False],
-            "L10000uktvxr_heat_demand": [False, True, False],
-            "L10000upovc1vK2_electricity_demand": [True, False, False],
-            "L10000upovc1vK2_heat_demand": [False, True, False],
-            "L10000vDGvrX_electricity_demand": [True, False, False],
-            "L10000vDGvrX_heat_demand": [False, True, False],
-
-        }
+            {"1": pd.read_csv(
+                    "/Users/gregor/sciebo/VM102/SESMG_20221111/results/2022"
+                    "-12-01--16-12-39/20221129_SchlossST_model_definition_v2_2022-12-01--16-12-39/components.csv"),
+                "0.75": pd.read_csv(
+                        "/Users/gregor/sciebo/VM102/SESMG_20221111/results"
+                        "/2022-12-01--16-12-39/20221129_SchlossST_model_definition_v2_0.25_2022-12-02--22-41-20/components.csv"),
+                "0.5": pd.read_csv(
+                        "/Users/gregor/sciebo/VM102/SESMG_20221111/results"
+                        "/2022-12-01--16-12-39/20221129_SchlossST_model_definition_v2_0.5_2022-12-01--19-46-12/components.csv"),
+                "0.35": pd.read_csv(
+                        "/Users/gregor/sciebo/VM102/SESMG_20221111/results"
+                        "/2022-12-01--16-12-39/20221129_SchlossST_model_definition_v2_0.65_2022-12-04--20-18-29/components.csv"),
+                "0.25": pd.read_csv(
+                        "/Users/gregor/sciebo/VM102/SESMG_20221111/results"
+                        "/2022-12-01--16-12-39/20221129_SchlossST_model_definition_v2_0.75_2022-12-02--06-05-14/components.csv"),
+                "0.15": pd.read_csv(
+                        "/Users/gregor/sciebo/VM102/SESMG_20221111/results"
+                        "/2022-12-01--16-12-39/20221129_SchlossST_model_definition_v2_0.85_2022-12-04--12-09-51/components.csv"),
+                "0": pd.read_csv(
+                        "/Users/gregor/sciebo/VM102/SESMG_20221111/results"
+                        "/2022-12-01--16-12-39/20221129_SchlossST_model_definition_v2_0_2022-12-01--19-09-05/components.csv")},
+            # import_scenario(
+            #    "/Users/gregor/Downloads/2022-10-24--07-47-24
+            #    /20221020_SchlossST_variant_1_0.75.xlsx"),
+        
+            # import_scenario(
+            # "/Users/gregor/Desktop/Arbeit/Git/SESMG/results/2022-10-20--17
+            # -52-20/20221018_schlossST_Optimierung2_0.5.xlsx"),
+            # "/Users/gregor/Desktop/Arbeit/Git/SESMG/results/2022-10-20--17
+            # -52-20/"
+            # scenario file path
+            import_scenario(
+                    "/Users/gregor/sciebo/VM102/SESMG_20221111/results/2022"
+                    "-12-01--16-12-39/20221129_SchlossST_model_definition_v2_0.5.xlsx"),
+            # result_path
+            str(os.path.dirname(__file__) + "/v2_final"),
+            # sink types dict {label: [bool(elec), bool(heat), bool(cooling)]}
+            {
+                "01Schloss_electricity_demand": [True, False, False],
+                "01Schloss_heat_demand": [False, True, False],
+                "01Schloss_electric_vehicle": [True, False, False],
+                "02Nebengebaeude_electricity_demand": [True, False, False],
+                "02Nebengebaeude_heat_demand": [False, True, False],
+                "03Kommende1B_electricity_demand": [True, False, False],
+                "03Kommende1B_heat_demand": [False, True, False],
+                "05Kommende3_electricity_demand": [True, False, False],
+                "05Kommende3_heat_demand": [False, True, False],
+                "06Kommende4_electricity_demand": [True, False, False],
+                "06Kommende4_heat_demand": [False, True, False],
+                "07Kommende5_electricity_demand": [True, False, False],
+                "07Kommende5_heat_demand": [False, True, False],
+                "08Kommende6_electricity_demand": [True, False, False],
+                "08Kommende6_heat_demand": [False, True, False],
+                "09Kommende7_electricity_demand": [True, False, False],
+                "09Kommende7_heat_demand": [False, True, False],
+                "10Kommende8_electricity_demand": [True, False, False],
+                "10Kommende8_heat_demand": [False, True, False],
+                "11Kommende9_electricity_demand": [True, False, False],
+                "11Kommende9_heat_demand": [False, True, False],
+                "12Kommende10_electricity_demand": [True, False, False],
+                "12Kommende10_heat_demand": [False, True, False],
+                "13Kommende1112_electricity_demand": [True, False, False],
+                "13Kommende1112_heat_demand": [False, True, False],
+                "14Kommende13_electricity_demand": [True, False, False],
+                "14Kommende13_heat_demand": [False, True, False],
+                "15TischlereiB_electricity_demand": [True, False, False],
+                "15TischlereiB_heat_demand": [False, True, False],
+                "16WGTischlereiB_electricity_demand": [True, False, False],
+                "16WGTischlereiB_heat_demand": [False, True, False],
+                "17Muehle_electricity_demand": [True, False, False],
+                "17Muehle_heat_demand": [False, True, False],
+                "19Hotel_electricity_demand": [True, False, False],
+                "19Hotel_heat_demand": [False, True, False],
+                "20Wohngebauede_electricity_demand": [True, False, False],
+                "20Wohngebauede_heat_demand": [False, True, False]}
     )
