@@ -223,7 +223,9 @@ def create_heat_amount_plots(dataframes: dict, nodes_data: pandas.DataFrame,
                     else:
                         if "wc" in comp["label"]:
                             heat_amounts_dict["central_wc_heat"].append(output)
-                        elif "ng" in comp["label"]:
+                        # TODO necessary since natural gas' abbreviation
+                        # TODO is ng and heating does contain ng also
+                        elif comp["label"].count("ng") >= 2:
                             heat_amounts_dict["central_ng_heat"].append(output)
                         elif "bg" in comp["label"]:
                             heat_amounts_dict["central_bg_heat"].append(output)
@@ -296,26 +298,26 @@ if __name__ == "__main__":
 
     create_heat_amount_plots(
             {"1": pd.read_csv(
-                    "/Users/gregor/sciebo/VM102/SESMG_20221111/results/2022"
-                    "-12-01--16-12-39/20221129_SchlossST_model_definition_v2_2022-12-01--16-12-39/components.csv"),
+                    "/Users/gregor/sciebo/VM105/SESMG_20221111/results/2022"
+                    "-12-01--16-17-00/20221129_SchlossST_model_definition_v4_2022-12-01--16-17-00/components.csv"),
                 "0.75": pd.read_csv(
-                        "/Users/gregor/sciebo/VM102/SESMG_20221111/results"
-                        "/2022-12-01--16-12-39/20221129_SchlossST_model_definition_v2_0.25_2022-12-02--22-41-20/components.csv"),
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
+                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.25_2022-12-02--12-33-55/components.csv"),
                 "0.5": pd.read_csv(
-                        "/Users/gregor/sciebo/VM102/SESMG_20221111/results"
-                        "/2022-12-01--16-12-39/20221129_SchlossST_model_definition_v2_0.5_2022-12-01--19-46-12/components.csv"),
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
+                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.5_2022-12-01--20-27-34/components.csv"),
                 "0.35": pd.read_csv(
-                        "/Users/gregor/sciebo/VM102/SESMG_20221111/results"
-                        "/2022-12-01--16-12-39/20221129_SchlossST_model_definition_v2_0.65_2022-12-04--20-18-29/components.csv"),
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
+                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.65_2022-12-03--17-53-22/components.csv"),
                 "0.25": pd.read_csv(
-                        "/Users/gregor/sciebo/VM102/SESMG_20221111/results"
-                        "/2022-12-01--16-12-39/20221129_SchlossST_model_definition_v2_0.75_2022-12-02--06-05-14/components.csv"),
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
+                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.75_2022-12-02--02-57-39/components.csv"),
                 "0.15": pd.read_csv(
-                        "/Users/gregor/sciebo/VM102/SESMG_20221111/results"
-                        "/2022-12-01--16-12-39/20221129_SchlossST_model_definition_v2_0.85_2022-12-04--12-09-51/components.csv"),
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
+                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.85_2022-12-03--08-31-40/components.csv"),
                 "0": pd.read_csv(
-                        "/Users/gregor/sciebo/VM102/SESMG_20221111/results"
-                        "/2022-12-01--16-12-39/20221129_SchlossST_model_definition_v2_0_2022-12-01--19-09-05/components.csv")},
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
+                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0_2022-12-01--19-45-56/components.csv")},
             # import_scenario(
             #    "/Users/gregor/Downloads/2022-10-24--07-47-24
             #    /20221020_SchlossST_variant_1_0.75.xlsx"),
@@ -327,10 +329,10 @@ if __name__ == "__main__":
             # -52-20/"
             # scenario file path
             import_scenario(
-                    "/Users/gregor/sciebo/VM102/SESMG_20221111/results/2022"
-                    "-12-01--16-12-39/20221129_SchlossST_model_definition_v2_0.5.xlsx"),
+                    "/Users/gregor/sciebo/VM105/SESMG_20221111/results/2022"
+                    "-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.5.xlsx"),
             # result_path
-            str(os.path.dirname(__file__) + "/v2_final"),
+            str(os.path.dirname(__file__) + "/v4_final"),
             # sink types dict {label: [bool(elec), bool(heat), bool(cooling)]}
             {
                 "01Schloss_electricity_demand": [True, False, False],

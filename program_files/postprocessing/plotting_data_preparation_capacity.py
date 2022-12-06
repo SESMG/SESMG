@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
 
 def pv_st_capacity(components_df, pv_st, dataframe, capacities_dict):
@@ -23,7 +24,7 @@ def pv_st_capacity(components_df, pv_st, dataframe, capacities_dict):
 
 
 def create_capacity_plots(dataframes: dict, nodes_data, result_path):
-    from program_files.postprocessing.plotting import get_dataframe_from_nodes_data
+    from program_files.postprocessing.plotting import get_dataframe_from_nodes_data, get_value
 
     capacities = pd.DataFrame()
     capacities_dict = {}
@@ -43,10 +44,14 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
                 "PV": [],
                 "ASHP": [],
                 "GCHP": [],
+                "SWHP": [],
                 "Electric_heating": [],
                 "Battery": [],
                 "ST": [],
-                "Gasheating": [],
+                "ng_heat": [],
+                "bg_heat": [],
+                "wc_heat": [],
+                "pe_heat": [],
                 "DH": [],
                 "Thermalstorage": [],
                 "ST_north": [],
@@ -57,6 +62,20 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
                 "ST_south_west": [],
                 "ST_west": [],
                 "ST_north_west": [],
+                "central_GCHP": [],
+                "central_ASHP": [],
+                "central_SWHP": [],
+                "central_ng_chp": [],
+                "central_wc_chp": [],
+                "central_bg_chp": [],
+                "central_pe_chp": [],
+                "central_chp": [],
+                "central_ng_heat": [],
+                "central_bg_heat": [],
+                "central_wc_heat": [],
+                "central_pe_heat": [],
+                "h2_Storage": [],
+                "electrolysis": [],
                 "reductionco2": (sum(dataframes[key]["constraints/CU"])
                 / emissions_100_percent) if key != "0" else
                 ((sum(dataframes[key]["variable costs/CU"]) + sum(dataframes[key]["periodical costs/CU"]))
@@ -66,6 +85,9 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
         dataframe = dataframes[key].copy()
         dataframe.reset_index(inplace=True, drop=False)
         components_df = get_dataframe_from_nodes_data(nodes_data)
+        # get central heat buses
+        df_central_heat = components_df[components_df["district heating conn."]
+                                        == "dh-system"]["label"].values
         # PV-System
         capacities_dict = pv_st_capacity(
             components_df.copy(), "photovoltaic", dataframe, capacities_dict
@@ -82,50 +104,55 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
             [df_hp, (components_df.isin(["AbsorptionHeatTransformer"])).any(axis=1)]
         )
         for num, comp in df_hp.iterrows():
-            if comp["heat source"] == "Ground":
-                value = dataframe.loc[dataframe["ID"].str.startswith(comp["label"])][
-                    "capacity/kW"
-                ].values
-                value = float(value[0]) if value.size > 0 else 0
-                capacities_dict["GCHP"].append(value)
-            elif comp["heat source"] == "Air":
-                value = dataframe.loc[dataframe["ID"].str.startswith(comp["label"])][
-                    "capacity/kW"
-                ].values
-                value = float(value[0]) if value.size > 0 else 0
-                capacities_dict["ASHP"].append(value)
+            value = get_value(comp["label"], "capacity/kW", dataframe)
+            if comp["output"] not in df_central_heat:
+                if comp["heat source"] == "Ground":
+                    capacities_dict["GCHP"].append(value)
+                elif comp["heat source"] == "Air":
+                    capacities_dict["ASHP"].append(value)
+                elif comp["heat source"] == "Water":
+                    capacities_dict["SWHP"].append(value)
+            else:
+                if comp["heat source"] == "Ground":
+                    capacities_dict["central_GCHP"].append(value)
+                elif comp["heat source"] == "Air":
+                    capacities_dict["central_ASHP"].append(value)
+                elif comp["heat source"] == "Water":
+                    capacities_dict["central_SWHP"].append(value)
 
         # generic transformer dataframe
         df_gen_transformer = components_df[
             (components_df.isin(["GenericTransformer"])).any(axis=1)
         ]
+        # collecting all decentral generic transformers
         for num, comp in df_gen_transformer.iterrows():
-            if "elec" in comp["input"] and "central" not in comp["label"]:
-                value = dataframe.loc[dataframe["ID"].str.startswith(comp["label"])][
-                    "capacity/kW"
-                ].values
-                value = float(value[0]) if value.size > 0 else 0
-                capacities_dict["Electric_heating"].append(value)
-            elif "gas" in comp["input"] and "central" not in comp["label"]:
-                value = dataframe.loc[dataframe["ID"].str.startswith(comp["label"])][
-                    "capacity/kW"
-                ].values
-                value = float(value[0]) if value.size > 0 else 0
-                capacities_dict["Gasheating"].append(value)
+            # TODO used label for differentiation of heating system
+            # TODO fuels
+            if not (comp["output"] in df_central_heat
+                    or comp["output2"] in df_central_heat):
+                if "elec" in comp["input"]:
+                    value = get_value(comp["label"], "capacity/kW", dataframe)
+                    capacities_dict["Electric_heating"].append(value)
+                elif "gas" in comp["input"]:
+                    value = get_value(comp["label"], "capacity/kW", dataframe)
+                    capacities_dict["ng_heat"].append(value)
+                elif "bg" in comp["input"]:
+                    value = get_value(comp["label"], "capacity/kW", dataframe)
+                    capacities_dict["bg_heat"].append(value)
+                elif "wc" in comp["input"]:
+                    value = get_value(comp["label"], "capacity/kW", dataframe)
+                    capacities_dict["wc_heat"].append(value)
+                elif "pe" in comp["input"]:
+                    value = get_value(comp["label"], "capacity/kW", dataframe)
+                    capacities_dict["pe_heat"].append(value)
 
         df_storage = components_df[(components_df.isin(["Generic"])).any(axis=1)]
         for num, comp in df_storage.iterrows():
             if "elec" in comp["bus"] and "central" not in comp["label"]:
-                value = dataframe.loc[dataframe["ID"].str.startswith(comp["label"])][
-                    "capacity/kW"
-                ].values
-                value = float(value[0]) if value.size > 0 else 0
+                value = get_value(comp["label"], "capacity/kW", dataframe)
                 capacities_dict["Battery"].append(value)
-            elif "heat" in comp["bus"] and "central" not in comp["label"]:
-                value = dataframe.loc[dataframe["ID"].str.startswith(comp["label"])][
-                    "capacity/kW"
-                ].values
-                value = float(value[0]) if value.size > 0 else 0
+            elif "heat" in comp["bus"] and comp["bus"] not in df_central_heat:
+                value = get_value(comp["label"], "capacity/kW", dataframe)
                 capacities_dict["Thermalstorage"].append(value)
 
         capacities_dict["DH"] += list(
@@ -133,7 +160,62 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
                 "capacity/kW"
             ].values
         )
-
+        
+        df_central_heat = components_df[components_df["district heating conn."]
+                                        == "dh-system"]
+        for num, bus in df_central_heat.iterrows():
+            for i in ["output", "output2"]:
+                for num2, comp in components_df[components_df[i]
+                                                == bus["label"]].iterrows():
+                    if comp["transformer type"] == "GenericTransformer":
+                        if comp["output2"] == "None":
+                            capacity = get_value(comp["label"], "capacity/kW", dataframe)
+                            if "wc" in comp["label"]:
+                                capacities_dict["central_wc_heat"].append(capacity)
+                            # TODO necessary since natural gas' abbreviation
+                            # TODO is ng and heating does contain ng also
+                            elif comp["label"].count("ng") >= 2:
+                                capacities_dict["central_ng_heat"].append(capacity)
+                            elif "bg" in comp["label"]:
+                                capacities_dict["central_bg_heat"].append(capacity)
+                            elif "pe" in comp["label"]:
+                                capacities_dict["central_pe_heat"].append(capacity)
+                            else:
+                                capacities_dict["central_heat"].append(capacity)
+                        else:
+                            capacity = get_value(comp["label"], "capacity/kW",
+                                                 dataframe)
+                            if "wc" in comp["label"]:
+                                capacities_dict["central_wc_chp"].append(
+                                    capacity)
+                            elif "ng" in comp["label"]:
+                                capacities_dict["central_ng_chp"].append(
+                                    capacity)
+                            elif "bg" in comp["label"]:
+                                capacities_dict["central_bg_chp"].append(
+                                    capacity)
+                            elif "pe" in comp["label"]:
+                                capacities_dict["central_pe_chp"].append(
+                                    capacity)
+                            else:
+                                capacities_dict["central_chp"].append(
+                                    capacity)
+                                
+            df_h2 = components_df[components_df["label"].str.contains("h2")]
+            
+            for num, comp in df_h2.iterrows():
+                if comp["storage type"] == "Generic":
+                    value = get_value(comp["label"], "capacity/kW", dataframe)
+                    capacities_dict["h2_Storage"].append(value)
+                else:
+                    df_comps = components_df[components_df["output"]
+                                             == comp["label"]]
+                    for num2, comp2 in df_comps.iterrows():
+                        if comp2["transformer type"] == "GenericTransformer":
+                            value = get_value(comp2["label"], "capacity/kW",
+                                              dataframe)
+                            capacities_dict["electrolysis"].append(value)
+                    
         for i in capacities_dict:
             if i != "run" and i != "reductionco2":
                 capacities_dict[i] = sum(capacities_dict[i])
@@ -142,7 +224,7 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
         capacities = pd.concat([capacities, pd.DataFrame([series])])
         capacities.set_index("reductionco2", inplace=True, drop=False)
         capacities = capacities.sort_values("run")
-        capacities.csv(result_path + "capacities.csv")
+        capacities.to_csv(result_path + "/capacities.csv")
         plt.clf()
         fig, axs = plt.subplots(3, sharex="all")
         fig.set_size_inches(18.5, 15.5)
@@ -170,7 +252,7 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
             "Electric_heating": [capacities.Electric_heating, axs[2]],
             "Battery": [capacities.Battery, axs[2]],
             "ST": [capacities.ST, axs[2]],
-            "Gasheating": [capacities.Gasheating, axs[2]],
+            "Gasheating": [capacities.ng_heat, axs[2]],
             "DH": [capacities.DH, axs[2]],
             "Thermalstorage": [capacities.Thermalstorage, axs[2]],
         }
@@ -197,13 +279,40 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
 if __name__ == "__main__":
     from program_files.preprocessing.create_energy_system import import_scenario
     create_capacity_plots(
-        {"1": pd.read_csv(""),
-         "0.75": pd.read_csv(""),
-         "0.5": pd.read_csv(""),
-         "0.25": pd.read_csv(""),
-         "0": pd.read_csv("")},
-        # scenario file path
-        import_scenario(""),
-        # result_path
-        ""
+            {"1": pd.read_csv(
+                    "/Users/gregor/sciebo/VM105/SESMG_20221111/results/2022"
+                    "-12-01--16-17-00/20221129_SchlossST_model_definition_v4_2022-12-01--16-17-00/components.csv"),
+                "0.75": pd.read_csv(
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
+                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.25_2022-12-02--12-33-55/components.csv"),
+                "0.5": pd.read_csv(
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
+                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.5_2022-12-01--20-27-34/components.csv"),
+                "0.35": pd.read_csv(
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
+                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.65_2022-12-03--17-53-22/components.csv"),
+                "0.25": pd.read_csv(
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
+                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.75_2022-12-02--02-57-39/components.csv"),
+                "0.15": pd.read_csv(
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
+                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.85_2022-12-03--08-31-40/components.csv"),
+                "0": pd.read_csv(
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
+                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0_2022-12-01--19-45-56/components.csv")},
+            # import_scenario(
+            #    "/Users/gregor/Downloads/2022-10-24--07-47-24
+            #    /20221020_SchlossST_variant_1_0.75.xlsx"),
+        
+            # import_scenario(
+            # "/Users/gregor/Desktop/Arbeit/Git/SESMG/results/2022-10-20--17
+            # -52-20/20221018_schlossST_Optimierung2_0.5.xlsx"),
+            # "/Users/gregor/Desktop/Arbeit/Git/SESMG/results/2022-10-20--17
+            # -52-20/"
+            # scenario file path
+            import_scenario(
+                    "/Users/gregor/sciebo/VM105/SESMG_20221111/results/2022"
+                    "-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.5.xlsx"),
+            # result_path
+            str(os.path.dirname(__file__) + "/v4_final"),
     )
