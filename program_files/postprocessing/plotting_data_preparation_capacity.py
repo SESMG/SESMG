@@ -130,7 +130,7 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
             # TODO fuels
             if not (comp["output"] in df_central_heat
                     or comp["output2"] in df_central_heat):
-                if "elec" in comp["input"]:
+                if "electric" in comp["input"]:
                     value = get_value(comp["label"], "capacity/kW", dataframe)
                     capacities_dict["Electric_heating"].append(value)
                 elif "gas" in comp["input"]:
@@ -201,20 +201,20 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
                                 capacities_dict["central_chp"].append(
                                     capacity)
                                 
-            df_h2 = components_df[components_df["label"].str.contains("h2")]
+        df_h2 = components_df[components_df["label"].str.contains("h2")]
             
-            for num, comp in df_h2.iterrows():
-                if comp["storage type"] == "Generic":
-                    value = get_value(comp["label"], "capacity/kW", dataframe)
-                    capacities_dict["h2_Storage"].append(value)
-                else:
-                    df_comps = components_df[components_df["output"]
-                                             == comp["label"]]
-                    for num2, comp2 in df_comps.iterrows():
-                        if comp2["transformer type"] == "GenericTransformer":
-                            value = get_value(comp2["label"], "capacity/kW",
-                                              dataframe)
-                            capacities_dict["electrolysis"].append(value)
+        for num, comp in df_h2.iterrows():
+            if comp["storage type"] == "Generic":
+                value = get_value(comp["label"], "capacity/kW", dataframe)
+                capacities_dict["h2_Storage"].append(value)
+            else:
+                df_comps = components_df[components_df["output"]
+                                         == comp["label"]]
+                for num2, comp2 in df_comps.iterrows():
+                    if comp2["transformer type"] == "GenericTransformer":
+                        value = get_value(comp2["label"], "capacity/kW",
+                                          dataframe)
+                        capacities_dict["electrolysis"].append(value)
                     
         for i in capacities_dict:
             if i != "run" and i != "reductionco2":
@@ -280,26 +280,19 @@ if __name__ == "__main__":
     from program_files.preprocessing.create_energy_system import import_scenario
     create_capacity_plots(
             {"1": pd.read_csv(
-                    "/Users/gregor/sciebo/VM105/SESMG_20221111/results/2022"
-                    "-12-01--16-17-00/20221129_SchlossST_model_definition_v4_2022-12-01--16-17-00/components.csv"),
+                    "/Users/gregor/sciebo/VM105/SESMG_20221111/results/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_2022-12-01--16-17-00/components.csv"),
                 "0.75": pd.read_csv(
-                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
-                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.25_2022-12-02--12-33-55/components.csv"),
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.25_2022-12-02--12-33-55/components.csv"),
                 "0.5": pd.read_csv(
-                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
-                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.5_2022-12-01--20-27-34/components.csv"),
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.5_2022-12-01--20-27-34/components.csv"),
                 "0.35": pd.read_csv(
-                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
-                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.65_2022-12-03--17-53-22/components.csv"),
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.65_2022-12-03--17-53-22/components.csv"),
                 "0.25": pd.read_csv(
-                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
-                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.75_2022-12-02--02-57-39/components.csv"),
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.75_2022-12-02--02-57-39/components.csv"),
                 "0.15": pd.read_csv(
-                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
-                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.85_2022-12-03--08-31-40/components.csv"),
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.85_2022-12-03--08-31-40/components.csv"),
                 "0": pd.read_csv(
-                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
-                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0_2022-12-01--19-45-56/components.csv")},
+                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0_2022-12-01--19-45-56/components.csv")},
             # import_scenario(
             #    "/Users/gregor/Downloads/2022-10-24--07-47-24
             #    /20221020_SchlossST_variant_1_0.75.xlsx"),
@@ -311,8 +304,7 @@ if __name__ == "__main__":
             # -52-20/"
             # scenario file path
             import_scenario(
-                    "/Users/gregor/sciebo/VM105/SESMG_20221111/results/2022"
-                    "-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.5.xlsx"),
+                    "/Users/gregor/sciebo/VM105/SESMG_20221111/results/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.5.xlsx"),
             # result_path
             str(os.path.dirname(__file__) + "/v4_final"),
     )
