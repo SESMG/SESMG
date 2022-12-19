@@ -1,5 +1,5 @@
 def create_standard_parameter_bus(label: str, bus_type: str, sheets,
-                                  standard_parameters, cords=None):
+                                  standard_parameters, coords=None):
     """
     creates a bus with standard_parameters, based on the standard
     parameters given in the "standard_parameters" dataset and adds
@@ -31,10 +31,10 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets,
     for i in range(len(standard_keys)):
         bus_dict[standard_keys[i]] = standard_param[standard_keys[i]]
     # defines rather a district heating connection is possible
-    if cords is not None:
+    if coords is not None:
         bus_dict.update(
-            {"district heating conn.": cords[2],
-             "lat": cords[0], "lon": cords[1]}
+            {"district heating conn.": coords[2],
+             "lat": coords[0], "lon": coords[1]}
         )
     else:
         bus_dict.update({"district heating conn.": 0})
