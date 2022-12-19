@@ -1,12 +1,13 @@
 import pytest
 import pandas
 from program_files.urban_district_upscaling.components import Sink
-
+import os
 
 @pytest.fixture
 def test_elec_sink_entry():
     # import standard parameter
-    standard_parameters = pandas.ExcelFile(r"standard_parameters.xlsx")
+    standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
+                                           + "/standard_parameters.xlsx")
     sinks = standard_parameters.parse("2_sinks")
     sink = sinks.loc[sinks["sink_type"] == "SFB_electricity_sink"]
 
@@ -36,7 +37,8 @@ def test_create_standard_parameter_sink(test_elec_sink_entry):
         sink_input="test_bus",
         sheets=sheets,
         annual_demand=3000,
-        standard_parameters=pandas.ExcelFile(r"standard_parameters.xlsx"))
+        standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
+                                             + "/standard_parameters.xlsx"))
 
     pandas.testing.assert_frame_equal(sheets["sinks"],
                                       test_elec_sink_entry["sinks"])
@@ -44,7 +46,8 @@ def test_create_standard_parameter_sink(test_elec_sink_entry):
 
 def test_create_sinks():
     # import standard parameter
-    standard_parameters = pandas.ExcelFile(r"standard_parameters.xlsx")
+    standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
+                                           + "/standard_parameters.xlsx")
     # import elec demand table
     elec = standard_parameters.parse("2_2_electricity")
     # import heat demand table

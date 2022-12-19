@@ -1,12 +1,13 @@
 import pytest
 import pandas
 from program_files.urban_district_upscaling.components import Bus
-
+import os
 
 @pytest.fixture
 def test_elec_bus_entry():
     # import standard parameter
-    standard_parameters = pandas.ExcelFile(r"standard_parameters.xlsx")
+    standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
+                                           + "/standard_parameters.xlsx")
     buses = standard_parameters.parse("1_buses")
     bus = buses.loc[buses["bus_type"] == "building_res_electricity_bus"]
 
@@ -27,7 +28,8 @@ def test_elec_bus_entry():
 @pytest.fixture
 def test_heat_bus_entry():
     # import standard parameter
-    standard_parameters = pandas.ExcelFile(r"standard_parameters.xlsx")
+    standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
+                                           + "/standard_parameters.xlsx")
     buses = standard_parameters.parse("1_buses")
     bus = buses.loc[buses["bus_type"] == "building_heat_bus"]
 
@@ -58,7 +60,8 @@ def test_create_standard_parameter_bus(test_elec_bus_entry,
         label="test_bus",
         bus_type="building_res_electricity_bus",
         sheets=sheets,
-        standard_parameters=pandas.ExcelFile(r"standard_parameters.xlsx")
+        standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
+                                           + "/standard_parameters.xlsx")
     )
     pandas.testing.assert_frame_equal(sheets["buses"],
                                       test_elec_bus_entry["buses"])
@@ -69,7 +72,8 @@ def test_create_standard_parameter_bus(test_elec_bus_entry,
         label="test_bus1",
         bus_type="building_heat_bus",
         sheets=sheets,
-        standard_parameters=pandas.ExcelFile(r"standard_parameters.xlsx"),
+        standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
+                                           + "/standard_parameters.xlsx"),
         coords=[10, 10, 1])
     pandas.testing.assert_frame_equal(sheets["buses"],
                                       test_heat_bus_entry["buses"])
