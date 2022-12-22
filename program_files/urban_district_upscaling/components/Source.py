@@ -35,10 +35,10 @@ def create_source(source_type, roof_num, building, sheets, standard_parameters,
     standard_param = standard_parameters.parse("3_sources")
     if not central:
         standard_param = standard_param.loc[
-            standard_param["comment"] == "solar_thermal_collector"]
+            standard_param["source_type"] == "solar_thermal_collector"]
     else:
         standard_param = standard_param.loc[
-            standard_param["comment"] == "central_solar_thermal_collector"]
+            standard_param["source_type"] == "central_solar_thermal_collector"]
     temp_inlet = (
         (building["flow temperature"]
          - (2 * float(standard_param["Temperature Difference"])))
@@ -67,8 +67,8 @@ def create_source(source_type, roof_num, building, sheets, standard_parameters,
 
     # extracts the st source specific standard values from the
     # standard_parameters dataset
-    param, keys = read_standard_parameters(source_type, "3_sources", "comment",
-                                           standard_parameters)
+    param, keys = read_standard_parameters(source_type, "3_sources",
+                                           "source_type", standard_parameters)
     for i in range(len(keys)):
         source_dict[keys[i]] = param[keys[i]]
 
