@@ -1,4 +1,8 @@
-def create_source(source_type, roof_num, building, sheets, standard_parameters,
+import pandas
+
+
+def create_source(source_type: str, roof_num: int, building: dict,
+                  sheets: dict, standard_parameters: pandas.ExcelFile,
                   st_output=None, central=False):
     """
         TODO DOCSTRINGTEXT
@@ -6,14 +10,17 @@ def create_source(source_type, roof_num, building, sheets, standard_parameters,
             solarthermal source has to be created
         :type source_type: str
         :param roof_num: roof part number
-        :type roof_num:
-        :param building:
-        :type building:
-        :param sheets:
-        :type sheets:
-        """
+        :type roof_num: int
+        :param building: building specific data (e.g. azimuth, \
+            surface tilt etc.)
+        :type building: dict
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+    """
     from program_files import append_component, read_standard_parameters
 
+    # convert the building dict into a list
     source_param = [
         str(roof_num),
         building["label"],
@@ -23,15 +30,20 @@ def create_source(source_type, roof_num, building, sheets, standard_parameters,
         building["longitude"],
         building["roof area {}".format(roof_num)],
     ]
+    
+    # define the source's label, output bus, input bus
     switch_dict = {
-        "fixed photovoltaic source": ["_pv_source", "_pv_bus", 0],
+        "fixed photovoltaic source": [
+            "_pv_source",
+            "_pv_bus",
+            0],
         "solar_thermal_collector": [
             "_solarthermal_source",
             "_heat_bus",
-            str(source_param[1]) + "_electricity_bus",
-        ],
+            str(source_param[1]) + "_electricity_bus"]
     }
     
+    # read the source specific standard parameters
     standard_param = standard_parameters.parse("3_sources")
     if not central:
         standard_param = standard_param.loc[
@@ -39,6 +51,8 @@ def create_source(source_type, roof_num, building, sheets, standard_parameters,
     else:
         standard_param = standard_param.loc[
             standard_param["source_type"] == "central_solar_thermal_collector"]
+    # calculate the inlet temperature which is necessary for solar
+    # thermal flat plates
     temp_inlet = (
         (building["flow temperature"]
          - (2 * float(standard_param["Temperature Difference"])))
@@ -50,8 +64,6 @@ def create_source(source_type, roof_num, building, sheets, standard_parameters,
         + "_"
         + str(source_param[0])
         + switch_dict.get(source_type)[0],
-        "existing capacity": 0,
-        "min. investment capacity": 0,
         "output": str(source_param[1]) + switch_dict.get(source_type)[1]
         if not st_output
         else st_output,

@@ -21,9 +21,6 @@ def test_decentral_pv_source_entry():
                     left=pandas.DataFrame.from_dict({
                         "label": ["test_1_pv_source"],
                         "source_type": ["fixed photovoltaic source"],
-                        # TODO warum nicht in der Standard param
-                        "existing capacity": [0],
-                        "min. investment capacity": [0],
                         "output": ["test_pv_bus"],
                         "Azimuth": [10],
                         "Surface Tilt": [10],
