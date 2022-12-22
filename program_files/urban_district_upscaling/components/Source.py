@@ -17,6 +17,9 @@ def create_source(source_type: str, roof_num: int, building: dict,
         :param sheets: dictionary containing the pandas.Dataframes that\
             will represent the model definition's Spreadsheets
         :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
     """
     from program_files import append_component, read_standard_parameters
 
@@ -128,28 +131,33 @@ def create_timeseries_source(sheets, label, output, standard_parameters):
     return append_component(sheets, "sources", source_dict)
 
 
-def create_competition_constraint(limit, label, roof_num, sheets,
-                                  standard_parameters):
+def create_competition_constraint(limit: float, label: str, roof_num: int,
+                                  sheets: dict,
+                                  standard_parameters: pandas.ExcelFile):
     """
-    TODO DOCSTRINGTEXT
-    :param limit:
-    :type limit: float
-    :param label:
-    :type label: str
-    :param roof_num:
-    :type roof_num: int
-    :param sheets:
-    :type sheets
+        TODO DOCSTRINGTEXT
+        :param limit:
+        :type limit: float
+        :param label:
+        :type label: str
+        :param roof_num:
+        :type roof_num: int
+        :param sheets:
+        :type sheets
+        :param standard_parameters:
+        :type standard_parameters:
     """
     from program_files import append_component, read_standard_parameters
 
+    # import the photovoltaic and solar thermal standard parameters
     pv_param, pv_keys = read_standard_parameters(
-        "fixed photovoltaic source", "3_sources", "comment",
-        standard_parameters
-    )
+        "fixed photovoltaic source", "3_sources", "source_type",
+        standard_parameters)
+    
     st_param, st_keys = read_standard_parameters(
-        "solar_thermal_collector", "3_sources", "comment", standard_parameters
-    )
+        "solar_thermal_collector", "3_sources", "source_type",
+        standard_parameters)
+    
     # define individual values
     constraint_dict = {
         "component 1": label + "_" + str(roof_num) + "_pv_source",

@@ -45,6 +45,31 @@ def test_decentral_pv_source_entry():
     
     return sheets
 
+
+@pytest.fixture
+def test_competition_constraint_entry():
+    """
+
+    """
+    # import standard parameter
+    standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
+                                           + "/standard_parameters.xlsx")
+    sources = standard_parameters.parse("3_sources")
+    pv_source = sources.loc[sources["source_type"]
+                            == "fixed photovoltaic source"]
+    st_source = sources.loc[sources["source_type"]
+                            == "solar_thermal_collector"]
+    
+    return {"competition constraints":
+        pandas.DataFrame.from_dict({
+            "component 1": ["test_1_pv_source"],
+            "factor 1": [float(1 / pv_source["Capacity per Area (kW/m2)"])],
+            "component 2": ["test_1_solarthermal_source"],
+            "factor 2": [float(1 / st_source["Capacity per Area (kW/m2)"])],
+            "limit": [100],
+            "active": [1]})
+    }
+
    
 def test_create_source(test_decentral_pv_source_entry):
     """
@@ -83,8 +108,25 @@ def test_create_timeseries_source():
     pass
 
 
-def test_create_competition_constraint():
-    pass
+def test_create_competition_constraint(test_competition_constraint_entry):
+    """
+    
+    """
+    from program_files.urban_district_upscaling.components import Source
+    sheets = {"competition constraints": pandas.DataFrame()}
+    
+    Source.create_competition_constraint(
+        limit=100,
+        label="test",
+        roof_num=1,
+        sheets=sheets,
+        standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
+                                             + r"/standard_parameters.xlsx")
+    )
+
+    pandas.testing.assert_frame_equal(
+        sheets["competition constraints"],
+        test_competition_constraint_entry["competition constraints"])
 
 
 def test_create_sources():
