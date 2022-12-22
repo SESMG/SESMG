@@ -20,6 +20,12 @@ def create_source(source_type: str, roof_num: int, building: dict,
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        :param st_output: str containing the solar thermal output bus \
+            which is used for the connection to district heating systems
+        :type st_output: str
+        :param central: parameter which definies rather the source is a\
+            central source (True) or a decentral one (False)
+        :type central: bool
     """
     from program_files import append_component, read_standard_parameters
 
@@ -124,7 +130,8 @@ def create_timeseries_source(sheets, label, output, standard_parameters):
 
     # extracts the st source specific standard values from the
     # standard_parameters dataset
-    param, keys = read_standard_parameters("timeseries_source", "3_sources", "comment", standard_parameters)
+    param, keys = read_standard_parameters("timeseries_source", "3_sources",
+                                           "comment", standard_parameters)
     for i in range(len(keys)):
         source_dict[keys[i]] = param[keys[i]]
 
@@ -136,16 +143,19 @@ def create_competition_constraint(limit: float, label: str, roof_num: int,
                                   standard_parameters: pandas.ExcelFile):
     """
         TODO DOCSTRINGTEXT
-        :param limit:
+        :param limit: max available roof area which can rather be used \
+            for photovoltaic or solar thermal sources
         :type limit: float
-        :param label:
+        :param label: building label
         :type label: str
-        :param roof_num:
+        :param roof_num: roof part id
         :type roof_num: int
-        :param sheets:
-        :type sheets
-        :param standard_parameters:
-        :type standard_parameters:
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
     """
     from program_files import append_component, read_standard_parameters
 
@@ -171,13 +181,38 @@ def create_competition_constraint(limit: float, label: str, roof_num: int,
     return append_component(sheets, "competition constraints", constraint_dict)
 
 
-def create_sources(building, clustering, sheets, standard_parameters,
+def create_sources(building: dict, clustering: bool, sheets: dict,
+                   standard_parameters: pandas.ExcelFile,
                    st_output=None, central=False):
-    """ """
+    """
+        Algorithm which creates a photovoltaic- and  a solar thermal \
+        source as well as the resulting competition constraint for a \
+        roof part under consideration
+        
+        :param building: dictionary containing the building specific \
+            parameters
+        :type building: dict
+        :param clustering: boolean which definies rather the resulting \
+            energy system is spatially clustered or not
+        :type clustering: bool
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+        :param st_output: str containing the solar thermal output bus \
+            which is used for the connection to district heating systems
+        :type st_output: str
+        :param central: parameter which definies rather the source is a\
+            central source (True) or a decentral one (False)
+        :type central: bool
+    """
     # create pv-sources and solar thermal-sources including area
     # competition
     roof_num = 1
-    while building["roof area %1d" % roof_num]:
+    while str("roof area %1d" % roof_num) in building.keys() \
+            and building["roof area %1d" % roof_num]:
         column = "st or pv %1d" % roof_num
         if building[column] == "pv&st":
             sheets = create_source(
