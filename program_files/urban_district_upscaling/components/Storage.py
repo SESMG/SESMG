@@ -1,3 +1,5 @@
+import pandas
+
 storage_dict = {
     "battery": ["_battery_storage", "_battery_storage", "_electricity_bus"],
     "thermal": ["_thermal_storage", "_thermal_storage", "_heat_bus"],
@@ -11,32 +13,38 @@ storage_dict = {
 
 
 def create_storage(
-    building_id: str, storage_type: str, de_centralized: str, sheets,
-    standard_parameters, bus=None
+    building_id: str, storage_type: str, de_centralized: str, sheets: dict,
+    standard_parameters: pandas.ExcelFile, bus=None
 ):
     """
-    Sets the specific parameters for a battery, and creates them
-    afterwards.
-
-    :param building_id: building label
-    :type building_id: str
-    :param storage_type:
-    :type storage_type: str
-    :param de_centralized:
-    :type de_centralized: str
-    :param bus:
-    :type bus: str
-    :param sheets:
-    :type sheets:
+        Sets the specific parameters for a battery, and creates them
+        afterwards.
+    
+        :param building_id: building label
+        :type building_id: str
+        :param storage_type: string which definies which storage type \
+            will be created
+        :type storage_type: str
+        :param de_centralized: string which differentiates rather the \
+            created storage will be placed in a building (building) or \
+            central (central)
+        :type de_centralized: str
+        :param sheets: dictionary containing the pandas.Dataframes that\
+                will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+        :param bus: string which contains a bus label which is \
+            necessary if the storage should not be connected to the \
+            standardized bus
+        :type bus: str
     """
-    from program_files.urban_district_upscaling.pre_processing import (
-        create_standard_parameter_comp,
-    )
+    from program_files import create_standard_parameter_comp
 
     return create_standard_parameter_comp(
         specific_param={
             "label": str(building_id) + storage_dict.get(storage_type)[1],
-            "comment": "automatically_created",
             "bus": str(building_id) + storage_dict.get(storage_type)[2]
             if bus is None
             else bus,
@@ -44,24 +52,34 @@ def create_storage(
         standard_parameter_info=[
             de_centralized + storage_dict.get(storage_type)[0],
             "5_storages",
-            "comment",
+            "storage_type",
         ],
         sheets=sheets,
         standard_parameters=standard_parameters
     )
 
 
-def building_storages(building, true_bools, sheets, standard_parameters):
+def building_storages(building: dict, true_bools: list, sheets: dict,
+                      standard_parameters: pandas.ExcelFile):
     """
-    TODO
-    :param building:
-    :type building:
-    :param true_bools:
-    :type true_bools:
-    :param sheets:
-    :type sheets:
+        TODO
+        :param building: dictionary containing the building specific \
+            parameters
+        :type building: dict
+        :param true_bools: list containing the entries that are \
+            evaluated as true
+        :type true_bools: list
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
     """
-    build_storage_dict = {"battery storage": "battery", "thermal storage": "thermal"}
+    build_storage_dict = {
+        "battery storage": "battery", "thermal storage": "thermal"
+    }
+    
     for storage in build_storage_dict:
         if building[storage] in true_bools:
             sheets = create_storage(
@@ -71,6 +89,7 @@ def building_storages(building, true_bools, sheets, standard_parameters):
                 de_centralized="building",
                 standard_parameters=standard_parameters
             )
+    
     return sheets
 
 
