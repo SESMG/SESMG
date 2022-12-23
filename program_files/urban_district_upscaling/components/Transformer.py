@@ -119,39 +119,50 @@ def create_transformer(building_id: str, transf_type: str, sheets: dict,
     )
 
 
-def building_transformer(building, p2g_link, true_bools, sheets,
-                         standard_parameters):
+def building_transformer(building: dict, p2g_link: bool, true_bools: list,
+                         sheets: dict, standard_parameters: pandas.ExcelFile):
     """
-    TODO
-    :param building:
-    :type building:
-    :param p2g_link:
-    :type p2g_link:
-    :param true_bools:
-    :type true_bools: list
-    :param sheets:
-    :type sheets:
+        TODO
+        :param building: dictionary holding the building specific data
+        :type building: dict
+        :param p2g_link: boolean defining rather a p2g system which \
+            creates a central naturalgas bus exists or not
+        :type p2g_link: bool
+        :param true_bools: list containing the entries that are \
+            evaluated as true
+        :type true_bools: list
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
     """
-    from program_files import Link
-
-    build_transf_dict = {
-        "ashp": [None, "building_ashp_transformer"],
-        "gas heating": [building["building type"], "building_gasheating_transformer"],
-        "electric heating": [None, "building_electricheating_transformer"],
-        "oil heating": [building["building type"], "building_oilheating_transformer"]
+    from program_files.urban_district_upscaling.components import Link
+    
+    build_transformer_dict = {
+        "ashp":
+            [None, "building_ashp_transformer"],
+        "gas heating":
+            [building["building type"], "building_gasheating_transformer"],
+        "electric heating":
+            [None, "building_electricheating_transformer"],
+        "oil heating":
+            [building["building type"], "building_oilheating_transformer"]
     }
-    for transf in build_transf_dict:
+    
+    for transformer in build_transformer_dict:
         # creates air source heat-pumps
-        if building[transf] in true_bools:
+        if building[transformer] in true_bools:
             sheets = create_transformer(
                 building_id=building["label"],
-                building_type=build_transf_dict[transf][0],
-                transf_type=build_transf_dict[transf][1],
+                building_type=build_transformer_dict[transformer][0],
+                transf_type=build_transformer_dict[transformer][1],
                 sheets=sheets,
                 standard_parameters=standard_parameters,
                 flow_temp=building["flow temperature"]
             )
-            if transf == "gas heating" and p2g_link:
+            if transformer == "gas heating" and p2g_link:
                 sheets = Link.create_link(
                     label="central_naturalgas_" + building["label"] + "link",
                     bus_1="central_naturalgas_bus",

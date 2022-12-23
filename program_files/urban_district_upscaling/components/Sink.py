@@ -1,6 +1,9 @@
+import pandas
+
+
 def create_standard_parameter_sink(
     sink_type: str, label: str, sink_input: str, annual_demand: int, sheets,
-    standard_parameters
+    standard_parameters: pandas.ExcelFile
 ):
     """
     creates a sink with standard_parameters, based on the standard
@@ -32,6 +35,7 @@ def create_standard_parameter_sink(
         sheets=sheets,
         standard_parameters=standard_parameters
     )
+
 
 def create_electricity_sink(building, building_type, area, sheets,
                             sinks_standard_param, standard_parameters):
