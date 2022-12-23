@@ -3,6 +3,7 @@ import pandas
 from program_files.urban_district_upscaling.components import Storage
 import os
 
+
 @pytest.fixture
 def test_storage_decentralized_battery_entry():
     # import standard parameter

@@ -1,73 +1,79 @@
+import pandas
+
 transf_dict = {
-    "building_gchp_transformer": ["gchp", "hp_elec", "heat", "None"],
-    "building_ashp_transformer": ["ashp", "hp_elec", "heat", "None"],
-    "building_gasheating_transformer": ["gasheating", "gas", "heat", "None"],
-    "building_oilheating_transformer": ["oilheating", "oil", "heat", "None"],
-    "building_electricheating_transformer": [
-        "electricheating",
-        "electricity",
-        "heat",
-        "None",
-    ],
+    "building_gchp_transformer":
+        ["gchp", "hp_elec", "heat", "None"],
+    "building_ashp_transformer":
+        ["ashp", "hp_elec", "heat", "None"],
+    "building_gasheating_transformer":
+        ["gasheating", "gas", "heat", "None"],
+    "building_oilheating_transformer":
+        ["oilheating", "oil", "heat", "None"],
+    "building_electricheating_transformer":
+        ["electricheating", "electricity", "heat", "None"],
 }
 
 
-def create_transformer(
-    building_id: str,
-    transf_type,
-    sheets,
-    standard_parameters,
-    flow_temp,
-    building_type=None,
-    area="0",
-    label="None",
-    specific="None",
-    output="None",
-):
+def create_transformer(building_id: str, transf_type: str, sheets: dict,
+                       standard_parameters: pandas.ExcelFile,
+                       flow_temp: str, building_type=None,
+                       area="0", label="None", specific="None",
+                       output="None"):
+    """
+    
+        :param building_id: building label
+        :type building_id: str
+        :param transf_type: string containing the type of transformer \
+            which has to be created
+        :type transf_type: str
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+        :param flow_temp: flow temperature of the heating system which \
+            is necessary for the COP calculation of heat pumps etc.
+        :type flow_temp: str
+        :param building_type: building type is used to define the \
+            shortage costs of heatpump electricity, gas, oil etc.
+        :type building_type: str
+        :param area: potential area for gchps
+        :type area: str
+        :param label: TODO
+        :type label: str
+        :param specific: TODO
+        :type specific: str
+        :param output:
+        :type output: str
+    """
     from program_files import create_standard_parameter_comp
     from program_files import Bus
 
+    # update the global data structure which contains the components
+    # label, output buses and input bus
     transf_dict.update(
         {
-            "central_"
-            + specific
-            + "_chp": [label + "_chp", label, label + "_elec", output],
-            "central_"
-            + specific
-            + "_heating_plant_transformer": [
-                label + "_heating_plant",
-                label,
-                output,
-                "None",
-            ],
-            "central_"
-            + specific
-            + "_transformer": [label + "_heatpump", "heatpump_elec", output, "None"],
+            "central_" + specific + "_chp":
+                [label + "_chp", label, label + "_elec", output],
+            "central_" + specific + "_heating_plant_transformer":
+                [label + "_heating_plant", label, output, "None"],
+            "central_" + specific + "_transformer":
+                [label + "_heatpump", "heatpump_elec", output, "None"],
             # TODO
             "central_biomass_transformer": ["biomass", "biomass", output, "None"],
-            "central_electrolysis_transformer": [
-                label + "_electrolysis",
-                "electricity",
-                "h2",
-                "None",
-            ],
-            "central_methanization_transformer": [
-                label + "_methanization",
-                "h2",
-                "naturalgas",
-                "None",
-            ],
-            "central_fuelcell_transformer": [
-                label + "_fuelcell",
-                "h2",
-                "electricity",
-                output,
-            ],
+            "central_electrolysis_transformer":
+                [label + "_electrolysis", "electricity", "h2", "None"],
+            "central_methanization_transformer":
+                [label + "_methanization", "h2", "naturalgas", "None"],
+            "central_fuelcell_transformer":
+                [label + "_fuelcell", "h2", "electricity", output],
         }
     )
-
+    
+    # differentiate the building type due to different shortage costs
     if building_type is not None:
-        if building_type in ["SFB", "MFB", "0", 0]:
+        if building_type in ["SFB", "MFB", "0"]:
             bus = "building_res_gas_bus"
             oil_bus = "building_res_oil_bus"
         elif building_type == "IND":
@@ -76,7 +82,7 @@ def create_transformer(
         else:
             bus = "building_com_gas_bus"
             oil_bus = "building_com_oil_bus"
-            # building gas bus
+            
         if transf_type == "building_gasheating_transformer":
             sheets = Bus.create_standard_parameter_bus(
                 label=str(building_id) + "_gas_bus", bus_type=bus,
@@ -100,14 +106,14 @@ def create_transformer(
             + "_"
             + transf_dict.get(transf_type)[0]
             + "_transformer",
-            "comment": "automatically_created",
             "input": building_id + "_" + transf_dict.get(transf_type)[1] + "_bus",
             "output": output1,
             "output2": transf_dict.get(transf_type)[3],
             "area": float(area),
             "temperature high": flow_temp
         },
-        standard_parameter_info=[transf_type, "4_transformers", "comment"],
+        standard_parameter_info=[transf_type, "4_transformers",
+                                 "transformer_type"],
         sheets=sheets,
         standard_parameters=standard_parameters
     )
