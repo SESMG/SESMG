@@ -1,16 +1,22 @@
-def create_building_insulation(building, sheets, standard_parameters):
-    """
-    In this method, the U-value potentials as well as the building
-    year-dependent U-value of the insulation types are obtained from
-    the standard parameters to create the insulation components in
-    the scenario.
+import pandas
 
-    :param building:
-    :type building:
-    :param sheets:
-    :type sheets:
-    :param standard_parameters:
-    :type standard_parameters:
+
+def create_building_insulation(building: dict, sheets: dict,
+                               standard_parameters: pandas.ExcelFile):
+    """
+        In this method, the U-value potentials as well as the building
+        year-dependent U-value of the insulation types are obtained from
+        the standard parameters to create the insulation components in
+        the scenario.
+    
+        :param building: dictionary holding the building specific data
+        :type building: dict
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
     """
     from program_files import append_component
 
@@ -40,7 +46,6 @@ def create_building_insulation(building, sheets, standard_parameters):
                 standard_param.loc["periodical constraint costs flat"]["roof"],
             ]
     param_dict = {
-        "comment": "automatically_created",
         "active": 1,
         "sink": str(building["label"]) + "_heat_demand",
         "temperature indoor": 20,
