@@ -1,5 +1,5 @@
 import xlsxwriter
-import pandas as pd
+import pandas
 
 import program_files.urban_district_upscaling.clustering as clustering_py
 from program_files.urban_district_upscaling.components import (
@@ -16,21 +16,29 @@ from program_files.urban_district_upscaling.components import (
 true_bools = ["yes", "Yes", 1]
 
 
-def append_component(sheets, sheet: str, comp_parameter: dict):
+def append_component(sheets: dict, sheet: str, comp_parameter: dict):
     """
-    :param sheets:
-    :type sheets:
-    :param sheet:
-    :type sheet: str
-    :param comp_parameter:
-    :type comp_parameter: dict
+        Within this method a component with the parameters stored in \
+        comp_parameter will be appended on the in sheets[sheet] stored\
+        pandas.DataFrame
+        
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param sheet: str which specifies which dict entry will be \
+            changed
+        :type sheet: str
+        :param comp_parameter: component parameters which will be \
+            appended as column on sheet
+        :type comp_parameter: dict
     """
-    series = pd.Series(comp_parameter)
-    sheets[sheet] = pd.concat([sheets[sheet], pd.DataFrame([series])])
+    series = pandas.Series(comp_parameter)
+    sheets[sheet] = pandas.concat([sheets[sheet], pandas.DataFrame([series])])
     return sheets
 
 
-def read_standard_parameters(name, param_type, index, standard_parameters):
+def read_standard_parameters(name: str, param_type: str, index: str,
+                             standard_parameters: pandas.ExcelFile):
     """
         searches the right entry within the standard parameter sheet
 
@@ -169,9 +177,9 @@ def create_buses(building, central_elec_bus: bool, gchps, sheets,
             label=str(building["label"]) + "_heat_bus",
             bus_type="building_heat_bus",
             sheets=sheets,
-            cords=[building["latitude"],
-                   building["longitude"],
-                   1 if building["central heat"] not in ["No", "no", 0, "0"] else 0],
+            coords=[building["latitude"],
+                    building["longitude"],
+                    1 if building["central heat"] not in ["No", "no", 0, "0"] else 0],
             standard_parameters=standard_parameters
         )
 
@@ -252,7 +260,7 @@ def load_input_data(plain_sheet, standard_parameter_path, pre_scenario):
     sheets = {}
     columns = {}
     # get keys from plain scenario
-    plain_sheet = pd.ExcelFile(plain_sheet)
+    plain_sheet = pandas.ExcelFile(plain_sheet)
     # get columns from plain sheet
     for sheet in plain_sheet.sheet_names:
         if sheet not in ["weather data", "time series"]:
@@ -262,15 +270,16 @@ def load_input_data(plain_sheet, standard_parameter_path, pre_scenario):
     worksheets = [column for column in columns.keys()]
     # get spreadsheet units from plain sheet
     for sheet in worksheets:
-        sheets.update({sheet: pd.DataFrame(columns=(columns[sheet]))})
-        units_series = pd.Series(data={a: "x" for a in sheets[sheet].keys()})
-        sheets[sheet] = pd.concat([sheets[sheet], pd.DataFrame([units_series])])
+        sheets.update({sheet: pandas.DataFrame(columns=(columns[sheet]))})
+        units_series = pandas.Series(data={a: "x" for a in sheets[sheet].keys()})
+        sheets[sheet] = pandas.concat([sheets[sheet],
+                                       pandas.DataFrame([units_series])])
     worksheets += ["weather data", "time series", "pipe types"]
 
     # load standard parameters from standard parameter file
-    standard_parameters = pd.ExcelFile(standard_parameter_path)
+    standard_parameters = pandas.ExcelFile(standard_parameter_path)
     # import the sheet which is filled by the user
-    pre_scenario_pd = pd.ExcelFile(pre_scenario)
+    pre_scenario_pd = pandas.ExcelFile(pre_scenario)
 
     # get the input sheets
     building_data = pre_scenario_pd.parse("1 - building data")
@@ -373,7 +382,7 @@ def urban_district_upscaling_pre_processing(
         "district heating",
         "8_pipe_types"
     ]:
-        if sheet_tbc not in pd.ExcelFile(paths[0]).sheet_names:
+        if sheet_tbc not in pandas.ExcelFile(paths[0]).sheet_names:
             if sheet_tbc in standard_parameters.sheet_names:
                 if sheet_tbc == "8_pipe_types":
                     sheet_name = "pipe types"
@@ -384,19 +393,19 @@ def urban_district_upscaling_pre_processing(
                     parse_dates=["timestamp"]
                     if sheet_tbc in ["weather data", "time series"]
                     else [],)
-            if "4 - time series data" in pd.ExcelFile(paths[0]).sheet_names:
-                sheets["weather data"] = pd.ExcelFile(paths[0]).parse(
+            if "4 - time series data" in pandas.ExcelFile(paths[0]).sheet_names:
+                sheets["weather data"] = pandas.ExcelFile(paths[0]).parse(
                     "4 - time series data", parse_dates=["timestamp"]
                 )
-                sheets["time series"] = pd.ExcelFile(paths[0]).parse(
+                sheets["time series"] = pandas.ExcelFile(paths[0]).parse(
                     "4 - time series data", parse_dates=["timestamp"]
                 )
-            if "3.1 - streets" in pd.ExcelFile(paths[0]).sheet_names:
-                sheets["district heating"] = pd.ExcelFile(paths[0]).parse(
+            if "3.1 - streets" in pandas.ExcelFile(paths[0]).sheet_names:
+                sheets["district heating"] = pandas.ExcelFile(paths[0]).parse(
                      "3.1 - streets"
                 )
         else:
-            sheets[sheet_tbc] = pd.ExcelFile(paths[0]).parse(
+            sheets[sheet_tbc] = pandas.ExcelFile(paths[0]).parse(
                 sheet_tbc,
                 parse_dates=["timestamp"]
                 if sheet_tbc in ["weather data", "time series"]
@@ -463,7 +472,7 @@ def urban_district_upscaling_pre_processing(
     
     # open the new excel file and add all the created components
     j = 0
-    writer = pd.ExcelWriter(paths[2], engine="xlsxwriter")
+    writer = pandas.ExcelWriter(paths[2], engine="xlsxwriter")
     for i in sheets:
         sheets[i].to_excel(writer, worksheets[j], index=False)
         j = j + 1
