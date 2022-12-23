@@ -7,6 +7,7 @@ import numpy as np
 import demandlib.bdew as bdew
 import datetime
 
+
 def extract_single_periods(data_set, column_name, period):
     """
         Extracts individual periods of a certain column of a weather data
