@@ -473,32 +473,41 @@ def create_central_heating_transformer(
 
 
 def create_central_chp(
-    label, gas_type, output, central_elec_bus, central_gas_bus, sheets,
-    standard_parameters
-):
+        label: str, fuel_type: str, output: str, central_elec_bus: bool,
+        central_fuel_bus: bool, sheets: dict,
+        standard_parameters: pandas.ExcelFile):
     """
         In this method, a central CHP unit with specified gas type is
         created, for this purpose the necessary data set is obtained
         from the standard parameter sheet, and the component is attached
-         to the transformers sheet.
-
-        :param label:
-        :type label:
-        :param gas_type: string which defines rather naturalgas or \
-            biogas is used
-        :type gas_type: str
-        :param output: string containing the heat output bus name
+        to the transformers sheet.
+    
+        :param label: defines the central heating plant's label
+        :type label: str
+        :param fuel_type: string which defines the heating plants fuel \
+            type
+        :type fuel_type: str
+        :param output: str containing the transformers output
         :type output: str
         :param central_elec_bus: determines if the central power \
             exchange exists
-        :param sheets
+        :type central_elec_bus: bool
+        :param central_fuel_bus: defines rather a central fuel exchange\
+            is possible or not
+        :type central_fuel_bus: bool
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
     """
     from program_files import Bus, Transformer, Link
 
     # chp gas bus
     sheets = Bus.create_standard_parameter_bus(
         label="central_" + label + "_bus",
-        bus_type="central_chp_" + gas_type + "_bus",
+        bus_type="central_chp_" + fuel_type + "_bus",
         sheets=sheets,
         standard_parameters=standard_parameters
     )
@@ -506,13 +515,13 @@ def create_central_chp(
     # chp electricity bus
     sheets = Bus.create_standard_parameter_bus(
         label="central_" + label + "_elec_bus",
-        bus_type="central_chp_" + gas_type + "_electricity_bus",
+        bus_type="central_chp_" + fuel_type + "_electricity_bus",
         sheets=sheets,
         standard_parameters=standard_parameters
     )
 
+    # connection to central electricity bus
     if central_elec_bus:
-        # connection to central electricity bus
         sheets = Link.create_link(
             label="central_" + label + "_elec_central_link",
             bus_1="central_" + label + "_elec_bus",
@@ -521,24 +530,27 @@ def create_central_chp(
             sheets=sheets,
             standard_parameters=standard_parameters
         )
-
-    if central_gas_bus:
+    # create a link to the central fuel exchange bus if the fuel
+    # exchange is possible
+    if central_fuel_bus:
         sheets = Link.create_link(
-            label="central_" + label + "_naturalgas_link",
-            bus_1="central_naturalgas_bus",
+            label="central_" + label + "_" + fuel_type + "_link",
+            bus_1="central_" + fuel_type + "_bus",
             bus_2="central_" + label + "_bus",
-            link_type="central_naturalgas_chp_link",
+            link_type="central_" + fuel_type + "_chp_link",
             sheets=sheets,
             standard_parameters=standard_parameters
         )
-
+    # create the CHP and return the sheets dict
     return Transformer.create_transformer(
         building_id="central",
-        transf_type="central_" + gas_type + "_chp",
+        transf_type="central_" + fuel_type + "_chp",
         label=label,
-        specific=gas_type,
+        specific=fuel_type,
         output=output,
         sheets=sheets,
         standard_parameters=standard_parameters,
-        flow_temp=0
+        # TODO since flow temp does not influence the Generic
+        #  Transformer's efficiency it is set to 0
+        flow_temp="0"
     )
