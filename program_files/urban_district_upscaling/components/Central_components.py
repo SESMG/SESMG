@@ -44,10 +44,10 @@ def create_central_heat_component(
         # create the central chp plant
         sheets = create_central_chp(
             label=label,
-            gas_type=comp_type.split("_")[0],
+            fuel_type=comp_type.split("_")[0],
             output=bus,
             central_elec_bus=exchange_buses["electricity_exchange"],
-            central_gas_bus=central_bus,
+            central_fuel_bus=central_bus,
             sheets=sheets,
             standard_parameters=standard_parameters
         )

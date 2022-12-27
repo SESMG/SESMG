@@ -49,7 +49,11 @@ def read_standard_parameters(name: str, param_type: str, index: str,
         :param index: defines on which column the index of the parsed \
             Dataframe will be set in order to locate the component's \
             name specific row
-        :param standard_parameters:
+        :type index: str
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+        
         :returns standard_param: technology specific parameters of name
         :rtype standard_param: pandas.Dataframe
         :returns standard_keys: technology specific keys of name
@@ -67,14 +71,14 @@ def read_standard_parameters(name: str, param_type: str, index: str,
         # return parameters and keys
         return standard_param, standard_keys
     else:
-        raise ValueError
+        raise ValueError("The component type " + name + "does not exist.")
 
 
 def create_standard_parameter_comp(
-    specific_param: dict, standard_parameter_info: list, sheets,
-    standard_parameters):
+        specific_param: dict, standard_parameter_info: list, sheets,
+        standard_parameters: pandas.ExcelFile):
     """
-        creates a storage with standard_parameters, based on the
+        creates a component with standard_parameters, based on the
         standard parameters given in the "standard_parameters" dataset
         and adds it to the "sheets"-output dataset.
 
@@ -86,8 +90,13 @@ def create_standard_parameter_comp(
             the components type [1] and the index of the components \
             standard parameter worksheets
         :type standard_parameter_info: list
-        :param sheets:
-        :type sheets:
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+        
         :return: - **sheets** () -
     """
     # extracts the storage specific standard values from the
@@ -102,7 +111,9 @@ def create_standard_parameter_comp(
     for i in range(len(standard_keys)):
         specific_param[standard_keys[i]] = standard_param[standard_keys[i]]
     # appends the new created component to storages sheet
-    return append_component(sheets, standard_parameter_info[1][2:], specific_param)
+    return append_component(sheets,
+                            standard_parameter_info[1][2:],
+                            specific_param)
 
 
 def create_buses(building, central_elec_bus: bool, gchps, sheets,
