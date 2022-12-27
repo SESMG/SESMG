@@ -14,9 +14,9 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets,
     :type sheets:
     :param standard_parameters:
     :type standard_parameters:
-    :param cords: latitude / longitude / dh column of the given bus\
+    :param coords: latitude / longitude / dh column of the given bus\
         used to connect a producer bus to district heating network
-    :type cords: list
+    :type coords: list
     """
     from program_files import read_standard_parameters, append_component
 
@@ -37,7 +37,7 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets,
              "lat": coords[0], "lon": coords[1]}
         )
     else:
-        bus_dict.update({"district heating conn.": 0})
+        bus_dict.update({"district heating conn.": float(0)})
     # appends the new created component to buses sheet
     return append_component(sheets, "buses", bus_dict)
 

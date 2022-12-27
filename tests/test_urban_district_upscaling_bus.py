@@ -3,6 +3,7 @@ import pandas
 from program_files.urban_district_upscaling.components import Bus
 import os
 
+
 @pytest.fixture
 def test_elec_bus_entry():
     # import standard parameter
@@ -21,7 +22,7 @@ def test_elec_bus_entry():
             "shortage costs": bus["shortage costs"].values,
             "excess constraint costs": bus["excess constraint costs"].values,
             "shortage constraint costs": bus["shortage constraint costs"].values,
-            "district heating conn.": [0]})
+            "district heating conn.": [float(0)]})
     }
 
 

@@ -1,33 +1,47 @@
-def create_central_heat_component(label, comp_type, bus, exchange_buses,
-                                  sheets, area, standard_parameters, flow_temp):
-    """
-    In this method, all heat supply systems are calculated for a
-    heat input into the district heat network.
+import pandas
 
-    :param label: defines the central component's label
-    :type label: str
-    :param comp_type: defines the component type
-    :type comp_type: str
-    :param bus: defines the output bus which is one of the heat
-        input buses of the district heating network
-    :type bus: str
-    :param exchange_buses: defines rather the central exchange of the \
-        specified energy is possible or not
-    :type exchange_buses: dict
-    :param sheets:
-    :param area: filled if a central gchp has to be created
-    :type area: str
-    :return:
+
+def create_central_heat_component(
+        label: str, comp_type: str, bus: str, exchange_buses: dict,
+        sheets: dict, area: str, standard_parameters: pandas.ExcelFile,
+        flow_temp: float):
+    """
+        In this method, all heat supply systems are calculated for a
+        heat input into the district heat network.
+    
+        :param label: defines the central component's label
+        :type label: str
+        :param comp_type: defines the component type
+        :type comp_type: str
+        :param bus: defines the output bus which is one of the heat
+            input buses of the district heating network
+        :type bus: str
+        :param exchange_buses: defines rather the central exchange of the \
+            specified energy is possible or not
+        :type exchange_buses: dict
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param area: filled if a central gchp has to be created
+        :type area: str
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+        :param flow_temp: flow temperature of the central heating \
+            system (district heating)
+        :type flow_temp: float
     """
     from program_files import Storage
 
-    # create central chp plants
-    chp_types = ["naturalgas_chp", "biogas_chp", "pellet_chp", "woodchips_chp"]
-    if comp_type in chp_types:
+    # CHPs
+    if comp_type in ["naturalgas_chp", "biogas_chp",
+                     "pellet_chp", "woodchips_chp"]:
+        # check rather a central exchange of fuel type is possible
         if comp_type.split("_")[0] in exchange_buses:
             central_bus = exchange_buses[comp_type.split("_")[0] + "_exchange"]
         else:
             central_bus = False
+        # create the central chp plant
         sheets = create_central_chp(
             label=label,
             gas_type=comp_type.split("_")[0],
@@ -38,31 +52,29 @@ def create_central_heat_component(label, comp_type, bus, exchange_buses,
             standard_parameters=standard_parameters
         )
 
-    # central gas heating plants
-    heating_plant_types = [
-        "naturalgas_heating_plant",
-        "biogas_heating_plant",
-        "pellet_heating_plant",
-        "woodchips_heating_plant",
-    ]
-    if comp_type in heating_plant_types:
+    # Heating plants
+    if comp_type in ["naturalgas_heating_plant", "biogas_heating_plant",
+                     "pellet_heating_plant", "woodchips_heating_plant"]:
+        # check rather a central exchange of fuel type is possible
         if comp_type.split("_")[0] in exchange_buses:
             central_bus = exchange_buses[comp_type.split("_")[0] + "_exchange"]
         else:
             central_bus = False
-        sheets = create_central_gas_heating_transformer(
+        # create the central heating plant
+        sheets = create_central_heating_transformer(
             label=label,
-            gas_type=comp_type.split("_")[0],
+            fuel_type=comp_type.split("_")[0],
             output=bus,
-            central_gas_bus=central_bus,
+            central_fuel_bus=central_bus,
             sheets=sheets,
             standard_parameters=standard_parameters
         )
 
-    # create central chp plants
-    heatpump_types = ["swhp_transformer", "ashp_transformer", "gchp_transformer"]
+    # Heatpumps
     central_heatpump_indicator = 0
-    if comp_type in heatpump_types:
+    if comp_type in ["swhp_transformer", "ashp_transformer",
+                     "gchp_transformer"]:
+        # create heatpump
         sheets = create_central_heatpump(
             label=label,
             specification=comp_type.split("_")[0],
@@ -74,6 +86,7 @@ def create_central_heat_component(label, comp_type, bus, exchange_buses,
             standard_parameters=standard_parameters,
             flow_temp=flow_temp
         )
+        # increase indicator to prevent duplex bus creation
         central_heatpump_indicator += 1
 
     # create central thermal storage
@@ -86,6 +99,7 @@ def create_central_heat_component(label, comp_type, bus, exchange_buses,
             sheets=sheets,
             standard_parameters=standard_parameters
         )
+        
     # power to gas system
     if comp_type == "power_to_gas":
         sheets = create_power_to_gas_system(
@@ -95,7 +109,8 @@ def create_central_heat_component(label, comp_type, bus, exchange_buses,
     return sheets
 
 
-def central_comp(central, true_bools, sheets, standard_parameters):
+def central_comp(central: pandas.DataFrame, true_bools: list, sheets: dict,
+                 standard_parameters: pandas.ExcelFile):
     """
         In this method, the central components of the energy system are
         added to the scenario, first checking if a heating network is
@@ -104,14 +119,20 @@ def central_comp(central, true_bools, sheets, standard_parameters):
         scenario.
 
         :param central: pandas Dataframe holding the information from the \
-                prescenario file "central" sheet
+            prescenario file "central" sheet
         :type central: pd.Dataframe
-        :param true_bools:
-        :type true_bools:
-        :param sheets:
-        :type sheets:
+        :param true_bools: list containing the entries that are \
+            evaluated as true
+        :type true_bools: list
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
     """
-    from program_files import Bus, Storage, Source, Link, get_central_comp_active_status
+    from program_files import Bus, Storage, Source, Link, \
+        get_central_comp_active_status
 
     exchange_buses = {"electricity_exchange": False}
     for bus in exchange_buses:
@@ -215,7 +236,7 @@ def central_comp(central, true_bools, sheets, standard_parameters):
             sheets = Bus.create_standard_parameter_bus(
                 label="central_{}_bus".format(bus["label"]),
                 bus_type="central_heat_input_bus",
-                cords=[bus["latitude"], bus["longitude"], "dh-system"],
+                coords=[bus["latitude"], bus["longitude"], "dh-system"],
                 sheets=sheets,
                 standard_parameters=standard_parameters
             )
@@ -388,57 +409,66 @@ def create_central_heatpump(
     )
 
 
-def create_central_gas_heating_transformer(
-    label, gas_type, output, central_gas_bus, sheets, standard_parameters
-):
+def create_central_heating_transformer(
+        label: str, fuel_type: str, output: str, central_fuel_bus: bool,
+        sheets: dict, standard_parameters: pandas.ExcelFile):
     """
-    In this method, a central heating plant unit with specified gas
-    type is created, for this purpose the necessary data set is
-    obtained from the standard parameter sheet, and the component is
-    attached to the transformers sheet.
-
-    :param label: defines the central heating plant's label
-    :type label: str
-    :param gas_type: string which defines rather naturalgas or biogas
-                    is used
-    :type gas_type: str
-    :param output: str containing the transformers output
-    :type output: str
-    :param central_gas_bus: defines rather a central gas exchange is \
-        investable
-    :type central_gas_bus: bool
-    :param sheets:
-    :type sheets:
+        In this method, a central heating plant unit with specified gas
+        type is created, for this purpose the necessary data set is
+        obtained from the standard parameter sheet, and the component is
+        attached to the transformers sheet.
+    
+        :param label: defines the central heating plant's label
+        :type label: str
+        :param fuel_type: string which defines the heating plants fuel \
+            type
+        :type fuel_type: str
+        :param output: str containing the transformers output
+        :type output: str
+        :param central_fuel_bus: defines rather a central fuel exchange\
+            is possible or not
+        :type central_fuel_bus: bool
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
     """
     from program_files import Bus, Transformer, Link
 
     # plant gas bus
     sheets = Bus.create_standard_parameter_bus(
         label="central_" + label + "_bus",
-        bus_type="central_heating_plant_" + gas_type + "_bus",
+        bus_type="central_heating_plant_" + fuel_type + "_bus",
         sheets=sheets,
         standard_parameters=standard_parameters
     )
 
-    if central_gas_bus:
+    # create a link to the central fuel exchange bus if the fuel
+    # exchange is possible
+    if central_fuel_bus:
         sheets = Link.create_link(
             label="heating_plant_" + label + "_link",
-            bus_1="central_" + gas_type + "_bus",
+            bus_1="central_" + fuel_type + "_bus",
             bus_2="central_" + label + "_bus",
-            link_type="central_naturalgas_building_link",
+            link_type="central_" + fuel_type + "_building_link",
             sheets=sheets,
             standard_parameters=standard_parameters
         )
-
+    
+    # create the heating plant and return the sheets dict
     return Transformer.create_transformer(
         label=label,
         building_id="central",
-        specific=gas_type,
+        specific=fuel_type,
         output=output,
         sheets=sheets,
-        transf_type="central_" + gas_type + "_heating_plant_transformer",
+        transf_type="central_" + fuel_type + "_heating_plant_transformer",
         standard_parameters=standard_parameters,
-        flow_temp=0
+        # TODO since flow temp does not influence the Generic
+        #  Transformer's efficiency it is set to 0
+        flow_temp="0"
     )
 
 
