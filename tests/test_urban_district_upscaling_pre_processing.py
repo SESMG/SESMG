@@ -1,5 +1,6 @@
 import pandas
 import os
+import pytest
 
 
 def test_append_component():
@@ -73,6 +74,91 @@ def test_create_standard_parameter_comp(
     pandas.testing.assert_frame_equal(
         sheets["storages"],
         test_storage_decentralized_battery_entry["storages"])
+
+
+@pytest.fixture
+def test_hp_buses_entry():
+    """
+    
+    """
+    # import standard parameter
+    standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
+                                           + "/standard_parameters.xlsx")
+    buses = standard_parameters.parse("1_buses")
+    bus = buses.loc[buses["bus_type"] == "building_hp_electricity_bus"]
+    
+    links = standard_parameters.parse("6_links")
+    hp_elec_link = links.loc[links["link_type"] == "building_hp_elec_link"]
+    hp_heat_link = links.loc[links["link_type"] == "building_hp_heat_link"]
+    
+    sheets = {
+        "buses": pandas.merge(
+            left=pandas.DataFrame.from_dict(
+                {"label": ["test_hp_elec_bus"],
+                 "bus_type": ["building_hp_electricity_bus"]}),
+            right=bus,
+            left_on="bus_type",
+            right_on="bus_type"),
+        "links": pandas.merge(
+            left=pandas.DataFrame.from_dict(
+                {"label": ["test_building_hp_elec_link"],
+                 "bus1": ["test_electricity_bus"],
+                 "bus2": ["test_hp_elec_bus"],
+                 "link_type": ["building_hp_elec_link"]}),
+            right=hp_elec_link,
+            left_on="link_type",
+            right_on="link_type")}
+    
+    sheets["links"] = pandas.concat(
+        [sheets["links"],
+         pandas.merge(
+             left=pandas.DataFrame({"label": ["test_parcel_gchp_elec_link"],
+                                    "bus1": ["test_hp_elec_bus"],
+                                    "bus2": ["st_parcel_hp_elec_bus"],
+                                    "link_type": ["building_hp_elec_link"]}),
+             right=hp_elec_link,
+             left_on="link_type",
+             right_on="link_type"),
+         pandas.merge(
+             left=pandas.DataFrame({"label": ["test_parcel_gchp_heat_link"],
+                                    "bus1": ["st_parcel_heat_bus"],
+                                    "bus2": ["test_heat_bus"],
+                                    "link_type": ["building_hp_heat_link"]}),
+             right=hp_heat_link,
+             left_on="link_type",
+             right_on="link_type"),
+         ])
+
+    types = {"buses": ["bus_type"], "links": ["link_type"]}
+    for key in sheets.keys():
+        sheets[key] = sheets[key].drop(columns=types.get(key))
+    
+    return sheets
+
+
+def test_create_heat_pump_buses_links(test_hp_buses_entry):
+    """
+    
+    """
+    from program_files.urban_district_upscaling.pre_processing \
+        import create_heat_pump_buses_links
+    building = {"label": "test",
+                "parcel ID": "test_parcel",
+                "ashp": "no",
+                "gchp": "yes"}
+    
+    sheets = {"buses": pandas.DataFrame(),
+              "links": pandas.DataFrame()}
+    sheets = create_heat_pump_buses_links(
+        building=building,
+        gchps={"st_parcel": "0"},
+        sheets=sheets,
+        standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
+                                             + "/standard_parameters.xlsx"))
+        
+    for key in sheets.keys():
+        pandas.testing.assert_frame_equal(sheets[key],
+                                          test_hp_buses_entry[key])
 
 
 def test_create_buses():
