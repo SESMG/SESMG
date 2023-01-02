@@ -42,7 +42,7 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets,
     return append_component(sheets, "buses", bus_dict)
 
 
-def create_cluster_elec_buses(building, cluster, sheets):
+def create_cluster_elec_buses(building, cluster, sheets, standard_parameters):
     """
         Method creating the building type specific electricity buses and
         connecting them to the main cluster electricity bus
@@ -78,6 +78,7 @@ def create_cluster_elec_buses(building, cluster, sheets):
             label=str(cluster) + bus_type + "electricity_bus",
             bus_type="building" + bus_type + "electricity_bus",
             sheets=sheets,
+            standard_parameters=standard_parameters
         )
         # reset index to label to ensure further attachments
         sheets["buses"].set_index("label", inplace=True, drop=False)
@@ -90,14 +91,15 @@ def create_cluster_elec_buses(building, cluster, sheets):
             bus_2=str(cluster) + bus_type + "electricity_bus",
             link_type="building_pv_building_link",
             sheets=sheets,
-        )
+            standard_parameters=standard_parameters)
+        
         # reset index to label to ensure further attachments
         sheets["links"].set_index("label", inplace=True, drop=False)
 
     return sheets
 
 
-def create_cluster_averaged_bus(sink_parameters, cluster, type, sheets, standard_param):
+def create_cluster_averaged_bus(sink_parameters, cluster, fuel_type, sheets, standard_parameters):
     """
 
     :param sink_parameters:
@@ -105,7 +107,7 @@ def create_cluster_averaged_bus(sink_parameters, cluster, type, sheets, standard
     :param type:
     :return:
     """
-    bus_parameters = standard_param.parse("buses", index_col="bus_type")
+    bus_parameters = standard_parameters.parse("1_buses", index_col="bus_type")
     if type != "gas":
         type1, type2, type3, type4 = (
             "hp_elec",
@@ -123,7 +125,7 @@ def create_cluster_averaged_bus(sink_parameters, cluster, type, sheets, standard
         label=str(cluster) + "_" + type1 + "_bus",
         bus_type="building_" + type2 + "_bus",
         sheets=sheets,
-    )
+        standard_parameters=standard_parameters)
     # reindex for further attachments
     sheets["buses"].set_index("label", inplace=True, drop=False)
     # recalculate gas bus shortage costs building type weighted

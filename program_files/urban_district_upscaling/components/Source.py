@@ -138,7 +138,7 @@ def create_timeseries_source(sheets, label, output, standard_parameters):
     return append_component(sheets, "sources", source_dict)
 
 
-def create_competition_constraint(limit: float, label: str, roof_num: int,
+def create_competition_constraint(limit: float, label: str, roof_num: str,
                                   sheets: dict,
                                   standard_parameters: pandas.ExcelFile):
     """
@@ -149,7 +149,7 @@ def create_competition_constraint(limit: float, label: str, roof_num: int,
         :param label: building label
         :type label: str
         :param roof_num: roof part id
-        :type roof_num: int
+        :type roof_num: str
         :param sheets: dictionary containing the pandas.Dataframes that\
             will represent the model definition's Spreadsheets
         :type sheets: dict
@@ -345,7 +345,7 @@ def sources_clustering(source_param, building, sheets, sheets_clustering):
     return source_param, sheets
 
 
-def create_cluster_sources(source_param, cluster, sheets):
+def create_cluster_sources(source_param, cluster, sheets, standard_parameters):
     """
 
     :param source_param:
@@ -358,10 +358,10 @@ def create_cluster_sources(source_param, cluster, sheets):
 
     # Define PV Standard-Parameters
     pv_standard_param, pv_standard_keys = read_standard_parameters(
-        "fixed photovoltaic source", "sources", "comment"
+        "fixed photovoltaic source", "3_sources", "source_type", standard_parameters
     )
     st_standard_param, st_standard_keys = read_standard_parameters(
-        "solar_thermal_collector", "sources", "comment"
+        "solar_thermal_collector", "3_sources", "source_type", standard_parameters
     )
     bus_created = False
     for azimuth in [
@@ -393,14 +393,16 @@ def create_cluster_sources(source_param, cluster, sheets):
                         label=str(cluster) + "_pv_bus",
                         bus_type="building_pv_bus",
                         sheets=sheets,
+                        standard_parameters=standard_parameters
                     )
                     bus_created = True
                 if pv_st == "pv" and source_param["st_{}".format(azimuth[:-4])][0] > 0:
                     sheets = create_competition_constraint(
                         limit=param_dict["roof area (m²) {}".format(azimuth[:-4])],
                         label=cluster,
-                        roof_num=int(azimuth[:-4]),
+                        roof_num=azimuth[:-4],
                         sheets=sheets,
+                        standard_parameters=standard_parameters
                     )
                 # parameter that aren't type dependent
                 param_dict.update(
@@ -426,7 +428,8 @@ def create_cluster_sources(source_param, cluster, sheets):
                     )
 
                 sheets = create_source(
-                    dependent_param.get(pv_st)[1], azimuth[:-4], param_dict, sheets
+                    dependent_param.get(pv_st)[1], azimuth[:-4], param_dict, sheets,
+                    standard_parameters
                 )
     return sheets
 

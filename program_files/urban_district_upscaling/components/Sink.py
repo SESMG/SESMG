@@ -223,7 +223,7 @@ def create_cluster_elec_sinks(
     from program_files.urban_district_upscaling.components import Link
     from program_files.urban_district_upscaling.components import Bus
 
-    bus_parameters = standard_parameters.parse("buses", index_col="bus_type")
+    bus_parameters = standard_parameters.parse("1_buses", index_col="bus_type")
     total_annual_demand = sink_parameters[0] + sink_parameters[1] + sink_parameters[2]
     if total_annual_demand > 0:
         if cluster + "_electricity_bus" not in sheets["buses"].index:
@@ -231,7 +231,7 @@ def create_cluster_elec_sinks(
                 label=str(cluster) + "_electricity_bus",
                 bus_type="building_res_electricity_bus",
                 sheets=sheets,
-            )
+                standard_parameters=standard_parameters)
             sheets["buses"].set_index("label", inplace=True, drop=False)
             cost_type = "shortage costs"
             label = "_electricity_bus"
@@ -244,7 +244,7 @@ def create_cluster_elec_sinks(
                 * bus_parameters.loc["building_ind" + label][cost_type]
             )
         if central_electricity_network:
-            sheets = Link.create_central_elec_bus_connection(cluster, sheets)
+            sheets = Link.create_central_elec_bus_connection(cluster, sheets, standard_parameters)
 
     # create clustered electricity sinks
     if sink_parameters[0] > 0:
