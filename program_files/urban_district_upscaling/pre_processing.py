@@ -194,25 +194,42 @@ def create_heat_pump_buses_links(building: dict, gchps: dict, sheets: dict,
     return sheets
         
 
-def create_buses(building, central_elec_bus: bool, sheets,
-                 standard_parameters):
+def create_building_buses_links(
+        building: dict, central_elec_bus: bool, sheets: dict,
+        standard_parameters: pandas.ExcelFile):
     """
-    todo docstring
-    :param building:
-    :type building:
-    :param central_elec_bus: defines rather buildings can be
-                             connected to central elec net or not
-    :type central_elec_bus: bool
-    :param sheets:
-    :type sheets:
+        In this method, all buses and links required for one building\
+        are created and attached to the "buses" and "links" dataframes \
+        in the sheet dictionary.
+        
+        :param building: dictionary containing the building specific \
+                parameters
+        :type building: dict
+        :param central_elec_bus: defines rather buildings can be
+                                 connected to central elec net or not
+        :type central_elec_bus: bool
+        :param sheets: dictionary containing the pandas.Dataframes that\
+                will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets
     """
 
     # foreach building the three necessary buses will be created
     pv_bus = False
+    # TODO Is there any other way to find "all" PV potential areas than
+    #  explicitly targeting them with their roofnum?
     for roof_num in range(1, 29):
         if building["st or pv %1d" % roof_num] == "pv&st":
             pv_bus = True
 
+    # define the building electricity bus type based on the building
+    # type
     if building["building type"] in ["SFB", "MFB", "0", 0]:
         bus = "building_res_electricity_bus"
     elif building["building type"] == "IND":
@@ -220,18 +237,19 @@ def create_buses(building, central_elec_bus: bool, sheets,
     else:
         bus = "building_com_electricity_bus"
         
-    if pv_bus or building["building type"] not in  ["0", 0]:
-        # house electricity bus
+    if pv_bus or building["building type"] not in ["0", 0]:
+        # create the building electricity bus
         sheets = Bus.create_standard_parameter_bus(
             label=(str(building["label"]) + "_electricity_bus"),
             bus_type=bus,
             sheets=sheets,
             standard_parameters=standard_parameters
         )
+        # create link from central elec bus to building electricity bus
+        # if the central electricity exchange is enabled
         if central_elec_bus:
-            # link from central elec bus to building electricity bus
             sheets = Link.create_link(
-                label=str(building["label"]) + "central_electricity_link",
+                label=str(building["label"]) + "_central_electricity_link",
                 bus_1="central_electricity_bus",
                 bus_2=str(building["label"]) + "_electricity_bus",
                 link_type="building_central_building_link",
@@ -251,9 +269,8 @@ def create_buses(building, central_elec_bus: bool, sheets,
             standard_parameters=standard_parameters
         )
         
-    # todo excess constraint costs
     if pv_bus:
-        # building pv bus
+        # create building pv bus
         sheets = Bus.create_standard_parameter_bus(
             label=str(building["label"]) + "_pv_bus",
             bus_type="building_pv_bus",
@@ -261,22 +278,23 @@ def create_buses(building, central_elec_bus: bool, sheets,
             standard_parameters=standard_parameters
         )
 
-        # link from pv bus to building electricity bus
+        # create link from pv bus to building electricity bus
         sheets = Link.create_link(
             label=str(building["label"])
-            + "pv_"
+            + "_pv_"
             + str(building["label"])
             + "_electricity_link",
             bus_1=str(building["label"]) + "_pv_bus",
             bus_2=str(building["label"]) + "_electricity_bus",
-            link_type="building_pv_central_link",
+            link_type="building_pv_building_link",
             sheets=sheets,
             standard_parameters=standard_parameters
         )
+        # create link from pv bus to central electricity bus if the
+        # central electricity exchange is enabled
         if central_elec_bus:
-            # link from pv bus to central electricity bus
             sheets = Link.create_link(
-                label=str(building["label"]) + "pv_central_electricity_link",
+                label=str(building["label"]) + "_pv_central_electricity_link",
                 bus_1=str(building["label"]) + "_pv_bus",
                 bus_2="central_electricity_bus",
                 link_type="building_pv_central_link",
@@ -457,7 +475,7 @@ def urban_district_upscaling_pre_processing(
 
     gchps, sheets = create_gchp(tool, parcel, sheets, standard_parameters)
     for num, building in tool[tool["active"] == 1].iterrows():
-        sheets = create_buses(
+        sheets = create_building_buses_links(
             building=building,
             sheets=sheets,
             central_elec_bus=central_electricity_network,

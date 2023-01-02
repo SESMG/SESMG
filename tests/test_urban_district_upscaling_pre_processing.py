@@ -91,6 +91,7 @@ def test_hp_buses_entry():
     hp_elec_link = links.loc[links["link_type"] == "building_hp_elec_link"]
     hp_heat_link = links.loc[links["link_type"] == "building_hp_heat_link"]
     
+    # create control data structure
     sheets = {
         "buses": pandas.merge(
             left=pandas.DataFrame.from_dict(
@@ -161,9 +162,124 @@ def test_create_heat_pump_buses_links(test_hp_buses_entry):
                                           test_hp_buses_entry[key])
 
 
-def test_create_buses():
-    pass
+@pytest.fixture
+def test_building_buses_entry():
+    """
+    
+    """
+    # import standard parameter
+    standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
+                                           + "/standard_parameters.xlsx")
+    buses = standard_parameters.parse("1_buses")
+    elec_bus = buses.loc[buses["bus_type"] == "building_res_electricity_bus"]
+    heat_bus = buses.loc[buses["bus_type"] == "building_heat_bus"]
+    pv_bus = buses.loc[buses["bus_type"] == "building_pv_bus"]
 
+    links = standard_parameters.parse("6_links")
+    central_building_link = links.loc[links["link_type"]
+                                      == "building_central_building_link"]
+    pv_central_link = links.loc[links["link_type"]
+                                == "building_pv_central_link"]
+    pv_building_link = links.loc[links["link_type"]
+                                 == "building_pv_building_link"]
+
+    # create control data structure
+    sheets = {
+        "buses": pandas.merge(
+                left=pandas.DataFrame.from_dict(
+                        {"label": ["test_electricity_bus"],
+                         "bus_type": ["building_res_electricity_bus"]}),
+                right=elec_bus,
+                left_on="bus_type",
+                right_on="bus_type"),
+        "links": pandas.merge(
+                left=pandas.DataFrame.from_dict(
+                        {"label": ["test_central_electricity_link"],
+                         "bus1": ["central_electricity_bus"],
+                         "bus2": ["test_electricity_bus"],
+                         "link_type": ["building_central_building_link"]}),
+                right=central_building_link,
+                left_on="link_type",
+                right_on="link_type")}
+
+    sheets["buses"] = pandas.concat(
+        [sheets["buses"],
+         pandas.merge(
+             left=pandas.DataFrame(
+                 {"label": ["test_heat_bus"],
+                  "bus_type": ["building_heat_bus"],
+                  "lat": "0",
+                  "lon": "0"}),
+             right=heat_bus,
+             left_on="bus_type",
+             right_on="bus_type"),
+         pandas.merge(
+             left=pandas.DataFrame(
+                     {"label": ["test_pv_bus"],
+                      "bus_type": ["building_pv_bus"]}),
+             right=pv_bus,
+             left_on="bus_type",
+             right_on="bus_type")])
+
+    sheets["links"] = pandas.concat(
+        [sheets["links"],
+         pandas.merge(
+             left=pandas.DataFrame(
+                 {"label": ["test_pv_test_electricity_link"],
+                  "bus1": ["test_pv_bus"],
+                  "bus2": ["test_electricity_bus"],
+                  "link_type": ["building_pv_building_link"]}),
+             right=pv_building_link,
+             left_on="link_type",
+             right_on="link_type"),
+         pandas.merge(
+             left=pandas.DataFrame(
+                 {"label": ["test_pv_central_electricity_link"],
+                  "bus1": ["test_pv_bus"],
+                  "bus2": ["central_electricity_bus"],
+                  "link_type": ["building_pv_central_link"]}),
+             right=pv_central_link,
+             left_on="link_type",
+             right_on="link_type"),
+         ])
+
+    types = {"buses": ["bus_type"], "links": ["link_type"]}
+    for key in sheets.keys():
+        sheets[key] = sheets[key].drop(columns=types.get(key))
+
+    return sheets
+
+
+def test_create_building_buses(test_building_buses_entry):
+    """
+    
+    """
+    from program_files.urban_district_upscaling.pre_processing \
+        import create_building_buses_links
+    
+    sheets = {"buses": pandas.DataFrame(), "links": pandas.DataFrame()}
+    
+    building = {
+        "label": "test",
+        "building type": "SFB",
+        "central heat": "no",
+        "latitude": "0",
+        "longitude": "0"
+    }
+    for i in range(1, 29):
+        building.update({"st or pv %1d" % i: "pv&st"})
+    
+    sheets = create_building_buses_links(
+        building=building,
+        central_elec_bus=True,
+        sheets=sheets,
+        standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
+                                             + "/standard_parameters.xlsx"))
+    
+    for key in sheets.keys():
+        pandas.testing.assert_frame_equal(sheets[key],
+                                          test_building_buses_entry[key])
+    
 
 def test_load_input_data():
     pass
