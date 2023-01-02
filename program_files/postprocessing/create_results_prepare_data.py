@@ -1,4 +1,4 @@
-import pandas as pd
+import pandas
 
 # columns_of_plotly_table
 copt = [
@@ -26,10 +26,10 @@ def add_component_to_loc(label, comp_dict, df_list_of_components, maxinvest="---
         capacity = max(comp_dict[4])
     else:
         capacity = comp_dict[4]
-    df_list_of_components = pd.concat(
+    df_list_of_components = pandas.concat(
         [
             df_list_of_components,
-            pd.DataFrame(
+            pandas.DataFrame(
                 [
                     [
                         label,
@@ -109,10 +109,14 @@ def append_flows(label, comp_dict, df_result_table):
         3: "_output2",
         4: "_capacity",
     }
+    dict_of_columns = {}
     for flow in flow_type_dict:
         if str(type(comp_dict[flow])) not in ["<class 'float'>", "<class 'int'>"]:
             if sum(comp_dict[flow]) != 0:
-                df_result_table.loc[:, label + flow_type_dict[flow]] = comp_dict[flow]
+                dict_of_columns[label + flow_type_dict[flow]] = comp_dict[flow]
+    df_result_table = pandas.concat([df_result_table,
+                                     pandas.DataFrame(dict_of_columns)],
+                                    axis=1)
     return df_result_table
 
 
@@ -142,7 +146,7 @@ def prepare_loc(comp_dict, df_result_table, df_list_of_components):
 
 
 def prepare_data(comp_dict, total_demand, nd, result_path, df_result_table):
-    df_list_of_components = pd.DataFrame(columns=copt)
+    df_list_of_components = pandas.DataFrame(columns=copt)
     for label in comp_dict.copy():
         if "insulation" in label:
             total_demand -= sum(comp_dict[label][2])
@@ -156,7 +160,7 @@ def prepare_data(comp_dict, total_demand, nd, result_path, df_result_table):
                 comp_dict[label[:-10]][9] = comp_dict[label][9]
             comp_dict.pop(label)
         elif comp_dict[label][8] == "dh":
-            pipe_data = pd.read_csv(result_path + "/pipes.csv")
+            pipe_data = pandas.read_csv(result_path + "/pipes.csv")
             comp_dict[get_dh_label(label, pipe_data)] = comp_dict.pop(label)
     (
         df_list_of_components,

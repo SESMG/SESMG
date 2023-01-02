@@ -71,7 +71,7 @@ def read_standard_parameters(name: str, param_type: str, index: str,
         # return parameters and keys
         return standard_param, standard_keys
     else:
-        raise ValueError("The component type " + name + "does not exist.")
+        raise ValueError("The component type " + name + " does not exist.")
 
 
 def create_standard_parameter_comp(

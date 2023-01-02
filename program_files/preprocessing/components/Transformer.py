@@ -298,7 +298,7 @@ class Transformers:
         if tf["mode"] == "heat_pump":
             temp_threshold_icing = tf["temp. threshold icing"]
             factor_icing = tf["factor icing"]
-            temp_high = [tf["temperature high"]]
+            temp_high = [float(tf["temperature high"])]
         elif tf["mode"] == "chiller":
             # variable "icing" is not important in cooling mode
             temp_threshold_icing = None

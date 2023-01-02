@@ -299,6 +299,9 @@ def test_create_gchp_entry():
 
 
 def test_create_gchp(test_create_gchp_entry):
+    """
+    
+    """
     from program_files.urban_district_upscaling.pre_processing \
         import create_gchp
     tool = pandas.DataFrame.from_dict({"label": ["test_building"],
