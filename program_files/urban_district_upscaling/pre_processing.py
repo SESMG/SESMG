@@ -143,14 +143,14 @@ def create_heat_pump_buses_links(building: dict, gchps: dict, sheets: dict,
     """
     gchp_bool = False
     gchp_heat_bus = None
-    gchp_elec_bus = None
+    gchp_electricity_bus = None
 
     gchp = True if building["parcel ID"] not in [0, "0"] else False
 
     if gchp and building["parcel ID"][-9:] in gchps:
         gchp_bool = True
         gchp_heat_bus = building["parcel ID"][-9:] + "_heat_bus"
-        gchp_elec_bus = building["parcel ID"][-9:] + "_hp_elec_bus"
+        gchp_electricity_bus = building["parcel ID"][-9:] + "_hp_elec_bus"
     
     # if a heatpump is investable for the considered building
     if gchp_bool or building["ashp"] in true_bools:
@@ -161,7 +161,8 @@ def create_heat_pump_buses_links(building: dict, gchps: dict, sheets: dict,
                 sheets=sheets,
                 standard_parameters=standard_parameters
         )
-        # electricity link from building electricity bus to hp elec bus
+        # electricity link from building electricity bus to hp
+        # electricity bus
         sheets = Link.create_link(
                 label=str(building["label"]) + "_building_hp_elec_link",
                 bus_1=str(building["label"]) + "_electricity_bus",
@@ -171,13 +172,13 @@ def create_heat_pump_buses_links(building: dict, gchps: dict, sheets: dict,
                 standard_parameters=standard_parameters
         )
     
-        if gchp and gchp_elec_bus is not None:
-            # electricity link from building hp elec bus to parcel hp
-            # elec bus
+        if gchp and gchp_electricity_bus is not None:
+            # electricity link from building hp electricity bus to
+            # parcel hp electricity bus
             sheets = Link.create_link(
                 label=str(building["label"]) + "_parcel_gchp_elec_link",
                 bus_1=str(building["label"]) + "_hp_elec_bus",
-                bus_2=gchp_elec_bus,
+                bus_2=gchp_electricity_bus,
                 link_type="building_hp_elec_link",
                 sheets=sheets,
                 standard_parameters=standard_parameters
@@ -245,8 +246,8 @@ def create_building_buses_links(
             sheets=sheets,
             standard_parameters=standard_parameters
         )
-        # create link from central elec bus to building electricity bus
-        # if the central electricity exchange is enabled
+        # create link from central electricity bus to building
+        # electricity bus if the central electricity exchange is enabled
         if central_elec_bus:
             sheets = Link.create_link(
                 label=str(building["label"]) + "_central_electricity_link",
@@ -305,7 +306,25 @@ def create_building_buses_links(
     return sheets
 
 
-def load_input_data(plain_sheet, standard_parameter_path, pre_scenario):
+def load_input_data(plain_sheet: str, standard_parameter_path: str,
+                    pre_scenario: str):
+    """
+        This method is used to convert the three ExcelFiles necessary \
+        for the upscaling tool into pandas structures and then return \
+        them to the main method.
+        
+        :param plain_sheet: string containing the path to the plain \
+            sheet ExcelFile, the plain sheet is used to create an \
+            empty model definition file in which only the column names \
+            are entered.
+        :type plain_sheet: str
+        :param standard_parameter_path: string containing the path to \
+            the standard parameter ExcelFile
+        :type plain_sheet: str
+        :param pre_scenario: string containing the path to the \
+            upscaling tool input file
+        :type pre_scenario: str
+    """
     sheets = {}
     columns = {}
     # get keys from plain scenario
@@ -320,7 +339,8 @@ def load_input_data(plain_sheet, standard_parameter_path, pre_scenario):
     # get spreadsheet units from plain sheet
     for sheet in worksheets:
         sheets.update({sheet: pandas.DataFrame(columns=(columns[sheet]))})
-        units_series = pandas.Series(data={a: "x" for a in sheets[sheet].keys()})
+        units_series = pandas.Series(
+            data={a: "x" for a in sheets[sheet].keys()})
         sheets[sheet] = pandas.concat([sheets[sheet],
                                        pandas.DataFrame([units_series])])
     worksheets += ["weather data", "time series", "pipe types"]
@@ -347,43 +367,66 @@ def load_input_data(plain_sheet, standard_parameter_path, pre_scenario):
 
 def get_central_comp_active_status(central, technology):
     """
+        Method used to check if the central component technology is \
+        enabled.
+        
+        :param central: pandas.DataFrame containing the central \
+            components' data from the upscaling tool input file
+        :type central: pandas.DataFrame
+        :param technology: central component to be checked
+        :type technology: str
 
-    :param central:
-    :type central: pandas.DataFrame
-    :param technology:
-    :type technology: str
-
-    :return:
+        :return: - **-** (bool) - return rather the technology is \
+            active (True) or not (False)
     """
-    if (
-        central.loc[central["technology"] == technology]["active"].values[0]
-        in true_bools
-    ):
+    entry = central.loc[central["technology"] == technology]
+    if entry["active"].values[0] in true_bools:
         return True
     else:
         return False
 
 
-def create_gchp(tool, parcel, sheets, standard_parameters):
+def create_gchp(tool: pandas.DataFrame, parcels: pandas.DataFrame,
+                sheets: dict, standard_parameters: pandas.ExcelFile):
+    """
+        Method that creates a GCHP and its buses for the parcel and \
+        appends them to the sheets return structure.
+        
+        :param tool: DataFrame containing the building data from the \
+            upscaling tool's input file
+        :type tool: pandas.DataFrame
+        :param parcels: DataFrame containing the energy system's \
+            parcels as well as their size
+        :type parcels: pandas.DataFrame
+        :param sheets: dictionary containing the pandas.Dataframes that\
+                will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+    """
+    # TODO parcel ID and ID parcel have to be unified
     # create GCHPs parcel wise
     gchps = {}
-    for num, parcel in parcel.iterrows():
+    for num, parcel in parcels.iterrows():
         build_parcel = tool[
-            (tool["active"] == 1)
-            & (tool["gchp"].isin(["Yes", "yes", 1]))
+            (tool["active"].isin(true_bools))
+            & (tool["gchp"].isin(true_bools))
             & (tool["parcel ID"] == parcel["ID parcel"])
         ]
         if not build_parcel.empty:
             gchps.update({parcel["ID parcel"][-9:]: parcel["gchp area (m²)"]})
     # create gchp relevant components
     for gchp in gchps:
+        # TODO What supply temperature do we use here, do we have to
+        #  average that of the buildings?
         sheets = Transformer.create_transformer(
             building_id=gchp,
             area=gchps[gchp],
             transf_type="building_gchp_transformer",
             sheets=sheets,
             standard_parameters=standard_parameters,
-            flow_temp=60
+            flow_temp="60"
         )
         sheets = Bus.create_standard_parameter_bus(
             label=gchp + "_hp_elec_bus",

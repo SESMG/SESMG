@@ -9,16 +9,14 @@ def test_append_component():
     """
     from program_files.urban_district_upscaling.pre_processing \
         import append_component
-    sheets = {"test": pandas.DataFrame()}
-    
-    test_sheets = {"test": pandas.DataFrame.from_dict({"test": [3]})}
     
     sheets = append_component(
-        sheets=sheets,
+        sheets={"test": pandas.DataFrame()},
         sheet="test",
         comp_parameter={"test": 3})
     
-    pandas.testing.assert_frame_equal(sheets["test"], test_sheets["test"])
+    pandas.testing.assert_frame_equal(
+        sheets["test"], pandas.DataFrame.from_dict({"test": [3]}))
 
 
 def test_read_standard_parameters():
@@ -43,7 +41,8 @@ def test_read_standard_parameters():
     
     # create test dataframes
     test_standard_parameters = buses.loc[
-        buses["bus_type"] == "building_heat_bus"].set_index("bus_type").squeeze()
+        buses["bus_type"] == "building_heat_bus"].set_index(
+            "bus_type").squeeze()
     test_standard_keys = test_standard_parameters.keys()
     
     pandas.testing.assert_series_equal(standard_parameters,
@@ -85,53 +84,40 @@ def test_hp_buses_entry():
     standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
                                            + "/standard_parameters.xlsx")
     buses = standard_parameters.parse("1_buses")
-    bus = buses.loc[buses["bus_type"] == "building_hp_electricity_bus"]
-    
     links = standard_parameters.parse("6_links")
-    hp_elec_link = links.loc[links["link_type"] == "building_hp_elec_link"]
-    hp_heat_link = links.loc[links["link_type"] == "building_hp_heat_link"]
     
     # create control data structure
     sheets = {
         "buses": pandas.merge(
             left=pandas.DataFrame.from_dict(
-                {"label": ["test_hp_elec_bus"],
+                {None: [0],
+                 "label": ["test_hp_elec_bus"],
                  "bus_type": ["building_hp_electricity_bus"]}),
-            right=bus,
+            right=buses,
             left_on="bus_type",
             right_on="bus_type"),
         "links": pandas.merge(
             left=pandas.DataFrame.from_dict(
-                {"label": ["test_building_hp_elec_link"],
-                 "bus1": ["test_electricity_bus"],
-                 "bus2": ["test_hp_elec_bus"],
-                 "link_type": ["building_hp_elec_link"]}),
-            right=hp_elec_link,
+                {None: [0, 0, 0],
+                 "label": ["test_building_hp_elec_link",
+                           "test_parcel_gchp_elec_link",
+                           "test_parcel_gchp_heat_link"],
+                 "bus1": ["test_electricity_bus",
+                          "test_hp_elec_bus",
+                          "st_parcel_heat_bus"],
+                 "bus2": ["test_hp_elec_bus",
+                          "st_parcel_hp_elec_bus",
+                          "test_heat_bus"],
+                 "link_type": ["building_hp_elec_link",
+                               "building_hp_elec_link",
+                               "building_hp_heat_link"]}),
+            right=links,
             left_on="link_type",
             right_on="link_type")}
-    
-    sheets["links"] = pandas.concat(
-        [sheets["links"],
-         pandas.merge(
-             left=pandas.DataFrame({"label": ["test_parcel_gchp_elec_link"],
-                                    "bus1": ["test_hp_elec_bus"],
-                                    "bus2": ["st_parcel_hp_elec_bus"],
-                                    "link_type": ["building_hp_elec_link"]}),
-             right=hp_elec_link,
-             left_on="link_type",
-             right_on="link_type"),
-         pandas.merge(
-             left=pandas.DataFrame({"label": ["test_parcel_gchp_heat_link"],
-                                    "bus1": ["st_parcel_heat_bus"],
-                                    "bus2": ["test_heat_bus"],
-                                    "link_type": ["building_hp_heat_link"]}),
-             right=hp_heat_link,
-             left_on="link_type",
-             right_on="link_type"),
-         ])
 
     types = {"buses": ["bus_type"], "links": ["link_type"]}
     for key in sheets.keys():
+        sheets[key] = sheets[key].set_index(None, drop=True)
         sheets[key] = sheets[key].drop(columns=types.get(key))
     
     return sheets
@@ -171,80 +157,46 @@ def test_building_buses_entry():
     standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
                                            + "/standard_parameters.xlsx")
     buses = standard_parameters.parse("1_buses")
-    elec_bus = buses.loc[buses["bus_type"] == "building_res_electricity_bus"]
-    heat_bus = buses.loc[buses["bus_type"] == "building_heat_bus"]
-    pv_bus = buses.loc[buses["bus_type"] == "building_pv_bus"]
-
     links = standard_parameters.parse("6_links")
-    central_building_link = links.loc[links["link_type"]
-                                      == "building_central_building_link"]
-    pv_central_link = links.loc[links["link_type"]
-                                == "building_pv_central_link"]
-    pv_building_link = links.loc[links["link_type"]
-                                 == "building_pv_building_link"]
 
     # create control data structure
     sheets = {
         "buses": pandas.merge(
-                left=pandas.DataFrame.from_dict(
-                        {"label": ["test_electricity_bus"],
-                         "bus_type": ["building_res_electricity_bus"]}),
-                right=elec_bus,
-                left_on="bus_type",
-                right_on="bus_type"),
+            left=pandas.DataFrame.from_dict(
+                {None: [0, 0, 0],
+                 "label": ["test_electricity_bus",
+                           "test_heat_bus",
+                           "test_pv_bus"],
+                 "bus_type": ["building_res_electricity_bus",
+                              "building_heat_bus",
+                              "building_pv_bus"],
+                 "lat": [None, "0", None],
+                 "lon": [None, "0", None]}),
+            right=buses,
+            left_on="bus_type",
+            right_on="bus_type"),
         "links": pandas.merge(
-                left=pandas.DataFrame.from_dict(
-                        {"label": ["test_central_electricity_link"],
-                         "bus1": ["central_electricity_bus"],
-                         "bus2": ["test_electricity_bus"],
-                         "link_type": ["building_central_building_link"]}),
-                right=central_building_link,
-                left_on="link_type",
-                right_on="link_type")}
-
-    sheets["buses"] = pandas.concat(
-        [sheets["buses"],
-         pandas.merge(
-             left=pandas.DataFrame(
-                 {"label": ["test_heat_bus"],
-                  "bus_type": ["building_heat_bus"],
-                  "lat": "0",
-                  "lon": "0"}),
-             right=heat_bus,
-             left_on="bus_type",
-             right_on="bus_type"),
-         pandas.merge(
-             left=pandas.DataFrame(
-                     {"label": ["test_pv_bus"],
-                      "bus_type": ["building_pv_bus"]}),
-             right=pv_bus,
-             left_on="bus_type",
-             right_on="bus_type")])
-
-    sheets["links"] = pandas.concat(
-        [sheets["links"],
-         pandas.merge(
-             left=pandas.DataFrame(
-                 {"label": ["test_pv_test_electricity_link"],
-                  "bus1": ["test_pv_bus"],
-                  "bus2": ["test_electricity_bus"],
-                  "link_type": ["building_pv_building_link"]}),
-             right=pv_building_link,
-             left_on="link_type",
-             right_on="link_type"),
-         pandas.merge(
-             left=pandas.DataFrame(
-                 {"label": ["test_pv_central_electricity_link"],
-                  "bus1": ["test_pv_bus"],
-                  "bus2": ["central_electricity_bus"],
-                  "link_type": ["building_pv_central_link"]}),
-             right=pv_central_link,
-             left_on="link_type",
-             right_on="link_type"),
-         ])
-
+            left=pandas.DataFrame.from_dict(
+                {None: [0, 0, 0],
+                 "label": ["test_central_electricity_link",
+                           "test_pv_test_electricity_link",
+                           "test_pv_central_electricity_link"],
+                 "bus1": ["central_electricity_bus",
+                          "test_pv_bus",
+                          "test_pv_bus"],
+                 "bus2": ["test_electricity_bus",
+                          "test_electricity_bus",
+                          "central_electricity_bus"],
+                 "link_type": ["building_central_building_link",
+                               "building_pv_building_link",
+                               "building_pv_central_link"]}),
+            right=links,
+            left_on="link_type",
+            right_on="link_type")}
+    
     types = {"buses": ["bus_type"], "links": ["link_type"]}
     for key in sheets.keys():
+        sheets[key] = sheets[key].set_index(None, drop=True)
         sheets[key] = sheets[key].drop(columns=types.get(key))
 
     return sheets
@@ -277,8 +229,9 @@ def test_create_building_buses(test_building_buses_entry):
                                              + "/standard_parameters.xlsx"))
     
     for key in sheets.keys():
-        pandas.testing.assert_frame_equal(sheets[key],
-                                          test_building_buses_entry[key])
+        pandas.testing.assert_frame_equal(
+            sheets[key].sort_index(axis=1),
+            test_building_buses_entry[key].sort_index(axis=1))
     
 
 def test_load_input_data():
@@ -286,11 +239,88 @@ def test_load_input_data():
 
 
 def test_get_central_comp_active_status():
-    pass
+    """
+    
+    """
+    from program_files.urban_district_upscaling.pre_processing \
+        import get_central_comp_active_status
+    
+    central = pandas.DataFrame.from_dict({"technology": ["test", "test2"],
+                                          "active": ["yes", "no"]})
+    
+    assert get_central_comp_active_status(central=central, technology="test")
+    assert not get_central_comp_active_status(
+            central=central, technology="test2")
 
 
-def test_create_gchp():
-    pass
+@pytest.fixture
+def test_create_gchp_entry():
+    """
+    
+    """
+    # import standard parameter
+    standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
+                                           + "/standard_parameters.xlsx")
+    buses = standard_parameters.parse("1_buses")
+    transformers = standard_parameters.parse("4_transformers")
+    
+    # create control data structure
+    sheets = {
+        "buses": pandas.merge(
+            left=pandas.DataFrame.from_dict(
+                {None: [0, 0],
+                 "label": ["st_parcel_hp_elec_bus",
+                           "st_parcel_heat_bus"],
+                 "bus_type": ["building_hp_electricity_bus",
+                              "building_heat_bus"]}),
+            right=buses,
+            left_on="bus_type",
+            right_on="bus_type"),
+        "transformers": pandas.merge(
+            left=pandas.DataFrame.from_dict(
+                    {None: [0],
+                     "label": ["st_parcel_gchp_transformer"],
+                     "input": ["st_parcel_hp_elec_bus"],
+                     "output": ["st_parcel_heat_bus"],
+                     "output2": ["None"],
+                     "area": [float(100)],
+                     "temperature high": ["60"],
+                     "transformer_type": ["building_gchp_transformer"]}),
+            right=transformers,
+            left_on="transformer_type",
+            right_on="transformer_type")}
+    
+    types = {"buses": ["bus_type"], "transformers": ["transformer_type"]}
+    for key in sheets.keys():
+        sheets[key] = sheets[key].set_index(None, drop=True)
+        sheets[key] = sheets[key].drop(columns=types.get(key))
+    
+    return sheets
+
+
+def test_create_gchp(test_create_gchp_entry):
+    from program_files.urban_district_upscaling.pre_processing \
+        import create_gchp
+    tool = pandas.DataFrame.from_dict({"label": ["test_building"],
+                                       "active": [1],
+                                       "gchp": ["yes"],
+                                       "parcel ID": ["test_parcel"]})
+    parcels = pandas.DataFrame.from_dict({"ID parcel": ["test_parcel"],
+                                          "gchp area (m²)": "100"})
+    gchps_test = {"st_parcel": "100"}
+    
+    gchps, sheets = create_gchp(
+        tool=tool,
+        parcels=parcels,
+        sheets={"buses": pandas.DataFrame(),
+                "transformers": pandas.DataFrame()},
+        standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
+                                             + "/standard_parameters.xlsx"))
+    assert gchps == gchps_test
+    for key in sheets.keys():
+        pandas.testing.assert_frame_equal(
+            sheets[key].sort_index(axis=1),
+            test_create_gchp_entry[key].sort_index(axis=1))
 
 
 def test_urban_district_upscaling_pre_processing():
