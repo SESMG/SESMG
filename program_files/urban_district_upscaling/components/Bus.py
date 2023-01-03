@@ -1,5 +1,9 @@
-def create_standard_parameter_bus(label: str, bus_type: str, sheets,
-                                  standard_parameters, coords=None):
+import pandas
+
+
+def create_standard_parameter_bus(label: str, bus_type: str, sheets: dict,
+                                  standard_parameters: pandas.ExcelFile,
+                                  coords=None):
     """
     creates a bus with standard_parameters, based on the standard
     parameters given in the "standard_parameters" dataset and adds
@@ -10,10 +14,12 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets,
     :param bus_type: defines, which set of standard param. will be
                      given to the dict
     :type bus_type: str
-    :param sheets:
-    :type sheets:
-    :param standard_parameters:
-    :type standard_parameters:
+    :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+    :type sheets: dict
+    :param standard_parameters: pandas imported ExcelFile \
+        containing the non-building specific technology data
+    :type standard_parameters: pandas.ExcelFile
     :param coords: latitude / longitude / dh column of the given bus\
         used to connect a producer bus to district heating network
     :type coords: list
@@ -25,7 +31,10 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets,
     # extracts the bus specific standard values from the
     # standard_parameters dataset
     standard_param, standard_keys = read_standard_parameters(
-        bus_type, "1_buses", "bus_type", standard_parameters
+        name=bus_type,
+        param_type="1_buses",
+        index="bus_type",
+        standard_parameters=standard_parameters
     )
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
@@ -34,40 +43,45 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets,
     if coords is not None:
         bus_dict.update(
             {"district heating conn.": coords[2],
-             "lat": coords[0], "lon": coords[1]}
-        )
+             "lat": coords[0], "lon": coords[1]})
     else:
         bus_dict.update({"district heating conn.": float(0)})
     # appends the new created component to buses sheet
     return append_component(sheets, "buses", bus_dict)
 
 
-def create_cluster_elec_buses(building, cluster, sheets, standard_parameters):
+def create_cluster_electricity_buses(building: list, cluster: str,
+                                     sheets: dict,
+                                     standard_parameters: pandas.ExcelFile):
     """
         Method creating the building type specific electricity buses and
         connecting them to the main cluster electricity bus
 
-        :param building: Dataframe holding the building specific data \
-            from prescenario file
-        :type building: pd.Dataframe
+        :param building: List holding the building label, parcel ID \
+            and building type
+        :type building: list
         :param cluster: Cluster id
         :type cluster: str
+        :param sheets: dictionary containing the pandas.Dataframes that\
+                will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
     """
     from . import Link
 
-    # ELEC BUSES
+    # ELECTRICITY BUSES
     # get building type to specify bus type to be created
-    if "RES" in building[2] and str(cluster) + "_res_electricity_bus" not in list(
-        sheets["buses"]["label"]
-    ):
+    if building[2] in ["SFB", "MFB"] \
+            and str(cluster) + "_res_electricity_bus" \
+            not in list(sheets["buses"]["label"]):
         bus_type = "_res_"
-    elif "COM" in building[2] and str(cluster) + "_com_electricity_bus" not in list(
-        sheets["buses"]["label"]
-    ):
+    elif "COM" in building[2] and str(cluster) + "_com_electricity_bus" \
+            not in list(sheets["buses"]["label"]):
         bus_type = "_com_"
-    elif "IND" in building[2] and str(cluster) + "_ind_electricity_bus" not in list(
-        sheets["buses"]["label"]
-    ):
+    elif "IND" in building[2] and str(cluster) + "_ind_electricity_bus" \
+            not in list(sheets["buses"]["label"]):
         bus_type = "_ind_"
     else:
         bus_type = None
@@ -89,7 +103,7 @@ def create_cluster_elec_buses(building, cluster, sheets, standard_parameters):
             label=str(cluster) + bus_type + "electricity_link",
             bus_1=str(cluster) + "_electricity_bus",
             bus_2=str(cluster) + bus_type + "electricity_bus",
-            link_type="building_pv_building_link",
+            link_type="cluster_electricity_link",
             sheets=sheets,
             standard_parameters=standard_parameters)
         
@@ -104,11 +118,10 @@ def create_cluster_averaged_bus(sink_parameters, cluster, fuel_type, sheets, sta
 
     :param sink_parameters:
     :param cluster:
-    :param type:
     :return:
     """
     bus_parameters = standard_parameters.parse("1_buses", index_col="bus_type")
-    if type != "gas":
+    if fuel_type != "gas":
         type1, type2, type3, type4 = (
             "hp_elec",
             "hp_electricity",

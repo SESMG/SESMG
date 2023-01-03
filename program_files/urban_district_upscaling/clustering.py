@@ -148,6 +148,7 @@ def collect_clustering_information(
     source_param,
     storage_parameters,
     transformer_parameters,
+    sheets_clustering
 ):
 
     # collect cluster intern source information
@@ -182,7 +183,7 @@ def collect_clustering_information(
     )
 
 
-def remove_buses(sheets):
+def remove_buses(sheets: dict, sheets_clustering: dict):
     """
         remove not longer used buses
             1. building specific gas bus
@@ -192,6 +193,8 @@ def remove_buses(sheets):
         :param sheets: dictionary containing the pandas DataFrames \
             containing the energy system's data
         :type sheets: dict
+        :param sheets_clustering:
+        :type sheets_clustering: dict
         :return: - **sheets**(dict) - updated dictionary without the \
             not used buses
     """
@@ -242,14 +245,17 @@ def get_dict_building_cluster(tool: pandas.DataFrame) -> dict:
 
 
 def collect_building_information(cluster_ids, cluster, sheets, heat_buses_gchps,
-                                standard_parameters):
+                                 standard_parameters, sheets_clustering):
+    """
+    
+    """
     # cluster sinks parameter
-    # [res_elec_demand, com_elec_demand, ind_elec_demand,
-    #  heat_buses, res_heat_demand, com_heat_demand,
-    #  ind_heat_demand, heat_sinks, elec_res_sink,
-    #  elec_com_sink, elec_ind_sink]
+    # [res_electricity_demand, com_electricity_demand,
+    #  ind_electricity_demand, heat_buses, res_heat_demand,
+    #  com_heat_demand, ind_heat_demand, heat_sinks,
+    #  electricity_res_sink, electricity_com_sink, electricity_ind_sink]
     sink_parameters = [0, 0, 0, [], 0, 0, 0, [], [], [], []]
-    # transformer_param technology:
+    # transformer_parameter technology:
     # [counter, efficiency, efficiency2, periodical_costs,
     #  variable_constraint_costs]
     transformer_parameters = {
@@ -288,10 +294,13 @@ def collect_building_information(cluster_ids, cluster, sheets, heat_buses_gchps,
     for building in cluster_ids:
         for index, sink in sheets_clustering["sinks"].iterrows():
             # collecting information for sinks
-            sink_parameters = Sink.sink_clustering(building, sink, sink_parameters)
+            sink_parameters = Sink.sink_clustering(
+                building=building,
+                sink=sink,
+                sink_parameters=sink_parameters)
 
         # create cluster elec buses
-        sheets = Bus.create_cluster_elec_buses(
+        sheets = Bus.create_cluster_electricity_buses(
             building=building,
             cluster=cluster,
             sheets=sheets,
@@ -310,12 +319,17 @@ def collect_building_information(cluster_ids, cluster, sheets, heat_buses_gchps,
             source_param,
             storage_parameters,
             transformer_parameters,
+            sheets_clustering
         )
 
         # restructure all links
         sheets = Link.restructuring_links(
-            sheets_clustering, building, cluster, sink_parameters, sheets, standard_parameters
-        )
+            sheets_clustering=sheets_clustering,
+            building=building,
+            cluster=cluster,
+            sink_parameters=sink_parameters,
+            sheets=sheets,
+            standard_parameters=standard_parameters)
 
         # update the sources in and output
         sheets = Source.update_sources_in_output(
@@ -405,7 +419,7 @@ def clustering_method(tool: pandas.DataFrame, sheets: dict,
     """
     # create a dictionary holding the combination of cluster ID and it's
     # buildings
-    cluster_ids = get_dict_building_cluster(tool)
+    cluster_ids = get_dict_building_cluster(tool=tool)
     sheets_clustering = {}
     # local copy of status of scenario components
     for sheet in list(sheets.keys()):
