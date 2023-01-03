@@ -255,22 +255,22 @@ def collect_building_information(cluster_ids, cluster, sheets, heat_buses_gchps,
     # periodical constraint costs, variable costs, Albedo,
     # Altitude, Azimuth, Surface Tilt, Latitude, Longitude]
     source_param = {
-        "pv_north": [0] * 11,
-        "pv_north_east": [0] * 11,
-        "pv_east": [0] * 11,
-        "pv_south_east": [0] * 11,
-        "pv_south": [0] * 11,
-        "pv_south_west": [0] * 11,
-        "pv_west": [0] * 11,
-        "pv_north_west": [0] * 11,
-        "st_north": [0] * 11,
-        "st_north_east": [0] * 11,
-        "st_east": [0] * 11,
-        "st_south_east": [0] * 11,
-        "st_south": [0] * 11,
-        "st_south_west": [0] * 11,
-        "st_west": [0] * 11,
-        "st_north_west": [0] * 11,
+        "pv_north": [0] * 12,
+        "pv_north_east": [0] * 12,
+        "pv_east": [0] * 12,
+        "pv_south_east": [0] * 12,
+        "pv_south": [0] * 12,
+        "pv_south_west": [0] * 12,
+        "pv_west": [0] * 12,
+        "pv_north_west": [0] * 12,
+        "st_north": [0] * 12,
+        "st_north_east": [0] * 12,
+        "st_east": [0] * 12,
+        "st_south_east": [0] * 12,
+        "st_south": [0] * 12,
+        "st_south_west": [0] * 12,
+        "st_west": [0] * 12,
+        "st_north_west": [0] * 12,
     }
     for building in cluster_ids:
         for index, sink in sheets_clustering["sinks"].iterrows():
@@ -351,8 +351,11 @@ def create_cluster_components(
         if storage_parameters[i][0] > 0:
             # create cluster's battery
             sheets = Storage.create_cluster_storage(
-                i, cluster, storage_parameters, sheets
-            )
+                type=i,
+                cluster=cluster,
+                storage_parameters=storage_parameters,
+                sheets=sheets,
+                standard_parameters=standard_parameters)
 
     sheets = create_cluster_heat_bus(
         transformer_parameters=transformer_parameters,
@@ -360,8 +363,7 @@ def create_cluster_components(
         clustering_dh=clustering_dh,
         sink_parameters=sink_parameters,
         sheets=sheets,
-        standard_parameters=standard_parameters
-    )
+        standard_parameters=standard_parameters)
 
     return sheets
 
@@ -432,7 +434,7 @@ def clustering_method(
                     bus_2=str(i[1]),
                     link_type="building_hp_elec_link",
                     sheets=sheets,
-                )
+                    standard_parameters=standard_parameters)
 
     buses = sheets["buses"].copy()
 

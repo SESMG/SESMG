@@ -158,7 +158,7 @@ def cluster_storage_information(storage, storage_parameter, type, sheets):
     return storage_parameter, sheets
 
 
-def create_cluster_storage(type, cluster, storage_parameters, sheets):
+def create_cluster_storage(type, cluster, storage_parameters, sheets, standard_parameters):
     """
 
     :param standard_parameters:
@@ -176,24 +176,23 @@ def create_cluster_storage(type, cluster, storage_parameters, sheets):
         "bus": str(cluster) + storage_dict.get(type)[2],
     }
     standard_param, standard_keys = read_standard_parameters(
-        "building" + storage_dict.get(type)[0], "storages", "comment"
-    )
+        name="building" + storage_dict.get(type)[0],
+        param_type="5_storages",
+        index="storage_type",
+        standard_parameters=standard_parameters)
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
         specific_dict[standard_keys[i]] = standard_param[standard_keys[i]]
+    counter = storage_parameters[type][0]
     specific_dict.update(
-        {
-            "periodical costs": storage_parameters[type][2]
-            / storage_parameters[type][0],
-            "periodical constraint costs": storage_parameters[type][3]
-            / storage_parameters[type][0],
-            "max. investment capacity": storage_parameters[type][1],
-        }
+        {"periodical costs": storage_parameters[type][2] / counter,
+         "periodical constraint costs": storage_parameters[type][3] / counter,
+         "max. investment capacity": storage_parameters[type][1]}
     )
 
     if type == "thermal":
         specific_dict["variable output costs"] = (
-            storage_parameters[type][4] / storage_parameters[type][0]
+            storage_parameters[type][4] / counter
         )
     # produce a pandas series out of the dict above due to easier
     # appending

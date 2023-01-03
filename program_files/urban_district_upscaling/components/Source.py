@@ -1,7 +1,7 @@
 import pandas
 
 
-def create_source(source_type: str, roof_num: int, building: dict,
+def create_source(source_type: str, roof_num: str, building: dict,
                   sheets: dict, standard_parameters: pandas.ExcelFile,
                   st_output=None, central=False):
     """
@@ -10,7 +10,7 @@ def create_source(source_type: str, roof_num: int, building: dict,
             solarthermal source has to be created
         :type source_type: str
         :param roof_num: roof part number
-        :type roof_num: int
+        :type roof_num: str
         :param building: building specific data (e.g. azimuth, \
             surface tilt etc.)
         :type building: dict
@@ -282,6 +282,7 @@ def cluster_sources_information(source, source_param, azimuth_type, sheets):
         8: source["Surface Tilt"],
         9: source["Latitude"],
         10: source["Longitude"],
+        11: source["Temperature Inlet"]
     }
     for num in param_dict:
         # counter
@@ -358,11 +359,16 @@ def create_cluster_sources(source_param, cluster, sheets, standard_parameters):
 
     # Define PV Standard-Parameters
     pv_standard_param, pv_standard_keys = read_standard_parameters(
-        "fixed photovoltaic source", "3_sources", "source_type", standard_parameters
-    )
+        name="fixed photovoltaic source",
+        param_type="3_sources",
+        index="source_type",
+        standard_parameters=standard_parameters)
     st_standard_param, st_standard_keys = read_standard_parameters(
-        "solar_thermal_collector", "3_sources", "source_type", standard_parameters
-    )
+        name="solar_thermal_collector",
+        param_type="3_sources",
+        index="source_type",
+        standard_parameters=standard_parameters)
+    
     bus_created = False
     for azimuth in [
         "north_000",
@@ -377,15 +383,14 @@ def create_cluster_sources(source_param, cluster, sheets, standard_parameters):
         for pv_st in ["pv", "st"]:
             if source_param[pv_st + "_{}".format(azimuth[:-4])][0] > 0:
                 # type dependent parameter
-                dependent_param = {
+                type_param = {
                     "pv": [pv_standard_param, "fixed photovoltaic source"],
                     "st": [st_standard_param, "solar_thermal_collector"],
                 }
                 param_dict = {
-                    "roof area (m²) {}".format(azimuth[:-4]): source_param[
-                        pv_st + "_{}".format(azimuth[:-4])
-                    ][1]
-                    / dependent_param.get(pv_st)[0]["Capacity per Area (kW/m2)"]
+                    "roof area {}".format(azimuth[:-4]):
+                        source_param[pv_st + "_{}".format(azimuth[:-4])][1]
+                        / type_param.get(pv_st)[0]["Capacity per Area (kW/m2)"]
                 }
 
                 if not bus_created and pv_st == "pv":
@@ -396,9 +401,10 @@ def create_cluster_sources(source_param, cluster, sheets, standard_parameters):
                         standard_parameters=standard_parameters
                     )
                     bus_created = True
-                if pv_st == "pv" and source_param["st_{}".format(azimuth[:-4])][0] > 0:
+                if pv_st == "pv" \
+                        and source_param["st_{}".format(azimuth[:-4])][0] > 0:
                     sheets = create_competition_constraint(
-                        limit=param_dict["roof area (m²) {}".format(azimuth[:-4])],
+                        limit=param_dict["roof area {}".format(azimuth[:-4])],
                         label=cluster,
                         roof_num=azimuth[:-4],
                         sheets=sheets,
@@ -408,29 +414,26 @@ def create_cluster_sources(source_param, cluster, sheets, standard_parameters):
                 param_dict.update(
                     {
                         "label": cluster,
-                        "azimuth (°) {}".format(azimuth[:-4]): int(azimuth[-3:]),
+                        "azimuth {}".format(azimuth[:-4]): int(azimuth[-3:]),
                     }
                 )
                 # dict defining param location in sources information list
                 pos_dict = {
-                    "surface tilt (°) {}".format(azimuth[:-4]): 8,
+                    "surface tilt {}".format(azimuth[:-4]): 8,
                     "latitude": 9,
                     "longitude": 10,
+                    "flow temperature": 11
                 }
                 for i in pos_dict:
-                    param_dict.update(
-                        {
-                            i: source_param[pv_st + "_{}".format(azimuth[:-4])][
-                                pos_dict[i]
-                            ]
-                            / source_param[pv_st + "_{}".format(azimuth[:-4])][0]
-                        }
-                    )
+                    param = source_param[pv_st + "_{}".format(azimuth[:-4])]
+                    param_dict.update({i: param[pos_dict[i]] / param[0]})
 
                 sheets = create_source(
-                    dependent_param.get(pv_st)[1], azimuth[:-4], param_dict, sheets,
-                    standard_parameters
-                )
+                    source_type=type_param.get(pv_st)[1],
+                    roof_num=azimuth[:-4],
+                    building=param_dict,
+                    sheets=sheets,
+                    standard_parameters=standard_parameters)
     return sheets
 
 
