@@ -75,17 +75,25 @@ def cluster_electricity_bus_entry():
     """
     return {"buses": pandas.merge(
                 left=pandas.DataFrame.from_dict({
-                    "label": ["test1_res_electricity_bus"],
-                    "bus_type": ["building_res_electricity_bus"],
-                    "district heating conn.": [float(0)]}),
+                    "label": ["test1_res_electricity_bus",
+                              "test1_com_electricity_bus",
+                              "test1_ind_electricity_bus"],
+                    "bus_type": ["building_res_electricity_bus",
+                                 "building_com_electricity_bus",
+                                 "building_ind_electricity_bus"],
+                    "district heating conn.": [float(0)] * 3}),
                 right=buses,
                 on="bus_type").drop(columns=["bus_type"]),
             "links": pandas.merge(
                 left=pandas.DataFrame.from_dict({
-                    "label": ["test1_res_electricity_link"],
-                    "bus1": ["test1_electricity_bus"],
-                    "bus2": ["test1_res_electricity_bus"],
-                    "link_type": ["cluster_electricity_link"]}),
+                    "label": ["test1_res_electricity_link",
+                              "test1_com_electricity_link",
+                              "test1_ind_electricity_link"],
+                    "bus1": ["test1_electricity_bus"] * 3,
+                    "bus2": ["test1_res_electricity_bus",
+                             "test1_com_electricity_bus",
+                             "test1_ind_electricity_bus"],
+                    "link_type": ["cluster_electricity_link"] * 3}),
                 right=links,
                 on="link_type").drop(columns=["link_type"])}
     
@@ -103,6 +111,18 @@ def test_create_cluster_electricity_buses(cluster_electricity_bus_entry):
         sheets={"buses": pandas.DataFrame(columns=["label"]),
                 "links": pandas.DataFrame(columns=["label"])},
         standard_parameters=standard_parameters)
+    
+    sheets = create_cluster_electricity_buses(
+            building=["test1", "test1", "COM"],
+            cluster="test1",
+            sheets=sheets,
+            standard_parameters=standard_parameters)
+
+    sheets = create_cluster_electricity_buses(
+            building=["test1", "test1", "IND"],
+            cluster="test1",
+            sheets=sheets,
+            standard_parameters=standard_parameters)
 
     for key in sheets.keys():
         cluster_electricity_bus_entry[key].set_index(
