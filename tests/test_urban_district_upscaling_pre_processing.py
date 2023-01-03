@@ -92,10 +92,10 @@ def test_hp_buses_entry():
             left=pandas.DataFrame.from_dict(
                 {None: [0],
                  "label": ["test_hp_elec_bus"],
-                 "bus_type": ["building_hp_electricity_bus"]}),
+                 "bus_type": ["building_hp_electricity_bus"],
+                 "district heating conn.": [float(0)]}),
             right=buses,
-            left_on="bus_type",
-            right_on="bus_type"),
+            on="bus_type").drop(columns=["bus_type"]),
         "links": pandas.merge(
             left=pandas.DataFrame.from_dict(
                 {None: [0, 0, 0],
@@ -112,13 +112,10 @@ def test_hp_buses_entry():
                                "building_hp_elec_link",
                                "building_hp_heat_link"]}),
             right=links,
-            left_on="link_type",
-            right_on="link_type")}
+            on="link_type").drop(columns=["link_type"])}
 
-    types = {"buses": ["bus_type"], "links": ["link_type"]}
-    for key in sheets.keys():
+    for key in ["buses", "links"]:
         sheets[key] = sheets[key].set_index(None, drop=True)
-        sheets[key] = sheets[key].drop(columns=types.get(key))
     
     return sheets
 
@@ -144,8 +141,9 @@ def test_create_heat_pump_buses_links(test_hp_buses_entry):
                                              + "/standard_parameters.xlsx"))
         
     for key in sheets.keys():
-        pandas.testing.assert_frame_equal(sheets[key],
-                                          test_hp_buses_entry[key])
+        pandas.testing.assert_frame_equal(
+            sheets[key].sort_index(axis=1),
+            test_hp_buses_entry[key].sort_index(axis=1))
 
 
 @pytest.fixture
@@ -170,11 +168,11 @@ def test_building_buses_entry():
                  "bus_type": ["building_res_electricity_bus",
                               "building_heat_bus",
                               "building_pv_bus"],
+                 "district heating conn.": [float(0)] * 3,
                  "lat": [None, "0", None],
                  "lon": [None, "0", None]}),
             right=buses,
-            left_on="bus_type",
-            right_on="bus_type"),
+            on="bus_type"),
         "links": pandas.merge(
             left=pandas.DataFrame.from_dict(
                 {None: [0, 0, 0],
@@ -191,8 +189,7 @@ def test_building_buses_entry():
                                "building_pv_building_link",
                                "building_pv_central_link"]}),
             right=links,
-            left_on="link_type",
-            right_on="link_type")}
+            on="link_type")}
     
     types = {"buses": ["bus_type"], "links": ["link_type"]}
     for key in sheets.keys():
@@ -272,10 +269,10 @@ def test_create_gchp_entry():
                  "label": ["st_parcel_hp_elec_bus",
                            "st_parcel_heat_bus"],
                  "bus_type": ["building_hp_electricity_bus",
-                              "building_heat_bus"]}),
+                              "building_heat_bus"],
+                 "district heating conn.": [float(0)] * 2}),
             right=buses,
-            left_on="bus_type",
-            right_on="bus_type"),
+            on="bus_type"),
         "transformers": pandas.merge(
             left=pandas.DataFrame.from_dict(
                     {None: [0],
@@ -287,8 +284,7 @@ def test_create_gchp_entry():
                      "temperature high": ["60"],
                      "transformer_type": ["building_gchp_transformer"]}),
             right=transformers,
-            left_on="transformer_type",
-            right_on="transformer_type")}
+            on="transformer_type")}
     
     types = {"buses": ["bus_type"], "transformers": ["transformer_type"]}
     for key in sheets.keys():
