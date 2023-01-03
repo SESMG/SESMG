@@ -209,11 +209,23 @@ def remove_buses(sheets):
     return sheets
 
 
-def get_dict_building_cluster(tool):
+def get_dict_building_cluster(tool: pandas.DataFrame) -> dict:
+    """
+        Method which creates a dictionary holding the Cluster ID and \
+        it's buildings and returns it to the main method
+        
+        :param tool: DataFrame containing the Energysystem specific \
+            parameters which result from the Upscaling Tool's input file
+        :type tool: pandas.Dataframe
+        
+        :returns: - **cluster_ids** (dict) - dict holding the Cluster \
+            ID buildings combination
+    """
     # create a dictionary holding the combination of cluster ID the included
     # building labels and its parcels
     cluster_ids = {}
     for num, building in tool[tool["active"].isin(true_bools)].iterrows():
+        # collected building information
         building_info = [
             building["label"],
             building["parcel ID"],
@@ -225,6 +237,7 @@ def get_dict_building_cluster(tool):
         # if cluster id not in dict
         else:
             cluster_ids.update({str(building["cluster ID"]): [building_info]})
+    # return dictionary to main method
     return cluster_ids
 
 
@@ -368,24 +381,31 @@ def create_cluster_components(
     return sheets
 
 
-def clustering_method(
-    tool, standard_parameters, sheets, central_electricity_network, clustering_dh
-):
+def clustering_method(tool: pandas.DataFrame, sheets: dict,
+                      standard_parameters: pandas.ExcelFile,
+                      central_electricity_network: bool, clustering_dh: bool):
     """
-    TODO DOCSTRING TEXT
-    :param tool:
-    :type tool: pd.Dataframe
-    :param standard_parameters:
-    :type standard_parameters:
-    :param sheets:
-    :type sheets:
-    :param central_electricity_network:
-    :type central_electricity_network:
-    :param clustering_dh:
-    :type clustering_dh:
+        TODO DOCSTRING TEXT
+        
+        :param tool: DataFrame containing the Energysystem specific \
+            parameters which result from the Upscaling Tool's input file
+        :type tool: pandas.Dataframe
+        :param sheets: dictionary containing the pandas.Dataframes that\
+                will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+        :param central_electricity_network: bool which decides rather a \
+            central electricity exchange is possible or not
+        :type central_electricity_network: bool
+        :param clustering_dh: bool which decides rather the cluster's \
+            district heating connections are clustered or not
+        :type clustering_dh: bool
     """
+    # create a dictionary holding the combination of cluster ID and it's
+    # buildings
     cluster_ids = get_dict_building_cluster(tool)
-    global sheets_clustering
     sheets_clustering = {}
     # local copy of status of scenario components
     for sheet in list(sheets.keys()):
@@ -395,7 +415,7 @@ def clustering_method(
         sheets_clustering.update({sheet: sheet_edited})
     sheets = remove_buses(sheets)
     heat_buses_gchps = []
-    print(sheets.keys())
+    
     for cluster in cluster_ids:
         # reset all indices to delete the right rows in pandas dataframe
         for sheet in ["transformers", "storages", "links", "sinks", "sources", "buses"]:
