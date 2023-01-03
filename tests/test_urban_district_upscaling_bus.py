@@ -123,6 +123,12 @@ def test_create_cluster_electricity_buses(cluster_electricity_bus_entry):
             cluster="test1",
             sheets=sheets,
             standard_parameters=standard_parameters)
+    
+    no_changes_sheets = create_cluster_electricity_buses(
+        building=["test1", "test1", "_"],
+        cluster="test1",
+        sheets=sheets,
+        standard_parameters=standard_parameters)
 
     for key in sheets.keys():
         cluster_electricity_bus_entry[key].set_index(
@@ -130,8 +136,55 @@ def test_create_cluster_electricity_buses(cluster_electricity_bus_entry):
         pandas.testing.assert_frame_equal(
             sheets[key].sort_index(axis=1),
             cluster_electricity_bus_entry[key].sort_index(axis=1))
+        pandas.testing.assert_frame_equal(
+            sheets[key].sort_index(axis=1),
+            no_changes_sheets[key].sort_index(axis=1))
+        
+        
+@pytest.fixture
+def test_cluster_averaged_bus_entry():
+    
+    sheets = {"buses": pandas.merge(
+            left=pandas.DataFrame.from_dict({
+                "label": ["test1_gas_bus"],
+                "bus_type": ["building_res_gas_bus"],
+                "district heating conn.": [float(0)]}),
+            right=buses,
+            on="bus_type").drop(columns=["bus_type"])}
+    
+    res_gas_bus = buses.loc[buses["bus_type"] == "building_res_gas_bus"]
+    com_gas_bus = buses.loc[buses["bus_type"] == "building_com_gas_bus"]
+    ind_gas_bus = buses.loc[buses["bus_type"] == "building_ind_gas_bus"]
+    
+    sheets["buses"].loc[0, "shortage costs"] = \
+        (1/6) * float(res_gas_bus["shortage costs"]) \
+        + (2/6) * float(com_gas_bus["shortage costs"]) \
+        + (3/6) * float(ind_gas_bus["shortage costs"])
+    
+    return sheets
 
 
-def test_create_cluster_averaged_bus():
-    pass
+def test_create_cluster_averaged_bus(test_cluster_averaged_bus_entry):
+    """
+    
+    """
+    from program_files.urban_district_upscaling.components.Bus \
+        import create_cluster_averaged_bus
+    sink_parameters = ["x", "x", "x", "x", 1, 2, 3]
+    
+    sheets = create_cluster_averaged_bus(
+        sink_parameters=sink_parameters,
+        cluster="test1",
+        fuel_type="gas",
+        sheets={"buses": pandas.DataFrame()},
+        standard_parameters=standard_parameters)
+    
+    test_cluster_averaged_bus_entry["buses"].set_index(
+        "label", inplace=True, drop=False)
+    
+    pandas.testing.assert_frame_equal(
+        sheets["buses"].sort_index(axis=1),
+        test_cluster_averaged_bus_entry["buses"].sort_index(axis=1)
+    )
+
 

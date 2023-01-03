@@ -113,34 +113,53 @@ def create_cluster_electricity_buses(building: list, cluster: str,
     return sheets
 
 
-def create_cluster_averaged_bus(sink_parameters, cluster, fuel_type, sheets, standard_parameters):
+def create_cluster_averaged_bus(sink_parameters: list, cluster: str,
+                                fuel_type: str, sheets: dict,
+                                standard_parameters: pandas.ExcelFile):
     """
-
-    :param sink_parameters:
-    :param cluster:
-    :return:
+        In this method, an average grid purchase price for natural gas \
+        and heat pump electricity is calculated. This is measured \
+        based on the share of the heat demand of a building type \
+        (RES, COM, IND) in the total heat demand of the cluster.
+        
+        list containing the cluster's sinks \
+            parameter (4) res_heat_demand, (5) com_heat_demand, \
+            (6) ind_heat_demand
+        :type sink_parameters: list
+        :param fuel_type: str defining which type of buses will be \
+            clustered
+        :type fuel_type: str
+        :param cluster: Cluster id
+        :type cluster: str
+        :param sheets: dictionary containing the pandas.Dataframes that\
+                will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
     """
     bus_parameters = standard_parameters.parse("1_buses", index_col="bus_type")
-    if fuel_type != "gas":
-        type1, type2, type3, type4 = (
-            "hp_elec",
-            "hp_electricity",
-            "hp_electricity",
-            "electricity",
-        )
-    else:
-        type1, type2, type3, type4 = "gas", "res_gas", "com_gas", "gas"
+    type_dict = {
+        "hp_elec": ["hp_elec"] + 2 * ["hp_electricity"] + ["electricity"],
+        "gas": ["gas", "res_gas", "com_gas", "gas"]}
+    type1, type2, type3, type4 = type_dict.get(fuel_type)
 
     # calculate cluster's total heat demand
-    total_annual_demand = sink_parameters[4] + sink_parameters[5] + sink_parameters[6]
+    total_annual_demand = \
+        sink_parameters[4] \
+        + sink_parameters[5] \
+        + sink_parameters[6]
+    
     # create standard_parameter gas bus
     sheets = create_standard_parameter_bus(
         label=str(cluster) + "_" + type1 + "_bus",
         bus_type="building_" + type2 + "_bus",
         sheets=sheets,
         standard_parameters=standard_parameters)
+    
     # reindex for further attachments
     sheets["buses"].set_index("label", inplace=True, drop=False)
+    
     # recalculate gas bus shortage costs building type weighted
     costs_type = "shortage costs"
     sheets["buses"].loc[(str(cluster) + "_" + type1 + "_bus"), costs_type] = (
