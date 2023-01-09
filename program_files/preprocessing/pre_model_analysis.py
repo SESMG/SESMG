@@ -141,7 +141,7 @@ def dh_technical_pre_selection(components_xlsx, result_components):
     for i, dh_section in result_components.iterrows():
         if dh_section['investment/kW']:
             if 'dh_heat_house_station' not in dh_section['ID']:
-                if str(dh_section['investment/kW']) not in ['0.0','0','0.00','---']:
+                if str(dh_section['investment/kW']) not in ['0.0','0','0.00','---','-0','-0.0', '-0.00']:
                     section_name = dh_section['ID'].split('_Diameter')
                     dh_investment_list.append(section_name[0])
     print("WARNING: IF THE ORIGINAL SECTION NAME CONTAINED THE STRING "
@@ -164,14 +164,14 @@ def bus_technical_pre_selection(components_xlsx, result_components):
     # carried out
     dh_investment_list = []
     for i, dh_section in result_components.iterrows():
-        if str(dh_section['investment/kW']) not in ['0.0','0','0.00','---']:
+        if str(dh_section['investment/kW']) not in ['0.0','0','0.00','---','-0','-0.0', '-0.00']:
             if 'dh_heat_house_station' in dh_section['ID']:
                 section_name = dh_section['ID'].split('dh_heat_house_station_')
                 dh_investment_list.append(section_name[1])
 
-        elif str(dh_section['capacity/kW']) not in ['0.0','0','0.00','---']:
+        elif str(dh_section['capacity/kW']) not in ['0.0','0','0.00','---','-0','-0.0', '-0.00']:
             if 'dh_source_link' in dh_section['ID']:
-                # if str(dh_section['investment/kW']) not in ['0.0','0','0.00','---']:
+                # if str(dh_section['investment/kW']) not in ['0.0','0','0.00','---','-0','-0.0', '-0.00']:
                 section_name = dh_section['ID'].split('_dh_source_link_')[0]
                 dh_investment_list.append(section_name)
     print("WARNING: IF THE ORIGINAL BUS NAME CONTAINED THE STRING "
@@ -188,7 +188,7 @@ def bus_technical_pre_selection(components_xlsx, result_components):
     print('dh_investment_list')
     print(dh_investment_list)
     for i, dh_bus in bus_xlsx.iterrows():
-        if str(dh_bus['district heating conn.']) not in ['0.0','0','0.00','---']:
+        if str(dh_bus['district heating conn.']) not in ['0.0','0','0.00','---','-0','-0.0', '-0.00']:
             print(dh_bus['label'])
             if str(dh_bus['label']) not in dh_investment_list and str(dh_bus['label'])[0:9] not in dh_investment_list and dh_bus['label'].split('_')[0] not in dh_investment_list:# and dh_bus['district heating conn.']:
                 if dh_bus['district heating conn.'] == "dh-system":
