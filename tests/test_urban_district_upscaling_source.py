@@ -7,6 +7,10 @@ import os
 standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
                                        + "/standard_parameters.xlsx")
 sources = standard_parameters.parse("3_sources")
+buses = standard_parameters.parse("1_buses")
+
+test_sheets_clustering = pandas.DataFrame(columns=["label"])
+test_sheets_clustering.set_index("label", inplace=True, drop=False)
 
 
 @pytest.fixture
@@ -244,10 +248,8 @@ def test_cluster_sources_information():
             sheets=sheets
         )
     
-    test_sheets = pandas.DataFrame(columns=["label"])
-    test_sheets.set_index("label", inplace=True, drop=False)
-    
-    pandas.testing.assert_frame_equal(sheets["sources"], test_sheets)
+    pandas.testing.assert_frame_equal(sheets["sources"],
+                                      test_sheets_clustering)
     
     test_source_param.update({
         "pv_north": [1, 500, 10, 10, 50, 10, 10, 0, 30, 10, 50, 0],
@@ -258,11 +260,213 @@ def test_cluster_sources_information():
 
 
 def test_sources_clustering():
-    pass
+    """
+    
+    """
+    from program_files.urban_district_upscaling.components.Source \
+        import sources_clustering
+    source_param = {}
+    test_source_param = {}
+    for i in ["pv", "st"]:
+        for j in ["south_west", "west", "north_west", "north", "north_east",
+                  "east", "south_east", "south"]:
+            source_param.update({i + "_" + j: [0] * 12})
+            test_source_param.update({i + "_" + j: [0] * 12})
+    
+    building = ["testbuilding", "testparcel", "COM"]
+    
+    sheets = {"sources": pandas.DataFrame.from_dict({
+        "label": ["testbuilding_pv_1"]})}
+    
+    sheets["sources"].set_index("label", inplace=True, drop=False)
+    
+    sheets_clustering = {"sources": pandas.DataFrame.from_dict({
+        "label": ["testbuilding_pv_1"],
+        "technology": ["photovoltaic"],
+        "max. investment capacity": [500],
+        "periodical costs": [10],
+        "periodical constraint costs": [10],
+        "variable costs": [50],
+        "Albedo": [10],
+        "Altitude": [10],
+        "Azimuth": [0],
+        "Surface Tilt": [30],
+        "Latitude": [10],
+        "Longitude": [50],
+        "Temperature Inlet": [0]
+    })}
+    
+    source_param, sheets = sources_clustering(
+        source_param=source_param,
+        building=building,
+        sheets=sheets,
+        sheets_clustering=sheets_clustering
+    )
+
+    pandas.testing.assert_frame_equal(sheets["sources"],
+                                      test_sheets_clustering)
+
+    test_source_param.update({
+        "pv_north": [1, 500, 10, 10, 50, 10, 10, 0, 30, 10, 50, 0],
+    })
+
+    assert source_param == test_source_param
 
 
-def test_create_cluster_sources():
-    pass
+@pytest.fixture
+def test_clustered_pv_source_entry():
+    """
+
+    """
+    # combine specific data and the standard parameter data
+    sheets = {
+        "sources":
+            pandas.merge(
+                left=pandas.DataFrame.from_dict({
+                    "label": ["test_cluster_north_pv_source"],
+                    "source_type": ["fixed photovoltaic source"],
+                    "output": ["test_cluster_pv_bus"],
+                    "Azimuth": [0],
+                    "Surface Tilt": [30],
+                    "Latitude": [10],
+                    "Longitude": [50],
+                    "input": [0],
+                    "Temperature Inlet": [0],
+                    "max. investment capacity": [500]}),
+                right=sources,
+                on="source_type"
+            ).drop(columns=["source_type", "max. investment capacity_y"])}
+    
+    # rename the max invest column since it is renamed by the merge
+    # above
+    sheets["sources"] = sheets["sources"].rename(columns={
+        "max. investment capacity_x": "max. investment capacity"})
+    
+    return sheets
+
+
+@pytest.fixture
+def test_clustered_st_source_entry():
+    """
+
+    """
+    # combine specific data and the standard parameter data
+    sheets = {
+        "sources":
+            pandas.merge(
+                    left=pandas.DataFrame.from_dict({
+                        "label": ["test_cluster_north_solarthermal_source"],
+                        "source_type": ["solar_thermal_collector"],
+                        "output": ["test_cluster_heat_bus"],
+                        "Azimuth": [0],
+                        "Surface Tilt": [float(30)],
+                        "Latitude": [float(10)],
+                        "Longitude": [float(50)],
+                        "input": ["test_cluster_electricity_bus"],
+                        # Flow Temperatur (40K) - 2 * Tempdiff (10K)
+                        "Temperature Inlet": [float(20)],
+                        "max. investment capacity": [float(500)]}),
+                    right=sources,
+                    on="source_type"
+            ).drop(columns=["source_type", "max. investment capacity_y"])}
+    
+    # rename the max invest column since it is renamed by the merge
+    # above
+    sheets["sources"] = sheets["sources"].rename(columns={
+        "max. investment capacity_x": "max. investment capacity"})
+    
+    return sheets
+
+
+@pytest.fixture
+def test_clustered_competition_constraint_entry():
+    """
+
+    """
+    pv_source = sources.loc[sources["source_type"]
+                            == "fixed photovoltaic source"]
+    st_source = sources.loc[sources["source_type"]
+                            == "solar_thermal_collector"]
+    
+    sheets = {
+        "competition constraints":
+            pandas.DataFrame.from_dict({
+                None: [0],
+                "component 1": ["test_cluster_north_pv_source"],
+                "factor 1": [
+                    float(1 / pv_source["Capacity per Area (kW/m2)"])],
+                "component 2": ["test_cluster_north_solarthermal_source"],
+                "factor 2": [
+                    float(1 / st_source["Capacity per Area (kW/m2)"])],
+                "limit": 500 / pv_source["Capacity per Area (kW/m2)"],
+                "active": [1]})
+    }
+    
+    sheets["competition constraints"] = \
+        sheets["competition constraints"].set_index(None, drop=True)
+    
+    return sheets
+
+
+@pytest.fixture
+def test_pv_bus_entry():
+    # create control data structure
+    sheets = {
+        "buses": pandas.merge(
+            left=pandas.DataFrame.from_dict(
+                {"label": ["test_cluster_pv_bus"],
+                 "bus_type": ["building_pv_bus"],
+                 "district heating conn.": [float(0)]}),
+            right=buses,
+            on="bus_type").drop(columns=["bus_type"])}
+    
+    sheets["buses"].set_index("label", drop=False)
+
+    return sheets
+
+
+def test_create_cluster_sources(test_clustered_pv_source_entry,
+                                test_clustered_st_source_entry,
+                                test_clustered_competition_constraint_entry,
+                                test_pv_bus_entry):
+    """
+    
+    """
+    from program_files.urban_district_upscaling.components.Source \
+        import create_cluster_sources
+    source_param = {}
+    for i in ["pv", "st"]:
+        for j in ["south_west", "west", "north_west", "north", "north_east",
+                  "east", "south_east", "south"]:
+            source_param.update({i + "_" + j: [0] * 12})
+
+    source_param.update({
+        "pv_north": [1, 500, 10, 10, 50, 10, 10, 0, 30, 10, 50, 0],
+        "st_north": [1, 500, 10, 10, 50, 10, 10, 0, 30, 10, 50, 40],
+    })
+    
+    sheets = {"competition constraints": pandas.DataFrame(),
+              "buses": pandas.DataFrame(),
+              "sources": pandas.DataFrame()}
+    
+    sheets = create_cluster_sources(
+        source_param=source_param,
+        cluster="test_cluster",
+        sheets=sheets,
+        standard_parameters=standard_parameters
+    )
+    test_sheets = {}
+
+    test_sheets.update(test_clustered_competition_constraint_entry)
+    test_sheets.update({"sources":
+        pandas.concat([test_clustered_pv_source_entry["sources"],
+                      test_clustered_st_source_entry["sources"]])})
+    test_sheets.update(test_pv_bus_entry)
+    
+    for key in sheets.keys():
+        pandas.testing.assert_frame_equal(
+            sheets[key].sort_index(axis=1),
+            test_sheets[key].sort_index(axis=1))
 
 
 def test_update_sources_in_output():

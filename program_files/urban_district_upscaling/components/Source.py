@@ -296,7 +296,8 @@ def cluster_sources_information(source: pandas.Series, source_param: dict,
     return source_param, sheets
 
 
-def sources_clustering(source_param, building, sheets, sheets_clustering):
+def sources_clustering(source_param: dict, building: list,
+                       sheets: dict, sheets_clustering: dict):
     """
         In this method, the information of the photovoltaic and solar
         thermal systems to be clustered is collected, and the systems
@@ -305,12 +306,15 @@ def sources_clustering(source_param, building, sheets, sheets_clustering):
         :param source_param: dictionary containing the cluster summed \
             source information
         :type source_param: dict
-        :param building: DataFrame containing the building row from the\
-            pre scenario sheet
-        :type building: pd.Dataframe
+        :param building: list containing the building label [0], the \
+            building's parcel ID [1] and the building type [2]
+        :type building: pandas.Series
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
         :param sheets_clustering: copy of the scenario created within \
             the pre_processing.py
-        :type sheets_clustering: pd.DataFrame
+        :type sheets_clustering: dict
 
         :return: - **source_param** (dict) - containing the cluster \
             summed source information attached within this method
@@ -398,6 +402,8 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
         "north_west_315",
     ]:
         for pv_st in ["pv", "st"]:
+            # if the counter for the considered cardinal orientation is
+            # not 0
             if source_param[pv_st + "_{}".format(azimuth[:-4])][0] > 0:
                 # type dependent parameter
                 type_param = {
@@ -405,6 +411,8 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
                     "st": [st_standard_param, "solar_thermal_collector"],
                 }
                 param_dict = {
+                    "label": cluster,
+                    "azimuth {}".format(azimuth[:-4]): int(azimuth[-3:]),
                     "roof area {}".format(azimuth[:-4]):
                         source_param[pv_st + "_{}".format(azimuth[:-4])][1]
                         / type_param.get(pv_st)[0]["Capacity per Area (kW/m2)"]
@@ -427,13 +435,7 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
                         sheets=sheets,
                         standard_parameters=standard_parameters
                     )
-                # parameter that aren't type dependent
-                param_dict.update(
-                    {
-                        "label": cluster,
-                        "azimuth {}".format(azimuth[:-4]): int(azimuth[-3:]),
-                    }
-                )
+                    
                 # dict defining param location in sources information list
                 pos_dict = {
                     "surface tilt {}".format(azimuth[:-4]): 8,
