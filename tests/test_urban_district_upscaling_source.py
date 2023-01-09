@@ -3,17 +3,17 @@ import pandas
 import os
 
 
+# import standard parameter
+standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
+                                       + "/standard_parameters.xlsx")
+sources = standard_parameters.parse("3_sources")
+
+
 @pytest.fixture
 def test_decentral_pv_source_entry():
     """
     
     """
-    # import standard parameter
-    standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
-                                           + "/standard_parameters.xlsx")
-    sources = standard_parameters.parse("3_sources")
-    source = sources.loc[sources["source_type"] == "fixed photovoltaic source"]
-
     # combine specific data and the standard parameter data
     sheets = {
         "sources":
@@ -30,14 +30,10 @@ def test_decentral_pv_source_entry():
                         "Temperature Inlet": [0],
                         "max. investment capacity": source[
                             "Capacity per Area (kW/m2)"] * 100}),
-                    right=source,
-                    left_on="source_type",
-                    right_on="source_type"
-            )}
+                    right=sources,
+                    on="source_type"
+            ).drop(columns=["source_type", "max. investment capacity_y"])}
     
-    # remove column which was used to merge the two dataframe parts
-    sheets["sources"] = sheets["sources"].drop(columns=[
-        "source_type", "max. investment capacity_y"])
     # rename the max invest column since it is renamed by the merge
     # above
     sheets["sources"] = sheets["sources"].rename(columns={
@@ -51,12 +47,6 @@ def test_decentral_st_source_entry():
     """
 
     """
-    # import standard parameter
-    standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
-                                           + "/standard_parameters.xlsx")
-    sources = standard_parameters.parse("3_sources")
-    source = sources.loc[sources["source_type"] == "solar_thermal_collector"]
-    
     # combine specific data and the standard parameter data
     sheets = {
         "sources":
@@ -74,14 +64,10 @@ def test_decentral_st_source_entry():
                         "max. investment capacity": source[
                                                         "Capacity per Area ("
                                                         "kW/m2)"] * 100}),
-                    right=source,
-                    left_on="source_type",
-                    right_on="source_type"
-            )}
+                    right=sources,
+                    on="source_type"
+            ).drop(columns=["source_type", "max. investment capacity_y"])}
     
-    # remove column which was used to merge the two dataframe parts
-    sheets["sources"] = sheets["sources"].drop(columns=[
-        "source_type", "max. investment capacity_y"])
     # rename the max invest column since it is renamed by the merge
     # above
     sheets["sources"] = sheets["sources"].rename(columns={
@@ -95,23 +81,22 @@ def test_competition_constraint_entry():
     """
 
     """
-    # import standard parameter
-    standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
-                                           + "/standard_parameters.xlsx")
-    sources = standard_parameters.parse("3_sources")
     pv_source = sources.loc[sources["source_type"]
                             == "fixed photovoltaic source"]
     st_source = sources.loc[sources["source_type"]
                             == "solar_thermal_collector"]
     
-    return {"competition constraints":
-        pandas.DataFrame.from_dict({
-            "component 1": ["test_1_pv_source"],
-            "factor 1": [float(1 / pv_source["Capacity per Area (kW/m2)"])],
-            "component 2": ["test_1_solarthermal_source"],
-            "factor 2": [float(1 / st_source["Capacity per Area (kW/m2)"])],
-            "limit": [100],
-            "active": [1]})
+    return {
+        "competition constraints":
+            pandas.DataFrame.from_dict({
+                "component 1": ["test_1_pv_source"],
+                "factor 1": [
+                    float(1 / pv_source["Capacity per Area (kW/m2)"])],
+                "component 2": ["test_1_solarthermal_source"],
+                "factor 2": [
+                    float(1 / st_source["Capacity per Area (kW/m2)"])],
+                "limit": [100],
+                "active": [1]})
     }
 
    
@@ -137,11 +122,10 @@ def test_create_source(test_decentral_pv_source_entry):
     # start the method to be tested
     sheets = create_source(
         source_type="fixed photovoltaic source",
-        roof_num=1,
+        roof_num=str(1),
         building=building,
         sheets=sheets,
-        standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
-                                             + r"/standard_parameters.xlsx")
+        standard_parameters=standard_parameters
     )
     # assert rather the two dataframes are equal
     pandas.testing.assert_frame_equal(
@@ -162,10 +146,9 @@ def test_create_competition_constraint(test_competition_constraint_entry):
     Source.create_competition_constraint(
         limit=100,
         label="test",
-        roof_num=1,
+        roof_num=str(1),
         sheets=sheets,
-        standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
-                                             + r"/standard_parameters.xlsx")
+        standard_parameters=standard_parameters
     )
 
     pandas.testing.assert_frame_equal(
@@ -202,21 +185,75 @@ def test_create_sources(test_competition_constraint_entry,
         building=building,
         clustering=False,
         sheets=sheets,
-        standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
-                                             + r"/standard_parameters.xlsx"),
+        standard_parameters=standard_parameters
     )
     test_sheets = pandas.concat([test_decentral_pv_source_entry["sources"],
                                  test_decentral_st_source_entry["sources"]],
                                 axis=0)
     # assert rather the two dataframes are equal
-    pandas.testing.assert_frame_equal(sheets["sources"], test_sheets)
+    pandas.testing.assert_frame_equal(
+        sheets["sources"].sort_index(axis=1),
+        test_sheets.sort_index(axis=1))
 
     pandas.testing.assert_frame_equal(
-            sheets["competition constraints"],
-            test_competition_constraint_entry["competition constraints"])
+        sheets["competition constraints"].sort_index(axis=1),
+        test_competition_constraint_entry[
+            "competition constraints"].sort_index(axis=1))
+
 
 def test_cluster_sources_information():
-    pass
+    """
+    
+    """
+    from program_files.urban_district_upscaling.components.Source \
+        import cluster_sources_information
+    sheets = {"sources": pandas.DataFrame.from_dict({
+        "label": ["test_1", "test_2"]})}
+    sheets["sources"].set_index("label", inplace=True, drop=False)
+    
+    source = pandas.DataFrame.from_dict({
+        "label": ["test_1", "test_2"],
+        "technology": ["photovoltaic", "solar_thermal_flat_plate"],
+        "max. investment capacity": [500, 500],
+        "periodical costs": [10, 10],
+        "periodical constraint costs": [10, 10],
+        "variable costs": [50, 50],
+        "Albedo": [10, 10],
+        "Altitude": [10, 10],
+        "Azimuth": [0, 0],
+        "Surface Tilt": [30, 30],
+        "Latitude": [10, 10],
+        "Longitude": [50, 50],
+        "Temperature Inlet": [0, 40]
+    })
+    
+    source_param = {}
+    test_source_param = {}
+    for i in ["pv", "st"]:
+        for j in ["south_west", "west", "north_west", "north", "north_east",
+                  "east", "south_east", "south"]:
+            source_param.update({i + "_" + j: [0] * 12})
+            test_source_param.update({i + "_" + j: [0] * 12})
+    
+    for num, test in source.iterrows():
+        source_param, sheets = cluster_sources_information(
+            source=test,
+            source_param=source_param,
+            azimuth_type="north",
+            sheets=sheets
+        )
+    
+    test_sheets = pandas.DataFrame(columns=["label"])
+    test_sheets.set_index("label", inplace=True, drop=False)
+    
+    pandas.testing.assert_frame_equal(sheets["sources"], test_sheets)
+    
+    test_source_param.update({
+        "pv_north": [1, 500, 10, 10, 50, 10, 10, 0, 30, 10, 50, 0],
+        "st_north": [1, 500, 10, 10, 50, 10, 10, 0, 30, 10, 50, 40],
+    })
+    
+    assert source_param == test_source_param
 
 
 def test_sources_clustering():

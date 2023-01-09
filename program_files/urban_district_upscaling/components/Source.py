@@ -217,7 +217,7 @@ def create_sources(building: dict, clustering: bool, sheets: dict,
         if building[column] == "pv&st":
             sheets = create_source(
                 source_type="fixed photovoltaic source",
-                roof_num=roof_num,
+                roof_num=str(roof_num),
                 building=building,
                 sheets=sheets,
                 standard_parameters=standard_parameters
@@ -226,7 +226,7 @@ def create_sources(building: dict, clustering: bool, sheets: dict,
         if building["building type"] not in ["0", 0] and building[column] != 0:
             sheets = create_source(
                 source_type="solar_thermal_collector",
-                roof_num=roof_num,
+                roof_num=str(roof_num),
                 building=building,
                 sheets=sheets,
                 st_output=st_output,
@@ -236,7 +236,7 @@ def create_sources(building: dict, clustering: bool, sheets: dict,
 
             if not clustering and building[column] == "pv&st":
                 sheets = create_competition_constraint(
-                    roof_num=roof_num,
+                    roof_num=str(roof_num),
                     label=building["label"],
                     sheets=sheets,
                     limit=building["roof area %1d" % roof_num],
@@ -247,7 +247,8 @@ def create_sources(building: dict, clustering: bool, sheets: dict,
     return sheets
 
 
-def cluster_sources_information(source, source_param, azimuth_type, sheets):
+def cluster_sources_information(source: pandas.Series, source_param: dict,
+                                azimuth_type: str, sheets: dict):
     """
         Collects the source information of the selected type, and
         inserts it into the dict containing the cluster specific
@@ -255,15 +256,16 @@ def cluster_sources_information(source, source_param, azimuth_type, sheets):
 
         :param source: Dataframe containing the source under \
             investigation
-        :type source: pd.DataFrame
+        :type source: pandas.Series
         :param source_param: dictionary containing the cluster summed \
             source information
         :type source_param: dict
-        :param azimuth_type: definies the celestial direction of the \
+        :param azimuth_type: defines the celestial direction of the \
             source to be clustered
         :type azimuth_type: str
-        :param sheets:
-        :type sheets:
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
 
 
         :return: - **source_param** (dict) - dict extended by a new \
@@ -285,8 +287,8 @@ def cluster_sources_information(source, source_param, azimuth_type, sheets):
         11: source["Temperature Inlet"]
     }
     for num in param_dict:
-        # counter
-        source_param[source_type + "_{}".format(azimuth_type)][num] += param_dict[num]
+        source_param[source_type + "_{}".format(azimuth_type)][num] \
+            += param_dict[num]
     # remove the considered source from sources sheet
     sheets["sources"] = sheets["sources"].drop(index=source["label"])
     # return the modified source_param dict to the sources clustering
@@ -299,6 +301,7 @@ def sources_clustering(source_param, building, sheets, sheets_clustering):
         In this method, the information of the photovoltaic and solar
         thermal systems to be clustered is collected, and the systems
         whose information has been collected are deleted.
+        
         :param source_param: dictionary containing the cluster summed \
             source information
         :type source_param: dict
@@ -312,9 +315,10 @@ def sources_clustering(source_param, building, sheets, sheets_clustering):
         :return: - **source_param** (dict) - containing the cluster \
             summed source information attached within this method
     """
-    for index, sources in sheets_clustering["sources"].iterrows():
+    for index, source in sheets_clustering["sources"].iterrows():
         # collecting information for bundled photovoltaic systems
-        if sources["technology"] in ["photovoltaic", "solar_thermal_flat_plate"]:
+        if source["technology"] in [
+                "photovoltaic", "solar_thermal_flat_plate"]:
             # check the azimuth type for clustering in 8 cardinal
             # directions
             dir_dict = {
@@ -328,31 +332,44 @@ def sources_clustering(source_param, building, sheets, sheets_clustering):
             }
             azimuth_type = None
             for dire in dir_dict:
-                if dir_dict[dire][0] <= sources["Azimuth"] < dir_dict[dire][1]:
+                if dir_dict[dire][0] <= source["Azimuth"] < dir_dict[dire][1]:
                     azimuth_type = dire
 
             azimuth_type = "south" if azimuth_type is None else azimuth_type
-            # Photovoltaic clustering - collecting the sources
+            # Sources clustering - collecting the sources
             # information for each cluster
             if (
-                str(building[0]) in sources["label"]
-                and sources["label"] in sheets["sources"].index
+                str(building[0]) in source["label"]
+                and source["label"] in sheets["sources"].index
             ):
                 source_param, sheets = cluster_sources_information(
-                    sources, source_param, azimuth_type, sheets
+                    source=source,
+                    source_param=source_param,
+                    azimuth_type=azimuth_type,
+                    sheets=sheets
                 )
 
     # return the collected data to the main clustering method
     return source_param, sheets
 
 
-def create_cluster_sources(source_param, cluster, sheets, standard_parameters):
+def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
+                           standard_parameters: pandas.ExcelFile):
     """
-
-    :param source_param:
-    :param cluster:
-    :param sheets
-    :return:
+        This method is used to create the clustered sources, which \
+        are divided into 8 cardinal directions with averaged parameters.
+        
+        :param source_param: dictionary containing the cluster summed \
+                source information
+        :type source_param: dict
+        :param cluster: Cluster id
+        :type cluster: str
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
     """
     from program_files import read_standard_parameters
     from program_files.urban_district_upscaling.components import Bus
