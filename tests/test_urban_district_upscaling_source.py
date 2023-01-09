@@ -14,6 +14,7 @@ def test_decentral_pv_source_entry():
     """
     
     """
+    source = sources.loc[sources["source_type"] == "fixed photovoltaic source"]
     # combine specific data and the standard parameter data
     sheets = {
         "sources":
@@ -47,25 +48,25 @@ def test_decentral_st_source_entry():
     """
 
     """
+    source = sources.loc[sources["source_type"] == "solar_thermal_collector"]
     # combine specific data and the standard parameter data
     sheets = {
         "sources":
             pandas.merge(
-                    left=pandas.DataFrame.from_dict({
-                        "label": ["test_1_solarthermal_source"],
-                        "source_type": ["solar_thermal_collector"],
-                        "output": ["test_heat_bus"],
-                        "Azimuth": [10],
-                        "Surface Tilt": [10],
-                        "Latitude": [10],
-                        "Longitude": [10],
-                        "input": ["test_electricity_bus"],
-                        "Temperature Inlet": [float(40)],
-                        "max. investment capacity": source[
-                                                        "Capacity per Area ("
-                                                        "kW/m2)"] * 100}),
-                    right=sources,
-                    on="source_type"
+                left=pandas.DataFrame.from_dict({
+                    "label": ["test_1_solarthermal_source"],
+                    "source_type": ["solar_thermal_collector"],
+                    "output": ["test_heat_bus"],
+                    "Azimuth": [10],
+                    "Surface Tilt": [10],
+                    "Latitude": [10],
+                    "Longitude": [10],
+                    "input": ["test_electricity_bus"],
+                    "Temperature Inlet": [float(40)],
+                    "max. investment capacity": source[
+                        "Capacity per Area (kW/m2)"] * 100}),
+                right=sources,
+                on="source_type"
             ).drop(columns=["source_type", "max. investment capacity_y"])}
     
     # rename the max invest column since it is renamed by the merge
