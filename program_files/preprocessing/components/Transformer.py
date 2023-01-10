@@ -70,7 +70,7 @@ class Transformers:
         )
         logging.info("\t Transformer created: " + tf["label"])
 
-    def generic_transformer(self, tf: pd.Series):
+    def generic_transformer(self, tf: pd.Series, two_input=False):
         """
         Creates a Generic Transformer object.
         Creates a generic transformer with the parameters given in
@@ -141,6 +141,18 @@ class Transformers:
                 )
             }
         }
+        if two_input:
+            inputs["inputs"].update(
+                {
+                    self.busd[tf["input2"]]: Flow(
+                        variable_costs=tf["variable input costs 2"],
+                        emission_factor=tf["variable input constraint costs 2"],
+                    )
+                }
+            )
+            conversion_factors["conversion_factors"].update(
+                {self.busd[tf["input2"]]: tf["input2 / input"]}
+            )
         self.create_transformer(tf, inputs, outputs, conversion_factors)
 
     def create_abs_comp_bus(self, tf: pd.Series):
@@ -595,12 +607,15 @@ class Transformers:
         for i, t in (
             nd["transformers"].loc[nd["transformers"]["active"] == 1].iterrows()
         ):
-            switch_dict.get(
-                t["transformer type"],
-                "WARNING: The chosen transformer type is currently"
-                " not a part of this model generator or contains "
-                "a typo!",
-            )(t)
+            if t["transformer type"] != "GenericTwoInputTransformer":
+                switch_dict.get(
+                    t["transformer type"],
+                    "WARNING: The chosen transformer type is currently"
+                    " not a part of this model generator or contains "
+                    "a typo!",
+                )(t)
+            else:
+                self.generic_transformer(t, True)
 
         # appends created transformers to the list of nodes
         for i in range(len(self.nodes_transformer)):
