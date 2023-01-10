@@ -335,3 +335,14 @@ Error M-025: "left_on" OR "left_index"
 **Debugging:** Install pandas version 1.0.0 in the virtual environment used for the SESMG
 
 
+Error M-026: Key Error (sequences) III
+----------------------------------
+**Error Message:** ::
+
+   ... in get_sequence return_list.append([component["sequences"][(i, "flow")]])
+
+**Possible Error Cause:** No power supply is provided. The error can occur if only one air source heat pump is considered for the heat supply and the outdoor air temperature is higher than the flow temperature of the heating system.
+
+**Debugging:** Using a higher flow temperature or a lower outdoor air temperature, consider an alternative technology
+
+
