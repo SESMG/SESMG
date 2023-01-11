@@ -313,7 +313,7 @@ Error M-023: nearest foot point
 
 Error M-024: KeyError: 'lon'
 ----------------------------------
-**Error Message:** ::
+**Error Message:** :
 
    ... in get_loc
    raise KeyError(key) from err
@@ -326,7 +326,7 @@ Error M-024: KeyError: 'lon'
 
 Error M-025: "left_on" OR "left_index"
 ----------------------------------
-**Error Message:** ::
+**Error Message:** :
 
    ... pandas.errors.MergeError: Can only pass argument "left_on" OR "left_index" not both.
 
@@ -337,7 +337,7 @@ Error M-025: "left_on" OR "left_index"
 
 Error M-026: Key Error (sequences) III
 ----------------------------------
-**Error Message:** ::
+**Error Message:** :
 
    ... in get_sequence return_list.append([component["sequences"][(i, "flow")]])
 
@@ -346,3 +346,12 @@ Error M-026: Key Error (sequences) III
 **Debugging:** Using a higher flow temperature or a lower outdoor air temperature, consider an alternative technology
 
 
+Error M-027: Key Error (Index) II
+----------------------------------
+**Error Message**:
+
+   KeyError: 'Index \'("<oemof.solph.network.source.Source: \'insulation-..._roof\'>", "<oemof.solph.network.bus.Bus: \'..._heat_bus\'>", 0)\' is not valid for indexed component \'flow\''
+
+**Possible Error Cause:** The u-value of your building component meets the requirements.
+
+**Debugging:** Do not consider insulation measurements for the building component. 
