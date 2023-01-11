@@ -319,7 +319,6 @@ def create_power_to_gas_system(label, bus, sheets, standard_parameters):
     for transformer in [
         "central_electrolysis_transformer",
         "central_methanization_transformer",
-        "central_fuelcell_transformer",
     ]:
         sheets = Transformer.create_transformer(
             label=label,
@@ -329,6 +328,35 @@ def create_power_to_gas_system(label, bus, sheets, standard_parameters):
             sheets=sheets,
             standard_parameters=standard_parameters,
             flow_temp=0
+        )
+        
+    for transformer in [
+        "central_fuelcell_transformer",
+    ]:
+        sheets = Transformer.create_transformer(
+            label=label,
+            building_id="central",
+            transf_type=transformer,
+            output=label+'_heat_bus',
+            sheets=sheets,
+            standard_parameters=standard_parameters,
+            flow_temp=0
+        )
+
+    # links
+    for link in ["h2_heat_link"]:
+        sheets = Link.create_link(
+                label=label+'heat_link',
+                bus_1=label+'_heat_bus',
+                bus_2=bus,
+                link_type="central_h2_heat_link",
+                sheets=sheets,
+                standard_parameters=standard_parameters)
+                
+    for bus_type in ["central_h2_heat_bus"]:
+            sheets = Bus.create_standard_parameter_bus(
+	        label=label+'_heat_bus', bus_type=bus_type, sheets=sheets,
+	        standard_parameters=standard_parameters
         )
 
     # storages
