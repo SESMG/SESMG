@@ -20,15 +20,20 @@ def create_building_insulation(building: dict, sheets: dict,
     """
     from program_files import append_component
 
-    yoc = building["year of construction"]
+    yoc_roof = building["year of construction roof"]
+    yoc_wall = building["year of construction wall"]
+    yoc_window = building["year of construction windows"]
     roof = building["rooftype"]
+    yoc_component = [yoc_roof, yoc_wall, yoc_window]
+    yoc_component_new = [yoc_component[i] if yoc_component[i] > 1918 else "<1918" for i in range(len(yoc_component))]
+    building_component = ["roof", "outer wall", "window"]
 
     standard_param = standard_parameters.parse("7_insulation")
     standard_param.set_index("year of construction", inplace=True)
-    if int(yoc) <= 1918:  # TODO
-        yoc = "<1918"
+
     u_values = {}
-    for comp in ["roof", "outer wall", "window"]:
+
+    for yoc, comp in zip(yoc_component_new, building_component):
         u_values.update(
             {
                 comp: [
