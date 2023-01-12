@@ -1,7 +1,7 @@
-Application of the Model Generator
+Graphical User Interface
 *************************************************
 
-1. Fill in the spreadsheet document according to the instructions in the "Using th Scenario File" chapter.
+1. Fill in the spreadsheet document according to the instructions in the "Scenario Spreadsheet" chapter.
 
 2. Execute the Run_SESMG_for_**your operating System** file in the main folder.
 
@@ -15,7 +15,7 @@ Application of the Model Generator
    :alt: GUI
    :align: center
    
-   The display may vary depending on the operating system.
+   The display may vary depending on the operating system. The function "Switch Criteria" is not completely implemented.
 
 
 Description of the GUI functions
@@ -41,7 +41,7 @@ The functions under the topic **Results** are used to analyze results older then
  .. note::
 	The detailed modelling results are also stored within the "results" folder.
 
-Model Simplification
+Timeseries preperation
 ======================
 
 Using the timeseries preparation-options, the modeled time system can be reduced so that not all time steps are considered with the modeling. Such a simplification allows shorter runtimes, but may lead to a reduction in the quality of the results [1].

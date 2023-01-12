@@ -23,23 +23,21 @@ Structure of Energy Systems
 	
 	
 ..	toctree::
-	:maxdepth: 1
+	:maxdepth: 2
 	:hidden:
 	:caption: Structure of Energy Systems
 	
 	structure_of_energy_system/structure
-
-
 
 Manual
 -------------------------------------------------
 * :doc:`manual/installation`
 * :doc:`manual/GUI`
 * :doc:`manual/ScenarioSpreadsheet`
-* :doc:`manual/TechnicalData`
 * :doc:`manual/Results`
 * :doc:`manual/UpscalingTool`
 * :doc:`manual/DemoTool`
+
 
 
 ..	toctree::
@@ -50,12 +48,9 @@ Manual
 	manual/installation
 	manual/GUI
 	manual/ScenarioSpreadsheet
-	manual/TechnicalData
 	manual/Results
 	manual/UpscalingTool
 	manual/DemoTool
-
-
 
 Troubleshooting 
 -------------------------------------------------
@@ -69,9 +64,7 @@ Troubleshooting
 	
 	troubleshooting/troubleshooting
 
-
-
-Sourcecode
+Sourcecode Documentation
 -------------------------------------------------
 * :doc:`Source code documentation of the GUI <sourcecode_documentation/gui_functions>`
 * :doc:`Source code documentation of the Upscaling Tool <sourcecode_documentation/upscaling_tool>`
@@ -84,15 +77,15 @@ Sourcecode
 	:caption: Sourcecode Documentation
 	
 	sourcecode_documentation/gui_functions
-        sourcecode_documentation/upscaling_tool
-	sourcecode_documentation/program_functions
+    sourcecode_documentation/upscaling_tool
+    sourcecode_documentation/program_functions
 	
-	
-	
+
 Further Information
 -------------------------------------------------
 * :doc:`information/publications`
 * :doc:`information/links`
+* :doc:`information/citation`
 * :doc:`information/license`
 * :doc:`information/contact`
 * :doc:`information/acknowledgements`
@@ -104,6 +97,7 @@ Further Information
 	
 	information/publications
 	information/links
+	information/citation
 	information/license
 	information/contact
 	information/acknowledgements

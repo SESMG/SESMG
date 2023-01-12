@@ -6,7 +6,7 @@ Thanks for submitting a pull request! Please provide enough information so that 
 For more information, see the `CONTRIBUTING` guide.
 
 **Code of Conduct**
-- [ ] Hereby I consent to the [CODE_OF_CONDUCT](https://github.com/GregorBecker/SESMG/blob/dev_open_district_upscaling/CODE_OF_CONDUCT.md)[^1]  
+- [ ] Hereby I consent to the [CODE_OF_CONDUCT](https://github.com/chrklemm/SESMG/blob/master/CODE_OF_CONDUCT.md)[^1]  
 
 
 **Summary**

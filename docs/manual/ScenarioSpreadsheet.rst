@@ -123,24 +123,21 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the sink shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed sink or not. 0 = not fixed; 1 = fixed.
-- **input**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
+- **input**: Specifies the bus from which the input to the sink comes from.
 - **load profile**: Specifies the basis onto which the load profile of the sink is to be created. If the Richardson tool is to be used, "richardson" has to be inserted. For standard load profiles, its acronym is used. If a time series is used, "timeseries" must be entered and must be provided in the `Time series sheet`_. If the sink is not fixed, the fill character "x" has to be used.
 - **nominal value** in (kW): Nominal performance of the sink. Required when "time series" has been entered into the "load profile". When SLP or Richardson is used, use the fill character "0" here.
 - **annual demand** in (kWh/a): Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "0" is used.
 - **occupants** [RICHARDSON]: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "0" for other load profiles.
 - **building class** [HEAT SLP ONLY]: BDEW building classes that coincide with the building locations are explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#sinks>`_.
 - **wind class** [HEAT SLP ONLY]: wind classification for building location (0=not windy, 1=windy)
-- **district heating**: This column allows you to specify whether the sink should be connected to the heating network (1) or not (0).
-- **lat**: If house sink be connected to dh-network this column must be filled with the latitude (WGS84).
-- **lon**: If house sink be connected to dh-network this column must be filled with the longitude (WGS84).
 
 .. csv-table:: Exemplary input for the sinks sheet
-   :header: label,comment,active,fixed,input,load profile,nominal value,annual demand,occupants,building class,wind class, district heating, lat, lon
+   :header: label,comment,active,fixed,input,load profile,nominal value,annual demand,occupants,building class,wind class
 
    ,,,,,,(kW),(kWh/a),(richardson),(heat slp),(heat slp)
-   ID_electricity_sink,H0 standard load profile sink,1,1,ID_electricity_bus,h0,0,5000.0,0,0,0,0,0,0
-   ID_heat_sink,EFH standard load profile sink,1,1,ID_heat_bus,efh,0,30000.0,0,3,0,1,55.000000,11.000000
-   ID_cooling_sink,fixed timeseries cooling demand,0,1,ID_cooling_bus,timeseries,1,0,0,0,0,0,0,0
+   ID_electricity_sink,H0 standard load profile sink,1,1,ID_electricity_bus,h0,0,5000.0,0,0,0
+   ID_heat_sink,EFH standard load profile sink,1,1,ID_heat_bus,efh,0,30000.0,0,3,0
+   ID_cooling_sink,fixed timeseries cooling demand,0,1,ID_cooling_bus,timeseries,1,0,0,0,0
 
 .. figure:: ../images/manual/ScenarioSpreadsheet/BSP_Graph_sink.png
    :width: 100 %
@@ -159,7 +156,6 @@ Within this sheet, the sources of the energy system are defined. Technology spec
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the source is connected to.
 - **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "other", "solar_thermal_flat_plate", "concentrated_solar_power". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the `Time series sheet`_.
-
 Costs
 -------------------------
 - **variable costs** in (CU/kWh): Defines the variable costs incurred for a kWh of energy drawn from the source.
@@ -171,12 +167,12 @@ Costs
 - **periodical constraint costs** in (CU/(kW a)): Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#investment>`_.
 - **Fix Investment Costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs).
-
 Wind
 -------------------------
-- **Turbine Model**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
-- **Hub Height**: Hub height of the wind turbine. Which hub heights are possible for the selected reference turbine can be viewed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
+The wind speed timeseries entered in the sheet "weather data" (measured at 10 m heigth) will get converted into wind speeds at specified hub height. With the specified turbine model an energy timeseries will then be calculated.
 
+- **Turbine Model**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_. Write the value of the column "turbine_type" of the .csv in your spreadsheet.
+- **Hub Height**: Hub height of the wind turbine. Which hub heights are possible for the selected reference turbine can be viewed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
 PV
 -------------------------
 - **Modul Model**: Module name, according to the database used. Possible Modul Models are presented `here <https://github.com/chrklemm/SESMG/blob/master/docs/manual/modul_name.csv>`_.
@@ -187,7 +183,6 @@ PV
 - **Altitude**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
 - **Latitude**: Geographic latitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
 - **Longitude**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
-
 Concentrated Solar Power
 ------------------------------
 - **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Use fill character "0" for other technologies.
@@ -223,7 +218,7 @@ Solar Thermal Flatplate
 - **Temperature Difference** in (°C): Temperature Difference between in- and outlet temperature of the solar heat collector module. Use fill character "0" for other technologies.
 - **Electric Consumption**: Electric consumption of the collector system. Example: If value is set to 0,05, the electric consumption is 5 % of the energy output. Use fill character "0" for other technologies.
 - **Peripheral Losses**: Heat loss coefficient for losses in the collector's peripheral system. Use fill character "0" for other technologies.
-
+- **Conversion Factor** in m²/kW: The factor is explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#sources>`_.
 Timeseries
 -------------------------
 If you have choosen the technology "timeseries", you have to include a timeseries in the  `Time series sheet`_ or use default one.
@@ -237,7 +232,7 @@ If you have choosen the technology "other", the solver has the opportunity to co
 
    ,,,,,,solar heat,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/(kW a)),windpower,windpower,PV,PV,PV,PV,PV,(m)| PV,(°),(°),(°),(°),solar heat,solar heat,solar heat,solar heat,solar heat,(°C) | solar heat,(°C)|solar heat,(sqm/kW) | solar heat,solar heat,solar heat,solar heat
    ID_photovoltaic_electricity_source,,1,1,photovoltaic,ID_pv_bus,None,0,0,20,0,0,0,90,56,0,0,0,SandiaMod,sandiainverter,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,0.18,60,180,35,52.13,7.36,0,0,0,0,0,0,0,0,0,0,0
-   ID_solar_thermal_source,,1,1,solar_thermal_flat_plate,ID_heat_bus,ID_electricity_bus,0,0,20,0,0,0,40,25,0,0,0,0,0,0,0,0,0,20,10,52.13,7.36,0.719,1.063,0.005,0,0,40,15,1.89941306,0.05,0.06,0
+   ID_solar_thermal_source,,1,1,solar_thermal_flat_plate,ID_heat_bus,ID_electricity_bus,0,0,20,0,0,0,40,25,0,0,0,0,0,0,0,0,0,20,10,52.13,7.36,0.719,1.063,0.005,0,0,40,15,1.79,0.05,0.06,0
    wind_turbine,,0,1,windpower,electricity_bus,None,0,0,30,0,0,0,100,9,0,E-126/4200,135,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 
@@ -259,33 +254,35 @@ The following parameters have to be entered:
 - **label**: Unique designation of the transformer. The following format is recommended: "ID_energy sector_transformer".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the transformer shall be included to the model. 0 = inactive, 1 = active.
-- **transformer type**: Indicates what kind of transformer it is. Possible entries: "GenericTransformer" for linear transformers with constant efficiencies; "GenericCHP" for transformers with varying efficiencies; "CompressionHeatTransformer"; "AbsorptionHeatTransformer".
+- **transformer type**: Indicates what kind of transformer it is. Possible entries: "GenericTransformer" for linear transformers with constant efficiencies; "GenericTwoInputTransformer" for transformers with two inputs and constant efficiencies (e. g. Pumping units with water and electricity intake); "GenericCHP" for transformers with varying efficiencies; "CompressionHeatTransformer"; "AbsorptionHeatTransformer".
 - **mode**: Specifies, if a compression or absorption heat transformer is working as "chiller" or "heat_pump". Only required if "transformer type" is set to "CompressionHeatTransformer" or "AbsorptionHeatTransformer". Otherwise has to be set to "None", "none", "0".
 - **input**: Specifies the bus from which the input to the transformer comes from.
+- **input2**: Specifies the bus from which the input2 to the transformer comes from. Only required if "transformer type" is set to "GenericTwoInputTransformer". If there is no second input, the fill character "0" must be entered here.
 - **output**: Specifies bus to which the output of the transformer is forwarded to. For CHP Transformers it should be the electric output.
 - **output2**: Specifies the bus to which the output of the transformer is forwarded to, if there are several outputs. If there is no second output, the fill character "0" must be entered here.
+- **input2 / input**: Specifies the ratio of input2 to input (e. g. kWh/m³). Only required if "transformer type" is set to "GenericTwoInputTransformer". If there is no second input, the fill character "0" must be entered here.
 
 Costs
 ---------------------
 - **variable input costs** in (CU/kWh): Variable costs incurred per kWh of input energy supplied.
+- **variable input costs 2** in (CU/kWh): Variable costs incurred per kWh of input2 energy supplied.
 - **variable output costs** in (CU/kWh): Variable costs incurred per kWh of output energy supplied.
 - **variable output costs 2** in (CU/kWh): Variable costs incurred per kWh of output 2 energy supplied.
 - **variable input constraint costs** in (CU/kWh): Variable constraint costs incurred per kWh of input energy supplied referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **variable input constraint costs 2** in (CU/kWh): Variable constraint costs incurred per kWh of input2 energy supplied referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **variable output constraint costs** in (CU/kWh): Variable constraint costs incurred per kWh of output energy supplied referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **variable output constraint costs 2** in (CU/kWh): Variable constraint costs incurred per kWh of output 2 energy supplied referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **existing capacity** in (kW): Already installed capacity of the transformer.
 - **min investment capacity** in (kW): Minimum transformer capacity to be installed.
-- **max investment capacity** in (kW): Maximum  installable transformer capacity in addition to the previously existing one.
+- **max investment capacity** in (kW): Maximum  installable transformer capacity regarding the output of the transformer, in addition to previously installed capacity, if existing.
 - **periodical costs** in (CU/a): Costs incurred per kW for investments within the time horizon. Periodical costs only apply for newly invested capacities but not for existing capacities.
 - **periodical constraint costs** in (CU/(kW a)): Constraint costs incurred per kW for investments within the time horizon. If not considering constraints fill character "0" is used.
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#investment>`_.
 - **Fix Investment Costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs)
-
 Generic Transformer
 ------------------------
 - **efficiency**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
 - **efficiency2**: Specifies the efficiency of the second output, if there is one. Values between 0 and 1 are entered. If there is no second output, the fill character "0" must be entered here.
-
 GenericCHP
 ------------------------
 - **min. share of flue gas loss**: Percentage flue gas losses of the operating point with maximum heat extraction.
@@ -297,7 +294,6 @@ GenericCHP
 - **minimal thermal output power** in (kW): Heat output taken from the exhaust gas via a condenser even in purely electric operation.
 - **electric power loss index**: Reduction of the electrical power by "electric power loss index * extracted thermal power".
 - **back pressure**: Defines rather the end pressure of "Turbine CHP" is higher than ambient pressure (input value has to be "1") or not (input value has to be "0"). For "Motoric CHP" it has to be "0".
-
 Compression Heat Transformer
 ---------------------------------
 The following parameters are only required, if "transformer type" is set to "CompressionHeatTransformer":
@@ -312,7 +308,6 @@ The following parameters are only required, if "transformer type" is set to "Com
 - **min. borehole area** in (sqm): Limited space due to the regeneation of the ground source, only for GC-CHT.
 - **temp threshold icing**: Temperature below which icing occurs (see `oemof.thermal <https://oemof-thermal.readthedocs.io/en/latest/>`_). Only required if "mode" is set to "heat_pump".
 - **factor icing**: Factor to which the COP is reduced caused by icing (e.g. 0.8 if you have a reduction of 20%). (see `oemof.thermal <https://oemof-thermal.readthedocs.io/en/latest/>`_). Only required if "mode" is set to "heat_pump".
-
 Absorption Heat Transformer
 --------------------------------
 The following parameters are only required, if "transformer type" is set to "AbsorptionHeatTransformer":
@@ -326,15 +321,16 @@ The following parameters are only required, if "transformer type" is set to "Abs
 
   
 .. csv-table:: Exemplary input for the transformers sheet
-   :header: label,comment,active,transformer type,mode,input,output,output2,efficiency,efficiency2,existing capacity,min. investment capacity,max. investment capacity,non-convex investment,fix investment costs,variable input costs,variable output costs,variable output costs 2,periodical costs,variable input constraint costs,variable output constraint costs,variable output constraint costs 2,periodical constraint costs,heat source,temperature high,temperature low,quality grade,area,length of the geoth. probe,heat extraction,min. borehole area,temp. threshold icing,factor icing,name,high temperature,chilling temperature,electrical input conversion factor,recooling temperature difference,min. share of flue gas loss,max. share of flue gas loss,min. electric power,max. electric power,min. electric efficiency, max. electric efficiency,minimal thermal output power,elec. power loss index,back pressure
+   :header: label,comment,active,transformer type,mode,input,input2,output,output2,input2 / input,efficiency,efficiency2,existing capacity,min. investment capacity,max. investment capacity,non-convex investment,fix investment costs,variable input costs,variable input costs 2,variable output costs,variable output costs 2,periodical costs,variable input constraint costs,variable input constraint costs 2,variable output constraint costs,variable output constraint costs 2,periodical constraint costs,heat source,temperature high,temperature low,quality grade,area,length of the geoth. probe,heat extraction,min. borehole area,temp. threshold icing,factor icing,name,high temperature,chilling temperature,electrical input conversion factor,recooling temperature difference,min. share of flue gas loss,max. share of flue gas loss,min. electric power,max. electric power,min. electric efficiency, max. electric efficiency,minimal thermal output power,elec. power loss index,back pressure
 
-	,,,,,,,,,,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),,(°C),(°C),,(m²),(`m`),(kW/(m*a)),(m²),(°C),,,(°C),(°C),,(°C),,,(kW),(kW),,,(kW)
- 	ID_gasheating_transformer,,1,GenericTransformer,0,ID_gas_bus,ID_heat_bus,None,0.85,0,10,0,20,0,0,0,0,0,70,0,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_GCHP_transformer,ground-coupled heat pump,1,CompressionHeatTransformer,heat_pump,ID_hp_electricity_bus,ID_heat_bus,None,1,0,0,0,20,0,0,0,0,0,115.57,0,0,0,0,Ground,60,0,0.6,1000,100,0.05,100,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_ASCH_transformer,air source chiller,1,CompressionHeatTransformer,chiller,ID_hp_electricity_bus,ID_cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,Air,0,-10,0.4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_AbsCH_transformer,absorption chiller,1,AbsorptionHeatTransformer,chiller,ID_hp_electricity_bus,ID_cooling_bus,None,1,0,0,0,20,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Kuehn,85,10,0.05,6,0,0,0,0,0,0,0,0,0
-	ID_ASHP_transformer,air source heat pump,1,CompressionHeatTransformer,heat_pump,ID_hp_electricity_bus,ID_heat_bus,None,1,0,0,0,20,0,0,0,0,0,112.78,0,0,0,0,Air,60,0,0.4,0,0,0,0,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_chp_transformer,,0,GenericTransformer,0,district_gas_bus,district_chp_electricity_bus,district_heat_bus,0.35,0.55,0,0,20,0,0,0,0,0,50,130,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	,,,,,,,,,,,,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),,(°C),(°C),,(m²),(`m`),(kW/(m*a)),(m²),(°C),,,(°C),(°C),,(°C),,,(kW),(kW),,,(kW)
+ 	ID_gasheating_transformer,,1,GenericTransformer,0,ID_gas_bus,0,ID_heat_bus,None,0,0.85,0,10,0,20,0,0,0,0,0,0,70,0,0,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_TwoInput_transformer,high pressure pump,0,GenericTwoInputTransformer,None,ID_water_intake_bus,ID_electricity_intake_bus,ID_water_output_bus,None,0.84,0.88,0,0,0,4000,0,0,0,0,0,0,6.600,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_GCHP_transformer,ground-coupled heat pump,1,CompressionHeatTransformer,heat_pump,ID_hp_electricity_bus,0,ID_heat_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,115.57,0,0,0,0,0,Ground,60,0,0.6,1000,100,0.05,100,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_ASCH_transformer,air source chiller,1,CompressionHeatTransformer,chiller,ID_hp_electricity_bus,0,ID_cooling_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,100,0,0,0,0,0,Air,0,-10,0.4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_AbsCH_transformer,absorption chiller,1,AbsorptionHeatTransformer,chiller,ID_hp_electricity_bus,0,ID_cooling_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Kuehn,85,10,0.05,6,0,0,0,0,0,0,0,0,0
+	ID_ASHP_transformer,air source heat pump,1,CompressionHeatTransformer,heat_pump,ID_hp_electricity_bus,0,ID_heat_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,112.78,0,0,0,0,0,Air,60,0,0.4,0,0,0,0,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_chp_transformer,,0,GenericTransformer,0,district_gas_bus,0,district_chp_electricity_bus,district_heat_bus,0,0.35,0.55,0,0,20,0,0,0,0,0,0,50,130,0,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	
 .. figure:: ../images/manual/ScenarioSpreadsheet/BSP_Graph_transformer.png
    :width: 100 %
@@ -346,7 +342,7 @@ The following parameters are only required, if "transformer type" is set to "Abs
 Storages
 =================================================
 
-Within this sheet, the sinks of the energy system are defined. The following parameters have to be entered:
+Within this sheet, the storages of the energy system are defined. The following parameters have to be entered:
 
 - **label**: Unique designation of the storage. The following format is recommended: "ID_energy sector_storage".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
@@ -374,11 +370,9 @@ Costs
 - **variable input constraint costs**: Indicates how many costs arise for charging with one kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **variable output constraint costs**: Indicates how many costs arise for charging with one kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **periodical constraint costs** in (CU/a): Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
-
 Generic Storage
 ---------------------
-- **capacity loss** (Generic only): Indicates the storage loss per time unit. Only required, if the "storage type" is set to "Generic".
-
+- **capacity loss** (Generic only): Indicates the percentage storage loss per time unit. Only required, if the "storage type" is set to "Generic".
 Stratified Storage
 ---------------------
 - **diameter** in (m) | (Stratified Storage): Defines the diameter of a stratified thermal storage, which is necessary for the calculation of thermal losses.
@@ -415,7 +409,6 @@ to be entered:
 - **bus2**: Second bus to which the link is connected. If it is a directed link, this is the output bus.
 - **(un)directed**: Specifies whether it is a directed or an undirected link. Input options: "directed", "undirected".
 - **efficiency**: Specifies the efficiency of the link. Values between 0 and 1 are allowed entries.
-
 Costs
 -------------------
 - **variable output costs** in (CU/kWh): Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
@@ -449,17 +442,17 @@ Costs
 Insulation
 =================================================
 
-Within this sheet, the energy system insulation options are defined. The following parameters have 
+Within this sheet, the energy system insulation options are defined. The following parameters have
 to be entered:
 
 - **label**: Unique designation of the insulation. The following format is recommended: "ID_sink_label_insulation_type"
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
-- **active**: Specifies whether the insulation shall be included to the model. 0 = inactive, 1 = active. 
+- **active**: Specifies whether the insulation shall be included to the model. 0 = inactive, 1 = active.
 - **sink**: Sink influenced by the insulation.
 - **temperature indoor** in (°C): Definition of the living space temperature.
 - **heat limit temperature** in (°C): Temperature from which the heating is switched on.
-- **U-value old** in (W/(`m`:sup:`2` *K)): U-value before insulation. 
-- **U-value new** in (W/(`m`:sup:`2` *K)): U-value after insulation. 
+- **U-value old** in (W/(`m`:sup:`2` *K)): U-value before insulation.
+- **U-value new** in (W/(`m`:sup:`2` *K)): U-value after insulation.
 - **area** in (`m`:sup:`2`): Area that can be considered for isolation.
 - **periodical costs** in (CU/(`m`:sup:`2` *a)): Costs incurred per `m`:sup:`2` for investments within the time horizon.
 - **periodical constraint costs** in (CU/(`m`:sup:`2` *a)): Costs incurred per `m`:sup:`2` for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
@@ -500,14 +493,15 @@ with the "technology" property "timeseries". The following parameters have to be
 Weather Data
 =================================================
 
-If electrical load profiles are simulated with the Richardson tool, heating load profiles with the demandlib or 
-photovoltaic systems with the feedinlib, weather data must be stored here. The weather 
+If electrical load profiles are simulated with the Richardson tool, heating load profiles with the demandlib or
+photovoltaic systems with the feedinlib, weather data must be stored here. The weather
 data time system should be in conformity with the model’s time system, defined in the sheet "timesystem".
 
 - **timestamp**: Points in time to which the stored weather data are related. 
 - **dhi**: diffuse horizontal irradiance in W/m\ :sup:`2`
 - **dirhi**: direct horizontal irradiance in W/m\ :sup:`2`
 - **pressure**: air pressure in Pa
+- **temperature**: air temperature in °C
 - **windspeed**: wind speed, measured at 10 m height, in unit m/s
 - **z0**: roughness length of the environment in units m
 - **ground_temp**: constant ground temperature at 100 m depth

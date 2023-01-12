@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 **Code of Conduct**
-- [ ] Hereby I consent to the [CODE_OF_CONDUCT](https://github.com/GregorBecker/SESMG/blob/dev_open_district_upscaling/CODE_OF_CONDUCT.md)[^1]
+- [ ] Hereby I consent to the [CODE_OF_CONDUCT](https://github.com/chrklemm/SESMG/blob/master/CODE_OF_CONDUCT.md)[^1]
 
 **Is your feature request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
