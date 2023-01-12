@@ -67,6 +67,9 @@ def test_create_building_insulation(test_insulation_entries):
     # building specific data
     building = {
         "year of construction": 1917,
+        "year of construction wall": 1917,
+        "year of construction windows": 1917,
+        "year of construction roof": 1917,
         "rooftype": "flat roof",
         "label": "test",
         "area windows": "10",
