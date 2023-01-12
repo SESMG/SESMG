@@ -66,7 +66,9 @@ Troubleshooting
 
 Sourcecode Documentation
 -------------------------------------------------
-* :doc:`Python code documentation <sourcecode_documentation/program_functions>`
+* :doc:`Source code documentation of the GUI <sourcecode_documentation/gui_functions>`
+* :doc:`Source code documentation of the Upscaling Tool <sourcecode_documentation/upscaling_tool>`
+* :doc:`Source code documentation of SESMG algorithm <sourcecode_documentation/program_functions>`
 	
 	
 ..	toctree::
@@ -74,7 +76,9 @@ Sourcecode Documentation
 	:hidden:
 	:caption: Sourcecode Documentation
 	
-	sourcecode_documentation/program_functions
+	sourcecode_documentation/gui_functions
+    sourcecode_documentation/upscaling_tool
+    sourcecode_documentation/program_functions
 	
 	
 Further Information

@@ -1,7 +1,7 @@
 Structure of Energy Systems
 *************************************************
 
-Energy systems in the sense of the Spreadseet Energy System Model Generator are designed according to the 
+Energy systems in the sense of the Spreadsheet Energy System Model Generator are designed according to the
 specifications of the `oemof <https://oemof.org>`_ library. Accordingly, 
 energy systems can be represented with the help of mathematical graph theory. Thus, energy systems are 
 exemplified as "graphs" consisting of sets of "vertices" and "edges". In more specific terms, vertices 
@@ -18,7 +18,7 @@ Buses furthermore form connection points of an energy system. The graph of a sim
 consisting of each one source, one transformer, one sink, as well as two buses, could look like the 
 example displayed in the following figure.
   
-.. figure:: ../images/simple_energy_system.png
+.. figure:: ../images/structure_of_energy_system/simple_energy_system.png
    :width: 100 %
    :alt: Bus-Example
    :align: center
@@ -70,7 +70,7 @@ source could represent the purchase of energy at a fixed price.
 The following figure sketches the fractions of radiation
 arriving at a PV-module as well as further relevant parameters. 
 
-.. figure:: ../images/PV_Aufbau.png
+.. figure:: ../images/structure_of_energy_system/PV_Aufbau.png
    :width: 100 %
    :alt: pv_systems
    :align: center
@@ -117,7 +117,7 @@ listed in the following table.
 **Wind Turbines**
 
 For the modeling of wind turbines, the weather data set must
-include wind speeds. The wind speeds must be available for a 
+include wind speeds, as well as the roughness length z0 and the pressure. The wind speeds must be available for a
 measurement height of 10 m in the unit m/s.
 
 The system data of the wind turbine to be modelled are obtained 
@@ -146,7 +146,7 @@ its technical parameters. The transformer object embodies the systems
 periphery (pipes, pumps). Thermal losses and the electricity demand
 of this periphery can be considered by the transformer.
 
-.. figure:: ../images/solar_thermal_collector_structure.png
+.. figure:: ../images/structure_of_energy_system/solar_thermal_collector_structure.png
    :width: 50%
    :alt: solar_thermal_system
    :align: center
@@ -200,15 +200,17 @@ output is 1,504 kW and the conversion factor roundabout 1,68 (sqm/kW).
 
 Example for calculation of conversion factor.
 
-If you are calculating a system with the concentrated solar power
-module, you need to be careful. Depending on the azimuth of the system
-some tests have shown, that for some hours of the considered period the
-calculated power output of the concentrated solar power module peaks
-by a factor of e.g. 100 compared to the rest of the period. This was
-observed with increasing azimuth e.g. an azimuth of 270 degrees.
-These peaks in power output are not possible, so the final results
-have to be evaluated carefully. The interactive results in the end
-can help to identify possible peaks very well.
+.. note::
+
+    If you are calculating a system with the concentrated solar power
+    module, you need to be careful. Depending on the azimuth of the system
+    some tests have shown, that for some hours of the considered period the
+    calculated power output of the concentrated solar power module peaks
+    by a factor of e.g. 100 compared to the rest of the period. This was
+    observed with increasing azimuth e.g. an azimuth of 270 degrees.
+    These peaks in power output are not possible, so the final results
+    have to be evaluated carefully. The interactive results in the end
+    can help to identify possible peaks very well.
 
 Sinks
 =================================================
@@ -356,7 +358,7 @@ The compression heat transformer function automatically creates a heat source an
 temperature bus, depending on the mode of operation (see red bubble). So only a transformer
 and a electricity bus needs to be created. An example is shown in the following figure.
 
-.. figure:: ../images/graph_chiller_heat_pump.png
+.. figure:: ../images/structure_of_energy_system/graph_chiller_heat_pump.png
    :width: 100 %
    :alt: graph heatpump and chiller
    :align: center
@@ -422,7 +424,7 @@ In an energy system, links can represent, for
 example, electrical powerlines, gas pipelines, district heating
 distribution networks or similar.
 
-.. figure:: ../images/link.png
+.. figure:: ../images/structure_of_energy_system/link.png
    :width: 50 %
    :alt: links
    :align: center
@@ -435,6 +437,25 @@ Storages are connected to a bus and can store energy from this bus and return it
 
 Stratified thermal storages use the thermal transmittance of the wall of the stratified thermal storage
 (including thermal insulation) for calculating the losses. Specific values can be found in data sheets.
+
+District Heating
+=================================================
+Different from the previously mentioned points, District Heating is not a component,
+but a piped heat supply option, elaborated on the basis of the oemof package DHNx.
+Within the district heating approach, a heat producer is connected to the consumers' heat sink
+via a link, heat pipes (lossy transformers) and the district heating
+house station.
+
+.. figure:: ../images/structure_of_energy_system/district_heating.png
+   :width: 50 %
+   :alt: district_heating
+   :align: center
+
+   Representation of the district heating network as described above.
+
+Insulation
+=================================================
+Thermal insulation represents a possibility to reduce the heat demand of a respective building. For this purpose, an investment decision is used to calculate a U-value and temperature difference dependent saving, which is substracted from the sinks.
 
 Investment
 =================================================

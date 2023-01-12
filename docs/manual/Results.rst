@@ -9,7 +9,7 @@ a browser window with interactive results will be opened automatically after suc
 modeling. Alternatively, the results of the last modelling run can be accessed by executing the 
 Interactive_Results.py file.
 
-.. figure:: ../images/interactive_results2.png
+.. figure:: ../images/manual/Results/interactive_results2.png
    :width: 100 %
    :alt: interactive_results
    :align: center

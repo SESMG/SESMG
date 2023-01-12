@@ -10,7 +10,7 @@ Graphical User Interface
 
 	If you receive a "Your computer has been protected by Windows" error message or a similiar one, click "More Information," and then "Run Anyway" (or your operating system specific way to run the programm anyway).
 
-.. figure:: ../images/GUI.png
+.. figure:: ../images/manual/GUI/GUI.png
    :width: 100 %
    :alt: GUI
    :align: center
@@ -49,7 +49,7 @@ Using the timeseries preparation-options, the modeled time system can be reduced
 .. warning::
 
 	All time series simplifications can currently only be applied at an output time resolution of hours with 8760 time steps (i.e. one whole year).
-	
+
 GUI Settings
 ------------
 
@@ -65,12 +65,18 @@ Different possibilities of time series simplification are applicable, for this t
 
 * **Season**: Time periods within which clustering takes place (year, seasons, months)
 
+
+Pre-Modeling
+------------
+
+If this function is activated, the model is split into two model-runs. In a temporally simplified pre-model, potentially irrelevant investment decisions are identified and removed from the main model run ("technical pre-selection", see [1]). Optionally, the investment boundaries for the investment decisions remaining in the model can be adjusted with the freely selectable _investment_boundary_factor_ ("tightening of technical boundaries", see [1]). The pre-run and main run are automatically executed one after the other.
+
 Available Algorithms
 --------------------
 
 The following algorithms are applicable and must be specified with the following additional information:
 
-.. csv-table:: 
+.. csv-table::
 	:file: ../manual/timeseries_preparation.csv
 	:header-rows: 1
 
@@ -113,14 +119,12 @@ Available selection schemes:
 Acronyms: hp=highest peak, lv=lowest valley, ha=highest average, la=lowest average
 
 
-Furthere schemes can be added here: https://github.com/chrklemm/SESMG/blob/master/program_files/technical_data/hierarchical_selection_schemes.xlsx
+Further schemes can be added here: https://github.com/chrklemm/SESMG/blob/master/program_files/technical_data/hierarchical_selection_schemes.xlsx
 
 
 random sampling
 ^^^^^^^^^^^^^^^^^^^^^
 "In random sampling, a predetermined number of random periods (e.g. days or weeks) are selected and used as representatives." [1] "The python library ``random'' is utilized. To ensure reproducability, a ``seed'' is defined, so that with each run the same random periods will be selected. Furthermore, a random time series of e.g. 10 periods thereby automatically makes up 10 periods of a random time series of, e.g. 20 periods" [1]
-
-
 
 
 Further Adjustments
@@ -129,10 +133,10 @@ Further Adjustments
 Depending on the simplification applied, further adjustments to the energy system must be made automatically.
 
 **Adjustment of time series of non-divisible length:**
-"For a time series' adjustments, the simplification factor should ideally be divisible by the length of the given time series without remainder. For example, out of 365 days, every fifth day can be selected via slicing without any problems (365/5=73), but every tenth day results in a remainder (365/10=36.5). In order to be able to simplify the time series correctly, in such cases the given time series is shortened so far that the calculation is correct. For slicing with every tenth day, for example, the time series would be shortened to 360 days (360/10=36). In sampling methods, the selected periods are strung together and merged into a new time series. The individual sample periods are partially assigned new time stamps" [1]. 
+"For a time series' adjustments, the simplification factor should ideally be divisible by the length of the given time series without remainder. For example, out of 365 days, every fifth day can be selected via slicing without any problems (365/5=73), but every tenth day results in a remainder (365/10=36.5). In order to be able to simplify the time series correctly, in such cases the given time series is shortened so far that the calculation is correct. For slicing with every tenth day, for example, the time series would be shortened to 360 days (360/10=36). In sampling methods, the selected periods are strung together and merged into a new time series. The individual sample periods are partially assigned new time stamps" [1].
 
 **Variable cost factor:**
-"To ensure the correct consideration of the relationship between variable and periodical (annual) costs in the case of shortened time series, variable costs are multiplied by the variable cost factor" [1]: 
+"To ensure the correct consideration of the relationship between variable and periodical (annual) costs in the case of shortened time series, variable costs are multiplied by the variable cost factor" [1]:
 
 `variable cost factor = original number of timesteps / new number of timesteps`
 
@@ -140,6 +144,6 @@ Depending on the simplification applied, further adjustments to the energy syste
 
 References
 ==========
-[1] Klemm C. *Model-based run-time and memory optimization for a mixed-used multi-energy system model with high spatial resolution*, unpublished at the time of publication of this documentation, 2022.
+[1] Klemm C. *Model-based run-time and memory optimization for a mixed-use multi-energy system model with high spatial resolution*, preprint submitted to 'Applied Energy', `Available here <https://www.researchgate.net/publication/361634152_Model-based_run-time_and_memory_optimization_for_a_mixed-use_multi-energy_system_model_with_high_spatial_resolution>`_ , 2022.
 
 [2] Green, Richard, Iain Staffell, and Nicholas Vasilakos. *Divide and Conquer? k-Means Clustering of Demand Data Allows Rapid and Accurate Simulations of the British Electricity System.* IEEE Transactions on Engineering Management 61.2 (2014): 251-260.

@@ -1,4 +1,4 @@
-Sourcecode documentation
+Source code documentation of the SESMG algorithm
 *************************************************
 The Spreadsheet Energy System Model Generator has a hierarchical structure and
 consists of a total of four work blocks, which in turn consist of various functions and subfunctions.
@@ -8,7 +8,7 @@ input and output variables and further details can be easily accessed via the py
 help function. The model generator’s flow chart is shown in the following figure, including all
 input and output data, used functions and Python libraries.
 
-.. figure:: ../images/program_flow.png
+.. figure:: ../images/sourcecode_documentation/program_flow.png
 	:width: 100%
 	:alt: Program-Flow
 	:align: center
@@ -33,12 +33,12 @@ load profiles (residential heat, commercial heat, electricity) as well as sinks 
 profiles that were created with the Richardson tool. Although it is untypical to convert
 a function into a single sub-function, this alternative was chosen for the creation of
 transformers and storages. This offers the option to add further sub-functions such as
-additional types of transformers and storages lateron. Lastly, the creation of links is
+additional types of transformers and storages later on. Lastly, the creation of links is
 divided into the creation of undirected and directed links.
 
 **Optimize Model**. Within the third block, the CBC solver is utilized to solve the energy
 system for minimum costs. It returns the “best” scenario. This block only contains one
-function. Again, further functions may be added lateron, for example the combination
+function. Again, further functions may be added later on, for example the combination
 of more than one assessment criterion.
 
 **Create Results**. In the last block, the scenario as returned from the CBC solver is
@@ -84,6 +84,20 @@ create\_objects module
    :undoc-members:
    :show-inheritance:
    
+district\_heating
+-----------------------------------
+.. figure:: ../images/sourcecode_documentation/district_heating_sourcecode_flowchart.png
+	:width: 100%
+	:alt: DH-Flow
+	:align: center
+
+	Program flow of the district heating algorithm.
+
+.. automodule:: program_files.district_heating
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 create\_graph module
 -----------------------------------
 

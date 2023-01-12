@@ -20,7 +20,7 @@ The project was funded by the BMBF within the framework of the Federal Ministry
 of Education and Research's `RES:Z "Resource-Efficient Urban Districts" <https://ressourceneffiziente-stadtquartiere.de/>`_ funding 
 programme. The funding measure is part of the flagship initiative "City of the Future" within the BMBF's framework programme "Research for Sustainable Development - FONA3".
 
-.. figure:: ../images/R2Q_Logos.png
+.. figure:: ../images/information/R2Q_Logos.png
    :width: 100 %
    :alt: R2Q_logos
    :align: center
