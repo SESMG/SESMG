@@ -160,7 +160,7 @@ efficiency of the collector, A1 is the linear heat loss coefficient
 and A2 is the quadratic heat loss coefficient. Values for Eta 0, A1
 and A2 are collector specific values and can be found in data sheets.
 These values are measured and calculated according to DIN EN ISO
-9806. The parameters C1 and C2 for concentrated solar power are 
+9806. The parameters C1 and C2 for concentrated solar power are
 collector specific values as
 well. An exemplary  set of values is given
 in the documentation on how to use the `scenario file <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/manual/ScenarioSpreadsheet.html#concentrated-solar-power>`_.
