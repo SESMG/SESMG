@@ -15,10 +15,7 @@ The HTML-Page consists the following elements:
     
 """
 
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
-import dash_table
+from dash import Dash, html, dash_table, dcc
 import pandas as pd
 from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
@@ -34,7 +31,7 @@ if sys.argv[1] != "-T":
         result_path_import = result_path_import[1:]
 # necessary for Sphinx documentation
 else:
-    result_path_import = "../../results"
+    result_path_import = "../results"
 
 
 def return_component_value(componentid, table):
@@ -95,7 +92,7 @@ external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 options = dict()
 
 # Creating the application, which is running the interactive page
-demo_app = dash.Dash(__name__, **options)
+demo_app = Dash(__name__, **options)
 
 demo_app.layout = html.Div(
     children=[
