@@ -8,7 +8,7 @@ import os
 import csv
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 from program_files.Demo_Tool import demo_tool
-from program_files.urban_district_upscaling import urban_district_upscaling_GUI
+from program_files.GUI_files import urban_district_upscaling_GUI
 
 
 def create_elements(sheet, elements, texts, values, first_row):

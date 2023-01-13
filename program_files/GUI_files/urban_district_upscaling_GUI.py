@@ -72,7 +72,8 @@ class upscaling_frame_class:
             pre_scenario=pre_scenario,
             standard_parameter_path=standard_param,
             output_scenario=scenario_name,
-            plain_sheet=os.path.join(os.path.dirname(__file__), r"plain_scenario.xlsx"),
+            plain_sheet=os.path.join(os.path.dirname(__file__),
+                                     r"../urban_district_upscaling/plain_scenario.xlsx"),
         )
 
     def create_overview(self, components):
@@ -82,10 +83,12 @@ class upscaling_frame_class:
     def __init__(self, window, tab_control, upscaling_frame):
 
         self.pre_scenario_path = StringVar(
-            window, os.path.join(os.path.dirname(__file__), r"pre_scenario.xlsx")
+            window, os.path.join(os.path.dirname(__file__),
+                                 r"../urban_district_upscaling/pre_scenario.xlsx")
         )
         self.standard_parameters_path = StringVar(
-            window, os.path.join(os.path.dirname(__file__), r"standard_parameters.xlsx")
+            window, os.path.join(os.path.dirname(__file__),
+                                 r"../urban_district_upscaling/standard_parameters.xlsx")
         )
         self.scenario_name = StringVar(
             window,
