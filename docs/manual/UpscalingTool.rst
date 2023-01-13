@@ -109,10 +109,10 @@ Upscaling sheet
    :header:  label,comment,active,year of construction,distance of electric vehicles,electricity demand,heat demand,building type,units,occupants per unit,gross building area,latitude,longitude,year of construction wall,area outer wall,year of construction windows,area windows,year of construction roof,rooftype,area roof,cluster ID,flow temperature
 
 
-x,,,,km/a,kWh / (sqm * a),kWh / (sqm * a),,,,sqm,° WGS 84,° WGS 84,,sqm,,sqm,,,sqm,,°C
-001_building,,1,1800,0,400,400,COM_Food,1,1,100,52.147317,7.342736,1800,50,0,0,1967,flat roof,25,0,60
-002_building,,1,1800,0,0,0,MFB,1,1,50,52.147099,7.342589,1979,100,1999,20,1993,flat roof,50,0,60
-003_building,,1,1800,10000,30,20,SFB,1,1,120,52.146666,7.342088,1994,250,2001,125,1992,step roof,125,0,40
+   x,,,,km/a,kWh / (sqm * a),kWh / (sqm * a),,,,sqm,° WGS 84,° WGS 84,,sqm,,sqm,,,sqm,,°C
+   001_building,,1,1800,0,400,400,COM_Food,1,1,100,52.147317,7.342736,1800,50,0,0,1967,flat roof,25,0,60
+   002_building,,1,1800,0,0,0,MFB,1,1,50,52.147099,7.342589,1979,100,1999,20,1993,flat roof,50,0,60
+   003_building,,1,1800,10000,30,20,SFB,1,1,120,52.146666,7.342088,1994,250,2001,125,1992,step roof,125,0,40
 
 
 
