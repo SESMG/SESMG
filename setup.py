@@ -22,8 +22,10 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=install_requires,
     classifiers=[
+        # complete classifier list:
+        # http://pypi.python.org/pypi?%3Aaction=list_classifiers
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.9",
     ],
     extras_require={"dev": ["pytest", "sphinx", "sphinx_rtd_theme"]},
 )
