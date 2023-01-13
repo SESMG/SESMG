@@ -44,7 +44,8 @@ Linux only:
 
 ### Step 2) Download the Spreadsheet Energy System Model Generator from GIT as .zip folder 
 
-### Step 3) Extract the .zip folder into any directory on the computer. 
+### Step 3) Extract the .zip folder into any directory on the computer
+Watch out: we do not support spaces in the path yet. It will lead to an error if there is one.
 
 ### Step 4) Install pip (Linux only)
 
@@ -96,7 +97,6 @@ Examples are stored in a separate GIT-Repository: https://github.com/chrklemm/SE
 
 ✘ No support of Python 3.8 and newer <br />
 ✘ Issues on installing depedencies <br />
-✘ No use of CI <br />
 ✘ Incomplete Documentation <br />
 ✘ Programming of tests still pending <br />
 ✘ More time to code other things ... wait ✓!  
@@ -128,18 +128,16 @@ Christian Klemm - christian.klemm@fh-muenster.de
 
 The Spreadsheet Energy System Model Generator was carried out within the 
 research project [R2Q "Resource Planing for Urban Districts](https://www.fh-muenster.de/forschungskooperationen/r2q/index.php). 
-The project was funded by the BMBF within the framework of the Federal Ministry 
-of Education and Research's [RES:Z "Resource-Efficient Urban Districts](https://ressourceneffiziente-stadtquartiere.de) funding 
-programme. The funding measure is part of the flagship initiative "City of the Future" within the BMBF's framework programme "Research for Sustainable Development - FONA3".
+The project was funded by the Federal Ministry 
+of Education and Research (BMBF) funding program [RES:Z "Resource-Efficient Urban Districts](https://ressourceneffiziente-stadtquartiere.de). The funding measure is part of the flagship initiative "City of the Future" within the BMBF's framework programme "Research for Sustainable Development - FONA3".
+The contributors gratefully acknowledge the support of BMBF (grant number 033W102).
 
 ### License
 
-This project is published under MIT license, click [here](https://github.com/chrklemm/SESMG/blob/master/LICENSE) for more details.
+This project is published under GNU GPL-3.0 license, click [here](https://github.com/chrklemm/SESMG/blob/master/LICENSE) for more details.
 
 ## Contributing ![contribution](https://cs.adelaide.edu.au/~christoph/badges/content-contribution-blue.svg)
 
 Issues and Pull Requests are greatly appreciated. If you've never contributed to an open source project before I'm more than happy to walk you through how to create a pull request.
 
 Detailed description of the contribution procedure as well as the projects coding standards can be found [here](/docs/CONTRIBUTING.md).
-
-
