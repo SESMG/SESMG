@@ -6,7 +6,7 @@ from tkinter import filedialog
 import subprocess
 import os
 import csv
-from program_files.Spreadsheet_Energy_System_Model_Generator import sesmg_main
+from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 from program_files.Demo_Tool import demo_tool
 from program_files.urban_district_upscaling import urban_district_upscaling_GUI
 
@@ -177,7 +177,8 @@ def getSavePath():
 def show_graph():
     """creates and shows a graph of the energy system given by a Spreadsheet
     - the created graphs are saved in /results/graphs"""
-    from program_files import create_energy_system, create_graph
+    from program_files.preprocessing import create_graph
+    from program_files.preprocessing import create_energy_system
 
     # DEFINES PATH OF INPUT DATA
     scenario_file = gui_variables["scenario_path"].get()

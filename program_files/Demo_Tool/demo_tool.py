@@ -4,11 +4,9 @@ import pandas as pd
 import openpyxl
 import matplotlib as mlp
 import matplotlib.pyplot as plt
-import numpy as np
-from threading import *
 import os
 import subprocess
-from program_files.Spreadsheet_Energy_System_Model_Generator import sesmg_main
+from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 
 
 class demo_frame_class:
@@ -210,10 +208,6 @@ class demo_frame_class:
         import numpy as np
 
         from matplotlib.figure import Figure
-        from matplotlib.backends.backend_tkagg import (
-            FigureCanvasTkAgg,
-            NavigationToolbar2Tk,
-        )
 
         # the figure that will contain the plot
         fig = Figure(figsize=(5, 5), dpi=100)

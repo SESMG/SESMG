@@ -80,17 +80,12 @@ Christian Klemm - christian.klemm@fh-muenster.de
 import logging
 from oemof.tools import logger
 import os
-import pandas as pd
 from threading import *
 import sys
-from program_files import (
-    create_objects,
-    create_results,
-    create_energy_system,
-    optimize_model,
-    create_graph,
-    data_preparation,
-)
+from program_files.postprocessing import create_results
+from program_files.processing import optimize_model
+from program_files.preprocessing import create_objects, create_energy_system, \
+    create_graph, data_preparation
 
 
 def sesmg_main(

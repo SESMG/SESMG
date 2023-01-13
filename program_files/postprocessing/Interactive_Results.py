@@ -34,7 +34,7 @@ if sys.argv[1] != "-T":
         result_path_import = result_path_import[1:]
 # necessary for Sphinx documentation
 else:
-    result_path_import = "../results"
+    result_path_import = "../../results"
 
 
 def return_component_value(componentid, table):
