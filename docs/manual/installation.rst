@@ -91,7 +91,7 @@ Linux
 - go to `<https://phoenixnap.com/kb/how-to-install-python-3-ubuntu/>`_
 - use Python3.7 instead of Python3.8
 
-.. note:: 
+.. note::
 	
 	Make sure that the alias python3 is set to Python3.7.x.
 	If not use update-alternatives to change it and test ist afterwards.
