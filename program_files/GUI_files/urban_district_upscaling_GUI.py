@@ -1,215 +1,159 @@
 import os
-from tkinter import *
-from tkinter import filedialog
-from program_files.urban_district_upscaling.urban_district_upscaling_pre_processing import (
-    urban_district_upscaling_pre_processing,
-)
+from program_files import urban_district_upscaling_pre_processing
 from program_files.urban_district_upscaling.urban_district_upscaling_post_processing import (
     urban_district_upscaling_post_processing,
+)
+from program_files.urban_district_upscaling.urban_district_upscaling_post_processing_clustered import (
+    urban_district_upscaling_post_processing_clustered,
 )
 import subprocess
 
 
-class upscaling_frame_class:
-    def getPreScenario(self):
+class UpscalingFrameClass:
+    """
+    This class is used to create the Graphical User Interface
+    (GUI) for the Urban_District_Upscaling_Tool.
+    In this context, it uses the methods of the superclass
+    MethodsGUI.
+
+    :param frame: tkinter upscaling frame
+    :type frame: ttk.Frame
+    :param gui_variables: dictionary containing GUI variables
+    :type gui_variables: dict
+    :param tk: object containing the super class methods
+    :type tk: GUI object
+
+    """
+
+    @staticmethod
+    def scenario_upscaling(
+        pre_scenario, standard_param, scenario_name, clustering, clustering_dh
+    ):
         """
-        opens a file dialog and sets the selected path for the
-        variable "pre_scenario_path"
+        Methods starting the upscaling pre_processing Algorithm
+
+        :param pre_scenario: containing path to pre_scenario file
+        :type pre_scenario: tk.StringVar
+        :param standard_param: containing path to standard_parameter
+            file
+        :type standard_param: tk.StringVar
+        :param scenario_name: containing path to scenario_name file
+        :type scenario_name: tk.StringVar
+        :param clustering: containing boolean rather the pre
+            scenario is clustered or not
+        :type clustering: tk.BooleanVar
+        :param clustering_dh:
+        :type clustering_dh:
         """
-
-        path = filedialog.askopenfilename(
-            filetypes=(("Spreadsheet Files", "*.xlsx"), ("all files", "*.*"))
-        )
-        self.pre_scenario_path.set(path)
-        print(self.pre_scenario_path.get())
-        self.paths["pre_scenario"] = self.pre_scenario_path.get()
-        self.pre_scenario_path_label.configure(text=self.pre_scenario_path.get())
-
-    def getStandardParameters(self):
-        """
-        opens a file dialog and sets the selected path for the
-        variable "standard_parameters_path"
-        """
-
-        path = filedialog.askopenfilename(
-            filetypes=(("Spreadsheet Files", "*.xlsx"), ("all files", "*.*"))
-        )
-        self.standard_parameters_path.set(path)
-
-        self.paths["standard_parameters"] = self.standard_parameters_path.get()
-        self.standard_parameters_path_label.configure(
-            text=self.standard_parameters_path.get()
-        )
-
-    def getComponentsCSV(self):
-        """
-        opens a file dialog and sets the selected path for the
-        variable "components_path"
-        """
-
-        path = filedialog.askopenfilename(
-            filetypes=(("Spreadsheet Files", "*.csv"), ("all files", "*.*"))
-        )
-        self.components_path.set(path)
-
-        self.paths["componentsCSV"] = self.components_path.get()
-        self.components_path_label.configure(text=self.components_path.get())
-
-    def getScenarioName(self):
-        """opens a file dialog and sets the selected path for the variable "prescenario" """
-
-        path = filedialog.askopenfilename(
-            filetypes=(("Spreadsheet Files", "*.xlsx"), ("all files", "*.*"))
-        )
-        self.scenario_name.set(path)
-
-        self.paths["scenario_name"] = self.scenario_name.get()
-        self.scenario_name_label.configure(text=self.scenario_name.get())
-
-    def scenario_upscaling(self, pre_scenario, standard_param, scenario_name):
-        # urban_district_upscaling
         urban_district_upscaling_pre_processing(
-            pre_scenario=pre_scenario,
-            standard_parameter_path=standard_param,
-            output_scenario=scenario_name,
-            plain_sheet=os.path.join(os.path.dirname(__file__),
-                                     r"../urban_district_upscaling/plain_scenario.xlsx"),
+            paths=[
+                pre_scenario.get(),
+                standard_param.get(),
+                scenario_name.get(),
+                os.path.join(
+                    os.path.dirname(__file__),
+                    r"../urban_district_upscaling/plain_scenario.xlsx",
+                ),
+            ],
+            clustering=clustering.get(),
+            clustering_dh=clustering_dh.get(),
         )
 
-    def create_overview(self, components):
-        urban_district_upscaling_post_processing(components)
+    @staticmethod
+    def create_overview(components, clustering):
+        """
+        Methods starting the upscaling post_processing Algorithm
+
+        :param components: containing path to components.csv
+        :type components: tk.StringVar
+        :param clustering: containing boolean rather the pre
+            scenario is clustered or not
+        :type clustering: tk.BooleanVar
+
+        """
+        if clustering:
+            urban_district_upscaling_post_processing_clustered(components.get())
+        else:
+            urban_district_upscaling_post_processing(components.get())
         subprocess.call(os.path.dirname(__file__) + "/overview.xlsx", shell=True)
 
-    def __init__(self, window, tab_control, upscaling_frame):
-
-        self.pre_scenario_path = StringVar(
-            window, os.path.join(os.path.dirname(__file__),
-                                 r"../urban_district_upscaling/pre_scenario.xlsx")
-        )
-        self.standard_parameters_path = StringVar(
-            window, os.path.join(os.path.dirname(__file__),
-                                 r"../urban_district_upscaling/standard_parameters.xlsx")
-        )
-        self.scenario_name = StringVar(
-            window,
-            os.path.join(os.path.dirname(__file__), r"auto_generated_scenario.xlsx"),
-        )
-        self.components_path = StringVar()
-        # Definition of the Frame
-        self.mainpath = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-        self.window = window
-        tab_control.add(upscaling_frame, text="Urban District Upscaling")
-
-        # Paths
-        self.paths = {
-            "pre_scenario": self.pre_scenario_path.get(),
-            "standard_parameters": self.standard_parameters_path.get(),
-            "scenario_name": self.scenario_name.get(),
-            "componentsCSV": self.components_path.get(),
-        }
+    def __init__(self, frame, gui_variables, tk):
         # Headline
         row = 0
-        Label(
-            upscaling_frame, text="Urban District Upscaling", font="Helvetica 10 bold"
-        ).grid(column=0, columnspan=7, row=row, sticky="W")
-
+        tk.create_heading(
+            frame, "Urban District Upscaling", 0, row, "w", True, columnspan=7
+        )
         # Description
-        row = row + 1
-        Label(
-            upscaling_frame,
-            text="Standardized implementation of urban energy systems",
-            font="Helvetica 10",
-        ).grid(column=0, columnspan=7, row=row, sticky="W")
-
+        row += 1
+        tk.create_heading(
+            frame,
+            "Standardized implementation of " "urban energy systems",
+            0,
+            row,
+            "w",
+            columnspan=7,
+        )
         row += 1
         # Headline
-        main_head1 = Label(
-            upscaling_frame, text="Preprocessing", font="Helvetica 10 bold"
-        ).grid(column=0, row=row, sticky="w")
+        tk.create_heading(frame, "Preprocessing", 0, row, "w", True)
         row += 1
-        # Selection of the Pre-Scenario-File
-        Label(upscaling_frame, text="Pre-Scenario", font="Helvetica 10").grid(
-            column=0, row=row, sticky="W"
+        upscaling_elements = {
+            "Pre-Scenario": [
+                lambda: tk.get_path("xlsx", gui_variables["pre_scenario_path"]),
+                "Change",
+                "pre_scenario_path",
+            ],
+            "Standard Parameters": [
+                lambda: tk.get_path("xlsx", gui_variables["standard_parameter_path"]),
+                "Change",
+                "standard_parameter_path",
+            ],
+            "Scenario Name": [
+                lambda: tk.get_path("xlsx", gui_variables["scenario_name"]),
+                "Change",
+                "scenario_name",
+            ],
+        }
+        row = tk.create_button_lines(frame, upscaling_elements, row, gui_variables)
+        row = (
+            tk.create_cb_lines(frame, {"Clustering": "clustering"}, row, gui_variables)
+            + 1
         )
-        Button(upscaling_frame, text="Change", command=self.getPreScenario).grid(
-            column=1, row=row, sticky="W"
+        row = (
+            tk.create_cb_lines(
+                frame, {"Clustering DH": "clustering_dh"}, row, gui_variables
+            )
+            + 1
         )
-        self.pre_scenario_path_label = Label(
-            upscaling_frame, text=self.pre_scenario_path.get(), font="Helvetica 10"
-        )
-        self.pre_scenario_path_label.grid(column=2, row=row, sticky="W")
-
-        # Selection of Standard-Parameter-File
-        row = row + 1
-        Label(upscaling_frame, text="Standard Parameters", font="Helvetica 10").grid(
-            column=0, row=row, sticky="W"
-        )
-        Button(upscaling_frame, text="Change", command=self.getStandardParameters).grid(
-            column=1, row=row, sticky="W"
-        )
-        self.standard_parameters_path_label = Label(
-            upscaling_frame,
-            text=self.standard_parameters_path.get(),
-            font="Helvetica 10",
-        )
-        self.standard_parameters_path_label.grid(column=2, row=row, sticky="W")
-
-        # Name zu erstellendes Scenario
-        row = row + 1
-        Label(upscaling_frame, text="Scenario Name", font="Helvetica 10").grid(
-            column=0, row=row, sticky="W"
-        )
-        Button(upscaling_frame, text="Change", command=self.getScenarioName).grid(
-            column=1, row=row, sticky="W"
-        )
-        self.scenario_name_label = Label(
-            upscaling_frame, text=self.scenario_name.get(), font="Helvetica 10"
-        )
-        self.scenario_name_label.grid(column=2, row=row, sticky="W")
-
-        # Create Scenario
-        row = row + 1
-        Label(upscaling_frame, text="Create Scenario", font="Helvetica 10").grid(
-            column=0, row=row, sticky="W"
-        )
-        Button(
-            upscaling_frame,
-            text="Execute",
-            command=lambda: self.scenario_upscaling(
-                pre_scenario=self.paths["pre_scenario"],
-                standard_param=self.paths["standard_parameters"],
-                scenario_name=self.paths["scenario_name"],
-            ),
-        ).grid(column=1, row=row)
-        # Path to components csv
-        row += 1
+        upscaling_elements = {
+            "Create Scenario": [
+                lambda: self.scenario_upscaling(
+                    pre_scenario=gui_variables["pre_scenario_path"],
+                    standard_param=gui_variables["standard_parameter_path"],
+                    scenario_name=gui_variables["scenario_name"],
+                    clustering=gui_variables["clustering"],
+                    clustering_dh=gui_variables["clustering_dh"],
+                ),
+                "Execute",
+                "",
+            ]
+        }
+        row = tk.create_button_lines(frame, upscaling_elements, row, gui_variables)
         # Headline
-        main_head2 = Label(
-            upscaling_frame, text="Postprocessing", font="Helvetica 10 bold"
-        ).grid(column=0, row=row, sticky="w")
+        tk.create_heading(frame, "Postprocessing", 0, row, "w", True)
         row += 1
-        Label(
-            upscaling_frame,
-            text="Components CSV for post processing",
-            font="Helvetica 10",
-        ).grid(column=0, row=row, sticky="W")
-        Button(upscaling_frame, text="Change", command=self.getComponentsCSV).grid(
-            column=1, row=row, sticky="W"
-        )
-        self.components_path_label = Label(
-            upscaling_frame, text=self.components_path.get(), font="Helvetica 10"
-        )
-        self.components_path_label.grid(column=2, row=row, sticky="W")
-
-        # Create Post Scenario
-        row = row + 1
-        Label(upscaling_frame, text="Create Overview", font="Helvetica 10").grid(
-            column=0, row=row, sticky="W"
-        )
-        Button(
-            upscaling_frame,
-            text="Execute",
-            command=lambda: self.create_overview(
-                components=self.paths["componentsCSV"]
-            ),
-        ).grid(column=1, row=row)
+        upscaling_elements = {
+            "Components CSV for post processing": [
+                lambda: tk.get_path("csv", gui_variables["components_path"]),
+                "Change",
+                "components_path",
+            ],
+            "Create Overview": [
+                lambda: self.create_overview(
+                    components=gui_variables["components_path"], clustering=True
+                ),
+                "Execute",
+                "",
+            ],
+        }
+        tk.create_button_lines(frame, upscaling_elements, row, gui_variables)
