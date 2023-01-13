@@ -13,7 +13,7 @@ Using the Upscaling Tool
 
 The upscaling tool can be used with the following steps:
 
-1. Fill the "upscaling"-xlsx-sheet.
+1. Fill the "upscaling"-xlsx-sheet (`upscaling sheet`_).
 2. If necessary, adjust the "standard_parameters"-xlsx-sheet, for example if electricity prices have increased. 
 3. Execute the upscaling tool to generate a energy system model with the structure described below.
 4. Execute the automatically generated model_definition-xlsx-sheet.
@@ -101,8 +101,8 @@ Upscaling Model
 
      
 
-
-Pre-Scenario
+.. _`upscaling sheet`:
+Upscaling sheet
 ------------
 
 .. list-table:: pre-scenario input columns
