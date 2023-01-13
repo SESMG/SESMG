@@ -1,23 +1,37 @@
-# Spreadsheet Energy System Model Generator (SESMG) ![what-why](https://cs.adelaide.edu.au/~christoph/badges/content-what-why-brightgreen.svg) ![how](https://cs.adelaide.edu.au/~christoph/badges/content-how-green.svg)
+# Spreadsheet Energy System Model Generator (SESMG) ![what-why](https://cs.adelaide.edu.au/~christoph/badges/content-what-why-brightgreen.svg) ![how](https://cs.adelaide.edu.au/~christoph/badges/content-how-green.svg) 
 
-The **SESMG** provides a spreadsheet interface to the "Open Energy Modeling Framework" ("oemof"), allowing modeling and optimization of urban energy systems based the spreadsheet. 
+
+## Status Badges
+
+| Badge                                                                                                                                                                                                                 | Description                                                                          | Target Value                                             |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|----------------------------------------------------------|
+| [![codecov](https://codecov.io/gh/SESMG/SESMG/branch/master/graph/badge.svg?token=70AHZEB2IN)](https://codecov.io/gh/SESMG/SESMG)                                                                                                                    | Indicates the test coverage of the code (Tool 1).                                    | min. 60 % (https://doi.org/10.1371/journal.pcbi.1009481) |
+| [![Test Coverage](https://api.codeclimate.com/v1/badges/5654620e2adb1eb286da/test_coverage)](https://codeclimate.com/github/chrklemm/SESMG/test_coverage)                                                             | Indicates the test coverage of the code (Tool 2).                                    | min. 60 % (https://doi.org/10.1371/journal.pcbi.1009481) |
+| [![Maintainability](https://api.codeclimate.com/v1/badges/5654620e2adb1eb286da/maintainability)](https://codeclimate.com/github/chrklemm/SESMG/maintainability)                                                       | Indicates the effort for the maintenance of the code.                                |                                                          |
+| [![Requirements Status](https://requires.io/github/chrklemm/SESMG/requirements.svg?branch=dev)](https://requires.io/github/chrklemm/SESMG/requirements/?branch=dev)                                                   | Indicates the currency of the used packages and dependencies.                        | 'up to date'                                             |
+| [![Documentation Status](https://readthedocs.org/projects/spreadsheet-energy-system-model-generator/badge/?version=latest)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/?badge=latest) | Indicates if the automated process for the creation of the documentation is working. | 'passing'                                                |
+
+
+## Software Description
+
+The **SESMG** provides a spreadsheet interface to the Open Energy Modeling Framework (oemof), allowing modeling and optimization of urban energy systems based a spreadsheet.
 
 **SESMG** makes it easier to create oemof-based energy system models.
 
-- You don't need to touch the command line.
-- You don't need programming skills.
-- **SESMG** is an intuitive spreadsheet driven tool.
+- You don't need to touch the command line
+- You don't need programming skills
+- **SESMG** is an intuitive spreadsheet driven tool
 
 The components defined in this spreadsheet are defined with the included Python 
-program and the open source Python library "oemof", assembled to an energy system 
-and optimized with open source solvers (e.g. “CBC”). The modeling results can be 
-viewed and analyzed using a browser-based results output.
+program and the open source Python library “oemof”, assembled to an energy system 
+and optimized with open source solvers, e.g. “cbc”. The modeling results can be 
+viewed and analyzed using a browser-based results output.)
 
-![workflow_graph_SESMG](/docs/images/SESMG_principle.png)
+![workflow_graph_SESMG](/docs/images/readme/workflow_graph.jpeg)
 
 ## Quick Start ![how](https://cs.adelaide.edu.au/~christoph/badges/content-how-green.svg)
 
-### Step 1) Download Python 3.7 
+### Step 1) Download Python 3.7 or newer (Python 3.10 was not tested yet)
 
 - go to the Python download page
 - chose a Python version (e.g. “Python 3.7.6”) and click “download”
@@ -28,7 +42,7 @@ Linux only:
 - run `$ sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 2`
 - test by running `$ python3 --version`
 
-### Step 2) Download the SESMG from GIT as .zip folder 
+### Step 2) Download the Spreadsheet Energy System Model Generator from GIT as .zip folder 
 
 ### Step 3) Extract the .zip folder into any directory on the computer
 Watch out: we do not support spaces in the path yet. It will lead to an error if there is one.
@@ -48,8 +62,8 @@ run `$ sudo apt-get install python3.7-tk`
 Download [here](http://ampl.com/dl/open/cbc/cbc-win64.zip)
 
 <u>Within this step there are two options: </u>
-- install the cbc-Solver on your whole operating system.
-- copy and paste the downloaded executable two your **SESMG**-working directory.
+- install the cbc-Solver on your whole operating system 
+- copy and paste the downloaded executable two your **SESMG**-working directory
 
 #### For Linux:
 
@@ -60,30 +74,26 @@ run `$ sudo apt-get install coinor-cbc`
 #### For Windows:
 Download [here](https://graphviz.gitlab.io/download/)
 
-- Select and download the graphviz version for your device (e.g. graphviz-2.38.msi for Windows).
-- Execute the installation manager you just downloaded. Choose the following directory for the installation: “C:\Program Files (x86)\Graphviz2.38" (should be the default settings).
+- select and download the graphviz version for your device (e.g. graphviz-2.38.msi for Windows)
+- Execute the installation manager you just downloaded. Choose the following directory for the installation: “C:\Program Files (x86)\Graphviz2.38" (should be the default settings)
 
 #### For Linux:
 
 run `$ sudo apt-get install graphviz`
 
-### Step 8) Start the operating system specific installation file
+### Step 8) Start the operating system specific installation file. 
 
 
 ## SESMG Features & Releases ![what-why](https://cs.adelaide.edu.au/~christoph/badges/content-what-why-brightgreen.svg) 
 
-### Project Status 
-[![Documentation Status](https://readthedocs.org/projects/spreadsheet-energy-system-model-generator/badge/?version=latest)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/?badge=latest)
-[![Requirements Status](https://requires.io/github/chrklemm/SESMG/requirements.svg?branch=master)](https://requires.io/github/chrklemm/SESMG/requirements/?branch=master)
-
 ### Examples
-Examples are stored in a separate GIT-Repository: https://github.com/chrklemm/SESMG_Examples.
+Examples are stored in a separate GIT-Repository: https://github.com/chrklemm/SESMG_Examples
 
 ### Project status
 ✓ Draft (alpha, beta) State <br />
 ✓ Modeling and Optimization of holistic energy systems <br />
 ✓ Several result plotting oportunities <br />
-✓ Usable on Windows, MacOS, and Linux <br />
+✓ usable on Windows, MacOS and Linux <br />
 
 ✘ No support of Python 3.8 and newer <br />
 ✘ Issues on installing depedencies <br />
@@ -97,7 +107,7 @@ The [documentation](https://spreadsheet-energy-system-model-generator.readthedoc
 which includes detailed instructions for **installation** and **use**, **troubleshooting** 
 and much more, can be accessed via the following link:
 
-https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/.
+https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
 
 ## Questions? ![who](https://cs.adelaide.edu.au/~christoph/badges/content-who-yellow.svg) ![references](https://cs.adelaide.edu.au/~christoph/badges/content-references-orange.svg)
 
@@ -128,6 +138,6 @@ This project is published under GNU GPL-3.0 license, click [here](https://github
 
 ## Contributing ![contribution](https://cs.adelaide.edu.au/~christoph/badges/content-contribution-blue.svg)
 
-Issues and Pull Requests are greatly appreciated. If you've never contributed to an open source project before I'm more than happy to walk you through how to create a Pull Request.
+Issues and Pull Requests are greatly appreciated. If you've never contributed to an open source project before I'm more than happy to walk you through how to create a pull request.
 
 Detailed description of the contribution procedure as well as the projects coding standards can be found [here](/docs/CONTRIBUTING.md).

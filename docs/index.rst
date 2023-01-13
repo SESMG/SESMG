@@ -28,7 +28,7 @@ Structure of Energy Systems
 	:caption: Structure of Energy Systems
 	
 	structure_of_energy_system/structure
-	
+
 Manual
 -------------------------------------------------
 * :doc:`manual/installation`
@@ -51,7 +51,7 @@ Manual
 	manual/Results
 	manual/UpscalingTool
 	manual/DemoTool
-	
+
 Troubleshooting 
 -------------------------------------------------
 * :doc:`troubleshooting/troubleshooting`
@@ -80,7 +80,7 @@ Sourcecode Documentation
     sourcecode_documentation/upscaling_tool
     sourcecode_documentation/program_functions
 	
-	
+
 Further Information
 -------------------------------------------------
 * :doc:`information/publications`
