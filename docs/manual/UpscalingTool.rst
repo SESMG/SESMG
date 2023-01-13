@@ -105,31 +105,72 @@ Upscaling Model
 Upscaling sheet
 =========================
 
-Catergory 1
+Category 1
 -----------------------
 
 .. csv-table:: Input for the upscaling sheet. Category 1: Building-specific data.
    :header:  label,comment,active,year of construction,distance of electric vehicles,electricity demand,heat demand,building type,units,occupants per unit,gross building area,latitude,longitude,year of construction wall,area outer wall,year of construction windows,area windows,year of construction roof,rooftype,area roof,cluster ID,flow temperature
-
 
    x,,,,km/a,kWh / (sqm * a),kWh / (sqm * a),,,,sqm,° WGS 84,° WGS 84,,sqm,,sqm,,,sqm,,°C
    001_building,,1,1800,0,400,400,COM_Food,1,1,100,52.147317,7.342736,1800,50,0,0,1967,flat roof,25,0,60
    002_building,,1,1800,0,0,0,MFB,1,1,50,52.147099,7.342589,1979,100,1999,20,1993,flat roof,50,0,60
    003_building,,1,1800,10000,30,20,SFB,1,1,120,52.146666,7.342088,1994,250,2001,125,1992,step roof,125,0,40
 
-Catergory 2
+Category 2
 -----------------------
 
 
-.. csv-table:: Input for the upscaling sheet. Category 1: Building-specific data.
-   :header:  label,comment,active,year of construction,distance of electric vehicles,electricity demand,heat demand,building type,units,occupants per unit,gross building area,latitude,longitude,year of construction wall,area outer wall,year of construction windows,area windows,year of construction roof,rooftype,area roof,cluster ID,flow temperature
+.. csv-table:: Input for the upscaling sheet. Category 2: Building investment data.
+   :header:  label,HS,ashp,gchp,parcel ID,oil heating,gas heating,battery storage,thermal storage,central heat,electric heating,st or pv 1,roof area 1,surface tilt 1,azimuth 1,st or pv 2,roof area 2,surface tilt 2,azimuth 2
+
+   x,,,,,,,,,,,,(m²),(°),(°),,(m²),(°),(°)
+   Gartenhuette_GB,1,no,no,no,no,no,no,no,yes,no,0,0,0,0,0,0,0,0
+   Schaafstall,1,no,no,no,no,yes,no,no,no,no,pv&st,150,75,100,0,0,0,0
+   Residenz_JB,1,yes,yes,GCHP25,no,no,yes,yes,yes,no,pv&st,200,50,180,0,0,0,0
 
 
-   x,,,,km/a,kWh / (sqm * a),kWh / (sqm * a),,,,sqm,° WGS 84,° WGS 84,,sqm,,sqm,,,sqm,,°C
-   001_building,,1,1800,0,400,400,COM_Food,1,1,100,52.147317,7.342736,1800,50,0,0,1967,flat roof,25,0,60
-   002_building,,1,1800,0,0,0,MFB,1,1,50,52.147099,7.342589,1979,100,1999,20,1993,flat roof,50,0,60
-   003_building,,1,1800,10000,30,20,SFB,1,1,120,52.146666,7.342088,1994,250,2001,125,1992,step roof,125,0,40
 
+Category 3
+-----------------------
+
+
+.. csv-table:: Input for the upscaling sheet. Category 3: Central investment data.
+   :header:  label,comment,active,technology,latitude,longitude,area,dh_connection,azimuth,surface tilt,flow temperature
+
+   ,,,,° WGS 84,° WGS 84,sqm,,°,°,°C
+   electricity_exchange,,1,electricity_exchange,,,,,,, 
+   battery_storage,,1,battery,,,,,,, 
+   ng_chp,,0,naturalgas_chp,,,,heat_input,,, 
+   bg_chp,,0,biogas_chp,,,,heat_input,,, 
+   pe_chp,,0,pellet_chp,,,,heat_input,,, 
+   wc_chp,,1,woodchips_chp,,,,heat_input,,, 
+   swhp,,0,swhp_transformer,,,,heat_input,,, 
+   ashp,,0,ashp_transformer,,,,heat_input,,, 
+   gchp,free area needed,1,gchp_transformer,,,2500,heat_input,,, 
+   ng_heating,,0,naturalgas_heating_plant,,,,heat_input,,, 
+   bg_heating,,0,biogas_heating_plant,,,,heat_input,,, 
+   pe_heating,,0,pellet_heating_plant,,,,heat_input,,, 
+   wc_heating,,1,woodchips_heating_plant,,,,heat_input,,, 
+   thermal_storage,,1,thermal_storage,,,,heat_input,,, 
+   p2g,,0,power_to_gas,,,,heat_input,,, 
+   heat_input,heat center,1,heat_input_bus,52,7,,,,,40
+   central_pv_st,free area needed,1,pv&st,52,7,15000,heat_input,180,22.5, 
+   screw_turbine,,1,timeseries_source,,,,,,, 
+
+
+Category 4
+-----------------------
+
+
+.. csv-table:: Input for the upscaling sheet. Category 4: Time series.
+   :header:  timestamp,dhi,pressure,temperature,windspeed,z0,dni,ghi,ground_temp,water_temp,groundwater_temp,screw_turbine.fix,electric_vehicle.fix
+
+   01.01.2012 00:00,0,100119.3125,8.656125,5.9235,0.159,0,0,12.6,14.62006667,13.06,0.420911041,0
+   01.01.2012 01:00,0,100113.836,8.9435,6.455,0.159,0,0,12.6,14.62006667,13.06,0.420911041,0
+   01.01.2012 02:00,0,100102.5625,9.210125,6.8535,0.159,0,0,12.6,14.71342667,13.06,0.420911041,0
+   01.01.2012 03:00,0,100075.5,9.6415,7.318,0.159,0,0,12.6,14.75492,13.06,0.420911041,0
+   01.01.2012 04:00,0,100026.8555,9.9285,7.916,0.159,0,0,12.6,14.99350667,13.06,0.420911041,0
+   …,…,…,…,…,…,…,…,…,…,…,…,…
 
 
 Standard Parameters
