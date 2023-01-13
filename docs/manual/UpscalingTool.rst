@@ -116,30 +116,28 @@ Category 1
    002_building,,1,1800,0,0,0,MFB,1,1,50,52.000000,7.000000,1979,100,1999,20,1993,flat roof,50,0,60
    003_building,,1,1800,10000,30,20,SFB,1,1,120,52.000000,7.000000,1994,250,2001,125,1992,step roof,125,0,40
    
-- **label**:
-- **comment**:
-- **active**:
-- **year of construction**:
-- **distance of electric vehicles (km/a)**:
-- **electricity demand (kWh / (m²  a))**:
-- **heat demand (kWh / (m² a))**:
-- **building type**:
-- **units**:
-- **occupants per unit**:
-- **gross building area	(m²)**:
-- **latitude	(° WGS 84)**:
-- **longitude	(° WGS 84)**:
-- **year of construction wall**:
-- **area outer wall	(m²)**:
-- **year of construction windows**:
-- **area windows	(m²)**:
-- **year of construction roof**:
-- **rooftype**:
-- **area roof	(m²)**:
-- **cluster ID**:
-- **flow temperature	(°C)**:
-
-  
+- **label**: description coming soon
+- **comment**: description coming soon
+- **active**: description coming soon
+- **year of construction**: description coming soon
+- **distance of electric vehicles (km/a)**: description coming soon
+- **electricity demand (kWh / (m²  a))**: description coming soon
+- **heat demand (kWh / (m² a))**: description coming soon
+- **building type**: description coming soon
+- **units**: description coming soon
+- **occupants per unit**: description coming soon
+- **gross building area	(m²)**: description coming soon
+- **latitude	(° WGS 84)**: description coming soon
+- **longitude	(° WGS 84)**: description coming soon
+- **year of construction wall**: description coming soon
+- **area outer wall	(m²)**: description coming soon
+- **year of construction windows**: description coming soon
+- **area windows	(m²)**: description coming soon
+- **year of construction roof**: description coming soon
+- **rooftype**: description coming soon
+- **area roof	(m²)**: description coming soon
+- **cluster ID**: description coming soon
+- **flow temperature	(°C)**: description coming soon
  
 
 Category 2
@@ -154,6 +152,22 @@ Category 2
    002_building,1,no,no,no,no,yes,no,no,no,no,pv&st,150,75,100,0,0,0,0
    003_building,1,yes,yes,GCHP25,no,no,yes,yes,yes,no,pv&st,200,50,180,0,0,0,0
 
+
+- **label**: description coming soon
+- **HS**: description coming soon
+- **ashp**: description coming soon
+- **gchp**: description coming soon
+- **parcel ID**: description coming soon
+- **oil heating**: description coming soon
+- **gas heating**: description coming soon
+- **battery storage**: description coming soon
+- **thermal storage**: description coming soon
+- **central heat**: description coming soon
+- **electric heating**: description coming soon
+- **st or pv 1**: description coming soon
+- **roof area 1	(m²)**: description coming soon
+- **surface tilt 1	(°)**: description coming soon
+- **azimuth 1	(°)**: description coming soon
 
 
 Category 3
@@ -184,6 +198,19 @@ Category 3
    screw_turbine,,1,timeseries_source,,,,,,, 
 
 
+ - **label**: description coming soon
+ - **comment**: description coming soon
+ - **active**: description coming soon
+ - **technology		**: description coming soon
+ - **latitude (° WGS 84)**: description coming soon
+ - **longitude	(° WGS 84)**: description coming soon
+ - **area (m²)**: description coming soon
+ - **dh_connection**: description coming soon
+ - **azimuth	(°)**: description coming soon
+ - **surface tilt	(°)**: description coming soon
+ - **flow temperature	(°C)**: description coming soon
+
+
 Category 4
 -----------------------
 
@@ -197,6 +224,21 @@ Category 4
    01.01.2012 03:00,0,100075.5,9.6415,7.318,0.159,0,0,12.6,14.75492,13.06,0.420911041,0
    01.01.2012 04:00,0,100026.8555,9.9285,7.916,0.159,0,0,12.6,14.99350667,13.06,0.420911041,0
    …,…,…,…,…,…,…,…,…,…,…,…,…
+
+
+- **timestamp**: description coming soon
+- **dhi**: description coming soon
+- **pressure**: description coming soon
+- **temperature**: description coming soon
+- **windspeed**: description coming soon
+- **z0**: description coming soon
+- **dni**: description coming soon
+- **ghi**: description coming soon
+- **ground_temp**: description coming soon
+- **water_temp**: description coming soon
+- **groundwater_temp**: description coming soon
+- **screw_turbine.fix**: description coming soon
+- **electric_vehicle.fix**: description coming soon
 
 
 Standard Parameters
