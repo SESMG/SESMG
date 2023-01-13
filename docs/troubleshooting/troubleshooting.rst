@@ -25,7 +25,7 @@ Error M-XXX: Error-Name
 **Possible Error Cause:** explain the error cause
 
 **Debugging:** explain how to solve the error
-   
+
 6. Click "Create pull request"
 
 7. Name your pull request and click "create pull request".
@@ -69,12 +69,12 @@ Pay attention to the correct spelling:
 - Do not use spaces in the entire spreadsheet (except for the "comment" columns).
 - Make sure that every column of the used lines is filled. Columns that are not used can be filled with a "0".
 
-Make sure that the displayed system can stay in balance. 
-- It must always be possible to take off all of the supplied energy and vice versa. 
+Make sure that the displayed system can stay in balance.
+- It must always be possible to take off all of the supplied energy and vice versa.
 - The use of excess-sinks and shortage-sources can help to keep the system in balance.
 
 **Your error message is not included? Help us and all users by reporting your error message - with or without a solution!. Thank you!**
-         
+
 
 Error M-001: KeyError sequences (sources)
 ----------------------------------
@@ -129,7 +129,7 @@ Error M-005:  time module
 
 Error M-006: shapes
 ----------------------------------
-**Error Message:** :: 
+**Error Message:** ::
 
    ValueError: operands could not be broadcast together with shapes (8784 ) (8760 )
 
@@ -193,7 +193,7 @@ Error M-012: Key Error (Index)
 ----------------------------------
 **Error Message** (example): ::
 
-   KeyError: 'Index \'(''<oemof.solph.network.source.Source: \'ID_phtovoltaic_electricity_source\'>' ''<oemof.solph.network.bus.Bus: \'ID_pv_bus\'>'' 0)\' is not valid for indexed component \'flow\'' 
+   KeyError: 'Index \'(''<oemof.solph.network.source.Source: \'ID_phtovoltaic_electricity_source\'>' ''<oemof.solph.network.bus.Bus: \'ID_pv_bus\'>'' 0)\' is not valid for indexed component \'flow\''
 
 **Possible Error Cause:** You probably named the busses incorrectly.
 
@@ -277,15 +277,15 @@ Error M-020: Value Error Length Mismatch
 
 **Possible Error Cause:** The model probably isn't solvable, because of wrong energybalance.
 
-**Debugging:** Activate necessary excesses sinks and shortages sources. 
+**Debugging:** Activate necessary excesses sinks and shortages sources.
 
 Error M-021: Solver Returned Non-Zero Return Code
 ----------------------------------
 **Error Message:** ::
 
    ERROR: Solver (gurobi) returned non-zero return code (1)
- 
-**Possible Error Cause:** 
+
+**Possible Error Cause:**
 
 **Debugging:** reinstall the pyomo-package: 1. open a terminal 2. navigate to your SESMG folder 3. navigate to the scripts-subfolder: "cd Scripts" 4. start the virtual environment: ``start /b activate.bat`` 5. reinstall pyomo: ``pip install pyomo==5.7.1``
 
@@ -293,7 +293,7 @@ Error M-022: Key Error (sequences) II
 ----------------------------------
 **Error Message:** ::
 
-   df = node_results['sequences'] KeyError: 'sequences'  
+   df = node_results['sequences'] KeyError: 'sequences'
 
 **Possible Error Cause:** The model may possibly have an over or under supply. This will break the calculation.
 
@@ -303,7 +303,7 @@ Error M-022: Key Error (sequences) II
 Error M-023: nearest foot point
 ----------------------------------
 **Error Message:** 
-   
+
    ... get nearest_perp_foot_point foot_point.extend(foot_points[0])
    IndexError: list index out of range
 
@@ -317,7 +317,7 @@ Error M-024: KeyError: 'lon'
 
    ... in get_loc
    raise KeyError(key) from err
-   KeyError: 'lon' 
+   KeyError: 'lon'
 
 **Possible Error Cause:** No heat source bus has been correctly defined for the heat network.
 
@@ -354,4 +354,4 @@ Error M-027: Key Error (Index) II
 
 **Possible Error Cause:** The u-value of your building component meets the requirements.
 
-**Debugging:** Do not consider insulation measurements for the building component. 
+**Debugging:** Do not consider insulation measurements for the building component.

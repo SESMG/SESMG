@@ -130,7 +130,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **occupants** [RICHARDSON]: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "0" for other load profiles.
 - **building class** [HEAT SLP ONLY]: BDEW building classes that coincide with the building locations are explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#sinks>`_.
 - **wind class** [HEAT SLP ONLY]: wind classification for building location (0=not windy, 1=windy)
- 
+
 .. csv-table:: Exemplary input for the sinks sheet
    :header: label,comment,active,fixed,input,load profile,nominal value,annual demand,occupants,building class,wind class
 

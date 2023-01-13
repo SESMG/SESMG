@@ -57,8 +57,8 @@ the energy system, others have fixed performances,
 which depend on external circumstances. In the latter case, 
 the exact performances must be entered to the model in 
 form of time series. With the help of oemofs "feedinlib" 
-and "windpowerlib", electrical outputs of photovoltaic 
-(PV)-systems and wind power plants can be generated 
+and "windpowerlib", electrical outputs of photovoltaic
+(PV)-systems and wind power plants can be generated
 automatically. In order to ensure a balance in the energy 
 system at all times, it may be useful to add a "shortage"
 source to the energy system, which supplies energy 
@@ -160,9 +160,10 @@ efficiency of the collector, A1 is the linear heat loss coefficient
 and A2 is the quadratic heat loss coefficient. Values for Eta 0, A1
 and A2 are collector specific values and can be found in data sheets.
 These values are measured and calculated according to DIN EN ISO
-9806. The parameters C1 and C2 for concentrated solar power are as
-well collector specific values. An exemplary  set of values is give
-in the documentation on how to use the scenario file.
+9806. The parameters C1 and C2 for concentrated solar power are
+collector specific values as
+well. An exemplary  set of values is given
+in the documentation on how to use the `scenario file <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/manual/ScenarioSpreadsheet.html#concentrated-solar-power>`_.
 
 The solar irradiance is given in W/sqm. Therefore the collector's heat
 output is given in this unit as well. The investment object has to
@@ -339,12 +340,11 @@ Transformers
 Transformers are components with one ore more input flows, which are 
 transformed to one or more output flows. Transformers may be power 
 plants, energy transforming processes 
-(e.g. electrolysis, heat pumps), as well as transport lines with 
+(e.g. electrolysis, heat pumps), as well as transport lines with
 losses. The transformers’ efficiencies can be defined for every 
-time step (e.g. the efficiency of a thermal 
+time step (e.g. the efficiency of a thermal
 powerplants in dependence of  the ambient temperature).
 
-Currently only Generic Transformers can be used within the Spreadsheet Energy System Model Generator. 
 These may have one or more different outputs, e.g. heat and electricity. For the modelling,
 the nominal performance of a generic transformer with several outputs,
 the respective output ratios, and an efficiency for each output need to be known.

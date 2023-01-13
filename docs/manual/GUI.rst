@@ -41,7 +41,7 @@ The functions under the topic **Results** are used to analyze results older then
  .. note::
 	The detailed modelling results are also stored within the "results" folder.
 
-Timeseries preperation 
+Timeseries preperation
 ======================
 
 Using the timeseries preparation-options, the modeled time system can be reduced so that not all time steps are considered with the modeling. Such a simplification allows shorter runtimes, but may lead to a reduction in the quality of the results [1].

@@ -27,7 +27,7 @@ Windows
 
 3. Extract the .zip folder into any directory on the computer.
 
-4. Download the CBC-solver from `here <https://ampl.com/dl/open/cbc/cbc-win64.zip>`_
+4. Download the CBC-solver from `here <http://ampl.com/dl/open/cbc/cbc-win64.zip>`_
 
 
 5. Extract the CBC solver into the folder of the Spreadsheet Energy System Model Generator
@@ -85,11 +85,13 @@ MacOS
 
 Linux 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 1. Install Python (version 3.5 or higher)
 
 - go to `<https://phoenixnap.com/kb/how-to-install-python-3-ubuntu/>`_
 - use Python3.7 instead of Python3.8
-.. note:: 
+
+.. note::
 	
 	Make sure that the alias python3 is set to Python3.7.x.
 	If not use update-alternatives to change it and test ist afterwards.
