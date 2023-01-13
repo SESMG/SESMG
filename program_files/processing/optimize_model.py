@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from oemof import solph
+from memory_profiler import memory_usage
+from datetime import datetime
 
 
 def constraint_optimization_against_two_values(
@@ -22,12 +24,16 @@ def constraint_optimization_against_two_values(
     from oemof.solph.plumbing import sequence
 
     invest_flows = {}
+    ##########################
+    # PERIODICAL CONSTRAINTS #
+    ##########################
+    # extract all investment flows where periodical constraints apply
     for (i, o) in om.flows:
         if hasattr(om.flows[i, o].investment, "periodical_constraint_costs"):
             invest_flows[(i, o)] = om.flows[i, o].investment
-
-    limit_name = "invest_limit_" + "space"
-
+    limit_name = "invest_limit_" + "periodical_constraints"
+    # Setting the equation representing the sum of the periodic
+    # emissions
     setattr(
         om,
         limit_name,
@@ -39,18 +45,41 @@ def constraint_optimization_against_two_values(
             )
         ),
     )
-
-    ############
-    flows = {}
+    ##########################
+    # NONCONVEX CONSTRAINTS  #
+    ##########################
+    invest_flows2 = {}
+    # extract all investment flows where fix constraints apply
     for (i, o) in om.flows:
-        if hasattr(om.flows[i, o], "emission_factor"):
-            flows[(i, o)] = om.flows[i, o]
-
-    limit_name1 = "integral_limit_" + "emission_factor"
-
+        if hasattr(om.flows[i, o].investment, "fix_constraint_costs"):
+            invest_flows2[(i, o)] = om.flows[i, o].investment
+    limit_name1 = "invest_limit_" + "nonconvex_constraints"
+    # Setting the equation representing the sum of the nonconvex
+    # emissions
     setattr(
         om,
         limit_name1,
+        po.Expression(
+            expr=sum(
+                getattr(invest_flows2[inflow, outflow], "fix_constraint_costs")
+                for (inflow, outflow) in invest_flows2
+            )
+        ),
+    )
+    ##########################
+    # VARIABLE CONSTRAINTS   #
+    ##########################
+    flows = {}
+    # extract all investment flows where variable constraints apply
+    for (i, o) in om.flows:
+        if hasattr(om.flows[i, o], "emission_factor"):
+            flows[(i, o)] = om.flows[i, o]
+    limit_name2 = "integral_limit_" + "variable_constraints"
+    # Setting the equation representing the sum of the variable
+    # emissions
+    setattr(
+        om,
+        limit_name2,
         po.Expression(
             expr=sum(
                 om.flow[inflow, outflow, t]
@@ -61,15 +90,61 @@ def constraint_optimization_against_two_values(
             )
         ),
     )
-
+    ##########################
+    # STORAGE CONSTRAINTS    #
+    ##########################
+    comp = {}
+    comp_fix = {}
+    # extract all investment flows where periodical / fix constraints
+    # apply
+    for num in om.GenericInvestmentStorageBlock.INVESTSTORAGES.data():
+        if hasattr(num.investment, "periodical_constraint_costs"):
+            comp[num] = num.investment
+        if hasattr(num.investment, "fix_constraint_costs"):
+            comp_fix[num] = num.investment
+    # Setting the equation representing the sum of the periodic
+    # emissions
+    limit_name3 = "invest_limit_storage"
+    setattr(
+        om,
+        limit_name3,
+        po.Expression(
+            expr=sum(
+                om.GenericInvestmentStorageBlock.invest[num]
+                * getattr(comp[num], "periodical_constraint_costs")
+                for num in comp
+            )
+        ),
+    )
+    # Setting the equation representing the sum of the nonconvex
+    # emissions
+    limit_name4 = "invest_limit_fix_storage"
+    setattr(
+        om,
+        limit_name4,
+        po.Expression(
+            expr=sum(getattr(comp_fix[num], "fix_constraint_costs") for num in comp_fix)
+        ),
+    )
+    # Setting the equation representing the overall limit for the sum of
+    # all appearing constraints
     setattr(
         om,
         limit_name + "_constraint",
         po.Constraint(
-            expr=((getattr(om, limit_name) + getattr(om, limit_name1)) <= limit)
+            expr=(
+                (
+                    getattr(om, limit_name)
+                    #+ getattr(om, limit_name1)
+                    + getattr(om, limit_name2)
+                    + getattr(om, limit_name4)
+                    + getattr(om, limit_name3)
+                )
+                <= limit
+            )
         ),
     )
-
+    # Return of the opimization model extended by the new equations
     return om
 
 
@@ -136,6 +211,43 @@ def competition_constraint(om, nd, energy_system):
     return om
 
 
+def constraint_optimization_of_criterion_adherence_to_a_minval(
+    om: solph.Model, limit: float
+) -> solph.Model:
+
+    import pyomo.environ as po
+    from oemof.solph.plumbing import sequence
+
+    flows = {}
+    for (i, o) in om.flows:
+        if hasattr(om.flows[i, o].investment, "constraint2"):
+            flows[(i, o)] = om.flows[i, o].investment
+
+    limit_name = "invest_limit_" + "space2"
+
+    setattr(
+        om,
+        limit_name,
+        po.Expression(
+            expr=sum(
+                om.flow[inflow, outflow, t]
+                * om.timeincrement[t]
+                * sequence(getattr(flows[inflow, outflow], "constraint2"))[t]
+                for (inflow, outflow) in flows
+                for t in om.TIMESTEPS
+            )
+        ),
+    )
+
+    setattr(
+        om,
+        limit_name + "_constraint2",
+        po.Constraint(expr=((getattr(om, limit_name) >= limit))),
+    )
+
+    return om
+
+
 def least_cost_model(
     energy_system: solph.EnergySystem,
     num_threads: int,
@@ -163,17 +275,13 @@ def least_cost_model(
 
         Christian Klemm - christian.klemm@fh-muenster.de
     """
-
     import logging
     import math
     import pyomo.environ as po
 
     # add nodes and flows to energy system
-    logging.info(
-        "   " + "******************************************************" + "***"
-    )
+    logging.info("\t ********************************************************")
     logging.info("   " + "Create Energy System...")
-
     # creation of a least cost model from the energy system
     om = solph.Model(energy_system)
     if (
@@ -186,6 +294,26 @@ def least_cost_model(
             next(nodes_data["energysystem"].iterrows())[1]["constraint cost limit"]
         )
         om = constraint_optimization_against_two_values(om, limit)
+    if (
+        str(
+            next(nodes_data["energysystem"].iterrows())[1][
+                "minimum final energy reduction"
+            ]
+        )
+        != "none"
+        and str(
+            next(nodes_data["energysystem"].iterrows())[1][
+                "minimum final energy reduction"
+            ]
+        )
+        != "None"
+    ):
+        limit = float(
+            next(nodes_data["energysystem"].iterrows())[1][
+                "minimum final energy reduction"
+            ]
+        )
+        om = constraint_optimization_of_criterion_adherence_to_a_minval(om, limit)
 
     # limit for two given outflows e.g area_competition
     if "competition constraints" in nodes_data:
@@ -206,22 +334,18 @@ def least_cost_model(
                         om.InvestmentFlow.invest[p, busd[z["bus1"]]],
                         om.InvestmentFlow.invest[p, busd[z["bus2"]]],
                     )
-                # check if the link is directed and ensure that the
-                # solver does not invest on the second direction
-                elif z["(un)directed"] == "directed":
-                    p = energy_system.groups[z["label"]]
-
-                    def input_rule(om, t):
-                        inflow = om.flow[busd[z["bus2"]], p, t]
-                        return inflow == 0
-
-                    om.InvestmentFlow.invest[p, busd[z["bus1"]]] = 0
-                    setattr(
-                        om,
-                        z["label"] + "input_constraint",
-                        po.Constraint(om.TIMESTEPS, expr=input_rule),
-                    )
-
+    #            # check if the link is directed and ensure that the
+    #            # solver does not invest on the second direction
+    #            elif z['(un)directed'] == 'directed':
+    #                p = energy_system.groups[z['label']]
+    #
+    #                def input_rule(om, t):
+    #                    inflow = (om.flow[busd[z['bus2']], p, t])
+    #                    return inflow == 0
+    #
+    #                om.InvestmentFlow.invest[p, busd[z['bus1']]] = 0
+    #                setattr(om, z['label'] + "input_constraint",
+    #                        po.Constraint(om.TIMESTEPS, expr=input_rule))
     logging.info(
         "   " + "******************************************************" + "***"
     )
@@ -229,5 +353,5 @@ def least_cost_model(
 
     # solving the linear problem using the given solver
     om.solve(solver=solver, cmdline_options={"threads": num_threads})
-
+    logging.info("\t Memory Usage during processing:" + str(memory_usage()))
     return om
