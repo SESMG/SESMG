@@ -1118,7 +1118,7 @@ def hierarchical_selection(nodes_data, scheme, period, seasons, scheme_path):
             period_length = 24
         else:
             raise ValueError("Non supported period")
-            
+
         return extract_data_slices(data_set=nodes_data['weather data'],
                                    timesteps=period_length)
 
