@@ -1,15 +1,20 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
 import setuptools
+import re
 
+__version__ = "0.4.0"
 with open("README.md", encoding="utf-8") as f:
     long_description = f.read()
 
 with open("requirements.txt") as f:
     install_requires = f.read().splitlines()
 
+
 setuptools.setup(
     name="SESMG",
-    version="0.1.1",
-    license="MIT",
+    version=__version__,
+    license="GPL-3.0-only",
     author="Christian Klemm",
     author_email="christian.klemm@fh-muenster.de",
     long_description=long_description,
