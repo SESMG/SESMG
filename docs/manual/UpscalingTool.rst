@@ -116,28 +116,28 @@ Category 1
    002_building,,1,1800,0,0,0,MFB,1,1,50,52.000000,7.000000,1979,100,1999,20,1993,flat roof,50,0,60
    003_building,,1,1800,10000,30,20,SFB,1,1,120,52.000000,7.000000,1994,250,2001,125,1992,step roof,125,0,40
    
-- **	label	x	**
-- **	comment		**
-- **	active		**
-- **	year of construction		**
-- **	distance of electric vehicles	km/a	**
-- **	electricity demand	kWh / (sqm * a)	**
-- **	heat demand	kWh / (sqm * a)	**
-- **	building type		**
-- **	units		**
-- **	occupants per unit		**
-- **	gross building area	sqm	**
-- **	latitude	° WGS 84	**
-- **	longitude	° WGS 84	**
-- **	year of construction wall		**
-- **	area outer wall	sqm	**
-- **	year of construction windows		**
-- **	area windows	sqm	**
-- **	year of construction roof		**
-- **	rooftype		**
-- **	area roof	sqm	**
-- **	cluster ID		**
-- **	flow temperature	°C	**
+- **label	x**
+- **comment**
+- **active**
+- **year of construction**
+- **distance of electric vehicles	km/a**
+- **electricity demand	kWh / (sqm * a)**
+- **heat demand	kWh / (sqm * a)**
+- **building type**
+- **units**
+- **occupants per unit**
+- **gross building area	sqm**
+- **latitude	° WGS 84**
+- **longitude	° WGS 84**
+- **year of construction wall**
+- **area outer wall	sqm**
+- **year of construction windows**
+- **area windows	sqm**
+- **year of construction roof**
+- **rooftype**
+- **area roof	sqm**
+- **cluster ID**
+- **flow temperature	°C**
 
   
  
