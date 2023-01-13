@@ -201,7 +201,7 @@ Category 3
 - **label**: description coming soon
 - **comment**: description coming soon
 - **active**: description coming soon
-- **technology		**: description coming soon
+- **technology**: description coming soon
 - **latitude (° WGS 84)**: description coming soon
 - **longitude	(° WGS 84)**: description coming soon
 - **area (m²)**: description coming soon
