@@ -7,6 +7,7 @@
 import os
 import pandas as pd
 import logging
+from program_files.preprocessing import import_weather_data
 
 
 def import_scenario(filepath: str) -> dict:
@@ -51,11 +52,14 @@ def import_scenario(filepath: str) -> dict:
             "sinks": xls.parse("sinks"),
             "links": xls.parse("links"),
             "sources": xls.parse("sources"),
-            "timeseries": xls.parse("time series"),
+            "timeseries": xls.parse("time series", parse_dates=["timestamp"]),
             "transformers": xls.parse("transformers"),
             "storages": xls.parse("storages"),
-            "weather data": xls.parse("weather data"),
+            "weather data": xls.parse("weather data", parse_dates=["timestamp"]),
             "competition constraints": xls.parse("competition constraints"),
+            "insulation": xls.parse("insulation"),
+            "district heating": xls.parse("district heating"),
+            "pipe types": xls.parse("pipe types")
         }
         # delete spreadsheet row within technology or units specific parameters
         list = [
@@ -67,15 +71,26 @@ def import_scenario(filepath: str) -> dict:
             "storages",
             "links",
             "competition constraints",
+            "insulation",
+            "district heating",
+            "pipe types"
         ]
         for i in list:
-            nd[i] = nd[i].drop(index=0)
+            if len(nd[i]) > 0:
+                nd[i] = nd[i].drop(index=0)
+
     # error message, if no nodes are provided
     if not nd:
         raise ValueError("No nodes data provided.")
 
     # returns logging info
-    logging.info("Spreadsheet scenario successfully imported.")
+    logging.info("\t Spreadsheet scenario successfully imported.")
+    if nd["energysystem"].loc[1, "weather data lat"] not in ["None", "none"]:
+        logging.info("\t Start import weather data")
+        lat = nd["energysystem"].loc[1, "weather data lat"]
+        lon = nd["energysystem"].loc[1, "weather data lon"]
+        import_weather_data.create_weather_data_plot(lat, lon)
+        nd = import_weather_data.import_open_fred_weather_data(nd, lat, lon)
     # returns nodes
     return nd
 
@@ -121,15 +136,17 @@ def define_energy_system(nodes_data: dict):
         nodes_data["timeseries"].index.values, utc=True
     )
     nodes_data["timeseries"].index = pd.to_datetime(
-        nodes_data["timeseries"].index
+            nodes_data["timeseries"].index
     ).tz_convert("Europe/Berlin")
-    nodes_data["weather data"].set_index("timestamp", inplace=True, drop=False)
-    nodes_data["weather data"].index = pd.to_datetime(
-        nodes_data["weather data"].index.values, utc=True
-    )
-    nodes_data["weather data"].index = pd.to_datetime(
-        nodes_data["weather data"].index
-    ).tz_convert("Europe/Berlin")
+
+    if "timestamp" in list(nodes_data["weather data"].columns.values):
+        nodes_data["weather data"].set_index("timestamp", inplace=True)
+        nodes_data["weather data"].index = pd.to_datetime(
+            nodes_data["weather data"].index.values, utc=True
+        )
+        nodes_data["weather data"].index = pd.to_datetime(
+                nodes_data["weather data"].index
+        ).tz_convert("Europe/Berlin")
 
     # returns logging info
     logging.info(
