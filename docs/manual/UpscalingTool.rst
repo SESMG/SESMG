@@ -3,6 +3,11 @@ Urban District Upscaling Tool
 
 Documentation to be completed soon.
 
+.. figure:: ../images/sesmg_process.png
+   :width: 100 %
+   :alt: Process of the SESMG.
+   :align: center
+
 Using the Upscaling Tool
 ------------------------
 
