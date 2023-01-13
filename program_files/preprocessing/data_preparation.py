@@ -578,6 +578,7 @@ def k_medoids_algorithm(clusters: int, criterion: str, nodes_data: dict,
                                 cluster_labels, period)
 
 
+
 def timeseries_averaging(clusters: int, nodes_data: dict, period: str):
     """
         Averages the values of the time series, how many values are
