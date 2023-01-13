@@ -115,14 +115,6 @@ Upscaling sheet
    003_building,,1,1800,10000,30,20,SFB,1,1,120,52.146666,7.342088,1994,250,2001,125,1992,step roof,125,0,40
 
 
-
-.. csv-table:: Exemplary input for the sinks sheet
-   :header: label,comment,active,fixed,input,load profile,nominal value,annual demand,occupants,building class,wind class
-
-   ,,,,,,(kW),(kWh/a),(richardson),(heat slp),(heat slp)
-   ID_electricity_sink,H0 standard load profile sink,1,1,ID_electricity_bus,h0,0,5000.0,0,0,0
-   ID_heat_sink,EFH standard load profile sink,1,1,ID_heat_bus,efh,0,30000.0,0,3,0
-   ID_cooling_sink,fixed timeseries cooling demand,0,1,ID_cooling_bus,timeseries,1,0,0,0,0
      
 Standard Parameters
 -------------------
