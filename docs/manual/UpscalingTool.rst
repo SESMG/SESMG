@@ -198,17 +198,17 @@ Category 3
    screw_turbine,,1,timeseries_source,,,,,,, 
 
 
- - **label**: description coming soon
- - **comment**: description coming soon
- - **active**: description coming soon
- - **technology		**: description coming soon
- - **latitude (° WGS 84)**: description coming soon
- - **longitude	(° WGS 84)**: description coming soon
- - **area (m²)**: description coming soon
- - **dh_connection**: description coming soon
- - **azimuth	(°)**: description coming soon
- - **surface tilt	(°)**: description coming soon
- - **flow temperature	(°C)**: description coming soon
+- **label**: description coming soon
+- **comment**: description coming soon
+- **active**: description coming soon
+- **technology		**: description coming soon
+- **latitude (° WGS 84)**: description coming soon
+- **longitude	(° WGS 84)**: description coming soon
+- **area (m²)**: description coming soon
+- **dh_connection**: description coming soon
+- **azimuth	(°)**: description coming soon
+- **surface tilt	(°)**: description coming soon
+- **flow temperature	(°C)**: description coming soon
 
 
 Category 4
