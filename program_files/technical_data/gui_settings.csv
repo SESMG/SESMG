@@ -13,3 +13,5 @@ solver_select,cbc
 xlsx_select_state,0
 console_select_state,0
 plotly_select_state,0
+dh_path,
+cluster_dh,0
