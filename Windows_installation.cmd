@@ -12,8 +12,8 @@ cd Scripts/
 start /b activate.bat
 
 pip install pipwin
-pipwin install gdal 
-pipwin install fiona 
+pipwin install gdal
+pipwin install fiona
 
 @echo #############################################
 @echo download and install required python packages
