@@ -120,7 +120,7 @@ def calculate_cluster_means(data_set, cluster_number: int,
         :param period: defines rather days or weeks were selected
         :type period: str
 
-        :return: - **prep_data_set** (pd.Dataframe) - pandas dataframe 
+        :return: - **prep_data_set** (pd.Dataframe) - pandas dataframe
             containing the prepared weather data set
        
     """
@@ -1118,7 +1118,7 @@ def hierarchical_selection(nodes_data, scheme, period, seasons, scheme_path):
             period_length = 24
         else:
             raise ValueError("Non supported period")
-                
+
         return extract_data_slices(data_set=nodes_data['weather data'],
                                    timesteps=period_length)
 
