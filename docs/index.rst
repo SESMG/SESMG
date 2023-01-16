@@ -72,11 +72,11 @@ Sourcecode Documentation
 	
 	
 ..	toctree::
-	:maxdepth: 3
+	:maxdepth: 2
 	:hidden:
 	:caption: Sourcecode Documentation
 	
-	sourcecode_documentation/gui_functions
+    sourcecode_documentation/gui_functions
     sourcecode_documentation/upscaling_tool
     sourcecode_documentation/program_functions
 	
