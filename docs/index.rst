@@ -8,7 +8,7 @@ included Python program and the open source Python library "oemof", assembled
 to an energy system and optimized with the open source solver "cbc". The modeling 
 results can be viewed and analyzed using a browser-based results output.
 
-.. figure:: images/SESMG_principle.png
+.. figure:: images/sesmg_process.png
    :width: 100 %
    :alt: SESMG_principle.png
    :align: center
