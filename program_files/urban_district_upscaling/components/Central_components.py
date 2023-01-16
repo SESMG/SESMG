@@ -323,7 +323,7 @@ def create_power_to_gas_system(label, bus, sheets, standard_parameters):
         sheets = Transformer.create_transformer(
             label=label,
             building_id="central",
-            transf_type=transformer,
+            transformer_type=transformer,
             output=bus,
             sheets=sheets,
             standard_parameters=standard_parameters,
@@ -336,7 +336,7 @@ def create_power_to_gas_system(label, bus, sheets, standard_parameters):
         sheets = Transformer.create_transformer(
             label=label,
             building_id="central",
-            transf_type=transformer,
+            transformer_type=transformer,
             output=label+'_heat_bus',
             sheets=sheets,
             standard_parameters=standard_parameters,
@@ -429,7 +429,7 @@ def create_central_heatpump(
         building_id="central",
         output=output,
         specific=specification,
-        transf_type="central_" + specification + "_transformer",
+        transformer_type="central_" + specification + "_transformer",
         sheets=sheets,
         area=area,
         standard_parameters=standard_parameters,
@@ -492,7 +492,7 @@ def create_central_heating_transformer(
         specific=fuel_type,
         output=output,
         sheets=sheets,
-        transf_type="central_" + fuel_type + "_heating_plant_transformer",
+        transformer_type="central_" + fuel_type + "_heating_plant_transformer",
         standard_parameters=standard_parameters,
         # TODO since flow temp does not influence the Generic
         #  Transformer's efficiency it is set to 0
@@ -572,7 +572,7 @@ def create_central_chp(
     # create the CHP and return the sheets dict
     return Transformer.create_transformer(
         building_id="central",
-        transf_type="central_" + fuel_type + "_chp",
+        transformer_type="central_" + fuel_type + "_chp",
         label=label,
         specific=fuel_type,
         output=output,

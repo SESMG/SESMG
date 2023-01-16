@@ -188,7 +188,7 @@ def test_create_cluster_storage(test_clustered_battery_storage):
         standard_parameters=standard_parameters,
         storage_type="battery"
     )
-        
+
     pandas.testing.assert_frame_equal(
         sheets["storages"].sort_index(axis=1),
         test_clustered_battery_storage["storages"].sort_index(axis=1))

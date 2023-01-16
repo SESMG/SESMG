@@ -244,7 +244,10 @@ def create_cluster_elec_sinks(
                 * bus_parameters.loc["building_ind" + label][cost_type]
             )
         if central_electricity_network:
-            sheets = Link.create_central_elec_bus_connection(cluster, sheets, standard_parameters)
+            sheets = Link.create_central_electricity_bus_connection(
+                cluster=cluster,
+                sheets=sheets,
+                standard_parameters=standard_parameters)
 
     # create clustered electricity sinks
     if sink_parameters[0] > 0:

@@ -1,19 +1,17 @@
 import pytest
 import os
 import pandas
+from program_files.urban_district_upscaling.components import Transformer
 
+# import standard parameter
+standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
+                                       + "/standard_parameters.xlsx")
+transformers = standard_parameters.parse("4_transformers")
 
 @pytest.fixture
 def test_decentral_gasheating_entry():
-    # import standard parameter
-    standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
-                                           + "/standard_parameters.xlsx")
-    transformers = standard_parameters.parse("4_transformers")
-    transformer = transformers.loc[transformers["transformer_type"]
-                                   == "building_gasheating_transformer"]
-
     # combine specific data and the standard parameter data
-    sheets = {
+    return {
         "transformers":
             pandas.merge(
                 left=pandas.DataFrame.from_dict({
@@ -24,28 +22,14 @@ def test_decentral_gasheating_entry():
                     "output2": ["None"],
                     "area": [float(0)],
                     "temperature high": ["60"]}),
-                right=transformer,
-                left_on="transformer_type",
-                right_on="transformer_type")}
-
-    # remove column which was used to merge the two dataframe parts
-    sheets["transformers"] = sheets["transformers"].drop(
-            columns=["transformer_type"])
-
-    return sheets
+                right=transformers,
+                on="transformer_type").drop(columns=["transformer_type"])}
 
 
 @pytest.fixture
 def test_decentral_ashp_entry():
-    # import standard parameter
-    standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
-                                           + "/standard_parameters.xlsx")
-    transformers = standard_parameters.parse("4_transformers")
-    transformer = transformers.loc[transformers["transformer_type"]
-                                   == "building_ashp_transformer"]
-
     # combine specific data and the standard parameter data
-    sheets = {
+    return {
         "transformers":
             pandas.merge(
                 left=pandas.DataFrame.from_dict({
@@ -56,44 +40,36 @@ def test_decentral_ashp_entry():
                     "output2": ["None"],
                     "area": [float(0)],
                     "temperature high": ["60"]}),
-                right=transformer,
-                left_on="transformer_type",
-                right_on="transformer_type")}
-
-    # remove column which was used to merge the two dataframe parts
-    sheets["transformers"] = sheets["transformers"].drop(
-            columns=["transformer_type"])
-
-    return sheets
+                right=transformers,
+                on="transformer_type").drop(columns=["transformer_type"])}
     
     
 def test_create_transformer(test_decentral_gasheating_entry):
     """
     
     """
-    from program_files.urban_district_upscaling.components import Transformer
-    
     sheets = {"transformers": pandas.DataFrame(), "buses": pandas.DataFrame()}
     # start the method to be tested
     sheets = Transformer.create_transformer(
         building_id="test",
-        transf_type="building_gasheating_transformer",
+        transformer_type="building_gasheating_transformer",
         sheets=sheets,
-        standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
-                                             + r"/standard_parameters.xlsx"),
+        standard_parameters=standard_parameters,
         flow_temp="60",
         building_type="SFB")
     # assert rather the two dataframes are equal
     pandas.testing.assert_frame_equal(
-        sheets["transformers"], test_decentral_gasheating_entry["transformers"]
+        sheets["transformers"].sort_index(axis=1),
+        test_decentral_gasheating_entry["transformers"].sort_index(axis=1)
     )
 
 
 def test_building_transformer(test_decentral_gasheating_entry,
                               test_decentral_ashp_entry):
-    from program_files.urban_district_upscaling.components import Transformer
+    """
+    
+    """
     sheets = {"transformers": pandas.DataFrame(), "buses": pandas.DataFrame()}
-
     # building specific parameter
     building = {
         "label": "test",
@@ -110,14 +86,15 @@ def test_building_transformer(test_decentral_gasheating_entry,
         p2g_link=False,
         true_bools=["yes"],
         sheets=sheets,
-        standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
-                                             + r"/standard_parameters.xlsx")
+        standard_parameters=standard_parameters
     )
     # assert rather the two dataframes are equal
     pandas.testing.assert_frame_equal(
-        sheets["transformers"],
-        pandas.concat([test_decentral_ashp_entry["transformers"],
-                       test_decentral_gasheating_entry["transformers"]]))
+        sheets["transformers"].sort_index(axis=1),
+        pandas.concat(
+            [test_decentral_ashp_entry["transformers"],
+             test_decentral_gasheating_entry["transformers"]]).sort_index(
+                axis=1))
 
 
 def test_cluster_transf_information():

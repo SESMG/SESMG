@@ -14,7 +14,7 @@ technology_dict = {
 }
 
 
-def create_transformer(building_id: str, transf_type: str, sheets: dict,
+def create_transformer(building_id: str, transformer_type: str, sheets: dict,
                        standard_parameters: pandas.ExcelFile,
                        flow_temp: str, building_type=None,
                        area="0", label="None", specific="None",
@@ -23,9 +23,9 @@ def create_transformer(building_id: str, transf_type: str, sheets: dict,
     
         :param building_id: building label
         :type building_id: str
-        :param transf_type: string containing the type of transformer \
-            which has to be created
-        :type transf_type: str
+        :param transformer_type: string containing the type of \
+            transformer which has to be created
+        :type transformer_type: str
         :param sheets: dictionary containing the pandas.Dataframes that\
             will represent the model definition's Spreadsheets
         :type sheets: dict
@@ -84,20 +84,20 @@ def create_transformer(building_id: str, transf_type: str, sheets: dict,
             bus = "building_com_gas_bus"
             oil_bus = "building_com_oil_bus"
             
-        if transf_type == "building_gasheating_transformer":
+        if transformer_type == "building_gasheating_transformer":
             sheets = Bus.create_standard_parameter_bus(
                 label=str(building_id) + "_gas_bus", bus_type=bus,
                 sheets=sheets, standard_parameters=standard_parameters
             )
-        if transf_type == "building_oilheating_transformer":
+        if transformer_type == "building_oilheating_transformer":
             sheets = Bus.create_standard_parameter_bus(
                 label=str(building_id) + "_oil_bus", bus_type=oil_bus,
                 sheets=sheets, standard_parameters=standard_parameters
             )
 
-    if not technology_dict.get(transf_type)[2] == output:
+    if not technology_dict.get(transformer_type)[2] == output:
         output1 = str(building_id) + "_" \
-                  + technology_dict.get(transf_type)[2] + "_bus"
+                  + technology_dict.get(transformer_type)[2] + "_bus"
     else:
         output1 = output
 
@@ -105,17 +105,17 @@ def create_transformer(building_id: str, transf_type: str, sheets: dict,
         specific_param={
             "label": building_id
             + "_"
-            + technology_dict.get(transf_type)[0]
+            + technology_dict.get(transformer_type)[0]
             + "_transformer",
             "input": building_id
             + "_"
-            + technology_dict.get(transf_type)[1] + "_bus",
+            + technology_dict.get(transformer_type)[1] + "_bus",
             "output": output1,
-            "output2": technology_dict.get(transf_type)[3],
+            "output2": technology_dict.get(transformer_type)[3],
             "area": float(area),
             "temperature high": flow_temp
         },
-        standard_parameter_info=[transf_type, "4_transformers",
+        standard_parameter_info=[transformer_type, "4_transformers",
                                  "transformer_type"],
         sheets=sheets,
         standard_parameters=standard_parameters
@@ -160,7 +160,7 @@ def building_transformer(building: dict, p2g_link: bool, true_bools: list,
             sheets = create_transformer(
                 building_id=building["label"],
                 building_type=build_transformer_dict[transformer][0],
-                transf_type=build_transformer_dict[transformer][1],
+                transformer_type=build_transformer_dict[transformer][1],
                 sheets=sheets,
                 standard_parameters=standard_parameters,
                 flow_temp=building["flow temperature"]

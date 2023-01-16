@@ -423,7 +423,7 @@ def create_gchp(tool: pandas.DataFrame, parcels: pandas.DataFrame,
         sheets = Transformer.create_transformer(
             building_id=gchp,
             area=gchps[gchp],
-            transf_type="building_gchp_transformer",
+            transformer_type="building_gchp_transformer",
             sheets=sheets,
             standard_parameters=standard_parameters,
             flow_temp="60"

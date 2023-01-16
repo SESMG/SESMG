@@ -34,10 +34,23 @@ def create_link(label: str, bus_1: str, bus_2: str, link_type: str, sheets,
     )
 
 
-def create_central_elec_bus_connection(cluster, sheets, standard_parameters):
-    if (cluster + "central_electricity_link") not in sheets["links"].index:
+def create_central_electricity_bus_connection(
+        cluster: str, sheets: dict, standard_parameters: pandas.ExcelFile):
+    """
+    
+        :param cluster: Cluster id
+        :type cluster: str
+        :param sheets: dictionary containing the pandas.Dataframes that\
+                will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+    """
+    # add link from central electricity bus to cluster electricity bus
+    if (cluster + "_central_electricity_link") not in sheets["links"].index:
         sheets = create_link(
-            cluster + "central_electricity_link",
+            label=cluster + "_central_electricity_link",
             bus_1="central_electricity_bus",
             bus_2=cluster + "_electricity_bus",
             link_type="building_central_building_link",
@@ -45,11 +58,12 @@ def create_central_elec_bus_connection(cluster, sheets, standard_parameters):
             standard_parameters=standard_parameters
         )
         sheets["links"].set_index("label", inplace=True, drop=False)
-    if (cluster + "pv_" + cluster + "_electricity_link") not in sheets[
+    # add link from cluster pv bus to cluster electricity bus
+    if (cluster + "_pv_" + cluster + "_electricity_link") not in sheets[
         "links"
-    ].index and (cluster + "pv_central") in sheets["links"].index:
+    ].index and (cluster + "_pv_central") in sheets["links"].index:
         sheets = create_link(
-            cluster + "pv_" + cluster + "_electricity_link",
+            label=cluster + "_pv_" + cluster + "_electricity_link",
             bus_1=cluster + "_pv_bus",
             bus_2=cluster + "_electricity_bus",
             link_type="building_pv_central_link",
