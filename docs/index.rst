@@ -78,9 +78,9 @@ Sourcecode Documentation
 	:hidden:
 	:caption: Sourcecode Documentation
 	
-    sourcecode_documentation/gui_functions
-    sourcecode_documentation/upscaling_tool
-    sourcecode_documentation/program_functions
+	sourcecode_documentation/gui_functions
+	sourcecode_documentation/upscaling_tool
+	sourcecode_documentation/program_functions
 	
 
 Further Information
