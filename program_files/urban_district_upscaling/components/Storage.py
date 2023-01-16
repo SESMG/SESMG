@@ -60,7 +60,7 @@ def create_storage(
 
 
 def building_storages(building: dict, true_bools: list, sheets: dict,
-                      standard_parameters: pandas.ExcelFile):
+                      standard_parameters: pandas.ExcelFile) -> dict:
     """
         TODO
         :param building: dictionary containing the building specific \
@@ -93,22 +93,25 @@ def building_storages(building: dict, true_bools: list, sheets: dict,
     return sheets
 
 
-def storage_clustering(building, sheets_clustering, storage_parameter, sheets):
+def storage_clustering(building: list, sheets_clustering: dict,
+                       storage_parameter: dict, sheets: dict):
     """
         Main method to collect the information about the storage
         (battery, thermal storage), which are located in the considered
         cluster.
 
-        :param building: DataFrame containing the building row from the\
-            pre scenario sheet
-        :type building: pd.Dataframe
-        :param sheets_clustering:
-        :type sheets_clustering: pd.DataFrame
+        :param building: list containing the building label [0], the \
+            building's parcel ID [1] and the building type [2]
+        :type building: list
+        :param sheets_clustering: copy of the scenario created within \
+            the pre_processing.py
+        :type sheets_clustering: dict
         :param storage_parameter: dictionary containing the collected \
             storage information
         :type storage_parameter: dict
-
-        :return:
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
     """
     for index, storage in sheets_clustering["storages"].iterrows():
         label = storage["label"]
@@ -116,13 +119,18 @@ def storage_clustering(building, sheets_clustering, storage_parameter, sheets):
         if str(building[0]) in label and label in sheets["storages"].index:
             if label.split("_")[1] in ["battery", "thermal"]:
                 storage_parameter, sheets = cluster_storage_information(
-                    storage, storage_parameter, label.split("_")[1], sheets
+                    storage=storage,
+                    storage_parameter=storage_parameter,
+                    storage_type=label.split("_")[1],
+                    sheets=sheets
                 )
     # return the collected data to the main clustering method
     return storage_parameter, sheets
 
 
-def cluster_storage_information(storage, storage_parameter, type, sheets):
+def cluster_storage_information(storage: pandas.Series,
+                                storage_parameter: dict, storage_type: str,
+                                sheets: dict):
     """
         Collects the transformer information of the selected type, and
         inserts it into the dict containing the cluster specific
@@ -134,27 +142,28 @@ def cluster_storage_information(storage, storage_parameter, type, sheets):
         :param storage_parameter: dictionary containing the cluster \
             summed storage information
         :type storage_parameter: dict
-        :param type: storage type needed to define the dict entry \
+        :param storage_type: storage type needed to define the dict entry \
             to be modified
-        :type type: str
-
-        :return:
+        :type storage_type: str
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
     """
     # counter
-    storage_parameter[type][0] += 1
+    storage_parameter[storage_type][0] += 1
     # max invest
-    storage_parameter[type][1] += storage["max. investment capacity"]
+    storage_parameter[storage_type][1] += storage["max. investment capacity"]
     # periodical costs
-    storage_parameter[type][2] += storage["periodical costs"]
+    storage_parameter[storage_type][2] += storage["periodical costs"]
     # periodical constraint costs
-    storage_parameter[type][3] += storage["periodical constraint costs"]
-    if type == "thermal":
-        # variable output costs
-        storage_parameter[type][4] += storage["variable output costs"]
+    storage_parameter[storage_type][3] \
+        += storage["periodical constraint costs"]
+    # variable output costs
+    storage_parameter[storage_type][4] += storage["variable output costs"]
     # remove the considered storage from transformer sheet
     sheets["storages"] = sheets["storages"].drop(index=storage["label"])
-    # return the modified transf_param dict to the transformer clustering
-    # method
+    # return the modified storage_parameter dict to the storage
+    # clustering method
     return storage_parameter, sheets
 
 

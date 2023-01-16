@@ -308,7 +308,7 @@ def sources_clustering(source_param: dict, building: list,
         :type source_param: dict
         :param building: list containing the building label [0], the \
             building's parcel ID [1] and the building type [2]
-        :type building: pandas.Series
+        :type building: list
         :param sheets: dictionary containing the pandas.Dataframes that\
             will represent the model definition's Spreadsheets
         :type sheets: dict

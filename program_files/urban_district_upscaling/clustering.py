@@ -267,8 +267,7 @@ def collect_building_information(cluster_ids, cluster, sheets, heat_buses_gchps,
     # storage param technology:
     # [counter, maxinvest, periodical costs,
     #  periodical constraint costs, variable output costs]
-    storage_parameters = {"battery": [0, 0, 0, 0, "x"],
-                          "thermal": [0, 0, 0, 0, 0]}
+    storage_parameters = {"battery": [0] * 5, "thermal": [0] * 5}
 
     # storage param technology: [counter, maxinvest, periodical costs,
     # periodical constraint costs, variable costs, Albedo,
