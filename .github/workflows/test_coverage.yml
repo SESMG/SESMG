@@ -36,7 +36,7 @@ jobs:
     - name: Code Climate Coverage Action
       uses: paambaati/codeclimate-action@v3.0.0
       env:
-          CC_TEST_REPORTER_ID: 509b11670be42b6f151b759d826929555e3d6e1103b04c12738047589623d0d5
+          CC_TEST_REPORTER_ID: c38d5cc724ab734c45fc13b40613d17b2bbaab370d2dfd9e1ef4696b14ca6362
     #- name: action-scrutinizer
     #  run: ocular 
 
