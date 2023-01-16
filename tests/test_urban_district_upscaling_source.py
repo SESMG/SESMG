@@ -1,6 +1,7 @@
 import pytest
 import pandas
 import os
+from program_files.urban_district_upscaling.components import Source
 
 
 # import standard parameter
@@ -110,9 +111,6 @@ def test_create_source(test_decentral_pv_source_entry):
     
     """
     
-    from program_files.urban_district_upscaling.components.Source \
-        import create_source
-    
     sheets = {"sources": pandas.DataFrame()}
     
     # building specific parameter
@@ -125,7 +123,7 @@ def test_create_source(test_decentral_pv_source_entry):
         "roof area 1": 100
     }
     # start the method to be tested
-    sheets = create_source(
+    sheets = Source.create_source(
         source_type="fixed photovoltaic source",
         roof_num=str(1),
         building=building,
@@ -145,14 +143,11 @@ def test_create_competition_constraint(test_competition_constraint_entry):
     """
     
     """
-    from program_files.urban_district_upscaling.components import Source
-    sheets = {"competition constraints": pandas.DataFrame()}
-    
-    Source.create_competition_constraint(
+    sheets = Source.create_competition_constraint(
         limit=100,
         label="test",
         roof_num=str(1),
-        sheets=sheets,
+        sheets={"competition constraints": pandas.DataFrame()},
         standard_parameters=standard_parameters
     )
 
@@ -167,9 +162,6 @@ def test_create_sources(test_competition_constraint_entry,
     """
     
     """
-    from program_files.urban_district_upscaling.components.Source \
-        import create_sources
-    
     sheets = {"sources": pandas.DataFrame(),
               "competition constraints": pandas.DataFrame()}
     
@@ -186,7 +178,7 @@ def test_create_sources(test_competition_constraint_entry,
         "building type": "SFB"
     }
     # start the method to be tested
-    sheets = create_sources(
+    sheets = Source.create_sources(
         building=building,
         clustering=False,
         sheets=sheets,
@@ -210,8 +202,6 @@ def test_cluster_sources_information():
     """
     
     """
-    from program_files.urban_district_upscaling.components.Source \
-        import cluster_sources_information
     sheets = {"sources": pandas.DataFrame.from_dict({
         "label": ["test_1", "test_2"]})}
     sheets["sources"].set_index("label", inplace=True, drop=False)
@@ -241,7 +231,7 @@ def test_cluster_sources_information():
             test_source_param.update({i + "_" + j: [0] * 12})
     
     for num, test in source.iterrows():
-        source_param, sheets = cluster_sources_information(
+        source_param, sheets = Source.cluster_sources_information(
             source=test,
             source_param=source_param,
             azimuth_type="north",
@@ -263,8 +253,6 @@ def test_sources_clustering():
     """
     
     """
-    from program_files.urban_district_upscaling.components.Source \
-        import sources_clustering
     source_param = {}
     test_source_param = {}
     for i in ["pv", "st"]:
@@ -296,7 +284,7 @@ def test_sources_clustering():
         "Temperature Inlet": [0]
     })}
     
-    source_param, sheets = sources_clustering(
+    source_param, sheets = Source.sources_clustering(
         source_param=source_param,
         building=building,
         sheets=sheets,
@@ -432,8 +420,6 @@ def test_create_cluster_sources(test_clustered_pv_source_entry,
     """
     
     """
-    from program_files.urban_district_upscaling.components.Source \
-        import create_cluster_sources
     source_param = {}
     for i in ["pv", "st"]:
         for j in ["south_west", "west", "north_west", "north", "north_east",
@@ -449,7 +435,7 @@ def test_create_cluster_sources(test_clustered_pv_source_entry,
               "buses": pandas.DataFrame(),
               "sources": pandas.DataFrame()}
     
-    sheets = create_cluster_sources(
+    sheets = Source.create_cluster_sources(
         source_param=source_param,
         cluster="test_cluster",
         sheets=sheets,

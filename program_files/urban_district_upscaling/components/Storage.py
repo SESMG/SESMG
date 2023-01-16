@@ -167,42 +167,54 @@ def cluster_storage_information(storage: pandas.Series,
     return storage_parameter, sheets
 
 
-def create_cluster_storage(type, cluster, storage_parameters, sheets, standard_parameters):
+def create_cluster_storage(storage_type: str, cluster: str,
+                           storage_parameter: dict, sheets: dict,
+                           standard_parameters: pandas.ExcelFile):
     """
-
-    :param standard_parameters:
-    :param type:
-    :return:
+        This method is used to create the clustered storages.
+        
+        :param storage_type: str which defines the storage type to be \
+             created within this method
+        :type storage_type: str
+        :param storage_parameter: dictionary containing the cluster summed \
+                source information
+        :type storage_parameter: dict
+        :param cluster: Cluster id
+        :type cluster: str
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
     """
     from program_files.urban_district_upscaling.pre_processing import (
         append_component,
         read_standard_parameters,
     )
-
-    specific_dict = {
-        "label": str(cluster) + storage_dict.get(type)[0],
-        "comment": "automatically created",
-        "bus": str(cluster) + storage_dict.get(type)[2],
-    }
+    specific_dict = {}
+    # load the storage standard parameter
     standard_param, standard_keys = read_standard_parameters(
-        name="building" + storage_dict.get(type)[0],
-        param_type="5_storages",
-        index="storage_type",
-        standard_parameters=standard_parameters)
+            name="building" + storage_dict.get(storage_type)[0],
+            param_type="5_storages",
+            index="storage_type",
+            standard_parameters=standard_parameters)
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
         specific_dict[standard_keys[i]] = standard_param[standard_keys[i]]
-    counter = storage_parameters[type][0]
-    specific_dict.update(
-        {"periodical costs": storage_parameters[type][2] / counter,
-         "periodical constraint costs": storage_parameters[type][3] / counter,
-         "max. investment capacity": storage_parameters[type][1]}
-    )
-
-    if type == "thermal":
-        specific_dict["variable output costs"] = (
-            storage_parameters[type][4] / counter
-        )
+        
+    counter = storage_parameter[storage_type][0]
+    # define the storage specific parameter
+    specific_dict.update({
+        "label": str(cluster) + storage_dict.get(storage_type)[0],
+        "bus": str(cluster) + storage_dict.get(storage_type)[2],
+        "periodical costs": storage_parameter[storage_type][2] / counter,
+        "periodical constraint costs": storage_parameter[storage_type][3]
+                                       / counter,
+        "max. investment capacity": storage_parameter[storage_type][1],
+        "variable output costs": storage_parameter[storage_type][4] / counter
+    })
+    
     # produce a pandas series out of the dict above due to easier
     # appending
     return append_component(sheets, "storages", specific_dict)
