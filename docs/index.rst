@@ -29,6 +29,7 @@ Structure of Energy Systems
 	
 	structure_of_energy_system/structure
 
+
 Manual
 -------------------------------------------------
 * :doc:`manual/installation`
@@ -37,7 +38,6 @@ Manual
 * :doc:`manual/Results`
 * :doc:`manual/UpscalingTool`
 * :doc:`manual/DemoTool`
-
 
 
 ..	toctree::
@@ -52,6 +52,7 @@ Manual
 	manual/UpscalingTool
 	manual/DemoTool
 
+
 Troubleshooting 
 -------------------------------------------------
 * :doc:`troubleshooting/troubleshooting`
@@ -63,6 +64,7 @@ Troubleshooting
 	:caption: Troubleshooting
 	
 	troubleshooting/troubleshooting
+
 
 Sourcecode Documentation
 -------------------------------------------------
