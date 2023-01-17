@@ -11,6 +11,7 @@ import pandas as pd
 from PIL import Image
 import os
 from datetime import datetime 
+from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode 
 
 # from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 
@@ -23,12 +24,6 @@ from program_files.GUI_st.GUI_st_US import *
 ###### Main SESMG Application ######
 ####################################
 
-
-
-# initial_session_dict
-
-# if "scenario_input_sheet_path" not in st.session_state: 
-#     st.session_state["scenario_input_sheet_path"] = False
 
 
 
@@ -52,27 +47,61 @@ def main_output_result_overview():
     
     # Import summary csv and create dataframe
     df_summary = pd.read_csv(os.path.dirname(__file__) + "/summary.csv")
+    # Create list with headers
+    summary_headers = list(df_summary)
     
     # Display and import time series values
-    #time1, time2 = st.columns(2)
-    #time1.metric(label="Start Date", value=str(df_summary['Start Date']))
-    #time2.metric(label="End Date", value=str(df_summary['End Date']))
+    time1, time2 = st.columns(2)
+    time1.metric(label="Start Date", value=str(df_summary.iloc[0,0]))
+    time2.metric(label="End Date", value=str(df_summary.iloc[0,1]))
     #time3.metric(label="Temporal Resolution", value=str(df_summary['Resolution']))            
     '''Hier Problem mit Darstellung des Typs Datetime'''
     
+    
     # Display and import simulated cost values from summary dataframe
     cost1, cost2, cost3, cost4 = st.columns(4)
-    cost1.metric(label="Total System Costs", value=round(df_summary['Total System Costs'],1), delta="1.2 °F")
-    cost2.metric(label="Total Constraint Costs", value=round(df_summary['Total Constraint Costs'],1), delta="1.2 °F")
-    cost3.metric(label="Total Variable Costs", value=round(df_summary['Total Variable Costs'],1), delta="-1.2 °F")
-    cost4.metric(label="Total Periodical Costs", value=round(df_summary['Total Periodical Costs'],1), delta="1.2 °F")
+    cost1.metric(label=summary_headers[3], value=round(df_summary[summary_headers[3]],1), delta="1.2 °F")
+    cost2.metric(label=summary_headers[4], value=round(df_summary[summary_headers[4]],1), delta="1.2 °F")
+    cost3.metric(label=summary_headers[5], value=round(df_summary[summary_headers[5]],1), delta="-1.2 °F")
+    cost4.metric(label=summary_headers[6], value=round(df_summary[summary_headers[6]],1), delta="1.2 °F")
     
     # Display and import simulated energy values from summary dataframe
     ener1, ener2 = st.columns(2)
-    ener1.metric(label="Total Energy Demand", value=round(df_summary['Total Energy Demand'],1), delta="1.2 °F")
-    ener2.metric(label="Total Energy Usage", value=round(df_summary['Total Energy Usage'],1), delta="1.2 °F")   
+    ener1.metric(label=summary_headers[7], value=round(df_summary[summary_headers[7]],1), delta="1.2 °F")
+    ener2.metric(label=summary_headers[8], value=round(df_summary[summary_headers[8]],1), delta="1.2 °F")   
+    
+    
+    ########## Result Summary ########
+    # Functions to display a summary of the modeled energy system.
+    
+    # Import components csv and create dataframe
+    df_components = pd.read_csv(os.path.dirname(__file__) + "/components.csv")
+    
+    
+    # CSS to inject contained in a string
+    hide_dataframe_row_index = """
+                <style>
+                .row_heading.level0 {display:none}
+                .blank {display:none}
+                </style>
+                """
+
+    # Inject CSS with Markdown
+    st.markdown(hide_dataframe_row_index, unsafe_allow_html=True)
 
 
+    st.dataframe(df_components)
+    
+    AgGrid(df_components, height = 400, fit_columns_on_grid_load=True, update_mode=GridUpdateMode.SELECTION_CHANGED)
+    
+    st.write(df_summary['Start Date'])
+    st.write(df_summary.iloc[0,0])
+    st.write(summary_headers)
+    st.dataframe(df_summary)
+    st.write(df_summary)
+    
+
+    
 
 
 
@@ -93,8 +122,7 @@ def main_application_sesmg():
         "Type in path to your model definition sheet.",
         help="Give the full path from your main directory ending with \
                 /modeldefinition_name.xlsx . \
-                You can choose the filenames and directorties as you want.",
-                value=st.session_state.scenario_input_sheet_path)
+                You can choose the filenames and directorties as you want.")
                 
     
     # ###### Run Model Visualization #####
@@ -232,9 +260,9 @@ def main_application_sesmg():
     
     ####################################
     # Starting process if "Start Optimization"-button is clicked
-    if submitted_optimization:
+    
+    if submitted_optimization == False:
         
-        st.session_state["scenario_input_sheet_path"] = scenario_input_sheet_path
         
         
         if scenario_input_sheet_path is not "":
@@ -316,7 +344,7 @@ def main_application_sesmg():
                 
             
         else:
-            result()
+            main_output_result_overview()
             st.write("Session State")
              
 
