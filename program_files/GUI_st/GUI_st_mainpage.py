@@ -12,6 +12,7 @@ from PIL import Image
 import os
 from datetime import datetime 
 from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode 
+import json
 
 # from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 
@@ -358,10 +359,93 @@ def main_application_sesmg():
 
 def advanced_result_page():
     
-    udu_page = st.container()
     
-    with udu_page:
-        st.title("Hier werden erweitere Ergebnisaufbereitungen dargestellt.")
+    # Opening JSON file
+    json_file = open('GUI_test_setting_cache.json')
+      
+    # returns JSON object as 
+    # a dictionary
+    settings_cache_dict_reload = json.load(json_file)
+      
+    # Iterating through the json
+    # list
+#    for i in data['emp_details']:
+#        print(i)
+      
+    # Closing file
+    json_file.close()
+    
+    st.write(settings_cache_dict_reload)
+    
+    
+    st.title("Hier werden erweitere Ergebnisaufbereitungen dargestellt.")
+       
+    if st.sidebar.button("Clear Cache"):
+
+        settings_cache_dict_reload = dict.fromkeys(settings_cache_dict_reload, "")
+        
+        with open('GUI_test_setting_cache.json', 'w') as outfile:
+            json.dump(settings_cache_dict_reload, outfile, indent=4)
+        
+    with st.sidebar.form("Input Parameters"):
+        
+        # Submit button to start optimization.
+        submitted_optimization = st.form_submit_button("Start Inputs")
+        input1 = st.text_input("Test Input 1", value=settings_cache_dict_reload["input1"])
+        input2 = st.text_input("Test Input 2", value=settings_cache_dict_reload["input2"])
+    
+        if  submitted_optimization:
+            
+            settings_cache_dict = {"input1": input1, "input2": input2}
+            
+            st.write("Test running")
+            st.write(settings_cache_dict)
+            
+            with open('GUI_test_setting_cache.json', 'w') as outfile:
+                json.dump(settings_cache_dict, outfile, indent=4)
+                
+             
+                
+             
+def import_GUI_input_values_json(json_file_name):
+    """
+        :param json_file_name: file name to the underlying json with input values for all GUI pages
+        :type json_file_name: str
+        :param GUI_settings_cache_dict_reload: exported dict from json file including a (sub)dict for every GUI page
+        :type json_file_name: dict
+    """
+    #Import json file including several (sub)dicts for every GUI page 
+    #Each (sub)dict includes input values as a cache from the last session
+    with open(json_file_name, "r") as infile:
+        GUI_settings_cache_dict_reload = json.load(infile)
+        
+    return GUI_settings_cache_dict_reload
+    
+
+
+                
+def clear_GUI_input_values(input_values_sub_dict, json_file_name):
+    
+    
+                
+                
+        
+def safe_GUI_input_values(input_values_sub_dict, json_file_name):
+    """
+        :param input_values_dict: dict of input values of specific GUI page
+        :type input_values_dict: dict
+        :param json_file_name: file name to the underlying json with input values
+        :type json_file_name: str
+    """
+
+
+
+
+    with open(json_file_name, 'w') as outfile:
+        json.dump(input_values_dict, outfile, indent=4)
+
+        
+    
         
 
 ####################################

@@ -36,7 +36,7 @@ def st_settings_global():
         page_title=('SESMG'),
         layout='wide', 
         menu_items={'Get Help': 'https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/',
-                    'Report a Bug': 'https://github.com/chrklemm/SESMG/issues'})
+                    'Report a Bug': 'https://github.com/SESMG/SESMG/issues'})
 
 
 
