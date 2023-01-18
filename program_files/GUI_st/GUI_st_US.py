@@ -11,7 +11,7 @@ def us_application():
         if "created" not in st.session_state:
             st.session_state["created"] = "note done"
         # Submit button to start optimization.
-        submitted_us_run = st.form_submit_button("Start US hallo Tool", on_click=creating_xlsx)
+        submitted_us_run = st.form_submit_button("Start US Tool", on_click=creating_xlsx)
         if st.session_state["created"] == "done":
             st.success("The model definition ist being created.")
 
