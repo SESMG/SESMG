@@ -167,7 +167,7 @@ def building_transformer(building: dict, p2g_link: bool, true_bools: list,
             )
             if transformer == "gas heating" and p2g_link:
                 sheets = Link.create_link(
-                    label="central_naturalgas_" + building["label"] + "link",
+                    label=building["label"] + "_central_naturalgas_link",
                     bus_1="central_naturalgas_bus",
                     bus_2=building["label"] + "_gas_bus",
                     link_type="central_naturalgas_building_link",

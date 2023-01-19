@@ -558,11 +558,11 @@ def urban_district_upscaling_pre_processing(
 
     if clustering:
         sheets = clustering_py.clustering_method(
-            tool,
-            standard_parameters,
-            sheets,
-            central_electricity_network,
-            clustering_dh,
+            tool=tool,
+            standard_parameters=standard_parameters,
+            sheets=sheets,
+            central_electricity_network=central_electricity_network,
+            clustering_dh=clustering_dh,
         )
     
     # open the new excel file and add all the created components

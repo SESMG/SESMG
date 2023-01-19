@@ -73,91 +73,83 @@ def create_central_electricity_bus_connection(
     return sheets
 
 
-def restructuring_links(sheets_clustering, building, cluster, sink_parameters, sheets, standard_parameters):
-    # TODO comments
-    for i, j in sheets_clustering["links"][
-        sheets_clustering["links"]["label"].isin(sheets["links"].index)
-    ].iterrows():
-        # remove heatpump links
-        if str(building[0]) in j["bus2"] and "hp_elec" in j["bus2"]:
-            sheets["links"] = sheets["links"].drop(index=j["label"])
-        if (
-            str(building[1])[-9:] in j["bus2"]
-            and "hp_elec" in j["bus2"]
-            and j["label"] in sheets["links"].index
-        ):
-            sheets["links"] = sheets["links"].drop(index=j["label"])
-        # delete pvbus -> central elec
-        if (
-            str(building[0]) in j["bus1"]
-            and "central_electricity" in j["bus2"]
-            and "pv_bus" in j["bus1"]
-        ):
-            sheets["links"] = sheets["links"].drop(index=j["label"])
-            if (
-                not (
-                    str(cluster) + "_pv_bus" in j["bus1"]
-                    and "central_electricity" in j["bus2"]
-                )
-                and cluster + "pv_central_electricity_link" not in sheets["links"].index
-            ):
-                sheets = create_link(
-                    cluster + "pv_central_electricity_link",
-                    bus_1=cluster + "_pv_bus",
-                    bus_2="central_electricity_bus",
-                    link_type="building_pv_central_link",
-                    sheets=sheets,
-                    standard_parameters=standard_parameters)
-                if sink_parameters[0] + sink_parameters[1] + sink_parameters[2]:
-                    sheets = create_link(
-                        cluster + "pv_electricity_link",
-                        bus_1=cluster + "_pv_bus",
-                        bus_2=cluster + "_electricity_bus",
-                        link_type="building_pv_central_link",
-                        sheets=sheets,
-                        standard_parameters=standard_parameters)
-                sheets["links"].set_index("label", inplace=True, drop=False)
-        # delete pvbus ->  elec bus of building
-        if (
-            str(building[0]) in j["bus1"]
-            and str(building[0]) in j["bus2"]
-            and "pv_bus" in j["bus1"]
-        ):
-            sheets["links"] = sheets["links"].drop(index=j["label"])
+def create_cluster_pv_links(cluster, sheets, standard_parameters,
+                            sink_parameters):
+    if cluster + "_pv_central_electricity_link" not in sheets["links"].index:
+        sheets = create_link(
+            label=cluster + "_pv_central_electricity_link",
+            bus_1=cluster + "_pv_bus",
+            bus_2="central_electricity_bus",
+            link_type="building_pv_central_link",
+            sheets=sheets,
+            standard_parameters=standard_parameters)
+        
+        # if the considered cluster has an electricity demand the link
+        # between the cluster electricity bus and the cluster pv sources
+        # will be created
+        if sink_parameters[0] + sink_parameters[1] + sink_parameters[2]:
+            sheets = create_link(
+                label=cluster + "_pv_electricity_link",
+                bus_1=cluster + "_pv_bus",
+                bus_2=cluster + "_electricity_bus",
+                link_type="building_pv_central_link",
+                sheets=sheets,
+                standard_parameters=standard_parameters)
+        sheets["links"].set_index("label", inplace=True, drop=False)
+    return sheets
 
-        if str(building[1][-9:]) in j["bus1"] and "heat" in j["bus1"]:
-            sheets["links"] = sheets["links"].drop(index=j["label"])
 
-        # connecting the clusters to the central gas bus
-        if str(building[0]) in j["label"]:
-            if "central_naturalgas" in j["bus1"] and "_gas_bus" in j["bus2"]:
-                sheets["links"] = sheets["links"].drop(index=j["label"])
+def add_cluster_naturalgas_bus_links(sheets: dict, cluster: str,
+                                     standard_parameters: pandas.ExcelFile):
+    """
+    
+    """
+    if cluster + "_central_naturalgas" not in sheets["links"].index:
+        sheets = create_link(
+                label=cluster + "_central_naturalgas",
+                bus_1="central_naturalgas_bus",
+                bus_2=cluster + "_gas_bus",
+                link_type="central_naturalgas_building_link",
+                sheets=sheets,
+                standard_parameters=standard_parameters
+        )
+        sheets["links"].set_index("label", inplace=True, drop=False)
+    return sheets
 
-                if "central_naturalgas" + cluster not in sheets["links"].index:
-                    sheets = create_link(
-                        label="central_naturalgas" + cluster,
-                        bus_1="central_naturalgas_bus",
-                        bus_2=cluster + "_gas_bus",
-                        link_type="central_naturalgas_building_link",
-                        sheets=sheets,
-                        standard_parameters=standard_parameters
-                    )
-                    sheets["links"].set_index("label", inplace=True, drop=False)
-        if str(building[0]) in j["bus2"] and "electricity" in j["bus2"]:
-            sheets["links"]["bus2"] = sheets["links"]["bus2"].replace(
-                [str(building[0]) + "_electricity_bus"],
-                str(cluster) + "_electricity_bus",
-            )
-        # delete and replace central elec -> building elec
-        if (
-            str(building[0]) in j["bus2"]
-            and "electricity_bus" in j["bus2"]
-            and "_electricity" in j["bus1"]
-        ):
-            sheets["links"] = sheets["links"].drop(index=j["label"])
 
-        if str(building[0]) in j["bus2"] and "gas" in j["bus2"]:
-            sheets["links"]["bus2"] = sheets["links"]["bus2"].replace(
-                [str(building[0]) + "_gas_bus"], str(cluster) + "_gas_bus"
-            )
+def delete_non_used_links(sheets_clustering: dict, cluster_ids: dict,
+                          sheets: dict) -> dict:
+    """
+        Within this method all non clustered links which are no longer
+        in use after the clustering process are removed and the
+        
+        :param sheets_clustering: copy of the scenario created within \
+            the pre_processing.py
+        :type sheets_clustering: dict
+        :param cluster_ids: dictionary holding the clusters' buildings \
+            information which are represented by lists containing the \
+            building label [0], the building's parcel ID [1] and the \
+            building type [2]
+        :type cluster_ids: dict
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+    """
+    
+    # iterate threw all links that are within the sheets dictionary
+    # this is necessary since sheets clustering is only a copy of the
+    # unclustered file while sheets will be changed within this method
+    df_links = sheets_clustering["links"][sheets_clustering["links"][
+        "label"].isin(sheets["links"].index)]
+    for num, link in df_links.iterrows():
+        for building in cluster_ids:
+            
+            # if the label doesn't begin with central_
+            if link["label"].split("_")[0] != "central":
+                # if the considered building's label is within the link
+                # label
+                if link["label"].split("_")[0] in building[0]:
+                    # remove the current link from sheets["links"]
+                    sheets["links"] = sheets["links"].drop(index=link["label"])
+
     return sheets

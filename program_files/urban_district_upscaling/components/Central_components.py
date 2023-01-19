@@ -346,18 +346,19 @@ def create_power_to_gas_system(label, bus, sheets, standard_parameters):
     # links
     for link in ["h2_heat_link"]:
         sheets = Link.create_link(
-                label=label+'heat_link',
-                bus_1=label+'_heat_bus',
-                bus_2=bus,
-                link_type="central_h2_heat_link",
-                sheets=sheets,
-                standard_parameters=standard_parameters)
+            label="central_" + label + '_heat_link',
+            bus_1="central_" + label + '_heat_bus',
+            bus_2=bus,
+            link_type="central_h2_heat_link",
+            sheets=sheets,
+            standard_parameters=standard_parameters)
                 
     for bus_type in ["central_h2_heat_bus"]:
-            sheets = Bus.create_standard_parameter_bus(
-	        label=label+'_heat_bus', bus_type=bus_type, sheets=sheets,
-	        standard_parameters=standard_parameters
-        )
+        sheets = Bus.create_standard_parameter_bus(
+            label="central_" + label + '_heat_bus',
+            bus_type=bus_type,
+            sheets=sheets,
+            standard_parameters=standard_parameters)
 
     # storages
     for storage_type in ["central_h2_storage", "central_naturalgas_storage"]:

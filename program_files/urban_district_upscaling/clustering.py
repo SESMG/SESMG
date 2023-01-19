@@ -290,6 +290,13 @@ def collect_building_information(cluster_ids, cluster, sheets, heat_buses_gchps,
         "st_west": [0] * 12,
         "st_north_west": [0] * 12,
     }
+    
+    # remove the not longer used links
+    sheets = Link.delete_non_used_links(
+        sheets_clustering=sheets_clustering,
+        cluster_ids=cluster_ids,
+        sheets=sheets)
+    
     for building in cluster_ids:
         for index, sink in sheets_clustering["sinks"].iterrows():
             # collecting information for sinks
@@ -321,20 +328,24 @@ def collect_building_information(cluster_ids, cluster, sheets, heat_buses_gchps,
             sheets_clustering
         )
 
-        # restructure all links
-        sheets = Link.restructuring_links(
-            sheets_clustering=sheets_clustering,
-            building=building,
+        sheets = Link.create_cluster_pv_links(
             cluster=cluster,
-            sink_parameters=sink_parameters,
             sheets=sheets,
-            standard_parameters=standard_parameters)
-
+            standard_parameters=standard_parameters,
+            sink_parameters=sink_parameters)
+            
+        if transformer_parameters["gasheating"][0] > 0:
+            sheets = Link.add_cluster_naturalgas_bus_links(
+                sheets=sheets,
+                cluster=cluster,
+                standard_parameters=standard_parameters
+            )
+        
         # update the sources in and output
         sheets = Source.update_sources_in_output(
             building, sheets_clustering, cluster, sheets
         )
-
+    
     return (
         sheets,
         sink_parameters,
@@ -377,9 +388,9 @@ def create_cluster_components(
         if storage_parameters[i][0] > 0:
             # create cluster's battery
             sheets = Storage.create_cluster_storage(
-                type=i,
+                storage_type=i,
                 cluster=cluster,
-                storage_parameters=storage_parameters,
+                storage_parameter=storage_parameters,
                 sheets=sheets,
                 standard_parameters=standard_parameters)
 
@@ -426,7 +437,7 @@ def clustering_method(tool: pandas.DataFrame, sheets: dict,
         sheet_edited.reset_index(drop=True, inplace=True)
         sheet_edited = sheet_edited.drop(index=0)
         sheets_clustering.update({sheet: sheet_edited})
-    sheets = remove_buses(sheets)
+    sheets = remove_buses(sheets=sheets, sheets_clustering=sheets_clustering)
     heat_buses_gchps = []
     
     for cluster in cluster_ids:
@@ -444,7 +455,8 @@ def clustering_method(tool: pandas.DataFrame, sheets: dict,
                     cluster=cluster,
                     sheets=sheets,
                     heat_buses_gchps=heat_buses_gchps,
-                    standard_parameters=standard_parameters)
+                    standard_parameters=standard_parameters,
+                    sheets_clustering=sheets_clustering)
 
             sheets = create_cluster_components(
                 standard_parameters,
