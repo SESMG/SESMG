@@ -3,142 +3,153 @@ import pandas
 from program_files.urban_district_upscaling.components import Sink
 import os
 
+# import standard parameter
+standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
+                                       + "/standard_parameters.xlsx")
+sinks = standard_parameters.parse("2_sinks")
+
 
 @pytest.fixture
 def test_elec_sink_entry():
-    # import standard parameter
-    standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
-                                           + "/standard_parameters.xlsx")
-    sinks = standard_parameters.parse("2_sinks")
-    sink = sinks.loc[sinks["sink_type"] == "SFB_electricity_sink"]
-
+    """
+    
+    """
     return {
-        "sinks": pandas.DataFrame.from_dict({
-            "label": ["test_sink"],
-            "input": ["test_bus"],
-            "annual demand": [3000],
-            "active": sink["active"].values,
-            "fixed": sink["fixed"].values,
-            "load profile": sink["load profile"].values,
-            "nominal value": sink["nominal value"].values,
-            "occupants": sink["occupants"].values,
-            "building class": sink["building class"].values,
-            "wind class": sink["wind class"].values,
-            "net_floor_area / area": sink["net_floor_area / area"].values})
-    }
+        "sinks": pandas.merge(
+            left=pandas.DataFrame.from_dict({
+                "label": ["test_sink"],
+                "input": ["test_bus"],
+                "annual demand": [3000],
+                "sink_type": ["SFB_electricity_sink"]}),
+            right=sinks,
+            on="sink_type").drop(columns=["sink_type"])}
 
 
 def test_create_standard_parameter_sink(test_elec_sink_entry):
-    sheets = {"sinks": pandas.DataFrame()}
+    """
     
+    """
     # create a standard_parameter building res electricity bus
     sheets = Sink.create_standard_parameter_sink(
         label="test_sink",
         sink_type="SFB_electricity_sink",
         sink_input="test_bus",
-        sheets=sheets,
+        sheets={"sinks": pandas.DataFrame()},
         annual_demand=3000,
-        standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
-                                             + "/standard_parameters.xlsx"))
+        standard_parameters=standard_parameters)
 
-    pandas.testing.assert_frame_equal(sheets["sinks"],
-                                      test_elec_sink_entry["sinks"])
+    pandas.testing.assert_frame_equal(
+        sheets["sinks"].sort_index(axis=1),
+        test_elec_sink_entry["sinks"].sort_index(axis=1))
 
 
 def test_create_sinks():
-    # import standard parameter
-    standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
-                                           + "/standard_parameters.xlsx")
+    """
+        Within this test method 5 different types of buildings and their
+        sinks are created. Furthermore the building specific attributes
+        as e.g. the annual demand are calculated manually and compared
+        with the value resulting from the create sinks method.
+        
+        FIRST TEST BUILDING:
+        details:
+            - Single family building,
+            - 100 sqm building area,
+            - yoc 2000,
+            - 5 person
+            
+        SECOND TEST BUILDING:
+        details:
+            - Single family building,
+            - energy certificate information
+    """
     # import elec demand table
     elec = standard_parameters.parse("2_2_electricity")
+    elec = elec.loc[elec["household size"] == "specific demand"]
     # import heat demand table
     heat = standard_parameters.parse("2_1_heat")
-    # import sinks table
-    sinks = standard_parameters.parse("2_sinks")
-    sheets = {"sinks": pandas.DataFrame()}
     
-    # prepare FIRST TEST BUILDING:
-    # details: Single family building, 100 sqm building area, yoc 2000,
-    # 5 person
-    building = {
-        "label": "test",
-        "building type": "SFB",
-        "gross building area": 100,
-        "occupants per unit": 5,
-        "units": 1,
-        "electricity demand": 0,
-        "year of construction": 2000,
-        "heat demand": 0,
-        "distance of electric vehicles": 0
-    }
-    sheets = Sink.create_sinks(
-            building=building,
-            sheets=sheets,
-            standard_parameters=standard_parameters)
+    # FIRST TEST BUILDING:
+    # details:
+    #   - Single family building,
+    #   - 100 sqm building area,
+    #   - yoc 2000,
+    #   - 5 person
+    sink_sheet = Sink.create_sinks(
+        building={
+            "label": "test",
+            "building type": "SFB",
+            "gross building area": 100,
+            "occupants per unit": 5,
+            "units": 1,
+            "electricity demand": 0,
+            "year of construction": 2000,
+            "heat demand": 0,
+            "distance of electric vehicles": 0},
+        sheets={"sinks": pandas.DataFrame()},
+        standard_parameters=standard_parameters)["sinks"]
     
     # check annual ELEC DEMAND column
-    sink = sheets["sinks"].loc[
-                sheets["sinks"]["label"] == "test_electricity_demand"]
+    sink = sink_sheet.loc[sink_sheet["label"] == "test_electricity_demand"]
     # the demand of a single family house with 5 persons
-    assert float(sink["annual demand"][0]) == elec.loc[
-        elec["household size"] == "specific demand"]["SFB 5 person"][1]
+    assert float(sink["annual demand"][0]) == elec["SFB 5 person"][1]
     
     # check annual HEAT DEMAND column
-    sink = sheets["sinks"].loc[
-        sheets["sinks"]["label"] == "test_heat_demand"]
+    sink = sink_sheet.loc[sink_sheet["label"] == "test_heat_demand"]
+    yoc_heat = heat.loc[heat["year of construction"] == 2000]
+    NFA_GFA = sinks.loc[sinks["sink_type"] == "SFB_heat_sink"][
+                "net_floor_area / area"]
+    # demand = specific demand for 1 unit (details) * Net Floor Area /
+    # Gross Floor Area * gross building area (details)
+    ref_demand = float(yoc_heat["1 unit(s)"]) * float(NFA_GFA) * 100
     # the demand of a single family house build in 2000
-    assert float(sink["annual demand"][0]) == float(heat.loc[
-        heat["year of construction"] == 2000]["1 unit(s)"]) \
-        * float(sinks.loc[sinks["sink_type"] == "SFB_heat_sink"][
-                "net_floor_area / area"]) * 100
+    assert float(sink["annual demand"][0]) == ref_demand
     
-    # prepare SECOND TEST BUILDING:
-    # details: Single family building, energy certificate information
-    building = {
-        "label": "test1",
-        "building type": "SFB",
-        "gross building area": 100,
-        "occupants per unit": 0,
-        "units": 1,
-        "electricity demand": 100,
-        "year of construction": 0,
-        "heat demand": 100,
-        "distance of electric vehicles": 0
-    }
-    sheets = Sink.create_sinks(
-            building=building,
-            sheets=sheets,
-            standard_parameters=standard_parameters)
+    # SECOND TEST BUILDING:
+    # details:
+    #   - Single family building,
+    #   - energy certificate information
+    sink_sheet = Sink.create_sinks(
+        building={
+            "label": "test1",
+            "building type": "SFB",
+            "gross building area": 100,
+            "occupants per unit": 0,
+            "units": 1,
+            "electricity demand": 100,
+            "year of construction": 0,
+            "heat demand": 100,
+            "distance of electric vehicles": 0},
+        sheets={"sinks": pandas.DataFrame()},
+        standard_parameters=standard_parameters)["sinks"]
     
     # check annual ELEC DEMAND column
-    sink = sheets["sinks"].loc[
-        sheets["sinks"]["label"] == "test1_electricity_demand"]
+    sink = sink_sheet.loc[sink_sheet["label"] == "test1_electricity_demand"]
     # the given electricity demand is 100 kWh / (sqm * a)
     assert float(sink["annual demand"]) == 100 * 100
     
     # check annual HEAT DEMAND column
-    sink = sheets["sinks"].loc[
-        sheets["sinks"]["label"] == "test1_heat_demand"]
+    sink = sink_sheet.loc[sink_sheet["label"] == "test1_heat_demand"]
     # the given electricity demand is 100 kWh / (sqm * a)
     assert float(sink["annual demand"]) == 100 * 100
     
-    # prepare THIRD TEST BUILDING:
-    # details: Single family building, >5 person, yoc 1980
-    building = {
-        "label": "test2",
-        "building type": "SFB",
-        "gross building area": 100,
-        "occupants per unit": 6,
-        "units": 1,
-        "electricity demand": 0,
-        "year of construction": 1980,
-        "heat demand": 0,
-        "distance of electric vehicles": 0
-    }
+    # THIRD TEST BUILDING:
+    # details:
+    #   - Single family building,
+    #   - >5 person,
+    #   - yoc 1980
     sheets = Sink.create_sinks(
-            building=building,
-            sheets=sheets,
-            standard_parameters=standard_parameters)
+        building={
+            "label": "test2",
+            "building type": "SFB",
+            "gross building area": 100,
+            "occupants per unit": 6,
+            "units": 1,
+            "electricity demand": 0,
+            "year of construction": 1980,
+            "heat demand": 0,
+            "distance of electric vehicles": 0},
+        sheets={"sinks": pandas.DataFrame()},
+        standard_parameters=standard_parameters)
     
     # check annual ELEC DEMAND column
     sink = sheets["sinks"].loc[
@@ -174,7 +185,7 @@ def test_create_sinks():
     }
     sheets = Sink.create_sinks(
             building=building,
-            sheets=sheets,
+            sheets={"sinks": pandas.DataFrame()},
             standard_parameters=standard_parameters)
     
     # check annual ELEC DEMAND column
@@ -211,7 +222,7 @@ def test_create_sinks():
     }
     sheets = Sink.create_sinks(
             building=building,
-            sheets=sheets,
+            sheets={"sinks": pandas.DataFrame()},
             standard_parameters=standard_parameters)
     
     # check annual ELEC DEMAND column

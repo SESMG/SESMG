@@ -8,6 +8,7 @@ standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
                                        + "/standard_parameters.xlsx")
 links = standard_parameters.parse("6_links")
 
+
 @pytest.fixture
 def test_create_link_entry():
     # combine specific data and the standard parameter data
@@ -148,9 +149,41 @@ def test_create_cluster_pv_links(test_cluster_pv_links_entries):
         test_cluster_pv_links_entries["links"].sort_index(axis=1))
 
 
-def test_add_cluster_naturalgas_bus_links():
-    pass
+@pytest.fixture
+def test_cluster_natural_gas_bus_links_entry():
+    """
+    
+    """
+    return {
+        "links": pandas.merge(
+            left=pandas.DataFrame.from_dict({
+                "label": ["test_cluster_central_naturalgas_link"],
+                "bus1": ["central_naturalgas_bus"],
+                "bus2": ["test_cluster_gas_bus"],
+                "link_type": ["central_naturalgas_building_link"]}),
+            right=links,
+            on="link_type").drop(columns=["link_type"])
+    }
 
 
+def test_add_cluster_naturalgas_bus_links(
+        test_cluster_natural_gas_bus_links_entry):
+    """
+    
+    """
+    sheets = Link.add_cluster_naturalgas_bus_links(
+        sheets={"links": pandas.DataFrame()},
+        cluster="test_cluster",
+        standard_parameters=standard_parameters
+    )
+    
+    test_cluster_natural_gas_bus_links_entry["links"].set_index(
+            "label", inplace=True, drop=False)
+
+    pandas.testing.assert_frame_equal(
+        sheets["links"].sort_index(axis=1),
+        test_cluster_natural_gas_bus_links_entry["links"].sort_index(axis=1))
+    
+    
 def test_delete_non_used_links():
     pass

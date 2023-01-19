@@ -1,27 +1,30 @@
 import pandas
 
 
-def create_standard_parameter_sink(
-    sink_type: str, label: str, sink_input: str, annual_demand: int, sheets,
-    standard_parameters: pandas.ExcelFile
-):
+def create_standard_parameter_sink(sink_type: str, label: str, sink_input: str,
+                                   annual_demand: int, sheets: dict,
+                                   standard_parameters: pandas.ExcelFile):
     """
-    creates a sink with standard_parameters, based on the standard
-    parameters given in the "standard_parameters" dataset and adds
-    it to the "sheets"-output dataset.
-
-    :param sink_type: needed to get the standard parameters of the
-                      link to be created
-    :type sink_type: str
-    :param label: label, the created sink will be given
-    :type label: str
-    :param sink_input: label of the bus which will be the input of the
-                  sink to be created
-    :type sink_input: str
-    :param annual_demand: #todo formula
-    :type annual_demand: int
-    :param sheets:
-    :type sheets:
+        creates a sink with standard_parameters, based on the standard
+        parameters given in the "standard_parameters" dataset and adds
+        it to the "sheets"-output dataset.
+    
+        :param sink_type: needed to get the standard parameters of the
+                          link to be created
+        :type sink_type: str
+        :param label: label, the created sink will be given
+        :type label: str
+        :param sink_input: label of the bus which will be the input of \
+            the sink to be created
+        :type sink_input: str
+        :param annual_demand: #todo formula
+        :type annual_demand: int
+        :param sheets: dictionary containing the pandas.Dataframes that\
+                will represent the model definition's Spreadsheets
+            :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+                containing the non-building specific technology data
+            :type standard_parameters: pandas.ExcelFile
     """
     from program_files import create_standard_parameter_comp
 

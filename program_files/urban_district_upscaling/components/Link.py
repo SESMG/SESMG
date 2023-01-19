@@ -87,6 +87,7 @@ def create_cluster_pv_links(cluster: str, sheets: dict, sink_parameters: list,
         :type sheets: dict
         :param sink_parameters: list holding the cluster's sinks \
             information e. g. the total res electricity demand [0]
+        :type sink_parameters: list
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
@@ -118,16 +119,27 @@ def create_cluster_pv_links(cluster: str, sheets: dict, sink_parameters: list,
 def add_cluster_naturalgas_bus_links(sheets: dict, cluster: str,
                                      standard_parameters: pandas.ExcelFile):
     """
+        In this method, the naturalgas bus of the cluster is connected
+        to the central natural gas bus.
+        
+        :param cluster: Cluster ID
+        :type cluster: str
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
     
     """
     if cluster + "_central_naturalgas" not in sheets["links"].index:
         sheets = create_link(
-                label=cluster + "_central_naturalgas",
-                bus_1="central_naturalgas_bus",
-                bus_2=cluster + "_gas_bus",
-                link_type="central_naturalgas_building_link",
-                sheets=sheets,
-                standard_parameters=standard_parameters
+            label=cluster + "_central_naturalgas_link",
+            bus_1="central_naturalgas_bus",
+            bus_2=cluster + "_gas_bus",
+            link_type="central_naturalgas_building_link",
+            sheets=sheets,
+            standard_parameters=standard_parameters
         )
         sheets["links"].set_index("label", inplace=True, drop=False)
     return sheets
