@@ -73,8 +73,24 @@ def create_central_electricity_bus_connection(
     return sheets
 
 
-def create_cluster_pv_links(cluster, sheets, standard_parameters,
-                            sink_parameters):
+def create_cluster_pv_links(cluster: str, sheets: dict, sink_parameters: list,
+                            standard_parameters: pandas.ExcelFile):
+    """
+        In this method, the PV bus of the cluster is connected to the
+        central electricity bus, if the cluster power demand > 0, it is
+        also connected to the cluster power bus.
+        
+        :param cluster: Cluster ID
+        :type cluster: str
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param sink_parameters: list holding the cluster's sinks \
+            information e. g. the total res electricity demand [0]
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+    """
     if cluster + "_pv_central_electricity_link" not in sheets["links"].index:
         sheets = create_link(
             label=cluster + "_pv_central_electricity_link",
@@ -92,7 +108,7 @@ def create_cluster_pv_links(cluster, sheets, standard_parameters,
                 label=cluster + "_pv_electricity_link",
                 bus_1=cluster + "_pv_bus",
                 bus_2=cluster + "_electricity_bus",
-                link_type="building_pv_central_link",
+                link_type="building_pv_building_link",
                 sheets=sheets,
                 standard_parameters=standard_parameters)
         sheets["links"].set_index("label", inplace=True, drop=False)
@@ -143,13 +159,12 @@ def delete_non_used_links(sheets_clustering: dict, cluster_ids: dict,
         "label"].isin(sheets["links"].index)]
     for num, link in df_links.iterrows():
         for building in cluster_ids:
-            
-            # if the label doesn't begin with central_
-            if link["label"].split("_")[0] != "central":
-                # if the considered building's label is within the link
-                # label
-                if link["label"].split("_")[0] in building[0]:
-                    # remove the current link from sheets["links"]
-                    sheets["links"] = sheets["links"].drop(index=link["label"])
+            # first label part
+            label_part = link["label"].split("_")[0]
+            # if the label doesn't begin with central_ and the
+            # considered building's label is within the link label
+            if label_part != "central" and label_part in building[0]:
+                # remove the current link from sheets["links"]
+                sheets["links"] = sheets["links"].drop(index=link["label"])
 
     return sheets

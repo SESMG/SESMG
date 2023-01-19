@@ -110,6 +110,47 @@ def test_create_central_electricity_bus_connection(
     )
     
     
-def test_restructuring_links():
+@pytest.fixture
+def test_cluster_pv_links_entries():
+    """
+    
+    """
+    return {
+        "links": pandas.merge(
+            left = pandas.DataFrame.from_dict({
+                "label": ["test_cluster_pv_central_electricity_link",
+                          "test_cluster_pv_electricity_link"],
+                "bus1": ["test_cluster_pv_bus"] * 2,
+                "bus2": ["central_electricity_bus",
+                         "test_cluster_electricity_bus"],
+                "link_type": ["building_pv_central_link",
+                              "building_pv_building_link"]}),
+            right=links,
+            on="link_type").drop(columns=["link_type"])
+    }
 
+
+def test_create_cluster_pv_links(test_cluster_pv_links_entries):
+    """
+    
+    """
+    sheets = Link.create_cluster_pv_links(
+        cluster="test_cluster",
+        sheets={"links": pandas.DataFrame()},
+        sink_parameters=[1, 2, 3, [], 0, 0, 0, [], [], [], []],
+        standard_parameters=standard_parameters)
+    
+    test_cluster_pv_links_entries["links"].set_index(
+            "label", inplace=True, drop=False)
+    
+    pandas.testing.assert_frame_equal(
+        sheets["links"].sort_index(axis=1),
+        test_cluster_pv_links_entries["links"].sort_index(axis=1))
+
+
+def test_add_cluster_naturalgas_bus_links():
+    pass
+
+
+def test_delete_non_used_links():
     pass
