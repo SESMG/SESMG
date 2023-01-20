@@ -17,6 +17,7 @@ from datetime import datetime
 
 from program_files.GUI_st.GUI_st_US import *
 from program_files.GUI_st.GUI_st_mainpage import *
+from program_files.GUI_st.GUI_st_results import *
 
 
 
