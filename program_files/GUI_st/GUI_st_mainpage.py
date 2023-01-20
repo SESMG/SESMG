@@ -16,8 +16,8 @@ import json
 
 # from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 
-from program_files.GUI_st.GUI_st_US import *
-
+# from program_files.GUI_st.GUI_st_US import *
+from GUI_streamlit import *
 
 
 
@@ -108,6 +108,9 @@ def main_output_result_overview():
 
 
 def main_application_sesmg():    
+
+    # Import the saved GUI settings from the last session
+    settings_cache_dict_reload = import_GUI_input_values_json(os.path.dirname(__file__) + "/GUI_test_setting_cache.json")
 
         
     ####################################
@@ -262,11 +265,15 @@ def main_application_sesmg():
     ####################################
     # Starting process if "Start Optimization"-button is clicked
     
-    if submitted_optimization == False:
+    if submitted_optimization:
         
         
         
         if scenario_input_sheet_path is not "":
+            
+            # Creating a dict with all GUI settings as preparation to save them for the next session
+            # settings_cache_dict_reload["main_page"]
+            
             
             # Creating the timeseries preperation settings list for the main model
             timeseries_prep_param = \
@@ -287,105 +294,95 @@ def main_application_sesmg():
             st.write(timeseries_prep_param)
             st.write(scenario_input_sheet_path)
             
-            # Setting the path where to safe the modeling results
-            res_folder_path = os.path.join(os.path.dirname(__file__),'results')
-            res_path = res_folder_path \
-                        + '/' \
-                        + scenario_input_sheet_path.split("/")[-1][:-5] \
-                        + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
-            os.mkdir(res_path)
+#             # Setting the path where to safe the modeling results
+#             res_folder_path = os.path.join(os.path.dirname(__file__),'results')
+#             res_path = res_folder_path \
+#                         + '/' \
+#                         + scenario_input_sheet_path.split("/")[-1][:-5] \
+#                         + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
+#             os.mkdir(res_path)
 
-# HIER NOCHMAL ANSEHEN WIE / WO DIE DATEI GESPEICHERT WERDEN SOLL            
-            # Setting the path where to safe the pre-modeling results
-            premodeling_res_folder_path = os.path.join(os.path.dirname(__file__),'pre_model_results')
-            premodeling_res_path = premodeling_res_folder_path \
-                        + '/' \
-                        + scenario_input_sheet_path.split("/")[-1][:-5] \
-                        + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
-            os.mkdir(premodeling_res_path)
+# # HIER NOCHMAL ANSEHEN WIE / WO DIE DATEI GESPEICHERT WERDEN SOLL            
+#             # Setting the path where to safe the pre-modeling results
+#             premodeling_res_folder_path = os.path.join(os.path.dirname(__file__),'pre_model_results')
+#             premodeling_res_path = premodeling_res_folder_path \
+#                         + '/' \
+#                         + scenario_input_sheet_path.split("/")[-1][:-5] \
+#                         + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
+#             os.mkdir(premodeling_res_path)
             
             
             # Staring the model run without a pre-model
-            if input_activate_premodeling == False:
-                sesmg_main(
-                    scenario_file=scenario_input_sheet_path,
-                    result_path=res_path,
-                    num_threads=input_num_threads,
-                    timeseries_prep=timeseries_prep_param,
-    #TODO: Implementieren 
-                    graph=False,
-                    criterion_switch=input_criterion_switch,
-                    xlsx_results=input_xlsx_results,
-                    console_results=input_console_results,
-                    solver=input_solver,
-                    district_heating_path=district_heating_precalc_path,
-                    cluster_dh=input_cluster_dh
-                    )
+    #         if input_activate_premodeling == False:
+    #             sesmg_main(
+    #                 scenario_file=scenario_input_sheet_path,
+    #                 result_path=res_path,
+    #                 num_threads=input_num_threads,
+    #                 timeseries_prep=timeseries_prep_param,
+    # #TODO: Implementieren 
+    #                 graph=False,
+    #                 criterion_switch=input_criterion_switch,
+    #                 xlsx_results=input_xlsx_results,
+    #                 console_results=input_console_results,
+    #                 solver=input_solver,
+    #                 district_heating_path=district_heating_precalc_path,
+    #                 cluster_dh=input_cluster_dh
+    #                 )
                 
             # Staring the model run with a pre-model           
-            else: 
-                sesmg_main_including_premodel(
-                    scenario_file=scenario_input_sheet_path,
-                    result_path=res_path,
-                    num_threads=input_num_threads,
-                    timeseries_prep=timeseries_prep_param,
-    #TODO: Implementieren 
-                    graph=False,
-                    criterion_switch=input_criterion_switch,
-                    xlsx_results=input_xlsx_results,
-                    console_results=input_console_results,
-                    solver=input_solver,
-                    district_heating_path=district_heating_precalc_path,
-                    cluster_dh=input_cluster_dh,
-                    pre_model_timeseries_prep=pre_model_timeseries_prep_param,
-                    investment_boundaries = input_premodeling_invest_boundaries,
-                    investment_boundary_factor = input_premodeling_tightening_factor,
-                    pre_model_path=premodeling_res_path
-                    )
+    #         else: 
+    #             sesmg_main_including_premodel(
+    #                 scenario_file=scenario_input_sheet_path,
+    #                 result_path=res_path,
+    #                 num_threads=input_num_threads,
+    #                 timeseries_prep=timeseries_prep_param,
+    # #TODO: Implementieren 
+    #                 graph=False,
+    #                 criterion_switch=input_criterion_switch,
+    #                 xlsx_results=input_xlsx_results,
+    #                 console_results=input_console_results,
+    #                 solver=input_solver,
+    #                 district_heating_path=district_heating_precalc_path,
+    #                 cluster_dh=input_cluster_dh,
+    #                 pre_model_timeseries_prep=pre_model_timeseries_prep_param,
+    #                 investment_boundaries = input_premodeling_invest_boundaries,
+    #                 investment_boundary_factor = input_premodeling_tightening_factor,
+    #                 pre_model_path=premodeling_res_path
+    #                 )
                 
             
         else:
             main_output_result_overview()
-            st.write("Session State")
+            st.write("Hallo")
              
 
 
 
-
 ####################################
-###### SESMG Advanced Results ######
+############ TEST PAGE #############
 ####################################
+                
+             
 
 
-def advanced_result_page():
+
+def test_page():
     
-    
-    # Opening JSON file
-    json_file = open('GUI_test_setting_cache.json')
-      
-    # returns JSON object as 
-    # a dictionary
-    settings_cache_dict_reload = json.load(json_file)
-      
-    # Iterating through the json
-    # list
-#    for i in data['emp_details']:
-#        print(i)
-      
-    # Closing file
-    json_file.close()
-    
+    settings_cache_dict_reload = import_GUI_input_values_json(os.path.dirname(__file__) + "/GUI_test_setting_cache.json")
+
     st.write(settings_cache_dict_reload)
     
     
     st.title("Hier werden erweitere Ergebnisaufbereitungen dargestellt.")
        
+    
     if st.sidebar.button("Clear Cache"):
 
-        settings_cache_dict_reload = dict.fromkeys(settings_cache_dict_reload, "")
+        settings_cache_dict_reload_2 = clear_GUI_input_values(settings_cache_dict_reload, "main_page", os.path.dirname(__file__) + "/GUI_test_setting_cache.json")
         
-        with open('GUI_test_setting_cache.json', 'w') as outfile:
-            json.dump(settings_cache_dict_reload, outfile, indent=4)
+        #rerun whole script to update GUI settings
+        st.experimental_rerun()
+
         
     with st.sidebar.form("Input Parameters"):
         
@@ -398,54 +395,12 @@ def advanced_result_page():
             
             settings_cache_dict = {"input1": input1, "input2": input2}
             
-            st.write("Test running")
-            st.write(settings_cache_dict)
+            #sfe GUI settings dict
+            safe_GUI_input_values(settings_cache_dict, os.path.dirname(__file__) + "/GUI_test_setting_cache.json")
             
-            with open('GUI_test_setting_cache.json', 'w') as outfile:
-                json.dump(settings_cache_dict, outfile, indent=4)
-                
-             
-                
-             
-def import_GUI_input_values_json(json_file_name):
-    """
-        :param json_file_name: file name to the underlying json with input values for all GUI pages
-        :type json_file_name: str
-        :param GUI_settings_cache_dict_reload: exported dict from json file including a (sub)dict for every GUI page
-        :type json_file_name: dict
-    """
-    #Import json file including several (sub)dicts for every GUI page 
-    #Each (sub)dict includes input values as a cache from the last session
-    with open(json_file_name, "r") as infile:
-        GUI_settings_cache_dict_reload = json.load(infile)
-        
-    return GUI_settings_cache_dict_reload
-    
+            #rerun whole script to update GUI settings
+            st.experimental_rerun()
 
-
-                
-def clear_GUI_input_values(input_values_sub_dict, json_file_name):
-    
-    
-                
-                
-        
-def safe_GUI_input_values(input_values_sub_dict, json_file_name):
-    """
-        :param input_values_dict: dict of input values of specific GUI page
-        :type input_values_dict: dict
-        :param json_file_name: file name to the underlying json with input values
-        :type json_file_name: str
-    """
-
-
-
-
-    with open(json_file_name, 'w') as outfile:
-        json.dump(input_values_dict, outfile, indent=4)
-
-        
-    
         
 
 ####################################
