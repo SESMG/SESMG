@@ -48,7 +48,7 @@ Using the timeseries preparation-options, the modeled time system can be reduced
 
 .. warning::
 
-	All time series simplifications can currently only be applied at an output time resolution of hours with 8760 time steps (i.e. one whole year).
+	All time series simplifications can currently only be applied at an input time resolution of hours with 8760 time steps (i.e. one whole year).
 
 GUI Settings
 ------------
