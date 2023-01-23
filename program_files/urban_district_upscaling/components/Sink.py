@@ -224,11 +224,21 @@ def create_sink_ev(building: pandas.Series, sheets: dict,
         standard_parameters=standard_parameters)
 
 
-def create_sinks(building, standard_parameters, sheets):
+def create_sinks(building: pandas.Series, sheets: dict,
+                 standard_parameters: pandas.ExcelFile):
     """
     TODO DOCSTRING
+        
+        :param building: building specific data which were imported \
+            from the US-Input sheet
+        :type building: pandas.Series
+        :param sheets: dictionary containing the pandas.Dataframes that\
+                will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+                containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
     """
-    # electricity demand
     if building["building type"]:
         area = building["gross building area"]
         # get sinks standard parameters
@@ -237,15 +247,25 @@ def create_sinks(building, standard_parameters, sheets):
         
         # create electricity sink
         sheets = create_electricity_sink(
-            building, area, sheets,
-            sinks_standard_param, standard_parameters)
+            building=building,
+            area=area,
+            sheets=sheets,
+            sinks_standard_param=sinks_standard_param,
+            standard_parameters=standard_parameters)
 
         # heat demand
         sheets = create_heat_sink(
-            building, area, sheets,
-            sinks_standard_param, standard_parameters)
+            building=building,
+            area=area,
+            sheets=sheets,
+            sinks_standard_param=sinks_standard_param,
+            standard_parameters=standard_parameters)
+        
         if building["distance of electric vehicles"] > 0:
-            sheets = create_sink_ev(building, sheets, standard_parameters)
+            sheets = create_sink_ev(
+                building=building,
+                sheets=sheets,
+                standard_parameters=standard_parameters)
     return sheets
 
 
