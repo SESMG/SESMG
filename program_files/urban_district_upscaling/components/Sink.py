@@ -24,7 +24,7 @@ def create_standard_parameter_sink(sink_type: str, label: str, sink_input: str,
             :type sheets: dict
         :param standard_parameters: pandas imported ExcelFile \
                 containing the non-building specific technology data
-            :type standard_parameters: pandas.ExcelFile
+        :type standard_parameters: pandas.ExcelFile
     """
     from program_files import create_standard_parameter_comp
 
@@ -59,6 +59,7 @@ def create_electricity_sink(building: pandas.Series, area: float, sheets: dict,
         :type sheets: dict
         :param sinks_standard_param: sinks sheet from standard \
             parameter sheet
+        :type sinks_standard_param: pandas.DataFrame
         :param standard_parameters: pandas imported ExcelFile \
                 containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
@@ -100,59 +101,90 @@ def create_electricity_sink(building: pandas.Series, area: float, sheets: dict,
                 demand_el = demand_el_specific * occupants
         # TODO was machen wir mit IND
         else:
+            # specific demand per area
             demand_el_specific = sink_param.loc[1, building["building type"]]
-            net_floor_area = (
-                    area
-                    * sinks_standard_param.loc[
-                       building["building type"] + "_electricity_sink"][
-                        "net_floor_area / area"
-                    ]
-            )
-            demand_el = demand_el_specific * net_floor_area
+            NFA_GFA = \
+                sinks_standard_param.loc[
+                    building["building type"] + "_electricity_sink"][
+                    "net_floor_area / area"]
+            demand_el = demand_el_specific * area * NFA_GFA
     else:
         demand_el = building["electricity demand"] * area
     
     return create_standard_parameter_sink(
-            sink_type=building["building type"] + "_electricity_sink",
-            label=str(building["label"]) + "_electricity_demand",
-            sink_input=str(building["label"]) + "_electricity_bus",
-            annual_demand=demand_el,
-            sheets=sheets,
-            standard_parameters=standard_parameters
+        sink_type=building["building type"] + "_electricity_sink",
+        label=str(building["label"]) + "_electricity_demand",
+        sink_input=str(building["label"]) + "_electricity_bus",
+        annual_demand=demand_el,
+        sheets=sheets,
+        standard_parameters=standard_parameters
     )
 
 
-def create_heat_sink(building, building_type, area, sheets,
-                     sinks_standard_param, standard_parameters):
+def create_heat_sink(building: pandas.Series, area: float, sheets: dict,
+                     sinks_standard_param: pandas.DataFrame,
+                     standard_parameters: pandas.ExcelFile):
+    """
+        In this method, the heat demand is calculated either on
+        the basis of energy certificates (area-specific demand values)
+        or on the basis of inhabitants. Using this calculated demand
+        the load profile heat sink is created.
+
+        :param building: building specific data which were imported \
+            from the US-Input sheet
+        :type building: pandas.Series
+        :param area: building gross area
+        :type area: float
+        :param sheets: dictionary containing the pandas.Dataframes that\
+                will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param sinks_standard_param: sinks sheet from standard \
+            parameter sheet
+        :type sinks_standard_param: pandas.DataFrame
+        :param standard_parameters: pandas imported ExcelFile \
+                containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+    """
     standard_param = standard_parameters.parse("2_1_heat")
     standard_param.set_index("year of construction", inplace=True)
-    yoc = (
-        int(building["year of construction"])
-        if int(building["year of construction"]) > 1918
-        else "<1918"
-    )
-    units = str(int(building["units"])) if building["units"] < 12 else "> 12"
-    if building_type in ["SFB", "MFB"]:
-        specific_heat_demand = standard_param.loc[yoc][units + " unit(s)"]
+    
+    # year of construction: buildings older than 1918 are clustered in
+    # <1918
+    yoc = int(building["year of construction"])
+    yoc = (yoc if yoc > 1918 else "<1918")
+    
+    # define a variable for building type
+    building_type = building["building type"]
+    
+    # If an area-specific electricity requirement is given, e.g. from an
+    # energy certificate, use the else clause.
+    if not building["heat demand"]:
+        # if the investigated building is a residential building
+        if building_type in ["SFB", "MFB"]:
+            # units: buildings bigger than 12 units are clustered in > 12
+            units = str(building["units"]) if building["units"] < 12 \
+                else "> 12"
+            # specific demand per area
+            specific_heat_demand = standard_param.loc[yoc][units + " unit(s)"]
+        # TODO was machen wir mit IND
+        else:
+            # specific demand per area
+            specific_heat_demand = standard_param.loc[yoc][building_type]
+        NFA_GFA = \
+            sinks_standard_param.loc[
+                building["building type"] + "_heat_sink"][
+                "net_floor_area / area"]
+        demand_heat = specific_heat_demand * area * NFA_GFA
     else:
-        specific_heat_demand = standard_param.loc[yoc][building_type]
-    net_floor_area = (
-            area
-            * sinks_standard_param.loc[building_type + "_heat_sink"][
-                "net_floor_area / area"
-            ]
-    )
-    demand_heat = specific_heat_demand * net_floor_area
-    if building["heat demand"]:
         demand_heat = building["heat demand"] * area
     
     return create_standard_parameter_sink(
-            sink_type=building_type + "_heat_sink",
-            label=str(building["label"]) + "_heat_demand",
-            sink_input=str(building["label"]) + "_heat_bus",
-            annual_demand=demand_heat,
-            sheets=sheets,
-            standard_parameters=standard_parameters
+        sink_type=building_type + "_heat_sink",
+        label=str(building["label"]) + "_heat_demand",
+        sink_input=str(building["label"]) + "_heat_bus",
+        annual_demand=demand_heat,
+        sheets=sheets,
+        standard_parameters=standard_parameters
     )
 
 
