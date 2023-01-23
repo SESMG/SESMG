@@ -369,12 +369,12 @@ def create_cluster_components(
 ):
     # TRANSFORMER
     # create cluster electricity sinks
-    sheets = Sink.create_cluster_elec_sinks(
-        standard_parameters,
-        sink_parameters,
-        cluster,
-        central_electricity_network,
-        sheets,
+    sheets = Sink.create_cluster_electricity_sinks(
+        standard_parameters=standard_parameters,
+        sink_parameters=sink_parameters,
+        cluster=cluster,
+        central_electricity_network=central_electricity_network,
+        sheets=sheets,
     )
 
     sheets = clustering_transformers(

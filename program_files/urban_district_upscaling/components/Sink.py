@@ -162,7 +162,7 @@ def create_heat_sink(building: pandas.Series, area: float, sheets: dict,
         # if the investigated building is a residential building
         if building_type in ["SFB", "MFB"]:
             # units: buildings bigger than 12 units are clustered in > 12
-            units = str(building["units"]) if building["units"] < 12 \
+            units = str(int(building["units"])) if building["units"] < 12 \
                 else "> 12"
             # specific demand per area
             specific_heat_demand = standard_param.loc[yoc][units + " unit(s)"]
