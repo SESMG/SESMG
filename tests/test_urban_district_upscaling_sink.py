@@ -323,7 +323,9 @@ def test_create_sink_ev(test_electric_vehicle_entry):
     """
     
     """
-    time_series = pandas.ExcelFile("ev_timeseries.xlsx").parse("ev_timeseries")
+    time_series = \
+        pandas.ExcelFile(os.path.dirname(__file__)
+                         + "/ev_timeseries.xlsx").parse("ev_timeseries")
     
     sheets = Sink.create_sink_ev(
         building=pandas.Series(data={
