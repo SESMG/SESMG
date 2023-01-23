@@ -40,46 +40,80 @@ def create_standard_parameter_sink(sink_type: str, label: str, sink_input: str,
     )
 
 
-def create_electricity_sink(building, building_type, area, sheets,
-                            sinks_standard_param, standard_parameters):
-    standard_param = standard_parameters.parse("2_2_electricity")
+def create_electricity_sink(building: pandas.Series, area: float, sheets: dict,
+                            sinks_standard_param: pandas.DataFrame,
+                            standard_parameters: pandas.ExcelFile):
+    """
+        In this method, the electricity demand is calculated either on
+        the basis of energy certificates (area-specific demand values)
+        or on the basis of inhabitants. Using this calculated demand
+        the load profile electricity sink is created.
+        
+        :param building: building specific data which were imported \
+            from the US-Input sheet
+        :type building: pandas.Series
+        :param area: building gross area
+        :type area: float
+        :param sheets: dictionary containing the pandas.Dataframes that\
+                will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param sinks_standard_param: sinks sheet from standard \
+            parameter sheet
+        :param standard_parameters: pandas imported ExcelFile \
+                containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+    """
+    sink_param = standard_parameters.parse("2_2_electricity")
     specific_demands = {}
-    
-    if building_type in ["SFB", "MFB"]:
-        if not building["electricity demand"]:
-            for i in standard_param.columns:
-                if building_type in i:
-                    specific_demands[i[4:]] = [standard_param.loc[1, i]]
+    # If an area-specific electricity requirement is given, e.g. from an
+    # energy certificate, use the else clause.
+    if not building["electricity demand"]:
+        # if the investigated building is a residential building
+        if building["building type"] in ["SFB", "MFB"]:
+            # get all columns from electricity sink parameters sheets
+            # that begin with the building type
+            for column in sink_param.columns:
+                if building["building type"] in column:
+                    specific_demands[column[4:]] = [sink_param.loc[1, column]]
+            # specific electricity demand for less/equal 5 occupants in
+            # one unit
+            # calculation: specific demand from standard parameter * units
             if building["occupants per unit"] <= 5:
+                # specific demand column from standard parameter sheet
                 column = str(int(building["occupants per unit"])) + " person"
+                # demand calculation
                 demand_el = specific_demands[column][0] * building["units"]
+            # specific electricity demand for more than 5 occupants in
+            # one unit
+            # calculation:
+            # specific demand =
+            # (specific demand for 5 occupants per unit
+            #   from standard parameter) / 5
+            # occupants = total occupants of the investigated building
+            # demand = specific demand * occupants
             else:
-                # specific elec demand per person linearised for
-                # more than 5
+                # specific demand per occupant
                 demand_el_specific = (specific_demands["5 person"][0]) / 5
-                occupants = building["occupants per unit"] \
-                            * building["units"]
+                # total occupants of the investigated building
+                occupants = building["occupants per unit"] * building["units"]
+                # demand calculation
                 demand_el = demand_el_specific * occupants
+        # TODO was machen wir mit IND
         else:
-            demand_el = building["electricity demand"] * area
-    else:
-        if not building["electricity demand"]:
-            demand_el_specific = standard_param.loc[1, building_type]
+            demand_el_specific = sink_param.loc[1, building["building type"]]
             net_floor_area = (
                     area
                     * sinks_standard_param.loc[
-                        building_type + "_electricity_sink"][
+                       building["building type"] + "_electricity_sink"][
                         "net_floor_area / area"
                     ]
             )
             demand_el = demand_el_specific * net_floor_area
-        else:
-            demand_el = building["electricity demand"] * area
-    
-    # TODO was machen wir mit IND
+    else:
+        demand_el = building["electricity demand"] * area
     
     return create_standard_parameter_sink(
-            sink_type=building_type + "_electricity_sink",
+            sink_type=building["building type"] + "_electricity_sink",
             label=str(building["label"]) + "_electricity_demand",
             sink_input=str(building["label"]) + "_electricity_bus",
             annual_demand=demand_el,
@@ -147,9 +181,8 @@ def create_sinks(building, standard_parameters, sheets):
     """
     TODO DOCSTRING
     """
-    building_type = building["building type"]
     # electricity demand
-    if building_type:
+    if building["building type"]:
         area = building["gross building area"]
         # get sinks standard parameters
         sinks_standard_param = standard_parameters.parse("2_sinks")
@@ -157,12 +190,12 @@ def create_sinks(building, standard_parameters, sheets):
         
         # create electricity sink
         sheets = create_electricity_sink(
-            building, building_type, area, sheets,
+            building, area, sheets,
             sinks_standard_param, standard_parameters)
 
         # heat demand
         sheets = create_heat_sink(
-            building, building_type, area, sheets,
+            building, area, sheets,
             sinks_standard_param, standard_parameters)
         if building["distance of electric vehicles"] > 0:
             sheets = create_sink_ev(building, sheets, standard_parameters)

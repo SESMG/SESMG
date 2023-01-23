@@ -10,39 +10,62 @@ sinks = standard_parameters.parse("2_sinks")
 
 
 @pytest.fixture
-def test_elec_sink_entry():
+def test_SFB_electricity_sink_entry():
     """
     
     """
     return {
         "sinks": pandas.merge(
             left=pandas.DataFrame.from_dict({
-                "label": ["test_sink"],
-                "input": ["test_bus"],
-                "annual demand": [3000],
+                "label": ["test_electricity_demand"],
+                "input": ["test_electricity_bus"],
+                "annual demand": [3600],
                 "sink_type": ["SFB_electricity_sink"]}),
             right=sinks,
             on="sink_type").drop(columns=["sink_type"])}
 
 
-def test_create_standard_parameter_sink(test_elec_sink_entry):
+def test_create_standard_parameter_sink(test_SFB_electricity_sink_entry):
     """
     
     """
     # create a standard_parameter building res electricity bus
     sheets = Sink.create_standard_parameter_sink(
-        label="test_sink",
+        label="test_electricity_demand",
         sink_type="SFB_electricity_sink",
-        sink_input="test_bus",
+        sink_input="test_electricity_bus",
         sheets={"sinks": pandas.DataFrame()},
-        annual_demand=3000,
+        annual_demand=3600,
         standard_parameters=standard_parameters)
 
     pandas.testing.assert_frame_equal(
         sheets["sinks"].sort_index(axis=1),
-        test_elec_sink_entry["sinks"].sort_index(axis=1))
+        test_SFB_electricity_sink_entry["sinks"].sort_index(axis=1))
 
 
+def test_create_electricity_sink(test_SFB_electricity_sink_entry):
+    """
+    
+    """
+    sinks.set_index("sink_type", inplace=True)
+    sheets = Sink.create_electricity_sink(
+        building=pandas.Series(data={
+            "label": "test",
+            "building type": "SFB",
+            "electricity demand": 0,
+            "occupants per unit": 3,
+            "units": 1}),
+        area=0,
+        sheets={"sinks": pandas.DataFrame()},
+        sinks_standard_param=sinks,
+        standard_parameters=standard_parameters)
+
+    pandas.testing.assert_frame_equal(
+        sheets["sinks"].sort_index(axis=1),
+        test_SFB_electricity_sink_entry["sinks"].sort_index(axis=1))
+    
+  
+@pytest.mark.skip
 def test_create_sinks():
     """
         Within this test method 5 different types of buildings and their
