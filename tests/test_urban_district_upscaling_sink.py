@@ -296,7 +296,49 @@ def test_create_heat_sink(test_SFB_heat_sink_entry,
     pandas.testing.assert_frame_equal(
         sheets["sinks"].sort_index(axis=1),
         test_certificate_heat_sink_entry["sinks"].sort_index(axis=1))
-  
+    
+
+@pytest.fixture
+def test_electric_vehicle_entry():
+    """
+    
+    """
+    sheets = {
+        "sinks": pandas.merge(
+            left=pandas.DataFrame.from_dict({
+                "label": ["test_electric_vehicle"],
+                "input": ["test_electricity_bus"],
+                "nominal value": [float(1)],
+                "sink_type": ["EV_electricity_sink"]}),
+            right=sinks,
+            on="sink_type").drop(columns=["sink_type", "nominal value_y"])}
+    
+    sheets["sinks"] = sheets["sinks"].rename(columns={
+        "nominal value_x": "nominal value"})
+    
+    return sheets
+
+    
+def test_create_sink_ev(test_electric_vehicle_entry):
+    """
+    
+    """
+    time_series = pandas.ExcelFile("ev_timeseries.xlsx").parse("ev_timeseries")
+    
+    sheets = Sink.create_sink_ev(
+        building=pandas.Series(data={
+            "label": "test",
+            "distance of electric vehicles": 10000}),
+        sheets={"sinks": pandas.DataFrame(), "time series": time_series},
+        standard_parameters=standard_parameters)
+
+    pandas.testing.assert_frame_equal(
+        sheets["sinks"].sort_index(axis=1),
+        test_electric_vehicle_entry["sinks"].sort_index(axis=1))
+    
+    assert list(time_series.loc[:, "electric_vehicle.fix"] * 10000) \
+           == list(sheets["time series"].loc[:, "test_electric_vehicle.fix"])
+    
 
 @pytest.mark.skip
 def test_create_sinks():

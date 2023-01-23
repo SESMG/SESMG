@@ -188,14 +188,30 @@ def create_heat_sink(building: pandas.Series, area: float, sheets: dict,
     )
 
 
-def create_sink_ev(building, sheets, standard_parameters):
+def create_sink_ev(building: pandas.Series, sheets: dict,
+                   standard_parameters: pandas.ExcelFile):
+    """
+        For the modeling of electric vehicles, within this method the
+        sink for electric vehicles is created.
+    
+        :param building: building specific data which were imported \
+            from the US-Input sheet
+        :type building: pandas.Series
+        :param sheets: dictionary containing the pandas.Dataframes that\
+                will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+                containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+    """
     from program_files import create_standard_parameter_comp
-
-    print(sheets["time series"].loc[:, "electric_vehicle.fix"])
+    
+    # multiply the electric vehicle time series with the driven
+    # kilometers
     sheets["time series"].loc[:, building['label'] + "_electric_vehicle.fix"] \
         = sheets["time series"].loc[:, "electric_vehicle.fix"] \
         * building["distance of electric vehicles"]
-    print(sheets["time series"])
+    
     return create_standard_parameter_comp(
         specific_param={
             "label": building["label"] + "_electric_vehicle",
@@ -205,8 +221,7 @@ def create_sink_ev(building, sheets, standard_parameters):
         standard_parameter_info=[
             "EV_electricity_sink", "2_sinks", "sink_type"],
         sheets=sheets,
-        standard_parameters=standard_parameters
-    )
+        standard_parameters=standard_parameters)
 
 
 def create_sinks(building, standard_parameters, sheets):
