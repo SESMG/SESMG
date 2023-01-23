@@ -1,11 +1,5 @@
-import pandas as pd
 import streamlit as st
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set_theme(style="whitegrid")
-sns.set_color_codes("pastel")
-
+import plotly.express as px
 
 from program_files.urban_district_upscaling.urban_district_upscaling_post_processing import *
 from program_files.postprocessing.pareto_curve_plotting import *
@@ -41,19 +35,20 @@ def advanced_result_page():
             if st.session_state["overview"] == "done":
                 overview = pd.ExcelFile(overview_upload)
                 df_central_comp = pd.read_excel(overview, 'decentral_components')
-                # st.dataframe(df_central_comp)
 
                 tab1, tab2 = st.tabs(["🗃 Data", "📈 Chart"])
                 with tab1:
+                    # show the dataframe
                     st.write(df_central_comp)
 
                 with tab2:
-                    fig = plt.figure()
-                    df_central_comp.set_index('Building').plot(kind='bar', stacked=True)
-                    #sns.barplot(data=df_central_comp, hue="Building")
-                    st.pyplot(fig)
-
-
+                    # get the y values for the chart
+                    column_headers = list(df_central_comp.columns.values)
+                    # delete building column
+                    column_headers.pop(0)
+                    # building specific figure
+                    fig = px.bar(df_central_comp, x="Building", y=column_headers)
+                    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
         with st.expander("Creating Pareto-Diagram"):
             if "pareto" not in st.session_state:
@@ -66,12 +61,28 @@ def advanced_result_page():
                 with tab1:
                     st.dataframe(pareto_df)
 
-
                 with tab2:
-                    fig = plt.figure()
-                    sns.lineplot(data=pareto_df, x="costs", y="emissions")
-                    st.pyplot(fig)
+                    fig = px.line(pareto_df, x="costs", y="emissions")
+                    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
+        with st.expander("Interactive Results"):
+            if "results" not in st.session_state:
+                st.session_state["results"] = "not done"
+            result_file = st.file_uploader("Choose your results.csv", on_change=change_interactive_results)
+            if st.session_state["results"] == "done":
+                # loading result.csv as a dataframe
+                result_df = pd.read_csv(result_file)
+                # creating column headers to select
+                column_headers_result = list(result_df.columns.values)
+                # column headers without date
+                list_headers = column_headers_result[1:]
+                # selecting headers
+                select_headers = st.multiselect("Select a bus:", list_headers)
+                # filtered dataframe
+                filtered_df = result_df[select_headers]
+                # plotting
+                fig = px.line(filtered_df)
+                st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
 def change_overview_state():
@@ -80,3 +91,7 @@ def change_overview_state():
 
 def change_pareto_state():
     st.session_state["pareto"] = "done"
+
+
+def change_interactive_results():
+    st.session_state["results"] = "done"
