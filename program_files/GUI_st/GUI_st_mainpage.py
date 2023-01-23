@@ -14,7 +14,7 @@ from datetime import datetime
 from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode 
 import json
 
-# from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
+from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 
 # from program_files.GUI_st.GUI_st_US import *
 from GUI_streamlit import *
@@ -28,26 +28,21 @@ from GUI_streamlit import *
 
 
 
-def main_output_result_overview():    
+def main_output_result_overview(result_path_summary, result_path_components, result_path_results):   
+    
+    #result_path_summary: path to summary.csv
+    #result_path_components: path to components.csv
+    #result_path_results: path to results.csv
+    
     ####################################
     ############ Result Page ###########
-    
-    ########## Show Model Graph ########
-    #Function to display the energy systems structure.
-    
-    # Header
-    st.subheader("The structure of the modeled energy system:")
-    
-    # Importing and printing the energy system graph
-    es_graph = Image.open(os.path.dirname(__file__) + "/graph.gv.png", "r")
-    st.image(es_graph, caption="Beispielgraph.",)
-    
     
     ########## Result Summary ########
     # Functions to display a summary of the modeled energy system.
     
-    # Import summary csv and create dataframe
-    df_summary = pd.read_csv(os.path.dirname(__file__) + "/summary.csv")
+    # Import summary.csv and create dataframe
+    #df_summary = pd.read_csv(os.path.dirname(__file__) + "/summary.csv")
+    df_summary = pd.read_csv(result_path_summary)
     # Create list with headers
     summary_headers = list(df_summary)
     
@@ -75,9 +70,9 @@ def main_output_result_overview():
     ########## Result Summary ########
     # Functions to display a summary of the modeled energy system.
     
-    # Import components csv and create dataframe
-    df_components = pd.read_csv(os.path.dirname(__file__) + "/components.csv")
-    
+    # Import components.csv and create dataframe
+    #df_components = pd.read_csv(os.path.dirname(__file__) + "/components.csv")
+    df_components = pd.read_csv(result_path_components)
     
     # CSS to inject contained in a string
     hide_dataframe_row_index = """
@@ -90,19 +85,24 @@ def main_output_result_overview():
     # Inject CSS with Markdown
     st.markdown(hide_dataframe_row_index, unsafe_allow_html=True)
 
-
-    st.dataframe(df_components)
-    
+    # Creating st_aggrid table
     AgGrid(df_components, height = 400, fit_columns_on_grid_load=True, update_mode=GridUpdateMode.SELECTION_CHANGED)
     
-    st.write(df_summary['Start Date'])
-    st.write(df_summary.iloc[0,0])
-    st.write(summary_headers)
-    st.dataframe(df_summary)
-    st.write(df_summary)
+    
+    ####################  
+    # hier plotly import
     
 
+    ########## Show Model Graph ########
+    #Function to display the energy systems structure.
     
+    # Header
+    st.subheader("The structure of the modeled energy system:")
+    
+# Expander einfügen
+    # Importing and printing the energy system graph
+    es_graph = Image.open(os.path.dirname(__file__) + "/graph.gv.png", "r")
+    st.image(es_graph, caption="Beispielgraph.",)
 
 
 
@@ -117,33 +117,45 @@ def main_application_sesmg():
     ############## Sidebar #############
     
     ########## Scenario Input ##########
-    # Functions to upload the scenario sheet file.
-        
-    # Header
-    st.sidebar.title("Upload Model Definition File")
-    
-    scenario_input_sheet_path = st.sidebar.text_input(
-        "Type in path to your model definition sheet.",
-        help="Give the full path from your main directory ending with \
-                /modeldefinition_name.xlsx . \
-                You can choose the filenames and directorties as you want.")
+    #
                 
     
-    # ###### Run Model Visualization #####
-    # # Function to create and display the model structure without optimizung the system.
+    ###### Run Model Visualization #####
+    # Function to create and display the model structure without optimizung the system.
     
-    # with st.sidebar.form("Visualization"):
+    with st.sidebar.form("Visualization"):
         
-    #     submitted_vis_structure = st.form_submit_button(label="Visualize model")
+        submitted_vis_existing_results = st.form_submit_button(label="Visualize existing model results")
+        
+        with st.expander("File Upload"):
+            
+            #importing an existing summary file
+            existing_summary_csv = st.file_uploader("Existing summary.csv file")
+        
+            #importing an existing components file
+            existing_components_csv= st.file_uploader("Existing components.csv file")
+            
+            #importing an existing results file
+            existing_results_csv= st.file_uploader("Existing results.csv file")
+    
     
     
     ########## Modelrun Parameter Input ##########
     # Creating Frame as st.form_submit_button
     with st.sidebar.form("Input Parameters"):
-        
+    
         # Submit button to start optimization.
         submitted_optimization = st.form_submit_button("Start Optimization")
-            
+        
+        #Functions to upload the scenario sheet file.
+           
+        # Header
+        st.title("Upload Model Definition")
+       
+        scenario_input_sheet_path = st.file_uploader(label=
+           "Upload your model definition sheet.",
+           help="muss noch geschrieben werden.")
+        
         # Header
         st.title("Input Parameters")
     
@@ -259,7 +271,20 @@ def main_application_sesmg():
             # Multiselect element
             input_pareto_points = st.multiselect("Pareto Points", options=pareto_options)
             input_pareto_points.sort(reverse=True)
+            
+            
+    
+    
+    ####################################
+    # Starting process if "Visualize existing model results"-button is clicked    
+    
+    if submitted_vis_existing_results:
+        st.write("hi")
         
+        # run main result page with uploaded files as 
+        main_output_result_overview(result_path_summary=existing_summary_csv, 
+                                    result_path_components=existing_components_csv,
+                                    result_path_results=existing_results_csv,)
     
     
     ####################################
@@ -267,9 +292,10 @@ def main_application_sesmg():
     
     if submitted_optimization:
         
-        
-        
         if scenario_input_sheet_path is not "":
+            
+            # Starting the waiting / processing screen
+            st.spinner(text="Modelling in Progress.")
             
             # Creating a dict with all GUI settings as preparation to save them for the next session
             # settings_cache_dict_reload["main_page"]
@@ -294,25 +320,27 @@ def main_application_sesmg():
             st.write(timeseries_prep_param)
             st.write(scenario_input_sheet_path)
             
-#             # Setting the path where to safe the modeling results
-#             res_folder_path = os.path.join(os.path.dirname(__file__),'results')
-#             res_path = res_folder_path \
-#                         + '/' \
-#                         + scenario_input_sheet_path.split("/")[-1][:-5] \
-#                         + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
-#             os.mkdir(res_path)
+             # Setting the path where to safe the modeling results
+            res_folder_path = os.path.join(os.path.dirname(__file__),'pre_model_results')
+            res_path = res_folder_path \
+                        + '/' \
+                        + scenario_input_sheet_path.split("/")[-1][:-5] \
+                        + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
+            #os.mkdir(res_path)             
+            st.write(res_path)
 
-# # HIER NOCHMAL ANSEHEN WIE / WO DIE DATEI GESPEICHERT WERDEN SOLL            
-#             # Setting the path where to safe the pre-modeling results
-#             premodeling_res_folder_path = os.path.join(os.path.dirname(__file__),'pre_model_results')
-#             premodeling_res_path = premodeling_res_folder_path \
-#                         + '/' \
-#                         + scenario_input_sheet_path.split("/")[-1][:-5] \
-#                         + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
-#             os.mkdir(premodeling_res_path)
+# HIER NOCHMAL ANSEHEN WIE / WO DIE DATEI GESPEICHERT WERDEN SOLL            
+            # Setting the path where to safe the pre-modeling results
+            premodeling_res_folder_path = os.path.join(os.path.dirname(__file__),'pre_model_results')
+            premodeling_res_path = premodeling_res_folder_path \
+                        + '/' \
+                        + scenario_input_sheet_path.split("/")[-1][:-5] \
+                        + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
+            #os.mkdir(premodeling_res_path)
+            st.write(premodeling_res_path)
             
             
-            # Staring the model run without a pre-model
+    #         # Staring the model run without a pre-model
     #         if input_activate_premodeling == False:
     #             sesmg_main(
     #                 scenario_file=scenario_input_sheet_path,
@@ -329,7 +357,9 @@ def main_application_sesmg():
     #                 cluster_dh=input_cluster_dh
     #                 )
                 
-            # Staring the model run with a pre-model           
+    #             st.write('Done')
+                
+    #         # Staring the model run with a pre-model           
     #         else: 
     #             sesmg_main_including_premodel(
     #                 scenario_file=scenario_input_sheet_path,
@@ -350,9 +380,14 @@ def main_application_sesmg():
     #                 pre_model_path=premodeling_res_path
     #                 )
                 
+            st.write('Done')
+            
+            
             
         else:
-            main_output_result_overview()
+            
+            #main_output_result_overview()
+            st.spinner("Modelling in Progress...")
             st.write("Hallo")
              
 
