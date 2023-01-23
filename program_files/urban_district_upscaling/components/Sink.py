@@ -227,7 +227,7 @@ def create_sink_ev(building: pandas.Series, sheets: dict,
 def create_sinks(building: pandas.Series, sheets: dict,
                  standard_parameters: pandas.ExcelFile):
     """
-    TODO DOCSTRING
+        TODO DOCSTRING
         
         :param building: building specific data which were imported \
             from the US-Input sheet
@@ -269,18 +269,19 @@ def create_sinks(building: pandas.Series, sheets: dict,
     return sheets
 
 
-def sink_clustering(building, sink, sink_parameters):
+def sink_clustering(building: list, sink: pandas.Series,
+                    sink_parameters: list):
     """
         In this method, the current sinks of the respective cluster are
         stored in dict and the current sinks are deleted. Furthermore,
         the heat buses and heat requirements of each cluster are
         collected in order to summarize them afterwards.
 
-        :param building: DataFrame containing the building row from the\
-            pre scenario sheet
-        :type building: pd.Dataframe
-        :param sink: sink dataframe
-        :type sink: pd.Dataframe
+        :param building: list containing the building label [0], the \
+            building's parcel ID [1] and the building type [2]
+        :type building: list
+        :param sink: One column of the sinks sheet
+        :type sink: pandas.Series
         :parameter sink_parameters: list containing clusters' sinks \
             information
         :type sink_parameters: list
