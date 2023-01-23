@@ -58,22 +58,6 @@ def test_COM_electricity_sink_entry():
 
 
 @pytest.fixture
-def test_COM_electricity_sink_entry():
-    """
-
-    """
-    return {
-        "sinks": pandas.merge(
-            left=pandas.DataFrame.from_dict({
-                "label": ["test_electricity_demand"],
-                "input": ["test_electricity_bus"],
-                "annual demand": [102060.0],
-                "sink_type": ["COM_Food_electricity_sink"]}),
-            right=sinks,
-            on="sink_type").drop(columns=["sink_type"])}
-
-
-@pytest.fixture
 def test_certificate_electricity_sink_entry():
     """
 
