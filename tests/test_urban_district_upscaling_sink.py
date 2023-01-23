@@ -380,73 +380,106 @@ def test_sink_clustering():
     """
     
     """
-    # electricity sink clustering
-    sink_parameters = Sink.sink_clustering(
-        building=["test", "test_parcel", "RES"],
-        sink=pandas.Series({
-            "label": "test_electricity_sink",
-            "annual demand": 3000}),
-        sink_parameters=[0, 0, 0, [], 0, 0, 0, [], [], [], []])
+    results = {
+        "RES_electricity":
+            [3000, 0, 0, [], 0, 0, 0, [], ["test_electricity_sink"], [], []],
+        "RES_heat":
+            [0, 0, 0, [("RES", "test_heat_bus")], 3000, 0, 0,
+             [("RES", "test_heat_sink")], [], [], []],
+        "COM_electricity":
+            [0, 3000, 0, [], 0, 0, 0, [], [], ["test_electricity_sink"], []],
+        "COM_heat":
+            [0, 0, 0, [("COM", "test_heat_bus")], 0, 3000, 0,
+             [("COM", "test_heat_sink")], [], [], []],
+        "IND_electricity":
+            [0, 0, 3000, [], 0, 0, 0, [], [], [], ["test_electricity_sink"]],
+        "IND_heat":
+            [0, 0, 0, [("IND", "test_heat_bus")], 0, 0, 3000,
+             [("IND", "test_heat_sink")], [], [], []]}
     
-    assert sink_parameters \
-           == [3000, 0, 0, [], 0, 0, 0, [], ["test_electricity_sink"], [], []]
+    for i in ["RES", "COM", "IND"]:
+        for j in ["electricity", "heat"]:
+            # electricity sink clustering
+            sink_parameters = Sink.sink_clustering(
+                building=["test", "test_parcel", i],
+                sink=pandas.Series({
+                    "label": "test_" + j + "_sink",
+                    "input": "test_" + j + "_bus",
+                    "annual demand": 3000}),
+                sink_parameters=[0, 0, 0, [], 0, 0, 0, [], [], [], []])
+            
+            assert sink_parameters == results.get(i + "_" + j)
+            
 
-    sink_parameters = Sink.sink_clustering(
-            building=["test", "test_parcel", "COM"],
-            sink=pandas.Series({
-                "label": "test_electricity_sink",
-                "annual demand": 3000}),
-            sink_parameters=[0, 0, 0, [], 0, 0, 0, [], [], [], []])
-
-    assert sink_parameters \
-           == [0, 3000, 0, [], 0, 0, 0, [], [], ["test_electricity_sink"], []]
-
-    sink_parameters = Sink.sink_clustering(
-            building=["test", "test_parcel", "IND"],
-            sink=pandas.Series({
-                "label": "test_electricity_sink",
-                "annual demand": 3000}),
-            sink_parameters=[0, 0, 0, [], 0, 0, 0, [], [], [], []])
-
-    assert sink_parameters \
-           == [0, 0, 3000, [], 0, 0, 0, [], [], [], ["test_electricity_sink"]]
-    # heat sink clustering
-    sink_parameters = Sink.sink_clustering(
-            building=["test", "test_parcel", "RES"],
-            sink=pandas.Series({
-                "label": "test_heat_sink",
-                "input": "test_heat_bus",
-                "annual demand": 3000}),
-            sink_parameters=[0, 0, 0, [], 0, 0, 0, [], [], [], []])
-
-    assert sink_parameters \
-           == [0, 0, 0, [("RES", "test_heat_bus")], 3000, 0, 0,
-               [("RES", "test_heat_sink")], [], [], []]
-
-    sink_parameters = Sink.sink_clustering(
-            building=["test", "test_parcel", "COM"],
-            sink=pandas.Series({
-                "label": "test_heat_sink",
-                "input": "test_heat_bus",
-                "annual demand": 3000}),
-            sink_parameters=[0, 0, 0, [], 0, 0, 0, [], [], [], []])
-
-    assert sink_parameters \
-           == [0, 0, 0, [("COM", "test_heat_bus")], 0, 3000, 0,
-               [("COM", "test_heat_sink")], [], [], []]
-
-    sink_parameters = Sink.sink_clustering(
-            building=["test", "test_parcel", "IND"],
-            sink=pandas.Series({
-                "label": "test_heat_sink",
-                "input": "test_heat_bus",
-                "annual demand": 3000}),
-            sink_parameters=[0, 0, 0, [], 0, 0, 0, [], [], [], []])
-
-    assert sink_parameters \
-           == [0, 0, 0, [("IND", "test_heat_bus")], 0, 0, 3000,
-               [("IND", "test_heat_sink")], [], [], []]
+@pytest.fixture
+def test_cluster_electricity_sinks_entries():
+    sheets = {
+        "sinks": pandas.DataFrame.from_dict({
+                "label": ["test_electricity_sink",
+                          "test1_electricity_sink",
+                          "test2_electricity_sink"],
+                "input": ["test_cluster_res_electricity_bus",
+                          "test_cluster_com_electricity_bus",
+                          "test_cluster_ind_electricity_bus"]}),
+        "buses": pandas.merge(
+                  left=pandas.DataFrame.from_dict({
+                    "label": ["test_cluster_electricity_bus"],
+                    "bus_type": ["building_res_electricity_bus"],
+                    "district heating conn.": [float(0)]}),
+                  right=standard_parameters.parse("1_buses"),
+                  on="bus_type").drop(columns=["bus_type"]),
+        "links": pandas.merge(
+                  left=pandas.DataFrame.from_dict({
+                      "label": ["test_cluster_central_electricity_link"],
+                      "bus1": ["central_electricity_bus"],
+                      "bus2": ["test_cluster_electricity_bus"],
+                      "link_type": ["building_central_building_link"]}),
+                  right=standard_parameters.parse("6_links"),
+                  on="link_type").drop(columns=["link_type"])}
+    
+    sheets["links"].set_index("label", inplace=True, drop=False)
+    sheets["buses"].set_index("label", inplace=True, drop=False)
+    
+    return sheets
 
 
-def test_create_cluster_elec_sinks():
-    pass
+def test_create_cluster_electricity_sinks(
+        test_cluster_electricity_sinks_entries):
+    """
+    
+    """
+    sink_parameters = [3000, 3000, 3000, [], 0, 0, 0, [],
+                       ["test_electricity_sink"], ["test1_electricity_sink"],
+                       ["test2_electricity_sink"]]
+    
+    sheets = {"sinks": pandas.DataFrame.from_dict({
+                "label": ["test_electricity_sink",
+                          "test1_electricity_sink",
+                          "test2_electricity_sink"],
+                "input": ["test_electricity_bus",
+                          "test1_electricity_bus",
+                          "test2_electricity_bus"]}),
+              "buses": pandas.DataFrame(),
+              "links": pandas.DataFrame()}
+    
+    sheets = Sink.create_cluster_electricity_sinks(
+        standard_parameters=standard_parameters,
+        sink_parameters=sink_parameters,
+        cluster="test_cluster",
+        central_electricity_network=True,
+        sheets=sheets
+    )
+    buses = standard_parameters.parse("1_buses")
+    buses.set_index("bus_type", inplace=True)
+    # since all three demand types are equal each shortage price has to
+    # be multiplied by (1/3)
+    test_cluster_electricity_sinks_entries["buses"].loc[
+        "test_cluster_electricity_bus", "shortage costs"] = \
+        (1/3) * buses.loc["building_res_electricity_bus", "shortage costs"] \
+        + (1/3) * buses.loc["building_com_electricity_bus", "shortage costs"] \
+        + (1/3) * buses.loc["building_ind_electricity_bus", "shortage costs"]
+    
+    for i in ["sinks", "links", "buses"]:
+        pandas.testing.assert_frame_equal(
+            sheets[i].sort_index(axis=1),
+            test_cluster_electricity_sinks_entries[i].sort_index(axis=1))

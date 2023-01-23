@@ -317,20 +317,37 @@ def sink_clustering(building: list, sink: pandas.Series,
     return sink_parameters
 
 
-def create_cluster_elec_sinks(
-    standard_parameters, sink_parameters, cluster, central_electricity_network, sheets
-):
+def create_cluster_electricity_sinks(standard_parameters: pandas.ExcelFile,
+                                     sink_parameters: list, cluster: str,
+                                     central_electricity_network: bool,
+                                     sheets: dict):
     """
-
-    :return:
+        TODO DOCSTRING
+        
+        :param standard_parameters: pandas imported ExcelFile \
+                containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+        :parameter sink_parameters: list containing clusters' sinks \
+            information
+        :type sink_parameters: list
+        :param cluster: Cluster ID
+        :type cluster: str
+        :param central_electricity_network: boolean which decides \
+            whether a central electricity exchange is possible or not
+        :param sheets: dictionary containing the pandas.Dataframes that\
+                will represent the model definition's Spreadsheets
+        :type sheets: dict
+        
     """
-    from program_files.urban_district_upscaling.components import Link
-    from program_files.urban_district_upscaling.components import Bus
+    from program_files.urban_district_upscaling.components import (Link, Bus)
 
     bus_parameters = standard_parameters.parse("1_buses", index_col="bus_type")
-    total_annual_demand = sink_parameters[0] + sink_parameters[1] + sink_parameters[2]
+    total_annual_demand = sum(sink_parameters[0:3])
+    # if the clusters total annual electricity demand is greater 0
     if total_annual_demand > 0:
+        # if there is no cluster electricity bus
         if cluster + "_electricity_bus" not in sheets["buses"].index:
+            # create the clusters electricity bus
             sheets = Bus.create_standard_parameter_bus(
                 label=str(cluster) + "_electricity_bus",
                 bus_type="building_res_electricity_bus",
@@ -339,6 +356,8 @@ def create_cluster_elec_sinks(
             sheets["buses"].set_index("label", inplace=True, drop=False)
             cost_type = "shortage costs"
             label = "_electricity_bus"
+            # calculate the averaged shortage costs based on the
+            # percentage of the considered demand on the total demand
             sheets["buses"].loc[(str(cluster) + label), cost_type] = (
                 (sink_parameters[0] / total_annual_demand)
                 * bus_parameters.loc["building_res" + label][cost_type]
@@ -347,6 +366,9 @@ def create_cluster_elec_sinks(
                 + (sink_parameters[2] / total_annual_demand)
                 * bus_parameters.loc["building_ind" + label][cost_type]
             )
+        # if there is an opportunity for central electric exchange the
+        # new created bus has to be connected to the central electricity
+        # bus
         if central_electricity_network:
             sheets = Link.create_central_electricity_bus_connection(
                 cluster=cluster,
