@@ -27,6 +27,9 @@ def test_central_comp():
 
 @pytest.fixture
 def test_create_power_to_gas_entry():
+    """
+    
+    """
     return {
         "buses": pandas.merge(
             left=pandas.DataFrame.from_dict({
