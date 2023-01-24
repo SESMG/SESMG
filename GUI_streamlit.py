@@ -11,12 +11,13 @@ import pandas as pd
 from PIL import Image
 import os
 from datetime import datetime 
+import json
 
 # from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 # from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main_including_premodel
 
+from program_files.GUI_st.GUI_st_mainpage import main_application_sesmg
 from program_files.GUI_st.GUI_st_US import *
-from program_files.GUI_st.GUI_st_mainpage import *
 from program_files.GUI_st.GUI_st_results import *
 
 
@@ -39,16 +40,13 @@ def st_settings_global():
         menu_items={'Get Help': 'https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/',
                     'Report a Bug': 'https://github.com/SESMG/SESMG/issues'})
 
-
-
+    
 ####################################
 ####### Global GUI functions #######
 ####################################
 
 
-
-
-def import_GUI_input_values_json(json_file_path):
+def import_GUI_input_values_json(json_file_path): 
     """
         :param json_file_path: file name to the underlying json with input values for all GUI pages
         :type json_file_path: str
@@ -70,7 +68,6 @@ def safe_GUI_input_values(input_values_dict, json_file_path):
         :param json_file_path: file name to the underlying json with input values
         :type json_file_path: str
     """
-    
     with open(json_file_path, 'w') as outfile:
         json.dump(input_values_dict, outfile, indent=4)
 
@@ -93,16 +90,17 @@ def clear_GUI_input_values(input_values_dict, name_sub_dict, json_file_path):
     return updated_GUI_dict
 
 
-if os.path.exists(os.path.dirname(__file__) + "/program_files/GUI_st/GUI_cache.json") == True:
+# if os.path.exists(os.path.dirname(__file__) + "/program_files/GUI_st/GUI_cache.json") == True:
 
-    # create empty GUI values dict
-    GUI_input_values_empty = {
-        "main_page": {},
-        "udu_page": {},
-        "result_page": {},
-        "test_page": {},
-        }
-    safe_GUI_input_values(GUI_input_values_empty, os.path.dirname(__file__) + "/program_files/GUI_st/GUI_cache.json")
+#    # create empty GUI values dict
+#     GUI_input_values_empty = {
+#         "main_page": {},
+#         "udu_page": {},
+#         "result_page": {},
+#         "test_page": {},
+#         }
+#     safe_GUI_input_values(GUI_input_values_empty, os.path.dirname(__file__) + "/program_files/GUI_st/GUI_cache.json")    
+    
     
 
 ####################################
@@ -110,29 +108,31 @@ if os.path.exists(os.path.dirname(__file__) + "/program_files/GUI_st/GUI_cache.j
 ####################################
 
 # Import settings
-st_settings_global()
-
-
-app_mode = st.sidebar.selectbox(
-    "Choose the app mode",
-    ["Main SESMG Application", 
-     "Urban District Upscaling Tool",
-     "Advanced Model Results",
-     "SESMG Demo Tool",
-     "Development Test Page"])
-
-
-if app_mode == "Main SESMG Application":
-    main_application_sesmg()
-elif app_mode == "Urban District Upscaling Tool":
-    us_application()
-elif app_mode == "Advanced Model Results":
-    advanced_result_page()
-elif app_mode == "SESMG Demo Tool":
-    demo_result_page()
-elif app_mode == "Development Test Page":
-    test_page()
+if __name__ == "__main__":
     
+    st_settings_global()
+
+
+    app_mode = st.sidebar.selectbox(
+        "Choose the app mode",
+        ["Main SESMG Application", 
+         "Urban District Upscaling Tool",
+         "Advanced Model Results",
+         "SESMG Demo Tool",
+         "Development Test Page"])
+        
+        
+    if app_mode == "Main SESMG Application":
+        main_application_sesmg()
+    elif app_mode == "Urban District Upscaling Tool":
+        us_application()
+    elif app_mode == "Advanced Model Results":
+        advanced_result_page()
+    elif app_mode == "SESMG Demo Tool":
+        demo_result_page()
+    elif app_mode == "Development Test Page":
+        test_page()
+
     
 
 

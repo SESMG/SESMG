@@ -17,8 +17,6 @@ import json
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main
 
 # from program_files.GUI_st.GUI_st_US import *
-from GUI_streamlit import *
-
 
 
 ####################################
@@ -108,6 +106,8 @@ def main_output_result_overview(result_path_summary, result_path_components, res
 
 
 def main_application_sesmg():    
+
+    from GUI_streamlit import import_GUI_input_values_json
 
     # Import the saved GUI settings from the last session
     settings_cache_dict_reload = import_GUI_input_values_json(os.path.dirname(__file__) + "/GUI_test_setting_cache.json")
@@ -292,7 +292,7 @@ def main_application_sesmg():
     
     if submitted_optimization:
         
-        if scenario_input_sheet_path is not "":
+        if scenario_input_sheet_path != "":
             
             # Starting the waiting / processing screen
             st.spinner(text="Modelling in Progress.")
@@ -319,28 +319,30 @@ def main_application_sesmg():
             
             st.write(timeseries_prep_param)
             st.write(scenario_input_sheet_path)
+            st.write(scenario_input_sheet_path.name)
+            st.write(type(scenario_input_sheet_path))
             
              # Setting the path where to safe the modeling results
-            res_folder_path = os.path.join(os.path.dirname(__file__),'pre_model_results')
+            res_folder_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),'results')
             res_path = res_folder_path \
                         + '/' \
-                        + scenario_input_sheet_path.split("/")[-1][:-5] \
+                        + scenario_input_sheet_path.name.split("/")[-1][:-5] \
                         + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
-            #os.mkdir(res_path)             
             st.write(res_path)
-
+            os.mkdir(res_path)             
+            
 # HIER NOCHMAL ANSEHEN WIE / WO DIE DATEI GESPEICHERT WERDEN SOLL            
             # Setting the path where to safe the pre-modeling results
             premodeling_res_folder_path = os.path.join(os.path.dirname(__file__),'pre_model_results')
             premodeling_res_path = premodeling_res_folder_path \
                         + '/' \
-                        + scenario_input_sheet_path.split("/")[-1][:-5] \
+                        + scenario_input_sheet_path.name.split("/")[-1][:-5] \
                         + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
             #os.mkdir(premodeling_res_path)
             st.write(premodeling_res_path)
             
             
-    #         # Staring the model run without a pre-model
+    #         # Starting the model run without a pre-model
     #         if input_activate_premodeling == False:
     #             sesmg_main(
     #                 scenario_file=scenario_input_sheet_path,
@@ -359,7 +361,7 @@ def main_application_sesmg():
                 
     #             st.write('Done')
                 
-    #         # Staring the model run with a pre-model           
+    #         # Starting the model run with a pre-model           
     #         else: 
     #             sesmg_main_including_premodel(
     #                 scenario_file=scenario_input_sheet_path,
@@ -377,8 +379,7 @@ def main_application_sesmg():
     #                 pre_model_timeseries_prep=pre_model_timeseries_prep_param,
     #                 investment_boundaries = input_premodeling_invest_boundaries,
     #                 investment_boundary_factor = input_premodeling_tightening_factor,
-    #                 pre_model_path=premodeling_res_path
-    #                 )
+    #                 pre_model_path=premodeling_res_path)
                 
             st.write('Done')
             
@@ -403,6 +404,10 @@ def main_application_sesmg():
 
 def test_page():
     
+    from GUI_streamlit import (import_GUI_input_values_json, \
+        safe_GUI_input_values, \
+        clear_GUI_input_values)
+        
     settings_cache_dict_reload = import_GUI_input_values_json(os.path.dirname(__file__) + "/GUI_test_setting_cache.json")
 
     st.write(settings_cache_dict_reload)
