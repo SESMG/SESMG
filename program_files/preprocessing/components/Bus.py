@@ -17,7 +17,6 @@ import logging
 
 def buses(nodes_data: dict, nodes: list) -> dict:
     """
-    Creates bus objects.
     Creates bus objects with the parameters given in 'nodes_data' and
     adds them to the list of components 'nodes'.
 
