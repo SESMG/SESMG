@@ -59,7 +59,7 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
             "central_" + specific + "_heating_plant_transformer":
                 [label + "_heating_plant", label, output, "None"],
             "central_" + specific + "_transformer":
-                [label + "_heatpump", "heatpump_elec", output, "None"],
+                [label + "_heatpump", "heatpump_electricity", output, "None"],
             # TODO
             "central_biomass_transformer":
                 ["biomass", "biomass", output, "None"],

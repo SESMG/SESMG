@@ -376,50 +376,58 @@ def create_power_to_gas_system(label, bus, sheets, standard_parameters):
     return sheets
 
 
-def create_central_heatpump(
-    label, specification, create_bus, central_elec_bus, output, sheets, area,
-    standard_parameters, flow_temp
-):
+def create_central_heatpump(label: str, specification: str, create_bus: bool,
+                            central_electricity_bus: bool, output: str,
+                            sheets: dict, area: str,
+                            standard_parameters: pandas.ExcelFile,
+                            flow_temp: str):
     """
-     In this method, a central heatpump unit with specified gas type
-     is created, for this purpose the necessary data set is obtained
-     from the standard parameter sheet, and the component is attached
-     to the transformers sheet.
-
-    :param specification: string giving the information which type
-                           of heatpump shall be added.
-     :type specification: str
-     :param create_bus: indicates whether a central heatpump
-                        electricity bus and further parameters shall
-                        be created or not.
-     :param central_elec_bus: indicates whether a central elec exists
-     :type central_elec_bus: bool
-     :param output:
-     :type output:
-     :param sheets:
-     :type sheets:
-     :param area:
-     :type area: str
-     :return: bool
+         In this method, a central heatpump unit with specified gas type
+         is created, for this purpose the necessary data set is obtained
+         from the standard parameter sheet, and the component is
+         attached to the transformers sheet.
+    
+        :param label: str containing the label of the heatpump to be \
+            created
+        :type label: str
+        :param specification: string giving the information which type
+                               of heatpump shall be added.
+        :type specification: str
+        :param create_bus: indicates whether a central heatpump
+                            electricity bus and further parameters shall
+                            be created or not.
+        :type create_bus: bool
+        :param central_electricity_bus: indicates whether a central
+            electricity exists
+        :type central_electricity_bus: bool
+        :param output: str containing the heatpump's output bus label
+        :type output: str
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+        :param area: maximum collector area for gchp's
+        :type area: str
+        :param flow_temp: flow temperature of the heatpump
+        :type flow_temp: str
     """
     from program_files import Bus, Transformer, Link
-
-    if (
-        create_bus
-        and "central_heatpump_elec_bus" not in sheets["buses"]["label"].to_list()
-    ):
+    bus_labels = sheets["buses"]["label"].to_list()
+    if create_bus and "central_heatpump_elec_bus" not in bus_labels:
         sheets = Bus.create_standard_parameter_bus(
-            label="central_heatpump_elec_bus",
+            label="central_heatpump_electricity_bus",
             bus_type="central_heatpump_electricity_bus",
             sheets=sheets,
             standard_parameters=standard_parameters
         )
-        if central_elec_bus:
+        if central_electricity_bus:
             # connection to central electricity bus
             sheets = Link.create_link(
                 label="central_heatpump_electricity_link",
                 bus_1="central_electricity_bus",
-                bus_2="central_heatpump_elec_bus",
+                bus_2="central_heatpump_electricity_bus",
                 link_type="building_central_building_link",
                 sheets=sheets,
                 standard_parameters=standard_parameters
