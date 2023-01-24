@@ -297,68 +297,73 @@ def central_comp(central: pandas.DataFrame, true_bools: list, sheets: dict,
     return sheets
 
 
-def create_power_to_gas_system(label, bus, sheets, standard_parameters):
+def create_power_to_gas_system(label: str, output: str, sheets: dict,
+                               standard_parameters: pandas.ExcelFile):
     """
-    TODO DOCSTRING TEXT
-
-    :param bus:
-    :type bus:
-    :param sheets:
-    :type sheets:
+         In this method, a central power to gas system is created,
+         for this purpose the necessary data set is obtained
+         from the standard parameter sheet, and the components are
+         attached to the transformers, the storages and the buses sheet.
+    
+        :param label: str containing the label of the heatpump to be \
+            created
+        :type label: str
+        :param output: define the heat output bus for the power to gas \
+            components
+        :type output: str
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
     """
     from program_files import Bus, Transformer, Storage, Link
-
+    
+    # create the h2 and the central natural gas bus if they do not exist
     for bus_type in ["central_h2_bus", "central_naturalgas_bus"]:
         if bus_type not in sheets["buses"]["label"].to_list():
             # h2 bus
             sheets = Bus.create_standard_parameter_bus(
-                label=bus_type, bus_type=bus_type, sheets=sheets,
+                label=bus_type,
+                bus_type=bus_type,
+                sheets=sheets,
                 standard_parameters=standard_parameters
             )
-
-    for transformer in [
-        "central_electrolysis_transformer",
-        "central_methanization_transformer",
-    ]:
-        sheets = Transformer.create_transformer(
-            label=label,
-            building_id="central",
-            transformer_type=transformer,
-            output=bus,
-            sheets=sheets,
-            standard_parameters=standard_parameters,
-            flow_temp=0
-        )
+    
+    transformer_dict = \
+        {"central_electrolysis_transformer": output,
+         "central_methanization_transformer": output,
+         "central_fuelcell_transformer": "central_" + label + "_heat_bus"}
+    # create the elctrolysis and the methanization transformer
+    for transformer in transformer_dict:
+        if transformer == "central_fuelcell_transformer":
+            # links
+            sheets = Link.create_link(
+                    label="central_" + label + '_heat_link',
+                    bus_1="central_" + label + '_heat_bus',
+                    bus_2=output,
+                    link_type="central_h2_heat_link",
+                    sheets=sheets,
+                    standard_parameters=standard_parameters)
+            # separate heat bus for the fuelcell
+            sheets = Bus.create_standard_parameter_bus(
+                    label="central_" + label + '_heat_bus',
+                    bus_type="central_h2_heat_bus",
+                    sheets=sheets,
+                    standard_parameters=standard_parameters)
         
-    for transformer in [
-        "central_fuelcell_transformer",
-    ]:
         sheets = Transformer.create_transformer(
             label=label,
             building_id="central",
             transformer_type=transformer,
-            output=label+'_heat_bus',
+            output=transformer_dict.get(transformer),
             sheets=sheets,
             standard_parameters=standard_parameters,
-            flow_temp=0
+            # TODO since flow temp does not influence the Generic
+            #  Transformer's efficiency it is set to 0
+            flow_temp="0"
         )
-
-    # links
-    for link in ["h2_heat_link"]:
-        sheets = Link.create_link(
-            label="central_" + label + '_heat_link',
-            bus_1="central_" + label + '_heat_bus',
-            bus_2=bus,
-            link_type="central_h2_heat_link",
-            sheets=sheets,
-            standard_parameters=standard_parameters)
-                
-    for bus_type in ["central_h2_heat_bus"]:
-        sheets = Bus.create_standard_parameter_bus(
-            label="central_" + label + '_heat_bus',
-            bus_type=bus_type,
-            sheets=sheets,
-            standard_parameters=standard_parameters)
 
     # storages
     for storage_type in ["central_h2_storage", "central_naturalgas_storage"]:
@@ -382,8 +387,8 @@ def create_central_heatpump(label: str, specification: str, create_bus: bool,
                             standard_parameters: pandas.ExcelFile,
                             flow_temp: str):
     """
-         In this method, a central heatpump unit with specified gas type
-         is created, for this purpose the necessary data set is obtained
+         In this method, a central heatpump unit is created, for this
+         purpose the necessary data set is obtained
          from the standard parameter sheet, and the component is
          attached to the transformers sheet.
     
@@ -414,6 +419,7 @@ def create_central_heatpump(label: str, specification: str, create_bus: bool,
         :type flow_temp: str
     """
     from program_files import Bus, Transformer, Link
+    # create central heatpump electricity bus
     bus_labels = sheets["buses"]["label"].to_list()
     if create_bus and "central_heatpump_elec_bus" not in bus_labels:
         sheets = Bus.create_standard_parameter_bus(
@@ -423,7 +429,8 @@ def create_central_heatpump(label: str, specification: str, create_bus: bool,
             standard_parameters=standard_parameters
         )
         if central_electricity_bus:
-            # connection to central electricity bus
+            # connect the heatpump electricity bus to central
+            # electricity bus
             sheets = Link.create_link(
                 label="central_heatpump_electricity_link",
                 bus_1="central_electricity_bus",
@@ -432,7 +439,7 @@ def create_central_heatpump(label: str, specification: str, create_bus: bool,
                 sheets=sheets,
                 standard_parameters=standard_parameters
             )
-
+    # create the heatpump
     return Transformer.create_transformer(
         label=label,
         building_id="central",

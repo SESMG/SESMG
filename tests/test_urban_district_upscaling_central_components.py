@@ -9,6 +9,7 @@ standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
                                        + "/standard_parameters.xlsx")
 buses = standard_parameters.parse("1_buses")
 transformers = standard_parameters.parse("4_transformers")
+storages = standard_parameters.parse("5_storages")
 links = standard_parameters.parse("6_links")
 
 
@@ -22,6 +23,86 @@ def test_central_comp():
     from program_files.urban_district_upscaling.components.Central_components \
         import central_comp
     pass
+
+
+@pytest.fixture
+def test_create_power_to_gas_entry():
+    return {
+        "buses": pandas.merge(
+            left=pandas.DataFrame.from_dict({
+                None: [0, 0, 0],
+                "label": ["central_h2_bus",
+                          "central_naturalgas_bus",
+                          "central_test_heat_bus"],
+                "bus_type": ["central_h2_bus",
+                             "central_naturalgas_bus",
+                             "central_h2_heat_bus"],
+                "district heating conn.": [float(0)] * 3}),
+            right=buses,
+            on="bus_type").drop(columns=["bus_type"]),
+        "links": pandas.merge(
+            left=pandas.DataFrame.from_dict({
+                "label": ["central_test_heat_link"],
+                "link_type": ["central_h2_heat_link"],
+                "bus1": ["central_test_heat_bus"],
+                "bus2": ["test_output_bus"]}),
+            right=links,
+            on="link_type").drop(columns=["link_type"]),
+        "transformers": pandas.merge(
+            left=pandas.DataFrame.from_dict({
+                None: [0, 0, 0],
+                "label": ["central_test_electrolysis_transformer",
+                          "central_test_methanization_transformer",
+                          "central_test_fuelcell_transformer"],
+                "transformer_type": ["central_electrolysis_transformer",
+                                     "central_methanization_transformer",
+                                     "central_fuelcell_transformer"],
+                "input": ["central_electricity_bus",
+                          "central_h2_bus",
+                          "central_h2_bus"],
+                "output": ["central_h2_bus",
+                           "central_naturalgas_bus",
+                           "central_electricity_bus"],
+                "output2": ["None",
+                            "None",
+                            "central_test_heat_bus"],
+                "area": [float(0)] * 3,
+                "temperature high": ["0"]* 3}),
+            right=transformers,
+            on="transformer_type").drop(columns=["transformer_type"]),
+        "storages": pandas.merge(
+            left=pandas.DataFrame.from_dict({
+                None: [0, 0],
+                "label": ["central_h2_storage",
+                          "central_naturalgas_storage"],
+                "storage_type": ["central_h2_storage",
+                                 "central_naturalgas_storage"],
+                "bus": ["central_h2_bus",
+                        "central_naturalgas_bus"]}),
+            right=storages,
+            on="storage_type").drop(columns=["storage_type"])
+    }
+
+
+def test_create_power_to_gas_system(test_create_power_to_gas_entry):
+    """
+    
+    """
+    sheets = Central_components.create_power_to_gas_system(
+        label="test",
+        output="test_output_bus",
+        sheets={"buses": pandas.DataFrame(columns=["label"]),
+                "links": pandas.DataFrame(),
+                "transformers": pandas.DataFrame(),
+                "storages": pandas.DataFrame(columns=["label"])},
+        standard_parameters=standard_parameters)
+    
+    for key in sheets.keys():
+        if len(test_create_power_to_gas_entry[key]) > 1:
+            test_create_power_to_gas_entry[key].set_index(None, inplace=True)
+        pandas.testing.assert_frame_equal(
+            sheets[key].sort_index(axis=1),
+            test_create_power_to_gas_entry[key].sort_index(axis=1))
 
 
 @pytest.fixture
