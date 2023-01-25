@@ -118,6 +118,8 @@ def define_energy_system(nodes_data: dict):
     """
 
     from oemof import solph
+    import pyutilib.subprocess.GlobalData
+    pyutilib.subprocess.GlobalData.DEFINE_SIGNAL_HANDLERS_DEFAULT = False
 
     # Importing energysystem parameters from the scenario
     ts = next(nodes_data["energysystem"].iterrows())[1]
