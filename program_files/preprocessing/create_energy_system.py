@@ -39,8 +39,8 @@ def import_scenario(filepath: str) -> dict:
     from oemof.tools import logger
 
     # reads node data from Excel sheet
-    if not filepath or not os.path.isfile(filepath):
-        raise FileNotFoundError("Excel data file {} not found.".format(filepath))
+    # if not filepath or not os.path.isfile(filepath):
+    #    raise FileNotFoundError("Excel data file {} not found.".format(filepath))
 
     # creates nodes from excel sheet
     xls = pd.ExcelFile(filepath)
