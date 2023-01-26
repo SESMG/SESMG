@@ -297,79 +297,19 @@ if __name__ == "__main__":
     import pandas as pd
 
     create_heat_amount_plots(
-            {"1": pd.read_csv(
-                    "/Users/gregor/sciebo/VM105/SESMG_20221111/results/2022"
-                    "-12-01--16-17-00/20221129_SchlossST_model_definition_v4_2022-12-01--16-17-00/components.csv"),
-                "0.75": pd.read_csv(
-                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
-                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.25_2022-12-02--12-33-55/components.csv"),
-                "0.5": pd.read_csv(
-                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
-                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.5_2022-12-01--20-27-34/components.csv"),
-                "0.35": pd.read_csv(
-                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
-                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.65_2022-12-03--17-53-22/components.csv"),
-                "0.25": pd.read_csv(
-                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
-                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.75_2022-12-02--02-57-39/components.csv"),
-                "0.15": pd.read_csv(
-                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
-                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.85_2022-12-03--08-31-40/components.csv"),
-                "0": pd.read_csv(
-                        "/Users/gregor/sciebo/VM105/SESMG_20221111/results"
-                        "/2022-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0_2022-12-01--19-45-56/components.csv")},
-            # import_scenario(
-            #    "/Users/gregor/Downloads/2022-10-24--07-47-24
-            #    /20221020_SchlossST_variant_1_0.75.xlsx"),
-        
-            # import_scenario(
-            # "/Users/gregor/Desktop/Arbeit/Git/SESMG/results/2022-10-20--17
-            # -52-20/20221018_schlossST_Optimierung2_0.5.xlsx"),
-            # "/Users/gregor/Desktop/Arbeit/Git/SESMG/results/2022-10-20--17
-            # -52-20/"
-            # scenario file path
-            import_scenario(
-                    "/Users/gregor/sciebo/VM105/SESMG_20221111/results/2022"
-                    "-12-01--16-17-00/20221129_SchlossST_model_definition_v4_0.5.xlsx"),
+            {"1": pd.read_csv("<path_to_csv_file>"),
+             "0.75": pd.read_csv(),
+             "0.5": pd.read_csv(),
+             "0.35": pd.read_csv(),
+             "0.25": pd.read_csv(),
+             "0.15": pd.read_csv(),
+             "0": pd.read_csv()},
+            # import scenario file
+            import_scenario(),
             # result_path
-            str(os.path.dirname(__file__) + "/v4_final"),
+            str(),
             # sink types dict {label: [bool(elec), bool(heat), bool(cooling)]}
             {
-                "01Schloss_electricity_demand": [True, False, False],
-                "01Schloss_heat_demand": [False, True, False],
-                "01Schloss_electric_vehicle": [True, False, False],
-                "02Nebengebaeude_electricity_demand": [True, False, False],
-                "02Nebengebaeude_heat_demand": [False, True, False],
-                "03Kommende1B_electricity_demand": [True, False, False],
-                "03Kommende1B_heat_demand": [False, True, False],
-                "05Kommende3_electricity_demand": [True, False, False],
-                "05Kommende3_heat_demand": [False, True, False],
-                "06Kommende4_electricity_demand": [True, False, False],
-                "06Kommende4_heat_demand": [False, True, False],
-                "07Kommende5_electricity_demand": [True, False, False],
-                "07Kommende5_heat_demand": [False, True, False],
-                "08Kommende6_electricity_demand": [True, False, False],
-                "08Kommende6_heat_demand": [False, True, False],
-                "09Kommende7_electricity_demand": [True, False, False],
-                "09Kommende7_heat_demand": [False, True, False],
-                "10Kommende8_electricity_demand": [True, False, False],
-                "10Kommende8_heat_demand": [False, True, False],
-                "11Kommende9_electricity_demand": [True, False, False],
-                "11Kommende9_heat_demand": [False, True, False],
-                "12Kommende10_electricity_demand": [True, False, False],
-                "12Kommende10_heat_demand": [False, True, False],
-                "13Kommende1112_electricity_demand": [True, False, False],
-                "13Kommende1112_heat_demand": [False, True, False],
-                "14Kommende13_electricity_demand": [True, False, False],
-                "14Kommende13_heat_demand": [False, True, False],
-                "15TischlereiB_electricity_demand": [True, False, False],
-                "15TischlereiB_heat_demand": [False, True, False],
-                "16WGTischlereiB_electricity_demand": [True, False, False],
-                "16WGTischlereiB_heat_demand": [False, True, False],
-                "17Muehle_electricity_demand": [True, False, False],
-                "17Muehle_heat_demand": [False, True, False],
-                "19Hotel_electricity_demand": [True, False, False],
-                "19Hotel_heat_demand": [False, True, False],
-                "20Wohngebauede_electricity_demand": [True, False, False],
-                "20Wohngebauede_heat_demand": [False, True, False]}
+                "sink_id": ["bool(elec)", "bool(heat)", "bool(cooling)"]
+            }
     )
