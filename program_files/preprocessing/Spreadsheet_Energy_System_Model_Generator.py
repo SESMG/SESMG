@@ -158,7 +158,7 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
 
     # CREATES BUS OBJECTS, EXCESS SINKS, AND SHORTAGE SOURCES AS DEFINED IN THE
     # SCENARIO FILE AND ADDS THEM TO THE lIST OF COMPONENTS
-    busd = Bus.buses(nd=nodes_data, nodes=nodes)
+    busd = Bus.buses(nodes_data=nodes_data, nodes=nodes)
     # PARALLEL CREATION OF ALL OBJECTS OF THE SCENARIO FILE
 
     # CREATES SOURCE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
