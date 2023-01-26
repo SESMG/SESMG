@@ -445,65 +445,17 @@ if __name__ == "__main__":
     import pandas as pd
     
     create_elec_amount_plots(
-            {"1": pd.read_csv(
-                    "/Users/gregor/sciebo/VM101/SESMG_20221111/results/2022"
-                    "-11-21--08-34-04/20221118_SchlossST_model_definition_v1_2022-11-21--08-34-04/components.csv"),
-             "0.75": pd.read_csv(
-                     "/Users/gregor/sciebo/VM101/SESMG_20221111/results"
-                     "/2022-11-21--08-34-04/20221118_SchlossST_model_definition_v1_0.25_2022-11-22--19-56-41/components.csv"),
-             "0.5": pd.read_csv(
-                     "/Users/gregor/sciebo/VM101/SESMG_20221111/results"
-                     "/2022-11-21--08-34-04/20221118_SchlossST_model_definition_v1_0.5_2022-11-21--16-13-43/components.csv"),
-             "0.25": pd.read_csv(
-                     "/Users/gregor/sciebo/VM101/SESMG_20221111/results"
-                     "/2022-11-21--08-34-04/20221118_SchlossST_model_definition_v1_0.75_2022-11-23--18-28-52/components.csv"),
-             "0": pd.read_csv(
-                     "/Users/gregor/sciebo/VM101/SESMG_20221111/results"
-                     "/2022-11-21--08-34-04/20221118_SchlossST_model_definition_v1_0_2022-11-21--12-44-46/components.csv")},
+            {"1": pd.read_csv("<path_to_csv_file>"),
+             "0.75": pd.read_csv(),
+             "0.5": pd.read_csv(),
+             "0.25": pd.read_csv(),
+             "0": pd.read_csv()},
             # scenario file path
-            import_scenario(
-                    "/Users/gregor/sciebo/VM101/SESMG_20221111/results/2022"
-                    "-11-21--08-34-04/20221118_SchlossST_model_definition_v1_0.75.xlsx"),
+            import_scenario(),
             # result_path
             str(os.path.dirname(__file__)),
             # sink types dict {label: [bool(elec), bool(heat), bool(cooling)]}
             {
-                "01Schloss_electricity_demand": [True, False, False],
-                "01Schloss_heat_demand": [False, True, False],
-                "01Schloss_electric_vehicle": [True, False, False],
-                "02Nebengebaeude_electricity_demand": [True, False, False],
-                "02Nebengebaeude_heat_demand": [False, True, False],
-                "03Kommende1B_electricity_demand": [True, False, False],
-                "03Kommende1B_heat_demand": [False, True, False],
-                "05Kommende3_electricity_demand": [True, False, False],
-                "05Kommende3_heat_demand": [False, True, False],
-                "06Kommende4_electricity_demand": [True, False, False],
-                "06Kommende4_heat_demand": [False, True, False],
-                "07Kommende5_electricity_demand": [True, False, False],
-                "07Kommende5_heat_demand": [False, True, False],
-                "08Kommende6_electricity_demand": [True, False, False],
-                "08Kommende6_heat_demand": [False, True, False],
-                "09Kommende7_electricity_demand": [True, False, False],
-                "09Kommende7_heat_demand": [False, True, False],
-                "10Kommende8_electricity_demand": [True, False, False],
-                "10Kommende8_heat_demand": [False, True, False],
-                "11Kommende9_electricity_demand": [True, False, False],
-                "11Kommende9_heat_demand": [False, True, False],
-                "12Kommende10_electricity_demand": [True, False, False],
-                "12Kommende10_heat_demand": [False, True, False],
-                "13Kommende1112_electricity_demand": [True, False, False],
-                "13Kommende1112_heat_demand": [False, True, False],
-                "14Kommende13_electricity_demand": [True, False, False],
-                "14Kommende13_heat_demand": [False, True, False],
-                "15TischlereiB_electricity_demand": [True, False, False],
-                "15TischlereiB_heat_demand": [False, True, False],
-                "16WGTischlereiB_electricity_demand": [True, False, False],
-                "16WGTischlereiB_heat_demand": [False, True, False],
-                "17Muehle_electricity_demand": [True, False, False],
-                "17Muehle_heat_demand": [False, True, False],
-                "19Hotel_electricity_demand": [True, False, False],
-                "19Hotel_heat_demand": [False, True, False],
-                "20Wohngebauede_electricity_demand": [True, False, False],
-                "20Wohngebauede_heat_demand": [False, True, False]
+               "sink_id": ["bool(elec)", "bool(heat)", "bool(cooling)"]
             }
     )
