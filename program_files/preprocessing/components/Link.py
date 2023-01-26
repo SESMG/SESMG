@@ -1,49 +1,75 @@
 from oemof.solph import Investment, Flow
 from oemof.solph.custom import Link
 import logging
+import pandas
 
 
 class Links:
     """
-    Creates links objects as defined in 'nodes_data' and adds them
-    to the list of components 'nodes'.
-
-    # TODO Excel columns missing
-
-    :param nd: dictionary containing data from excel
-                       scenario file. The following data have to be
-                       provided:
-
-                            - 'active'
-                            - 'label'
-                            - '(un)directed'
-    :type nd: dict
-    :param busd: dictionary containing the buses of the energy system
-    :type busd: dict
-    :param nodes: list of components created before(can be empty)
-    :type nodes: list
-
-    Christian Klemm - christian.klemm@fh-muenster.de
+        Creates links objects as defined in 'nodes_data' and adds them
+        to the list of components 'nodes'.
+    
+        :param nodes_data: dictionary containing data from excel
+                           scenario file. The following data have to be
+                           provided:
+    
+                                - active,
+                                - label,
+                                - (un)directed,
+                                - efficiency,
+                                - bus1,
+                                - bus2,
+                                - periodical costs,
+                                - periodical constraint costs,
+                                - variable costs,
+                                - variable constraint costs,
+                                - non-convex investment,
+                                - fix investment costs,
+                                - fix investment constraint costs,
+                                - min. investment capacity,
+                                - max. investment capacity,
+                                - existing capacity
+        :type nodes_data: dict
+        :param nodes: list of components created before(can be empty)
+        :type nodes: list
+        :param busd: dictionary containing the buses of the energy \
+            system
+        :type busd: dict
+        
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
 
     # intern variables
     busd = None
 
     @staticmethod
-    def get_flow(link):
-        """ """
+    def get_flow(link: pandas.Series):
+        """
+            The parameterization of the output flow of the link
+            component has been outsourced to this static method.
+            
+            :param link: nodes data row of the link in creation
+            :type link: pandas.Series
+        """
+        # if the link is directed the total costs result from one flow
+        # which is the reason for the assignment of the total costs to
+        # this output flow
         if link["(un)directed"] == "directed":
             ep_costs = link["periodical costs"]
             ep_constr_costs = link["periodical constraint costs"]
             fix_investment_costs = link["fix investment costs"]
             fix_constr_costs = link["fix investment constraint costs"]
+        # if the link is undirected the total costs result from both
+        # output flows which is the reason for the assignment of the
+        # half costs to each of them
         elif link["(un)directed"] == "undirected":
             ep_costs = link["periodical costs"] / 2
             ep_constr_costs = link["periodical constraint costs"] / 2
             fix_investment_costs = link["fix investment costs"] / 2
             fix_constr_costs = link["fix investment constraint costs"] / 2
         else:
-            raise SystemError("Problem with periodical costs")
+            raise SystemError("Parameter (un)directed not filled correctly "
+                              "for the component " + link["label"])
 
         return Flow(
             variable_costs=link["variable output costs"],
@@ -54,22 +80,24 @@ class Links:
                 minimum=link["min. investment capacity"],
                 maximum=link["max. investment capacity"],
                 existing=link["existing capacity"],
-                nonconvex=True if link["non-convex investment"] == 1 else False,
+                nonconvex=True if link["non-convex investment"] == 1
+                else False,
                 offset=fix_investment_costs,
                 fix_constraint_costs=fix_constr_costs,
             ),
         )
 
-    def __init__(self, nd, nodes, busd):
+    def __init__(self, nodes_data: dict, nodes: list, busd: dict):
         """
-        Inits the Links class.
-
-        Christian Klemm - christian.klemm@fh-muenster.de
+            Inits the Links class.
+    
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
         # renames variables
         self.busd = busd
+        links = nodes_data["links"]
         # creates link objects for every link object in nd
-        for i, link in nd["links"][nd["links"]["active"] == 1].iterrows():
+        for num, link in links[links["active"] == 1].iterrows():
             link_node = Link(
                 label=link["label"],
                 inputs={

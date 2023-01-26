@@ -45,6 +45,7 @@ def test_buses(test_bus_entry):
         Finally, it is checked whether the values can be found again in
         the correct places of the oemof components.
     """
+    from .conftest import comparison_of_flow_attributes
     from program_files.preprocessing.components import Bus
     import pandas
     
@@ -68,18 +69,6 @@ def test_buses(test_bus_entry):
         assert nodes[num].label == test_bus_entry[num].label
         # check if the variable costs and emission factors of the
         # inputs / outputs of the two nodes are equal
-        for flows in [nodes[num].inputs, nodes[num].outputs]:
-            if flows == nodes[num].inputs:
-                flows_test = test_bus_entry[num].inputs
-            else:
-                flows_test = test_bus_entry[num].outputs
-            if len(list(flows.keys())) > 0:
-                inputs_test_method = flows[list(flows.keys())[0]]
-                inputs_compare = flows_test[list(flows_test.keys())[0]]
-                if hasattr(inputs_test_method, "emission_factor"):
-                    assert inputs_test_method.emission_factor \
-                        == inputs_compare.emission_factor
-                    assert inputs_test_method.variable_costs.default \
-                        == inputs_compare.variable_costs.default
+        comparison_of_flow_attributes([nodes[num]], [test_bus_entry[num]])
                 
         assert type(busd["test_bus"]) == type(test_bus_entry[0])
