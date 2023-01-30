@@ -177,7 +177,7 @@ def test_building_buses_entry():
             left=pandas.DataFrame.from_dict(
                 {None: [0, 0, 0],
                  "label": ["test_central_electricity_link",
-                           "test_pv_test_electricity_link",
+                           "test_pv_self_consumption_electricity_link",
                            "test_pv_central_electricity_link"],
                  "bus1": ["central_electricity_bus",
                           "test_pv_bus",
