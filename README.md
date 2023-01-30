@@ -86,13 +86,10 @@ Examples are stored in a separate GIT-Repository: https://github.com/chrklemm/SE
 ### Project status
 ✓ Draft (alpha, beta) State <br />
 ✓ Modeling and Optimization of holistic energy systems <br />
+✓ Automated modeling of urban energy systems <br /> 
 ✓ Several result plotting oportunities <br />
-✓ usable on Windows, MacOS and Linux <br />
+✓ Usable on Windows, MacOS and Linux <br />
 
-✘ No support of Python 3.8 and newer <br />
-✘ Issues on installing depedencies <br />
-✘ Incomplete Documentation <br />
-✘ Programming of tests still pending <br />
 ✘ More time to code other things ... wait ✓!  
 
 ## Detailed Documentation! ![references](https://cs.adelaide.edu.au/~christoph/badges/content-references-orange.svg)
