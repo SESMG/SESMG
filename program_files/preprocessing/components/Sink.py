@@ -121,7 +121,7 @@ class Sinks:
                 self.insulation.loc[i, "ep_constr_costs_kW"] = ep_constr_costs
                 self.nodes_sinks.append(
                     Source(
-                        label="insulation-{}".format(ins["label"]),
+                        label="{}-insulation".format(ins["label"]),
                         outputs={
                             self.busd[de["input"]]: Flow(
                                 investment=Investment(

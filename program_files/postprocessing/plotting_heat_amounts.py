@@ -177,7 +177,7 @@ def create_heat_amount_plots(dataframes: dict, nodes_data: pandas.DataFrame,
         df_insulation = components_df[components_df["U-value new"].notna()]
         for num, insulation in df_insulation.iterrows():
             cap_sink = get_value(insulation["sink"], "capacity/kW", dataframe)
-            cap_insulation = get_value('insulation-'+insulation["label"], "capacity/kW", dataframe)
+            cap_insulation = get_value(insulation["label"] + "-insulation", "capacity/kW", dataframe)
             value_sink = get_value(insulation["sink"], "input 1/kWh", dataframe)
             # append the heat savings of the insulations on the heat
             # amounts dict

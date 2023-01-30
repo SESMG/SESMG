@@ -216,7 +216,7 @@ def insulation_technical_pre_selection(components_xlsx, result_components):
     # deactivate those street section for which no investment has been
     # carried out
     for i, insulation in components_xlsx.iterrows():
-        if str('insulation-'+insulation['label']) not in insulation_investment_list:
+        if str(insulation['label'] + "-insulation") not in insulation_investment_list:
             components_xlsx.at[i, 'active'] = 0
 
 
