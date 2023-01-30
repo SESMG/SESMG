@@ -10,7 +10,7 @@ from program_files.urban_district_upscaling.components import (
 
 true_bools = ["yes", "Yes", 1, "1"]
 
-# hey single ladys
+
 def clustering_transformers(sheets: dict, sink_parameters: list,
                             transformer_parameters: dict, cluster: str,
                             standard_parameters: pandas.ExcelFile):
