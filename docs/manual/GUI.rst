@@ -144,6 +144,6 @@ Depending on the simplification applied, further adjustments to the energy syste
 
 References
 ==========
-[1] Klemm C. *Model-based run-time and memory optimization for a mixed-use multi-energy system model with high spatial resolution*, preprint submitted to 'Applied Energy', `Available here <https://www.researchgate.net/publication/361634152_Model-based_run-time_and_memory_optimization_for_a_mixed-use_multi-energy_system_model_with_high_spatial_resolution>`_ , 2022.
+[1] Klemm, C.; Wiese, F. and Vennemann P.  *Model-based run-time and memory reduction for a mixed-use multi-energy system model with high spatial resolution*. Applied Energy (2023), https://doi.org/10.1016/j.apenergy.2022.120574
 
-[2] Green, Richard, Iain Staffell, and Nicholas Vasilakos. *Divide and Conquer? k-Means Clustering of Demand Data Allows Rapid and Accurate Simulations of the British Electricity System.* IEEE Transactions on Engineering Management 61.2 (2014): 251-260.
+[2] Green, R.; Staffell, I and Vasilakos, N. *Divide and Conquer? k-Means Clustering of Demand Data Allows Rapid and Accurate Simulations of the British Electricity System.* IEEE Transactions on Engineering Management 61.2 (2014): 251-260.
