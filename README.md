@@ -1,15 +1,9 @@
 # Spreadsheet Energy System Model Generator (SESMG) ![what-why](https://cs.adelaide.edu.au/~christoph/badges/content-what-why-brightgreen.svg) ![how](https://cs.adelaide.edu.au/~christoph/badges/content-how-green.svg) 
 
-
-## Status Badges
-
-| Badge                                                                                                                                                                                                                 | Description                                                                          | Target Value                                             |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|----------------------------------------------------------|
-| [![codecov](https://codecov.io/gh/SESMG/SESMG/branch/master/graph/badge.svg?token=70AHZEB2IN)](https://codecov.io/gh/SESMG/SESMG)                                                                                                                    | Indicates the test coverage of the code (Tool 1).                                    | min. 60 % (https://doi.org/10.1371/journal.pcbi.1009481) |
-|[![Test Coverage](https://api.codeclimate.com/v1/badges/5ab50cca9d852028f3df/test_coverage)](https://codeclimate.com/github/SESMG/SESMG/test_coverage)                                                            | Indicates the test coverage of the code (Tool 2).                                    | min. 60 % (https://doi.org/10.1371/journal.pcbi.1009481) |
-| [![Maintainability](https://api.codeclimate.com/v1/badges/5ab50cca9d852028f3df/maintainability)](https://codeclimate.com/github/SESMG/SESMG/maintainability)                                                       | Indicates the effort for the maintenance of the code.                                |                                                          |                                         |
-| [![Documentation Status](https://readthedocs.org/projects/spreadsheet-energy-system-model-generator/badge/?version=latest)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/?badge=latest) | Indicates if the automated process for the creation of the documentation is working. | 'passing'                                                |
-
+[![codecov](https://codecov.io/gh/SESMG/SESMG/branch/master/graph/badge.svg?token=70AHZEB2IN)](https://codecov.io/gh/SESMG/SESMG)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/5ab50cca9d852028f3df/test_coverage)](https://codeclimate.com/github/SESMG/SESMG/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/5ab50cca9d852028f3df/maintainability)](https://codeclimate.com/github/SESMG/SESMG/maintainability)
+[![Documentation Status](https://readthedocs.org/projects/spreadsheet-energy-system-model-generator/badge/?version=latest)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/?badge=latest)
 
 ## Software Description
 
