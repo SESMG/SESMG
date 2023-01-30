@@ -27,7 +27,7 @@ def test_bus_entry():
     return test_energy_system.nodes
 
 
-@pytest.skip
+@pytest.mark.skip
 def test_buses(test_bus_entry):
     """
         Now the Pandas DataFrame structure of the Buses method is
