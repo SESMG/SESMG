@@ -64,31 +64,6 @@ def calc_constraint_limits(result_folders, limits):
     return constraints
 
 
-def criterion_switch_dh(directory):
-    columns = {}
-    path = os.path.dirname(os.path.dirname(directory)) \
-           + "/program_files/urban_district_upscaling/standard_parameters.xlsx"
-    # get keys from plain scenario
-    standard_parameter = pd.ExcelFile(path)
-    # get columns from plain sheet
-    for sheet in standard_parameter.sheet_names:
-        if sheet not in ["8_1_other"]:
-            columns[sheet] = standard_parameter.parse(sheet)
-    
-    other_param = standard_parameter.parse("8_1_other", index_col="label")
-    writer = pd.ExcelWriter(path, engine="xlsxwriter")
-    
-    costs = other_param.loc[:, "costs"].copy()
-    other_param.loc[:, "costs"] = \
-        other_param.loc[:, "constraint costs"]
-    other_param.loc[:, "constraint costs"] = costs
-    other_param.reset_index(inplace=True, drop=False)
-    other_param.to_excel(writer, "8_1_other", index=False)
-    for sheet in columns:
-        columns[sheet].to_excel(writer, sheet, index=False)
-    writer.save()
-
-
 def run_pareto(
         limits, scenario, gui_variables, timeseries_prep_param, pre_modeling,
         pre_model_timeseries_prep, investment_boundaries,
@@ -154,7 +129,6 @@ def run_pareto(
                 pre_model_path=pre_model_path
         )
     
-    criterion_switch_dh(directory)
     print(save_path)
     # TODO enable more than one scenario (districts)
     # set the save path
@@ -212,8 +186,6 @@ def run_pareto(
     print(constraints)
     files = create_transformation_scenarios(constraints, scenario, directory,
                                             limits)
-    
-    criterion_switch_dh(directory)
     
     for limit in limits:
         result_folders.update({str(limit): []})
