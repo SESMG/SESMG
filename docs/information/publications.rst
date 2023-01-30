@@ -7,6 +7,9 @@ Your publication/thesis/project is missing? Contact us!
 
 Papers and Conference Proceedings
 ---------------------------------
+- Klemm, Christian; Wiese, Frauke & Vennemann, Peter (2023): "**Model-based run-time and memory reduction for a mixed-use multi-energy system model with high spatial resolution**", *Applied Energy*, 334, 120574, `https://doi.org/10.1016/j.apenergy.2022.120574>`_.
+
+- Becker, Gregor; Klemm, Christian & Vennemann, Peter (2022) "**Open Source District Heating Modeling Tools—A Comparative Study**", *Energies*, 15(21), 8277, `https://doi.org/10.3390/en15218277>`_.
 
 - Quest, Gemina; Arendt, Rosalie; Klemm, Christian; Bach, Vanessa; Budde, Janik; Vennemann, Peter & Finkbeiner, Matthias (2022): "**Integrated Life Cycle Assessment (LCA) of Power and Heat Supply for a Neighborhood: A Case Study of Herne, Germany**", *Energies*, 15(16), 5900, `https://doi.org/10.3390/en15165900 <https://doi.org/10.3390/en15165900>`_.
 
@@ -21,6 +24,7 @@ Papers and Conference Proceedings
 
 Theses
 ------
+- Budde, Janik (2022): "**Leitfaden zur Modellierung von Energiesystemen**" (Master Thesis), Münster University of Applied Sciences.  `Mail <mailto:janik.budde\@fh-muenster.de>`_
 
 - Petereit, Vincent (2022): "**Wirtschaftlichkeitsanalyse der Wasserstoffnutzung in Quartieren**" (Bachelor Thesis), Münster University of Applied Sciences. `Mail <mailto:vincent.petereit@fh-muenster.de>`_
 
