@@ -80,7 +80,7 @@ def create_central_heat_component(
             specification=comp_type.split("_")[0],
             create_bus=True if central_heatpump_indicator == 0 else False,
             output=bus,
-            central_elec_bus=exchange_buses["electricity_exchange"],
+            central_electricity_bus=exchange_buses["electricity_exchange"],
             sheets=sheets,
             area=area,
             standard_parameters=standard_parameters,
