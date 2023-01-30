@@ -1,3 +1,13 @@
+# TODO building intern heatpumps
+# TODO battery storages
+# TODO electric heating
+# TODO Solarthermal
+# TODO DH
+# TODO differentiate between insulations
+# TODO Central components?
+# TODO clustered demands res com etc.
+# TODO clustered solar thermal
+
 import pandas
 
 # dictionary that contains all attachments form us tool
@@ -5,7 +15,7 @@ label_dict = {
     "_electricity_demand":
         ["electricity demand", "input 1/kWh"],
     "_parcel_gchp_elec_link":
-        ["electricity demand heat pump", "output 1/kWh"],
+        ["electricity demand heat pump (GCHP)", "output 1/kWh"],
     "_electric_vehicle":
         ["electricity demand electric vehicle", "input 1/kWh"],
     "_electricity_bus_shortage":
@@ -63,7 +73,9 @@ def create_building_specific_results(us_sheet_raw_data: str,
     
     # function 2
     # indices of columns with 0 capacity
-    components_raw_data.drop(components_raw_data.loc[components_raw_data['capacity/kW'] == 0].index, inplace=True)
+    components_raw_data.drop(
+        components_raw_data.loc[
+            components_raw_data['capacity/kW'] == 0].index, inplace=True)
     
     overview = {}
     # for loop to match label_dict with list of buildings
