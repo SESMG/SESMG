@@ -6,9 +6,9 @@
 @echo off
 set /p PYVERSION="Enter your Python Version here:"
 
-py -%PYVERSION% -m venv "%~dp0"
+py -%PYVERSION% -m venv "%~dp0 "
 
-cd "%~dp0"/Scripts/
+cd Scripts/
 start /b activate.bat
 
 pip install pipwin
@@ -19,13 +19,13 @@ pipwin install fiona
 @echo download and install required python packages
 @echo #############################################
 
-pip install -r "%~dp0"/requirements.txt
+pip install -r ../requirements.txt
 
-mkdir "%~dp0"/files_deviant_operating_system
-move "%~dp0"/MacOS_installation.command "%~dp0"/files_deviant_operating_system\MacOS_installation.command
-move "%~dp0"/Run_SESMG_for_macos.command "%~dp0"/files_deviant_operating_system\Run_SESMG_for_macos.command
-move "%~dp0"/Linux_installation.sh "%~dp0"/files_deviant_operating_system\Linux_installation.sh
-move "%~dp0"/Run_SESMG_for_Linux.sh "%~dp0"/files_deviant_operating_system\Run_SESMG_for_Linux.sh
+mkdir "%~dp0 "/files_deviant_operating_system
+move "%~dp0 "/MacOS_installation.command "%~dp0 "/files_deviant_operating_system\MacOS_installation.command
+move "%~dp0 "/Run_SESMG_for_macos.command "%~dp0 "/files_deviant_operating_system\Run_SESMG_for_macos.command
+move "%~dp0 "/Linux_installation.sh "%~dp0 "/files_deviant_operating_system\Linux_installation.sh
+move "%~dp0 "/Run_SESMG_for_Linux.sh "%~dp0 "/files_deviant_operating_system\Run_SESMG_for_Linux.sh
 
 
 @echo ######################
