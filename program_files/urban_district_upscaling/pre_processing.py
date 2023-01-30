@@ -282,9 +282,7 @@ def create_building_buses_links(
         # create link from pv bus to building electricity bus
         sheets = Link.create_link(
             label=str(building["label"])
-            + "_pv_"
-            + str(building["label"])
-            + "_electricity_link",
+            + "_pv_self_consumption_electricity_link",
             bus_1=str(building["label"]) + "_pv_bus",
             bus_2=str(building["label"]) + "_electricity_bus",
             link_type="building_pv_building_link",
