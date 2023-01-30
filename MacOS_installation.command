@@ -1,14 +1,14 @@
 #!/bin/bash
 echo --------------------------------
 echo Building the Virtual Enviroment
-echo File path: $(dirname "$0")
+echo File path: "$(dirname "$0")"
 echo --------------------------------
-cd $(dirname "$0")
+cd "$(dirname "$0")"
 
 echo "Enter your Python Version here:"
 read PYVERSION
 
-python$PYVERSION -m venv $(dirname "$0")
+python$PYVERSION -m venv "$(dirname "$0")"
 source bin/activate
 
 echo ---------------------------------------------
