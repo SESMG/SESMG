@@ -60,7 +60,7 @@ class UpscalingFrameClass:
         )
 
     @staticmethod
-    def create_overview(components, clustering):
+    def create_overview(us_input, components, building_or_cluster, result_path):
         """
         Methods starting the upscaling post_processing Algorithm
 
@@ -71,11 +71,20 @@ class UpscalingFrameClass:
         :type clustering: tk.BooleanVar
 
         """
-        if clustering:
-            urban_district_upscaling_post_processing_clustered(components.get())
-        else:
-            urban_district_upscaling_post_processing(components.get())
-        subprocess.call(os.path.dirname(__file__) + "/overview.xlsx", shell=True)
+        #if clustering:
+        #    urban_district_upscaling_post_processing_clustered(components.get())
+        #else:
+        #    urban_district_upscaling_post_processing(components.get())
+        #subprocess.call(os.path.dirname(__file__) + "/overview.xlsx", shell=True)
+        
+        from program_files.postprocessing import building_specific_results
+        
+        building_specific_results.create_building_specific_results(
+            us_sheet_raw_data=us_input.get(),
+            components_raw_data=components.get(),
+            building_or_cluster=building_or_cluster.get(),
+            result_path=result_path.get()
+        )
 
     def __init__(self, frame, gui_variables, tk):
         # Headline
@@ -142,15 +151,27 @@ class UpscalingFrameClass:
         # Headline
         tk.create_heading(frame, "Postprocessing", 0, row, "w", True)
         row += 1
+        tk.create_option_menu(frame,
+                              gui_variables["building_or_cluster"],
+                              ["building", "cluster"], 1, row)
+        row += 1
         upscaling_elements = {
             "Components CSV for post processing": [
                 lambda: tk.get_path("csv", gui_variables["components_path"]),
                 "Change",
                 "components_path",
             ],
+            "Result Path": [
+                lambda: tk.get_path("folder", gui_variables["result_path"]),
+                "Change",
+                "result_path",
+            ],
             "Create Overview": [
                 lambda: self.create_overview(
-                    components=gui_variables["components_path"], clustering=True
+                    us_input=gui_variables["pre_scenario_path"],
+                    components=gui_variables["components_path"],
+                    building_or_cluster=gui_variables["building_or_cluster"],
+                    result_path=gui_variables["result_path"]
                 ),
                 "Execute",
                 "",

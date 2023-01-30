@@ -441,6 +441,7 @@ class GUI(MethodsGUI):
                                 "results")
                     ),
             ),
+            "result_path": StringVar(self.frames[1], ""),
             "save_path": StringVar(self.frames[0], ""),
             "num_threads": IntVar(self.frames[0], 2),
             "timeseries_algorithm": StringVar(self.frames[0], "None"),
@@ -451,6 +452,7 @@ class GUI(MethodsGUI):
             "graph_state": IntVar(),
             "criterion_state": IntVar(),
             "solver_select": StringVar(self.frames[0], "gurobi"),
+            "building_or_cluster": StringVar(self.frames[1], "building"),
             "xlsx_select_state": IntVar(),
             "console_select_state": IntVar(),
             "plotly_select_state": IntVar(),
