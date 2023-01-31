@@ -1,7 +1,5 @@
-# TODO building intern heatpumps
 # TODO battery storages
-# TODO electric heating
-# TODO Solarthermal
+# TODO Solarthermal (change labeling (1,2,3,4 ?)
 # TODO DH
 # TODO differentiate between insulations
 # TODO Central components?
@@ -38,7 +36,21 @@ label_dict = {
         ["gas purchase", "output 1/kWh"],
     "_gasheating_transformer":
         ["heat supply (gas heating system)", "output 1/kWh"],
-  }
+    "_oilheating_transformer":
+        ["heat supply (oil heating system)", "output 1/kWh"],
+    "_electricheating_transformer":
+        ["heat supply (electric heating system)", "output 1/kWh"],
+    "_wall-insulation":
+        ["heat savings (wall)", "output 1/kWh"],
+    "_roof-insulation":
+        ["heat savings (roof)", "output 1/kWh"],
+    "_window-insulation":
+        ["heat savings (window)", "output 1/kWh"],
+    "_1_solarthermal_source":
+        ["heat supply (solar thermal collector)", "output 1/kWh"],
+    "_ashp_transformer":
+        ["heat supply (ashp)", "output 1/kWh"],
+    }
 
 
 def create_building_specific_results(us_sheet_raw_data: str,
@@ -46,7 +58,6 @@ def create_building_specific_results(us_sheet_raw_data: str,
                                      components_raw_data: str,
                                      result_path: str):
     """
-    
         :param us_sheet_raw_data: Upscaling input sheet containing the \
             building data
         :type us_sheet_raw_data: str
@@ -92,3 +103,4 @@ def create_building_specific_results(us_sheet_raw_data: str,
     # replace nan values with 0
     overview_df = overview_df_nan.fillna(0)
     overview_df.to_csv(result_path + "/building_specific_results.csv")
+    print("Essen ist fertig.")
