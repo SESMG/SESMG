@@ -42,8 +42,12 @@ class Transformers:
     nodes_transformer = []
     busd = None
 
-    def get_primary_output_data(self, tf):
+    def get_primary_output_data(self, tf, max_invest=None):
         """ """
+        if max_invest:
+            max_invest = max_invest
+        else:
+            max_invest = tf["max. investment capacity"]
         return {
             "outputs": {
                 self.busd[tf["output"]]: Flow(
@@ -52,7 +56,7 @@ class Transformers:
                     investment=Investment(
                         ep_costs=tf["periodical costs"],
                         minimum=tf["min. investment capacity"],
-                        maximum=tf["max. investment capacity"],
+                        maximum=max_invest,
                         periodical_constraint_costs=tf["periodical constraint costs"],
                         existing=tf["existing capacity"],
                         nonconvex=True if tf["non-convex investment"] == 1 else False,
@@ -345,7 +349,12 @@ class Transformers:
                 self.busd[tf["label"] + temp + "_bus"]: Flow(emission_factor=0),
             }
         }
-        outputs = self.get_primary_output_data(tf)
+        if tf["heat source"] == "Ground" and tf["mode"] == "heat_pump":
+            cop_new = [(i / (i - 1)) for i in cops_hp]
+            max_invest = heatsource_cap * max(cop_new)
+        else:
+            max_invest = None
+        outputs = self.get_primary_output_data(tf, max_invest)
         # transformer conversion factor parameter
         conversion_factors = {
             "conversion_factors": {

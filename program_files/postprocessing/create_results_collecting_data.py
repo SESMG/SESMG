@@ -316,7 +316,7 @@ def get_max_invest(comp_type: str, nd):
     # check rather there is an opportunity to invest in the component (nd)
     if hasattr(invest_object, "maximum"):
         # if yes return the maximum investment capacity
-        max_invest = getattr(invest_object, "maximum")
+        max_invest = round(getattr(invest_object, "maximum"), 2)
     return max_invest
 
 
