@@ -120,10 +120,10 @@ Category 1
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: In this cell, users decide whether a building should be considered in the modeling.
 - **year of construction**: The year of construction of a building is relevant for the calculation of the heat demand and for the calculation of the savings potential of insulation measures. Insulation measures for the wall area, window area and roof area are considered. For each building, the U-value (also heat transfer coefficient) for windows, walls and roof is obtained from the standard parameter sheet (see `standard parameter`_), depending on the year of construction of the building. In the Energy Saving Ordinance 2014, U-values are defined to achieve the desirable efficiency level 1. These U-values can be maximally achieved in the modeling. The difference between current and minimum U-value is the possible saving of heat demand. The calculation is explained in the standard parameter documentation (see `standard parameter`_).
-- **distance of electric vehicles (km/a)**: description coming soon
-- **electricity demand (kWh / (m²  a))**: description coming soon
-- **heat demand (kWh / (m² a))**: description coming soon
-- **building type**: description coming soon
+- **distance of electric vehicles (km/a)**: The annual kilometers driven are used to create the charging profile of an electric car. The electricity demand for the electric car is considered separately from the building electricity demand.
+- **electricity demand (kWh / (m²  a))**: The specific electricity demand is multiplied by the useful building area to calculate the annual demand. If the annual electricity demand is not available as a function of the building floor area, 1 m^2 must be entered for the building floor area.
+- **heat demand (kWh / (m² a))**: The specific heat demand is multiplied by the useful building area to calculate the annual demand. If the annual heat demand is not available as a function of the building floor area, 1 m^2 must be entered for the building floor area.
+- **building type**: The building usage influences the calculation of the energy demand and the selection of the load profile for buildings. The different building types can be found in the standard parameter documentation (see `standard parameter`_).
 - **units**: description coming soon
 - **occupants per unit**: description coming soon
 - **gross building area	(m²)**: description coming soon
@@ -245,7 +245,7 @@ Category 4
 .. _`standard parameter`:
 Standard parameter sheet
 =========================
-The standard parameter table contains all technology-specific data (costs, emissions, efficiencies) as well as all other data (e.g. specific energy requirements) required for energy system modeling. The parameters used are included in the following standard parameter documentation:
+The standard parameter sheet contains all technology-specific data (costs, emissions, efficiencies) as well as all other data (e.g. specific energy requirements) required for energy system modeling. The parameters used are included in the following standard parameter documentation:
 https://doi.org/10.5281/zenodo.6974401
 
 The documents contain all values, formulas and related sources used. The standard parameter documentation is intended to ensure the reproducibility of the results. The documentation is continuously updated.
