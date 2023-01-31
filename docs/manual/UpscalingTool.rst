@@ -119,7 +119,7 @@ Category 1
 - **label**: The building name can be chosen by the user and is the identification number (ID) of a building. The ID must be unique for each building, because all the following columns are assigned to it.
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: In this cell, users decide whether a building should be considered in the modeling.
-- **year of construction**: The year of construction of a building is relevant for the calculation of the heat demand and for the calculation of the savings potential of insulation measures. Insulation measures for the wall area, window area and roof area are considered. For each building, the U-value (also heat transfer coefficient) for windows, walls and roof is obtained from the standard parameter sheet (see `standard_parameter`_), depending on the year of construction of the building. In the Energy Saving Ordinance 2014, U-values are defined to achieve the desirable efficiency level 1. These U-values can be maximally achieved in the modeling. The difference between current and minimum U-value is the possible saving of heat demand. The calculation is explained in the standard parameter documentation (see `standard_parameter`_).
+- **year of construction**: The year of construction of a building is relevant for the calculation of the heat demand and for the calculation of the savings potential of insulation measures. Insulation measures for the wall area, window area and roof area are considered. For each building, the U-value (also heat transfer coefficient) for windows, walls and roof is obtained from the standard parameter sheet (see `standard parameter`_), depending on the year of construction of the building. In the Energy Saving Ordinance 2014, U-values are defined to achieve the desirable efficiency level 1. These U-values can be maximally achieved in the modeling. The difference between current and minimum U-value is the possible saving of heat demand. The calculation is explained in the standard parameter documentation (see `standard parameter`_).
 - **distance of electric vehicles (km/a)**: description coming soon
 - **electricity demand (kWh / (m²  a))**: description coming soon
 - **heat demand (kWh / (m² a))**: description coming soon
@@ -242,9 +242,12 @@ Category 4
 
 
 
-.. _`standard_parameter`:
+.. _`standard parameter`:
 Standard parameter sheet
 =========================
+The standard parameter table contains all technology-specific data (costs, emissions, efficiencies) as well as all other data (e.g. specific energy requirements) required for energy system modeling. The parameters used are included in the following standard parameter documentation:
+https://doi.org/10.5281/zenodo.6974401
+The documents contain all values, formulas and related sources used. The standard parameter documentation is intended to ensure the reproducibility of the results. The documentation is continuously updated.
 
 
 
