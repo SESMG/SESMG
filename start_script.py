@@ -23,3 +23,5 @@ if __name__ == "__main__":
 
         gui = GUI.GUI()
         # subprocess.call("Scripts/python program_files/GUI_files/GUI.py")
+        # command to allow streamlit run
+        # subprocess.call("streamlit run {}".format(os.path.dirname(__file__) + "/GUI_streamlit.py"), shell=True)
