@@ -247,6 +247,7 @@ Standard parameter sheet
 =========================
 The standard parameter table contains all technology-specific data (costs, emissions, efficiencies) as well as all other data (e.g. specific energy requirements) required for energy system modeling. The parameters used are included in the following standard parameter documentation:
 https://doi.org/10.5281/zenodo.6974401
+
 The documents contain all values, formulas and related sources used. The standard parameter documentation is intended to ensure the reproducibility of the results. The documentation is continuously updated.
 
 
