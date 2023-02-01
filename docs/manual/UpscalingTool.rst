@@ -277,5 +277,5 @@ Clustering
 
 References
 ==========
-[1] Budde J., *Leitfaden zur Modellierung von Energiesystemen (2022)*, master thesis. <br>
+[1] Budde J., *Leitfaden zur Modellierung von Energiesystemen (2022)*, master thesis. </br>
 [2] Klemm, C., Budde J., Vennemann P., *Model Structure for urban energy system optimization models*, unpublished at the time of publication of this documentation, 2021.
