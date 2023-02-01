@@ -119,25 +119,25 @@ Category 1
 - **label**: The building name can be chosen by the user and is the identification number (ID) of a building. The ID must be unique for each building, because all the following columns are assigned to it.
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: In this cell, users decide whether a building should be considered in the modeling.
-- **year of construction**: The year of construction of a building is relevant for the calculation of the heat demand and for the calculation of the savings potential of insulation measures. Insulation measures for the wall area, window area and roof area are considered. For each building, the U-value (also heat transfer coefficient) for windows, walls and roof is obtained from the standard parameter sheet (see `standard parameter`_), depending on the year of construction of the building. In the Energy Saving Ordinance 2014, U-values are defined to achieve the desirable efficiency level 1. These U-values can be maximally achieved in the modeling. The difference between current and minimum U-value is the possible saving of heat demand. The calculation is explained in the standard parameter documentation (see `standard parameter`_).
+- **year of construction**: The year of construction of a building is relevant for the calculation of the heat demand.
 - **distance of electric vehicles (km/a)**: The annual kilometers driven are used to create the charging profile of an electric car. The electricity demand for the electric car is considered separately from the building electricity demand.
 - **electricity demand (kWh / (m²  a))**: The specific electricity demand is multiplied by the useful building area to calculate the annual demand. If the annual electricity demand is not available as a function of the building floor area, 1 m^2 must be entered for the building floor area.
 - **heat demand (kWh / (m² a))**: The specific heat demand is multiplied by the useful building area to calculate the annual demand. If the annual heat demand is not available as a function of the building floor area, 1 m^2 must be entered for the building floor area.
 - **building type**: The building usage influences the calculation of the energy demand and the selection of the load profile for buildings. The different building types can be found in the standard parameter documentation (see `standard parameter`_). The following input values are valid: SFB, MFB, COM_Food, COM_Retail, COM_Office, COM_School, COM_Stable, COM_Sports, COM_Workshop, COM_Restaurant and COM_Hotel.
-- **units**: description coming soon
-- **occupants per unit**: description coming soon
-- **gross building area	(m²)**: description coming soon
-- **latitude	(° WGS 84)**: description coming soon
-- **longitude	(° WGS 84)**: description coming soon
-- **year of construction wall**: description coming soon
-- **area outer wall	(m²)**: description coming soon
-- **year of construction windows**: description coming soon
-- **area windows	(m²)**: description coming soon
-- **year of construction roof**: description coming soon
-- **rooftype**: description coming soon
-- **area roof	(m²)**: description coming soon
-- **cluster ID**: description coming soon
-- **flow temperature	(°C)**: description coming soon
+- **units**: The number of housing units is required for calculating the heat demand of residential buildings.
+- **occupants per unit**: The occupants per housing unit are required to calculate the electricity demand of the households. If the occupants per housing unit are multiplied by the housing units, the number of occupants per building can be calculated. The summed occupants of all buildings represent the total modeled neighborhood residents and provide a good basis for validation with real data.
+- **gross building area	(m²)**: The gross building area is required to calculate the annual electricity and heat demand of commercial buildings and the heat demand of residential buildings. For this purpose, the gross building area is multiplied by the specific electricity and heat demand and a building area factor (see `standard parameter`_). The building area factor depends on the building use and reduces the gross building area by non-usable areas such as the base areas of walls.
+- **latitude	(° WGS 84)**: The latitude of the building are required to connect the building to a heating network. In addition, the coordinates are used to obtain weather data for PV systems from an external database. The World Geodetic System 1984 (WGS 84) is used as a reference system.
+- **longitude	(° WGS 84)**: The longitude of the building are required to connect the building to a heating network. In addition, the coordinates are used to obtain weather data for PV systems from an external database. The World Geodetic System 1984 (WGS 84) is used as a reference system.
+- **year of construction wall**: The year of construction of a walls is relevant for the calculation of the savings potential of insulation measures. For each building, the U-value (also heat transfer coefficient) is obtained from the standard parameter sheet (see `standard parameter`_), depending on the year of construction of the building. In the Energy Saving Ordinance 2014, U-values are defined to achieve the desirable efficiency level 1. These U-values can be maximally achieved in the modeling. The difference between current and minimum U-value is the possible saving of heat demand. The calculation is explained in the standard parameter documentation (see `standard parameter`_).
+- **area outer wall	(m²)**: The external wall area is relevant for the calculation of insulation measures.
+- **year of construction windows**: The year of construction of windows is relevant for the calculation of the savings potential of insulation measures. For each building, the U-value (also heat transfer coefficient) is obtained from the standard parameter sheet (see `standard parameter`_), depending on the year of construction of the building. In the Energy Saving Ordinance 2014, U-values are defined to achieve the desirable efficiency level 1. These U-values can be maximally achieved in the modeling. The difference between current and minimum U-value is the possible saving of heat demand. The calculation is explained in the standard parameter documentation (see `standard parameter`_).
+- **area windows	(m²)**: The window area is relevant for the calculation of insulation measures.
+- **year of construction roof**: The year of construction of a roof is relevant for the calculation of the savings potential of insulation measures. For each building, the U-value (also heat transfer coefficient) is obtained from the standard parameter sheet (see `standard parameter`_), depending on the year of construction of the building. In the Energy Saving Ordinance 2014, U-values are defined to achieve the desirable efficiency level 1. These U-values can be maximally achieved in the modeling. The difference between current and minimum U-value is the possible saving of heat demand. The calculation is explained in the standard parameter documentation (see `standard parameter`_).
+- **rooftype**: The roof type is differentiated between flat roofs and step roofs. The roof type is relevant for the calculation of insulation measures.
+- **area roof	(m²)**: The roof areas are relevant for the calculation of insulation measures.
+- **cluster ID**: The cluster ID is used to spatially assign a building to a specific area. The area can be, for example, a settlement or neighborhood. The cluster ID is crucial for spatial clustering.
+- **flow temperature	(°C)**: The flow temperature may differ depending on the heating system. The flow temperature should not fall below the heat source temperature of a heat pump. If the outdoor temperature is 35 °C and the flow temperature is 30 °C, the air heat pump is switched off and an alternative technology is used for heat supply.
  
 
 Category 2
