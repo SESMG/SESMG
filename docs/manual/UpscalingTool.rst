@@ -223,7 +223,7 @@ Category 3
    pellet_heating_plant, pellet heating plant
    woodchips_heating_plant, woodchips heating plant
    thermal_storage, central thermal storage
-   power_to_gas, Power-to-Gas system (electrolyzer, hydrogen storage, fuel cell, methanation, natural gas storage)
+   power_to_gas, Power-to-Gas system (electrolyzer; hydrogen storage; fuel cell; methanation; natural gas storage)
    heat_input_bus, heat network center 
    pv&st, central photovoltaic or solar thermal system
    timeseries_source, time series e.g. hydropower plants
