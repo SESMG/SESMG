@@ -195,17 +195,40 @@ Category 3
    screw_turbine,,1,timeseries_source,,,,,,, 
 
 
-- **label**: description coming soon
-- **comment**: description coming soon
-- **active**: description coming soon
-- **technology**: description coming soon
-- **latitude (° WGS 84)**: description coming soon
-- **longitude	(° WGS 84)**: description coming soon
-- **area (m²)**: description coming soon
-- **dh_connection**: description coming soon
-- **azimuth	(°)**: description coming soon
-- **surface tilt	(°)**: description coming soon
-- **flow temperature	(°C)**: description coming soon
+- **label**: The technology name can be chosen arbitrarily by the user and represents the ID of a central technology. The ID must be unique for each technology, because all following columns are assigned to it.
+- **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
+- **active**: In this cell, users decide whether a technology should be considered in the modeling.
+- **technology**: In this cell, the central technologies are considered (see table below).
+- **latitude, longitude (° WGS 84)**: The WGS 84 coordinates are required when heat grid centers or ground-mounted solar systems are selected as technologies. The coordinates are used to locate the technologies.
+- **area (m²)**: This is where the area for central solar and GCHP systems is entered.
+- **dh_connection**: In this cell, the central heat supply technologies are connected to a heat network center. The label of the heat network center must be entered. In addition, the corner points of the street pipes must be located in the auxiliary data sheet. Two WGS 84 coordinates are required for each corner point. The length of the house connection lines (distance between distribution line and house connection point) is calculated automatically. With the perpendicular point method, the shortest path for the house connection lines is always calculated. Twelve different pipe diameters are stored in the standard parameter sheer (see `standard parameter`_), which can be considered as investment alternatives.
+- **azimuth	(°)**: For ground-mounted solar systems, the azimuth must be specified. 
+- **surface tilt	(°)**: For ground-mounted solar systems, the surface tilt must be specified.
+- **flow temperature	(°C)**: For each heat network center, it is necessary to specify the flow temperature at which the technologies feed into the heat network.
+
+.. csv-table:: All possible central technologies.
+   :header:  key word,meaning
+
+   electricity_exchange, local energy market
+   battery, battery storage
+   naturalgas_chp, natrual gas combined heat and power (CHP)
+   biogas_chp, biogas CHP
+   pellet_chp, pellet CHP
+   woodchips_chp, woodchip CHP
+   swhp_transformer, surface water heat pump (SWHP)
+   ashp_transformer, ASHP
+   gchp_transformer, GCHP
+   naturalgas_heating_plant, natural gas heating plant
+   biogas_heating_plant, biogas heating plant
+   pellet_heating_plant, pellet heating plant
+   woodchips_heating_plant, woodchips heating plant
+   thermal_storage, central thermal storage
+   power_to_gas, Power-to-Gas system (electrolyzer, hydrogen storage, fuel cell, methanation, natural gas storage)
+   heat_input_bus, heat network center 
+   pv&st, central photovoltaic or solar thermal system
+   timeseries_source, time series e.g. hydropower plants
+
+
 
 
 Category 4
