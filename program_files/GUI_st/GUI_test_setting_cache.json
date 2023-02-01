@@ -1,4 +1,26 @@
 {
-    "input1": "",
-    "input2": ""
+    "result_path": "",
+    "premodeling_result_path": "",
+    "num_threads": 30,
+    "input_timeseries_algorithm_index": 2,
+    "input_timeseries_cluster_index_index": 1,
+    "input_timeseries_criterion_index": 1,
+    "input_timeseries_period_index": 1,
+    "input_timeseries_season_index": 1,
+    "graph": true,
+    "criterion_switch": false,
+    "xlsx_results": false,
+    "console_results": false,
+    "input_solver_index": 0,
+    "cluster_dh": true,
+    "input_premodeling_invest_boundaries": false,
+    "input_premodeling_tightening_factor": 1,
+    "input_premodeling_timeseries_algorithm_index": 0,
+    "input_premodeling_timeseries_cluster_index_index": 0,
+    "input_premodeling_timeseries_criterion_index": 0,
+    "input_premodeling_timeseries_period_index": 0,
+    "input_premodeling_timeseries_season_index": 0,
+    "investment_boundaries": false,
+    "investment_boundary_factor": 1,
+    "input_pareto_points": []
 }
