@@ -18,8 +18,6 @@ The upscaling tool can be used with the following steps:
 3. Execute the upscaling tool to generate a energy system model with the structure described below.
 4. Execute the automatically generated model_definition-xlsx-sheet.
 
-
-
 .. _`upscaling sheet`:
 
 Upscaling sheet
@@ -173,8 +171,6 @@ Category 4
 - **groundwater_temp**: The ground-water temperature serves as a heat source for ground-water heat pumps (GWHP).
 - **screw_turbine.fix**: This is a dimensionless time series that indicates the relative utilization of the hydropower screw. Multiplication by the maximum electrical power gives the power per time step.
 - **electric_vehicle.fix**: The time series represents the charging power of an electric car. Each time series value is automatically multiplied by the annual kilometers driven and transferred to the model_definition.xlsx.
-
-
 
 .. _`standard parameter`:
 
