@@ -246,7 +246,7 @@ Category 4
    …,…,…,…,…,…,…,…,…,…,…,…,…
 
 
-- **timestamp**: description coming soon
+- **timestamp**: The time stamp is entered with an hourly accuracy for one year (8 760 time steps). All further time series are assigned to this time stamp.
 - **dhi**: description coming soon
 - **pressure**: description coming soon
 - **temperature**: description coming soon
@@ -254,11 +254,11 @@ Category 4
 - **z0**: description coming soon
 - **dni**: description coming soon
 - **ghi**: description coming soon
-- **ground_temp**: description coming soon
-- **water_temp**: description coming soon
-- **groundwater_temp**: description coming soon
-- **screw_turbine.fix**: description coming soon
-- **electric_vehicle.fix**: description coming soon
+- **ground_temp**: The ground temperature serves as a heat source for GCHP.
+- **water_temp**: The water temperature serves as a heat source for SWHP.
+- **groundwater_temp**: The ground-water temperature serves as a heat source for ground-water heat pumps (GWHP).
+- **screw_turbine.fix**: This is a dimensionless time series that indicates the relative utilization of the hydropower screw. Multiplication by the maximum electrical power gives the power per time step.
+- **electric_vehicle.fix**: The time series represents the charging power of an electric car. Each time series value is automatically multiplied by the annual kilometers driven and transferred to the model_definition.xlsx.
 
 
 
