@@ -175,6 +175,7 @@ Category 4
 - **electric_vehicle.fix**: The time series represents the charging power of an electric car. Each time series value is automatically multiplied by the annual kilometers driven and transferred to the model_definition.xlsx.
 
 
+
 .. _`standard parameter`:
 
 Standard parameter sheet
