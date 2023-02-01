@@ -159,16 +159,12 @@ Category 2
 - **gchp**: Ground-coupled heat pumps are limited by the area required for geothermal collectors or probes. If there is a potential area for the GCHP, the so-called parcel must be assigned to the buildings.
 - **parcel ID**: The parcel ID assigns a potential area for GCHP to the buildings. On an additional auxiliary data sheet, users enter the parcel ID and the potential area.
 - **heat extraction (kW/m)**: The extraction capacity of the geothermal probes or collectors is crucial for the performance of the heat pumps. The extraction rate should be determined specifically for the location.
-- **oil heating, gas heating, battery storage, thermal storage**: Oil heating systems are not subject to restrictions and can be considered as an investment alternative.
-- **gas heating**: description coming soon
-- **battery storage**: description coming soon
-- **thermal storage**: description coming soon
-- **central heat**: description coming soon
-- **electric heating**: description coming soon
-- **st or pv 1**: description coming soon
-- **roof area 1	(m²)**: description coming soon
-- **surface tilt 1	(°)**: description coming soon
-- **azimuth 1	(°)**: description coming soon
+- **oil heating, gas heating, electric heating, battery storage, thermal storage**: The technologies are not subject to restrictions and can be considered as an investment alternative.
+- **central heat**: If a heating network is available, a network connection can be considered as an investment alternative.
+- **st or pv 1**: In this column it is decided whether the roof potential area applies to solar thermal (ST) systems, photovoltaic (PV) systems or to both systems. As soon as both systems are relevant for one area, an area competition arises, which is automatically considered.
+- **roof area 1	(m²)**: The roof potential area of a building can be divided into several partial roof areas with respect to the radiation intensity. In total, users can add 30 partial roof areas.
+- **surface tilt 1	(°)**: The surface tilt is decisive for the dimensioning of the solar systems and depends on the construction of the roof.
+- **azimuth 1	(°)**: The azimuth is also critical to solar system sizing and depends on the orientation of the building.
 
 
 Category 3
