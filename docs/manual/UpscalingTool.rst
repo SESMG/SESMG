@@ -4,8 +4,8 @@ Urban District Upscaling Tool
 Documentation to be completed soon.
 
 .. figure:: ../images/manual/UpscalingTool/sesmg_process.png
-   :width: 100 %
-   :alt: Process of the SESMG.
+   :width: 50 %
+   :alt: Process of the SESMG [1].
    :align: center
 
 Using the Upscaling Tool
@@ -104,6 +104,7 @@ Upscaling Model
 .. _`upscaling sheet`:
 Upscaling sheet
 =========================
+This part of the documentation is taken from Budde's master's thesis [1].
 
 Category 1
 -----------------------
@@ -257,4 +258,5 @@ Clustering
 
 References
 ==========
-[1] Klemm, C., Budde J., Vennemann P., *Model Structure for urban energy system optimization models*, unpublished at the time of publication of this documentation, 2021.
+[1] Budde J., *Leitfaden zur Modellierung von Energiesystemen (2022)*, master thesis.
+[2] Klemm, C., Budde J., Vennemann P., *Model Structure for urban energy system optimization models*, unpublished at the time of publication of this documentation, 2021.
