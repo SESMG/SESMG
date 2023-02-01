@@ -41,8 +41,8 @@ Category 1
 - **active**: In this cell, users decide whether a building should be considered in the modeling.
 - **year of construction**: The year of construction of a building is relevant for the calculation of the heat demand.
 - **distance of electric vehicles (km/a)**: The annual kilometers driven are used to create the charging profile of an electric car. The electricity demand for the electric car is considered separately from the building electricity demand.
-- **electricity demand (kWh / (m²  a))**: The specific electricity demand is multiplied by the useful building area to calculate the annual demand. If the annual electricity demand is not available as a function of the building floor area, 1 m^2 must be entered for the building floor area.
-- **heat demand (kWh / (m² a))**: The specific heat demand is multiplied by the useful building area to calculate the annual demand. If the annual heat demand is not available as a function of the building floor area, 1 m^2 must be entered for the building floor area.
+- **electricity demand (kWh / (m²  a))**: The specific electricity demand is multiplied by the useful building area to calculate the annual demand. If the annual electricity demand is not available as a function of the building floor area, 1 m² must be entered for the building floor area.
+- **heat demand (kWh / (m² a))**: The specific heat demand is multiplied by the useful building area to calculate the annual demand. If the annual heat demand is not available as a function of the building floor area, 1 m² must be entered for the building floor area.
 - **building type**: The building usage influences the calculation of the energy demand and the selection of the load profile for buildings. The different building types can be found in the standard parameter documentation (see `standard parameter`_). The following input values are valid: SFB, MFB, COM_Food, COM_Retail, COM_Office, COM_School, COM_Stable, COM_Sports, COM_Workshop, COM_Restaurant and COM_Hotel.
 - **units**: The number of housing units is required for calculating the heat demand of residential buildings.
 - **occupants per unit**: The occupants per housing unit are required to calculate the electricity demand of the households. If the occupants per housing unit are multiplied by the housing units, the number of occupants per building can be calculated. The summed occupants of all buildings represent the total modeled neighborhood residents and provide a good basis for validation with real data.
@@ -166,13 +166,7 @@ Category 4
 
 
 - **timestamp**: The time stamp is entered with an hourly accuracy for one year (8 760 time steps). All further time series are assigned to this time stamp.
-- **dhi**: description coming soon
-- **pressure**: description coming soon
-- **temperature**: description coming soon
-- **windspeed**: description coming soon
-- **z0**: description coming soon
-- **dni**: description coming soon
-- **ghi**: description coming soon
+- **temperature (°C), dhi (W/m²), dni (W/m²), ghi (W/m²), pressure (Pa), windspeed (m/s), z0 (m)**: The time series can be obtained from the Open Energy Platform (https://openenergy-platform.org/) via the open_Fred interface (https://reiner-lemoine-institut.de/open_fred-open-feed-time-series-based-renewable-energy-database/) integrated in the SESMG. For this purpose, the year and the centroid of the neighborhood are specified in the Graphical User Interface (GUI). The outdoor temperature (temperature) serves as a heat source for ASHP, influences the performance of the PV systems and has an impact on the heat transfer of the building components. Diffuse horizontal irradiance (dhi), direct normal irradiance (dni) and global horizontal irradiance (ghi) are required for solar systems. The air pressure (pressure), wind speed (windspeed), and surface roughness (z0) are required for wind turbines. In addition, the air pressure influences the design of the PV systems. Alternatively, the time series can be taken from other sources and added to the upscaling sheet.
 - **ground_temp**: The ground temperature serves as a heat source for GCHP.
 - **water_temp**: The water temperature serves as a heat source for SWHP.
 - **groundwater_temp**: The ground-water temperature serves as a heat source for ground-water heat pumps (GWHP).
