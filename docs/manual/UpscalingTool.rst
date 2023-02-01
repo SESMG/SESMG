@@ -23,7 +23,7 @@ Upscaling Model
 ---------------
 
 .. figure:: ../images/manual/UpscalingTool/Upscaling_Model.png
-   :width: 100 %
+   :width: 50 %
    :alt: Upscaling_Model
    :align: center
 
