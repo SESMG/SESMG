@@ -21,6 +21,7 @@ The upscaling tool can be used with the following steps:
 
 
 .. _`upscaling sheet`:
+
 Upscaling sheet
 =========================
 This part of the documentation is taken from Budde's master's thesis [1].
@@ -166,7 +167,7 @@ Category 4
 
 
 - **timestamp**: The time stamp is entered with an hourly accuracy for one year (8 760 time steps). All further time series are assigned to this time stamp.
-- **temperature (°C), dhi (W/m²), dni (W/m²), ghi (W/m²), pressure (Pa), windspeed (m/s), z0 (m)**: The time series can be obtained from the  `Open Energy Platform <https://openenergy-platform.org>`_ via the open_Fred  `Open Fred <https://reiner-lemoine-institut.de/open_fred-open-feed-time-series-based-renewable-energy-database/>`_ interface integrated in the SESMG. For this purpose, the year and the centroid of the neighborhood are specified in the Graphical User Interface (GUI). The outdoor temperature (temperature) serves as a heat source for ASHP, influences the performance of the PV systems and has an impact on the heat transfer of the building components. Diffuse horizontal irradiance (dhi), direct normal irradiance (dni) and global horizontal irradiance (ghi) are required for solar systems. The air pressure (pressure), wind speed (windspeed), and surface roughness (z0) are required for wind turbines. In addition, the air pressure influences the design of the PV systems. Alternatively, the time series can be taken from other sources and added to the upscaling sheet.
+- **temperature (°C), dhi (W/m²), dni (W/m²), ghi (W/m²), pressure (Pa), windspeed (m/s), z0 (m)**: The time series can be obtained from the  `Open Energy Platform <https://openenergy-platform.org>`_ via the `Open Fred <https://reiner-lemoine-institut.de/open_fred-open-feed-time-series-based-renewable-energy-database/>`_ interface integrated in the SESMG. For this purpose, the year and the centroid of the neighborhood are specified in the Graphical User Interface (GUI). The outdoor temperature (temperature) serves as a heat source for ASHP, influences the performance of the PV systems and has an impact on the heat transfer of the building components. Diffuse horizontal irradiance (dhi), direct normal irradiance (dni) and global horizontal irradiance (ghi) are required for solar systems. The air pressure (pressure), wind speed (windspeed), and surface roughness (z0) are required for wind turbines. In addition, the air pressure influences the design of the PV systems. Alternatively, the time series can be taken from other sources and added to the upscaling sheet.
 - **ground_temp**: The ground temperature serves as a heat source for GCHP.
 - **water_temp**: The water temperature serves as a heat source for SWHP.
 - **groundwater_temp**: The ground-water temperature serves as a heat source for ground-water heat pumps (GWHP).
@@ -174,8 +175,8 @@ Category 4
 - **electric_vehicle.fix**: The time series represents the charging power of an electric car. Each time series value is automatically multiplied by the annual kilometers driven and transferred to the model_definition.xlsx.
 
 
-
 .. _`standard parameter`:
+
 Standard parameter sheet
 =========================
 The standard parameter sheet contains all technology-specific data (costs, emissions, efficiencies) as well as all other data (e.g. specific energy requirements) required for energy system modeling. The parameters used are included in the following standard parameter documentation:
