@@ -154,12 +154,12 @@ Category 2
    003_building,1,yes,yes,GCHP25,no,no,yes,yes,yes,no,pv&st,200,50,180,0,0,0,0
 
 
-- **label**: description coming soon
-- **HS**: description coming soon
-- **ashp**: description coming soon
-- **gchp**: description coming soon
-- **parcel ID**: description coming soon
-- **oil heating**: description coming soon
+- **label**: The building name can be chosen by the user and is the identification number (ID) of a building. The ID must be unique for each building, because all the following columns are assigned to it.
+- **ashp**: Air source heat pumps (ASHP) can be considered in the optimization of a building if the air-regenerated noise of the fans does not exceed the limits of the Technical Instructions on Noise Abatement (TA Lärm). There are already some ASHP on the market that meet the requirements.
+- **gchp**: Ground-coupled heat pumps are limited by the area required for geothermal collectors or probes. If there is a potential area for the GCHP, the so-called parcel must be assigned to the buildings.
+- **parcel ID**: The parcel ID assigns a potential area for GCHP to the buildings. On an additional auxiliary data sheet, users enter the parcel ID and the potential area.
+- **heat extraction (kW/m)**: The extraction capacity of the geothermal probes or collectors is crucial for the performance of the heat pumps. The extraction rate should be determined specifically for the location.
+- **oil heating, gas heating, battery storage, thermal storage**: Oil heating systems are not subject to restrictions and can be considered as an investment alternative.
 - **gas heating**: description coming soon
 - **battery storage**: description coming soon
 - **thermal storage**: description coming soon
