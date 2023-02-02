@@ -115,6 +115,7 @@ def main_output_result_overview(result_path_summary, result_path_components, res
     # hier plotly import
     # loading result.csv as a dataframe
     result_df = pd.read_csv(result_path_results)
+    st.dataframe(result_df)
     # creating column headers to select
     column_headers_result = list(result_df.columns.values)
     # column headers without date
@@ -494,72 +495,72 @@ def main_application_sesmg():
                      
             
             # Starting the waiting / processing screen
-            with st.spinner(text="Modelling in Progress."):
+            #with st.spinner(text="Modelling in Progress."):
             
-                # Starting the model run without a pre-model
-                if input_activate_premodeling == False:
-                    sesmg_main(
-                        scenario_file=scenario_input_sheet_path,
-                        result_path=res_path,
-                        num_threads=input_num_threads,
-                        timeseries_prep=timeseries_prep_param,
-        #TODO: Implementieren 
-                        graph=False,
-                        criterion_switch=input_criterion_switch,
-                        xlsx_results=input_xlsx_results,
-                        console_results=input_console_results,
-                        solver=input_solver,
-                        district_heating_path=district_heating_precalc_path,
-                        cluster_dh=input_cluster_dh
-                        )
-                    
-                    st.header('Modelling completed!')
-                    
-                    # run main result page with new modelled files 
-                    main_output_result_overview(result_path_summary=res_path + "/summary.csv", 
-                                                result_path_components=res_path + "/components.csv",
-                                                result_path_results=res_path + "/results.csv",
-                                                result_path_graph=res_path + "/graph.gv.png")
-                    
-                    
-                    ####################  
-                    # hier plotly import
-                    # loading result.csv as a dataframe
-                    result_df = pd.read_csv(res_path + "/results.csv")
-                    # creating column headers to select
-                    column_headers_result = list(result_df.columns.values)
-                    # column headers without date
-                    list_headers = column_headers_result[1:]
-                    # selecting headers
-                    select_headers = st.multiselect("Select a bus:", list_headers)
-                    # filtered dataframe
-                    filtered_df = result_df[select_headers]
-                    # plotting
-                    fig = px.line(filtered_df)
-                    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
-                    
+            # Starting the model run without a pre-model
+            if input_activate_premodeling == False:
+                sesmg_main(
+                    scenario_file=scenario_input_sheet_path,
+                    result_path=res_path,
+                    num_threads=input_num_threads,
+                    timeseries_prep=timeseries_prep_param,
+    #TODO: Implementieren 
+                    graph=False,
+                    criterion_switch=input_criterion_switch,
+                    xlsx_results=input_xlsx_results,
+                    console_results=input_console_results,
+                    solver=input_solver,
+                    district_heating_path=district_heating_precalc_path,
+                    cluster_dh=input_cluster_dh
+                    )
                 
-            # Starting the model run with a pre-model           
-                else: 
-                    sesmg_main_including_premodel(
-                        scenario_file=scenario_input_sheet_path,
-                        result_path=res_path,
-                        num_threads=input_num_threads,
-                        timeseries_prep=timeseries_prep_param,
-        #TODO: Implementieren 
-                        graph=False,
-                        criterion_switch=input_criterion_switch,
-                        xlsx_results=input_xlsx_results,
-                        console_results=input_console_results,
-                        solver=input_solver,
-                        district_heating_path=district_heating_precalc_path,
-                        cluster_dh=input_cluster_dh,
-                        pre_model_timeseries_prep=pre_model_timeseries_prep_param,
-                        investment_boundaries = input_premodeling_invest_boundaries,
-                        investment_boundary_factor = input_premodeling_tightening_factor,
-                        pre_model_path=premodeling_res_path)
-                    
-                    st.header('Modelling completed!')
+                st.header('Modelling completed!')
+                
+                # run main result page with new modelled files 
+                main_output_result_overview(result_path_summary=res_path + "/summary.csv", 
+                                            result_path_components=res_path + "/components.csv",
+                                            result_path_results=res_path + "/results.csv",
+                                            result_path_graph=res_path + "/graph.gv.png")
+                
+                
+                ####################  
+                # hier plotly import
+                # loading result.csv as a dataframe
+                result_df = pd.read_csv(res_path + "/results.csv")
+                # creating column headers to select
+                column_headers_result = list(result_df.columns.values)
+                # column headers without date
+                list_headers = column_headers_result[1:]
+                # selecting headers
+                select_headers = st.multiselect("Select a bus:", list_headers)
+                # filtered dataframe
+                filtered_df = result_df[select_headers]
+                # plotting
+                fig = px.line(filtered_df)
+                st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+                
+            
+        # Starting the model run with a pre-model           
+            else: 
+                sesmg_main_including_premodel(
+                    scenario_file=scenario_input_sheet_path,
+                    result_path=res_path,
+                    num_threads=input_num_threads,
+                    timeseries_prep=timeseries_prep_param,
+    #TODO: Implementieren 
+                    graph=False,
+                    criterion_switch=input_criterion_switch,
+                    xlsx_results=input_xlsx_results,
+                    console_results=input_console_results,
+                    solver=input_solver,
+                    district_heating_path=district_heating_precalc_path,
+                    cluster_dh=input_cluster_dh,
+                    pre_model_timeseries_prep=pre_model_timeseries_prep_param,
+                    investment_boundaries = input_premodeling_invest_boundaries,
+                    investment_boundary_factor = input_premodeling_tightening_factor,
+                    pre_model_path=premodeling_res_path)
+                
+                st.header('Modelling completed!')
 
            
             

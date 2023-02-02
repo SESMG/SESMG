@@ -254,7 +254,12 @@ def update_model_according_pre_model_results(
     components = pd.read_csv(results_components_path)
 
     # Copy original scenario sheet to new file
-    shutil.copy(scenario_path, updated_scenario_path)
+#replaced to be compatable with streamlit    
+    #shutil.copy(scenario_path, updated_scenario_path)
+    with pd.ExcelWriter(updated_scenario_path) as writer:  
+        for i in scenario_xlsx:
+            scenario_xlsx[i].to_excel(writer, sheet_name=i)
+
 
     # Create List required for adaption of competition constraints
     complete_list_of_deactivated_components =[]
