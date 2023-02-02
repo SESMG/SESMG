@@ -1,9 +1,7 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Created on Thu Sep 29 13:23:07 2022
 
-@author: jantockloth
+@author: Jan Tockloth - jan.tockloth@fh-muenster.de
 """
 
 import streamlit as st
@@ -12,6 +10,7 @@ from PIL import Image
 import os
 from datetime import datetime 
 from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode 
+import plotly.express as px
 
 from program_files.GUI_st.GUI_st_global_functions import clear_GUI_main_settings, create_safe_GUI_main_settings_dict, import_GUI_input_values_json
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main, sesmg_main_including_premodel
@@ -23,11 +22,43 @@ from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator impor
 ###### Main SESMG Application ######
 ####################################
 
-def main_output_result_overview(result_path_summary, result_path_components, result_path_results):   
-    
-    #result_path_summary: path to summary.csv
-    #result_path_components: path to components.csv
-    #result_path_results: path to results.csv
+def main_start_page():
+    """
+    Definition of the start page for the GUI with introducing texts.
+    """
+    st.header("Spread Sheet Energy System Model Generator")
+    st.subheader("Welcome using the SESMG!")
+    st.write("This is the main application. You will find the differend modes over the dropdown menu in the sidebar.")
+    st.write("To use this application you need to configurate your model run \
+             in the sidebar on the left. Each with a short help text. You can \
+             start a new model run and reopen earlier generated results as an \
+                 overview. The GUI settings will be safed between your sessions,\
+                which can be cleared.")
+    st.subheader("Detailed Documentation!")
+    st.write("The documentation, which includes detailed instructions for \
+             installation and use, troubleshooting and much more, can be \
+                 accessed via the following link:")
+    st.write("https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/")
+    st.subheader("Questions?")
+    st.write("Use the our discussion section and ask other users for help, if \
+              you can not fix your problem with the documentation, via the \
+                  following link:")
+    st.write("https://github.com/SESMG/SESMG/discussions")
+
+             
+             
+def main_output_result_overview(result_path_summary, result_path_components, result_path_results, result_path_graph):   
+    """
+    Function building the result overview of the SESMG main application. 
+        :param result_path_summary: path to a result summary.csv file
+        :type result_path_summary: str
+        :param result_path_components: path to a result components.csv file
+        :type result_path_components: str
+        :param result_path_results: path to a result results.csv file
+        :type result_path_results: str
+        :param result_path_graph: path to a result graph.gv.png file
+        :type result_path_graph: str
+    """
     
     ####################################
     ############ Result Page ###########
@@ -48,27 +79,25 @@ def main_output_result_overview(result_path_summary, result_path_components, res
     #time3.metric(label="Temporal Resolution", value=str(df_summary['Resolution']))            
     '''Hier Problem mit Darstellung des Typs Datetime'''
     
-    
+#TODO: add delta functions based on the latest results    
     # Display and import simulated cost values from summary dataframe
     cost1, cost2, cost3, cost4 = st.columns(4)
-    cost1.metric(label=summary_headers[3], value=round(df_summary[summary_headers[3]],1), delta="1.2 °F")
-    cost2.metric(label=summary_headers[4], value=round(df_summary[summary_headers[4]],1), delta="1.2 °F")
-    cost3.metric(label=summary_headers[5], value=round(df_summary[summary_headers[5]],1), delta="-1.2 °F")
-    cost4.metric(label=summary_headers[6], value=round(df_summary[summary_headers[6]],1), delta="1.2 °F")
+    cost1.metric(label=summary_headers[3], value=round(df_summary[summary_headers[3]],1))
+    cost2.metric(label=summary_headers[4], value=round(df_summary[summary_headers[4]],1))
+    cost3.metric(label=summary_headers[5], value=round(df_summary[summary_headers[5]],1))
+    cost4.metric(label=summary_headers[6], value=round(df_summary[summary_headers[6]],1))
     
     # Display and import simulated energy values from summary dataframe
     ener1, ener2 = st.columns(2)
-    ener1.metric(label=summary_headers[7], value=round(df_summary[summary_headers[7]],1), delta="1.2 °F")
-    ener2.metric(label=summary_headers[8], value=round(df_summary[summary_headers[8]],1), delta="1.2 °F")   
+    ener1.metric(label=summary_headers[7], value=round(df_summary[summary_headers[7]],1))
+    ener2.metric(label=summary_headers[8], value=round(df_summary[summary_headers[8]],1))   
     
     
     ########## Result Summary ########
     # Functions to display a summary of the modeled energy system.
     
     # Import components.csv and create dataframe
-    #df_components = pd.read_csv(os.path.dirname(__file__) + "/components.csv")
     df_components = pd.read_csv(result_path_components)
-    
     # CSS to inject contained in a string
     hide_dataframe_row_index = """
                 <style>
@@ -76,17 +105,27 @@ def main_output_result_overview(result_path_summary, result_path_components, res
                 .blank {display:none}
                 </style>
                 """
-
     # Inject CSS with Markdown
     st.markdown(hide_dataframe_row_index, unsafe_allow_html=True)
-
     # Creating st_aggrid table
     AgGrid(df_components, height = 400, fit_columns_on_grid_load=True, update_mode=GridUpdateMode.SELECTION_CHANGED)
     
     
     ####################  
     # hier plotly import
-    
+    # loading result.csv as a dataframe
+    result_df = pd.read_csv(result_path_results)
+    # creating column headers to select
+    column_headers_result = list(result_df.columns.values)
+    # column headers without date
+    list_headers = column_headers_result[1:]
+    # selecting headers
+    select_headers = st.multiselect("Select a bus:", list_headers)
+    # filtered dataframe
+    filtered_df = result_df[select_headers]
+    # plotting
+    fig = px.line(filtered_df)
+    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
     ########## Show Model Graph ########
     #Function to display the energy systems structure.
@@ -94,7 +133,7 @@ def main_output_result_overview(result_path_summary, result_path_components, res
     # Header
     st.subheader("The structure of the modeled energy system:")
     
-# Expander einfügen
+#TODO: Expander einfügen
     # Importing and printing the energy system graph
     es_graph = Image.open(os.path.dirname(__file__) + "/graph.gv.png", "r")
     st.image(es_graph, caption="Beispielgraph.",)
@@ -103,12 +142,15 @@ def main_output_result_overview(result_path_summary, result_path_components, res
 
 
 def main_application_sesmg():    
+    """
+    Function building the sidebar of the main application including all 
+    input options and starting the processes.
 
+    """
+    
     # Import the saved GUI settings from the last session
     settings_cache_dict_reload = import_GUI_input_values_json(os.path.dirname(__file__) + "/GUI_st_cache.json")
     
-    st.write(settings_cache_dict_reload)
-    st.write(settings_cache_dict_reload["num_threads"])
         
     ####################################
     ############## Sidebar #############
@@ -256,7 +298,7 @@ def main_application_sesmg():
         with st.expander("Pre-Modeling Settings"):
             
             # Checkbox to activate the pre-modeling
-            input_activate_premodeling = st.checkbox(label="Activate Pre-Modeling")
+            input_activate_premodeling = st.checkbox(label="Activate Pre-Modeling", value=settings_cache_dict_reload["input_activate_premodeling"])
             
             # Activate functions to reduce the maximum design capacity
             input_premodeling_invest_boundaries = st.checkbox(label="Investment Boundaries Tightening", value=settings_cache_dict_reload["input_premodeling_invest_boundaries"])
@@ -288,8 +330,9 @@ def main_application_sesmg():
         input_premodeling_timeseries_period_index = input_timeseries_period_dict[input_premodeling_timeseries_period]
         #preparing input_timeseries_season for GUI cache as an streamlit input index
         input_premodeling_timeseries_season_index = input_timeseries_season_dict[input_premodeling_timeseries_season]       
+    
+        
  
-          
         # Checkboxes modeling while using district heating clustering.
         input_cluster_dh = st.checkbox(label="Clustering District Heating Network", value=settings_cache_dict_reload["cluster_dh"])
         
@@ -313,15 +356,13 @@ def main_application_sesmg():
         # Input result processing parameters
         input_xlsx_results = st.checkbox(label="Create xlsx-files", value=settings_cache_dict_reload["xlsx_results"])
         input_console_results = st.checkbox(label="Create console-log", value=settings_cache_dict_reload["console_results"])
-
+        input_criterion_switch = st.checkbox(label="Switch Criteria", value=settings_cache_dict_reload["criterion_switch"])
 
         # Elements to set the pareto points.
         with st.expander("Pareto Point Options"):
             
-            input_criterion_switch = st.checkbox(label="Switch Criteria", value=settings_cache_dict_reload["criterion_switch"])
-            
             # List of pareto points wich can be chosen.
-            pareto_options = [100 - 5*i for i in range(1,20)]
+            pareto_options = [i for i in range(1,99)]
             
             # Multiselect element
             input_pareto_points = st.multiselect(label="Pareto Points", options=pareto_options, default=settings_cache_dict_reload["input_pareto_points"])
@@ -358,11 +399,18 @@ def main_application_sesmg():
             
     
     
+    ###### Start Result Overview #######
+    ###################################
+    # Starting process if "Visualize existing model results"-button is clicked    
+    if not submitted_vis_existing_results or submitted_optimization: 
+        # Display the start page
+        main_start_page()
+        
+    
     ####################################
     # Starting process if "Visualize existing model results"-button is clicked    
-    
     if submitted_vis_existing_results:
-        
+
         # run main result page with uploaded existiag files  
         main_output_result_overview(result_path_summary=existing_summary_csv, 
                                     result_path_components=existing_components_csv,
@@ -374,8 +422,14 @@ def main_application_sesmg():
     
     if submitted_optimization:
         
-        if scenario_input_sheet_path != "":
-                        
+        if scenario_input_sheet_path == None:
+            
+            #raise an error advice
+            st.header("Model definition is missing!")
+            st.write("Plase make sure to upload a model definition in the sidebar.")
+        
+        elif scenario_input_sheet_path != "":
+            
             # Creating the timeseries preperation settings list for the main model
             timeseries_prep_param = \
                 [input_timeseries_algorithm,
@@ -398,18 +452,17 @@ def main_application_sesmg():
                         + '/' \
                         + scenario_input_sheet_path.name.split("/")[-1][:-5] \
                         + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
-            st.write(res_path)
             os.mkdir(res_path)             
             
 # HIER NOCHMAL ANSEHEN WIE / WO DIE DATEI GESPEICHERT WERDEN SOLL            
             # Setting the path where to safe the pre-modeling results
-            premodeling_res_folder_path = os.path.join(os.path.dirname(__file__),'pre_model_results')
-            premodeling_res_path = premodeling_res_folder_path \
-                        + '/' \
-                        + scenario_input_sheet_path.name.split("/")[-1][:-5] \
-                        + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
+ #           premodeling_res_folder_path = res_path + "/pre_model_results"
+ #           premodeling_res_path = premodeling_res_folder_path \
+ #                       + '/' \
+ #                       + scenario_input_sheet_path.name.split("/")[-1][:-5] \
+ #                       + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
+            premodeling_res_path = res_path + "/pre_model_results"
             #os.mkdir(premodeling_res_path)
-            st.write(premodeling_res_path)
 
              # Creating a dict with all GUI settings as preparation to save them for the next session
              # settings_cache_dict_reload["main_page"]
@@ -428,6 +481,7 @@ def main_application_sesmg():
                                                console_results=input_console_results,
                                                input_solver_index=input_solver_index,
                                                cluster_dh=input_cluster_dh,
+                                               input_activate_premodeling=input_activate_premodeling,
                                                input_premodeling_invest_boundaries=input_premodeling_invest_boundaries,
                                                input_premodeling_tightening_factor=input_premodeling_tightening_factor,
                                                input_premodeling_timeseries_algorithm_index=input_premodeling_timeseries_algorithm_index,
@@ -459,35 +513,53 @@ def main_application_sesmg():
                         cluster_dh=input_cluster_dh
                         )
                     
-                    st.write('Modelling completed!')
+                    st.header('Modelling completed!')
                     
                     # run main result page with new modelled files 
                     main_output_result_overview(result_path_summary=res_path + "/summary.csv", 
                                                 result_path_components=res_path + "/components.csv",
-                                                result_path_results=res_path + "/results.csv")
+                                                result_path_results=res_path + "/results.csv",
+                                                result_path_graph=res_path + "/graph.gv.png")
+                    
+                    
+                    ####################  
+                    # hier plotly import
+                    # loading result.csv as a dataframe
+                    result_df = pd.read_csv(res_path + "/results.csv")
+                    # creating column headers to select
+                    column_headers_result = list(result_df.columns.values)
+                    # column headers without date
+                    list_headers = column_headers_result[1:]
+                    # selecting headers
+                    select_headers = st.multiselect("Select a bus:", list_headers)
+                    # filtered dataframe
+                    filtered_df = result_df[select_headers]
+                    # plotting
+                    fig = px.line(filtered_df)
+                    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
                     
                 
-        #     # Starting the model run with a pre-model           
-        #         else: 
-        #             sesmg_main_including_premodel(
-        #                 scenario_file=scenario_input_sheet_path,
-        #                 result_path=res_path,
-        #                 num_threads=input_num_threads,
-        #                 timeseries_prep=timeseries_prep_param,
-        # #TODO: Implementieren 
-        #                 graph=False,
-        #                 criterion_switch=input_criterion_switch,
-        #                 xlsx_results=input_xlsx_results,
-        #                 console_results=input_console_results,
-        #                 solver=input_solver,
-        #                 district_heating_path=district_heating_precalc_path,
-        #                 cluster_dh=input_cluster_dh,
-        #                 pre_model_timeseries_prep=pre_model_timeseries_prep_param,
-        #                 investment_boundaries = input_premodeling_invest_boundaries,
-        #                 investment_boundary_factor = input_premodeling_tightening_factor,
-        #                 pre_model_path=premodeling_res_path)
+            # Starting the model run with a pre-model           
+                else: 
+                    sesmg_main_including_premodel(
+                        scenario_file=scenario_input_sheet_path,
+                        result_path=res_path,
+                        num_threads=input_num_threads,
+                        timeseries_prep=timeseries_prep_param,
+        #TODO: Implementieren 
+                        graph=False,
+                        criterion_switch=input_criterion_switch,
+                        xlsx_results=input_xlsx_results,
+                        console_results=input_console_results,
+                        solver=input_solver,
+                        district_heating_path=district_heating_precalc_path,
+                        cluster_dh=input_cluster_dh,
+                        pre_model_timeseries_prep=pre_model_timeseries_prep_param,
+                        investment_boundaries = input_premodeling_invest_boundaries,
+                        investment_boundary_factor = input_premodeling_tightening_factor,
+                        pre_model_path=premodeling_res_path)
                     
-        #             st.write('Modelling completed!')
+                    st.header('Modelling completed!')
 
            
             
