@@ -55,7 +55,7 @@ Submodules of program_files
 Spreadsheet\_Energy\_System\_Model\_Generator module
 -------------------------------------------------------------------
 
-.. automodule:: program_files.Spreadsheet_Energy_System_Model_Generator
+.. automodule:: program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator
    :members:
    :undoc-members:
    :inherited-members:
@@ -63,7 +63,7 @@ Spreadsheet\_Energy\_System\_Model\_Generator module
    
 data\_preparation module 
 --------------------------------------------
-.. automodule:: program_files.data_preparation
+.. automodule:: program_files.preprocessing.data_preparation
    :members:
    :undoc-members:
    :show-inheritance:
@@ -71,7 +71,7 @@ data\_preparation module
 create\_energy\_system module
 --------------------------------------------
 
-.. automodule:: program_files.create_energy_system
+.. automodule:: program_files.preprocessing.create_energy_system
    :members:
    :undoc-members:
    :show-inheritance:
