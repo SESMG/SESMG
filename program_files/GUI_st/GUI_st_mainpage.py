@@ -19,6 +19,12 @@ from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator impor
 
 
 ####################################
+#opening the input value dict, which will be safed as a jason
+GUI_main_dict = {
+    }
+
+
+####################################
 ###### Main SESMG Application ######
 ####################################
 
@@ -170,21 +176,26 @@ def main_application_sesmg():
         with st.expander("File Upload"):
             
             #importing an existing summary file
-            existing_summary_csv = st.file_uploader("Existing summary.csv file")
+            GUI_main_dict["existing_summary_csv"] = st.file_uploader("Existing summary.csv file")
         
             #importing an existing components file
-            existing_components_csv= st.file_uploader("Existing components.csv file")
+            GUI_main_dict["existing_components_csv"] = st.file_uploader("Existing components.csv file")
             
             #importing an existing results file
-            existing_results_csv= st.file_uploader("Existing results.csv file")
+            GUI_main_dict["existing_results_csv"] = st.file_uploader("Existing results.csv file")
     
     
     ########## Modelrun Parameter Input ##########
     # Creating Frame as st.form_submit_button
     with st.sidebar.form("Input Parameters"):
     
+        
+        if "state_submitted_optimization" not in st.session_state:
+            st.session_state["state_submitted_optimization"] = "not done"
+            
+            
         # Submit button to start optimization.
-        submitted_optimization = st.form_submit_button("Start Optimization")
+        submitted_optimization = st.form_submit_button(label="Start Optimization", on_click=change_state_submitted_optimization)
         
         #Functions to upload the scenario sheet file.
            
@@ -207,19 +218,19 @@ def main_application_sesmg():
         st.subheader("Processing Parameters")
 
         # Checkboxes processing graph
-        input_show_graph=st.checkbox("Show Graph")
+        GUI_main_dict["input_show_graph"] = st.checkbox(label="Show Graph")
         # Slider number of threads
-        input_num_threads = st.slider("Number of threads",min_value=1,max_value=35, help="Number of threads to use on your machine", value=settings_cache_dict_reload["num_threads"])
+        GUI_main_dict["input_num_threads"] = st.slider(label="Number of threads",min_value=1,max_value=35, help="Number of threads to use on your machine", value=settings_cache_dict_reload["num_threads"])
         #indexing the chosen solver of the cache session as an inputvalue for st. selectbox
         
         # Dict of choosable solvers the streamlit input index for selectbox's preselections
         input_solver_dict = {"cbc": 0,
                              "gurobi": 1}
         # chosing the solver in an select box
-        input_solver = st.selectbox("Optimization Solver", input_solver_dict.keys(), index=settings_cache_dict_reload["input_solver_index"])
+        GUI_main_dict["input_solver"] = st.selectbox(label="Optimization Solver", options=input_solver_dict.keys(), index=settings_cache_dict_reload["input_solver_index"])
         
         #preparing input_timeseries_season for GUI cache as an streamlit input index
-        input_solver_index = input_solver_dict[input_solver]       
+        GUI_main_dict["input_solver_index"] = input_solver_dict[GUI_main_dict["input_solver"]]       
     
         ####################################
         # Input preprocessing parameters
@@ -269,73 +280,73 @@ def main_application_sesmg():
         # Timeseries preparation input inside an expander. 
         with st.expander("Timeseries Simplification"):
             # Choosing timeseries parameters - algorithm
-            input_timeseries_algorithm = st.selectbox(label="Algorithm", options=timeseries_algorithm_dict.keys(), index=settings_cache_dict_reload["input_timeseries_algorithm_index"])
+            GUI_main_dict["input_timeseries_algorithm"] = st.selectbox(label="Algorithm", options=timeseries_algorithm_dict.keys(), index=settings_cache_dict_reload["input_timeseries_algorithm_index"])
             # Choosing timeseries parameters - index
-            input_timeseries_cluster_index = st.selectbox(label="Index", options=timeseries_index_range_list, index=settings_cache_dict_reload["input_timeseries_cluster_index_index"])
+            GUI_main_dict["input_timeseries_cluster_index"] = st.selectbox(label="Index", options=timeseries_index_range_list, index=settings_cache_dict_reload["input_timeseries_cluster_index_index"])
             # Choosing timeseries parameters - cluster criterion
-            input_timeseries_criterion = st.selectbox(label="Cluster Criterion", options=timeseries_cluster_criteria_dict.keys(), index=settings_cache_dict_reload["input_timeseries_criterion_index"])
+            GUI_main_dict["input_timeseries_criterion"] = st.selectbox(label="Cluster Criterion", options=timeseries_cluster_criteria_dict.keys(), index=settings_cache_dict_reload["input_timeseries_criterion_index"])
             # Choosing timeseries parameters - period
-            input_timeseries_period = st.selectbox(label="Period", options=input_timeseries_period_dict.keys(), index=settings_cache_dict_reload["input_timeseries_period_index"])
+            GUI_main_dict["input_timeseries_period"] = st.selectbox(label="Period", options=input_timeseries_period_dict.keys(), index=settings_cache_dict_reload["input_timeseries_period_index"])
             # Choosing timeseries parameters - season
-            input_timeseries_season = st.selectbox(label="Season", options=input_timeseries_season_dict.keys(), index=settings_cache_dict_reload["input_timeseries_season_index"])
+            GUI_main_dict["input_timeseries_season"] = st.selectbox(label="Season", options=input_timeseries_season_dict.keys(), index=settings_cache_dict_reload["input_timeseries_season_index"])
             
         # transform input values of Timeseries Simplification to an index which will be safed in the GUI cache to be able to reload setting. Needs to be an index for st.selectboxes.
         #preparing input_timeseries_algorithm for GUI cache as an streamlit input index
-        input_timeseries_algorithm_index = timeseries_algorithm_dict[input_timeseries_algorithm]
+        GUI_main_dict["input_timeseries_algorithm_index"] = timeseries_algorithm_dict[GUI_main_dict["input_timeseries_algorithm"]]
         #preparing input_timeseries_cluster_index for GUI cache as an streamlit input index
-        if input_timeseries_cluster_index == "None":
-            input_timeseries_cluster_index_index = 0
+        if GUI_main_dict["input_timeseries_cluster_index"] == "None":
+            GUI_main_dict["input_timeseries_cluster_index_index"] = 0
         else: 
-            input_timeseries_cluster_index_index = input_timeseries_cluster_index
+            GUI_main_dict["input_timeseries_cluster_index_index"] = GUI_main_dict["input_timeseries_cluster_index"]
         #preparing input_timeseries_criterion for GUI cache as an streamlit input index
-        input_timeseries_criterion_index = timeseries_cluster_criteria_dict[input_timeseries_criterion]
+        GUI_main_dict["input_timeseries_criterion_index"] = timeseries_cluster_criteria_dict[GUI_main_dict["input_timeseries_criterion"]]
         #preparing input_timeseries_period for GUI cache as an streamlit input index
-        input_timeseries_period_index = input_timeseries_period_dict[input_timeseries_period]
+        GUI_main_dict["input_timeseries_period_index"] = input_timeseries_period_dict[GUI_main_dict["input_timeseries_period"]]
         #preparing input_timeseries_season for GUI cache as an streamlit input index
-        input_timeseries_season_index = input_timeseries_season_dict[input_timeseries_season]
+        GUI_main_dict["input_timeseries_season_index"] = input_timeseries_season_dict[GUI_main_dict["input_timeseries_season"]]
         
         
         # Pre-Model setting and pre-model timeseries preparation input inside an expander.
         with st.expander("Pre-Modeling Settings"):
             
             # Checkbox to activate the pre-modeling
-            input_activate_premodeling = st.checkbox(label="Activate Pre-Modeling", value=settings_cache_dict_reload["input_activate_premodeling"])
+            GUI_main_dict["input_activate_premodeling"] = st.checkbox(label="Activate Pre-Modeling", value=settings_cache_dict_reload["input_activate_premodeling"])
             
             # Activate functions to reduce the maximum design capacity
-            input_premodeling_invest_boundaries = st.checkbox(label="Investment Boundaries Tightening", value=settings_cache_dict_reload["input_premodeling_invest_boundaries"])
+            GUI_main_dict["input_premodeling_invest_boundaries"] = st.checkbox(label="Investment Boundaries Tightening", value=settings_cache_dict_reload["input_premodeling_invest_boundaries"])
             # Slider to set the tightening factor for maximum design capacity
-            input_premodeling_tightening_factor = st.slider(label="Investment Tightening Factor", min_value=1, max_value=100, value=settings_cache_dict_reload["input_premodeling_tightening_factor"])
+            GUI_main_dict["input_premodeling_tightening_factor"] = st.slider(label="Investment Tightening Factor", min_value=1, max_value=100, value=settings_cache_dict_reload["input_premodeling_tightening_factor"])
             
             # Choosing pre-model timeseries parameters - algorithm
-            input_premodeling_timeseries_algorithm = st.selectbox(label="Algorithm (Pre-Model)", options=timeseries_algorithm_dict.keys(), index=settings_cache_dict_reload["input_premodeling_timeseries_algorithm_index"])
+            GUI_main_dict["input_premodeling_timeseries_algorithm"] = st.selectbox(label="Algorithm (Pre-Model)", options=timeseries_algorithm_dict.keys(), index=settings_cache_dict_reload["input_premodeling_timeseries_algorithm_index"])
             # Choosing pre-model timeseries parameters - index
-            input_premodeling_timeseries_cluster_index = st.selectbox(label="Index (Pre-Model)", options=timeseries_index_range_list, index=settings_cache_dict_reload["input_premodeling_timeseries_cluster_index_index"])
+            GUI_main_dict["input_premodeling_timeseries_cluster_index"] = st.selectbox(label="Index (Pre-Model)", options=timeseries_index_range_list, index=settings_cache_dict_reload["input_premodeling_timeseries_cluster_index_index"])
             # Choosing pre-model timeseries parameters - cluster criterion
-            input_premodeling_timeseries_criterion = st.selectbox(label="Cluster Criterion (Pre-Model)", options=timeseries_cluster_criteria_dict.keys(), index=settings_cache_dict_reload["input_premodeling_timeseries_criterion_index"])
+            GUI_main_dict["input_premodeling_timeseries_criterion"] = st.selectbox(label="Cluster Criterion (Pre-Model)", options=timeseries_cluster_criteria_dict.keys(), index=settings_cache_dict_reload["input_premodeling_timeseries_criterion_index"])
             # Choosing pre-model timeseries parameters - period
-            input_premodeling_timeseries_period = st.selectbox(label="Period (Pre-Model)", options=input_timeseries_period_dict.keys(), index=settings_cache_dict_reload["input_premodeling_timeseries_period_index"])
+            GUI_main_dict["input_premodeling_timeseries_period"] = st.selectbox(label="Period (Pre-Model)", options=input_timeseries_period_dict.keys(), index=settings_cache_dict_reload["input_premodeling_timeseries_period_index"])
             # Choosing pre-model timeseries parameters - season
-            input_premodeling_timeseries_season = st.selectbox(label="Season (Pre-Model)", options=input_timeseries_season_dict.keys(), index=settings_cache_dict_reload["input_premodeling_timeseries_season_index"])
+            GUI_main_dict["input_premodeling_timeseries_season"] = st.selectbox(label="Season (Pre-Model)", options=input_timeseries_season_dict.keys(), index=settings_cache_dict_reload["input_premodeling_timeseries_season_index"])
  
         # transform input values of Timeseries Simplification to an index which will be safed in the GUI cache to be able to reload setting. Needs to be an index for st.selectboxes.
         #preparing input_timeseries_algorithm for GUI cache as an streamlit input index
-        input_premodeling_timeseries_algorithm_index = timeseries_algorithm_dict[input_premodeling_timeseries_algorithm]
+        GUI_main_dict["input_premodeling_timeseries_algorithm_index"] = timeseries_algorithm_dict[GUI_main_dict["input_premodeling_timeseries_algorithm"]]
         #preparing input_timeseries_cluster_index for GUI cache as an streamlit input index
-        if input_premodeling_timeseries_cluster_index == "None":
-            input_premodeling_timeseries_cluster_index_index = 0
+        if GUI_main_dict["input_premodeling_timeseries_cluster_index"] == "None":
+            GUI_main_dict["input_premodeling_timeseries_cluster_index_index"] = 0
         else: 
-            input_premodeling_timeseries_cluster_index_index = input_premodeling_timeseries_cluster_index
+            GUI_main_dict["input_premodeling_timeseries_cluster_index_index"] = GUI_main_dict["input_premodeling_timeseries_cluster_index"]
         #preparing input_timeseries_criterion for GUI cache as an streamlit input index
-        input_premodeling_timeseries_criterion_index = timeseries_cluster_criteria_dict[input_premodeling_timeseries_criterion]
+        GUI_main_dict["input_premodeling_timeseries_criterion_index"] = timeseries_cluster_criteria_dict[GUI_main_dict["input_premodeling_timeseries_criterion"]]
         #preparing input_timeseries_period for GUI cache as an streamlit input index
-        input_premodeling_timeseries_period_index = input_timeseries_period_dict[input_premodeling_timeseries_period]
+        GUI_main_dict["input_premodeling_timeseries_period_index"] = input_timeseries_period_dict[GUI_main_dict["input_premodeling_timeseries_period"]]
         #preparing input_timeseries_season for GUI cache as an streamlit input index
-        input_premodeling_timeseries_season_index = input_timeseries_season_dict[input_premodeling_timeseries_season]       
+        GUI_main_dict["input_premodeling_timeseries_season_index"] = input_timeseries_season_dict[GUI_main_dict["input_premodeling_timeseries_season"]]       
     
         
  
         # Checkboxes modeling while using district heating clustering.
-        input_cluster_dh = st.checkbox(label="Clustering District Heating Network", value=settings_cache_dict_reload["cluster_dh"])
+        GUI_main_dict["input_cluster_dh"] = st.checkbox(label="Clustering District Heating Network", value=settings_cache_dict_reload["cluster_dh"])
         
         ### Function to upload the distrct heating precalulation inside an expander.
         with st.expander("Advanced District Heating Precalculation"):
@@ -355,9 +366,9 @@ def main_application_sesmg():
         st.subheader("Postprocessing Parameters")
        
         # Input result processing parameters
-        input_xlsx_results = st.checkbox(label="Create xlsx-files", value=settings_cache_dict_reload["xlsx_results"])
-        input_console_results = st.checkbox(label="Create console-log", value=settings_cache_dict_reload["console_results"])
-        input_criterion_switch = st.checkbox(label="Switch Criteria", value=settings_cache_dict_reload["criterion_switch"])
+        GUI_main_dict["input_xlsx_results"] = st.checkbox(label="Create xlsx-files", value=settings_cache_dict_reload["xlsx_results"])
+        GUI_main_dict["input_console_results"] = st.checkbox(label="Create console-log", value=settings_cache_dict_reload["console_results"])
+        GUI_main_dict["input_criterion_switch"] = st.checkbox(label="Switch Criteria", value=settings_cache_dict_reload["criterion_switch"])
 
         # Elements to set the pareto points.
         with st.expander("Pareto Point Options"):
@@ -367,7 +378,7 @@ def main_application_sesmg():
             
             # Multiselect element
             input_pareto_points = st.multiselect(label="Pareto Points", options=pareto_options, default=settings_cache_dict_reload["input_pareto_points"])
-            input_pareto_points.sort(reverse=True)
+            GUI_main_dict["input_pareto_points"] = input_pareto_points.sort(reverse=True)
             
             
     ####### Clear the GUI settings cache
@@ -377,7 +388,7 @@ def main_application_sesmg():
         submitted_clear_cache = st.form_submit_button(label="Clear all GUI Settings")
         
         #button if latest path should be cleard as well
-        clear_path=st.checkbox(label="Clear result paths")
+        clear_path = st.checkbox(label="Clear result paths")
     
     
     #################################### 
@@ -403,8 +414,9 @@ def main_application_sesmg():
     ###### Start Result Overview #######
     ###################################
     # Starting process if "Visualize existing model results"-button is clicked    
-    if not submitted_vis_existing_results or submitted_optimization: 
-        # Display the start page
+    # if not submitted_vis_existing_results or submitted_optimization: 
+    #     # Display the start page
+    if st.session_state["state_submitted_optimization"] == "not done":    
         main_start_page()
         
     
@@ -413,15 +425,17 @@ def main_application_sesmg():
     if submitted_vis_existing_results:
 
         # run main result page with uploaded existiag files  
-        main_output_result_overview(result_path_summary=existing_summary_csv, 
-                                    result_path_components=existing_components_csv,
-                                    result_path_results=existing_results_csv)
+        main_output_result_overview(result_path_summary=GUI_main_dict["existing_summary_csv"], 
+                                    result_path_components=GUI_main_dict["existing_components_csv"],
+                                    result_path_results=GUI_main_dict["existing_results_csv"])
     
     
     ####################################
     # Starting process if "Start Optimization"-button is clicked
     
-    if submitted_optimization:
+    if st.session_state["state_submitted_optimization"] == "done":
+        
+        st.write(GUI_main_dict)
         
         if scenario_input_sheet_path == None:
             
@@ -433,27 +447,27 @@ def main_application_sesmg():
             
             # Creating the timeseries preperation settings list for the main model
             timeseries_prep_param = \
-                [input_timeseries_algorithm,
-                 input_timeseries_cluster_index,
-                 input_timeseries_criterion,
-                 input_timeseries_period,
-                 0 if input_timeseries_season == "None" else input_timeseries_season]
+                [GUI_main_dict["input_timeseries_algorithm"],
+                 GUI_main_dict["input_timeseries_cluster_index"],
+                 GUI_main_dict["input_timeseries_criterion"],
+                 GUI_main_dict["input_timeseries_period"],
+                 0 if GUI_main_dict["input_timeseries_season"] == "None" else GUI_main_dict["input_timeseries_season"]]
             
             # Creating the timeseries preperation settings list for the pre-model
             pre_model_timeseries_prep_param = \
-                [input_premodeling_timeseries_algorithm,
-                 input_premodeling_timeseries_cluster_index,
-                 input_premodeling_timeseries_criterion,
-                 input_premodeling_timeseries_period,
-                 0 if input_premodeling_timeseries_season == "None" else input_premodeling_timeseries_season]
+                [GUI_main_dict["input_premodeling_timeseries_algorithm"],
+                 GUI_main_dict["input_premodeling_timeseries_cluster_index"],
+                 GUI_main_dict["input_premodeling_timeseries_criterion"],
+                 GUI_main_dict["input_premodeling_timeseries_period"],
+                 0 if GUI_main_dict["input_premodeling_timeseries_season"] == "None" else GUI_main_dict["input_premodeling_timeseries_season"]]
 
              # Setting the path where to safe the modeling results
             res_folder_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),'results')
-            res_path = res_folder_path \
+            GUI_main_dict["res_path"] = res_folder_path \
                         + '/' \
                         + scenario_input_sheet_path.name.split("/")[-1][:-5] \
                         + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
-            os.mkdir(res_path)             
+            os.mkdir(GUI_main_dict["res_path"])             
             
 # HIER NOCHMAL ANSEHEN WIE / WO DIE DATEI GESPEICHERT WERDEN SOLL            
             # Setting the path where to safe the pre-modeling results
@@ -462,7 +476,7 @@ def main_application_sesmg():
  #                       + '/' \
  #                       + scenario_input_sheet_path.name.split("/")[-1][:-5] \
  #                       + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
-            premodeling_res_path = res_path + "/pre_model_results"
+            GUI_main_dict["premodeling_res_path"] = GUI_main_dict["res_path"] + "/pre_model_results"
             #os.mkdir(premodeling_res_path)
 
              # Creating a dict with all GUI settings as preparation to save them for the next session
@@ -498,70 +512,75 @@ def main_application_sesmg():
             #with st.spinner(text="Modelling in Progress."):
             
             # Starting the model run without a pre-model
-            if input_activate_premodeling == False:
+            if GUI_main_dict["input_activate_premodeling"] == False:
                 sesmg_main(
                     scenario_file=scenario_input_sheet_path,
-                    result_path=res_path,
-                    num_threads=input_num_threads,
-                    timeseries_prep=timeseries_prep_param,
+                    result_path=GUI_main_dict["res_path"],
+                    num_threads=GUI_main_dict["input_num_threads"],
+                    timeseries_prep=GUI_main_dict["timeseries_prep_param"],
     #TODO: Implementieren 
                     graph=False,
-                    criterion_switch=input_criterion_switch,
-                    xlsx_results=input_xlsx_results,
-                    console_results=input_console_results,
-                    solver=input_solver,
-                    district_heating_path=district_heating_precalc_path,
-                    cluster_dh=input_cluster_dh
+                    criterion_switch=GUI_main_dict["input_criterion_switch"],
+                    xlsx_results=GUI_main_dict["input_xlsx_results"],
+                    console_results=GUI_main_dict["input_console_results"],
+                    solver=GUI_main_dict["input_solver"],
+                    district_heating_path=GUI_main_dict["district_heating_precalc_path"],
+                    cluster_dh=GUI_main_dict["input_cluster_dh"]
                     )
                 
                 st.header('Modelling completed!')
                 
                 # run main result page with new modelled files 
-                main_output_result_overview(result_path_summary=res_path + "/summary.csv", 
-                                            result_path_components=res_path + "/components.csv",
-                                            result_path_results=res_path + "/results.csv",
-                                            result_path_graph=res_path + "/graph.gv.png")
+                main_output_result_overview(result_path_summary=GUI_main_dict["res_path"] + "/summary.csv", 
+                                            result_path_components=GUI_main_dict["res_path"] + "/components.csv",
+                                            result_path_results=GUI_main_dict["res_path"] + "/results.csv",
+                                            result_path_graph=GUI_main_dict["res_path"] + "/graph.gv.png")
                 
                 
-                ####################  
-                # hier plotly import
-                # loading result.csv as a dataframe
-                result_df = pd.read_csv(res_path + "/results.csv")
-                # creating column headers to select
-                column_headers_result = list(result_df.columns.values)
-                # column headers without date
-                list_headers = column_headers_result[1:]
-                # selecting headers
-                select_headers = st.multiselect("Select a bus:", list_headers)
-                # filtered dataframe
-                filtered_df = result_df[select_headers]
-                # plotting
-                fig = px.line(filtered_df)
-                st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+                # ####################  
+                # # hier plotly import
+                # # loading result.csv as a dataframe
+                # result_df = pd.read_csv(res_path + "/results.csv")
+                # # creating column headers to select
+                # column_headers_result = list(result_df.columns.values)
+                # # column headers without date
+                # list_headers = column_headers_result[1:]
+                # # selecting headers
+                # select_headers = st.multiselect("Select a bus:", list_headers)
+                # # filtered dataframe
+                # filtered_df = result_df[select_headers]
+                # # plotting
+                # fig = px.line(filtered_df)
+                # st.plotly_chart(fig, theme="streamlit", use_container_width=True)
                 
             
         # Starting the model run with a pre-model           
             else: 
                 sesmg_main_including_premodel(
                     scenario_file=scenario_input_sheet_path,
-                    result_path=res_path,
-                    num_threads=input_num_threads,
-                    timeseries_prep=timeseries_prep_param,
+                    result_path=GUI_main_dict["res_path"],
+                    num_threads=GUI_main_dict["input_num_threads"],
+                    timeseries_prep=GUI_main_dict["timeseries_prep_param"],
     #TODO: Implementieren 
                     graph=False,
-                    criterion_switch=input_criterion_switch,
-                    xlsx_results=input_xlsx_results,
-                    console_results=input_console_results,
-                    solver=input_solver,
-                    district_heating_path=district_heating_precalc_path,
-                    cluster_dh=input_cluster_dh,
-                    pre_model_timeseries_prep=pre_model_timeseries_prep_param,
-                    investment_boundaries = input_premodeling_invest_boundaries,
-                    investment_boundary_factor = input_premodeling_tightening_factor,
-                    pre_model_path=premodeling_res_path)
+                    criterion_switch=GUI_main_dict["input_criterion_switch"],
+                    xlsx_results=GUI_main_dict["input_xlsx_results"],
+                    console_results=GUI_main_dict["input_console_results"],
+                    solver=GUI_main_dict["input_solver"],
+                    district_heating_path=GUI_main_dict["district_heating_precalc_path"],
+                    cluster_dh=GUI_main_dict["input_cluster_dh"],
+                    pre_model_timeseries_prep=GUI_main_dict["pre_model_timeseries_prep_param"],
+                    investment_boundaries=GUI_main_dict["input_premodeling_invest_boundaries"],
+                    investment_boundary_factor=GUI_main_dict["input_premodeling_tightening_factor"],
+                    pre_model_path=GUI_main_dict["premodeling_res_path"])
                 
                 st.header('Modelling completed!')
-
+                
+                # run main result page with new modelled files 
+                main_output_result_overview(result_path_summary=GUI_main_dict["res_path"] + "/summary.csv", 
+                                            result_path_components=GUI_main_dict["res_path"] + "/components.csv",
+                                            result_path_results=GUI_main_dict["res_path"] + "/results.csv",
+                                            result_path_graph=GUI_main_dict["res_path"] + "/graph.gv.png")
            
             
         else:
@@ -570,6 +589,11 @@ def main_application_sesmg():
             st.spinner("Modelling in Progress...")
             st.write("Hallo")
              
+
+def change_state_submitted_optimization():
+    st.session_state["state_submitted_optimization"] = "done"
+
+
 
 
 
