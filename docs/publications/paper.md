@@ -10,11 +10,9 @@ authors:
   - name: Christian Klemm
     corresponding: true # (This is how to denote the corresponding author)
     orcid: 0000-0003-0801-4178
-    equal-contrib: true
     affiliation: "1, 2"
   - name: Gregor Becker
     orcid: 0000-0001-8803-6873
-    equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
     affiliation: 1
   - name: Janik Budde
     orcid: 0000-0002-1617-5900
@@ -40,52 +38,13 @@ bibliography: paper.bib
 ...
 
 # Statement of need
+Due to volatile renewable energy sources, the use of different energy storage systems, sector coupling, the growing importance of new sectors such as e-mobility and hydrogen usage [@Klemm.2023], as well as the increasing relevance of multiple planning objectives, it is becoming increasingly difficult to optimally design urban energy systems [@QUELLE]. In this context, urban energy systems are defined as “the combined process of acquiring and using energy in a given spatial entity with a high density and differentiation of residents, buildings, commercial sectors, infrastructure, and energy sectors (e.g., heat, electricity, fuels). They are also called mixed-used multi-energy systems” [@Klemm.Indicators]. Traditionally, such systems are designed by simulating and comparing a very few predefined energy supply scenarios. Mathematical optimization of the systems is usually not performed [@QUELLE]. In addition, individual buildings, consumption sectors, or energy sectors are rarely planned and designed holistically, but rather separately from each other [@Lukszo.2018]. Finally, planning processes are often driven only by financial interests, instead of considering additional planning objectives, such as minimizing greenhouse gas emissions or reducing final energy demands. To fully exploit all synergies and avoid conflicting interests of increasingly entangled energy systems [@Pfenninger.2014], it is necessary to carry out holistic planning [@Lukszo.2018]. Therefore, all energy sectors, planning objectives and an entire spatial entity should be considered within a holistic analysis [@QUELLE]. Thereby, not only certain, but all theoretically possible supply scenarios should be compared by using optimization algorithms [@QUELLE], to ensure that those scenarios are identified that allow the minimization of the planning objectives by a given ratio [@QUELLE].
 
 ...
 
-# Mathematics
-
-Single dollars ($) are required for inline mathematics e.g. $f(x) = e^{\pi/x}$
-
-Double dollars make self-standing equations:
-
-$$\Theta(x) = \left\{\begin{array}{l}
-0\textrm{ if } x < 0\cr
-1\textrm{ else}
-\end{array}\right.$$
-
-You can also use plain \LaTeX for equations
-\begin{equation}\label{eq:fourier}
-\hat f(\omega) = \int_{-\infty}^{\infty} f(x) e^{i\omega x} dx
-\end{equation}
-and refer to \autoref{eq:fourier} from text.
-
-# Citations
-
-Citations to entries in paper.bib should be in
-[rMarkdown](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
-format.
-
-If you want to cite a software repository URL (e.g. something on GitHub without a preferred
-citation) then you can do it with the example BibTeX entry below for @fidgit.
-
-For a quick reference, the following citation commands can be used:
-- `@author:2001`  ->  "Author et al. (2001)"
-- `[@author:2001]` -> "(Author et al., 2001)"
-- `[@author1:2001; @author2:2001]` -> "(Author1 et al., 2001; Author2 et al., 2002)"
-
-# Figures
-
-Figures can be included like this:
-![Caption for example figure.\label{fig:example}](figure.png)
-and referenced from text using \autoref{fig:example}.
-
-Figure sizes can be customized by adding an optional second parameter:
-![Caption for example figure.](figure.png){ width=20% }
 
 # Acknowledgements
 
-We acknowledge contributions from Brigitta Sipocz, Syrtis Major, and Semyeong
-Oh, and support from Kathryn Johnston during the genesis of this project.
+...
 
 # References
