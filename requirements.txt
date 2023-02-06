@@ -1,6 +1,6 @@
 streamlit>=1.17.0
 streamlit-aggrid>=0.3.0
-oemof.solph>=0.4  
+oemof.solph==0.4.5
 openpyxl>=3.0.0  
 oemof.thermal>=0.0.5  
 feedinlib @ https://github.com/SESMG/feedinlib/archive/refs/heads/dev.zip
