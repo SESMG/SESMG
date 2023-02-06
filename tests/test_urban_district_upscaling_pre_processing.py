@@ -213,10 +213,12 @@ def test_create_building_buses(test_building_buses_entry):
         "building type": "SFB",
         "central heat": "no",
         "latitude": "0",
-        "longitude": "0"
+        "longitude": "0",
+        "st 1": "yes",
+        "pv 1": "yes",
+        "roof area 1": 10
     }
-    for i in range(1, 29):
-        building.update({"st or pv %1d" % i: "pv&st"})
+    building.update({})
     
     sheets = create_building_buses_links(
         building=building,

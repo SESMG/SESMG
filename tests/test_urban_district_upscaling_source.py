@@ -128,11 +128,12 @@ def test_create_source(test_decentral_pv_source_entry):
         roof_num=str(1),
         building=building,
         sheets=sheets,
-        standard_parameters=standard_parameters
+        standard_parameters=standard_parameters,
     )
     # assert rather the two dataframes are equal
     pandas.testing.assert_frame_equal(
-        sheets["sources"], test_decentral_pv_source_entry["sources"])
+        sheets["sources"].sort_index(axis=1),
+        test_decentral_pv_source_entry["sources"].sort_index(axis=1))
 
 
 def test_create_timeseries_source():
@@ -174,7 +175,8 @@ def test_create_sources(test_competition_constraint_entry,
         "longitude": 10,
         "roof area 1": 100,
         "flow temperature": 60,
-        "st or pv 1": "pv&st",
+        "st 1": "yes",
+        "pv 1": "yes",
         "building type": "SFB"
     }
     # start the method to be tested

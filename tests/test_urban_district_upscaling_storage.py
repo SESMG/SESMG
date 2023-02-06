@@ -68,10 +68,11 @@ def test_building_storages(test_storage_decentralized_battery_entry,
                                              + "/standard_parameters.xlsx"))
     # assert rather the two dataframes are equal
     pandas.testing.assert_frame_equal(
-            sheets["storages"],
-            pandas.concat([
-                test_storage_decentralized_battery_entry["storages"],
-                test_storage_decentralized_thermal_storage_entry["storages"]]))
+        sheets["storages"].sort_index(axis=1),
+        pandas.concat([
+            test_storage_decentralized_battery_entry["storages"],
+            test_storage_decentralized_thermal_storage_entry["storages"]]
+        ).sort_index(axis=1))
 
 
 def test_storage_clustering():
