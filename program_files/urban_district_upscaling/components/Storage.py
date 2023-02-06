@@ -14,7 +14,7 @@ storage_dict = {
 
 def create_storage(
     building_id: str, storage_type: str, de_centralized: str, sheets: dict,
-    standard_parameters: pandas.ExcelFile, bus=None
+    standard_parameters: pandas.ExcelFile, bus=None, min_invest="0"
 ):
     """
         Sets the specific parameters for a battery, and creates them
@@ -48,6 +48,7 @@ def create_storage(
             "bus": str(building_id) + storage_dict.get(storage_type)[2]
             if bus is None
             else bus,
+            "min. investment capacity": min_invest
         },
         standard_parameter_info=[
             de_centralized + storage_dict.get(storage_type)[0],
@@ -76,18 +77,27 @@ def building_storages(building: dict, true_bools: list, sheets: dict,
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
     """
+    from program_files.urban_district_upscaling.pre_processing \
+        import represents_int
     build_storage_dict = {
         "battery storage": "battery", "thermal storage": "thermal"
     }
     
     for storage in build_storage_dict:
-        if building[storage] in true_bools:
+        if building[storage] not in ["no", "No", "0"]:
+            # Check if the user has inserted a min investment value
+            # or a boolean yes
+            if represents_int(building[storage]):
+                min_invest = building[storage]
+            else:
+                min_invest = "0"
             sheets = create_storage(
                 building_id=building["label"],
                 sheets=sheets,
                 storage_type=build_storage_dict[storage],
                 de_centralized="building",
-                standard_parameters=standard_parameters
+                standard_parameters=standard_parameters,
+                min_invest=min_invest
             )
     
     return sheets

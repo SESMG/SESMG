@@ -18,7 +18,7 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
                        standard_parameters: pandas.ExcelFile,
                        flow_temp: str, building_type=None,
                        area="0", label="None", specific="None",
-                       output="None"):
+                       output="None", min_invest="0"):
     """
         TODO DOCSTRING
         :param building_id: building label
@@ -113,7 +113,8 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
             "output": output1,
             "output2": technology_dict.get(transformer_type)[3],
             "area": float(area),
-            "temperature high": flow_temp
+            "temperature high": flow_temp,
+            "min. investment capacity": min_invest
         },
         standard_parameter_info=[transformer_type, "4_transformers",
                                  "transformer_type"],
@@ -142,6 +143,8 @@ def building_transformer(building: dict, p2g_link: bool, true_bools: list,
         :type standard_parameters: pandas.ExcelFile
     """
     from program_files.urban_district_upscaling.components import Link
+    from program_files.urban_district_upscaling.pre_processing \
+        import represents_int
     
     build_transformer_dict = {
         "ashp":
@@ -156,14 +159,21 @@ def building_transformer(building: dict, p2g_link: bool, true_bools: list,
     
     for transformer in build_transformer_dict:
         # creates air source heat-pumps
-        if building[transformer] in true_bools:
+        if building[transformer] not in ["no", "No", "0"]:
+            # Check if the user has inserted a min investment value
+            # or a boolean yes
+            if represents_int(building[transformer]):
+                min_invest = building[transformer]
+            else:
+                min_invest = "0"
             sheets = create_transformer(
                 building_id=building["label"],
                 building_type=build_transformer_dict[transformer][0],
                 transformer_type=build_transformer_dict[transformer][1],
                 sheets=sheets,
                 standard_parameters=standard_parameters,
-                flow_temp=building["flow temperature"]
+                flow_temp=building["flow temperature"],
+                min_invest=min_invest
             )
             if transformer == "gas heating" and p2g_link:
                 sheets = Link.create_link(

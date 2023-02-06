@@ -193,7 +193,47 @@ def create_heat_pump_buses_links(building: dict, gchps: dict, sheets: dict,
                 standard_parameters=standard_parameters
             )
     return sheets
+    
+    
+def column_exists(building: pandas.Series, column: str) -> bool:
+    """
+        Method which is used to check rather the column exists (True)
+        within the building Series or not (False).
         
+        :param building: Series which contains the building data
+        :type building: pandas.Series
+        :param column: label of the investigated column
+        :type column: str
+    """
+    # test rather the column exists
+    try:
+        test = building[column]
+    # if an error is thrown return false
+    except KeyError:
+        return False
+    # else return true
+    else:
+        return True
+    
+    
+def represents_int(entry: str) -> bool:
+    """
+        Method which is used to check rather the entry can be converted
+        into an integer.
+        
+        :param entry: entry under investigation
+        :type entry: str
+    """
+    # test rather the entry is convertible
+    try:
+        int(entry)
+    # if an error is thrown return false
+    except ValueError:
+        return False
+    # else return true
+    else:
+        return True
+    
 
 def create_building_buses_links(
         building: dict, central_elec_bus: bool, sheets: dict,
@@ -223,11 +263,11 @@ def create_building_buses_links(
 
     # foreach building the three necessary buses will be created
     pv_bus = False
-    # TODO Is there any other way to find "all" PV potential areas than
-    #  explicitly targeting them with their roofnum?
-    for roof_num in range(1, 29):
-        if building["st or pv %1d" % roof_num] == "pv&st":
+    roof_num = 1
+    while column_exists(building, str("roof area %1d" % roof_num)):
+        if building["pv %1d" % roof_num] not in ["No", "no", "0"]:
             pv_bus = True
+        roof_num += 1
 
     # define the building electricity bus type based on the building
     # type

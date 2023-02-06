@@ -3,7 +3,7 @@ import pandas
 
 def create_source(source_type: str, roof_num: str, building: dict,
                   sheets: dict, standard_parameters: pandas.ExcelFile,
-                  st_output=None, central=False):
+                  st_output=None, central=False, min_invest="0"):
     """
         TODO DOCSTRINGTEXT
         :param source_type: define rather a photovoltaic or a \
@@ -82,6 +82,7 @@ def create_source(source_type: str, roof_num: str, building: dict,
         "Longitude": source_param[5],
         "input": switch_dict.get(source_type)[2],
         "Temperature Inlet": temp_inlet,
+        "min. investment capacity": min_invest
     }
     if central:
         source_type = "central_solar_thermal_collector"
@@ -208,41 +209,57 @@ def create_sources(building: dict, clustering: bool, sheets: dict,
             central source (True) or a decentral one (False)
         :type central: bool
     """
+    from program_files.urban_district_upscaling.pre_processing \
+        import column_exists, represents_int
     # create pv-sources and solar thermal-sources including area
     # competition
     roof_num = 1
-    while str("roof area %1d" % roof_num) in building.keys() \
-            and building["roof area %1d" % roof_num]:
-        column = "st or pv %1d" % roof_num
-        if building[column] == "pv&st":
-            sheets = create_source(
-                source_type="fixed photovoltaic source",
-                roof_num=str(roof_num),
-                building=building,
-                sheets=sheets,
-                standard_parameters=standard_parameters
-            )
-
-        if building["building type"] not in ["0", 0] and building[column] != 0:
-            sheets = create_source(
-                source_type="solar_thermal_collector",
-                roof_num=str(roof_num),
-                building=building,
-                sheets=sheets,
-                st_output=st_output,
-                standard_parameters=standard_parameters,
-                central=central
-            )
-
-            if not clustering and building[column] == "pv&st":
-                sheets = create_competition_constraint(
+    while column_exists(building, str("roof area %1d" % roof_num)):
+        if building[str("roof area %1d" % roof_num)]:
+            pv = building["pv {}".format(roof_num)] not in ["No", "no", "0"]
+            st = building["st {}".format(roof_num)] not in ["No", "no", "0"]
+            
+            if pv:
+                pv_column = building["pv {}".format(roof_num)]
+                # if the user inserted an entry deviating yes in the pv
+                # column it has to be the min invest value
+                min_invest = pv_column if represents_int(pv_column) else "0"
+                
+                sheets = create_source(
+                    source_type="fixed photovoltaic source",
                     roof_num=str(roof_num),
-                    label=building["label"],
+                    building=building,
                     sheets=sheets,
-                    limit=building["roof area %1d" % roof_num],
-                    standard_parameters=standard_parameters
+                    standard_parameters=standard_parameters,
+                    min_invest=min_invest
                 )
-
+    
+            if building["building type"] not in ["0", 0] and st:
+                st_column = building["st {}".format(roof_num)]
+                # if the user inserted an entry deviating yes in the pv
+                # column it has to be the min invest value
+                min_invest = st_column if represents_int(st_column) else "0"
+                
+                sheets = create_source(
+                    source_type="solar_thermal_collector",
+                    roof_num=str(roof_num),
+                    building=building,
+                    sheets=sheets,
+                    st_output=st_output,
+                    standard_parameters=standard_parameters,
+                    central=central,
+                    min_invest=min_invest
+                )
+    
+                if not clustering and pv and st:
+                    sheets = create_competition_constraint(
+                        roof_num=str(roof_num),
+                        label=building["label"],
+                        sheets=sheets,
+                        limit=building["roof area %1d" % roof_num],
+                        standard_parameters=standard_parameters
+                    )
+    
         roof_num += 1
     return sheets
 

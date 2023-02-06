@@ -197,18 +197,28 @@ def central_comp(central: pandas.DataFrame, true_bools: list, sheets: dict,
                     sheets=sheets,
                     standard_parameters=standard_parameters
                 )
+                
+            if pv["technology"] == "st&pv":
+                st_column = "yes"
+                pv_column = "yes"
+            elif pv["technology"] == "st":
+                st_column = "yes"
+                pv_column = "no"
+            else:
+                st_column = "no"
+                pv_column = "no"
 
             sheets = Source.create_sources(
                 building={
                     "label": pv["label"],
                     "building type": "central",
-                    "st or pv %1d" % 1: str(pv["technology"]),
+                    "st %1d" % 1: st_column,
+                    "pv %1d" % 1: pv_column,
                     "azimuth {}".format(1): pv["azimuth"],
                     "surface tilt {}".format(1): pv["surface tilt"],
                     "latitude": pv["latitude"],
                     "longitude": pv["longitude"],
                     "roof area {}".format(1): pv["area"],
-                    "roof area {}".format(2): 0,
                     "flow temperature": float(
                         central.loc[(central["label"] == pv["dh_connection"])
                                     & (central["active"] == 1)][
