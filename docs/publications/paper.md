@@ -8,26 +8,25 @@ tags:
   - Multi-Energy Systems
 authors:
   - name: Christian Klemm
-	corresponding: true # (This is how to denote the corresponding author)
+    corresponding: true # (This is how to denote the corresponding author)
     orcid: 0000-0003-0801-4178
     equal-contrib: true
     affiliation: "1, 2"
   - name: Gregor Becker
-	orcid: 0000-0001-8803-6873
+    orcid: 0000-0001-8803-6873
     equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
     affiliation: 1
   - name: Janik Budde
-	orcid: 0000-0002-1617-5900
+    orcid: 0000-0002-1617-5900
     affiliation: 1
   - name: Jan Tockloth
-	orcid: 0000-0003-2582-1043
+    orcid: 0000-0003-2582-1043
     affiliation: 1
   - name: Peter Vennemann
-	orcid: 0000-0002-0767-5014
+    orcid: 0000-0002-0767-5014
     affiliation: 1
 affiliations:
- - name: Department of Energy, Building Services and Environmental Engineering,
-Münster University of Applied Sciences, Germany
+ - name: Department of Energy, Building Services and Environmental Engineering, Münster University of Applied Sciences, Germany
    index: 1
  - name: Department of Energy and Environmental Management, Europa-Universität Flensburg, Germany 
    index: 2
