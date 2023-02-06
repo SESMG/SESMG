@@ -42,7 +42,7 @@ Due to volatile renewable energy sources, the use of different energy storage sy
 
 The Spreadsheet Energy System Model Generator (SESMG) meets all these challenges by 
 * considering the multi-energy system (MES) approach [@Mancarella.2016], 
-* by carrying out multi-objective optimization by using the epsilon-constraint-method [@Mavrotas.2009], and
+* carrying out multi-objective optimization by using the epsilon-constraint-method [@Mavrotas.2009], and
 * enabling high spatial resolution results through the applicability of model-based methods for the reduction of computational effort [@Klemm.2023].
 
 ...
