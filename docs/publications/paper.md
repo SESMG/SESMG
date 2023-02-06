@@ -46,7 +46,6 @@ The Spreadsheet Energy System Model Generator (SESMG) meets all these requiremen
 
 
 # Acknowledgements
-
-...
+This research has been conducted within the R2Q project, funded by the German Federal Ministry of Education and Research (BMBF), grant number 033W102A.
 
 # References
