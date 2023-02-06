@@ -6,63 +6,142 @@ creates an energy system from a given spreadsheet data file, solves it
 for the purpose of least cost optimization, and returns the optimal
 scenario results.
 
-The scenario.xlsx-file must contain the following elements:
+The model_definition.xlsx-file must contain the following elements:
 
 +-------------+--------------------------------------------------------+
 |sheet        | columns                                                |
 +=============+========================================================+
-|energysystem | start_date, end_date, holidays, temporal resolution,   |
-|             | timezone                                               |
+|energysystem | start date (DD.MM.YYYY HH.MM.SS),                      |
+|             | end_date (DD.MM.YYYY HH.MM.SS),                        |
+|             | temporal resolution,                                   |
+|             | periods, constraint costs (CU),                        |
+|             | minimal final energy (kWh),                            |
+|             | weather data lon. (WGS84),                             |
+|             | weather data lat. (WGS84)                              |
 +-------------+--------------------------------------------------------+
-|buses        | label, active, excess, shortage,                       |
-|             | shortage costs /(CU/kWh), excess costs /(CU/kWh)       |
+|buses        | label,                                                 |
+|             | active (0 or 1), excess (0 or 1), shortage (0 or 1),   |
+|             | excess costs (CU/kWh), shortage costs (CU/kWh),        |
+|             | excess constraint costs (CU/kWh),                      |
+|             | shortage constraint costs (CU/kWh),                    |
+|             | district heating conn. (0 or 1 or dh-system),          |
+|             | lat (WGS84), lon(WGS84)                                |
 +-------------+--------------------------------------------------------+
-|sinks        | label, active, input, input2, load profile,            |
-|             | nominal value /(kW), annual demand /(kWh/a),           |
-|             | occupants [RICHARDSON], building class [HEAT SLP ONLY],|
-|             | wind class [HEAT SLP ONLY], fixed                      |
+|sinks        | label, active (0 or 1), fixed (0 or 1),                |
+|             | input (bus label), load profile, nominal value (kW),   |
+|             | annual demand (kWh/a), occupants (int [RICHARDSON]),   |
+|             | building class [HEAT SLP], wind class [HEAT SLP]       |
 +-------------+--------------------------------------------------------+
-|sources      | label, active, output, technology,                     |
-|             | variable costs /(CU/kWh), existing capacity /(kW),     |
-|             | min. investment capacity /(kW),                        |
-|             | max. investment capacity /(kW),                        |
-|             | periodical costs /(CU/(kW a)),                         |
-|             | technology database (PV ONLY),                         |
-|             | inverter database (PV ONLY), Modul Model (PV ONLY),    |
-|             | Inverter Model (PV ONLY), reference value /(kW),       |
-|             | Azimuth (PV ONLY), Surface Tilt (PV ONLY),             |
-|             | Albedo (PV ONLY), Altitude (PV ONLY),                  |
-|             | Latitude (PV ONLY), Longitude (PV ONLY)                |
+|sources      | label, active (0 or 1), fixed (0 or 1), technology,    |
+|             | output (bus label), input (bus label [ST ONLY]),       |
+|             | existing capacity (kW), min. investment capacity (kW), |
+|             | max. investment capacity (kW),                         |
+|             | non-convex investment (0 or 1),                        |
+|             | fix investment costs (CU/a),                           |
+|             | fix investment constraint costs (CU/a)                 |
+|             | variable costs (CU/kWh), periodical costs (CU/(kW a)), |
+|             | variable constraint costs (CU/kWh),                    |
+|             | periodical constraint costs (CU/(kW a)),               |
+|             | Tubine Model [WINDPOWER], Hub Height [WINDPOWER],      |
+|             | technology database [PV], inverter database [PV],      |
+|             | Modul Model [PV], Inverter Model [PV], Albedo [PV],    |
+|             | Azimuth [PV or ST], Altitude [PV or ST],               |
+|             | Surface Tilt [PV or ST],                               |
+|             | Latitude [PV or ST], Longitude [PV or ST], ETA0 [ST],  |
+|             | A1 [ST], A2 [ST], C1 [ST], C2 [ST],                    |
+|             | Temperature Inlet [ST], Temperature Difference [ST],   |
+|             | Conversion Factor [ST], Peripheral Losses [ST],        |
+|             | Electric Consumption [ST], Cleanliness [ST]            |
 +-------------+--------------------------------------------------------+
-|transformers | label, active, transformer type, input, output,        |
-|             | output2, efficiency, efficiency2,                      |
-|             | variable input costs /(CU/kWh),                        |
-|             | variable output costs /(CU/kWh),                       |
-|             | existing capacity /(kW),                               |
-|             | max. investment capacity /(kW),                        |
-|             | min. investment capacity /(kW),                        |
-|             | periodical costs /(CU/(kW a))                          |
+|competition  | active (0 or 1),                                       |
+|constraints  | component 1 (component label), factor 1,               |
+|             | component 2 (component label), factor 2                |
 +-------------+--------------------------------------------------------+
-|storages     | label, active, bus, existing capacity /(kW),           |
-|             | min. investment capacity /(kW),                        |
-|             | max. investment capacity /(kW),                        |
-|             | periodical costs /(CU/(kW a)), capacity inflow,        |
-|             | capacity outflow, capacity loss, efficiency inflow,    |
-|             | efficiency outflow, initial capacity, capacity min,    |
-|             | capacity max, variable input costs,                    |
-|             | variable output costs                                  |
+|transformers | label, active (0 or 1), transformer type, mode,        |
+|             | input (bus label), input 2 (bus label),                |
+|             | output (bus label), output2 (bus label), input2/input, |
+|             | efficiency, efficiency2, existing capacity (kW),       |
+|             | min. investment capacity (kW),                         |
+|             | max. investment capacity (kW),                         |
+|             | non-convex investment (0 or 1),                        |
+|             | fix investment costs (CU/a),                           |
+|             | fix investment constraint costs (CU/a),                |
+|             | variable input costs (CU/kWh),                         |
+|             | variable input costs 2 (CU/kWh),                       |
+|             | variable output costs (CU/kWh),                        |
+|             | variable output costs 2 (CU/kWh),                      |
+|             | periodical costs (CU/(kW a)),                          |
+|             | variable input constraint costs (CU/kWh),              |
+|             | variable input constraint costs 2 (CU/kWh),            |
+|             | variable output constraint costs (CU/kWh),             |
+|             | variable output constraint costs 2 (CU/kWh),           |
+|             | periodical constraint costs (CU/(kW a)),               |
+|             | heat source, temperature high [HEAT PUMP],             |
+|             | temperature low [CHILLER], quality grade, area (sqm),  |
+|             | length of geoth. probe, heat extraction,               |
+|             | min. borehole area, temp. threshold icing,             |
+|             | factor icing, name, TODO high temperature (duplication)|
+|             | TODO chilling temperature (duplication),               |
+|             | electric input conversion factor [Absorption],         |
+|             | recooling temperature difference [Absorption],         |
+|             | min. share of flue gas loss [GenericCHP],              |
+|             | max. share of flue gas loss [GenericCHP],              |
+|             | min. electric power [GenericCHP],                      |
+|             | max. electric power [GenericCHP],                      |
+|             | min. electric efficiency [GenericCHP],                 |
+|             | max. electric efficiency [GenericCHP],                 |
+|             | minimal thermal output [GenericCHP],                   |
+|             | elec. power loss index [GenericCHP],                   |
+|             | back pressure [GenericCHP]                             |
 +-------------+--------------------------------------------------------+
-|powerlines   | label, active, bus_1, bus_2, (un)directed, efficiency, |
-|             | existing capacity /(kW),                               |
-|             | min. investment capacity /(kW),                        |
-|             | max. investment capacity /(kW),                        |
-|             | variable costs /(CU/kWh), periodical costs /(CU/(kW a))|
+|storages     | label, active (0 or 1), storage type, bus (bus label), |
+|             | input/capacity ration, output/capacity ratio,          |
+|             | efficiency inflow, efficiency outflow,                 |
+|             | initial capacity, capacity min, capacity max,          |
+|             | existing capacity (kW), min. investment capacity (kW), |
+|             | max. investment capacity (kW),                         |
+|             | non-convex investment (0 or 1),                        |
+|             | fix investment costs (CU/a),                           |
+|             | fix investment constraint costs (CU/a),                |
+|             | variable input costs (CU/kWh),                         |
+|             | variable output costs (CU/kWh),                        |
+|             | periodical costs (CU/(kW a)),                          |
+|             | variable input constraint costs (CU/kWh),              |
+|             | variable output constraint costs (CU/kWh),             |
+|             | periodical constraint costs (CU/(kW a)),               |
+|             | capacity loss [GENERIC], diameter [STRATIFIED],        |
+|             | temperature high [STRATIFIED],                         |
+|             | temperature low [STRATIFIED], U-value [STRATIFIED]     |
 +-------------+--------------------------------------------------------+
-|time_series  | timestamp,                                             |
+|links        | label, active (0 or 1), (un)directed, bus1 (bus label),|
+|             | bus2 (bus label), efficiency, existing capacity (kW),  |
+|             | min. investment capacity (kW),                         |
+|             | max. investment capacity (kW),                         |
+|             | non-convex investment (0 or 1),                        |
+|             | fix investment costs (CU/a),                           |
+|             | fix investment constraint costs (CU/a),                |
+|             | variable output costs (CU/kWh),                        |
+|             | periodical costs (CU/(kW a)),                          |
+|             | variable output constraint costs (CU/kWh),             |
+|             | periodical constraint costs (CU/(kW a))                |
++-------------+--------------------------------------------------------+
+|insulation   | label, active (0 or 1), sink (sink label),             |
+|             | temperature indoor (°C), heat limit temperature (°C),  |
+|             | U-value old (W/(sqm K)), U-value new (W/(sqm K)),      |
+|             | area (sqm), periodical costs (CU/(sqm a)),             |
+|             | periodical constraint costs (CU/(sqm a))               |
++-------------+--------------------------------------------------------+
+|district     | label, active (0 or 1), lat. 1st intersection (WGS84), |
+|heating      | lat. 2nd intersection (WGS84),                         |
+|             | lon. 1st intersection (WGS84),                         |
+|             | lon. 2nd intersection (WGS84)                          |
++-------------+--------------------------------------------------------+
+|time series  | timestamp,                                             |
 |             | timeseries for components with fixed input or output   |
 +-------------+--------------------------------------------------------+
-|weather_data | dates(untitled), dhi, dirhi, pressure, temp_air,       |
-|             | windspeed, z0                                          |
+|weather data | timestamp, dhi, dni, ghi, pressure, temperature,       |
+|             | windspeed, z0, temperature, ground temp, water temp,   |
+|             | groundwater temp                                       |
 +-------------+--------------------------------------------------------+
 
 
