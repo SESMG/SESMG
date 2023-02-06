@@ -24,8 +24,8 @@ def buses(nodes_data: dict, nodes: list) -> dict:
         :param nodes: list of components created before (can be empty)
         :type nodes: list
     
-        :return busd: dictionary containing all buses created
-        :rtype: dict
+        :return: - **busd** (dict) - dictionary containing all buses \
+            created
     
         Christian Klemm - christian.klemm@fh-muenster.de
     """

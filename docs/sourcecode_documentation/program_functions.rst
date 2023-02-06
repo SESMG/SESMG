@@ -83,6 +83,11 @@ Create Objects
    :members:
    :undoc-members:
    :show-inheritance:
+
+.. automodule:: program_files.preprocessing.components.Sink
+   :members:
+   :undoc-members:
+   :show-inheritance:
    
 district\_heating
 -----------------------------------
