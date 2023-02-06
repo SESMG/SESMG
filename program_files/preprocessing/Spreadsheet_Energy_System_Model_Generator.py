@@ -144,7 +144,6 @@ The model_definition.xlsx-file must contain the following elements:
 |             | groundwater temp                                       |
 +-------------+--------------------------------------------------------+
 
-
 Docs:
  - https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
  
@@ -152,7 +151,6 @@ GIT:
  - https://github.com/chrklemm/SESMG
  
 -------------------------------------------------------------------------------
-
 
 Christian Klemm - christian.klemm@fh-muenster.de
 """

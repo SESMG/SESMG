@@ -76,10 +76,10 @@ create\_energy\_system module
    :undoc-members:
    :show-inheritance:
 
-create\_objects module
+Create Objects
 -------------------------------------
 
-.. automodule:: program_files.create_objects
+.. automodule:: program_files.preprocessing.components.Bus
    :members:
    :undoc-members:
    :show-inheritance:
