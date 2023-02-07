@@ -24,7 +24,7 @@ def create_source(source_type: str, roof_num: str, building: dict,
         :param st_output: str containing the solar thermal output bus \
             which is used for the connection to district heating systems
         :type st_output: str
-        :param central: parameter which definies rather the source is a\
+        :param central: parameter which defines rather the source is a\
             central source (True) or a decentral one (False)
         :type central: bool
         

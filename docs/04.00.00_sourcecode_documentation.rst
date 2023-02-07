@@ -14,16 +14,16 @@ The software product "SESMG" can be divided into the following 4 process phases:
     different buildings are grouped together e. g. by their load profile via
     the cluster ID (column in the US-Input sheet).
 
-    - `Preprocessing <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#US_Tool/pre_processing>`_
-    - `Clustering <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#US_Tool/clustering>`_
-    - `US-Tool Bus <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#US_Tool/components/Bus>`_
-    - `US-Tool Central_Components <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#US_Tool/components/Central_components>`_
-    - `US-Tool Insulation <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#US_Tool/components/Insulation>`_
-    - `US-Tool Link <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#US_Tool/components/Link>`_
-    - `US-Tool Sink <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#US_Tool/components/Sink>`_
-    - `US-Tool Source <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#US_Tool/components/Source>`_
-    - `US-Tool Storage <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#US_Tool/components/Storage>`_
-    - `US-Tool Transformer <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#US_Tool/components/Transformer>`_
+    - `Preprocessing <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.pre_processing>`_
+    - `Clustering <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.clustering>`_
+    - `US-Tool Bus <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/004.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Bus>`_
+    - `US-Tool Central_Components <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Central_components>`_
+    - `US-Tool Insulation <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Insulation>`_
+    - `US-Tool Link <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Link>`_
+    - `US-Tool Sink <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Sink>`_
+    - `US-Tool Source <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Source>`_
+    - `US-Tool Storage <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Storage>`_
+    - `US-Tool Transformer <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Transformer>`_
 
 
 Urban District Upscaling Tool
@@ -86,7 +86,7 @@ US_Tool/components/Storage
 
 US_Tool/components/Transformer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: program_files.urban_district_upscaling.components.Insulation
+.. automodule:: program_files.urban_district_upscaling.components.Transformer
    :members:
    :undoc-members:
    :show-inheritance:
