@@ -55,7 +55,7 @@ Manual
 
 Troubleshooting 
 -------------------------------------------------
-* :doc:`troubleshooting/troubleshooting`
+* :doc:`03.00.00_trouble_shooting`
 	
 
 ..	toctree::
@@ -63,7 +63,7 @@ Troubleshooting
 	:hidden:
 	:caption: Troubleshooting
 	
-	troubleshooting/troubleshooting
+	03.00.00_trouble_shooting
 
 
 Sourcecode Documentation
