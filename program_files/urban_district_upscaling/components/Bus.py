@@ -122,7 +122,7 @@ def create_cluster_averaged_bus(sink_parameters: list, cluster: str,
         based on the share of the heat demand of a building type \
         (RES, COM, IND) in the total heat demand of the cluster.
         
-        list containing the cluster's sinks \
+        :param sink_parameters: list containing the cluster's sinks \
             parameter (4) res_heat_demand, (5) com_heat_demand, \
             (6) ind_heat_demand
         :type sink_parameters: list
