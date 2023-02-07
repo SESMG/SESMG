@@ -85,12 +85,13 @@ Sourcecode Documentation
 
 Further Information
 -------------------------------------------------
-* :doc:`information/publications`
-* :doc:`information/links`
-* :doc:`information/citation`
-* :doc:`information/license`
-* :doc:`information/contact`
-* :doc:`information/acknowledgements`
+* :doc:`05.01.00_publications`
+* :doc:`05.02.00_related_links`
+* :doc:`05.03.00_citation`
+* :doc:`05.04.00_license`
+* :doc:`05.05.00_contact`
+* :doc:`05.06.00_contributors`
+* :doc:`05.07.00_acknowledgements`
 		
 ..	toctree::
 	:maxdepth: 2
