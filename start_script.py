@@ -9,9 +9,11 @@ if __name__ == "__main__":
     #    if "-s" in sys.argv:
     if sys.platform.startswith("darwin"):
         #import program_files.GUI_files.GUI as GUI
-
+        
         #gui = GUI.GUI()
-        subprocess.call("streamlit run {}".format(os.path.dirname(__file__) + "/GUI_streamlit.py"), shell=True)
+        subprocess.call("streamlit run {}".format(os.path.dirname(__file__) + "/program_files/GUI_st/1_Main_Application.py"), shell=True)
+
+
 
 
     elif sys.platform.startswith("linux"):

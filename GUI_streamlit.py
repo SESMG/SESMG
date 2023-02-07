@@ -39,26 +39,26 @@ if __name__ == "__main__":
     # Start GUI as configurated above
     st_settings_global()
 
-    # Dropdown with the differned app modes
-    app_mode = st.sidebar.selectbox(
-        "Choose the app mode",
-        ["Main SESMG Application", 
-         "Urban District Upscaling Tool",
-         "Advanced Model Results",
-         "SESMG Demo Tool",
-         "Development Test Page"])
+    # # Dropdown with the differned app modes
+    # app_mode = st.sidebar.selectbox(
+    #     "Choose the app mode",
+    #     ["Main SESMG Application", 
+    #      "Urban District Upscaling Tool",
+    #      "Advanced Model Results",
+    #      "SESMG Demo Tool",
+    #      "Development Test Page"])
         
-    # Run chosen appmode
-    if app_mode == "Main SESMG Application":
-        main_application_sesmg()
-    elif app_mode == "Urban District Upscaling Tool":
-        us_application()
-    elif app_mode == "Advanced Model Results":
-        advanced_result_page()
-    elif app_mode == "SESMG Demo Tool":
-        demo_result_page()
-    elif app_mode == "Development Test Page":
-        test_page()
+    # # Run chosen appmode
+    # if app_mode == "Main SESMG Application":
+    #     main_application_sesmg()
+    # elif app_mode == "Urban District Upscaling Tool":
+    #     us_application()
+    # elif app_mode == "Advanced Model Results":
+    #     advanced_result_page()
+    # elif app_mode == "SESMG Demo Tool":
+    #     demo_result_page()
+    # elif app_mode == "Development Test Page":
+    #     test_page()
 
     
 
