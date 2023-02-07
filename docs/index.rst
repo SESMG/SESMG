@@ -97,10 +97,11 @@ Further Information
 	:hidden:
 	:caption: Further Information 
 	
-	information/publications
-	information/links
-	information/citation
-	information/license
-	information/contact
-	information/acknowledgements
+	05.01.00_publications
+	05.02.00_related_links
+	05.03.00_citation
+	05.04.00_license
+	05.05.00_contact
+	05.06.00_contributors
+	05.07.00_acknowledgements
 	
