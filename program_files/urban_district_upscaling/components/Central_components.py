@@ -4,7 +4,7 @@ import pandas
 def create_central_heat_component(
         label: str, comp_type: str, bus: str, exchange_buses: dict,
         sheets: dict, area: str, standard_parameters: pandas.ExcelFile,
-        flow_temp: float):
+        flow_temp: float) -> dict:
     """
         In this method, all heat supply systems are calculated for a
         heat input into the district heat network.
@@ -30,6 +30,10 @@ def create_central_heat_component(
         :param flow_temp: flow temperature of the central heating \
             system (district heating)
         :type flow_temp: float
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import Storage
 
@@ -110,7 +114,7 @@ def create_central_heat_component(
 
 
 def central_comp(central: pandas.DataFrame, true_bools: list, sheets: dict,
-                 standard_parameters: pandas.ExcelFile):
+                 standard_parameters: pandas.ExcelFile) -> dict:
     """
         In this method, the central components of the energy system are
         added to the scenario, first checking if a heating network is
@@ -130,6 +134,10 @@ def central_comp(central: pandas.DataFrame, true_bools: list, sheets: dict,
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import Bus, Storage, Source, Link, \
         get_central_comp_active_status
@@ -308,7 +316,7 @@ def central_comp(central: pandas.DataFrame, true_bools: list, sheets: dict,
 
 
 def create_power_to_gas_system(label: str, output: str, sheets: dict,
-                               standard_parameters: pandas.ExcelFile):
+                               standard_parameters: pandas.ExcelFile) -> dict:
     """
          In this method, a central power to gas system is created,
          for this purpose the necessary data set is obtained
@@ -327,6 +335,10 @@ def create_power_to_gas_system(label: str, output: str, sheets: dict,
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import Bus, Transformer, Storage, Link
     
@@ -395,7 +407,7 @@ def create_central_heatpump(label: str, specification: str, create_bus: bool,
                             central_electricity_bus: bool, output: str,
                             sheets: dict, area: str,
                             standard_parameters: pandas.ExcelFile,
-                            flow_temp: str):
+                            flow_temp: str) -> dict:
     """
          In this method, a central heatpump unit is created, for this
          purpose the necessary data set is obtained
@@ -427,6 +439,10 @@ def create_central_heatpump(label: str, specification: str, create_bus: bool,
         :type area: str
         :param flow_temp: flow temperature of the heatpump
         :type flow_temp: str
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import Bus, Transformer, Link
     # create central heatpump electricity bus
@@ -465,7 +481,7 @@ def create_central_heatpump(label: str, specification: str, create_bus: bool,
 
 def create_central_heating_transformer(
         label: str, fuel_type: str, output: str, central_fuel_bus: bool,
-        sheets: dict, standard_parameters: pandas.ExcelFile):
+        sheets: dict, standard_parameters: pandas.ExcelFile) -> dict:
     """
         In this method, a central heating plant unit with specified gas
         type is created, for this purpose the necessary data set is
@@ -488,6 +504,10 @@ def create_central_heating_transformer(
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import Bus, Transformer, Link
 
@@ -529,7 +549,7 @@ def create_central_heating_transformer(
 def create_central_chp(
         label: str, fuel_type: str, output: str, central_elec_bus: bool,
         central_fuel_bus: bool, sheets: dict,
-        standard_parameters: pandas.ExcelFile):
+        standard_parameters: pandas.ExcelFile) -> dict:
     """
         In this method, a central CHP unit with specified gas type is
         created, for this purpose the necessary data set is obtained
@@ -555,6 +575,10 @@ def create_central_chp(
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import Bus, Transformer, Link
 

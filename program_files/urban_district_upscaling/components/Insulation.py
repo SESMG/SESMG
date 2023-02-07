@@ -2,7 +2,7 @@ import pandas
 
 
 def create_building_insulation(building: dict, sheets: dict,
-                               standard_parameters: pandas.ExcelFile):
+                               standard_parameters: pandas.ExcelFile) -> dict:
     """
         In this method, the U-value potentials as well as the building
         year-dependent U-value of the insulation types are obtained from
@@ -17,6 +17,10 @@ def create_building_insulation(building: dict, sheets: dict,
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import append_component
 
@@ -25,7 +29,8 @@ def create_building_insulation(building: dict, sheets: dict,
     yoc_window = building["year of construction windows"]
     roof = building["rooftype"]
     yoc_component = [yoc_roof, yoc_wall, yoc_window]
-    yoc_component_new = [yoc_component[i] if yoc_component[i] > 1918 else "<1918" for i in range(len(yoc_component))]
+    yoc_component_new = [yoc_component[i] if yoc_component[i] > 1918
+                         else "<1918" for i in range(len(yoc_component))]
     building_component = ["roof", "outer wall", "window"]
 
     standard_param = standard_parameters.parse("7_insulation")

@@ -16,7 +16,7 @@ from program_files.urban_district_upscaling.components import (
 true_bools = ["yes", "Yes", 1]
 
 
-def append_component(sheets: dict, sheet: str, comp_parameter: dict):
+def append_component(sheets: dict, sheet: str, comp_parameter: dict) -> dict:
     """
         Within this method a component with the parameters stored in \
         comp_parameter will be appended on the in sheets[sheet] stored\
@@ -31,6 +31,10 @@ def append_component(sheets: dict, sheet: str, comp_parameter: dict):
         :param comp_parameter: component parameters which will be \
             appended as column on sheet
         :type comp_parameter: dict
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     series = pandas.Series(comp_parameter)
     sheets[sheet] = pandas.concat([sheets[sheet], pandas.DataFrame([series])])

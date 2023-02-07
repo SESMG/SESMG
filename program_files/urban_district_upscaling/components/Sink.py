@@ -3,9 +3,10 @@ import pandas
 
 def create_standard_parameter_sink(sink_type: str, label: str, sink_input: str,
                                    annual_demand: int, sheets: dict,
-                                   standard_parameters: pandas.ExcelFile):
+                                   standard_parameters: pandas.ExcelFile
+                                   ) -> dict:
     """
-        creates a sink with standard_parameters, based on the standard
+        Creates a sink with standard_parameters, based on the standard
         parameters given in the "standard_parameters" dataset and adds
         it to the "sheets"-output dataset.
     
@@ -25,6 +26,10 @@ def create_standard_parameter_sink(sink_type: str, label: str, sink_input: str,
         :param standard_parameters: pandas imported ExcelFile \
                 containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import create_standard_parameter_comp
 
@@ -42,7 +47,7 @@ def create_standard_parameter_sink(sink_type: str, label: str, sink_input: str,
 
 def create_electricity_sink(building: pandas.Series, area: float, sheets: dict,
                             sinks_standard_param: pandas.DataFrame,
-                            standard_parameters: pandas.ExcelFile):
+                            standard_parameters: pandas.ExcelFile) -> dict:
     """
         In this method, the electricity demand is calculated either on
         the basis of energy certificates (area-specific demand values)
@@ -63,6 +68,10 @@ def create_electricity_sink(building: pandas.Series, area: float, sheets: dict,
         :param standard_parameters: pandas imported ExcelFile \
                 containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     sink_param = standard_parameters.parse("2_2_electricity")
     specific_demands = {}
@@ -123,7 +132,7 @@ def create_electricity_sink(building: pandas.Series, area: float, sheets: dict,
 
 def create_heat_sink(building: pandas.Series, area: float, sheets: dict,
                      sinks_standard_param: pandas.DataFrame,
-                     standard_parameters: pandas.ExcelFile):
+                     standard_parameters: pandas.ExcelFile) -> dict:
     """
         In this method, the heat demand is calculated either on
         the basis of energy certificates (area-specific demand values)
@@ -144,6 +153,10 @@ def create_heat_sink(building: pandas.Series, area: float, sheets: dict,
         :param standard_parameters: pandas imported ExcelFile \
                 containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     standard_param = standard_parameters.parse("2_1_heat")
     standard_param.set_index("year of construction", inplace=True)
@@ -189,7 +202,7 @@ def create_heat_sink(building: pandas.Series, area: float, sheets: dict,
 
 
 def create_sink_ev(building: pandas.Series, sheets: dict,
-                   standard_parameters: pandas.ExcelFile):
+                   standard_parameters: pandas.ExcelFile) -> dict:
     """
         For the modeling of electric vehicles, within this method the
         sink for electric vehicles is created.
@@ -203,6 +216,10 @@ def create_sink_ev(building: pandas.Series, sheets: dict,
         :param standard_parameters: pandas imported ExcelFile \
                 containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import create_standard_parameter_comp
     
@@ -225,9 +242,9 @@ def create_sink_ev(building: pandas.Series, sheets: dict,
 
 
 def create_sinks(building: pandas.Series, sheets: dict,
-                 standard_parameters: pandas.ExcelFile):
+                 standard_parameters: pandas.ExcelFile) -> dict:
     """
-        TODO DOCSTRING
+        TODO DOCSTRINGTEXT
         
         :param building: building specific data which were imported \
             from the US-Input sheet
@@ -238,6 +255,10 @@ def create_sinks(building: pandas.Series, sheets: dict,
         :param standard_parameters: pandas imported ExcelFile \
                 containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     if building["building type"]:
         area = building["gross building area"]
@@ -270,7 +291,7 @@ def create_sinks(building: pandas.Series, sheets: dict,
 
 
 def sink_clustering(building: list, sink: pandas.Series,
-                    sink_parameters: list):
+                    sink_parameters: list) -> list:
     """
         In this method, the current sinks of the respective cluster are
         stored in dict and the current sinks are deleted. Furthermore,
@@ -285,6 +306,10 @@ def sink_clustering(building: list, sink: pandas.Series,
         :parameter sink_parameters: list containing clusters' sinks \
             information
         :type sink_parameters: list
+        
+        :return: - **sink_parameters** (list) - list containing \
+            clusters' sinks information which were modified within \
+            this method
     """
     # get cluster electricity sinks
     if str(building[0]) in sink["label"] and "electricity" in sink["label"]:
@@ -320,9 +345,9 @@ def sink_clustering(building: list, sink: pandas.Series,
 def create_cluster_electricity_sinks(standard_parameters: pandas.ExcelFile,
                                      sink_parameters: list, cluster: str,
                                      central_electricity_network: bool,
-                                     sheets: dict):
+                                     sheets: dict) -> dict:
     """
-        TODO DOCSTRING
+        TODO DOCSTRINGTEXT
         
         :param standard_parameters: pandas imported ExcelFile \
                 containing the non-building specific technology data
@@ -338,8 +363,11 @@ def create_cluster_electricity_sinks(standard_parameters: pandas.ExcelFile,
                 will represent the model definition's Spreadsheets
         :type sheets: dict
         
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
-    from program_files.urban_district_upscaling.components import (Link, Bus)
+    from program_files import (Link, Bus)
 
     bus_parameters = standard_parameters.parse("1_buses", index_col="bus_type")
     total_annual_demand = sum(sink_parameters[0:3])

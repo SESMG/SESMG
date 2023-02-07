@@ -2,9 +2,9 @@ import pandas
 
 
 def create_link(label: str, bus_1: str, bus_2: str, link_type: str, sheets,
-                standard_parameters: pandas.ExcelFile):
+                standard_parameters: pandas.ExcelFile) -> dict:
     """
-        creates a link with standard_parameters, based on the standard
+        Creates a link with standard_parameters, based on the standard
         parameters given in the "standard_parameters" dataset and adds
         it to the "sheets"-output dataset.
     
@@ -23,6 +23,10 @@ def create_link(label: str, bus_1: str, bus_2: str, link_type: str, sheets,
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import create_standard_parameter_comp
 
@@ -35,9 +39,11 @@ def create_link(label: str, bus_1: str, bus_2: str, link_type: str, sheets,
 
 
 def create_central_electricity_bus_connection(
-        cluster: str, sheets: dict, standard_parameters: pandas.ExcelFile):
+        cluster: str, sheets: dict, standard_parameters: pandas.ExcelFile
+) -> dict:
     """
-    
+        TODO DOCSTRINGTEXT
+        
         :param cluster: Cluster id
         :type cluster: str
         :param sheets: dictionary containing the pandas.Dataframes that\
@@ -46,6 +52,10 @@ def create_central_electricity_bus_connection(
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     # add link from central electricity bus to cluster electricity bus
     if (cluster + "_central_electricity_link") not in sheets["links"].index:
@@ -74,7 +84,7 @@ def create_central_electricity_bus_connection(
 
 
 def create_cluster_pv_links(cluster: str, sheets: dict, sink_parameters: list,
-                            standard_parameters: pandas.ExcelFile):
+                            standard_parameters: pandas.ExcelFile) -> dict:
     """
         In this method, the PV bus of the cluster is connected to the
         central electricity bus, if the cluster power demand > 0, it is
@@ -91,6 +101,10 @@ def create_cluster_pv_links(cluster: str, sheets: dict, sink_parameters: list,
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     if cluster + "_pv_central_electricity_link" not in sheets["links"].index:
         sheets = create_link(
@@ -117,7 +131,8 @@ def create_cluster_pv_links(cluster: str, sheets: dict, sink_parameters: list,
 
 
 def add_cluster_naturalgas_bus_links(sheets: dict, cluster: str,
-                                     standard_parameters: pandas.ExcelFile):
+                                     standard_parameters: pandas.ExcelFile
+                                     ) -> dict:
     """
         In this method, the naturalgas bus of the cluster is connected
         to the central natural gas bus.
@@ -130,7 +145,10 @@ def add_cluster_naturalgas_bus_links(sheets: dict, cluster: str,
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
-    
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     if cluster + "_central_naturalgas" not in sheets["links"].index:
         sheets = create_link(
@@ -162,6 +180,10 @@ def delete_non_used_links(sheets_clustering: dict, cluster_ids: dict,
         :param sheets: dictionary containing the pandas.Dataframes that\
             will represent the model definition's Spreadsheets
         :type sheets: dict
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     
     # iterate threw all links that are within the sheets dictionary

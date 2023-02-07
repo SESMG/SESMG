@@ -3,9 +3,9 @@ import pandas
 
 def create_standard_parameter_bus(label: str, bus_type: str, sheets: dict,
                                   standard_parameters: pandas.ExcelFile,
-                                  coords=None):
+                                  coords=None) -> dict:
     """
-        creates a bus with standard_parameters, based on the standard
+        Creates a bus with standard_parameters, based on the standard
         parameters given in the "standard_parameters" dataset and adds
         it to the "sheets"-output dataset.
     
@@ -23,6 +23,10 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets: dict,
         :param coords: latitude / longitude / dh column of the given bus\
             used to connect a producer bus to district heating network
         :type coords: list
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import read_standard_parameters, append_component
 
@@ -52,7 +56,8 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets: dict,
 
 def create_cluster_electricity_buses(building: list, cluster: str,
                                      sheets: dict,
-                                     standard_parameters: pandas.ExcelFile):
+                                     standard_parameters: pandas.ExcelFile
+                                     ) -> dict:
     """
         Method creating the building type specific electricity buses and
         connecting them to the main cluster electricity bus
@@ -68,6 +73,10 @@ def create_cluster_electricity_buses(building: list, cluster: str,
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from . import Link
 
@@ -115,7 +124,7 @@ def create_cluster_electricity_buses(building: list, cluster: str,
 
 def create_cluster_averaged_bus(sink_parameters: list, cluster: str,
                                 fuel_type: str, sheets: dict,
-                                standard_parameters: pandas.ExcelFile):
+                                standard_parameters: pandas.ExcelFile) -> dict:
     """
         In this method, an average grid purchase price for natural gas \
         and heat pump electricity is calculated. This is measured \
@@ -137,6 +146,10 @@ def create_cluster_averaged_bus(sink_parameters: list, cluster: str,
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     bus_parameters = standard_parameters.parse("1_buses", index_col="bus_type")
     type_dict = {
