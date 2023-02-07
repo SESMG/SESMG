@@ -54,10 +54,10 @@ def read_standard_parameters(name: str, param_type: str, index: str,
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
         
-        :returns standard_param: technology specific parameters of name
-        :rtype standard_param: pandas.Dataframe
-        :returns standard_keys: technology specific keys of name
-        :rtype standard_keys: list
+        :return: - **standard_param** (pandas.Dataframe) - technology \
+                    specific parameters of name
+                 - **standard_keys** (list) - technology specific keys \
+                    of name
     """
     # get the param_type sheet from standard parameters
     standard_param_df = standard_parameters.parse(param_type)
@@ -76,7 +76,7 @@ def read_standard_parameters(name: str, param_type: str, index: str,
 
 def create_standard_parameter_comp(
         specific_param: dict, standard_parameter_info: list, sheets,
-        standard_parameters: pandas.ExcelFile):
+        standard_parameters: pandas.ExcelFile) -> dict:
     """
         creates a component with standard_parameters, based on the
         standard parameters given in the "standard_parameters" dataset
@@ -119,7 +119,8 @@ def create_standard_parameter_comp(
 
 
 def create_heat_pump_buses_links(building: dict, gchps: dict, sheets: dict,
-                                 standard_parameters: pandas.ExcelFile):
+                                 standard_parameters: pandas.ExcelFile
+                                 ) -> dict:
     """
         In this method, all buses and links required for the heat pumps\
         are created and attached to the "buses" and "links" dataframes \
@@ -204,6 +205,8 @@ def column_exists(building: pandas.Series, column: str) -> bool:
         :type building: pandas.Series
         :param column: label of the investigated column
         :type column: str
+        
+        :return: - **None** (bool) -
     """
     # test rather the column exists
     try:
@@ -223,6 +226,8 @@ def represents_int(entry: str) -> bool:
         
         :param entry: entry under investigation
         :type entry: str
+        
+        :return: - **None** (bool) -
     """
     # test rather the entry is convertible
     try:
@@ -237,7 +242,7 @@ def represents_int(entry: str) -> bool:
 
 def create_building_buses_links(
         building: dict, central_elec_bus: bool, sheets: dict,
-        standard_parameters: pandas.ExcelFile):
+        standard_parameters: pandas.ExcelFile) -> dict:
     """
         In this method, all buses and links required for one building\
         are created and attached to the "buses" and "links" dataframes \
@@ -403,7 +408,8 @@ def load_input_data(plain_sheet: str, standard_parameter_path: str,
     return sheets, central, parcel, tool, worksheets, standard_parameters
 
 
-def get_central_comp_active_status(central, technology):
+def get_central_comp_active_status(central: pandas.DataFrame, technology: str
+                                   ) -> bool:
     """
         Method used to check if the central component technology is \
         enabled.
@@ -414,7 +420,7 @@ def get_central_comp_active_status(central, technology):
         :param technology: central component to be checked
         :type technology: str
 
-        :return: - **-** (bool) - return rather the technology is \
+        :return: - **None** (bool) - return rather the technology is \
             active (True) or not (False)
     """
     entry = central.loc[central["technology"] == technology]
@@ -493,7 +499,7 @@ def urban_district_upscaling_pre_processing(
         :type paths: list
         :param clustering: boolean for decision rather the buildings are
                            clustered spatially
-        :tpye clustering: bool
+        :type clustering: bool
         :param clustering_dh: boolean for decision rather the district
             heating connection will be clustered cluster_id wise
         :type clustering_dh: bool
