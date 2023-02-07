@@ -1,1 +1,8 @@
+Results
+********
+
+.. warning::
+
+	If a time series preparation algorithm was applied for the (main-)model, not every time-step of the model was modeled. This must be considered when analysing *energy amounts*. Simplifying, it can be assumed that the modeled amount of energy multiplied by the variable cost factor (see methods section) corresponds to the actual  amount of energy over the entire period. Changes in the cost structure, on the other hand, are automatically taken into account.
+
 
