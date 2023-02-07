@@ -3,9 +3,10 @@ import pandas
 
 def create_source(source_type: str, roof_num: str, building: dict,
                   sheets: dict, standard_parameters: pandas.ExcelFile,
-                  st_output=None, central=False, min_invest="0"):
+                  st_output=None, central=False, min_invest="0") -> dict:
     """
         TODO DOCSTRINGTEXT
+        
         :param source_type: define rather a photovoltaic or a \
             solarthermal source has to be created
         :type source_type: str
@@ -26,6 +27,10 @@ def create_source(source_type: str, roof_num: str, building: dict,
         :param central: parameter which definies rather the source is a\
             central source (True) or a decentral one (False)
         :type central: bool
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import append_component, read_standard_parameters
 
@@ -101,19 +106,26 @@ def create_source(source_type: str, roof_num: str, building: dict,
     return append_component(sheets, "sources", source_dict)
 
 
-def create_timeseries_source(sheets, label, output, standard_parameters):
+def create_timeseries_source(sheets: dict, label: str, output: str,
+                             standard_parameters: pandas.ExcelFile) -> dict:
     """
         TODO DOCSTRINGTEXT
-        :param source_type: define rather a photovoltaic or a \
-            solarthermal source has to be created
-        :type source_type: str
-        :param roof_num: roof part number
-        :type roof_num:
-        :param building:
-        :type building:
-        :param sheets:
-        :type sheets:
-        """
+        
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param label: component label
+        :type label: str
+        :param output: output bus label
+        :type output: str
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
+    """
     from program_files import append_component, read_standard_parameters
 
     # technical parameters
@@ -141,9 +153,11 @@ def create_timeseries_source(sheets, label, output, standard_parameters):
 
 def create_competition_constraint(limit: float, label: str, roof_num: str,
                                   sheets: dict,
-                                  standard_parameters: pandas.ExcelFile):
+                                  standard_parameters: pandas.ExcelFile
+                                  ) -> dict:
     """
         TODO DOCSTRINGTEXT
+        
         :param limit: max available roof area which can rather be used \
             for photovoltaic or solar thermal sources
         :type limit: float
@@ -157,6 +171,10 @@ def create_competition_constraint(limit: float, label: str, roof_num: str,
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import append_component, read_standard_parameters
 
@@ -184,7 +202,7 @@ def create_competition_constraint(limit: float, label: str, roof_num: str,
 
 def create_sources(building: dict, clustering: bool, sheets: dict,
                    standard_parameters: pandas.ExcelFile,
-                   st_output=None, central=False):
+                   st_output=None, central=False) -> dict:
     """
         Algorithm which creates a photovoltaic- and  a solar thermal \
         source as well as the resulting competition constraint for a \
@@ -208,6 +226,10 @@ def create_sources(building: dict, clustering: bool, sheets: dict,
         :param central: parameter which definies rather the source is a\
             central source (True) or a decentral one (False)
         :type central: bool
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files.urban_district_upscaling.pre_processing \
         import column_exists, represents_int
@@ -265,7 +287,8 @@ def create_sources(building: dict, clustering: bool, sheets: dict,
 
 
 def cluster_sources_information(source: pandas.Series, source_param: dict,
-                                azimuth_type: str, sheets: dict):
+                                azimuth_type: str, sheets: dict
+                                ) -> (dict, dict):
     """
         Collects the source information of the selected type, and
         inserts it into the dict containing the cluster specific
@@ -286,7 +309,11 @@ def cluster_sources_information(source: pandas.Series, source_param: dict,
 
 
         :return: - **source_param** (dict) - dict extended by a new \
-            entry
+                    entry
+                 - **sheets** (dict) - dictionary containing the \
+                    pandas.Dataframes that will represent the model \
+                    definition's Spreadsheets which was modified in \
+                    this method
     """
     source_type = "pv" if source["technology"] == "photovoltaic" else "st"
     param_dict = {
@@ -314,7 +341,7 @@ def cluster_sources_information(source: pandas.Series, source_param: dict,
 
 
 def sources_clustering(source_param: dict, building: list,
-                       sheets: dict, sheets_clustering: dict):
+                       sheets: dict, sheets_clustering: dict) -> (dict, dict):
     """
         In this method, the information of the photovoltaic and solar
         thermal systems to be clustered is collected, and the systems
@@ -333,8 +360,12 @@ def sources_clustering(source_param: dict, building: list,
             the pre_processing.py
         :type sheets_clustering: dict
 
-        :return: - **source_param** (dict) - containing the cluster \
-            summed source information attached within this method
+        :return: - **source_param** (dict) - dict extended by a new \
+                    entry
+                 - **sheets** (dict) - dictionary containing the \
+                    pandas.Dataframes that will represent the model \
+                    definition's Spreadsheets which was modified in \
+                    this method
     """
     for index, source in sheets_clustering["sources"].iterrows():
         # collecting information for bundled photovoltaic systems
@@ -375,7 +406,7 @@ def sources_clustering(source_param: dict, building: list,
 
 
 def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
-                           standard_parameters: pandas.ExcelFile):
+                           standard_parameters: pandas.ExcelFile) -> dict:
     """
         This method is used to create the clustered sources, which \
         are divided into 8 cardinal directions with averaged parameters.
@@ -391,6 +422,10 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import read_standard_parameters
     from program_files.urban_district_upscaling.components import Bus
