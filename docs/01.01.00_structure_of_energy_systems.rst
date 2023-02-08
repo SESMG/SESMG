@@ -18,7 +18,7 @@ Buses furthermore form connection points of an energy system. The graph of a sim
 consisting of each one source, one transformer, one sink, as well as two buses, could look like the 
 example displayed in the following figure.
   
-.. figure:: ../docs/imagess/structure_of_energy_system/simple_energy_system.png
+.. figure:: ../docs/images/structure_of_energy_system/simple_energy_system.png
    :width: 100 %
    :alt: Bus-Example
    :align: center
