@@ -53,10 +53,6 @@ Manual
 	
 	02.01.00_installation
 	02.02.00_application
-	02.02.01_interface
-	02.02.02_model_definition
-	02.02.03_urban_district_upscaling
-	02.02.04_results
 	02.03.00_demo
 
 
