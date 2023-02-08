@@ -17,7 +17,7 @@ parent = os.path.abspath('.')
 sys.path.insert(1, parent)
 
 #TODO:problem mit reativen Pfaden!
-from GUI_st_global_functions import clear_GUI_main_settings, create_safe_GUI_main_settings_dict, import_GUI_input_values_json, st_settings_global
+from GUI_st_global_functions import clear_GUI_main_settings, safe_GUI_input_values, import_GUI_input_values_json, st_settings_global
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main, sesmg_main_including_premodel
 
 
@@ -164,9 +164,8 @@ def main_application_sesmg():
     """
     
     # Import the saved GUI settings from the last session
-    settings_cache_dict_reload = import_GUI_input_values_json(os.path.dirname(__file__) + "/GUI_st_cache.json")
+    settings_cache_dict_reload = import_GUI_input_values_json(os.path.dirname(__file__) + "/GUI_st_cache.json")    
     
-        
     ####################################
     ############## Sidebar #############
     
@@ -232,7 +231,7 @@ def main_application_sesmg():
         # Checkboxes processing graph
         GUI_main_dict["input_show_graph"] = st.checkbox(label="Show Graph")
         # Slider number of threads
-        GUI_main_dict["input_num_threads"] = st.slider(label="Number of threads",min_value=1,max_value=35, help="Number of threads to use on your machine", value=settings_cache_dict_reload["num_threads"])
+        GUI_main_dict["input_num_threads"] = st.slider(label="Number of threads",min_value=1,max_value=35, help="Number of threads to use on your machine", value=settings_cache_dict_reload["input_num_threads"])
         #indexing the chosen solver of the cache session as an inputvalue for st. selectbox
         
         # Dict of choosable solvers the streamlit input index for selectbox's preselections
@@ -358,7 +357,7 @@ def main_application_sesmg():
         
  
         # Checkboxes modeling while using district heating clustering.
-        GUI_main_dict["input_cluster_dh"] = st.checkbox(label="Clustering District Heating Network", value=settings_cache_dict_reload["cluster_dh"])
+        GUI_main_dict["input_cluster_dh"] = st.checkbox(label="Clustering District Heating Network", value=settings_cache_dict_reload["input_cluster_dh"])
         
         ### Function to upload the distrct heating precalulation inside an expander.
         with st.expander("Advanced District Heating Precalculation"):
@@ -378,9 +377,9 @@ def main_application_sesmg():
         st.subheader("Postprocessing Parameters")
        
         # Input result processing parameters
-        GUI_main_dict["input_xlsx_results"] = st.checkbox(label="Create xlsx-files", value=settings_cache_dict_reload["xlsx_results"])
-        GUI_main_dict["input_console_results"] = st.checkbox(label="Create console-log", value=settings_cache_dict_reload["console_results"])
-        GUI_main_dict["input_criterion_switch"] = st.checkbox(label="Switch Criteria", value=settings_cache_dict_reload["criterion_switch"])
+        GUI_main_dict["input_xlsx_results"] = st.checkbox(label="Create xlsx-files", value=settings_cache_dict_reload["input_xlsx_results"])
+        GUI_main_dict["input_console_results"] = st.checkbox(label="Create console-log", value=settings_cache_dict_reload["input_console_results"])
+        GUI_main_dict["input_criterion_switch"] = st.checkbox(label="Switch Criteria", value=settings_cache_dict_reload["input_criterion_switch"])
 
         # Elements to set the pareto points.
         with st.expander("Pareto Point Options"):
@@ -392,7 +391,8 @@ def main_application_sesmg():
             input_pareto_points = st.multiselect(label="Pareto Points", options=pareto_options, default=settings_cache_dict_reload["input_pareto_points"])
             GUI_main_dict["input_pareto_points"] = input_pareto_points.sort(reverse=True)
             
-            
+
+#TODO: replacae with new method for GUI_main_dict
     ####### Clear the GUI settings cache
     # creating sidebar form submit strucutre
     with st.sidebar.form("Clear Cache"):
@@ -459,15 +459,16 @@ def main_application_sesmg():
         elif scenario_input_sheet_path != "":
             
             # Creating the timeseries preperation settings list for the main model
-            timeseries_prep_param = \
+            GUI_main_dict["timeseries_prep_param"] = \
                 [GUI_main_dict["input_timeseries_algorithm"],
                  GUI_main_dict["input_timeseries_cluster_index"],
                  GUI_main_dict["input_timeseries_criterion"],
                  GUI_main_dict["input_timeseries_period"],
                  0 if GUI_main_dict["input_timeseries_season"] == "None" else GUI_main_dict["input_timeseries_season"]]
             
+
             # Creating the timeseries preperation settings list for the pre-model
-            pre_model_timeseries_prep_param = \
+            GUI_main_dict["pre_model_timeseries_prep_param"] = \
                 [GUI_main_dict["input_premodeling_timeseries_algorithm"],
                  GUI_main_dict["input_premodeling_timeseries_cluster_index"],
                  GUI_main_dict["input_premodeling_timeseries_criterion"],
@@ -492,33 +493,13 @@ def main_application_sesmg():
             GUI_main_dict["premodeling_res_path"] = GUI_main_dict["res_path"] + "/pre_model_results"
             #os.mkdir(premodeling_res_path)
 
-             # Creating a dict with all GUI settings as preparation to save them for the next session
-             # settings_cache_dict_reload["main_page"]
-             
-            create_safe_GUI_main_settings_dict(result_path=res_path,
-                                               premodeling_result_path=premodeling_res_path,
-                                               num_threads=input_num_threads,
-                                               input_timeseries_algorithm_index=input_timeseries_algorithm_index,
-                                               input_timeseries_cluster_index_index=input_timeseries_cluster_index_index,
-                                               input_timeseries_criterion_index=input_timeseries_criterion_index,
-                                               input_timeseries_period_index=input_timeseries_period_index , 
-                                               input_timeseries_season_index=input_timeseries_season_index ,
-                                               graph=input_show_graph,
-                                               criterion_switch=input_criterion_switch,
-                                               xlsx_results=input_xlsx_results,
-                                               console_results=input_console_results,
-                                               input_solver_index=input_solver_index,
-                                               cluster_dh=input_cluster_dh,
-                                               input_activate_premodeling=input_activate_premodeling,
-                                               input_premodeling_invest_boundaries=input_premodeling_invest_boundaries,
-                                               input_premodeling_tightening_factor=input_premodeling_tightening_factor,
-                                               input_premodeling_timeseries_algorithm_index=input_premodeling_timeseries_algorithm_index,
-                                               input_premodeling_timeseries_cluster_index_index=input_premodeling_timeseries_cluster_index_index,
-                                               input_premodeling_timeseries_criterion_index=input_premodeling_timeseries_criterion_index,
-                                               input_premodeling_timeseries_period_index=input_premodeling_timeseries_period_index,
-                                               input_premodeling_timeseries_season_index=input_premodeling_timeseries_season_index,
-                                               input_pareto_points=input_pareto_points,
-                                               json_file_path=os.path.dirname(__file__) + "/GUI_st_cache.json")
+                       
+            # safe the GUI_main_dice as a chache for the next session
+            safe_GUI_input_values(input_values_dict=GUI_main_dict, 
+                                  json_file_path=os.path.dirname(__file__) + "/GUI_st_cache.json")
+            
+            
+                
                      
             
             # Starting the waiting / processing screen

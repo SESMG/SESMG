@@ -2,6 +2,11 @@
 import streamlit as st
 import os
 
+from GUI_st_global_functions import st_settings_global
+
+####################################
+# settings the initial streamlit page settings
+st_settings_global()
 
 def test_page():
     from GUI_streamlit import (import_GUI_input_values_json, \

@@ -3,6 +3,11 @@ import pandas as pd
 import os
 
 from program_files.urban_district_upscaling.pre_processing import urban_district_upscaling_pre_processing
+from GUI_st_global_functions import st_settings_global
+
+####################################
+# settings the initial streamlit page settings
+st_settings_global()
 
 
 def us_application():

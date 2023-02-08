@@ -4,6 +4,11 @@ import plotly.express as px
 
 from program_files.urban_district_upscaling.urban_district_upscaling_post_processing import *
 from program_files.postprocessing.pareto_curve_plotting import *
+from GUI_st_global_functions import st_settings_global
+
+####################################
+# settings the initial streamlit page settings
+st_settings_global()
 
 
 def advanced_result_page():
