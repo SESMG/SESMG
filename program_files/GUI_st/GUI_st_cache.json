@@ -1,7 +1,7 @@
 {
     "result_path": "/Users/jan.tockloth/Documents/GitHub/SESMG_dev/results/model_definition_2023-02-02--16-58-25",
     "premodeling_result_path": "/Users/jan.tockloth/Documents/GitHub/SESMG_dev/results/model_definition_2023-02-02--16-58-25/pre_model_results",
-    "num_threads": 1,
+    "num_threads": 20,
     "input_timeseries_algorithm_index": 4,
     "input_timeseries_cluster_index_index": 40,
     "input_timeseries_criterion_index": 0,

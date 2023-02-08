@@ -3,7 +3,6 @@ Created on Thu Sep 29 13:23:07 2022
 
 @author: Jan Tockloth - jan.tockloth@fh-muenster.de
 """
-
 import streamlit as st
 import pandas as pd
 from PIL import Image
@@ -11,28 +10,19 @@ import os
 from datetime import datetime 
 from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode 
 import plotly.express as px
+import sys
 
+# Setting new system path to be able to refer to perent directories
+parent = os.path.abspath('.')
+sys.path.insert(1, parent)
 
 #TODO:problem mit reativen Pfaden!
-from GUI_st_global_functions import clear_GUI_main_settings, create_safe_GUI_main_settings_dict, import_GUI_input_values_json
-#from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main, sesmg_main_including_premodel
-from program_files.preprocessing import Spreadsheet_Energy_System_Model_Generator
+from GUI_st_global_functions import clear_GUI_main_settings, create_safe_GUI_main_settings_dict, import_GUI_input_values_json, st_settings_global
+from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main, sesmg_main_including_premodel
 
 
-# from program_files.GUI_st.GUI_st_US import *
-
-def st_settings_global():
-    """
-    Function to define settings for the Streamlit GUI.
-
-    """
-    # Global page settings
-    st.set_page_config(
-        page_title=('SESMG'),
-        layout='wide', 
-        menu_items={'Get Help': 'https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/',
-                    'Report a Bug': 'https://github.com/SESMG/SESMG/issues'})
-    
+####################################
+# settings the initial streamlit page settings
 st_settings_global()
 
 
