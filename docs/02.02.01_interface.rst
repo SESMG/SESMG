@@ -10,7 +10,7 @@ Interface (TK-INTER)
 
 	If you receive a "Your computer has been protected by Windows" error message or a similiar one, click "More Information," and then "Run Anyway" (or your operating system specific way to run the programm anyway).
 
-.. figure:: ..docs/images/manual/GUI/GUI.png
+.. figure:: ../docs/images/manual/GUI/GUI.png
    :width: 100 %
    :alt: GUI
    :align: center
@@ -78,7 +78,7 @@ Depending on which of the time series preparation algorithms described in the me
 The following algorithms are applicable and must be specified with the following additional information. A detailed description of the algorithms can be found in the methods section.
 
 .. csv-table::
-	:file: ..docs/csv/timeseries_preparation.csv
+	:file: ../docs/csv/timeseries_preparation.csv
 	:header-rows: 1
 
 Pre-Modeling
