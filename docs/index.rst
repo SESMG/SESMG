@@ -19,7 +19,7 @@ results can be viewed and analyzed using a browser-based results output.
 
 Structure of Energy Systems
 -------------------------------------------------
-* :doc:`structure_of_energy_system/structure`
+* :doc:`01.01.00_structure_of_energy_systems`
 	
 	
 ..	toctree::
@@ -27,7 +27,7 @@ Structure of Energy Systems
 	:hidden:
 	:caption: Structure of Energy Systems
 	
-	structure_of_energy_system/structure
+	01.01.00_structure_of_energy_systems
 
 
 Manual
