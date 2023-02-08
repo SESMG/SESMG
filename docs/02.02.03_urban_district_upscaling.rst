@@ -170,7 +170,7 @@ Category 4
 .. _`standard parameter`:
 
 Standard parameter sheet
-=========================
+------------------------
 The standard parameter sheet contains all technology-specific data (costs, emissions, efficiencies) as well as all other data (e.g. specific energy requirements) required for energy system modeling. The parameters used are included in the following standard parameter documentation:
 https://doi.org/10.5281/zenodo.6974401
 
