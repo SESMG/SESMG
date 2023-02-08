@@ -20,9 +20,8 @@ Modeling Methods
 -------------------------------------------------
 * :doc:`01.01.00_structure_of_energy_systems`
 * :doc:`01.02.00_multi_criteria_optimization`
-* :doc:`01.03.00_multi_criteria_optimization`
-* :doc:`01.04.00_model_simplification`
-* :doc:`01.05.00_urban_district_upscaling`
+* :doc:`01.03.00_model_simplification`
+* :doc:`01.04.00_urban_district_upscaling`
 	
 	
 ..	toctree::
@@ -32,9 +31,8 @@ Modeling Methods
 	
 	01.01.00_structure_of_energy_systems
 	01.02.00_multi_criteria_optimization
-	01.03.00_multi_criteria_optimization
-	01.04.00_model_simplification
-	01.05.00_urban_district_upscaling
+	01.03.00_model_simplification
+	01.04.00_urban_district_upscaling
 	
 	
 Manual
