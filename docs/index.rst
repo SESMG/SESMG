@@ -16,6 +16,50 @@ results can be viewed and analyzed using a browser-based results output.
    From an input spreadsheet to interactive modelling results: The Spreadsheet Energy System Model Generator
 
 
+Modeling Methods
+-------------------------------------------------
+* :doc:`01.01.00_structure_of_energy_systems`
+* :doc:`01.02.00_multi_criteria_optimization`
+* :doc:`01.03.00_model_simplification`
+* :doc:`01.04.00_urban_district_upscaling`
+	
+	
+..	toctree::
+	:maxdepth: 2
+	:hidden:
+	:caption: Modeling Methods
+	
+	01.01.00_structure_of_energy_systems
+	01.02.00_multi_criteria_optimization
+	01.03.00_model_simplification
+	01.04.00_urban_district_upscaling
+	
+	
+Manual
+-------------------------------------------------
+* :doc:`02.01.00_installation`
+* :doc:`02.02.00_application`
+* :doc:`02.02.01_interface`
+* :doc:`02.02.02_model_definition`
+* :doc:`02.02.03_urban_district_upscaling`
+* :doc:`02.02.04_results`
+* :doc:`02.03.00_demo`
+	
+	
+..	toctree::
+	:maxdepth: 2
+	:hidden:
+	:caption: Manual
+	
+	02.01.00_installation
+	02.02.00_application
+	02.02.01_interface
+	02.02.02_model_definition
+	02.02.03_urban_district_upscaling
+	02.02.04_results
+	02.03.00_demo
+
+
 
 Structure of Energy Systems
 -------------------------------------------------
