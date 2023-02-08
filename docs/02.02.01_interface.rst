@@ -102,9 +102,3 @@ Results
 ===========
 
 
-
-References
-===========
-[1] Klemm, C.; Wiese, F. and Vennemann P.  *Model-based run-time and memory reduction for a mixed-use multi-energy system model with high spatial resolution*. Applied Energy (2023), https://doi.org/10.1016/j.apenergy.2022.120574
-
-[2] Green, R.; Staffell, I and Vasilakos, N. *Divide and Conquer? k-Means Clustering of Demand Data Allows Rapid and Accurate Simulations of the British Electricity System.* IEEE Transactions on Engineering Management 61.2 (2014): 251-260.
