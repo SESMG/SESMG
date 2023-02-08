@@ -1,4 +1,4 @@
-Scenario Spreadsheet
+Model Definition
 =================================================
 
 For the modeling and optimization of an energy system, parameters for all system components must be given in the model 
