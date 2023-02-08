@@ -60,43 +60,6 @@ Manual
 	02.03.00_demo
 
 
-
-Structure of Energy Systems (Removed Soon)
--------------------------------------------------
-* :doc:`01.01.00_structure_of_energy_systems`
-	
-	
-..	toctree::
-	:maxdepth: 2
-	:hidden:
-	:caption: Structure of Energy Systems (Removed Soon)
-	
-	01.01.00_structure_of_energy_systems
-
-
-Manual (Removed Soon)
--------------------------------------------------
-* :doc:`manual/installation`
-* :doc:`manual/GUI`
-* :doc:`manual/ScenarioSpreadsheet`
-* :doc:`manual/Results`
-* :doc:`manual/UpscalingTool`
-* :doc:`manual/DemoTool`
-
-
-..	toctree::
-	:maxdepth: 2
-	:hidden:
-	:caption: Manual (Removed Soon)
-	
-	manual/installation
-	manual/GUI
-	manual/ScenarioSpreadsheet
-	manual/Results
-	manual/UpscalingTool
-	manual/DemoTool
-
-
 Troubleshooting 
 -------------------------------------------------
 * :doc:`03.00.00_trouble_shooting`
