@@ -61,7 +61,7 @@ Manual
 
 
 
-Structure of Energy Systems
+Structure of Energy Systems (Removed Soon)
 -------------------------------------------------
 * :doc:`01.01.00_structure_of_energy_systems`
 	
@@ -69,12 +69,12 @@ Structure of Energy Systems
 ..	toctree::
 	:maxdepth: 2
 	:hidden:
-	:caption: Structure of Energy Systems
+	:caption: Structure of Energy Systems (Removed Soon)
 	
 	01.01.00_structure_of_energy_systems
 
 
-Manual
+Manual (Removed Soon)
 -------------------------------------------------
 * :doc:`manual/installation`
 * :doc:`manual/GUI`
@@ -87,7 +87,7 @@ Manual
 ..	toctree::
 	:maxdepth: 2
 	:hidden:
-	:caption: Manual
+	:caption: Manual (Removed Soon)
 	
 	manual/installation
 	manual/GUI
