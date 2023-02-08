@@ -1,5 +1,5 @@
 Interface (TK-INTER)
-***********************
+====================
 
 1. Fill in the spreadsheet document according to the instructions in the "Scenario Spreadsheet" chapter.
 
@@ -42,26 +42,26 @@ The functions under the topic **Results** are used to analyze results older then
 	The detailed modelling results are also stored within the "results" folder.
 
 Interface (Streamlit)
-***********************
+====================
 
 Main Page
-===========
+-----------
 
 Input
-------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 xxxx
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+''''''''''''''''''''''
 
 xxxx
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+''''''''''''''''''''''
 
 Model Simplification
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Time Series Preparation
 ''''''''''''''''''''''
+
+**Time Series Preparation:**
+
 
 Depending on which of the time series preparation algorithms described in the methods section is used, the following specifications must be made:
 
@@ -81,8 +81,10 @@ The following algorithms are applicable and must be specified with the following
 	:file: ../docs/csv/timeseries_preparation.csv
 	:header-rows: 1
 
-Pre-Modeling
-''''''''''''''''''''''
+
+**Pre-Modeling:**
+
+
 For the pre-modeling as described in the methods section, the following specifications must be made:
 
 * **Active**: Must be checked, if pre-modeling should be carried out.
@@ -96,9 +98,9 @@ For the pre-modeling as described in the methods section, the following specific
 
 
 Short Results
---------------
+^^^^^^^^^^^^^^^^
 
 Results
-===========
+--------------
 
 
