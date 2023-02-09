@@ -1,5 +1,5 @@
 Interface (TK-INTER)
-====================
+--------------------
 
 1. Fill in the spreadsheet document according to the instructions in the "Scenario Spreadsheet" chapter.
 
