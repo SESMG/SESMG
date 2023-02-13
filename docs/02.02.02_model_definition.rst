@@ -241,7 +241,7 @@ If you have chosen the technology "other", the solver has the opportunity to con
    wind_turbine,,0,1,windpower,electricity_bus,None,0,0,30,0,0,0,100,9,0,E-126/4200,135,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 
-.. figure:: images/manual/ScenarioSpreadsheet/BSP_Graph_source.png
+.. figure:: ../docs/images/manual/ScenarioSpreadsheet/BSP_Graph_source.png
    :width: 100 %
    :alt: Source_Graph
    :align: center
