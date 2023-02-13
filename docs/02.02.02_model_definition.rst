@@ -89,7 +89,7 @@ Within this sheet, the buses of the energy system are defined. The following par
    district_chp_electricity_bus,,0,0,1,0.000,0.000,-375.00,0.00,0,0,0
    district_gas_bus,,0,0,1,0.000,0.070,0.00,0.00,0,0,0
    
-.. figure:: ../images/manual/ScenarioSpreadsheet/BSP_Graph_Bus.png
+.. figure:: images/manual/ScenarioSpreadsheet/BSP_Graph_Bus.png
    :width: 100 %
    :alt: Bus_Graph
    :align: center
@@ -139,7 +139,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
    ID_heat_sink,EFH standard load profile sink,1,1,ID_heat_bus,efh,0,30000.0,0,3,0
    ID_cooling_sink,fixed timeseries cooling demand,0,1,ID_cooling_bus,timeseries,1,0,0,0,0
 
-.. figure:: ../images/manual/ScenarioSpreadsheet/BSP_Graph_sink.png
+.. figure:: images/manual/ScenarioSpreadsheet/BSP_Graph_sink.png
    :width: 100 %
    :alt: Sink_Graph
    :align: center
@@ -241,7 +241,7 @@ If you have chosen the technology "other", the solver has the opportunity to con
    wind_turbine,,0,1,windpower,electricity_bus,None,0,0,30,0,0,0,100,9,0,E-126/4200,135,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 
-.. figure:: ../images/manual/ScenarioSpreadsheet/BSP_Graph_source.png
+.. figure:: images/manual/ScenarioSpreadsheet/BSP_Graph_source.png
    :width: 100 %
    :alt: Source_Graph
    :align: center
@@ -341,7 +341,7 @@ The following parameters are only required, if "transformer type" is set to "Abs
 	ID_ASHP_transformer,air source heat pump,1,CompressionHeatTransformer,heat_pump,ID_hp_electricity_bus,0,ID_heat_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,112.78,0,0,0,0,0,Air,60,0,0.4,0,0,0,0,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	ID_chp_transformer,,0,GenericTransformer,0,district_gas_bus,0,district_chp_electricity_bus,district_heat_bus,0,0.35,0.55,0,0,20,0,0,0,0,0,0,50,130,0,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	
-.. figure:: ../images/manual/ScenarioSpreadsheet/BSP_Graph_transformer.png
+.. figure:: images/manual/ScenarioSpreadsheet/BSP_Graph_transformer.png
    :width: 100 %
    :alt: Transformer_Graph
    :align: center
@@ -400,7 +400,7 @@ Stratified Storage
 	ID_stratified_thermal_storage,,0,Stratified,ID_heat_bus,0.2,0.2,1,0.98,0,0.05,0.95,0,0,100,0,0,0,20,35,0,0,100,0,0.8,60,40,0.04
 	district_battery_storage,,0,Generic,district_electricity_bus,0.17,0.17,1,0.98,0,0.1,1,0,0,1000,0,0,0,0,10,0,0,10,0,0,0,0,0
 	
-.. figure:: ../images/manual/ScenarioSpreadsheet/BSP_Graph_Storage.png
+.. figure:: images/manual/ScenarioSpreadsheet/BSP_Graph_Storage.png
    :width: 100 %
    :alt: Transformer_Graph
    :align: center
@@ -444,7 +444,7 @@ Costs
 	district_chp_to_district_electricity_bus,,0,directed,district_chp_electricity_bus,district_electricity_bus,1,0,0,0,0,0,0.1438,0,0,0
 	ID_pv_to_district_electricity_link,,0,directed,ID_pv_bus,ID_electricity_bus,1,0,0,0,0,0,0.1438,0,0,0
 	
-.. figure:: ../images/manual/ScenarioSpreadsheet/BSP_Graph_link.png
+.. figure:: images/manual/ScenarioSpreadsheet/BSP_Graph_link.png
    :width: 100 %
    :alt: bsp-graph-link
    :align: center
