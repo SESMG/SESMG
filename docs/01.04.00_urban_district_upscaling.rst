@@ -9,7 +9,7 @@ Upscaling Model
 
 By using the urban Upscaling Tool, automatically a model containing the components shown in the following figure is created. The model is divided into components of the main-system which are created only once, and components of sub-systems, which are created for every sub-system. A detailed description of the system is given here: https://doi.org/10.5281/zenodo.7615332
 
-.. figure:: ../images/manual/UpscalingTool/Upscaling_Model.png
+.. figure:: ../docs/images/manual/UpscalingTool/Upscaling_Model.png
    :width: 50 %
    :alt: Upscaling_Model
    :align: center
