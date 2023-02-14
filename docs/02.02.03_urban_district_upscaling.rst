@@ -2,7 +2,7 @@ Urban District Upscaling
 -------------------------------------
 
 
-.. figure:: ../images/manual/UpscalingTool/sesmg_process.png
+.. figure:: images/manual/UpscalingTool/sesmg_process.png
    :width: 50 %
    :alt: Process of the SESMG [1].
    :align: center
