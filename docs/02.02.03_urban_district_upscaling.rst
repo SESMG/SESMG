@@ -2,7 +2,7 @@ Urban District Upscaling
 -------------------------------------
 
 
-The modeling method of the Urban District Upscaling can be found here:  `Modeling Method Urban District Upscaling <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.04.00_urban_district_upscaling.html>`_. The usage is described in this chapter.
+The modeling method of the Urban District Upscaling can be found here:  `Modeling Method Urban District Upscaling <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.04.00_urban_district_upscaling.html>`_. All relevant data can be found The usage is described in this chapter.
 
 The upscaling tool can be used with the following steps:
 
