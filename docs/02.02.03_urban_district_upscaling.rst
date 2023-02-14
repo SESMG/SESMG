@@ -4,7 +4,7 @@ Urban District Upscaling
 
 .. figure:: images/manual/UpscalingTool/sesmg_process.png
    :width: 50 %
-   :alt: Process of the SESMG [1].
+   :alt: Process of the SESMG including the Upscaling Tool [1].
    :align: center
    
 
@@ -171,7 +171,7 @@ Category 4
 
 .. _`standard parameter`:
 
-Standard parameter sheet
+Standard Parameter Sheet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The standard parameter sheet contains all technology-specific data (costs, emissions, efficiencies) as well as all other data (e.g. specific energy requirements) required for energy system modeling. The parameters used are included in the following standard parameter documentation:
 https://doi.org/10.5281/zenodo.6974401
