@@ -7,9 +7,9 @@ The modeling method of the Urban District Upscaling can be found here:  `Modelin
 The upscaling tool can be used with the following steps:
 
 1. Fill the `upscaling sheet`_.
-2. If necessary, adjust the "standard_parameters"-xlsx-sheet, for example if electricity prices have increased. 
+2. If necessary, adjust the `standard parameter`_-sheet, for example if electricity prices have increased. 
 3. Execute the upscaling tool to generate a energy system model with the structure described below.
-4. Execute the automatically generated model_definition-xlsx-sheet.
+4. Execute the automatically generated *model_definition.xlsx*.
 
 .. _`upscaling sheet`:
 
