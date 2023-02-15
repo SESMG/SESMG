@@ -57,6 +57,7 @@ def create_building_insulation(building: dict, sheets: dict,
             ]
     param_dict = {
         "active": 1,
+        "existing": 0,
         "sink": str(building["label"]) + "_heat_demand",
         "temperature indoor": 20,
         "heat limit temperature": 15,

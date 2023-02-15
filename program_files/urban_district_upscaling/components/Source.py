@@ -87,7 +87,7 @@ def create_source(source_type: str, roof_num: str, building: dict,
         "Longitude": source_param[5],
         "input": switch_dict.get(source_type)[2],
         "Temperature Inlet": temp_inlet,
-        "min. investment capacity": min_invest
+        "min. investment capacity": float(min_invest)
     }
     if central:
         source_type = "central_solar_thermal_collector"

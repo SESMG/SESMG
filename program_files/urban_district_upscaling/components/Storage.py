@@ -48,7 +48,7 @@ def create_storage(
             "bus": str(building_id) + storage_dict.get(storage_type)[2]
             if bus is None
             else bus,
-            "min. investment capacity": min_invest
+            "min. investment capacity": float(min_invest)
         },
         standard_parameter_info=[
             de_centralized + storage_dict.get(storage_type)[0],

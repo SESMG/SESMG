@@ -96,6 +96,12 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
                 label=str(building_id) + "_oil_bus", bus_type=oil_bus,
                 sheets=sheets, standard_parameters=standard_parameters
             )
+        if transformer_type == "building_woodstove_transformer":
+            sheets = Bus.create_standard_parameter_bus(
+                label=str(building_id) + "_wood_bus",
+                bus_type="building_wood_bus",
+                sheets=sheets, standard_parameters=standard_parameters
+            )
 
     if not technology_dict.get(transformer_type)[2] == output:
         output1 = str(building_id) + "_" \
@@ -116,7 +122,7 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
             "output2": technology_dict.get(transformer_type)[3],
             "area": float(area),
             "temperature high": flow_temp,
-            "min. investment capacity": min_invest
+            "min. investment capacity": float(min_invest)
         },
         standard_parameter_info=[transformer_type, "4_transformers",
                                  "transformer_type"],
@@ -158,7 +164,7 @@ def building_transformer(building: dict, p2g_link: bool, true_bools: list,
         "oil heating":
             [building["building type"], "building_oilheating_transformer"],
         "wood stove":
-            [None, "building_woodstove_transformer"]
+            [building["building type"], "building_woodstove_transformer"]
     }
     
     for transformer in build_transformer_dict:
