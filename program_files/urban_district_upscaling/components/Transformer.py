@@ -23,6 +23,7 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
                        output="None", min_invest="0"):
     """
         TODO DOCSTRING
+        
         :param building_id: building label
         :type building_id: str
         :param transformer_type: string containing the type of \
@@ -48,6 +49,14 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
         :type specific: str
         :param output:
         :type output: str
+        :param min_invest: if the user's input contains an already \
+            existing transformer it's capacity is the min investment \
+            value of the transformer to be created
+        :type min_invest: str
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import create_standard_parameter_comp
     from program_files import Bus
@@ -131,24 +140,26 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
     )
 
 
-def building_transformer(building: dict, p2g_link: bool, true_bools: list,
-                         sheets: dict, standard_parameters: pandas.ExcelFile):
+def building_transformer(building: dict, p2g_link: bool, sheets: dict,
+                         standard_parameters: pandas.ExcelFile) -> dict:
     """
-        TODO
+        TODO DOCSTRINGTEXT
+        
         :param building: dictionary holding the building specific data
         :type building: dict
         :param p2g_link: boolean defining rather a p2g system which \
             creates a central naturalgas bus exists or not
         :type p2g_link: bool
-        :param true_bools: list containing the entries that are \
-            evaluated as true
-        :type true_bools: list
         :param sheets: dictionary containing the pandas.Dataframes that\
             will represent the model definition's Spreadsheets
         :type sheets: dict
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files.urban_district_upscaling.components import Link
     from program_files.urban_district_upscaling.pre_processing \
@@ -308,7 +319,7 @@ def transformer_clustering(building: pandas.DataFrame, sheets: dict,
 
 def create_cluster_transformer(technology: str, cluster_parameters: dict,
                                cluster: str, sheets: dict,
-                               standard_parameters: pandas.ExcelFile):
+                               standard_parameters: pandas.ExcelFile) -> dict:
     """
         TODO METHOD DESCRIPTION
         
@@ -327,7 +338,9 @@ def create_cluster_transformer(technology: str, cluster_parameters: dict,
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
 
-        :return:
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import read_standard_parameters, append_component
     

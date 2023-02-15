@@ -84,7 +84,6 @@ def test_building_transformer(test_decentral_gasheating_entry,
     sheets = Transformer.building_transformer(
         building=building,
         p2g_link=False,
-        true_bools=["yes"],
         sheets=sheets,
         standard_parameters=standard_parameters
     )

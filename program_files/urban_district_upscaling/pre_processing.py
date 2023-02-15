@@ -593,7 +593,7 @@ def urban_district_upscaling_pre_processing(
         )
         # create transformer
         sheets = Transformer.building_transformer(
-            building=building, p2g_link=p2g_link, true_bools=true_bools,
+            building=building, p2g_link=p2g_link,
             sheets=sheets, standard_parameters=standard_parameters
         )
         # create storages
