@@ -336,6 +336,18 @@ Error M-027: Key Error (Index) II
 
 **Debugging:** Do not consider insulation measurements for the building component.
 
+
+Error M-028: invalid literal for int()
+----------------------------------
+**Error Message:** ::
+
+   ValueError: invalid literal for int() with base10: 'none'
+
+**Possible Error Cause:** Wrong parameters for the timeseries preparation have been selected.
+
+**Debugging:** Make sure, that you have defined the parameters for the timeseries preparation correctly. Try changing the values for 'Period' and 'Season' to other values than 'none'.
+
+
 Contributing to the troubleshooting
 ===============================
 
