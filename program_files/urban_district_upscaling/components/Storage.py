@@ -15,7 +15,7 @@ storage_dict = {
 def create_storage(
     building_id: str, storage_type: str, de_centralized: str, sheets: dict,
     standard_parameters: pandas.ExcelFile, bus=None, min_invest="0"
-):
+) -> dict:
     """
         Sets the specific parameters for a battery, and creates them
         afterwards.
@@ -39,6 +39,14 @@ def create_storage(
             necessary if the storage should not be connected to the \
             standardized bus
         :type bus: str
+        :param min_invest: if the user's input contains an already \
+            existing storage it's capacity is the min investment \
+            value of the storage to be created
+        :type min_invest: str
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files import create_standard_parameter_comp
 
@@ -60,22 +68,24 @@ def create_storage(
     )
 
 
-def building_storages(building: dict, true_bools: list, sheets: dict,
+def building_storages(building: dict, sheets: dict,
                       standard_parameters: pandas.ExcelFile) -> dict:
     """
-        TODO
+        TODO DOCSTRING TEXT
+        
         :param building: dictionary containing the building specific \
             parameters
         :type building: dict
-        :param true_bools: list containing the entries that are \
-            evaluated as true
-        :type true_bools: list
         :param sheets: dictionary containing the pandas.Dataframes that\
             will represent the model definition's Spreadsheets
         :type sheets: dict
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files.urban_district_upscaling.pre_processing \
         import represents_int
@@ -179,7 +189,7 @@ def cluster_storage_information(storage: pandas.Series,
 
 def create_cluster_storage(storage_type: str, cluster: str,
                            storage_parameter: dict, sheets: dict,
-                           standard_parameters: pandas.ExcelFile):
+                           standard_parameters: pandas.ExcelFile) -> dict:
     """
         This method is used to create the clustered storages.
         
@@ -197,6 +207,10 @@ def create_cluster_storage(storage_type: str, cluster: str,
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files.urban_district_upscaling.pre_processing import (
         append_component,

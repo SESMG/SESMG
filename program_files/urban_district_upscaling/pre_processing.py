@@ -598,7 +598,7 @@ def urban_district_upscaling_pre_processing(
         )
         # create storages
         sheets = Storage.building_storages(
-            building=building, true_bools=true_bools, sheets=sheets,
+            building=building, sheets=sheets,
             standard_parameters=standard_parameters
         )
 

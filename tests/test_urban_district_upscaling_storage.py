@@ -62,7 +62,6 @@ def test_building_storages(test_storage_decentralized_battery_entry,
     # start the method to be tested
     sheets = Storage.building_storages(
         building=building,
-        true_bools=["yes"],
         sheets=sheets,
         standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
                                              + "/standard_parameters.xlsx"))
