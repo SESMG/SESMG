@@ -11,6 +11,8 @@ technology_dict = {
         ["oilheating", "oil", "heat", "None"],
     "building_electricheating_transformer":
         ["electricheating", "electricity", "heat", "None"],
+    "building_woodstove_transformer":
+        ["wood_stove", "wood", "heat", "None"]
 }
 
 
@@ -154,7 +156,9 @@ def building_transformer(building: dict, p2g_link: bool, true_bools: list,
         "electric heating":
             [None, "building_electricheating_transformer"],
         "oil heating":
-            [building["building type"], "building_oilheating_transformer"]
+            [building["building type"], "building_oilheating_transformer"],
+        "wood stove":
+            [None, "building_woodstove_transformer"]
     }
     
     for transformer in build_transformer_dict:
