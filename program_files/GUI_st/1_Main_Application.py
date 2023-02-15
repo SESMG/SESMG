@@ -17,8 +17,9 @@ parent = os.path.abspath('.')
 sys.path.insert(1, parent)
 
 #TODO:problem mit reativen Pfaden!
-from GUI_st_global_functions import clear_GUI_main_settings, safe_GUI_input_values, import_GUI_input_values_json, st_settings_global
-from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import sesmg_main, sesmg_main_including_premodel
+from GUI_st_global_functions import clear_GUI_main_settings, safe_GUI_input_values, import_GUI_input_values_json, st_settings_global, run_SESMG
+from program_files.preprocessing.pareto_optimization import run_pareto
+
 
 
 ####################################
@@ -28,8 +29,7 @@ st_settings_global()
 
 ####################################
 #opening the input value dict, which will be safed as a json
-GUI_main_dict = {
-    }
+GUI_main_dict = {}
 
 
 ####################################
@@ -148,10 +148,10 @@ def main_output_result_overview(result_path_summary, result_path_components, res
     # Header
     st.subheader("The structure of the modeled energy system:")
     
-#TODO: Expander einfügen
     # Importing and printing the energy system graph
-    es_graph = Image.open(os.path.dirname(__file__) + "/graph.gv.png", "r")
-    st.image(es_graph, caption="Beispielgraph.",)
+    with st.expander("Show the structure of the modeled energy system"):
+        es_graph = Image.open(result_path_graph, "r")
+        st.image(es_graph)
 
 
 
@@ -162,16 +162,12 @@ def main_application_sesmg():
     input options and starting the processes.
 
     """
-    
+
     # Import the saved GUI settings from the last session
     settings_cache_dict_reload = import_GUI_input_values_json(os.path.dirname(__file__) + "/GUI_st_cache.json")    
     
     ####################################
     ############## Sidebar #############
-    
-    ########## Scenario Input ##########
-    #
-                
     
     ###### Run Model Visualization #####
     # Function to create and display the model structure without optimizung the system.
@@ -180,7 +176,6 @@ def main_application_sesmg():
         
         if "state_submitted_vis_existing_results" not in st.session_state:
             st.session_state["state_submitted_vis_existing_results"] = "not done"
-        
         
         submitted_vis_existing_results = st.form_submit_button(label="Visualize existing model results", on_click=change_state_submitted_vis_existing_results)
         
@@ -223,7 +218,7 @@ def main_application_sesmg():
         
         ####################################
         # Input processing parameters
-        # Functions to input the modelling parameters.
+        # Functions to input the modeling parameters.
         
         # Header
         st.subheader("Processing Parameters")
@@ -355,17 +350,15 @@ def main_application_sesmg():
         GUI_main_dict["input_premodeling_timeseries_season_index"] = input_timeseries_season_dict[GUI_main_dict["input_premodeling_timeseries_season"]]       
     
         
- 
+ #TODO: check functionality of underlaying functions and implement in streamlit GUI
         # Checkboxes modeling while using district heating clustering.
         GUI_main_dict["input_cluster_dh"] = st.checkbox(label="Clustering District Heating Network", value=settings_cache_dict_reload["input_cluster_dh"])
         
         ### Function to upload the distrct heating precalulation inside an expander.
         with st.expander("Advanced District Heating Precalculation"):
-            #'''
             #### Fileuploader not able to print file path
             ## Upload DH Precalc File 
             #district_heating_precalc = st.file_uploader("Select District Heating File")
-            #'''
             district_heating_precalc_path = st.text_input("Type in path to your District Heating File input file.") 
         
         
@@ -385,19 +378,25 @@ def main_application_sesmg():
         with st.expander("Pareto Point Options"):
             
             # List of pareto points wich can be chosen.
-            pareto_options = [i for i in range(1,99)]
+            pareto_options = [i for i in range(1,100)]
             
             # Multiselect element
             input_pareto_points = st.multiselect(label="Pareto Points", options=pareto_options, default=settings_cache_dict_reload["input_pareto_points"])
-            GUI_main_dict["input_pareto_points"] = input_pareto_points.sort(reverse=True)
+            if input_pareto_points is not None: 
+                input_pareto_points.sort(reverse=True)
             
-
-#TODO: replacae with new method for GUI_main_dict
+            GUI_main_dict["input_pareto_points"] = input_pareto_points
+            
     ####### Clear the GUI settings cache
     # creating sidebar form submit strucutre
     with st.sidebar.form("Clear Cache"):
         
-        submitted_clear_cache = st.form_submit_button(label="Clear all GUI Settings")
+        # set initial sessin state for clear cache seubmit button
+        if "state_submitted_clear_cache" not in st.session_state:
+            st.session_state["state_submitted_clear_cache"] = "not done"
+        
+        # create submit button
+        submitted_clear_cache = st.form_submit_button(label="Clear all GUI Settings", on_click=change_state_submitted_clear_cache)
         
         #button if latest path should be cleard as well
         clear_path = st.checkbox(label="Clear result paths")
@@ -405,39 +404,45 @@ def main_application_sesmg():
     
     #################################### 
     # Clear all GUI settings if clear latest result paths clicked
-    if submitted_clear_cache and clear_path == True:
+#TOFDO: session state für clear dict
+        
+    if st.session_state["state_submitted_clear_cache"] == "done" and clear_path == True:
         #create and safe dict, set paths empty
         clear_GUI_main_settings(result_path="",
                                 premodeling_result_path="",
                                 json_file_path=os.path.dirname(__file__) + "/GUI_st_cache.json")
+        #reset session state for clear cache
+        st.session_state["state_submitted_clear_cache"] = "not done"
         #rerun whole script to update GUI settings
         st.experimental_rerun()
         
-    elif submitted_clear_cache == True:
+    elif st.session_state["state_submitted_clear_cache"] == "done" and clear_path == False:
         #create and safe dict, set paths as before
-        clear_GUI_main_settings(result_path=settings_cache_dict_reload["result_path"],
-                                premodeling_result_path=settings_cache_dict_reload["premodeling_result_path"],
+        clear_GUI_main_settings(result_path=settings_cache_dict_reload["res_path"],
+                                premodeling_result_path=settings_cache_dict_reload["premodeling_res_path"],
                                 json_file_path=os.path.dirname(__file__) + "/GUI_st_cache.json")
+        #reset session state for clear cache
+        st.session_state["state_submitted_clear_cache"] = "not done"
         #rerun whole script to update GUI settings
         st.experimental_rerun()  
             
-    
+    st.write(st.session_state)
     
     ###### Start Result Overview #######
     ###################################
     # Starting process if "Visualize existing model results"-button is clicked    
     # if not submitted_vis_existing_results or submitted_optimization: 
     #     # Display the start page
-    if st.session_state["state_submitted_optimization"] == "not done" and st.session_state["state_submitted_vis_existing_results"] == "not done":    
+    if st.session_state["state_submitted_optimization"] == "not done" \
+        and st.session_state["state_submitted_vis_existing_results"] == "not done":    
         main_start_page()
+ 
         
     
     ####################################
     # Starting process if "Visualize existing model results"-button is clicked    
     if st.session_state["state_submitted_vis_existing_results"] == "done":
 
-        
-        st.write("HIIIII")
         # run main result page with uploaded existiag files  
         main_output_result_overview(result_path_summary=GUI_main_dict["existing_summary_csv"], 
                                     result_path_components=GUI_main_dict["existing_components_csv"],
@@ -448,6 +453,8 @@ def main_application_sesmg():
     # Starting process if "Start Optimization"-button is clicked
     
     if st.session_state["state_submitted_optimization"] == "done":
+        
+        #st.session_state["state_submitted_optimization"] = "not done"
         
         if scenario_input_sheet_path == None:
             
@@ -503,87 +510,70 @@ def main_application_sesmg():
                      
             
             # Starting the waiting / processing screen
-            #with st.spinner(text="Modelling in Progress."):
+            st.spinner(text="Modeling in Progress.")
             
-            # Starting the model run without a pre-model
-            if GUI_main_dict["input_activate_premodeling"] == False:
-                sesmg_main(
-                    scenario_file=scenario_input_sheet_path,
-                    result_path=GUI_main_dict["res_path"],
-                    num_threads=GUI_main_dict["input_num_threads"],
-                    timeseries_prep=GUI_main_dict["timeseries_prep_param"],
-    #TODO: Implementieren 
-                    graph=False,
-                    criterion_switch=GUI_main_dict["input_criterion_switch"],
-                    xlsx_results=GUI_main_dict["input_xlsx_results"],
-                    console_results=GUI_main_dict["input_console_results"],
-                    solver=GUI_main_dict["input_solver"],
-                    district_heating_path=GUI_main_dict["district_heating_precalc_path"],
-                    cluster_dh=GUI_main_dict["input_cluster_dh"]
-                    )
+            # Starting the model run            
+            if len(GUI_main_dict["input_pareto_points"]) == 0:
                 
-                st.header('Modelling completed!')
+                with st.spinner("Modeling in Progress..."):
+                    
+                    run_SESMG(GUI_main_dict=GUI_main_dict, 
+                              model_definition=scenario_input_sheet_path, 
+                              save_path=GUI_main_dict["res_path"])
                 
-                # run main result page with new modelled files 
+                st.header('Modeling completed!')
+                # run main result page with new modeled files 
                 main_output_result_overview(result_path_summary=GUI_main_dict["res_path"] + "/summary.csv", 
                                             result_path_components=GUI_main_dict["res_path"] + "/components.csv",
                                             result_path_results=GUI_main_dict["res_path"] + "/results.csv",
                                             result_path_graph=GUI_main_dict["res_path"] + "/graph.gv.png")
                 
-            
-        # Starting the model run with a pre-model           
-            else: 
-                sesmg_main_including_premodel(
-                    scenario_file=scenario_input_sheet_path,
-                    result_path=GUI_main_dict["res_path"],
-                    num_threads=GUI_main_dict["input_num_threads"],
-                    timeseries_prep=GUI_main_dict["timeseries_prep_param"],
-    #TODO: Implementieren 
-                    graph=False,
-                    criterion_switch=GUI_main_dict["input_criterion_switch"],
-                    xlsx_results=GUI_main_dict["input_xlsx_results"],
-                    console_results=GUI_main_dict["input_console_results"],
-                    solver=GUI_main_dict["input_solver"],
-                    district_heating_path=GUI_main_dict["district_heating_precalc_path"],
-                    cluster_dh=GUI_main_dict["input_cluster_dh"],
-                    pre_model_timeseries_prep=GUI_main_dict["pre_model_timeseries_prep_param"],
-                    investment_boundaries=GUI_main_dict["input_premodeling_invest_boundaries"],
-                    investment_boundary_factor=GUI_main_dict["input_premodeling_tightening_factor"],
-                    pre_model_path=GUI_main_dict["premodeling_res_path"])
+
+            # Starting a pareto modeul rum
+            elif len(GUI_main_dict["input_pareto_points"]) != 0:
+
+                run_pareto(
+                    limits=[i/100 for i in GUI_main_dict["input_pareto_points"]],
+                    model_definition=scenario_input_sheet_path,
+                    GUI_main_dict=GUI_main_dict)
+    
+                st.header('Modeling completed!')
+               
                 
-                st.header('Modelling completed!')
+            else:
                 
-                # run main result page with new modelled files 
-                main_output_result_overview(result_path_summary=GUI_main_dict["res_path"] + "/summary.csv", 
-                                            result_path_components=GUI_main_dict["res_path"] + "/components.csv",
-                                            result_path_results=GUI_main_dict["res_path"] + "/results.csv",
-                                            result_path_graph=GUI_main_dict["res_path"] + "/graph.gv.png")
-           
-            
-        else:
-            
-            #main_output_result_overview()
-            st.spinner("Modelling in Progress...")
-            st.write("Hallo")
+                #main_output_result_overview()
+                st.spinner("Modeling in Progress...")
+                st.write("Hallo")
              
 
 def change_state_submitted_optimization():
     """
-    Setup session state for the optimization form-submitt as an 
+    Setup session state for the optimization form-submit as an 
     change event as on-click to switch the state.
     """
     st.session_state["state_submitted_optimization"] = "done"
+    return
 
 
 def change_state_submitted_vis_existing_results():
     """
-    Setup session state for the vis_excisting_results form-submitt as an 
+    Setup session state for the vis_excisting_results form-submit as an 
     change event as on-click to switch the state.
     """
     st.session_state["state_submitted_vis_existing_results"] = "done"
+    return
 
 
-
+def change_state_submitted_clear_cache():
+    """
+    Setup session state for the vis_excisting_results form-submit as an 
+    change event as on-click to switch the state.
+    """
+    st.session_state["state_submitted_clear_cache"] = "done"
+    st.session_state["state_submitted_optimization"] = "not done"
+    st.session_state["state_submitted_vis_existing_results"] = "not done"
+    return
 
 
 

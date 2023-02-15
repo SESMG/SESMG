@@ -3,10 +3,12 @@ from datetime import datetime
 import logging
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main, sesmg_main_including_premodel
+from program_files.GUI_st.GUI_st_global_functions import run_SESMG
+
 import pandas
 
 
-def create_scenario_save_folder(model_definition: str, directory: str,
+def create_scenario_save_folder(model_definition, directory: str,
                                 limit=""):
     """
     
@@ -20,7 +22,10 @@ def create_scenario_save_folder(model_definition: str, directory: str,
         :type limit: str
     """
     # set the save path
-    model_name = os.path.basename(model_definition)[:-5]
+    if type(model_definition) == str:    
+        model_name = model_definition.split("/")[-1][:-5]
+    else: 
+        model_name = model_definition.name.split("/")[-1][:-5]
     if limit:
         model_name = model_name + "_" + limit
     save_path = str(directory + "/" + model_name
@@ -28,60 +33,6 @@ def create_scenario_save_folder(model_definition: str, directory: str,
     os.mkdir(save_path)
     return save_path
 
-
-def run_SESMG(gui_input_run_parameter: dict,
-              model_definition: str, save_path: str):
-    """
-    
-        :param gui_input_run_parameter: TODO ...
-        :type gui_input_run_parameter: dict
-        :param model_definition: file path of the model definition to \
-            be optimized
-        :type model_definition: str
-        :param save_path: file path where the results will be saved
-        :type save_path: str
-    """
-    
-    if gui_input_run_parameter["criterion_switch"]:
-        criterion_switch = True
-    else:
-        criterion_switch = False
-    if not gui_input_run_parameter["pre_modeling"]:
-        sesmg_main(
-            scenario_file=model_definition,
-            result_path=save_path,
-            num_threads=gui_input_run_parameter["num_threads"],
-            timeseries_prep=gui_input_run_parameter["timeseries_prep_param"],
-            graph=gui_input_run_parameter["graph_state"],
-            criterion_switch=criterion_switch,
-            xlsx_results=gui_input_run_parameter["xlsx_select_state"],
-            console_results=gui_input_run_parameter["console_select_state"],
-            solver=gui_input_run_parameter["solver_select"],
-            district_heating_path=gui_input_run_parameter["dh_path"],
-            cluster_dh=gui_input_run_parameter["cluster_dh"])
-    
-    # If pre-modeling is activated a second run will be carried out
-    else:
-        sesmg_main_including_premodel(
-            scenario_file=model_definition,
-            result_path=save_path,
-            num_threads=gui_input_run_parameter["num_threads"],
-            timeseries_prep=gui_input_run_parameter[
-                "timeseries_prep_param"],
-            graph=gui_input_run_parameter["graph_state"],
-            criterion_switch=criterion_switch,
-            xlsx_results=gui_input_run_parameter["xlsx_select_state"],
-            console_results=gui_input_run_parameter[
-                "console_select_state"],
-            solver=gui_input_run_parameter["solver_select"],
-            district_heating_path=gui_input_run_parameter["dh_path"],
-            cluster_dh=gui_input_run_parameter["cluster_dh"],
-            pre_model_timeseries_prep=gui_input_run_parameter["pre_modeling_timeseries_prep_param"],
-            investment_boundaries=gui_input_run_parameter["investment_boundaries"],
-            investment_boundary_factor=gui_input_run_parameter["investment_boundary_factor"],
-            pre_model_path=gui_input_run_parameter["pre_model_path"]
-        )
-        
         
 def calc_constraint_limits(result_folders: dict, limits: list):
     """
@@ -108,7 +59,7 @@ def calc_constraint_limits(result_folders: dict, limits: list):
 
 
 def create_transformation_model_definitions(constraints: dict,
-                                            model_name: str, directory: str,
+                                            model_name, directory: str,
                                             limits: list):
     """
     
@@ -149,7 +100,7 @@ def create_transformation_model_definitions(constraints: dict,
         }
         file_name = directory \
             + "/" \
-            + model_name.split("/")[-1][:-5] \
+            + model_name.name[:-5] \
             + "_" \
             + str(limit) + ".xlsx"
         files[str(limit)].append(file_name)
@@ -158,11 +109,13 @@ def create_transformation_model_definitions(constraints: dict,
         for i in nd.keys():
             nd[i].to_excel(writer, sheet_name=str(i), index=False)
         writer.save()
+        print(files)
     return files
 
 
-def run_pareto(limits: list, model_definition: str,
-               gui_input_run_parameter: dict):
+def run_pareto(limits: list, 
+               model_definition,
+               GUI_main_dict: dict):
     """
     
         :param limits: list containing the percentages of reduction \
@@ -172,7 +125,7 @@ def run_pareto(limits: list, model_definition: str,
             be optimized
         :type model_definition: str
         
-        :param gui_input_run_parameter: dictionary containing
+        :param GUI_main_dict: dictionary containing
             
             pre_modeling
             num_threads
@@ -207,7 +160,7 @@ def run_pareto(limits: list, model_definition: str,
     # result folders
     result_folders["1"].append(save_path)
     # run the optimization of the first criterion minimum
-    run_SESMG(gui_input_run_parameter, model_definition, save_path)
+    run_SESMG(GUI_main_dict, model_definition, save_path)
     
     # SECOND CRITERION
     # TODO enable more than one scenario (districts)
@@ -218,10 +171,10 @@ def run_pareto(limits: list, model_definition: str,
     result_folders.update({"0": [save_path2]})
     
     # switch the criterion switch parameter in the gui input parameter
-    gui_input_run_parameter["criterion_switch"] = \
-        not gui_input_run_parameter["criterion_switch"]
+    GUI_main_dict["input_criterion_switch"] = \
+        not GUI_main_dict["input_criterion_switch"]
     # run the optimization of the second criterion minimum
-    run_SESMG(gui_input_run_parameter, model_definition, save_path2)
+    run_SESMG(GUI_main_dict, model_definition, save_path2)
     
     # SEMI OPTIMAL OPTIMIZATION
     # calculate the emission limits for the semi optimal model definitions
@@ -231,16 +184,17 @@ def run_pareto(limits: list, model_definition: str,
         constraints, model_definition, directory, limits)
 
     # switch the criterion switch parameter in the gui input parameter
-    gui_input_run_parameter["criterion_switch"] = \
-        not gui_input_run_parameter["criterion_switch"]
+    GUI_main_dict["input_criterion_switch"] = \
+        not GUI_main_dict["input_criterion_switch"]
     
     # run the semi optimal optimizations
+    print("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
     for limit in limits:
         result_folders.update({str(limit): []})
-        for model_definition in files[limit]:
+        for model_definition in files[str(limit)]:
             save_path = create_scenario_save_folder(model_definition,
                                                     directory)
             result_folders[str(limit)].append(save_path)
-            run_SESMG(gui_input_run_parameter, model_definition, save_path)
+            run_SESMG(GUI_main_dict, model_definition, save_path)
             
     return result_folders
