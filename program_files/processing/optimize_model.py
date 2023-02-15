@@ -352,6 +352,9 @@ def least_cost_model(
     logging.info("   " + "Starting Optimization with " + solver + "-Solver")
 
     # solving the linear problem using the given solver
-    om.solve(solver=solver, cmdline_options={"threads": num_threads})
+    if solver== 'gurobi':
+        om.solve(solver=solver, cmdline_options={"threads": num_threads})
+    else:
+        om.solve(solver=solver)
     logging.info("\t Memory Usage during processing:" + str(memory_usage()))
     return om
