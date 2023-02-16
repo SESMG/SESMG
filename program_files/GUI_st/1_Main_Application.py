@@ -43,7 +43,7 @@ def main_start_page():
         # Create an empty buffer list to temporarily store the lines of the README.md file
         readme_buffer = []
         # Use the glob library to search for all files in the Resources directory and extract the file names
-        resource_files = [os.path.basename(x) for x in glob.glob(f'Resources/*')]
+        resource_files = [os.path.basename(x) for x in glob.glob(f'docs/images/readme/*')]
 
     # Iterate over each line of the README.md file
     for line in readme_line:
@@ -55,7 +55,7 @@ def main_start_page():
             if image in line:
                 st.markdown(''.join(readme_buffer[:-1]))
                 # Display the image from the Resources folder using the image name from the resource_files list
-                st.image(f'Resources/{image}')
+                st.image(f'docs/images/readme/{image}')
                 # Clear the buffer list
                 readme_buffer.clear()
 
