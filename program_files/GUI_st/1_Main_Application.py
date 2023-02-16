@@ -60,7 +60,7 @@ def main_start_page():
                 readme_buffer.clear()
 
     # Display any remaining lines in the buffer list using the st.markdown() function
-    st.markdown(''.join(readme_buffer))
+    st.markdown(''.join(readme_buffer), unsafe_allow_html=True)
 
 
 def main_application_sesmg():    
