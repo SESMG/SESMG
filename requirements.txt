@@ -1,6 +1,5 @@
 streamlit>=1.17.0
 streamlit-aggrid>=0.3.0
-streamlit-extras>=0.2.0
 oemof.solph==0.4.5
 openpyxl>=3.0.0  
 oemof.thermal>=0.0.5  

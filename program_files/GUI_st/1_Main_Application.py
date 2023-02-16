@@ -20,14 +20,52 @@ sys.path.insert(1, parent)
 #TODO:problem mit reativen Pfaden!
 from GUI_st_global_functions import clear_GUI_main_settings, safe_GUI_input_values, import_GUI_input_values_json, st_settings_global, run_SESMG
 from program_files.preprocessing.pareto_optimization import run_pareto
-from streamlit_extras.switch_page_button import switch_page
-
+from streamlit.components.v1 import html
 
 # settings the initial streamlit page settings
 st_settings_global()
 
-#opening the input value dict, which will be safed as a json
+# opening the input value dict, which will be safed as a json
 GUI_main_dict = {}
+
+
+def nav_page(page_name, timeout_secs=3):
+    """
+        Javascript used to switch between to Streamlit pages
+        automatically.
+        
+        :param page_name: string containing the pages name possible \
+            entries are: Result_Processing, Urban_District_Upscaling, ...
+        :type page_name: str
+        :param timeout_secs: seconds until system returns timeout
+        :type timeout_secs: float
+    """
+    nav_script = """
+        <script type="text/javascript">
+            function attempt_nav_page(page_name, start_time, timeout_secs) {
+                var links = window.parent.document.getElementsByTagName("a");
+                for (var i = 0; i < links.length; i++) {
+                    if (links[i].href.toLowerCase().endsWith("/"
+                        + page_name.toLowerCase())) {
+                        links[i].click();
+                        return;
+                    }
+                }
+                var elasped = new Date() - start_time;
+                if (elasped < timeout_secs * 1000) {
+                    setTimeout(attempt_nav_page, 100, page_name,
+                               start_time, timeout_secs);
+                } else {
+                    alert("Unable to navigate to page '" + page_name
+                          + "' after " + timeout_secs + " second(s).");
+                }
+            }
+            window.addEventListener("load", function() {
+                attempt_nav_page("%s", new Date(), %d);
+            });
+        </script>
+    """ % (page_name, timeout_secs)
+    html(nav_script)
 
 
 def main_start_page():
@@ -35,7 +73,7 @@ def main_start_page():
     Definition of the start page for the GUI with introducing texts.
     """
     if st.button('Seitenwechsel'):
-        switch_page("result processing")
+        nav_page("Result_Processing")
         
     # Open the README.md file and read all lines
     with open("README.md", 'r', encoding="utf8") as f:
