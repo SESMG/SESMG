@@ -1,6 +1,6 @@
 import pandas
-import matplotlib.pyplot as plt
 import os
+
 
 def pv_elec_amount(components_df: pandas.DataFrame, pv_st: str,
                    dataframe: pandas.DataFrame, amounts_dict: dict):
@@ -44,7 +44,7 @@ def pv_elec_amount(components_df: pandas.DataFrame, pv_st: str,
     return amounts_dict, pv_buses
 
 
-def create_elec_amount_plots(
+def collect_electricity_amounts(
         dataframes: dict, nodes_data: pandas.DataFrame, result_path: str,
         sink_known: dict) -> None:
     """
@@ -379,83 +379,7 @@ def create_elec_amount_plots(
         # iterate threw the elec amounts dict and append the summed
         # entries on the elec amounts pandas dataframe
         elec_amounts = dict_to_dataframe(elec_amounts_dict, elec_amounts)
-    # clear the old plot
-    plt.clf()
-    fig, axs = plt.subplots(4, sharex="all")
-    fig.set_size_inches(18.5, 15.5)
     elec_amounts.set_index("run", inplace=True, drop=False)
     elec_amounts.to_csv(result_path + "/elec_amounts.csv")
-    # create the elec amounts plot with 4 subplots (consumption,
-    # usage of pv elec amount, pv earnings, central elec)
-    plot_dict = {
-        axs[0]: {
-            "SLP_DEMAND": elec_amounts.Electricity_Demand,
-            "Battery losses": elec_amounts.Battery_losses,
-            "Electric_heating": elec_amounts.Electric_heating,
-            "Heatpump_elec": elec_amounts.GCHP + elec_amounts.ASHP,
-            "ST_elec": elec_amounts.ST_elec,
-        },
-        axs[1]: {
-            "building consumption (PV)": elec_amounts.PV
-            - elec_amounts.PV_to_Central
-            - elec_amounts.PV_excess,
-            "PV Export": elec_amounts.PV_excess,
-            "PV to local market": elec_amounts.PV_to_Central,
-            "GRID Import": elec_amounts.grid_import,
-        },
-        axs[2]: {
-            "PV_south": elec_amounts.PV_south,
-            "PV_south_east": elec_amounts.PV_south_east,
-            "PV_south_west": elec_amounts.PV_south_west,
-            "PV_west": elec_amounts.PV_west,
-            "PV_east": elec_amounts.PV_east,
-            "PV_north_west": elec_amounts.PV_north_west,
-            "PV_north_east": elec_amounts.PV_north_east,
-            "PV_north": elec_amounts.PV_north,
-        },
-        axs[3]: {"central_wc_elec": elec_amounts.central_wc_elec,
-                 "central_ng_elec": elec_amounts.central_ng_elec,
-                 "central_bg_elec": elec_amounts.central_bg_elec,
-                 "central_pe_elec": elec_amounts.central_pe_elec,
-                 "central_elec": elec_amounts.central_elec},
-    }
-    for plot in plot_dict:
-        plot.stackplot(
-            elec_amounts.reductionco2,
-            plot_dict.get(plot).values(),
-            labels=list(plot_dict.get(plot).keys()),
-        )
-
-    axs[0].legend(loc="upper left")
-    axs[0].set_ylabel("Electricity Amount in kWh")
-    axs[1].legend(loc="upper left")
-    axs[1].set_ylabel("Electricity Amount in kWh")
-    axs[2].legend(loc="upper left")
-    axs[2].set_ylabel("Electricity Amount in kWh")
-    axs[3].legend(loc="upper left")
-    axs[3].set_ylabel("Electricity Amount in kWh")
-    axs[3].invert_xaxis()
-    # save the created plot
-    plt.savefig(result_path + "/elec_amounts.jpeg")
 
 
-if __name__ == "__main__":
-    from program_files.preprocessing.create_energy_system import \
-        import_scenario
-    import pandas as pd
-    
-    create_elec_amount_plots(
-            {"1": pd.read_csv("<path_to_csv_file>"),
-             "0.75": pd.read_csv(),
-             "0.5": pd.read_csv(),
-             "0.25": pd.read_csv(),
-             "0": pd.read_csv()},
-            # scenario file path
-            import_scenario(),
-            # result_path
-            str(os.path.dirname(__file__)),
-            # sink types dict {label: [bool(elec), bool(heat), bool(cooling)]}
-            {
-               "sink_id": ["bool(elec)", "bool(heat)", "bool(cooling)"]
-            }
-    )

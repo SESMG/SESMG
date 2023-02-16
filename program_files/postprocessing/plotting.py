@@ -66,3 +66,27 @@ def dict_to_dataframe(amounts_dict, return_df):
     return_df.set_index("reductionco2", inplace=True, drop=False)
     return_df = return_df.sort_values("run")
     return return_df
+
+
+def create_sink_differentiation_dict(model_definition: pandas.DataFrame):
+    """
+        use the model_definitions sink sheet to create a dictionary
+        holding the sink's type as well as it's label
+        
+        :param model_definition: sinks sheet of the investigated model \
+            definition
+        :type model_definition: pandas.DataFrame
+        
+        :return: - **sink_types** (dict) -
+    """
+    sink_types = {}
+    
+    for num, sink in model_definition.iterrows():
+        if sink["sector"] == "electricity":
+            sink_types.update({sink["label"]: [True, False, False]})
+        elif sink["sector"] == "heat":
+            sink_types.update({sink["label"]: [False, True, False]})
+        else:
+            sink_types.update({sink["label"]: [False, False, True]})
+    
+    return sink_types

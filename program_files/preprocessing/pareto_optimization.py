@@ -4,6 +4,12 @@ import logging
 from program_files.GUI_st.GUI_st_global_functions import run_SESMG
 from program_files.postprocessing.pareto_curve_plotting \
     import collect_pareto_data
+from program_files.postprocessing.plotting \
+    import create_sink_differentiation_dict
+from program_files.postprocessing.plotting_elec_amounts \
+    import collect_electricity_amounts
+from program_files.preprocessing.create_energy_system \
+    import import_scenario
 import pandas
 
 
@@ -203,7 +209,21 @@ def run_pareto(limits: list,
                                      + "/components.csv")})
     
     # create csv file for pareto plotting
-    collect_pareto_data(result_dfs=result_dfs,
-                        result_path=os.path.dirname(save_path))
-            
+    collect_pareto_data(
+            result_dfs=dict(sorted(result_dfs.items(), reverse=True)),
+            result_path=os.path.dirname(save_path))
+    
+    sink_types = create_sink_differentiation_dict(
+            import_scenario(model_definition)["sinks"])
+    
+    collect_electricity_amounts(dataframes=result_dfs,
+                                nodes_data=import_scenario(model_definition),
+                                result_path=os.path.dirname(save_path),
+                                sink_known=sink_types)
+
+    collect_electricity_amounts(dataframes=result_dfs,
+                                nodes_data=import_scenario(model_definition),
+                                result_path=os.path.dirname(save_path),
+                                sink_known=sink_types)
+    
     return result_folders
