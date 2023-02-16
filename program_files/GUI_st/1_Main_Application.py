@@ -32,7 +32,7 @@ def main_start_page():
     """
     Definition of the start page for the GUI with introducing texts.
     """
-       if st.button('Seitenwechsel'):
+    if st.button('Seitenwechsel'):
         switch_page("result processing")
         
     # Open the README.md file and read all lines
