@@ -40,24 +40,34 @@ def main_start_page():
     # Open the README.md file and read all lines
     with open("README.md", 'r', encoding="utf8") as f:
         readme_line = f.readlines()
-        # Create an empty buffer list to temporarily store the lines of the README.md file
+        # Create an empty buffer list to temporarily store the lines of
+        # the README.md file
         readme_buffer = []
-        # Use the glob library to search for all files in the Resources directory and extract the file names
+        # Use the glob library to search for all files in the Resources
+        # directory and extract the file names
         resource_files = [os.path.basename(x) for x in glob.glob(f'docs/images/readme/*')]
 
+    non_print = False
     # Iterate over each line of the README.md file
     for line in readme_line:
-        # Append the current line to the buffer list
-        readme_buffer.append(line)
-        # Check if any images are present in the current line
-        for image in resource_files:
-            # If an image is found, display the buffer list up to the last line
-            if image in line:
-                st.markdown(''.join(readme_buffer[:-1]))
-                # Display the image from the Resources folder using the image name from the resource_files list
-                st.image(f'docs/images/readme/{image}')
-                # Clear the buffer list
-                readme_buffer.clear()
+        if "## Quick Start" in str(line):
+            non_print = True
+        elif "## SESMG Features & Releases" in str(line):
+            non_print = False
+        if not non_print:
+            # Append the current line to the buffer list
+            readme_buffer.append(line)
+            # Check if any images are present in the current line
+            for image in resource_files:
+                # If an image is found, display the buffer list up to
+                # the last line
+                if image in line:
+                    st.markdown(''.join(readme_buffer[:-1]))
+                    # Display the image from the Resources folder using
+                    # the image name from the resource_files list
+                    st.image(f'docs/images/readme/{image}')
+                    # Clear the buffer list
+                    readme_buffer.clear()
 
     # Display any remaining lines in the buffer list using the st.markdown() function
     st.markdown(''.join(readme_buffer), unsafe_allow_html=True)
