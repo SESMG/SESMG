@@ -1,4 +1,7 @@
-# Spreadsheet Energy System Model Generator (SESMG) ![what-why](/docs/images/readme/content_what_why_badge.svg) ![how](/docs/images/readme/content_how_badge.svg) 
+# Spreadsheet Energy System Model Generator (SESMG) 
+[![Generic badge](https://img.shields.io/badge/content-what/why-darkgreen.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
+[![Generic badge](https://img.shields.io/badge/content-how-green.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
+
 
 [![codecov](https://codecov.io/gh/SESMG/SESMG/branch/master/graph/badge.svg?token=70AHZEB2IN)](https://codecov.io/gh/SESMG/SESMG)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/5ab50cca9d852028f3df/test_coverage)](https://codeclimate.com/github/SESMG/SESMG/test_coverage)
@@ -23,7 +26,8 @@ viewed and analyzed using a browser-based results output.)
 
 ![workflow_graph_SESMG](/docs/images/readme/workflow_graph.jpeg)
 
-## Quick Start ![how](https://cs.adelaide.edu.au/~christoph/badges/content-how-green.svg)
+## Quick Start 
+[![Generic badge](https://img.shields.io/badge/content-how-green.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
 ### Step 1) Download Python 3.7 or newer (Python 3.10 was not tested yet)
 
@@ -78,7 +82,8 @@ run `$ sudo apt-get install graphviz`
 ### Step 8) Start the operating system specific installation file. 
 
 
-## SESMG Features & Releases ![what-why](https://cs.adelaide.edu.au/~christoph/badges/content-what-why-brightgreen.svg) 
+## SESMG Features & Releases 
+[![Generic badge](https://img.shields.io/badge/content-what/why-darkgreen.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
 ### Examples
 Examples are stored in a separate GIT-Repository: https://github.com/chrklemm/SESMG_Examples
@@ -92,7 +97,8 @@ Examples are stored in a separate GIT-Repository: https://github.com/chrklemm/SE
 
 ✘ More time to code other things ... wait ✓!  
 
-## Detailed Documentation! ![references](https://cs.adelaide.edu.au/~christoph/badges/content-references-orange.svg)
+## Detailed Documentation! 
+[![Generic badge](https://img.shields.io/badge/content-references-orange.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
 The [documentation](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/),
 which includes detailed instructions for **installation** and **use**, **troubleshooting** 
@@ -100,11 +106,15 @@ and much more, can be accessed via the following link:
 
 https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
 
-## Questions? ![who](https://cs.adelaide.edu.au/~christoph/badges/content-who-yellow.svg) ![references](https://cs.adelaide.edu.au/~christoph/badges/content-references-orange.svg)
+## Questions? 
+[![Generic badge](https://img.shields.io/badge/content-who-yellow.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
+[![Generic badge](https://img.shields.io/badge/content-references-orange.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
 [Use the Discussions Section](https://github.com/chrklemm/SESMG/discussions) and let's chat!
 
-## Credits ![who](https://cs.adelaide.edu.au/~christoph/badges/content-who-yellow.svg)
+## Credits 
+[![Generic badge](https://img.shields.io/badge/content-who-yellow.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
+
 
 ### Contact and Code of Conduct 
 
@@ -127,7 +137,9 @@ The contributors gratefully acknowledge the support of BMBF (grant number 033W10
 
 This project is published under GNU GPL-3.0 license, click [here](https://github.com/chrklemm/SESMG/blob/master/LICENSE) for more details.
 
-## Contributing ![contribution](https://cs.adelaide.edu.au/~christoph/badges/content-contribution-blue.svg)
+## Contributing 
+[![Generic badge](https://img.shields.io/badge/content-contribution-blue.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
+
 
 Issues and Pull Requests are greatly appreciated. If you've never contributed to an open source project before I'm more than happy to walk you through how to create a pull request.
 
