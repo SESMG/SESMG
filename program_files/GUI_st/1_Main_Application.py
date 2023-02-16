@@ -32,24 +32,33 @@ def main_start_page():
     """
     Definition of the start page for the GUI with introducing texts.
     """
-    st.header("Spread Sheet Energy System Model Generator")
-    st.subheader("Welcome using the SESMG!")
-    st.write("This is the main application. You will find the different modes over the dropdown menu in the sidebar.")
-    st.write("To use this application you need to configure your model run \
-             in the sidebar on the left. Each with a short help text. You can \
-             start a new model run and reopen earlier generated results as an \
-                 overview. The GUI settings will be saved between your sessions,\
-                which can be cleared.")
-    st.subheader("Detailed Documentation!")
-    st.write("The documentation, which includes detailed instructions for \
-             installation and use, troubleshooting and much more, can be \
-                 accessed via the following link:")
-    st.write("https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/")
-    st.subheader("Questions?")
-    st.write("Use the our discussion section and ask other users for help, if \
-              you can not fix your problem with the documentation, via the \
-                  following link:")
-    st.write("https://github.com/SESMG/SESMG/discussions")
+       if st.button('Seitenwechsel'):
+        switch_page("result processing")
+        
+    # Open the README.md file and read all lines
+    with open("README.md", 'r', encoding="utf8") as f:
+        readme_line = f.readlines()
+        # Create an empty buffer list to temporarily store the lines of the README.md file
+        readme_buffer = []
+        # Use the glob library to search for all files in the Resources directory and extract the file names
+        resource_files = [os.path.basename(x) for x in glob.glob(f'Resources/*')]
+
+    # Iterate over each line of the README.md file
+    for line in readme_line:
+        # Append the current line to the buffer list
+        readme_buffer.append(line)
+        # Check if any images are present in the current line
+        for image in resource_files:
+            # If an image is found, display the buffer list up to the last line
+            if image in line:
+                st.markdown(''.join(readme_buffer[:-1]))
+                # Display the image from the Resources folder using the image name from the resource_files list
+                st.image(f'Resources/{image}')
+                # Clear the buffer list
+                readme_buffer.clear()
+
+    # Display any remaining lines in the buffer list using the st.markdown() function
+    st.markdown(''.join(readme_buffer))
 
 
 def main_application_sesmg():    
