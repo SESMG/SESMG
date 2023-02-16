@@ -12,6 +12,7 @@ from program_files.urban_district_upscaling.components import (
     Insulation,
     Central_components,
 )
+from io import BytesIO
 
 true_bools = ["yes", "Yes", 1]
 
@@ -492,7 +493,7 @@ def create_gchp(tool: pandas.DataFrame, parcels: pandas.DataFrame,
 
 
 def urban_district_upscaling_pre_processing(
-    paths: list, clustering: bool, clustering_dh: bool
+    paths: list, clustering: bool, clustering_dh: bool, streamlit=False
 ):
     """
         TODO DOCSTRING TEXT
@@ -612,12 +613,24 @@ def urban_district_upscaling_pre_processing(
             central_electricity_network=central_electricity_network,
             clustering_dh=clustering_dh,
         )
-    
-    # open the new excel file and add all the created components
-    j = 0
-    writer = pandas.ExcelWriter(paths[2], engine="xlsxwriter")
-    for i in sheets:
-        sheets[i].to_excel(writer, worksheets[j], index=False)
-        j = j + 1
-    print("Scenario created. It can now be executed.")
-    writer.save()
+    if streamlit:
+        output = BytesIO()
+        # open the new excel file and add all the created components
+        j = 0
+        writer = pandas.ExcelWriter(output, engine="xlsxwriter")
+        for i in sheets:
+            sheets[i].to_excel(writer, worksheets[j], index=False)
+            j = j + 1
+        writer.save()
+        processed_data = output.getvalue()
+        return processed_data
+    # TODO to be removed when establishing the new GUI
+    else:
+        # open the new excel file and add all the created components
+        j = 0
+        writer = pandas.ExcelWriter(paths[2], engine="xlsxwriter")
+        for i in sheets:
+            sheets[i].to_excel(writer, worksheets[j], index=False)
+            j = j + 1
+        print("Scenario created. It can now be executed.")
+        writer.save()

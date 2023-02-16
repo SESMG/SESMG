@@ -2,21 +2,27 @@ import streamlit as st
 import pandas as pd
 import os
 
-from program_files.urban_district_upscaling.pre_processing import urban_district_upscaling_pre_processing
+from program_files.urban_district_upscaling.pre_processing \
+    import urban_district_upscaling_pre_processing
 from GUI_st_global_functions import st_settings_global
+from io import BytesIO
 
 ####################################
 # settings the initial streamlit page settings
 st_settings_global()
 
 
+
+
 def us_application():
+    model_definition_df = ""
     with st.sidebar.form("Input Parameters"):
-        # message that the file is beeing created
+        # message that the file is being created
         if "created" not in st.session_state:
             st.session_state["created"] = "note done"
         # Submit button to start optimization.
-        submitted_us_run = st.form_submit_button("Start US Tool", on_click=creating_xlsx)
+        submitted_us_run = st.form_submit_button("Start US Tool",
+                                                 on_click=creating_xlsx)
 
         if st.session_state["created"] == "done":
             st.success("The model definition ist ready after running process.")
@@ -26,31 +32,44 @@ def us_application():
 
         with tab_us:
             # input us sheet
-            input_us_sheet_path = st.file_uploader("Import your upscaling sheet:")
+            input_us_sheet_path = st.file_uploader(
+                    "Import your upscaling sheet:")
 
         with tab_sp:
             # input standard parameter sheet
-            input_standardparam_path = st.file_uploader("Import your standard parameter sheet:")
+            input_standard_parameter_path = st.file_uploader(
+                    "Import your standard parameter sheet:")
 
         with tab_md:
-            # input model definition sheet
-            input_result_path = st.file_uploader("Import your model definition:")
-
+            result_file_name = \
+                st.text_input("Type in your model definition file name.")
+            
         # Run program main function if start button is clicked
         if submitted_us_run:
-            if input_us_sheet_path != "" and input_standardparam_path != "" and input_result_path != "":
+            if input_us_sheet_path != "" \
+                    and input_standard_parameter_path != "" \
+                    and result_file_name != "":
                 # strings replace due to variables defined above
                 us_path_list = [
                     input_us_sheet_path,
-                    input_standardparam_path,
-                    input_result_path,
+                    input_standard_parameter_path,
+                    result_file_name,
                     os.path.join(
                         os.path.dirname(__file__),
-                        r"../program_files/urban_district_upscaling/plain_scenario.xlsx")
+                        r"../../urban_district_upscaling/plain_scenario.xlsx")
                 ]
 
-                urban_district_upscaling_pre_processing(paths=us_path_list, clustering=False, clustering_dh=False)
+                model_definition_df = \
+                    urban_district_upscaling_pre_processing(
+                        paths=us_path_list,
+                        clustering=False,
+                        clustering_dh=False,
+                        streamlit=True)
 
+    st.sidebar.download_button(label="Download your model definition here.",
+                               data=model_definition_df,
+                               file_name=result_file_name + ".xlsx")
+    st.session_state["model_definition"] = model_definition_df
     udu_page = st.container()
 
     with udu_page:
