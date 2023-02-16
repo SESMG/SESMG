@@ -1,10 +1,9 @@
 import os
 from datetime import datetime
 import logging
-from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
-    import sesmg_main, sesmg_main_including_premodel
 from program_files.GUI_st.GUI_st_global_functions import run_SESMG
-
+from program_files.postprocessing.pareto_curve_plotting \
+    import collect_pareto_data
 import pandas
 
 
@@ -124,7 +123,6 @@ def run_pareto(limits: list,
         :param model_definition: file path of the model definition to \
             be optimized
         :type model_definition: str
-        
         :param GUI_main_dict: dictionary containing
             
             pre_modeling
@@ -140,6 +138,8 @@ def run_pareto(limits: list,
             investment boundaries
             investment boundaries factor
             pre model path
+            
+        :type GUI_main_dict
     """
     # create one directory to collect all runs
     directory = os.path.join(
@@ -188,7 +188,6 @@ def run_pareto(limits: list,
         not GUI_main_dict["input_criterion_switch"]
     
     # run the semi optimal optimizations
-    print("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
     for limit in limits:
         result_folders.update({str(limit): []})
         for model_definition in files[str(limit)]:
@@ -196,5 +195,15 @@ def run_pareto(limits: list,
                                                     directory)
             result_folders[str(limit)].append(save_path)
             run_SESMG(GUI_main_dict, model_definition, save_path)
+            
+    result_dfs = {}
+    for folder in result_folders:
+        result_dfs.update(
+            {folder: pandas.read_csv(result_folders[folder][0]
+                                     + "/components.csv")})
+    
+    # create csv file for pareto plotting
+    collect_pareto_data(result_dfs=result_dfs,
+                        result_path=os.path.dirname(save_path))
             
     return result_folders
