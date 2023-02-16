@@ -1,4 +1,4 @@
-# Spreadsheet Energy System Model Generator (SESMG) ![what-why](https://cs.adelaide.edu.au/~christoph/badges/content-what-why-brightgreen.svg) ![how](https://cs.adelaide.edu.au/~christoph/badges/content-how-green.svg) 
+# Spreadsheet Energy System Model Generator (SESMG) ![what-why](/docs/images/readme/content_what_why_badge.svg) ![how](/docs/images/readme/content_how_badge.svg) 
 
 [![codecov](https://codecov.io/gh/SESMG/SESMG/branch/master/graph/badge.svg?token=70AHZEB2IN)](https://codecov.io/gh/SESMG/SESMG)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/5ab50cca9d852028f3df/test_coverage)](https://codeclimate.com/github/SESMG/SESMG/test_coverage)
