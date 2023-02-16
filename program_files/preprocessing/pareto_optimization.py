@@ -8,6 +8,8 @@ from program_files.postprocessing.plotting \
     import create_sink_differentiation_dict
 from program_files.postprocessing.plotting_elec_amounts \
     import collect_electricity_amounts
+from program_files.postprocessing.plotting_heat_amounts \
+    import collect_heat_amounts
 from program_files.preprocessing.create_energy_system \
     import import_scenario
 import pandas
@@ -210,20 +212,21 @@ def run_pareto(limits: list,
     
     # create csv file for pareto plotting
     collect_pareto_data(
-            result_dfs=dict(sorted(result_dfs.items(), reverse=True)),
-            result_path=os.path.dirname(save_path))
+        result_dfs=dict(sorted(result_dfs.items(), reverse=True)),
+        result_path=os.path.dirname(save_path))
     
     sink_types = create_sink_differentiation_dict(
             import_scenario(model_definition)["sinks"])
     
+    # create amount csv files
     collect_electricity_amounts(dataframes=result_dfs,
                                 nodes_data=import_scenario(model_definition),
                                 result_path=os.path.dirname(save_path),
                                 sink_known=sink_types)
 
-    collect_electricity_amounts(dataframes=result_dfs,
-                                nodes_data=import_scenario(model_definition),
-                                result_path=os.path.dirname(save_path),
-                                sink_known=sink_types)
+    collect_heat_amounts(dataframes=result_dfs,
+                         nodes_data=import_scenario(model_definition),
+                         result_path=os.path.dirname(save_path),
+                         sink_known=sink_types)
     
     return result_folders

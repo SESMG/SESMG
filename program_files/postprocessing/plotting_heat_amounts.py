@@ -1,6 +1,5 @@
 import pandas
-import matplotlib.pyplot as plt
-import os
+
 
 def st_heat_amount(components_df, pv_st, dataframe, amounts_dict):
     from program_files.postprocessing.plotting import get_pv_st_dir, get_value
@@ -15,8 +14,8 @@ def st_heat_amount(components_df, pv_st, dataframe, amounts_dict):
     return amounts_dict
 
 
-def create_heat_amount_plots(dataframes: dict, nodes_data: pandas.DataFrame,
-                             result_path: str, sink_known: dict):
+def collect_heat_amounts(dataframes: dict, nodes_data: pandas.DataFrame,
+                         result_path: str, sink_known: dict):
     """
     main function of the algorithm to plot an heat amount plot after
     running an pareto optimization
@@ -246,70 +245,3 @@ def create_heat_amount_plots(dataframes: dict, nodes_data: pandas.DataFrame,
                       
         heat_amounts = dict_to_dataframe(heat_amounts_dict, heat_amounts)
     heat_amounts.to_csv(result_path + "/heat_amounts.csv")
-    # HEAT PLOT
-    fig, axs = plt.subplots(3, sharex="all")
-    fig.set_size_inches(18.5, 15.5)
-    plot_dict = {
-        axs[0]: {
-            "SLP_DEMAND": heat_amounts.Heat_Demand,
-            "Thermalstorage losses": heat_amounts.Thermalstorage_losses,
-            "Insulation": heat_amounts.Insulation,
-        },
-        axs[1]: {
-            "Electric Heating": heat_amounts.Electric_heating,
-            "Gasheating": heat_amounts.Gasheating,
-            "ASHP": heat_amounts.ASHP,
-            "GCHP": heat_amounts.GCHP,
-            "DH": heat_amounts.DH,
-            "ST": heat_amounts.ST,
-        },
-        axs[2]: {
-            "ST_north": heat_amounts.ST_north,
-            "ST_north_east": heat_amounts.ST_north_east,
-            "ST_east": heat_amounts.ST_east,
-            "ST_south_east": heat_amounts.ST_south_east,
-            "ST_south": heat_amounts.ST_south,
-            "ST_south_west": heat_amounts.ST_south_west,
-            "ST_west": heat_amounts.ST_west,
-            "ST_north_west": heat_amounts.ST_north_west,
-        },
-    }
-    for plot in plot_dict:
-        plot.stackplot(
-            heat_amounts.reductionco2,
-            plot_dict.get(plot).values(),
-            labels=list(plot_dict.get(plot).keys()),
-        )
-    axs[0].invert_xaxis()
-    axs[0].legend()
-    axs[0].set_ylabel("Heat Amount in kWh")
-    axs[1].legend()
-    axs[1].set_ylabel("Heat Amount in kWh")
-    axs[2].legend(loc="upper left")
-    axs[2].set_ylabel("Heat Amount in kWh")
-    axs[2].set_xlabel("Emission-reduced Scenario")
-    plt.savefig(result_path + "/heat_amounts.jpeg")
-
-
-if __name__ == "__main__":
-    from program_files.preprocessing.create_energy_system import \
-        import_scenario
-    import pandas as pd
-
-    create_heat_amount_plots(
-            {"1": pd.read_csv("<path_to_csv_file>"),
-             "0.75": pd.read_csv(),
-             "0.5": pd.read_csv(),
-             "0.35": pd.read_csv(),
-             "0.25": pd.read_csv(),
-             "0.15": pd.read_csv(),
-             "0": pd.read_csv()},
-            # import scenario file
-            import_scenario(),
-            # result_path
-            str(),
-            # sink types dict {label: [bool(elec), bool(heat), bool(cooling)]}
-            {
-                "sink_id": ["bool(elec)", "bool(heat)", "bool(cooling)"]
-            }
-    )
