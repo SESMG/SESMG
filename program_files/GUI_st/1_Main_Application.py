@@ -81,27 +81,7 @@ def main_application_sesmg():
     """
 
     # Import the saved GUI settings from the last session
-    settings_cache_dict_reload = import_GUI_input_values_json(os.path.dirname(__file__) + "/GUI_st_cache.json")    
-
-    # Function to create and display the model structure without optimizung the system.
-    
-    with st.sidebar.form("Visualization"):
-        
-        if "state_submitted_vis_existing_results" not in st.session_state:
-            st.session_state["state_submitted_vis_existing_results"] = "not done"
-        
-        submitted_vis_existing_results = st.form_submit_button(label="Visualize existing model results", on_click=change_state_submitted_vis_existing_results)
-        
-        with st.expander("File Upload"):
-            
-            #importing an existing summary file
-            GUI_main_dict["existing_summary_csv"] = st.file_uploader("Existing summary.csv file")
-        
-            #importing an existing components file
-            GUI_main_dict["existing_components_csv"] = st.file_uploader("Existing components.csv file")
-            
-            #importing an existing results file
-            GUI_main_dict["existing_results_csv"] = st.file_uploader("Existing results.csv file")
+    settings_cache_dict_reload = import_GUI_input_values_json(os.path.dirname(__file__) + "/GUI_st_cache.json")            
     
     # Creating Frame as st.form_submit_button
     with st.sidebar.form("Input Parameters"):
@@ -335,18 +315,8 @@ def main_application_sesmg():
     # Starting process if "Visualize existing model results"-button is clicked    
     # if not submitted_vis_existing_results or submitted_optimization: 
     #     # Display the start page
-    if st.session_state["state_submitted_optimization"] == "not done" \
-        and st.session_state["state_submitted_vis_existing_results"] == "not done":    
-        main_start_page()
- 
-        
-    # Starting process if "Visualize existing model results"-button is clicked    
-    if st.session_state["state_submitted_vis_existing_results"] == "done":
-
-        # run main result page with uploaded existiag files  
-        main_output_result_overview(result_path_summary=GUI_main_dict["existing_summary_csv"], 
-                                    result_path_components=GUI_main_dict["existing_components_csv"],
-                                    result_path_results=GUI_main_dict["existing_results_csv"])
+    if st.session_state["state_submitted_optimization"] == "not done" :    
+        main_start_page() 
     
     
     # Starting process if "Start Optimization"-button is clicked
@@ -456,23 +426,15 @@ def change_state_submitted_optimization():
     return
 
 
-def change_state_submitted_vis_existing_results():
-    """
-    Setup session state for the vis_excisting_results form-submit as an 
-    change event as on-click to switch the state.
-    """
-    st.session_state["state_submitted_vis_existing_results"] = "done"
-    return
 
 
 def change_state_submitted_clear_cache():
     """
-    Setup session state for the vis_excisting_results form-submit as an 
+    Setup session state for the clear_cache form-submit as an 
     change event as on-click to switch the state.
     """
     st.session_state["state_submitted_clear_cache"] = "done"
     st.session_state["state_submitted_optimization"] = "not done"
-    st.session_state["state_submitted_vis_existing_results"] = "not done"
     return
 
 
