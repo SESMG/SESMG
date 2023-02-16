@@ -11,6 +11,7 @@ from datetime import datetime
 from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode 
 import plotly.express as px
 import sys
+import glob
 
 # Setting new system path to be able to refer to perent directories
 parent = os.path.abspath('.')
@@ -19,6 +20,7 @@ sys.path.insert(1, parent)
 #TODO:problem mit reativen Pfaden!
 from GUI_st_global_functions import clear_GUI_main_settings, safe_GUI_input_values, import_GUI_input_values_json, st_settings_global, run_SESMG
 from program_files.preprocessing.pareto_optimization import run_pareto
+from streamlit_extras.switch_page_button import switch_page
 
 
 # settings the initial streamlit page settings
