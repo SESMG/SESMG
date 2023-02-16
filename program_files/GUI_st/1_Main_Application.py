@@ -72,9 +72,6 @@ def main_start_page():
     """
     Definition of the start page for the GUI with introducing texts.
     """
-    if st.button('Seitenwechsel'):
-        nav_page("Result_Processing")
-        
     # Open the README.md file and read all lines
     with open("README.md", 'r', encoding="utf8") as f:
         readme_line = f.readlines()
@@ -388,33 +385,12 @@ def main_application_sesmg():
                  GUI_main_dict["input_premodeling_timeseries_criterion"],
                  GUI_main_dict["input_premodeling_timeseries_period"],
                  0 if GUI_main_dict["input_premodeling_timeseries_season"] == "None" else GUI_main_dict["input_premodeling_timeseries_season"]]
-
-             # Setting the path where to safe the modeling results
-            res_folder_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),'results')
-            GUI_main_dict["res_path"] = res_folder_path \
-                        + '/' \
-                        + scenario_input_sheet_path.name.split("/")[-1][:-5] \
-                        + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
-            os.mkdir(GUI_main_dict["res_path"])             
-            
-# HIER NOCHMAL ANSEHEN WIE / WO DIE DATEI GESPEICHERT WERDEN SOLL            
-            # Setting the path where to safe the pre-modeling results
- #           premodeling_res_folder_path = res_path + "/pre_model_results"
- #           premodeling_res_path = premodeling_res_folder_path \
- #                       + '/' \
- #                       + scenario_input_sheet_path.name.split("/")[-1][:-5] \
- #                       + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
-            GUI_main_dict["premodeling_res_path"] = GUI_main_dict["res_path"] + "/pre_model_results"
-            #os.mkdir(premodeling_res_path)
-
                        
             # safe the GUI_main_dice as a chache for the next session
             safe_GUI_input_values(input_values_dict=GUI_main_dict, 
                                   json_file_path=os.path.dirname(__file__) + "/GUI_st_cache.json")
             
-            # safe path as session state for the result processing page
-            st.session_state["state_result_path"] = GUI_main_dict["res_path"]
-            st.session_state["state_premodeling_res_path"] = GUI_main_dict["premodeling_res_path"]
+            
                      
             
             # Starting the waiting / processing screen
@@ -425,27 +401,43 @@ def main_application_sesmg():
                 
                 with st.spinner("Modeling in Progress..."):
                     
+                    # Setting the path where to safe the modeling results
+                    res_folder_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),'results')
+                    GUI_main_dict["res_path"] = res_folder_path \
+                               + '/' \
+                               + scenario_input_sheet_path.name.split("/")[-1][:-5] \
+                               + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
+                    os.mkdir(GUI_main_dict["res_path"])    
+                    GUI_main_dict["premodeling_res_path"] = GUI_main_dict["res_path"] + "/pre_model_results"
+                    
+                    # safe path as session state for the result processing page
+                    st.session_state["state_result_path"] = GUI_main_dict["res_path"]
+                    st.session_state["state_premodeling_res_path"] = GUI_main_dict["premodeling_res_path"]
+                    
+                    # start model run
                     run_SESMG(GUI_main_dict=GUI_main_dict, 
                               model_definition=scenario_input_sheet_path, 
                               save_path=GUI_main_dict["res_path"])
                 
                 st.header('Modeling completed!')
-                # run main result page with new modeled files 
-                # main_output_result_overview(result_path_summary=GUI_main_dict["res_path"] + "/summary.csv", 
-                #                             result_path_components=GUI_main_dict["res_path"] + "/components.csv",
-                #                             result_path_results=GUI_main_dict["res_path"] + "/results.csv",
-                #                             result_path_graph=GUI_main_dict["res_path"] + "/graph.gv.png")
                 
 
             # Starting a pareto modeul rum
             elif len(GUI_main_dict["input_pareto_points"]) != 0:
 
-                run_pareto(
-                    limits=[i/100 for i in GUI_main_dict["input_pareto_points"]],
-                    model_definition=scenario_input_sheet_path,
-                    GUI_main_dict=GUI_main_dict)
-    
+                # run_pareto retuns res path
+                GUI_main_dict["res_path"] = \
+                    run_pareto(
+                        limits=[i/100 for i in GUI_main_dict["input_pareto_points"]],
+                        model_definition=scenario_input_sheet_path,
+                        GUI_main_dict=GUI_main_dict)
+                    
+                # safe path as session state for the result processing page
+                st.session_state["state_result_path"] = GUI_main_dict["res_path"]
+
                 st.header('Modeling completed!')
+                
+                nav_page(page_name="Result_Processing")
                
                 
             else:

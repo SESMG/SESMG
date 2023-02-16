@@ -27,22 +27,36 @@ def result_processing_sidebar():
                                               options=existing_result_foldernames_list)
 
         # chebox if user wants to reload existing results
-        run_existing_results = st.checkbox(label="Load Existing Results")
+        run_existing_results = st.button(label="Load Existing Results")
 
-        # create checkbox if results are pareo results with subfolders
-        existing_pareto_results = st.checkbox(label="Pareto Results")
-        st.write(existing_pareto_results)
-        if run_existing_results == True and existing_pareto_results == False:
+        if run_existing_results == True:
             # set session state with full folder path to the result folder 
             st.session_state["state_result_path"] = os.path.dirname(os.path.dirname(
                 os.path.dirname(os.path.dirname(os.path.abspath(__file__))))) + "/results/" + existing_result_folder
 
         st.header("Pareto Results")
 
+        if st.session_state["state_result_path"]+"/components.csv" not in glob.glob(st.session_state["state_result_path"]+"/*"):
+        
+            # read out subfolders of pareto list 
+            existing_result_foldernames_list =next(os.walk(st.session_state["state_result_path"]))[1]
+            # split foldernames and safe pareto point positions in a list
+            pareto_points_list = [directory.split("_")[-2] for directory in existing_result_foldernames_list]
+            
+            # ceate dict with pareto point possitions and folder names
+            pareto_folder_dict = dict(zip(pareto_points_list,existing_result_foldernames_list))
+            pareto_folder_dict
+            # sort parteo point list
+            pareto_points_list.sort()
+            # create selectbox to choose the pareotpoint you want to see show results for
+            pareto_point_chosen=st.selectbox(label="Choose the pareto point",
+                         options=pareto_points_list)
+            
         st.header("Energy Amount Diagramms")
 
         st.button(label="Create Diagramms")
 
+        st.write(st.session_state["state_result_path"] + "/" + pareto_folder_dict[pareto_point_chosen])
 
 def short_result_summary(result_path_summary):
     """
@@ -83,22 +97,22 @@ def short_result_table(result_path_components):
         :type result_path_components: str
     """
     # Header
-    with st.expander("Result Table"):
-        # Import components.csv and create dataframe
-        df_components = pd.read_csv(result_path_components)
-        # CSS to inject contained in a string
-        hide_dataframe_row_index = """
-                    <style>
-                    .row_heading.level0 {display:none}
-                    .blank {display:none}
-                    </style>
-                    """
+    st.subheader("Result Table")
+    # Import components.csv and create dataframe
+    df_components = pd.read_csv(result_path_components)
+    # CSS to inject contained in a string
+    hide_dataframe_row_index = """
+                <style>
+                .row_heading.level0 {display:none}
+                .blank {display:none}
+                </style>
+                """
 
-        # create table
-        # Inject CSS with Markdown
-        st.markdown(hide_dataframe_row_index, unsafe_allow_html=True)
-        # Creating st_aggrid table
-        AgGrid(df_components, height=400, fit_columns_on_grid_load=True, update_mode=GridUpdateMode.SELECTION_CHANGED)
+    # create table
+    # Inject CSS with Markdown
+    st.markdown(hide_dataframe_row_index, unsafe_allow_html=True)
+    # Creating st_aggrid table
+    AgGrid(df_components, height=400, fit_columns_on_grid_load=True, update_mode=GridUpdateMode.SELECTION_CHANGED)
 
 
 def short_result_interactive_dia(result_path_results):
@@ -108,20 +122,20 @@ def short_result_interactive_dia(result_path_results):
         :type result_path_results: str
     """
     # Header
-    with st.expander("Interactive Results"):
-        # loading result.csv as a dataframe
-        result_df = pd.read_csv(result_path_results)
-        # creating column headers to select
-        column_headers_result = list(result_df.columns.values)
-        # column headers without date
-        list_headers = column_headers_result[1:]
-        # selecting headers
-        select_headers = st.multiselect("Select a bus:", list_headers)
-        # filtered dataframe
-        filtered_df = result_df[select_headers]
-        # plotting
-        fig = px.line(filtered_df)
-        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+    st.subheader("Interactive Results")
+    # loading result.csv as a dataframe
+    result_df = pd.read_csv(result_path_results)
+    # creating column headers to select
+    column_headers_result = list(result_df.columns.values)
+    # column headers without date
+    list_headers = column_headers_result[1:]
+    # selecting headers
+    select_headers = st.multiselect("Select a bus:", list_headers)
+    # filtered dataframe
+    filtered_df = result_df[select_headers]
+    # plotting
+    fig = px.line(filtered_df)
+    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
 def show_heat_amounts(result_path_heat_amounts):
@@ -131,7 +145,7 @@ def show_heat_amounts(result_path_heat_amounts):
         :type result_path_results: str
     """
     # Header
-    with st.expander("Energy Amounts"):
+    with st.subheader("Energy Amounts"):
         tab1, tab2 = st.tabs(["Heat Amounts", "Electricity Amounts"])
         # loading result.csv as a dataframe
         with tab1:
@@ -156,16 +170,17 @@ def show_pareto(result_path_pareto):
         :type result_path_results: str
     """
     # Header
-    with st.expander("Pareto-Diagram"):
-        pareto_df = pd.read_csv(result_path_pareto)
-        tab1, tab2 = st.tabs(["🗃 Pareto data", "📈 Pareto chart"])
-
-        with tab1:
-            st.dataframe(pareto_df)
-
-        with tab2:
-            fig = px.line(pareto_df, x="costs", y="emissions")
-            st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+    st.subheader("Pareto-Diagram")
+    
+    # load pareto.csv
+    pareto_df = pd.read_csv(result_path_pareto)
+    # create and show pareo plot  
+    fig = px.line(pareto_df, x="costs", y="emissions")
+    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+    
+#TODO: behalten?
+    # create pareto dataframe
+    # st.dataframe(pareto_df)
 
 
 def show_building_specific_results(result_path_building_specific):
@@ -201,6 +216,7 @@ def short_result_graph(result_path_graph):
         :type result_path_graph: str
     """
     # Header
+    st.subheader("Energy System Graph")
     # Importing and printing the energy system graph
     with st.expander("Show the structure of the modeled energy system"):
         es_graph = Image.open(result_path_graph, "r")
@@ -215,6 +231,7 @@ result_processing_sidebar()
 
 st.write(st.session_state)
 
+
 # initialize session state  if no result paths are definied on main page
 if "state_result_path" not in st.session_state:
     st.session_state["state_result_path"] = "not set"
@@ -224,20 +241,35 @@ if st.session_state["state_result_path"] == "not set":
     st.write("This ia a dummy. You can choose your resultfolder here as ....")
 
 
-else:
-
+elif st.session_state["state_result_path"]+"/components.csv" in glob.glob(st.session_state["state_result_path"]+"/*"):
     # show short result summarys key values
     short_result_summary(result_path_summary=st.session_state["state_result_path"] + "/summary.csv")
     # show components table
     short_result_table(result_path_components=st.session_state["state_result_path"] + "/components.csv")
     # show interactive result diagram
     short_result_interactive_dia(result_path_results=st.session_state["state_result_path"] + "/results.csv")
+    # show energy system graph
+    short_result_graph(result_path_graph=st.session_state["state_result_path"] + "/graph.gv.png")
+
+
+elif st.session_state["state_result_path"]+"/components.csv" not in glob.glob(st.session_state["state_result_path"]+"/*"):
+    # show building specific results
+    show_pareto(result_path_pareto=st.session_state["state_result_path"] + "/pareto.csv")
     # show heat amount diagram
     show_heat_amounts(result_path_heat_amounts=st.session_state["state_result_path"] + "/heat_amounts.csv")
     # show building specific results
-    show_building_specific_results(
-        result_path_building_specific=st.session_state["state_result_path"] + "/building_specific_results.csv")
-    # show building specific results
-    show_pareto(result_path_pareto=st.session_state["state_result_path"] + "/pareto.csv")
-    # show energy system graph
-    short_result_graph(result_path_graph=st.session_state["state_result_path"] + "/graph.gv.png")
+    
+    
+    st.write(st.session_state["state_result_path"] + pareto_folder_dict[pareto_point_chosen])
+    
+    
+
+
+
+
+
+
+
+
+
+
