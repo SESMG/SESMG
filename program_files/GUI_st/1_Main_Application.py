@@ -21,20 +21,12 @@ from GUI_st_global_functions import clear_GUI_main_settings, safe_GUI_input_valu
 from program_files.preprocessing.pareto_optimization import run_pareto
 
 
-
-####################################
 # settings the initial streamlit page settings
 st_settings_global()
 
-
-####################################
 #opening the input value dict, which will be safed as a json
 GUI_main_dict = {}
 
-
-####################################
-###### Main SESMG Application ######
-####################################
 
 def main_start_page():
     """
@@ -59,102 +51,6 @@ def main_start_page():
                   following link:")
     st.write("https://github.com/SESMG/SESMG/discussions")
 
-             
-             
-def main_output_result_overview(result_path_summary, result_path_components, result_path_results, result_path_graph):   
-    """
-    Function building the result overview of the SESMG main application. 
-        :param result_path_summary: path to a result summary.csv file
-        :type result_path_summary: str
-        :param result_path_components: path to a result components.csv file
-        :type result_path_components: str
-        :param result_path_results: path to a result results.csv file
-        :type result_path_results: str
-        :param result_path_graph: path to a result graph.gv.png file
-        :type result_path_graph: str
-    """
-    
-    ####################################
-    ############ Result Page ###########
-    
-    ########## Result Summary ########
-    # Functions to display a summary of the modeled energy system.
-    
-    # Import summary.csv and create dataframe
-    #df_summary = pd.read_csv(os.path.dirname(__file__) + "/summary.csv")
-    df_summary = pd.read_csv(result_path_summary)
-    # Create list with headers
-    summary_headers = list(df_summary)
-    
-    # Display and import time series values
-    time1, time2 = st.columns(2)
-    time1.metric(label="Start Date", value=str(df_summary.iloc[0,0]))
-    time2.metric(label="End Date", value=str(df_summary.iloc[0,1]))
-    #time3.metric(label="Temporal Resolution", value=str(df_summary['Resolution']))            
-    '''Hier Problem mit Darstellung des Typs Datetime'''
-    
-#TODO: add delta functions based on the latest results    
-    # Display and import simulated cost values from summary dataframe
-    cost1, cost2, cost3, cost4 = st.columns(4)
-    cost1.metric(label=summary_headers[3], value=round(df_summary[summary_headers[3]],1))
-    cost2.metric(label=summary_headers[4], value=round(df_summary[summary_headers[4]],1))
-    cost3.metric(label=summary_headers[5], value=round(df_summary[summary_headers[5]],1))
-    cost4.metric(label=summary_headers[6], value=round(df_summary[summary_headers[6]],1))
-    
-    # Display and import simulated energy values from summary dataframe
-    ener1, ener2 = st.columns(2)
-    ener1.metric(label=summary_headers[7], value=round(df_summary[summary_headers[7]],1))
-    ener2.metric(label=summary_headers[8], value=round(df_summary[summary_headers[8]],1))   
-    
-    
-    ########## Result Summary ########
-    # Functions to display a summary of the modeled energy system.
-    
-    # Import components.csv and create dataframe
-    df_components = pd.read_csv(result_path_components)
-    # CSS to inject contained in a string
-    hide_dataframe_row_index = """
-                <style>
-                .row_heading.level0 {display:none}
-                .blank {display:none}
-                </style>
-                """
-    # Inject CSS with Markdown
-    st.markdown(hide_dataframe_row_index, unsafe_allow_html=True)
-    # Creating st_aggrid table
-    AgGrid(df_components, height = 400, fit_columns_on_grid_load=True, update_mode=GridUpdateMode.SELECTION_CHANGED)
-    
-    
-    ####################  
-    # hier plotly import
-    # loading result.csv as a dataframe
-    result_df = pd.read_csv(result_path_results)
-    st.dataframe(result_df)
-    # creating column headers to select
-    column_headers_result = list(result_df.columns.values)
-    # column headers without date
-    list_headers = column_headers_result[1:]
-    # selecting headers
-    select_headers = st.multiselect("Select a bus:", list_headers)
-    # filtered dataframe
-    filtered_df = result_df[select_headers]
-    # plotting
-    fig = px.line(filtered_df)
-    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
-
-    ########## Show Model Graph ########
-    #Function to display the energy systems structure.
-    
-    # Header
-    st.subheader("The structure of the modeled energy system:")
-    
-    # Importing and printing the energy system graph
-    with st.expander("Show the structure of the modeled energy system"):
-        es_graph = Image.open(result_path_graph, "r")
-        st.image(es_graph)
-
-
-
 
 def main_application_sesmg():    
     """
@@ -165,11 +61,7 @@ def main_application_sesmg():
 
     # Import the saved GUI settings from the last session
     settings_cache_dict_reload = import_GUI_input_values_json(os.path.dirname(__file__) + "/GUI_st_cache.json")    
-    
-    ####################################
-    ############## Sidebar #############
-    
-    ###### Run Model Visualization #####
+
     # Function to create and display the model structure without optimizung the system.
     
     with st.sidebar.form("Visualization"):
@@ -190,8 +82,6 @@ def main_application_sesmg():
             #importing an existing results file
             GUI_main_dict["existing_results_csv"] = st.file_uploader("Existing results.csv file")
     
-    
-    ########## Modelrun Parameter Input ##########
     # Creating Frame as st.form_submit_button
     with st.sidebar.form("Input Parameters"):
     
@@ -214,9 +104,7 @@ def main_application_sesmg():
         
         # Header
         st.title("Input Parameters")
-    
-        
-        ####################################
+
         # Input processing parameters
         # Functions to input the modeling parameters.
         
@@ -238,7 +126,6 @@ def main_application_sesmg():
         #preparing input_timeseries_season for GUI cache as an streamlit input index
         GUI_main_dict["input_solver_index"] = input_solver_dict[GUI_main_dict["input_solver"]]       
     
-        ####################################
         # Input preprocessing parameters
         # Functions to input the preprocessing parameters.
         
@@ -361,8 +248,6 @@ def main_application_sesmg():
             #district_heating_precalc = st.file_uploader("Select District Heating File")
             district_heating_precalc_path = st.text_input("Type in path to your District Heating File input file.") 
         
-        
-        ####################################
         # Input Postprocessing Parameters
         # Functions to input the postprocessing parameters.
         
@@ -387,7 +272,6 @@ def main_application_sesmg():
             
             GUI_main_dict["input_pareto_points"] = input_pareto_points
             
-    ####### Clear the GUI settings cache
     # creating sidebar form submit strucutre
     with st.sidebar.form("Clear Cache"):
         
@@ -402,7 +286,6 @@ def main_application_sesmg():
         clear_path = st.checkbox(label="Clear result paths")
     
     
-    #################################### 
     # Clear all GUI settings if clear latest result paths clicked
 #TOFDO: session state für clear dict
         
@@ -427,9 +310,7 @@ def main_application_sesmg():
         st.experimental_rerun()  
             
     st.write(st.session_state)
-    
-    ###### Start Result Overview #######
-    ###################################
+
     # Starting process if "Visualize existing model results"-button is clicked    
     # if not submitted_vis_existing_results or submitted_optimization: 
     #     # Display the start page
@@ -438,8 +319,6 @@ def main_application_sesmg():
         main_start_page()
  
         
-    
-    ####################################
     # Starting process if "Visualize existing model results"-button is clicked    
     if st.session_state["state_submitted_vis_existing_results"] == "done":
 
@@ -449,7 +328,6 @@ def main_application_sesmg():
                                     result_path_results=GUI_main_dict["existing_results_csv"])
     
     
-    ####################################
     # Starting process if "Start Optimization"-button is clicked
     
     if st.session_state["state_submitted_optimization"] == "done":
@@ -505,8 +383,9 @@ def main_application_sesmg():
             safe_GUI_input_values(input_values_dict=GUI_main_dict, 
                                   json_file_path=os.path.dirname(__file__) + "/GUI_st_cache.json")
             
-            
-                
+            # safe path as session state for the result processing page
+            st.session_state["state_result_path"] = GUI_main_dict["res_path"]
+            st.session_state["state_premodeling_res_path"] = GUI_main_dict["premodeling_res_path"]
                      
             
             # Starting the waiting / processing screen
@@ -523,10 +402,10 @@ def main_application_sesmg():
                 
                 st.header('Modeling completed!')
                 # run main result page with new modeled files 
-                main_output_result_overview(result_path_summary=GUI_main_dict["res_path"] + "/summary.csv", 
-                                            result_path_components=GUI_main_dict["res_path"] + "/components.csv",
-                                            result_path_results=GUI_main_dict["res_path"] + "/results.csv",
-                                            result_path_graph=GUI_main_dict["res_path"] + "/graph.gv.png")
+                # main_output_result_overview(result_path_summary=GUI_main_dict["res_path"] + "/summary.csv", 
+                #                             result_path_components=GUI_main_dict["res_path"] + "/components.csv",
+                #                             result_path_results=GUI_main_dict["res_path"] + "/results.csv",
+                #                             result_path_graph=GUI_main_dict["res_path"] + "/graph.gv.png")
                 
 
             # Starting a pareto modeul rum
