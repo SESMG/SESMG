@@ -42,11 +42,11 @@ def main_start_page():
     """
     st.header("Spread Sheet Energy System Model Generator")
     st.subheader("Welcome using the SESMG!")
-    st.write("This is the main application. You will find the differend modes over the dropdown menu in the sidebar.")
-    st.write("To use this application you need to configurate your model run \
+    st.write("This is the main application. You will find the different modes over the dropdown menu in the sidebar.")
+    st.write("To use this application you need to configure your model run \
              in the sidebar on the left. Each with a short help text. You can \
              start a new model run and reopen earlier generated results as an \
-                 overview. The GUI settings will be safed between your sessions,\
+                 overview. The GUI settings will be saved between your sessions,\
                 which can be cleared.")
     st.subheader("Detailed Documentation!")
     st.write("The documentation, which includes detailed instructions for \
