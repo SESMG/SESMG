@@ -26,11 +26,15 @@ def result_processing_sidebar():
         # create selectbox with the foldernames which are in the results folder 
         existing_result_folder = st.selectbox(label="Choose the result folder", options=existing_result_foldernames_list)
         
+        # chebox if user wants to reload existing results
+        run_existing_results = st.checkbox(label="Load Existing Results")
+        
         # create checkbox if results are pareo results with subfolders
         existing_pareto_results = st.checkbox(label="Pareto Results")
-        
-        # set session state with full folder path to the result folder 
-        st.session_state["state_result_path"] = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))) +"/results/" + existing_result_folder
+        st.write(existing_pareto_results)
+        if run_existing_results == True and existing_pareto_results == False:
+            # set session state with full folder path to the result folder 
+            st.session_state["state_result_path"] = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))) +"/results/" + existing_result_folder
         
         
         
@@ -144,6 +148,8 @@ st_settings_global()
 # start sidebar functions
 result_processing_sidebar()
 
+st.write(st.session_state)
+
 # initialize session state  if no result paths are definied on main page
 if "state_result_path" not in st.session_state:    
     st.session_state["state_result_path"] = "not set"
@@ -154,38 +160,7 @@ if st.session_state["state_result_path"] == "not set":
 
 
 else:
-    import os
-    import glob
 
-
-    # for directories in os.listdir(os.getcwd()): 
-    #     dir = os.path.join(st.session_state["state_result_path"], directories)
-    #     os.chdir(dir)
-    #     current = os.path.dirname(dir)
-    #     new = str(current).split("-")[0]
-    #     st.write(new)
-    
-    # os.chdir(st.session_state["state_result_path"])
-    # all_subdirs = [d for d in os.listdir('.') if os.path.isdir(d)]
-    # for dirs in all_subdirs:
-    #     dir = os.path.join(st.session_state["state_result_path"], dirs)
-    #     os.chdir(dir)
-    #     current = os.getcwd()
-    #     st.write(current)
-    
-    st.write(st.session_state["state_result_path"])
-    resource_files = [os.path.basename(x) for x in glob.glob(f'/Users/jan.tockloth/Documents/GitHub/SESMG_dev/results/2023-02-16--10-11-05/*')]
-    st.write(resource_files)
-    st.write(os.path.basename)
-    
-    from glob import glob
-    lol = glob("/Users/jan.tockloth/Documents/GitHub/SESMG_dev/results/2023-02-16--10-11-05/*", recursive = True)
-    st.write(lol)
-
-        
-        
-        
-        
     # show short result summarys key values
     short_result_summary(result_path_summary=st.session_state["state_result_path"]+"/summary.csv")
     # show components table
