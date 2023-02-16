@@ -50,6 +50,7 @@ def test_insulation_entries():
                 float(insulations.loc[
                         insulations["year of construction"]
                         == "periodical constraint costs flat"]["roof"])],
+            "existing": 3 * [0]
         })
     }
     
@@ -84,5 +85,6 @@ def test_create_building_insulation(test_insulation_entries):
                                              + r"/standard_parameters.xlsx")
     )
     # assert rather the two dataframes are equal
-    pandas.testing.assert_frame_equal(sheets["insulation"],
-                                      test_insulation_entries["insulation"])
+    pandas.testing.assert_frame_equal(
+        sheets["insulation"].sort_index(axis=1),
+        test_insulation_entries["insulation"].sort_index(axis=1))
