@@ -421,6 +421,7 @@ def main_application_sesmg():
                 
                 st.header('Modeling completed!')
                 
+                nav_page(page_name="Result_Processing", timeout_secs=3)
 
             # Starting a pareto modeul rum
             elif len(GUI_main_dict["input_pareto_points"]) != 0:
@@ -437,7 +438,7 @@ def main_application_sesmg():
 
                 st.header('Modeling completed!')
                 
-                nav_page(page_name="Result_Processing")
+                nav_page(page_name="Result_Processing",timeout_secs=3)
                
                 
             else:
@@ -456,8 +457,6 @@ def change_state_submitted_optimization():
     return
 
 
-
-
 def change_state_submitted_clear_cache():
     """
     Setup session state for the clear_cache form-submit as an 
@@ -471,72 +470,6 @@ def change_state_submitted_clear_cache():
 
 # Start main page
 main_application_sesmg()
-
-
-
-
-
-
-# ####################################
-# ############ TEST PAGE #############
-# ####################################
-                
-             
-
-
-
-# def test_page():
-    
-#     from GUI_streamlit import (import_GUI_input_values_json, \
-#         safe_GUI_input_values, \
-#         clear_GUI_input_values)
-        
-#     settings_cache_dict_reload = import_GUI_input_values_json(os.path.dirname(__file__) + "/GUI_test_setting_cache.json")
-
-#     st.write(settings_cache_dict_reload)
-    
-    
-#     st.title("Hier werden erweitere Ergebnisaufbereitungen dargestellt.")
-       
-    
-#     if st.sidebar.button("Clear Cache"):
-
-#         settings_cache_dict_reload_2 = clear_GUI_input_values(settings_cache_dict_reload, "main_page", os.path.dirname(__file__) + "/GUI_test_setting_cache.json")
-        
-#         #rerun whole script to update GUI settings
-#         st.experimental_rerun()
-
-        
-#     with st.sidebar.form("Input Parameters"):
-        
-#         # Submit button to start optimization.
-#         submitted_optimization = st.form_submit_button("Start Inputs")
-#         input1 = st.text_input("Test Input 1", value=settings_cache_dict_reload["input1"])
-#         input2 = st.text_input("Test Input 2", value=settings_cache_dict_reload["input2"])
-    
-#         if  submitted_optimization:
-            
-#             settings_cache_dict = {"input1": input1, "input2": input2}
-            
-#             #sfe GUI settings dict
-#             safe_GUI_input_values(settings_cache_dict, os.path.dirname(__file__) + "/GUI_test_setting_cache.json")
-            
-#             #rerun whole script to update GUI settings
-#             st.experimental_rerun()
-
-        
-
-# ####################################
-# ############ DEMO Tool #############
-# ####################################
-
-
-# def demo_result_page():
-    
-#     demo_page = st.container()
-    
-#     with demo_page:
-#         st.title("Hier wird das Demotool platziert.")
 
 
 

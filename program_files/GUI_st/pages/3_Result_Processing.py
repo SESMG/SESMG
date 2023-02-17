@@ -36,7 +36,8 @@ def result_processing_sidebar():
 
         st.header("Pareto Results")
 
-        if st.session_state["state_result_path"]+"/components.csv" not in glob.glob(st.session_state["state_result_path"]+"/*"):
+        if st.session_state["state_result_path"] is not "not set" and \
+            st.session_state["state_result_path"]+"/components.csv" not in glob.glob(st.session_state["state_result_path"]+"/*"):
         
             # read out subfolders of pareto list 
             existing_result_foldernames_list =next(os.walk(st.session_state["state_result_path"]))[1]
@@ -45,18 +46,19 @@ def result_processing_sidebar():
             
             # ceate dict with pareto point possitions and folder names
             pareto_folder_dict = dict(zip(pareto_points_list,existing_result_foldernames_list))
-            pareto_folder_dict
             # sort parteo point list
             pareto_points_list.sort()
             # create selectbox to choose the pareotpoint you want to see show results for
             pareto_point_chosen=st.selectbox(label="Choose the pareto point",
                          options=pareto_points_list)
             
+            st.session_state["state_pareto_point_chosen"] = pareto_point_chosen
+            st.session_state["state_pareto_result_path"] = st.session_state["state_result_path"] + "/" + pareto_folder_dict[pareto_point_chosen]
+            
         st.header("Energy Amount Diagramms")
 
         st.button(label="Create Diagramms")
 
-        st.write(st.session_state["state_result_path"] + "/" + pareto_folder_dict[pareto_point_chosen])
 
 def short_result_summary(result_path_summary):
     """
@@ -145,6 +147,7 @@ def show_heat_amounts(result_path_heat_amounts):
         :type result_path_results: str
     """
     # Header
+    st.subheader("Energy Amount Diagrams")
     with st.subheader("Energy Amounts"):
         tab1, tab2 = st.tabs(["Heat Amounts", "Electricity Amounts"])
         # loading result.csv as a dataframe
@@ -170,7 +173,7 @@ def show_pareto(result_path_pareto):
         :type result_path_results: str
     """
     # Header
-    st.subheader("Pareto-Diagram")
+    st.subheader("Pareto Diagram")
     
     # load pareto.csv
     pareto_df = pd.read_csv(result_path_pareto)
@@ -223,18 +226,18 @@ def short_result_graph(result_path_graph):
         st.image(es_graph)
 
 
+# starting page functions
 # initialize global page settings
 st_settings_global()
-
-# start sidebar functions
-result_processing_sidebar()
-
-st.write(st.session_state)
-
 
 # initialize session state  if no result paths are definied on main page
 if "state_result_path" not in st.session_state:
     st.session_state["state_result_path"] = "not set"
+    
+# start sidebar functions
+result_processing_sidebar()
+
+st.write(st.session_state)
 
 # show introduction page if no result paths are not set
 if st.session_state["state_result_path"] == "not set":
@@ -257,10 +260,21 @@ elif st.session_state["state_result_path"]+"/components.csv" not in glob.glob(st
     show_pareto(result_path_pareto=st.session_state["state_result_path"] + "/pareto.csv")
     # show heat amount diagram
     show_heat_amounts(result_path_heat_amounts=st.session_state["state_result_path"] + "/heat_amounts.csv")
+#TODO implement
     # show building specific results
+    #show_building_specific_results(st.session_state["state_result_path"] + "/???????????.csv")
     
+    # open short results for the chosen pareto point inkl. header
+    st.subheader("Short Results for Pareto Point: "+ st.session_state["state_pareto_point_chosen"])
+    # show short result summarys key values
+    short_result_summary(result_path_summary=st.session_state["state_pareto_result_path"] + "/summary.csv")
+    # show components table
+    short_result_table(result_path_components=st.session_state["state_pareto_result_path"] + "/components.csv")
+    # show interactive result diagram
+    short_result_interactive_dia(result_path_results=st.session_state["state_pareto_result_path"] + "/results.csv")
+    # show energy system graph
+    short_result_graph(result_path_graph=st.session_state["state_pareto_result_path"] + "/graph.gv.png")
     
-    st.write(st.session_state["state_result_path"] + pareto_folder_dict[pareto_point_chosen])
     
     
 
