@@ -14,13 +14,13 @@ def us_application():
     model_definition_df = ""
     with st.sidebar.form("Input Parameters"):
         # message that the file is being created
-        if "created" not in st.session_state:
-            st.session_state["created"] = "note done"
+        if "state_created" not in st.session_state:
+            st.session_state["state_created"] = "note done"
         # Submit button to start optimization.
         submitted_us_run = st.form_submit_button("Start US Tool",
                                                  on_click=creating_xlsx)
 
-        if st.session_state["created"] == "done":
+        if st.session_state["state_created"] == "done":
             st.success("The model definition ist ready after running process.")
 
         # tabs to create the model definition
@@ -65,7 +65,7 @@ def us_application():
     st.sidebar.download_button(label="Download your model definition here.",
                                data=model_definition_df,
                                file_name=result_file_name + ".xlsx")
-    st.session_state["model_definition"] = model_definition_df
+    st.session_state["state_model_definition"] = model_definition_df
 
 
 def standard_page():
@@ -83,10 +83,10 @@ def standard_page():
 def after_processing_page():
     st.header("Model defintion")
 
-    if "xlsx" not in st.session_state:
-        st.session_state["xlsx"] = "not done"
+    if "state_xlsx" not in st.session_state:
+        st.session_state["state_xlsx"] = "not done"
     input_model_definition = st.file_uploader("Model definition", on_change=change_xlsx_state)
-    if st.session_state["xlsx"] == "done":
+    if st.session_state["state_xlsx"] == "done":
         tabs = pd.ExcelFile(input_model_definition).sheet_names
         # without info column
         tabs.pop(0)
@@ -98,19 +98,15 @@ def after_processing_page():
 
 
 def change_xlsx_state():
-    st.session_state["xlsx"] = "done"
+    st.session_state["state_xlsx"] = "done"
 
 
 def creating_xlsx():
-    st.session_state["created"] = "done"
-
-
-def run_active():
-    st.session_state["active_us"] = "done"
+    st.session_state["state_created"] = "done"
 
 
 us_application()
-if st.session_state["model_definition"] == "":
+if st.session_state["state_model_definition"] == "":
     standard_page()
 else:
     after_processing_page()
