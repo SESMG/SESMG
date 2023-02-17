@@ -41,6 +41,7 @@ def result_processing_sidebar():
         
             # read out subfolders of pareto list 
             existing_result_foldernames_list =next(os.walk(st.session_state["state_result_path"]))[1]
+            st.write(existing_result_foldernames_list)
             # split foldernames and safe pareto point positions in a list
             pareto_points_list = [directory.split("_")[-2] for directory in existing_result_foldernames_list]
             
@@ -54,13 +55,30 @@ def result_processing_sidebar():
             
             st.session_state["state_pareto_point_chosen"] = pareto_point_chosen
             st.session_state["state_pareto_result_path"] = st.session_state["state_result_path"] + "/" + pareto_folder_dict[pareto_point_chosen]
-            
-        st.header("Energy Amount Diagramms")
-
-        st.button(label="Create Diagramms")
 
 
-def short_result_summary(result_path_summary):
+def short_result_summary_time(result_path_summary):
+    """
+        Function displaying the results timeseries informations. 
+        :param result_path_summary: path to a result summary.csv file
+        :type result_path_summary: str
+    """
+    st.subheader("Result Overview")
+    # Import summary.csv and create dataframe
+    df_summary = pd.read_csv(result_path_summary)
+    # Create list with headers
+    summary_headers = list(df_summary)
+
+    # Display and import time series values
+    # adding two blank rows
+    time1, time2, time3, time4 = st.columns(4)
+    time1.metric(label="Start Date", value=str(df_summary.iloc[0, 0]))
+    time2.metric(label="End Date", value=str(df_summary.iloc[0, 1]))
+    # TODO: Problem Darstellung Temporal Resolution
+    # time3.metric(label="Temporal Resolution", value=str(df_summary['Resolution']))
+
+
+def short_result_summary_system(result_path_summary):
     """
         Function displaying the short result summary overview of the energy system. 
         :param result_path_summary: path to a result summary.csv file
@@ -70,14 +88,6 @@ def short_result_summary(result_path_summary):
     df_summary = pd.read_csv(result_path_summary)
     # Create list with headers
     summary_headers = list(df_summary)
-
-    # Display and import time series values
-    time1, time2 = st.columns(2)
-    time1.metric(label="Start Date", value=str(df_summary.iloc[0, 0]))
-    time2.metric(label="End Date", value=str(df_summary.iloc[0, 1]))
-    # TODO: Problem Darstellung Temporal Resolution
-    # time3.metric(label="Temporal Resolution", value=str(df_summary['Resolution']))
-
     # TODO: add delta functions based on the latest results
     # Display and import simulated cost values from summary dataframe
     cost1, cost2, cost3, cost4 = st.columns(4)
@@ -87,9 +97,42 @@ def short_result_summary(result_path_summary):
     cost4.metric(label=summary_headers[6], value=round(df_summary[summary_headers[6]], 1))
 
     # Display and import simulated energy values from summary dataframe
-    ener1, ener2 = st.columns(2)
+    # adding two blank rows
+    ener1, ener2, ener3, ener4 = st.columns(4)
     ener1.metric(label=summary_headers[7], value=round(df_summary[summary_headers[7]], 1))
     ener2.metric(label=summary_headers[8], value=round(df_summary[summary_headers[8]], 1))
+    
+    
+def short_result_simplifications(result_GUI_settings_dict):
+    """
+        Function to display model simplification settings in addition to the timeseries information 
+        :param result_path_components: dict including the last runs GUI settings
+        :type result_path_components: dict
+    """
+    alg1, alg2 = st.columns(2)
+    alg1.metric(label="Simplification Algorithm", value=result_GUI_settings_dict["input_timeseries_algorithm"])
+    # create 5 columns. one for each simplification input field
+    simp1, simp2, simp3, simp4 = st.columns(4)
+    simp1.metric(label="Simplification Index", value=result_GUI_settings_dict["input_timeseries_cluster_index"])
+    simp2.metric(label="Cluster Criterion", value=result_GUI_settings_dict["input_timeseries_criterion"])
+    simp3.metric(label="Simplification Period", value=result_GUI_settings_dict["input_timeseries_period"])
+    simp4.metric(label="Cluster Season", value=result_GUI_settings_dict["input_timeseries_season"])
+    
+    
+def short_result_premodelling(result_GUI_settings_dict):
+    """
+        Function to display premodel settings in addition to the timeseries information 
+        :param result_path_components: dict including the last runs GUI settings
+        :type result_path_components: dict
+    """
+    # check if investment bouderies were active to show tightening factor
+    # create columns for premodelling informations
+    # addings one optinal for tightening factor and one blank
+    pre1, pre2, pre3, pre4 = st.columns(4)
+    pre1.metric(label="Premodelling Active", value=result_GUI_settings_dict["input_activate_premodeling"])
+    pre2.metric(label="Investment Bounderies", value=result_GUI_settings_dict["input_premodeling_invest_boundaries"])
+    if result_GUI_settings_dict["input_premodeling_invest_boundaries"] == True:
+        pre3.metric(label="Tightening Factor", value=result_GUI_settings_dict["input_premodeling_tightening_factor"])
 
 
 def short_result_table(result_path_components):
@@ -115,8 +158,8 @@ def short_result_table(result_path_components):
     st.markdown(hide_dataframe_row_index, unsafe_allow_html=True)
     # Creating st_aggrid table
     AgGrid(df_components, height=400, fit_columns_on_grid_load=True, update_mode=GridUpdateMode.SELECTION_CHANGED)
-
-
+    
+    
 def short_result_interactive_dia(result_path_results):
     """
         Function to create interactive results.  
@@ -164,7 +207,14 @@ def show_heat_amounts(result_path_heat_amounts):
             st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
         with tab2:
+#TODO: add elec amounts!
             st.write("Rudi Rüssel")
+    # comment that diagrams are not always valid / can be wrong    
+    st.write("The Energy Amount Diagrams are only valid if the model \
+             definition created with the Urban Upscaling Tool. \
+             Otherwise there is no guarantee that there are no components \
+             missing in the diagrams.")
+    
 
 def show_pareto(result_path_pareto):
     """
@@ -245,14 +295,31 @@ if st.session_state["state_result_path"] == "not set":
 
 
 elif st.session_state["state_result_path"]+"/components.csv" in glob.glob(st.session_state["state_result_path"]+"/*"):
+    
+    # show short result summarys timeseries informations
+    short_result_summary_time(result_path_summary=st.session_state["state_result_path"] + "/summary.csv")
+    
+    # check if GUI settings dict is in result folder
+    if st.session_state["state_result_path"]+"/GUI_st_run_settings.json" in glob.glob(st.session_state["state_result_path"]+"/*"):
+        # import json as in a dict
+        GUI_run_settings_dict = import_GUI_input_values_json(json_file_path=st.session_state["state_result_path"]+"/GUI_st_run_settings.json")
+        # display some GUI settings if premodellind was active
+        if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
+            # show timeseries simplification settings
+            short_result_simplifications(result_GUI_settings_dict=GUI_run_settings_dict)
+        if GUI_run_settings_dict["input_activate_premodeling"] != False:
+            # show timeseries simplification settings
+            short_result_premodelling(result_GUI_settings_dict=GUI_run_settings_dict)
     # show short result summarys key values
-    short_result_summary(result_path_summary=st.session_state["state_result_path"] + "/summary.csv")
+    short_result_summary_system(result_path_summary=st.session_state["state_result_path"] + "/summary.csv")
+    
+    # show energy system graph
+    short_result_graph(result_path_graph=st.session_state["state_result_path"] + "/graph.gv.png")
     # show components table
     short_result_table(result_path_components=st.session_state["state_result_path"] + "/components.csv")
     # show interactive result diagram
     short_result_interactive_dia(result_path_results=st.session_state["state_result_path"] + "/results.csv")
-    # show energy system graph
-    short_result_graph(result_path_graph=st.session_state["state_result_path"] + "/graph.gv.png")
+
 
 
 elif st.session_state["state_result_path"]+"/components.csv" not in glob.glob(st.session_state["state_result_path"]+"/*"):
@@ -266,14 +333,35 @@ elif st.session_state["state_result_path"]+"/components.csv" not in glob.glob(st
     
     # open short results for the chosen pareto point inkl. header
     st.subheader("Short Results for Pareto Point: "+ st.session_state["state_pareto_point_chosen"])
+    # show short result summarys timeseries informations
+    short_result_summary_time(result_path_summary=st.session_state["state_pareto_result_path"] + "/summary.csv")
+    # check if GUI settings dict is in result folder
+    if st.session_state["state_pareto_result_path"]+"/GUI_st_run_settings.json" in glob.glob(st.session_state["state_pareto_result_path"]+"/*"):
+        # import json as in a dict
+        GUI_run_settings_dict = import_GUI_input_values_json(json_file_path=st.session_state["state_pareto_result_path"]+"/GUI_st_run_settings.json")
+        # display some GUI settings if premodellind was active
+        if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
+            # show timeseries simplification settings
+            short_result_simplifications(result_GUI_settings_dict=GUI_run_settings_dict)
+        if GUI_run_settings_dict["input_activate_premodeling"] != False:
+            # show timeseries simplification settings
+            short_result_premodelling(result_GUI_settings_dict=GUI_run_settings_dict)
     # show short result summarys key values
-    short_result_summary(result_path_summary=st.session_state["state_pareto_result_path"] + "/summary.csv")
+    short_result_summary_system(result_path_summary=st.session_state["state_pareto_result_path"] + "/summary.csv")
     # show components table
     short_result_table(result_path_components=st.session_state["state_pareto_result_path"] + "/components.csv")
     # show interactive result diagram
     short_result_interactive_dia(result_path_results=st.session_state["state_pareto_result_path"] + "/results.csv")
     # show energy system graph
     short_result_graph(result_path_graph=st.session_state["state_pareto_result_path"] + "/graph.gv.png")
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     

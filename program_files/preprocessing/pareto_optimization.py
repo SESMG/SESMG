@@ -200,7 +200,7 @@ def run_pareto(limits: list,
         result_folders.update({str(limit): []})
         for model_definition in files[str(limit)]:
             save_path = create_scenario_save_folder(model_definition,
-                                                    directory,"1")
+                                                    directory)
             result_folders[str(limit)].append(save_path)
             run_SESMG(GUI_main_dict, model_definition, save_path)
             

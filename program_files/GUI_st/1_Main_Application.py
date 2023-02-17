@@ -391,8 +391,6 @@ def main_application_sesmg():
                                   json_file_path=os.path.dirname(__file__) + "/GUI_st_cache.json")
             
             
-                     
-            
             # Starting the waiting / processing screen
             st.spinner(text="Modeling in Progress.")
             
@@ -418,6 +416,10 @@ def main_application_sesmg():
                     run_SESMG(GUI_main_dict=GUI_main_dict, 
                               model_definition=scenario_input_sheet_path, 
                               save_path=GUI_main_dict["res_path"])
+                    
+                    # save GUI settings in result folder
+                    safe_GUI_input_values(input_values_dict=GUI_main_dict, 
+                                          json_file_path=st.session_state["state_result_path"] + "/GUI_st_run_settings.json")
                 
                 st.header('Modeling completed!')
                 
@@ -426,16 +428,21 @@ def main_application_sesmg():
             # Starting a pareto modeul rum
             elif len(GUI_main_dict["input_pareto_points"]) != 0:
 
-                # run_pareto retuns res path
-                GUI_main_dict["res_path"] = \
-                    run_pareto(
-                        limits=[i/100 for i in GUI_main_dict["input_pareto_points"]],
-                        model_definition=scenario_input_sheet_path,
-                        GUI_main_dict=GUI_main_dict)
+                with st.spinner("Modeling in Progress..."):
+                    # run_pareto retuns res path
+                    GUI_main_dict["res_path"] = \
+                        run_pareto(
+                            limits=[i/100 for i in GUI_main_dict["input_pareto_points"]],
+                            model_definition=scenario_input_sheet_path,
+                            GUI_main_dict=GUI_main_dict)
+                        
+                    # safe path as session state for the result processing page
+                    st.session_state["state_result_path"] = GUI_main_dict["res_path"]
                     
-                # safe path as session state for the result processing page
-                st.session_state["state_result_path"] = GUI_main_dict["res_path"]
-
+                    # save GUI settings in result folder
+                    safe_GUI_input_values(input_values_dict=GUI_main_dict, 
+                                          json_file_path=st.session_state["state_result_path"] + "/GUI_st_run_settings.json")
+                    
                 st.header('Modeling completed!')
                 
                 nav_page(page_name="Result_Processing",timeout_secs=3)
