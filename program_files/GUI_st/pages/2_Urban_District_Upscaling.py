@@ -25,7 +25,7 @@ def us_application():
         # Submit button to start optimization.
         submitted_us_run = st.form_submit_button("Start US Tool",
                                                  on_click=creating_xlsx)
-
+        print(st.session_state)
         if st.session_state["state_created"] == "done":
             st.success("The model definition ist ready after running process.")
 
