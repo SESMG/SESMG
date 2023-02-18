@@ -22,23 +22,17 @@ def us_application():
 
         if st.session_state["state_created"] == "done":
             st.success("The model definition ist ready after running process.")
+            
+        # input us sheet
+        input_us_sheet_path = st.file_uploader(
+            "Import your upscaling sheet:")
 
-        # tabs to create the model definition
-        tab_us, tab_sp, tab_md = st.tabs(["sheet 1", "sheet 2", "sheet 3"])
+        # input standard parameter sheet
+        input_standard_parameter_path = st.file_uploader(
+            "Import your standard parameter sheet:")
 
-        with tab_us:
-            # input us sheet
-            input_us_sheet_path = st.file_uploader(
-                "Import your upscaling sheet:")
-
-        with tab_sp:
-            # input standard parameter sheet
-            input_standard_parameter_path = st.file_uploader(
-                "Import your standard parameter sheet:")
-
-        with tab_md:
-            result_file_name = \
-                st.text_input("Type in your model definition file name.")
+        result_file_name = \
+            st.text_input("Type in your model definition file name.")
 
         # Run program main function if start button is clicked
         if submitted_us_run:
@@ -62,7 +56,7 @@ def us_application():
                         clustering_dh=False,
                         streamlit=True)
 
-    st.sidebar.download_button(label="Download your model definition here.",
+    st.sidebar.download_button(label="Download your model definition",
                                data=model_definition_df,
                                file_name=result_file_name + ".xlsx")
     st.session_state["state_model_definition"] = model_definition_df
@@ -76,7 +70,8 @@ def standard_page():
                 "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu "
                 "fugiat nulla pariatur. "
                 "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia "
-                "deserunt mollit anim id est laborum. ")
+                "deserunt mollit anim id est laborum."
+                "FINAL TEXT MISSING")
 
 
 # second column
