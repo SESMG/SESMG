@@ -163,7 +163,7 @@ def run_pareto(limits: list,
     # FIRST CRITERION
     result_folders = {"1": []}
     # TODO enable more than one scenario (districts)
-    save_path = create_scenario_save_folder(model_definition, directory)
+    save_path = create_scenario_save_folder(model_definition, directory, "1")
     # append optimum of first criterion driven run to the list of
     # result folders
     result_folders["1"].append(save_path)
