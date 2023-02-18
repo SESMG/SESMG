@@ -52,10 +52,7 @@ GUI/GUI_st_global_functions
 
 GUI/1_Main_Application
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: program_files.GUI_st.1_Main_Application
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. click:run:: python -m streamlit program_files.GUI_st.1_Main_Application
 
 GUI/pages/2_Urban_District_Upscaling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
