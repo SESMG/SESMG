@@ -1,11 +1,11 @@
 Model Simplification
-====================
+====================================
 
 Using the model simplification options, the modeled time system can be reduced so that not all time steps are considered with the modeling. Such a simplification allows shorter runtimes, but may lead to a reduction in the quality of the results [1].
 
 
 Time Series Preparation
-----------------------
+------------------------------------
 
 Using the timeseries preparation-options, the modeled time system can be reduced so that not all time steps are considered with the modeling. Such a simplification allows shorter runtimes, but may lead to a reduction in the quality of the results [1].
 
@@ -21,8 +21,8 @@ Using the timeseries preparation-options, the modeled time system can be reduced
 
 `variable cost factor = original number of timesteps / new number of timesteps`
   
- k-means / k-medoids
-^^^^^^^^^^^^^^^^^^^^^
+k-means / k-medoids
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 "The k-clustering algorithm divides a time series into a given number k of clusters so that the squared deviation of the cluster centers of gravity is minimal. The procedure is well described by Green et al. [2]. k-means-clustering as well as k-medoids-clustering are carried out using the python libraries ``scikit-learn'', respectively ``scikit-learn-extra''." [1] Different cluster criteria (1. temperature, 2. solar radiation, 3. electricity demand) as well as different periods (days and weeks) can be applied. To apply the criterion "electricity demand", a column "el_demand_sum" must be inserted in the scenario.xlsx file in the weather-data sheet, which defines the reference consumption. 
 
 
@@ -61,7 +61,7 @@ Available selection schemes:
 Acronyms: hp=highest peak, lv=lowest valley, ha=highest average, la=lowest average
 
 
-Further schemes can be added here: https://github.com/chrklemm/SESMG/blob/master/program_files/technical_data/hierarchical_selection_schemes.xlsx
+Further schemes can be added here: https://github.com/SESMG/SESMG/blob/master/program_files/technical_data/hierarchical_selection_schemes.xlsx
 
 
 random sampling
@@ -71,6 +71,4 @@ random sampling
 
 Pre-Modeling
 ----------------------
-
 The pre-modeling function splits the model into two model-runs. In a temporally simplified pre-model, potentially irrelevant investment decisions are identified and removed from the main model run ("technical pre-selection", see [1]). Optionally, the investment boundaries for the investment decisions remaining in the model can be adjusted with the freely selectable _investment_boundary_factor_ ("tightening of technical boundaries", see [1]). The pre-run and main run are automatically executed one after the other.
-
