@@ -41,8 +41,8 @@ def result_processing_sidebar():
         st.header("Pareto Results")
 
         if st.session_state["state_result_path"] != "not set" and \
-                st.session_state["state_result_path"]+"/components.csv" not in\
-                glob.glob(st.session_state["state_result_path"]+"/*"):
+                st.session_state["state_result_path"]+"/components.csv" \
+                not in glob.glob(st.session_state["state_result_path"]+"/*"):
 
             # read out subfolders of pareto list
             existing_result_foldernames_list = next(
