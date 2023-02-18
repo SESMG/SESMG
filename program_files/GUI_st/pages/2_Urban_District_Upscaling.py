@@ -10,35 +10,47 @@ import pandas as pd
 
 from program_files.urban_district_upscaling.pre_processing \
     import urban_district_upscaling_pre_processing
-from program_files.GUI_st.GUI_st_global_functions import st_settings_global
+from program_files.GUI_st.GUI_st_global_functions \
+    import st_settings_global, import_GUI_input_values_json
 
 # settings the initial streamlit page settings
 st_settings_global()
 
 
 def us_application():
+
+    # Import GUI help comments from the comment json and safe as an dict
+    GUI_helper = import_GUI_input_values_json(
+        os.path.dirname(os.path.dirname(__file__))
+        + "/GUI_st_help_comments.json")
+
     model_definition_df = ""
     with st.sidebar.form("Input Parameters"):
         # message that the file is being created
         if "state_created" not in st.session_state:
             st.session_state["state_created"] = "note done"
         # Submit button to start optimization.
-        submitted_us_run = st.form_submit_button("Start US Tool",
-                                                 on_click=creating_xlsx)
-        print(st.session_state)
+        submitted_us_run = st.form_submit_button(
+            label="Start US Tool",
+            on_click=creating_xlsx,
+            help=GUI_helper["udu_fs_start_US_tool"])
+
         if st.session_state["state_created"] == "done":
             st.success("The model definition ist ready after running process.")
 
         # input us sheet
         input_us_sheet_path = st.file_uploader(
-            "Import your upscaling sheet:")
+            label="Import your upscaling sheet:",
+            help=GUI_helper["udu_fu_us_sheet"])
 
         # input standard parameter sheet
         input_standard_parameter_path = st.file_uploader(
-            "Import your standard parameter sheet:")
+            label="Import your standard parameter sheet:",
+            help=GUI_helper["udu_fu_sp_sheet"])
 
         result_file_name = \
-            st.text_input("Type in your model definition file name.")
+            st.text_input(label="Type in your model definition file name.",
+                          help=GUI_helper["udu_ti_model_def_name"])
 
         # Run program main function if start button is clicked
         if submitted_us_run:
@@ -64,7 +76,9 @@ def us_application():
 
     st.sidebar.download_button(label="Download your model definition",
                                data=model_definition_df,
-                               file_name=result_file_name + ".xlsx")
+                               file_name=result_file_name + ".xlsx",
+                               help=GUI_helper["udu_b_download_model_def"])
+
     st.session_state["state_model_definition"] = model_definition_df
 
 

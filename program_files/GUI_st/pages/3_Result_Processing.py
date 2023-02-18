@@ -19,6 +19,12 @@ def result_processing_sidebar():
     """
         Function to create the sidebar.
     """
+
+    # Import GUI help comments from the comment json and safe as an dict
+    GUI_helper = import_GUI_input_values_json(
+        os.path.dirname(os.path.dirname(__file__))
+        + "/GUI_st_help_comments.json")
+
     # create sidebar
     with st.sidebar:
         st.header("Result Overview")
@@ -30,10 +36,12 @@ def result_processing_sidebar():
         # create selectbox with the foldernames which are in the results folder
         existing_result_folder = st.selectbox(
             label="Choose the result folder",
-            options=existing_result_foldernames_list)
+            options=existing_result_foldernames_list,
+            help=GUI_helper["res_dd_result_folder"])
 
         # chebox if user wants to reload existing results
-        run_existing_results = st.button(label="Load Existing Results")
+        run_existing_results = st.button(label="Load Existing Results",
+                                         help=GUI_helper["res_b_load_results"])
 
         if run_existing_results:
             # set session state with full folder path to the result folder
@@ -64,8 +72,10 @@ def result_processing_sidebar():
             pareto_points_list.sort()
             # create selectbox to choose the pareotpoint you want to see
             # show results for
-            pareto_point_chosen = st.selectbox(label="Choose the pareto point",
-                                               options=pareto_points_list)
+            pareto_point_chosen = st.selectbox(
+                label="Choose the pareto point",
+                options=pareto_points_list,
+                help=GUI_helper["res_dd_pareto_point"])
 
             # create session_state to initialize the prareto result overviews
             st.session_state["state_pareto_point_chosen"] = pareto_point_chosen
