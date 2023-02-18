@@ -52,7 +52,7 @@ GUI/GUI_st_global_functions
 
 GUI/1_Main_Application
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: streamlit run program_files.GUI_st.1_Main_Application
+.. autofunction:: program_files.GUI_st.1_Main_Application.main_application_sesmg
    :members:
    :undoc-members:
    :show-inheritance:
