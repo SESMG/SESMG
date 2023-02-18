@@ -1,9 +1,9 @@
 Sourcecode Documentation
 ********************************************
-**Graphical User Interface**:
+**Graphical User Interface (GUI)**:
 
     With the help of the Streamlit driven graphical user interface it is possible
-    for the user to create his model definition using the Urban District Upscaling.
+    for the user to create a model definition using the Urban District Upscaling.
     Furthermore, an already created model definition (can also be created manually)
     can be passed to the SESMG with defined optimization parameters and thus a model
     optimization can be performed. Finally, newly created or already existing results
@@ -29,8 +29,8 @@ The software product "SESMG" can be divided into the following 4 process phases:
     different buildings are grouped together e. g. by their load profile via
     the cluster ID (column in the US-Input sheet).
 
-    - `Preprocessing <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.pre_processing>`_
-    - `Clustering <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.clustering>`_
+    - `US-Tool Preprocessing <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.pre_processing>`_
+    - `US-Tool Clustering <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.clustering>`_
     - `US-Tool Bus <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/004.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Bus>`_
     - `US-Tool Central_Components <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Central_components>`_
     - `US-Tool Insulation <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Insulation>`_
@@ -77,6 +77,13 @@ Urban District Upscaling Tool
 US_Tool/pre_processing
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.pre_processing
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+US_Tool/clustering
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.urban_district_upscaling.clustering
    :members:
    :undoc-members:
    :show-inheritance:

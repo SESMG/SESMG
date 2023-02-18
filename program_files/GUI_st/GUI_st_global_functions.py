@@ -23,17 +23,18 @@ def st_settings_global():
                     'Report a Bug': 'https://github.com/SESMG/SESMG/issues'})
 
 
-def import_GUI_input_values_json(json_file_path):
+def import_GUI_input_values_json(json_file_path: str) -> dict:
     """
         Function to import GUI settings from am existing json file and
-            save it as a dict.
+        save it as a dict.
 
-        :param json_file_path: file name to the underlying json with input \
-            values for all GUI pages
+        :param json_file_path: file name to the underlying json with \
+            input values for all GUI pages
         :type json_file_path: str
-        :param GUI_settings_cache_dict_reload: exported dict from json file \
-            including a (sub)dict for every GUI page
-        :type json_file_name: dict
+        
+        :return: - **GUI_settings_cache_dict_reload ** (dict) - \
+            exported dict from json file including a (sub)dict for \
+            every GUI page
     """
     # Import json file including several (sub)dicts for every GUI page
     # Each (sub)dict includes input values as a cache from the last session
@@ -43,11 +44,11 @@ def import_GUI_input_values_json(json_file_path):
     return GUI_settings_cache_dict_reload
 
 
-def safe_GUI_input_values(input_values_dict, json_file_path):
+def safe_GUI_input_values(input_values_dict: dict, json_file_path: str):
     """
         Function so safe a dict as json.
 
-        :param input_values_sub_dict: name of the dict of input values \
+        :param input_values_dict: name of the dict of input values \
             for specific GUI page
         :type input_values_dict: dict
         :param json_file_path: file name to the underlying json with \
@@ -59,10 +60,10 @@ def safe_GUI_input_values(input_values_dict, json_file_path):
 
 
 def clear_GUI_main_settings(
-        result_path, premodeling_result_path, json_file_path):
+        result_path: str, premodeling_result_path: str, json_file_path: str):
     """
         Function to clear the  GUI settings dict, reset it to the initial
-            values and safe in json path as variables.
+        values and safe in json path as variables.
 
         :param result_path: internal path where the latest results were safed
         :type result_path: str
@@ -72,7 +73,6 @@ def clear_GUI_main_settings(
         :param json_file_path: internal path where json should be safed
         :type json_file_path: str
     """
-
     # creating the dict of GUI input values to be safed as json
 
     GUI_main_dict_cleared = {
@@ -122,8 +122,7 @@ def clear_GUI_main_settings(
                           json_file_path=json_file_path)
 
 
-def run_SESMG(GUI_main_dict: dict,
-              model_definition: str, save_path: str):
+def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
     """
         Function to run SESMG main based on the GUI input values dict.
 
