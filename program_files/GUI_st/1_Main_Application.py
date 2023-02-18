@@ -435,10 +435,10 @@ def main_application_sesmg():
 
             GUI_main_dict["input_pareto_points"] = input_pareto_points
 
-    # creating sidebar form submit strucutre
+    # creating sidebar form submit structure
     with st.sidebar.form("Clear Cache"):
-
-        # set initial sessin state for clear cache seubmit button
+        print("Piep TWAN UND GREGOR TESTEN SPHINX")
+        # set initial session state for clear cache submit button
         if "state_submitted_clear_cache" not in st.session_state:
             st.session_state["state_submitted_clear_cache"] = "not done"
 
@@ -453,7 +453,7 @@ def main_application_sesmg():
                                  help=GUI_helper["main_cb_clear_paths"])
 
     # Clear all GUI settings if clear latest result paths clicked
-# TOFDO: session state für clear dict
+# TODO: session state für clear dict
 
     if st.session_state["state_submitted_clear_cache"] == "done" \
             and clear_path:
