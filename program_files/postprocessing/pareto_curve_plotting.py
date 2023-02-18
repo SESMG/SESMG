@@ -14,7 +14,7 @@ def collect_pareto_data(result_dfs: dict, result_path: str) -> None:
     costs = {"monetary": [], "emissions": []}
 
     for dataframe in result_dfs:
-        if dataframe != "0":
+        if dataframe != "1":
             costs["monetary"].append(
                 sum(result_dfs[dataframe]["variable costs/CU"])
                 + sum(result_dfs[dataframe]["periodical costs/CU"])

@@ -52,10 +52,10 @@ def calc_constraint_limits(result_folders: dict, limits: list):
     """
     constraints = {}
     # get constraints of the first optimization
-    result = pandas.read_csv(str(result_folders["1"][0]) + "/components.csv")
+    result = pandas.read_csv(str(result_folders["0"][0]) + "/components.csv")
     constr_min_1 = float(sum(result["constraints/CU"]))
     # get constraints of the second optimization
-    result2 = pandas.read_csv(str(result_folders["0"][0]) + "/components.csv")
+    result2 = pandas.read_csv(str(result_folders["1"][0]) + "/components.csv")
     constr_min_2 = float(sum(result2["variable costs/CU"])
                          + sum(result2["periodical costs/CU"]))
     # devide solvable range in "limits" intervals
@@ -161,22 +161,22 @@ def run_pareto(limits: list,
                  + "started!")
     
     # FIRST CRITERION
-    result_folders = {"1": []}
+    result_folders = {"0": []}
     # TODO enable more than one scenario (districts)
-    save_path = create_scenario_save_folder(model_definition, directory, "1")
+    save_path = create_scenario_save_folder(model_definition, directory, "0")
     # append optimum of first criterion driven run to the list of
     # result folders
-    result_folders["1"].append(save_path)
+    result_folders["0"].append(save_path)
     # run the optimization of the first criterion minimum
     run_SESMG(GUI_main_dict, model_definition, save_path)
     
     # SECOND CRITERION
     # TODO enable more than one scenario (districts)
     # set the save path
-    save_path2 = create_scenario_save_folder(model_definition, directory, "0")
+    save_path2 = create_scenario_save_folder(model_definition, directory, "1")
     # append optimum of first criterion driven run to the list of
     # result folders
-    result_folders.update({"0": [save_path2]})
+    result_folders.update({"1": [save_path2]})
     
     # switch the criterion switch parameter in the gui input parameter
     GUI_main_dict["input_criterion_switch"] = \

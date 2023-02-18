@@ -44,11 +44,12 @@ def result_processing_sidebar():
                         os.path.abspath(__file__))))) \
                 + "/results/" + existing_result_folder
 
-        st.header("Pareto Results")
-
         if st.session_state["state_result_path"] != "not set" and \
                 st.session_state["state_result_path"]+"/components.csv" \
                 not in glob.glob(st.session_state["state_result_path"]+"/*"):
+
+            # header
+            st.header("Pareto Results")
 
             # read out subfolders of pareto list
             existing_result_foldernames_list = next(
@@ -77,13 +78,13 @@ def result_processing_sidebar():
 def short_result_summary_time(result_path_summary):
     """
         Function displaying the results timeseries informations.
+
         :param result_path_summary: path to a result summary.csv file
         :type result_path_summary: str
     """
     st.subheader("Result Overview")
     # Import summary.csv and create dataframe
     df_summary = pd.read_csv(result_path_summary)
-
     # Display and import time series values
     # adding two blank rows
     time1, time2, time3, time4 = st.columns(4)
@@ -98,6 +99,7 @@ def short_result_summary_system(result_path_summary):
     """
         Function displaying the short result summary overview of the energy \
             system.
+
         :param result_path_summary: path to a result summary.csv file
         :type result_path_summary: str
     """
@@ -105,6 +107,9 @@ def short_result_summary_system(result_path_summary):
     df_summary = pd.read_csv(result_path_summary)
     # Create list with headers
     summary_headers = list(df_summary)
+    # format thousends seperator
+    # TODO: Tausendertrennung
+    # df_summary = df_summary.iloc[1,:].style.format(thousands=" ",precision=0)
     # TODO: add delta functions based on the latest results
     # Display and import simulated cost values from summary dataframe
     cost1, cost2, cost3, cost4 = st.columns(4)
@@ -157,6 +162,7 @@ def short_result_premodelling(result_GUI_settings_dict):
     """
         Function to display premodel settings in addition to
             the timeseries information.
+
         :param result_path_components: dict including the last
             runs GUI settings
         :type result_path_components: dict
@@ -207,6 +213,7 @@ def short_result_table(result_path_components):
 def short_result_interactive_dia(result_path_results):
     """
         Function to create interactive results.
+
         :param result_path_results: path to a result results.csv file
         :type result_path_results: str
     """
@@ -227,34 +234,54 @@ def short_result_interactive_dia(result_path_results):
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
-def show_heat_amounts(result_path_heat_amounts):
+def create_energy_amounts_diagram(result_path_amounts):
+    """
+        Function to create energy amount diagrams in streamlit.
+
+        :param result_path_amounts: path to a result heat_amounts.csv or \
+            elec_amounts.csv file
+        :type result_path_amounts: str
+    """
+    # loading result.csv as a dataframe
+    amounts_df = pd.read_csv(result_path_amounts)
+    amounts_df = amounts_df.loc[:, (amounts_df != 0).any(axis=0)]
+
+    # creating column headers to select
+    column_headers_amount = list(amounts_df.columns.values)
+    # column headers without date
+    list_headers = column_headers_amount[1:]
+
+    # create plotly chart
+    fig = px.area(amounts_df, x="run", y=list_headers)
+    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+
+
+def show_energy_amounts(result_path_heat_amounts, result_path_elec_amounts):
     """
         Function to create heat amounts.
-        :param result_path_results: path to a result heat_amounts.csv file
-        :type result_path_results: str
+
+        :param result_path_heat_amounts: path to a result heat_amounts.csv file
+        :type result_path_heat_amounts: str
+        :param result_path_elec_amounts: path to a result elec_amounts.csv file
+        :type result_path_elec_amounts: str
     """
     # Header
     st.subheader("Energy Amount Diagrams")
+
     with st.subheader("Energy Amounts"):
         tab1, tab2 = st.tabs(["Heat Amounts", "Electricity Amounts"])
-        # loading result.csv as a dataframe
+        # TODO: fix displayed amounts!
+        # create heat amount diagram
         with tab1:
-            amounts_df = pd.read_csv(result_path_heat_amounts)
-            amounts_df = amounts_df.loc[:, (amounts_df != 0).any(axis=0)]
-
-            # creating column headers to select
-            column_headers_amount = list(amounts_df.columns.values)
-            # column headers without date
-            list_headers = column_headers_amount[1:]
-
-            fig = px.area(amounts_df, x="run", y=list_headers)
-            st.plotly_chart(fig, theme="streamlit", use_container_width=True)
-
+            create_energy_amounts_diagram(
+                result_path_amounts=result_path_heat_amounts)
+        # create elec amount diagram
         with tab2:
-            # TODO: add elec amounts!
-            st.write("Rudi Rüssel")
+            create_energy_amounts_diagram(
+                result_path_amounts=result_path_elec_amounts)
+
     # comment that diagrams are not always valid / can be wrong
-    st.write("The Energy Amount Diagrams are only valid if the model \
+    st.write("Info: The energy amount diagrams are only valid if the model \
              definition created with the Urban Upscaling Tool. \
              Otherwise there is no guarantee that there are no components \
              missing in the diagrams.")
@@ -263,6 +290,7 @@ def show_heat_amounts(result_path_heat_amounts):
 def show_pareto(result_path_pareto):
     """
         Function to create heat amounts.
+
         :param result_path_results: path to a result heat_amounts.csv file
         :type result_path_results: str
     """
@@ -271,18 +299,20 @@ def show_pareto(result_path_pareto):
 
     # load pareto.csv
     pareto_df = pd.read_csv(result_path_pareto)
-    # create and show pareo plot
-    fig = px.line(pareto_df, x="costs", y="emissions")
+    # create and show pareo plot inkl. point values
+    fig = px.line(pareto_df,
+                  x="costs",
+                  y="emissions",
+                  markers=True,
+                  hover_data=["costs", "emissions"])
+    fig.update_traces(textposition="top right")
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
-
-# TODO: behalten?
-    # create pareto dataframe
-    # st.dataframe(pareto_df)
 
 
 def show_building_specific_results(result_path_building_specific):
     """
         Function to create heat amounts.
+
         :param result_path_results: path to a result heat_amounts.csv file
         :type result_path_results: str
     """
@@ -312,6 +342,7 @@ def short_result_graph(result_path_graph):
     """
         Function to display the energy systems structure in a streamlit
             expander.
+
         :param result_path_graph: path to a result graph.gv.png file
         :type result_path_graph: str
     """
@@ -391,9 +422,11 @@ elif st.session_state["state_result_path"]+"/components.csv" \
         result_path_pareto=st.session_state["state_result_path"]
         + "/pareto.csv")
     # show heat amount diagram
-    show_heat_amounts(
+    show_energy_amounts(
         result_path_heat_amounts=st.session_state["state_result_path"]
-        + "/heat_amounts.csv")
+        + "/heat_amounts.csv",
+        result_path_elec_amounts=st.session_state["state_result_path"]
+        + "/elec_amounts.csv")
 # TODO implement
     # show building specific results
     # show_building_specific_results(st.session_state["state_result_path"]
