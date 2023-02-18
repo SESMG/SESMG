@@ -1,3 +1,9 @@
+"""
+@author: jtock - jan.tockloth@fh-muenster.de
+@author: GregorBecker - gregor.becker@fh-muenster.de
+@author: janik257
+"""
+
 import streamlit as st
 import pandas as pd
 from st_aggrid import AgGrid, GridUpdateMode

@@ -1,8 +1,9 @@
 """
-Created on Thu Sep 29 13:23:07 2022
-
-@author: Jan Tockloth - jan.tockloth@fh-muenster.de
+@author: jtock - jan.tockloth@fh-muenster.de
+@author: GregorBecker - gregor.becker@fh-muenster.de
+@author: janik257
 """
+
 from streamlit.components.v1 import html
 import streamlit as st
 import os
