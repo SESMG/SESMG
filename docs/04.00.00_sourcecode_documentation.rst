@@ -41,6 +41,11 @@ The software product "SESMG" can be divided into the following 4 process phases:
     - `US-Tool Transformer <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Transformer>`_
 
 
+**Preprocessing**
+
+    TEXTTEXTTEXT
+
+
 Graphical User Interface (GUI)
 --------------------------------------------
 GUI/GUI_st_global_functions
@@ -52,7 +57,10 @@ GUI/GUI_st_global_functions
 
 GUI/1_Main_Application
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. click:run:: python -m streamlit program_files.GUI_st.1_Main_Application
+.. automodule:: program_files.GUI_st.1_Main_Application
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 GUI/pages/2_Urban_District_Upscaling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -137,6 +145,113 @@ US_Tool/components/Storage
 US_Tool/components/Transformer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Transformer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Preprocessing
+--------------------------------------------
+Preprocessing/create_energy_system
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.preprocessing.create_energy_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Preprocessing/data_preparation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.preprocessing.data_preparation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Preprocessing/import_weather_data
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.preprocessing.import_weather_data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Preprocessing/pareto_optimization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.preprocessing.pareto_optimization
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Preprocessing/pre_model_analysis
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.preprocessing.pre_model_analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Preprocessing/Spreadsheet_Energy_System_Model_Generator
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Preprocessing/components/Bus
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.preprocessing.components.Bus
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Preprocessing/components/district_heating
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.preprocessing.components.district_heating
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Preprocessing/components/district_heating_calculations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.preprocessing.components.district_heating_calculations
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Preprocessing/components/district_heating_clustering
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.preprocessing.components.district_heating_clustering
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Preprocessing/components/Link
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.preprocessing.components.Link
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Preprocessing/components/Sink
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.preprocessing.components.Sink
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Preprocessing/components/Source
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.preprocessing.components.Source
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Preprocessing/components/Storage
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.preprocessing.components.Storage
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Preprocessing/components/Transformer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.preprocessing.components.Transformer
    :members:
    :undoc-members:
    :show-inheritance:
