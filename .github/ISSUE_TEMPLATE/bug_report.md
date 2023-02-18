@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Code of Conduct**
-- [ ] Hereby I consent to the [CODE_OF_CONDUCT](https://github.com/chrklemm/SESMG/blob/master/CODE_OF_CONDUCT.md)[^1]  
+- [ ] Hereby I consent to the [CODE_OF_CONDUCT](https://github.com/SESMG/SESMG/blob/master/CODE_OF_CONDUCT.md)[^1]  
 
 **Describe the bug**
 A clear and concise description of what the bug is.
