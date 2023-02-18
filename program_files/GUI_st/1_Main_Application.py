@@ -110,8 +110,8 @@ def main_start_page():
 
 def main_application_sesmg():
     """
-        Function building the sidebar of the main application including all
-        input options and starting the processes.
+        Function building the sidebar of the main application including all \
+            input options and starting the processes.
 
     """
 
@@ -574,8 +574,8 @@ def main_application_sesmg():
 
 def change_state_submitted_optimization():
     """
-        Setup session state for the optimization form-submit as an
-        change event as on-click to switch the state.
+        Setup session state for the optimization form-submit as an \
+            change event as on-click to switch the state.
     """
     st.session_state["state_submitted_optimization"] = "done"
     return
@@ -583,8 +583,8 @@ def change_state_submitted_optimization():
 
 def change_state_submitted_clear_cache():
     """
-        Setup session state for the clear_cache form-submit as an
-        change event as on-click to switch the state.
+        Setup session state for the clear_cache form-submit as an \
+            change event as on-click to switch the state.
     """
     st.session_state["state_submitted_clear_cache"] = "done"
     st.session_state["state_submitted_optimization"] = "not done"
