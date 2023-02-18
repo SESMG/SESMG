@@ -1,16 +1,15 @@
 """
-@author: jtock - jan.tockloth@fh-muenster.de
-@author: GregorBecker - gregor.becker@fh-muenster.de
-@author: janik257
+    @author: jtock - jan.tockloth@fh-muenster.de
+    @author: GregorBecker - gregor.becker@fh-muenster.de
+    @author: janik257
 """
-
+import glob
+import os
 import streamlit as st
 import pandas as pd
 from st_aggrid import AgGrid, GridUpdateMode
 import plotly.express as px
 from PIL import Image
-import glob
-import os
 
 from GUI_st_global_functions import \
     import_GUI_input_values_json, st_settings_global

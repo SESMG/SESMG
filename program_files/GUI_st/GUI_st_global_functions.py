@@ -1,10 +1,13 @@
 """
-@author: jtock - jan.tockloth@fh-muenster.de
-@author: GregorBecker - gregor.becker@fh-muenster.de
+    @author: jtock - jan.tockloth@fh-muenster.de
+    @author: GregorBecker - gregor.becker@fh-muenster.de
 """
 
-import streamlit as st
 import json
+import streamlit as st
+
+from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator\
+    import sesmg_main, sesmg_main_including_premodel
 
 
 def st_settings_global():
@@ -34,7 +37,7 @@ def import_GUI_input_values_json(json_file_path):
     """
     # Import json file including several (sub)dicts for every GUI page
     # Each (sub)dict includes input values as a cache from the last session
-    with open(json_file_path, "r") as infile:
+    with open(json_file_path, "r", encoding="utf-8") as infile:
         GUI_settings_cache_dict_reload = json.load(infile)
 
     return GUI_settings_cache_dict_reload
@@ -51,7 +54,7 @@ def safe_GUI_input_values(input_values_dict, json_file_path):
             input values
         :type json_file_path: str
     """
-    with open(json_file_path, 'w') as outfile:
+    with open(json_file_path, 'w', encoding="utf-8") as outfile:
         json.dump(input_values_dict, outfile, indent=4)
 
 
@@ -132,8 +135,6 @@ def run_SESMG(GUI_main_dict: dict,
         :param save_path: file path where the results will be saved
         :type save_path: str
     """
-    from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator\
-        import sesmg_main, sesmg_main_including_premodel
 
     if not GUI_main_dict["input_activate_premodeling"]:
         sesmg_main(

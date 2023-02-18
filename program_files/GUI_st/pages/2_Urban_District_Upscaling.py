@@ -1,6 +1,12 @@
+"""
+@author: Janik257
+@author: jtock - jan.tockloth@fh-muenster.de
+@author: GregorBecker - gregor.becker@fh-muenster.de
+"""
+
+import os
 import streamlit as st
 import pandas as pd
-import os
 
 from program_files.urban_district_upscaling.pre_processing \
     import urban_district_upscaling_pre_processing
@@ -22,7 +28,7 @@ def us_application():
 
         if st.session_state["state_created"] == "done":
             st.success("The model definition ist ready after running process.")
-            
+
         # input us sheet
         input_us_sheet_path = st.file_uploader(
             "Import your upscaling sheet:")
@@ -64,14 +70,19 @@ def us_application():
 
 def standard_page():
     st.markdown(" # Urban District Upscaling Tool")
-    st.markdown(" Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
-                " incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
-                "exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
-                "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu "
-                "fugiat nulla pariatur. "
-                "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia "
-                "deserunt mollit anim id est laborum."
-                "FINAL TEXT MISSING")
+    st.markdown(
+        " Lorem ipsum dolor sit amet, consectetur adipiscing elit, \
+            sed do eiusmod tempor"
+        " incididunt ut labore et dolore magna aliqua. Ut enim ad \
+            minim veniam, quis nostrud "
+        "exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+        "Duis aute irure dolor in reprehenderit in voluptate velit esse \
+            cillum dolore eu "
+        "fugiat nulla pariatur. "
+        "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui \
+            officia "
+        "deserunt mollit anim id est laborum."
+        "FINAL TEXT MISSING")
 
 
 # second column
@@ -80,7 +91,9 @@ def after_processing_page():
 
     if "state_xlsx" not in st.session_state:
         st.session_state["state_xlsx"] = "not done"
-    input_model_definition = st.file_uploader("Model definition", on_change=change_xlsx_state)
+    input_model_definition = st.file_uploader(
+        label="Model definition",
+        on_change=change_xlsx_state)
     if st.session_state["state_xlsx"] == "done":
         tabs = pd.ExcelFile(input_model_definition).sheet_names
         # without info column

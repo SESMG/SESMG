@@ -1,3 +1,7 @@
+"""
+    @author: GregorBecker - gregor.becker@fh-muenster.de
+"""
+
 import pandas as pd
 
 

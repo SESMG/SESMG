@@ -1,24 +1,24 @@
 """
-@author: jtock - jan.tockloth@fh-muenster.de
-@author: GregorBecker - gregor.becker@fh-muenster.de
-@author: janik257
+    @author: jtock - jan.tockloth@fh-muenster.de
+    @author: GregorBecker - gregor.becker@fh-muenster.de
+    @author: janik257
 """
-
-from streamlit.components.v1 import html
-import streamlit as st
-import os
-from datetime import datetime
 import sys
 import glob
+import os
+from datetime import datetime
+from streamlit.components.v1 import html
+import streamlit as st
+
 
 # Setting new system path to be able to refer to perent directories
 parent = os.path.abspath('.')
 sys.path.insert(1, parent)
 
-from program_files.preprocessing.pareto_optimization import run_pareto
 from GUI_st_global_functions import clear_GUI_main_settings, \
     safe_GUI_input_values, import_GUI_input_values_json, \
     st_settings_global, run_SESMG
+from program_files.preprocessing.pareto_optimization import run_pareto
 
 # settings the initial streamlit page settings
 st_settings_global()
@@ -71,8 +71,8 @@ def main_start_page():
         Definition of the start page for the GUI with introducing texts.
     """
     # Open the README.md file and read all lines
-    with open("README.md", 'r', encoding="utf8") as f:
-        readme_line = f.readlines()
+    with open("README.md", 'r', encoding="utf8") as file:
+        readme_line = file.readlines()
         # Create an empty buffer list to temporarily store the lines of \
         # the README.md file
         readme_buffer = []
@@ -112,7 +112,6 @@ def main_application_sesmg():
     """
         Function building the sidebar of the main application including all \
             input options and starting the processes.
-
     """
 
     # Import the saved GUI settings from the last session
@@ -191,12 +190,8 @@ def main_application_sesmg():
                                      "heuristic selection": 8,
                                      "random sampling": 9}
 
-        # Timeseries Index Range
-        timeseries_index_range_start = ["None"]
-        timeseries_index_range_values = [i for i in range(1, 366)]
-        # None or 1 to 365
-        timeseries_index_range_list = timeseries_index_range_start + \
-            timeseries_index_range_values
+        # Timeseries Index Range None or 1 to 365
+        timeseries_index_range_list = ["None"] + list(range(1, 366))
 
         # Dict of choosable clustering crtieria matching the streamlit \
         # input index for selectbox's preselections
@@ -403,13 +398,10 @@ def main_application_sesmg():
         # Elements to set the pareto points.
         with st.expander("Pareto Point Options"):
 
-            # List of pareto points wich can be chosen.
-            pareto_options = [i for i in range(1, 100)]
-
             # Multiselect element
             input_pareto_points = st.multiselect(
                 label="Pareto Points",
-                options=pareto_options,
+                options=list(range(1, 100)),
                 default=settings_cache_dict_reload["input_pareto_points"])
             if input_pareto_points is not None:
                 input_pareto_points.sort(reverse=True)
@@ -578,7 +570,6 @@ def change_state_submitted_optimization():
             change event as on-click to switch the state.
     """
     st.session_state["state_submitted_optimization"] = "done"
-    return
 
 
 def change_state_submitted_clear_cache():
@@ -588,7 +579,6 @@ def change_state_submitted_clear_cache():
     """
     st.session_state["state_submitted_clear_cache"] = "done"
     st.session_state["state_submitted_optimization"] = "not done"
-    return
 
 
 # Start main page

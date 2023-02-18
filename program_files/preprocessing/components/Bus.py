@@ -1,16 +1,21 @@
-from oemof.solph import Bus, Flow, Sink, Source
+"""
+    @author: Christian Klemm - christian.klemm@fh-muenster.de
+    @author: GregorBecker - gregor.becker@fh-muenster.de
+"""
+
 import logging
+from oemof.solph import Bus, Flow, Sink, Source
 
 
 def buses(nodes_data: dict, nodes: list) -> dict:
     """
         Creates bus objects with the parameters given in 'nodes_data'
         and adds them to the list of components 'nodes'.
-    
+
         :param nodes_data: dictionary containing parameters of the buses
                            to be created.
                            The following parameters have to be provided:
-    
+
                                 - label,
                                 - active,
                                 - excess,
@@ -23,11 +28,10 @@ def buses(nodes_data: dict, nodes: list) -> dict:
         :type nodes_data: dict
         :param nodes: list of components created before (can be empty)
         :type nodes: list
-    
+
         :return: - **busd** (dict) - dictionary containing all buses \
             created
-    
-        Christian Klemm - christian.klemm@fh-muenster.de
+
     """
     # creates a list of buses
     busd = {}
