@@ -32,7 +32,7 @@ def import_GUI_input_values_json(json_file_path: str) -> dict:
             input values for all GUI pages
         :type json_file_path: str
         
-        :return: - **GUI_settings_cache_dict_reload ** (dict) - \
+        :return: **GUI_settings_cache_dict_reload** (dict) - \
             exported dict from json file including a (sub)dict for \
             every GUI page
     """

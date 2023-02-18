@@ -15,9 +15,9 @@ import streamlit as st
 parent = os.path.abspath('.')
 sys.path.insert(1, parent)
 
-from GUI_st_global_functions import clear_GUI_main_settings, \
-    safe_GUI_input_values, import_GUI_input_values_json, \
-    st_settings_global, run_SESMG
+from program_files.GUI_st.GUI_st_global_functions import \
+    clear_GUI_main_settings, safe_GUI_input_values, \
+    import_GUI_input_values_json, st_settings_global, run_SESMG
 from program_files.preprocessing.pareto_optimization import run_pareto
 
 # settings the initial streamlit page settings

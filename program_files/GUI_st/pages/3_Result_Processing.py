@@ -11,7 +11,7 @@ from st_aggrid import AgGrid, GridUpdateMode
 import plotly.express as px
 from PIL import Image
 
-from GUI_st_global_functions import \
+from program_files.GUI_st.GUI_st_global_functions import \
     import_GUI_input_values_json, st_settings_global
 
 
