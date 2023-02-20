@@ -15,7 +15,7 @@ from program_files.postprocessing.plotting_elec_amounts \
 from program_files.postprocessing.plotting_heat_amounts \
     import collect_heat_amounts
 from program_files.preprocessing.create_energy_system \
-    import import_scenario
+    import import_model_definition
 import pandas
 
 
@@ -93,34 +93,20 @@ def create_transformation_model_definitions(constraints: dict,
     
     for limit in limits:
         constraint = constraints[limit]
-        xls = pandas.ExcelFile(model_name)
-        nd = {
-            "buses": xls.parse("buses"),
-            "energysystem": xls.parse("energysystem"),
-            "sinks": xls.parse("sinks"),
-            "links": xls.parse("links"),
-            "sources": xls.parse("sources"),
-            "time series": xls.parse("time series"),
-            "transformers": xls.parse("transformers"),
-            "storages": xls.parse("storages"),
-            "weather data": xls.parse("weather data"),
-            "competition constraints": xls.parse("competition constraints"),
-            "insulation": xls.parse("insulation"),
-            "district heating": xls.parse("district heating"),
-            "pipe types": xls.parse("pipe types")
-        }
-        file_name = directory \
-            + "/" \
-            + model_name.name[:-5] \
-            + "_" \
-            + str(limit) + ".xlsx"
-        files[str(limit)].append(file_name)
-        writer = pandas.ExcelWriter(file_name, engine="xlsxwriter")
-        nd["energysystem"].loc[1, "constraint cost limit"] = float(constraint)
-        for i in nd.keys():
-            nd[i].to_excel(writer, sheet_name=str(i), index=False)
+        nodes_data = import_model_definition(model_name, False)
+        files[str(limit)].append(
+            directory + "/" + model_name.name[:-5] + "_" + str(limit) + ".xlsx"
+        )
+        writer = pandas.ExcelWriter(files[str(limit)][-1], engine="xlsxwriter")
+        nodes_data["energysystem"].loc[1, "constraint cost limit"] = \
+            float(constraint)
+        nodes_data["time series"] = nodes_data["timeseries"]
+        nodes_data.pop("timeseries")
+        for sheet in nodes_data.keys():
+            nodes_data[sheet].to_excel(writer,
+                                       sheet_name=str(sheet),
+                                       index=False)
         writer.save()
-        print(files)
     return files
 
 
@@ -220,16 +206,17 @@ def run_pareto(limits: list,
         result_path=os.path.dirname(save_path))
     
     sink_types = create_sink_differentiation_dict(
-            import_scenario(model_definition)["sinks"])
+            import_model_definition(model_definition)["sinks"])
     
     # create amount csv files
-    collect_electricity_amounts(dataframes=result_dfs,
-                                nodes_data=import_scenario(model_definition),
-                                result_path=os.path.dirname(save_path),
-                                sink_known=sink_types)
+    collect_electricity_amounts(
+        dataframes=result_dfs,
+        nodes_data=import_model_definition(model_definition),
+        result_path=os.path.dirname(save_path),
+        sink_known=sink_types)
 
     collect_heat_amounts(dataframes=result_dfs,
-                         nodes_data=import_scenario(model_definition),
+                         nodes_data=import_model_definition(model_definition),
                          result_path=os.path.dirname(save_path),
                          sink_known=sink_types)
     

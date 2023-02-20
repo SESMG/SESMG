@@ -199,7 +199,8 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     # DEFINES A LOGGING FILE
     logger.define_logging(logpath=result_path)
     # IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
-    nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
+    nodes_data = create_energy_system.import_model_definition(
+        filepath=scenario_file)
 
     # CRITERION SWITCH
     if criterion_switch:
@@ -274,7 +275,6 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     esys.add(*nodes)
     ESGraphRenderer(energy_system=esys, filepath=result_path, view=graph,
                     legend=True)
-
     # OPTIMIZES THE ENERGYSYSTEM AND RETURNS THE OPTIMIZED ENERGY SYSTEM
     om = optimize_model.least_cost_model(esys, num_threads, nodes_data, busd,
                                          solver)
@@ -362,4 +362,3 @@ def sesmg_main_including_premodel(scenario_file: str, result_path: str, num_thre
         solver=solver,
         district_heating_path=district_heating_path,
         cluster_dh=cluster_dh)
-

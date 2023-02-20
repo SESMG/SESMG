@@ -1,9 +1,3 @@
-def test_create_weather_data_plot():
-    from program_files.preprocessing.import_weather_data \
-        import create_weather_data_plot
-    pass
-
-
 def test_set_esys_data():
     from program_files.preprocessing.import_weather_data \
         import set_esys_data

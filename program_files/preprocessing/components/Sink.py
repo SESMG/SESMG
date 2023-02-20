@@ -117,7 +117,6 @@ class Sinks:
                 ep_costs, ep_constr_costs, temp = \
                     self.calc_insulation_parameter(
                     ins)
-                print(self.insulation)
                 if "existing" in self.insulation:
                     if not ins["existing"]:
                         # add capacity specific costs to self.insulation

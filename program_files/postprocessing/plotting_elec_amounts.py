@@ -45,7 +45,7 @@ def pv_elec_amount(components_df: pandas.DataFrame, pv_st: str,
 
 
 def collect_electricity_amounts(
-        dataframes: dict, nodes_data: pandas.DataFrame, result_path: str,
+        dataframes: dict, nodes_data: dict, result_path: str,
         sink_known: dict) -> None:
     """
     main function of the algorithm to plot an electricity amount plot

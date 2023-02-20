@@ -1,6 +1,6 @@
 def test_import_scenario():
     from program_files.preprocessing.create_energy_system \
-        import import_scenario
+        import import_model_definition
     pass
 
 

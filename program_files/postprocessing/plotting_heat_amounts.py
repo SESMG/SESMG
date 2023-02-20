@@ -14,7 +14,7 @@ def st_heat_amount(components_df, pv_st, dataframe, amounts_dict):
     return amounts_dict
 
 
-def collect_heat_amounts(dataframes: dict, nodes_data: pandas.DataFrame,
+def collect_heat_amounts(dataframes: dict, nodes_data: dict,
                          result_path: str, sink_known: dict):
     """
     main function of the algorithm to plot an heat amount plot after

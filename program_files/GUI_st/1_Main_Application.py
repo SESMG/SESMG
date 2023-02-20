@@ -437,7 +437,6 @@ def main_application_sesmg():
 
     # creating sidebar form submit structure
     with st.sidebar.form("Clear Cache"):
-        print("Piep TWAN UND GREGOR TESTEN SPHINX")
         # set initial session state for clear cache submit button
         if "state_submitted_clear_cache" not in st.session_state:
             st.session_state["state_submitted_clear_cache"] = "not done"

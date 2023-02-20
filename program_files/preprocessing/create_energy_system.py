@@ -4,161 +4,139 @@
 
     Christian Klemm - christian.klemm@fh-muenster.de
 """
-import os
-import pandas as pd
+import pandas
 import logging
-from program_files.preprocessing import import_weather_data
+from program_files.preprocessing.import_weather_data \
+    import import_open_fred_weather_data
+from oemof.solph import EnergySystem
 
 
-def import_scenario(filepath: str) -> dict:
+def import_model_definition(filepath: str, delete_units=True) -> dict:
     """
-    Imports data from a spreadsheet scenario file.
-
-    The excel sheet has to contain the following sheets:
-
-        - energysystem
-        - buses
-        - transformers
-        - sinks
-        - sources
-        - storages
-        - powerlines
-        - time_series
-
-    :param filepath: path to excel scenario file
-    :type filepath: str
-
-    :raises FileNotFoundError: excel spreadsheet not found
-    :raises ValueError: content of excel spreadsheet not
-                        readable or empty
-
-    :return: - **nd** (dict) - dictionary containing excel sheets
-
-    Christian Klemm - christian.klemm@fh-muenster.de
+        Imports data from a spreadsheet model definition file.
+    
+        The excel sheet has to contain the following sheets:
+    
+            - energysystem
+            - buses
+            - transformers
+            - sinks
+            - sources
+            - storages
+            - links
+            - time series
+            - weather data
+            - competition constraints
+            - insulation
+            - district heating
+            - pipe types
+    
+        :param filepath: path to excel model definition file
+        :type filepath: str
+    
+        :raises FileNotFoundError: excel spreadsheet not found
+    
+        :return: **nodes_data** (dict) - dictionary containing excel sheets
     """
-    from oemof.tools import logger
-
-    # reads node data from Excel sheet
-    # if not filepath or not os.path.isfile(filepath):
-    #    raise FileNotFoundError("Excel data file {} not found.".format(filepath))
-
     # creates nodes from excel sheet
-    xls = pd.ExcelFile(filepath)
-
-    if "sources" in xls.sheet_names:
-        nd = {
-            "buses": xls.parse("buses"),
-            "energysystem": xls.parse("energysystem"),
-            "sinks": xls.parse("sinks"),
-            "links": xls.parse("links"),
-            "sources": xls.parse("sources"),
-            "timeseries": xls.parse("time series", parse_dates=["timestamp"]),
-            "transformers": xls.parse("transformers"),
-            "storages": xls.parse("storages"),
-            "weather data": xls.parse("weather data", parse_dates=["timestamp"]),
-            "competition constraints": xls.parse("competition constraints"),
-            "insulation": xls.parse("insulation"),
-            "district heating": xls.parse("district heating"),
-            "pipe types": xls.parse("pipe types")
-        }
-        # delete spreadsheet row within technology or units specific parameters
-        list = [
-            "energysystem",
-            "buses",
-            "sinks",
-            "sources",
-            "transformers",
-            "storages",
-            "links",
-            "competition constraints",
-            "insulation",
-            "district heating",
-            "pipe types"
-        ]
-        for i in list:
-            if len(nd[i]) > 0:
-                nd[i] = nd[i].drop(index=0)
-
-    # error message, if no nodes are provided
-    if not nd:
-        raise ValueError("No nodes data provided.")
-
+    try:
+        xls = pandas.ExcelFile(filepath)
+    except FileNotFoundError:
+        raise FileNotFoundError("Problem importing model definition file.")
+    
+    nodes_data = {
+        "buses": xls.parse("buses"),
+        "energysystem": xls.parse("energysystem"),
+        "sinks": xls.parse("sinks"),
+        "links": xls.parse("links"),
+        "sources": xls.parse("sources"),
+        "timeseries": xls.parse("time series", parse_dates=["timestamp"]),
+        "transformers": xls.parse("transformers"),
+        "storages": xls.parse("storages"),
+        "weather data": xls.parse("weather data", parse_dates=["timestamp"]),
+        "competition constraints": xls.parse("competition constraints"),
+        "insulation": xls.parse("insulation"),
+        "district heating": xls.parse("district heating"),
+        "pipe types": xls.parse("pipe types")
+    }
+    if delete_units:
+        # delete spreadsheet row within technology or units specific
+        # parameters
+        for index in nodes_data.keys():
+            if index not in ["timeseries", "weather data"] \
+                    and len(nodes_data[index]) > 0:
+                nodes_data[index] = nodes_data[index].drop(index=0)
+    
     # returns logging info
     logging.info("\t Spreadsheet scenario successfully imported.")
-    if nd["energysystem"].loc[1, "weather data lat"] not in ["None", "none"]:
+    if nodes_data["energysystem"].loc[1, "weather data lat"] \
+            not in ["None", "none"]:
         logging.info("\t Start import weather data")
-        lat = nd["energysystem"].loc[1, "weather data lat"]
-        lon = nd["energysystem"].loc[1, "weather data lon"]
-        import_weather_data.create_weather_data_plot(lat, lon)
-        nd = import_weather_data.import_open_fred_weather_data(nd, lat, lon)
-    # returns nodes
-    return nd
+        lat = nodes_data["energysystem"].loc[1, "weather data lat"]
+        lon = nodes_data["energysystem"].loc[1, "weather data lon"]
+        nodes_data = import_open_fred_weather_data(nodes_data, lat, lon)
+    # returns nodes data
+    return nodes_data
 
 
-def define_energy_system(nodes_data: dict):
+def define_energy_system(nodes_data: dict) -> EnergySystem:
     """
-    Creates an energy system.
-
-    Creates an energy system with the parameters defined in the given
-    .xlsx-file. The file has to contain a sheet called "energysystem",
-    which has to be structured as follows:
-
-    +-------------------+-------------------+-------------------+
-    |start_date         |end_date           |temporal resolution|
-    +-------------------+-------------------+-------------------+
-    |YYYY-MM-DD hh:mm:ss|YYYY-MM-DD hh:mm:ss|h                  |
-    +-------------------+-------------------+-------------------+
-
-    :param nodes_data: dictionary containing data from excel scenario
-                       file
-    :type nodes_data: dict
-    :return: - **esys** (oemof.Energysystem) - oemof energy system
-
-    Christian Klemm - christian.klemm@fh-muenster.de
+        Creates an energy system.
+    
+        Creates an energy system with the parameters defined in the
+        given .xlsx-file. The file has to contain a sheet called
+        "energysystem", which has to be structured as follows:
+    
+        +-------------------+-------------------+-------------------+
+        |start_date         |end_date           |temporal resolution|
+        +-------------------+-------------------+-------------------+
+        |YYYY-MM-DD hh:mm:ss|YYYY-MM-DD hh:mm:ss|h                  |
+        +-------------------+-------------------+-------------------+
+    
+        :param nodes_data: dictionary containing data from excel scenario
+                           file
+        :type nodes_data: dict
+        :return: **esys** (oemof.solph.Energysystem) - oemof energy \
+            system
     """
-
-    from oemof import solph
+    # fix pyomo error while using the streamlit gui
     import pyutilib.subprocess.GlobalData
     pyutilib.subprocess.GlobalData.DEFINE_SIGNAL_HANDLERS_DEFAULT = False
-
+    
     # Importing energysystem parameters from the scenario
-    ts = next(nodes_data["energysystem"].iterrows())[1]
-    temp_resolution = ts["temporal resolution"]
-    start_date = ts["start date"]
-    end_date = ts["end date"]
-
+    row = next(nodes_data["energysystem"].iterrows())[1]
+    temp_resolution = row["temporal resolution"]
+    start_date = row["start date"]
+    end_date = row["end date"]
+    
     # creates time index
-    datetime_index = pd.date_range(start_date, end_date, freq=temp_resolution)
-
+    datetime_index = pandas.date_range(start=start_date,
+                                       end=end_date,
+                                       freq=temp_resolution)
+    
     # initialisation of the energy system
-    esys = solph.EnergySystem(timeindex=datetime_index)
-    # defines a time series
-    nodes_data["timeseries"].set_index("timestamp", inplace=True)
-    nodes_data["timeseries"].index = pd.to_datetime(
-        nodes_data["timeseries"].index.values, utc=True
-    )
-    nodes_data["timeseries"].index = pd.to_datetime(
-            nodes_data["timeseries"].index
-    ).tz_convert("Europe/Berlin")
-
-    if "timestamp" in list(nodes_data["weather data"].columns.values):
-        nodes_data["weather data"].set_index("timestamp", inplace=True)
-        nodes_data["weather data"].index = pd.to_datetime(
-            nodes_data["weather data"].index.values, utc=True
-        )
-        nodes_data["weather data"].index = pd.to_datetime(
-                nodes_data["weather data"].index
-        ).tz_convert("Europe/Berlin")
-
+    esys = EnergySystem(timeindex=datetime_index)
+    # setting the index column for time series and weather data
+    # TODO we have to include the timezone into energy system for the
+    #  Optimization of energy systems outside Germany
+    for sheet in ["timeseries", "weather data"]:
+        # defines a time series
+        nodes_data[sheet].set_index("timestamp", inplace=True)
+        nodes_data[sheet].index = \
+            pandas.to_datetime(nodes_data[sheet].index.values, utc=True)
+        nodes_data[sheet].index = \
+            pandas.to_datetime(nodes_data[sheet].index
+                               ).tz_convert("Europe/Berlin")
+    
     # returns logging info
     logging.info(
-        "Date time index successfully defined:\n start date:          "
-        + str(start_date)
-        + ",\n end date:            "
-        + str(end_date)
-        + ",\n temporal resolution: "
-        + str(temp_resolution)
+            "Date time index successfully defined:\n start date:          "
+            + str(start_date)
+            + ",\n end date:            "
+            + str(end_date)
+            + ",\n temporal resolution: "
+            + str(temp_resolution)
     )
-
+    
     # returns oemof energy system as result of this function
     return esys

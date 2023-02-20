@@ -14,7 +14,8 @@ from program_files.GUI_files.MethodsGUI import MethodsGUI
 import \
     program_files.postprocessing.merge_partial_results as merge_partial_results
 import program_files.postprocessing.plotting as plotting
-from program_files.preprocessing.create_energy_system import import_scenario
+from program_files.preprocessing.create_energy_system \
+    import import_model_definition
 from program_files.preprocessing.pre_model_analysis import \
     update_model_according_pre_model_results
 
@@ -163,8 +164,7 @@ class GUI(MethodsGUI):
             raise ValueError("unsupported operating system")
         
         # IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
-        nodes_data = create_energy_system.import_scenario(
-            filepath=scenario_file)
+        nodes_data = import_model_definition(filepath=scenario_file)
         
         # PRINTS A GRAPH OF THE ENERGY SYSTEM
         create_graph.create_graph(filepath=result_path,
