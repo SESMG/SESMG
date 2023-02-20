@@ -28,7 +28,10 @@ mode_dict = {
         "Total Constraint Costs",
         "Total System Costs",
     ],
-    }
+}
+
+# creating global input values dict
+input_values_dict = {}
 
 # setting initial session state for mdoel run
 if "state_submitted_demo_run" not in st.session_state:
@@ -43,8 +46,6 @@ def dt_input_sidebar():
             GUI sidebar
     """
 
-    input_values_dict = {}
-
     with st.sidebar.form("Simulation input"):
 
         # input value for model run name
@@ -52,7 +53,7 @@ def dt_input_sidebar():
 
         # input value for photovoltaiks
         input_values_dict["input_pv"] = st.number_input(
-            label="Photovoltaik in kW",
+            label="Photovoltaic in kW",
             min_value=0,
             max_value=10000,
             step=1000)
@@ -110,6 +111,7 @@ def dt_input_sidebar():
 
         if st.form_submit_button:
             return input_values_dict
+    return None
 
 
 def execute_sesmg_demo(demo_file, demo_results):
@@ -138,7 +140,7 @@ def execute_sesmg_demo(demo_file, demo_results):
     )
 
 
-def create_demo_scenario(mode, mode_dict, input_values_dict):
+def create_demo_scenario(mode):
     """
         Modifies financial demo scenario.
 
@@ -215,7 +217,7 @@ def create_demo_scenario(mode, mode_dict, input_values_dict):
         demo_results=mainpath_mf + mode_dict.get(mode)[1])
 
 
-def show_demo_run_results(mode, mode_dict):
+def show_demo_run_results(mode):
     """
         Loading and displaying demo run results.
     """
@@ -234,9 +236,6 @@ def show_demo_run_results(mode, mode_dict):
     st.write(df_summary)
 
     summary_headers = list(df_summary)
-    # format thousends seperator
-    # df_summary = df_summary.iloc[1,:].style.format(thousands=" ",precision=0)
-    # TODO: add delta functions based on the latest results
     # Display and import simulated cost values from summary dataframe
     cost1, cost2, cost3, cost4 = st.columns(4)
     cost1.metric(label=summary_headers[3], value=round(
@@ -248,15 +247,76 @@ def show_demo_run_results(mode, mode_dict):
     cost4.metric(label=summary_headers[6], value=round(
         df_summary[summary_headers[6]], 1))
 
-    # Display and import simulated energy values from summary dataframe
-    # adding two blank rows
-    ener1, ener2, ener3, ener4 = st.columns(4)
-    ener1.metric(label=summary_headers[7], value=round(
-        df_summary[summary_headers[7]], 1))
-    ener2.metric(label=summary_headers[8], value=round(
-        df_summary[summary_headers[8]], 1))
+
+def demo_start_page():
+    """
+        Start page text for the demo tool.
+    """
+
+    st.header("Spreadsheet Energy System Model Generator (SESMG)")
+    st.subheader("Welcome using the Demo Tool!")
+    st.write("DEMO-Energy System:")
+    st.write("In this DEMO the financial costs and carbon dioxide emissions \
+             of a residential area are simulated. For improvement, the \
+             technologies listed below are \n available with the parameters \
+             below. The simulated scenarios can be compared with the status \
+             quo, the financial minimum and the emission minimum.")
 
 
+def demo_parameters_page():
+    """
+        Overview of the technical and energy system parameters.
+    """
+
+    par1, par2, par3, par4, par5 = st.columns(5)
+    with par1:
+        st.subheader("Technology")
+        st.write("Photovoltaic")
+        st.write("Solar thermal")
+        st.write("Battery")
+
+    with par2:
+        st.subheader("Specific costs")
+        st.write("1 070 000 €/MW")
+        st.write("846 000 €/MW")
+        st.write("1 000 000 €/MWh")
+
+    with par3:
+        st.subheader("Specific emission")
+        st.write("27 g/kW")
+        st.write("12 g/kW")
+        st.write("3.96 kg/(kWh*a)")
+
+    with par4:
+        st.subheader("Design lifetime")
+        st.write("Electricity Demand")
+
+    with par5:
+        st.subheader("Additional information")
+        st.write("h0 load profile")
+# TODO: Update to actual values and drop not used elements & unify wording!
+    model_parameter = [
+        ["Electricity Demand", "14 000 000 kWh/a", "h0 Load Profile"],
+        ["Heat Demand", "52 203 000 kWh/a", "EFH Load Profile"],
+        # ['Windturbines': '2 000 000 €/MW, 8 g/kWh, 20 a, max. 29.7 MW'],
+        ["Photovoltaics", "1 070 000 €/MW", "27 g/kWh", "20 a", "max. 10 MW"],
+        ["Solar Thermal", "846 000 €/MW", "12 g/kWh", "20 a", "max. 6.8 MW"],
+        ["Battery", "1 000 000 €/MWh", "3.96 kg/(kWh * a)", "(Invest!)", "20 a"],
+        ["Gas Heating", "1 005 000 €/MW", "232g/kWh", "18 a", "0.92"],
+        ["CHP", "760 000 €/MW(el.)", "308 g/kWh(el)", "265 g/kWh(th.)", "20 a"],
+        # ["Thermal Storage", "35 000 €/MWh", "743 g/(kWh * a)", "20 a", "3 % loss /d"],
+        ["Thermal Storage (decentral)", "49 000 €/MWh", "604g/(kWh * a)", "20 a", "3 % loss /d"],
+        ["district heating", "86 000 000 €", "15 % loss", "40 a"],
+        ["Gas Import", "6.29 ct/kWh(gas)"],
+        ["Electricity Import", "31.22 ct/kWh", "366 g/kWh"],
+        # ["HEATPUMP", "22 ct/kWh", "366 g/kWh"],
+        ["Electricity Export", "- 6.8 ct/kWh", "- 27 g/kWh"],
+        # ["Air Source Heat Pump", "1 318 000 €/MW", "12g/kWh", "18 a"],
+        ["Ground-coupled Heatpump", "1 444 000 €/MW", "8 g/kWh", "20 a"],
+    ]
+
+    st.dataframe(data=pd.DataFrame(model_parameter))
+    st.write(model_parameter)
 
 
 def change_state_submitted_demo_run():
@@ -274,12 +334,15 @@ st_settings_global()
 # run demotool input sidebar
 input_values_dict = dt_input_sidebar()
 
+# creating main demo tool page
+# loading start page
+demo_start_page()
+# loading parameter overview
+demo_parameters_page()
+
 # show results after submit button was clicked
 if st.session_state["state_submitted_demo_run"] == "done":
     # create demo model definition and start model run
-    create_demo_scenario(mode=input_values_dict["input_criterion"],
-                         mode_dict=mode_dict,
-                         input_values_dict=input_values_dict)
+    create_demo_scenario(mode=input_values_dict["input_criterion"])
     # show generated results
-    show_demo_run_results(mode=input_values_dict["input_criterion"],
-                          mode_dict=mode_dict)
+    show_demo_run_results(mode=input_values_dict["input_criterion"])
