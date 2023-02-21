@@ -83,20 +83,31 @@ def us_application():
 
 
 def standard_page():
-    st.markdown(" # Urban District Upscaling Tool")
-    st.markdown(
-        " Lorem ipsum dolor sit amet, consectetur adipiscing elit, \
-            sed do eiusmod tempor"
-        " incididunt ut labore et dolore magna aliqua. Ut enim ad \
-            minim veniam, quis nostrud "
-        "exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-        "Duis aute irure dolor in reprehenderit in voluptate velit esse \
-            cillum dolore eu "
-        "fugiat nulla pariatur. "
-        "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui \
-            officia "
-        "deserunt mollit anim id est laborum."
-        "FINAL TEXT MISSING")
+    # Open the README.md file and read all lines
+    with open("us_tool.md", 'r', encoding="utf8") as f:
+        readme_line = f.readlines()
+        # Create an empty buffer list to temporarily store the lines of the README.md file
+        readme_buffer = []
+        # Use the glob library to search for all files in the Resources directory and extract the file names
+        resource_files = [os.path.basename(x) for x
+                          in glob.glob(f'{"docs/images/manual/UpscalingTool/*"}')]
+
+    # Iterate over each line of the README.md file
+    for line in readme_line:
+        # Append the current line to the buffer list
+        readme_buffer.append(line)
+        # Check if any images are present in the current line
+        for image in resource_files:
+            # If an image is found, display the buffer list up to the last line
+            if image in line:
+                st.markdown(''.join(readme_buffer[:-1]))
+                # Display the image from the Resources folder using the image name from the resource_files list
+                st.image(f'docs/images/manual/UpscalingTool/{image}')
+                # Clear the buffer list
+                readme_buffer.clear()
+    # Display any remaining lines in the buffer list using the st.markdown() \
+    # function
+    st.markdown(''.join(readme_buffer), unsafe_allow_html=True)
 
 
 # second column
