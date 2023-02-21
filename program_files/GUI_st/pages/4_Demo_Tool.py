@@ -268,55 +268,60 @@ def demo_parameters_page():
         Overview of the technical and energy system parameters.
     """
 
-    par1, par2, par3, par4, par5 = st.columns(5)
-    with par1:
-        st.subheader("Technology")
-        st.write("Photovoltaic")
-        st.write("Solar thermal")
-        st.write("Battery")
-
-    with par2:
-        st.subheader("Specific costs")
-        st.write("1 070 000 €/MW")
-        st.write("846 000 €/MW")
-        st.write("1 000 000 €/MWh")
-
-    with par3:
-        st.subheader("Specific emission")
-        st.write("27 g/kW")
-        st.write("12 g/kW")
-        st.write("3.96 kg/(kWh*a)")
-
-    with par4:
-        st.subheader("Design lifetime")
-        st.write("Electricity Demand")
-
-    with par5:
-        st.subheader("Additional information")
-        st.write("h0 load profile")
 # TODO: Update to actual values and drop not used elements & unify wording!
-    model_parameter = [
-        ["Electricity Demand", "14 000 000 kWh/a", "h0 Load Profile"],
-        ["Heat Demand", "52 203 000 kWh/a", "EFH Load Profile"],
-        # ['Windturbines': '2 000 000 €/MW, 8 g/kWh, 20 a, max. 29.7 MW'],
-        ["Photovoltaics", "1 070 000 €/MW", "27 g/kWh", "20 a", "max. 10 MW"],
-        ["Solar Thermal", "846 000 €/MW", "12 g/kWh", "20 a", "max. 6.8 MW"],
-        ["Battery", "1 000 000 €/MWh", "3.96 kg/(kWh * a)", "(Invest!)", "20 a"],
-        ["Gas Heating", "1 005 000 €/MW", "232g/kWh", "18 a", "0.92"],
-        ["CHP", "760 000 €/MW(el.)", "308 g/kWh(el)", "265 g/kWh(th.)", "20 a"],
-        # ["Thermal Storage", "35 000 €/MWh", "743 g/(kWh * a)", "20 a", "3 % loss /d"],
-        ["Thermal Storage (decentral)", "49 000 €/MWh", "604g/(kWh * a)", "20 a", "3 % loss /d"],
-        ["district heating", "86 000 000 €", "15 % loss", "40 a"],
-        ["Gas Import", "6.29 ct/kWh(gas)"],
+
+    model_demands = [
+        ["Electricity", "14 000 000 kWh/a", "h0 Load Profile"],
+        ["Heat", "52 203 000 kWh/a", "EFH Load Profile"]
+        ]
+
+    model_prices = [
+        ["Gas Import", "6.29 ct/kWh", "?"],
         ["Electricity Import", "31.22 ct/kWh", "366 g/kWh"],
+        ["Electricity Export", "- 6.8 ct/kWh", "- 27 g/kWh"]
+        ]
+
+    model_parameter = [
+        # ['Windturbines': '2 000 000 €/MW, 8 g/kWh, 20 a, max. 29.7 MW'],
+        ["Photovoltaics", "1 070 000 €/MW",
+         "27 g/kWh", "20 a", "max. 10 MW", ""],
+        ["Solar Thermal", "846 000 €/MW",
+         "12 g/kWh", "20 a", "max. 27.7 MW", ""],
+        ["Battery", "1 000 000 €/MWh",
+         "3.96 kg/(kWh * a) (invest)", "20 a", "max. 10 MWh", ""],
+        ["Gas Heating", "1 005 000 €/MW",
+         "232g/kWh", "18 a", "endless", "0.92 %"],
+        ["Combindes Heat and Power Plant", "760 000 €/MW(el.)",
+         "308 g/kWh(el), 265 g/kWh(th.)", "20 a", "endless", ""],
+        ["Ground-coupled Heatpump", "1 444 000 €/MW",
+         "8 g/kWh", "20 a", "max. 5 MW", ""],
+        # ["Thermal Storage", "35 000 €/MWh",
+        #  "743 g/(kWh * a)", "20 a", "3 % loss /d"],
+        ["Thermal Storage (decentral)", "49 000 €/MWh",
+         "604g/(kWh * a) (invest)", "20 a", "max. 10 MWh", "3 % loss /d"],
+        ["District Heating", "86 000 000 €",
+         "????", "40 a", "bianry", "15 % loss"],
         # ["HEATPUMP", "22 ct/kWh", "366 g/kWh"],
-        ["Electricity Export", "- 6.8 ct/kWh", "- 27 g/kWh"],
         # ["Air Source Heat Pump", "1 318 000 €/MW", "12g/kWh", "18 a"],
-        ["Ground-coupled Heatpump", "1 444 000 €/MW", "8 g/kWh", "20 a"],
     ]
 
-    st.dataframe(data=pd.DataFrame(model_parameter))
-    st.write(model_parameter)
+    stdf1, stdf2 = st.columns(2)
+    # display dataframe for model demands
+    stdf1.dataframe(data=pd.DataFrame(
+        data=model_demands,
+        columns=["Energy Form", "Demand", "Usage Pattern"]))
+
+    # display dataframe for specific import & export cots
+    stdf2.dataframe(data=pd.DataFrame(
+        data=model_prices,
+        columns=["Energy Form", "Specific Costs", "Specific Emissions"]))
+
+    # display dataframe for technology parameter
+    st.dataframe(data=pd.DataFrame(
+        data=model_parameter,
+        columns=["Technology", "Specific Costs", "Specific Emissions",
+                 "Design Lifetime", "Investment Capacity",
+                 "Additional Information"]))
 
 
 def change_state_submitted_demo_run():
