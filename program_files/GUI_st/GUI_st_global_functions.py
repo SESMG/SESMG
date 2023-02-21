@@ -4,6 +4,8 @@
 """
 
 import json
+import glob
+import os
 import streamlit as st
 
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator\
@@ -168,3 +170,46 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
             investment_boundary_factor=GUI_main_dict["input_premodeling_tightening_factor"],
             pre_model_path=GUI_main_dict["premodeling_res_path"]
         )
+
+
+def read_markdown_document(document_path, folder_path, main_page=True):
+    """
+
+    """
+    # Open the README.md file and read all lines
+    with open(document_path, 'r', encoding="utf8") as file:
+        readme_line = file.readlines()
+        # Create an empty buffer list to temporarily store the lines of \
+        # the README.md file
+        readme_buffer = []
+        # Use the glob library to search for all files in the Resources \
+        # directory and extract the file names
+        resource_files = [os.path.basename(x) for x
+                          in glob.glob(folder_path)]
+    
+    non_print = False
+    # Iterate over each line of the README.md file
+    for line in readme_line:
+        if main_page:
+            if "## Quick Start" in str(line):
+                non_print = True
+            elif "## SESMG Features & Releases" in str(line):
+                non_print = False
+        if not non_print:
+            # Append the current line to the buffer list
+            readme_buffer.append(line)
+            # Check if any images are present in the current line
+            for image in resource_files:
+                # If an image is found, display the buffer list up to
+                # the last line
+                if image in line:
+                    st.markdown(''.join(readme_buffer[:-1]))
+                    # Display the image from the Resources folder using
+                    # the image name from the resource_files list
+                    st.image(folder_path[:-1] + f'/{image}')
+                    # Clear the buffer list
+                    readme_buffer.clear()
+    
+    # Display any remaining lines in the buffer list using the st.markdown() \
+    # function
+    st.markdown(''.join(readme_buffer), unsafe_allow_html=True)

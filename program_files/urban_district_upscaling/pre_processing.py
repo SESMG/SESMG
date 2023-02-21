@@ -621,7 +621,7 @@ def urban_district_upscaling_pre_processing(
         for i in sheets:
             sheets[i].to_excel(writer, worksheets[j], index=False)
             j = j + 1
-        writer.save()
+        writer.close()
         processed_data = output.getvalue()
         return processed_data
     # TODO to be removed when establishing the new GUI
@@ -633,4 +633,4 @@ def urban_district_upscaling_pre_processing(
             sheets[i].to_excel(writer, worksheets[j], index=False)
             j = j + 1
         print("Scenario created. It can now be executed.")
-        writer.save()
+        writer.close()
