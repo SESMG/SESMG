@@ -171,9 +171,9 @@ from program_files.preprocessing.pre_model_analysis import update_model_accordin
 
 
 def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
-               graph: bool, criterion_switch: bool, xlsx_results: bool,
+               criterion_switch: bool, xlsx_results: bool,
                console_results: bool, timeseries_prep: list, solver: str,
-               cluster_dh, district_heating_path=None):
+               cluster_dh, graph=False, district_heating_path=None):
     """
         Main function of the Spreadsheet System Model Generator
 
