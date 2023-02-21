@@ -1,10 +1,12 @@
 """
-    @author: GregorBecker - gregor.becker@fh-muenster.de
+    GregorBecker - gregor.becker@fh-muenster.de
 """
 
 import os
 from datetime import datetime
 import logging
+import pandas
+
 from program_files.GUI_st.GUI_st_global_functions import run_SESMG
 from program_files.postprocessing.pareto_curve_plotting \
     import collect_pareto_data
@@ -16,105 +18,162 @@ from program_files.postprocessing.plotting_heat_amounts \
     import collect_heat_amounts
 from program_files.preprocessing.create_energy_system \
     import import_model_definition
-import pandas
 
 
 def create_scenario_save_folder(model_definition, directory: str,
-                                limit=""):
+                                limit="") -> str:
     """
-    
+        In this method, the folder necessary for a Pareto run
+        (name pattern
+        <model_definition_name>_<constraint_limit>_<timestamp>) is
+        created in the directory. Here, due to the streamlit interface,
+        it must be distinguished whether the model_definitions variable
+        is a str or the object resulting from the GUI. After creation,
+        the path of the newly created folder is returned.
+        
         :param model_definition: file path of the model definition to \
             be optimized
-        :type model_definition: str
+        :type model_definition: str / streamlit.UploadedFile
         :param directory: file path of the main save path
         :type directory: str
         :param limit: str which is appended on the model name to \
             identify the pareto runs
         :type limit: str
+        
+        :return: - **save_path** (str) - path where the optimization \
+            results of the pareto point will be stored
     """
-    # set the save path
+    # extract the model_name from model_definition file path
     if type(model_definition) == str:    
         model_name = model_definition.split("/")[-1][:-5]
     else: 
         model_name = model_definition.name.split("/")[-1][:-5]
+    # append the limit on the model name if it's not an empty string
     if limit:
         model_name = model_name + "_" + limit
-    save_path = str(directory + "/" + model_name
-                    + str(datetime.now().strftime("_%Y-%m-%d--%H-%M-%S")))
+    # create timestamp
+    timestamp = str(datetime.now().strftime("_%Y-%m-%d--%H-%M-%S"))
+    # create save path
+    save_path = str(directory + "/" + model_name + timestamp)
+    # make directory for created save path and return it
     os.mkdir(save_path)
     return save_path
 
         
-def calc_constraint_limits(result_folders: dict, limits: list):
+def calc_constraint_limits(result_folders: dict, limits: list) -> dict:
     """
-    
+        This method reads out the emissions of the monetary-driven
+        minimum as well as those of the emissions-driven minimum, which
+        narrows down the solvable range of the model definition. Based
+        on these interval limits, the emission limits for the
+        transformation points (GUI given limits) are then calculated.
+        Here, 0.2 represented a reduction of 20% of the interval width.
+        Consequently, it is calculated as follows:
+        
+        .. math::
+            emissions_mon = emissions of monetary-driven minimum
+            
+            emissions_emi = emissions of emission-driven minimum
+            
+            interval_width = emission_mon - emission_min
+        
+            constraints[x] = emissions_mon - limits[x] *  interval_width
+
+        The list of limits is then returned as constraints.
+        
         :param result_folders: dictionary holding the result paths of \
             monetary and emission minimum
         :type result_folders: dict
         :param limits: list holding the pareto points to be optimized
         :type limits: list
+        
+        :return: - **constraints** (dict) - dict of constraint limits \
+            for the transformation points of the pareto optimization
     """
     constraints = {}
     # get constraints of the first optimization
     result = pandas.read_csv(str(result_folders["0"][0]) + "/components.csv")
     constr_min_1 = float(sum(result["constraints/CU"]))
-    # get constraints of the second optimization
+
+    # get constraints of the second optimization since it is an emission
+    # driven one the costs attribute is summed
     result2 = pandas.read_csv(str(result_folders["1"][0]) + "/components.csv")
     constr_min_2 = float(sum(result2["variable costs/CU"])
                          + sum(result2["periodical costs/CU"]))
-    # devide solvable range in "limits" intervals
-    for i in limits:
-        constraints.update({i: constr_min_1 - float(
-            constr_min_1 - constr_min_2) * float(i)})
+    
+    # divide solvable range in "limits" intervals
+    for limit in limits:
+        interval_width = float(constr_min_1 - constr_min_2)
+        constraints.update({limit: constr_min_1 - interval_width * limit})
     return constraints
 
 
-def create_transformation_model_definitions(constraints: dict,
-                                            model_name, directory: str,
-                                            limits: list):
+def create_transformation_model_definitions(
+        constraints: dict, model_definition, directory: str, limits: list
+) -> dict:
     """
-    
+        After the emission limits have been calculated in the
+        calc_constraint_limits method, the transformation model
+        definitions are now created. For this purpose, the model
+        definition entered by the user is imported again and extended
+        by the constraint cost limit. Afterwards it is saved in the
+        Pareto directory (directory) and the path is attached to the
+        dictionary "files". This dictionary also represents the return
+        value of the method.
+        
         :param constraints: list containing the maximum emissions \
             caused by the model definitions which will be created \
             within this method
         :type constraints: list
-        :param model_name:
-        :type model_name:
+        :param model_definition: file path of the model definition to \
+            be optimized
+        :type model_definition: str / streamlit.UploadedFile
         :param directory: str containing the path of the directory \
             where the created model definitions will be saved
         :type directory: str
         :param limits: list containing the percentages of reduction \
             defined within the GUI
         :type limits: list
+        
+        :return: - **files** (dict) - dictionary holding the \
+            combination of limit and path to the new created model \
+            definition
     """
     files = {}
     for limit in limits:
+        # append a dict entry for the limit
         files.update({str(limit): []})
-    
-    for limit in limits:
+        # get the constraint for the given limit from the list of
+        # constraints
         constraint = constraints[limit]
-        nodes_data = import_model_definition(model_name, False)
-        files[str(limit)].append(
-            directory + "/" + model_name.name[:-5] + "_" + str(limit) + ".xlsx"
-        )
+        # import the user given model definition without removing the
+        # units columns
+        nodes_data = import_model_definition(model_definition, False)
+        # append the file path for the transformation model definition
+        # to the files dict
+        file_name = directory + "/" + model_definition.name[:-5]
+        files[str(limit)].append(file_name + "_" + str(limit) + ".xlsx")
+        # create new model definition and save it to the created path
         writer = pandas.ExcelWriter(files[str(limit)][-1], engine="xlsxwriter")
         nodes_data["energysystem"].loc[1, "constraint cost limit"] = \
             float(constraint)
         nodes_data["time series"] = nodes_data["timeseries"]
         nodes_data.pop("timeseries")
         for sheet in nodes_data.keys():
-            nodes_data[sheet].to_excel(writer,
-                                       sheet_name=str(sheet),
-                                       index=False)
-        writer.save()
+            nodes_data[sheet].to_excel(writer, sheet_name=sheet, index=False)
+        writer.close()
     return files
 
 
-def run_pareto(limits: list, 
-               model_definition,
-               GUI_main_dict: dict):
+def run_pareto(limits: list, model_definition, GUI_main_dict: dict):
     """
-    
+        This method represents the main function of Pareto
+        optimization. For this purpose, the model is first run
+        according to the first optimization criterion, then according
+        to the second optimization criterion, after which the
+        semi-optimal intermediate points are determined.  Finally, the
+        CSV files are created for further result processing.
+        
         :param limits: list containing the percentages of reduction \
             defined within the GUI
         :type limits: list
@@ -137,7 +196,10 @@ def run_pareto(limits: list,
             investment boundaries factor
             pre model path
             
-        :type GUI_main_dict
+        :type GUI_main_dict: dict
+        
+        :return: - **directory** (str) - path where the pareto runs \
+            were stored
     """
     # create one directory to collect all runs
     directory = os.path.join(
@@ -146,9 +208,9 @@ def run_pareto(limits: list,
     )
     os.mkdir(directory)
     
-    logging.info("Optimiztation of the following runs"
+    logging.info("Optimiztation of the following runs "
                  + str(limits)
-                 + "started!")
+                 + " started!")
     
     # FIRST CRITERION
     result_folders = {"0": []}
