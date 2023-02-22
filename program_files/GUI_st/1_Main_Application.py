@@ -70,7 +70,7 @@ def main_start_page():
     """
         Definition of the start page for the GUI with introducing texts.
     """
-    
+
     read_markdown_document("Readme.md", f'{"docs/images/readme/*"}')
 
 
@@ -113,10 +113,10 @@ def main_application_sesmg():
         st.title("Input Parameters")
 
         tab_bar = st.tabs(["Preprocessing", "Processing", "Postprocessing"])
-        
+
         with tab_bar[0]:
             # Functions to input the preprocessing parameters
-            
+
             # Functions to input the parameters for timeseries preparation.
             # Dict of choosable algorithms matching the streamlit input
             # index for \
@@ -523,6 +523,9 @@ def main_application_sesmg():
             # Starting the model run
             if len(GUI_main_dict["input_pareto_points"]) == 0:
 
+                # create spinner info text
+                st.info(GUI_helper["main_info_spinner"], icon="ℹ️")
+
                 with st.spinner("Modeling in Progress..."):
 
                     # Setting the path where to safe the modeling results
@@ -557,6 +560,9 @@ def main_application_sesmg():
 
             # Starting a pareto modeul rum
             elif len(GUI_main_dict["input_pareto_points"]) != 0:
+
+                # create spinner info text
+                st.info(GUI_helper["main_info_spinner"], icon="ℹ️")
 
                 with st.spinner("Modeling in Progress..."):
                     # run_pareto retuns res path
