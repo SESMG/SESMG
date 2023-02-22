@@ -1,3 +1,6 @@
+"""
+    Gregor Becker - gregor.becker@fh-muenster.de
+"""
 from shapely.geometry import Point
 from feedinlib.open_FRED import Weather, defaultdb
 from datetime import timedelta

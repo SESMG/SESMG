@@ -71,13 +71,15 @@ def calc_constraint_limits(result_folders: dict, limits: list) -> dict:
         Consequently, it is calculated as follows:
         
         .. math::
-            emissions_{mon} = \text{emissions of monetary-driven minimum}
+            emissions_{mon} =
+                \mathrm{emissions of monetary-driven minimum}
             
-            emissions_{emi} = \text{emissions of emission-driven minimum}
+            emissions_{emi} =
+                \mathrm{emissions of emission-driven minimum}
             
-            interval width = emission_{mon} - emission_{min}
+            \mathrm{interval width} = emission_{mon} - emission_{min}
         
-            constraints[x] = emissions_{mon} - limits[x] *  interval width
+            constraints[x] = emissions_{mon} - limits[x] *  \mathrm{interval width}
 
         The list of limits is then returned as constraints.
         
@@ -180,21 +182,23 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict):
         :param model_definition: file path of the model definition to \
             be optimized
         :type model_definition: str
-        :param GUI_main_dict: dictionary containing:
+        :param GUI_main_dict: Dictionary which is passed to the method \
+            by the GUI and contains the user's input. The dictionary \
+            must contain the following attributes for this method:
             
-            - pre_modeling
-            - num_threads
-            - time series params
-            - graph state
-            - xlsx select state
-            - console select state
-            - solver select
-            - dh path
-            - cluster dh
-            - pre modeling time series params
-            - investment boundaries
-            - investment boundaries factor
-            - pre model path
+                - pre_modeling
+                - num_threads
+                - time series params
+                - graph state
+                - xlsx select state
+                - console select state
+                - solver select
+                - dh path
+                - cluster dh
+                - pre modeling time series params
+                - investment boundaries
+                - investment boundaries factor
+                - pre model path
             
         :type GUI_main_dict: dict
         

@@ -16,15 +16,15 @@ def buses(nodes_data: dict, nodes: list) -> dict:
             buses to be created. The following parameters have to be \
             provided:
             
-                - label,
-                - active,
-                - excess,
-                - shortage,
-                - shortage costs,
-                - excess costs,
-                - district heating conn.,
-                - lat,
-                - lon
+                    - label,
+                    - active,
+                    - excess,
+                    - shortage,
+                    - shortage costs,
+                    - excess costs,
+                    - district heating conn.,
+                    - lat,
+                    - lon
                 
         :type nodes_data: dict
         :param nodes: list of components created before (can be empty)
