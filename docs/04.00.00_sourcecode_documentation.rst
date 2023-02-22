@@ -57,21 +57,21 @@ GUI/GUI_st_global_functions
 
 GUI/1_Main_Application
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: program_files.GUI_st.1_Main_Application
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. .. automodule:: program_files.GUI_st.1_Main_Application
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 GUI/pages/2_Urban_District_Upscaling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: program_files.GUI_st.pages.2_Urban_District_Upscaling
+.. .. automodule:: program_files.GUI_st.pages.2_Urban_District_Upscaling
    :members:
    :undoc-members:
    :show-inheritance:
 
 GUI/pages/3_Result_Processing
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: program_files.GUI_st.pages.3_Result_Processing
+.. .. automodule:: program_files.GUI_st.pages.3_Result_Processing
    :members:
    :undoc-members:
    :show-inheritance:

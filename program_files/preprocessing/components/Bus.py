@@ -15,6 +15,7 @@ def buses(nodes_data: dict, nodes: list) -> dict:
         :param nodes_data: dictionary containing parameters of the \
             buses to be created. The following parameters have to be \
             provided:
+            
                 - label,
                 - active,
                 - excess,
