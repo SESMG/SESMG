@@ -127,11 +127,7 @@ Christian Klemm - christian.klemm@fh-muenster.de
 
 ### Acknowledgments
 
-The Spreadsheet Energy System Model Generator was carried out within the 
-research project [R2Q "Resource Planing for Urban Districts](https://www.fh-muenster.de/forschungskooperationen/r2q/index.php). 
-The project was funded by the Federal Ministry 
-of Education and Research (BMBF) funding program [RES:Z "Resource-Efficient Urban Districts](https://ressourceneffiziente-stadtquartiere.de). The funding measure is part of the flagship initiative "City of the Future" within the BMBF's framework programme "Research for Sustainable Development - FONA3".
-The contributors gratefully acknowledge the support of BMBF (grant number 033W102).
+The Spreadsheet Energy System Model Generator was carried out within the research project [R2Q "Resource Planing for Urban Districts](https://www.fh-muenster.de/forschungskooperationen/r2q/index.php). The project was funded by the Federal Ministry of Education and Research (BMBF) funding program [RES:Z "Resource-Efficient Urban Districts](https://ressourceneffiziente-stadtquartiere.de). The funding measure is part of the flagship initiative "City of the Future" within the BMBF's framework programme "Research for Sustainable Development - FONA3". The contributors gratefully acknowledge the support of BMBF (grant number 033W102).
 
 ### License
 
