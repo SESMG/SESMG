@@ -173,7 +173,7 @@ from program_files.preprocessing.pre_model_analysis import update_model_accordin
 def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
                criterion_switch: bool, xlsx_results: bool,
                console_results: bool, timeseries_prep: list, solver: str,
-               cluster_dh, graph=False, district_heating_path=None):
+               cluster_dh, graph=False, district_heating_path=None) -> None:
     """
         Main function of the Spreadsheet System Model Generator
 
@@ -185,14 +185,32 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
         :type result_path: str ['folder']
         :param num_threads: number of threads that the method may use
         :type num_threads: int
+        :param criterion_switch: boolean which decides rather the \
+            first and second optimization criterion will be switched \
+            (True) or not (False)
+        :type criterion_switch: bool
+        :param xlsx_results: boolean which decides rather a flow \
+            Spreadsheet will be created for each bus of the energy \
+            system after the optimization (True) or not (False)
+        :type xlsx_results: bool
+        :param console_results: boolean which decides rather the \
+            energy system's results will be printed in the console \
+            (True) or not (False)
+        :type console_results: bool
+        :param timeseries_prep: list containing the attributes \
+            necessary for timeseries simplifications
+        :type timeseries_prep: list
+        :param solver: str holding the user chosen solver
+        :type solver: str
+        :param cluster_dh: boolean which decides rather the district \
+            heating components are clustered street wise (True) or not \
+            (False)
+        :type cluster_dh: bool
         :param graph: defines if the graph should be created
         :type graph: bool
-        :param results: defines if the results should be created
-        :type results: bool
-        :param plotly: defines if the plotly dash should be started
-        :type plotly: bool
-
-        Christian Klemm - christian.klemm@fh-muenster.de
+        :param district_heating_path: path to the folder where already \
+            calculated district heating data is stored
+        :type district_heating_path: str['folder']
     """
     # SETS NUMBER OF THREADS FOR NUMPY
     os.environ['NUMEXPR_NUM_THREADS'] = str(num_threads)
@@ -217,19 +235,17 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
                          + r'/technical_data/hierarchical_selection'
                            r'_schemes.xlsx')
     # Timeseries Preprocessing
-    data_preparation.timeseries_preparation(timeseries_prep_param=timeseries_prep,
-                                            nodes_data=nodes_data,
-                                            scheme_path=scheme_path,
-                                            result_path=result_path)
+    data_preparation.timeseries_preparation(
+        timeseries_prep_param=timeseries_prep,
+        nodes_data=nodes_data,
+        scheme_path=scheme_path,
+        result_path=result_path)
 
     if timeseries_prep[0] != 'none':
         scenario_file = result_path + "/modified_scenario.xlsx"
 
     # CREATES AN ENERGYSYSTEM AS DEFINED IN THE SCENARIO FILE
     esys = create_energy_system.define_energy_system(nodes_data=nodes_data)
-
-    weather_data = nodes_data['weather data']
-    time_series = nodes_data['timeseries']
 
     # CREATES AN LIST OF COMPONENTS
     nodes = []
