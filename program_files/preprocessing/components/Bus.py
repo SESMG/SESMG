@@ -1,6 +1,6 @@
 """
-    @author: Christian Klemm - christian.klemm@fh-muenster.de
-    @author: GregorBecker - gregor.becker@fh-muenster.de
+    Christian Klemm - christian.klemm@fh-muenster.de
+    GregorBecker - gregor.becker@fh-muenster.de
 """
 
 import logging
@@ -12,19 +12,19 @@ def buses(nodes_data: dict, nodes: list) -> dict:
         Creates bus objects with the parameters given in 'nodes_data'
         and adds them to the list of components 'nodes'.
 
-        :param nodes_data: dictionary containing parameters of the buses
-                           to be created.
-                           The following parameters have to be provided:
-
-                                - label,
-                                - active,
-                                - excess,
-                                - shortage,
-                                - shortage costs,
-                                - excess costs,
-                                - district heating conn.,
-                                - lat,
-                                - lon
+        :param nodes_data: dictionary containing parameters of the \
+            buses to be created. The following parameters have to be \
+            provided:
+                - label,
+                - active,
+                - excess,
+                - shortage,
+                - shortage costs,
+                - excess costs,
+                - district heating conn.,
+                - lat,
+                - lon
+                
         :type nodes_data: dict
         :param nodes: list of components created before (can be empty)
         :type nodes: list

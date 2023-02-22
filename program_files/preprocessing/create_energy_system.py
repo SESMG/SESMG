@@ -33,10 +33,13 @@ def import_model_definition(filepath: str, delete_units=True) -> dict:
     
         :param filepath: path to excel model definition file
         :type filepath: str
+        :param delete_units: boolean which defines rather the unit \
+            row in the imported spreadsheets is removed or not
+        :type delete_units: bool
     
-        :raises FileNotFoundError: excel spreadsheet not found
+        :raises: - **FileNotFoundError** - excel spreadsheet not found
     
-        :return: **nodes_data** (dict) - dictionary containing excel sheets
+        :return: - **nodes_data** (dict) - dictionary containing excel sheets
     """
     # creates nodes from excel sheet
     try:
@@ -69,6 +72,8 @@ def import_model_definition(filepath: str, delete_units=True) -> dict:
     
     # returns logging info
     logging.info("\t Spreadsheet scenario successfully imported.")
+    # if the user imported coordinates for the OpenFred weather data
+    # download the import algorithm is triggered
     if nodes_data["energysystem"].loc[1, "weather data lat"] \
             not in ["None", "none"]:
         logging.info("\t Start import weather data")
@@ -117,8 +122,6 @@ def define_energy_system(nodes_data: dict) -> EnergySystem:
     # initialisation of the energy system
     esys = EnergySystem(timeindex=datetime_index)
     # setting the index column for time series and weather data
-    # TODO we have to include the timezone into energy system for the
-    #  Optimization of energy systems outside Germany
     for sheet in ["timeseries", "weather data"]:
         # defines a time series
         nodes_data[sheet].set_index("timestamp", inplace=True)
