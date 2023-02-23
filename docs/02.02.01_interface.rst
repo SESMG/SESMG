@@ -118,7 +118,7 @@ The following algorithms are applicable and must be specified with the following
 
 
 .. csv-table:: Input for the upscaling sheet. Category 1: Building-specific data.
-	:widths: 20 50 10 10 5 5
+	:widths: 5 50 15 10 10 10
    	:header: algorithm,description,index,criterion,period,season
    
 	k_means,The k-means algorithm clusters the time periods (see period) in such a way; that the squared deviation of the cluster centers is minimal. From the time periods of one cluster the mean is calculated and returned as reference period of the cluster. For the decision the vector of a single parameter (see criterion) over the period duration is considered [1].,number of clusters to be considered. The number of clusters equals the number of returned reference days.,Clustering criterion to be considered (temperature; dhi; heat demand; electricity demand),Period length to be clustered (hours; days; or weeks),--
