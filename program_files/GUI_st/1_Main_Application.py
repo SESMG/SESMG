@@ -307,11 +307,11 @@ def main_application_sesmg():
                                 "input_premodeling_timeseries_season_index"],
                             help=GUI_helper["main_dd_prem_timeser_season"])
 
-            # transform input values of Timeseries Simplification to an index \
-            # which will be safed in the GUI cache to be able to reload \
+            # transform input values of Timeseries Simplification to an index
+            # which will be safed in the GUI cache to be able to reload
             # setting. Needs to be an index for st.selectboxes.
             # preparing input_timeseries_algorithm for GUI cache as an
-            # streamlit \
+            # streamlit
             # input index
             GUI_main_dict["input_premodeling_timeseries_algorithm_index"] = \
                 timeseries_algorithm_dict[
@@ -463,9 +463,12 @@ def main_application_sesmg():
         if not scenario_input_sheet_path:
 
             # raise an error advice
-            st.header("Model definition is missing!")
-            st.write("Plase make sure to upload a model definition \
-                     in the sidebar.")
+            st.error(body=GUI_helper["main_error_defintion"], icon="🚨")
+
+            # reset session state
+            st.session_state["state_submitted_optimization"] = "not done"
+
+            # start main page
             main_start_page()
 
         elif scenario_input_sheet_path != "":
@@ -535,6 +538,10 @@ def main_application_sesmg():
                         json_file_path=st.session_state["state_result_path"]
                         + "/GUI_st_run_settings.json")
 
+                    # reset session state
+                    st.session_state["state_submitted_optimization"] = \
+                        "not done"
+
                 st.header('Modeling completed!')
 
                 nav_page(page_name="Result_Processing", timeout_secs=3)
@@ -562,6 +569,10 @@ def main_application_sesmg():
                         input_values_dict=GUI_main_dict,
                         json_file_path=st.session_state["state_result_path"]
                         + "/GUI_st_run_settings.json")
+
+                    # reset session state
+                    st.session_state["state_submitted_optimization"] = \
+                        "not done"
 
                 st.header('Modeling completed!')
 

@@ -375,8 +375,6 @@ if "state_result_path" not in st.session_state:
 # start sidebar functions
 result_processing_sidebar()
 
-st.write(st.session_state)
-
 # show introduction page if no result paths are not set
 if st.session_state["state_result_path"] == "not set":
     st.write("This ia a dummy. You can choose your result folder here as ....")
@@ -391,7 +389,8 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         + "/summary.csv")
 
     # check if GUI settings dict is in result folder
-    if os.path.join(st.session_state["state_result_path"], "GUI_st_run_settings.json") \
+    if os.path.join(st.session_state["state_result_path"],
+                    "GUI_st_run_settings.json") \
             in glob.glob(st.session_state["state_result_path"]+"/*"):
         # import json as in a dict
         GUI_run_settings_dict = import_GUI_input_values_json(
@@ -429,7 +428,8 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         not in glob.glob(st.session_state["state_result_path"]+"/*"):
     # show building specific results
     show_pareto(
-        result_path_pareto=os.path.join(st.session_state["state_result_path"], "pareto.csv"))
+        result_path_pareto=os.path.join(st.session_state["state_result_path"],
+                                        "pareto.csv"))
     # show heat amount diagram
     show_energy_amounts(
         result_path_heat_amounts=st.session_state["state_result_path"]
@@ -449,11 +449,14 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         result_path_summary=st.session_state["state_pareto_result_path"]
         + "/summary.csv")
     # check if GUI settings dict is in result folder
-    if os.path.join(st.session_state["state_pareto_result_path"], "GUI_st_run_settings.json") \
+    if os.path.join(st.session_state["state_pareto_result_path"],
+                    "GUI_st_run_settings.json") \
             in glob.glob(st.session_state["state_pareto_result_path"]+"/*"):
         # import json as in a dict
         GUI_run_settings_dict = import_GUI_input_values_json(
-            json_file_path=os.path.join(st.session_state["state_pareto_result_path"], "GUI_st_run_settings.json"))
+            json_file_path=os.path.join(
+                st.session_state["state_pareto_result_path"],
+                "GUI_st_run_settings.json"))
         # display some GUI settings if pre-modelling was active
         if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
             # show time series simplification settings
