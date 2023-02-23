@@ -173,3 +173,22 @@ The difference is that you need to select a folder that you want to analyze.
 .. _`urban district upscaling`:
 Urban District Upscaling
 ^^^^^^^^^^^^^^^^^^^^^
+
+The following steps must be performed here:
+
+	1. Uploading the upscaling sheet
+	2. Uploading the standard parameter sheet
+	3. Naming the model definition
+	4. Starting the Upscaling-Tool
+
+The model definition is created automatically and can be viewed on the right side. If you agree with the model definition, it can be downloaded. The model definition serves as a basis for the optimization process and can be used on the Main Application.
+
+.. figure:: ../docs/images/manual/GUI/gui_us_tool.png
+   :width: 20 %
+   :alt: GUI
+   :align: center
+
+
+
+
+
