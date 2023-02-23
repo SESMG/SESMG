@@ -73,49 +73,24 @@ The following steps must be performed here:
    :alt: GUI
    :align: center
 
-test
 
 1. Adding the model definition
 """"""""""""""""""""""""""""""
 
 2. Preprocessing
 """"""""""""""""""""""""""""""
-
-xxxx
-''''''''''''''''''''''
-
-
-3. Processing
-""""""""""""""""""""""""""""""
-
-4. Postprocessing
-""""""""""""""""""""""""""""""
-
-5. Starting the optimization
-""""""""""""""""""""""""""""""
-
-
 Timeseries Simplificaton
 ''''''''''''''''''''''
 
 Depending on which of the time series preparation algorithms described in the methods section is used, the following specifications must be made:
 
 * **Algorithm**: Indication of the simplification algorithm to be applied.
-
 * **Index**: Algorithm specific configuration.
-
 * **Criterion**: Criterion according to which cluster algorithms are applied.
-
 * **Period**: Time periods which are clustered together (weeks, days, hours)
-
 * **Season**: Time periods within which clustering takes place (year, seasons, months)
 
 The following algorithms are applicable and must be specified with the following additional information. A detailed description of the algorithms can be found in the methods section.
-
-.. csv-table::
-	:file: ../docs/csv/timeseries_preparation.csv
-	:header-rows: 1
-
 
 .. csv-table:: Input for the upscaling sheet. Category 1: Building-specific data.
 	:widths: 5 50 15 10 10 10
@@ -131,20 +106,15 @@ The following algorithms are applicable and must be specified with the following
 	random sampling,a given number of random periods are selected and used as representatives,number of periods to be selected.,--,length of periods to be selected randomly (days or weeks,--
 
 
-
 Premodeling Settings
 ''''''''''''''''''''''
 
-
-For the pre-modeling as described in the methods section, the following specifications must be made:
+For the premodeling as described in the methods section, the following specifications must be made:
 
 * **Active**: Must be checked, if pre-modeling should be carried out.
-
 * **Time series preparation parameters**: Timeseries-preparation specifications for the *pre-model* must be given.
-
 * **Investment Boundaries**: Must be checked, if "tightening of technical boundaries" should be carried out.
-
-* **Investment Boundary Factor**: Factor to which the investment 
+* **Investment Boundary Factor**: Factor to which the investment.
 
 
 Pareto Point Options
@@ -152,6 +122,19 @@ Pareto Point Options
 
 Advances District Heating Precalculation
 ''''''''''''''''''''''
+
+
+3. Processing
+""""""""""""""""""""""""""""""
+
+4. Postprocessing
+""""""""""""""""""""""""""""""
+
+5. Starting the optimization
+""""""""""""""""""""""""""""""
+
+
+
 
 
 
