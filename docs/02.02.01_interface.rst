@@ -148,6 +148,26 @@ The button starts the optimization. After the optimization process you will be a
 Result Processing
 ^^^^^^^^^^^^^^^^^^^^^
 
+You will be automatically directed to this page after the optimization process (1) or you may want to analyze existing results (2) again.
+
+1. Result processing after optimization process
+""""""""""""""""""""""""""""""
+The results differ depending on whether you used only one optimization criterion (a) or whether you did a multi-criteria optimization (b).
+
+a. Single-criteria optimization
+'''''''''''''''''''''''''''''''
+
+*Description coming soon*
+
+b. Multi-critertia optimization
+'''''''''''''''''''''''''''''''
+
+*Description coming soon*
+
+
+2. Result processing of existing results
+""""""""""""""""""""""""""""""
+The difference is that you need to select a folder that you want to analyze.
 
 
 .. _`urban district upscaling`:
