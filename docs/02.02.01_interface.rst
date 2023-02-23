@@ -60,13 +60,7 @@ The basis for any application is the so-called *model_definition.xlsx*, wich can
 .. _`main application`:
 Main Application
 ^^^^^^^^^^^^^^^^^^^^^
-The following steps must be performed here:
-
-	1. Adding the model definition
-	2. Preprocessing: Making model-based runtime and memory usage optimizations
-	3. Processing: Setting solver-settings
-	4. Postprocessing: Selecting optional results
-	5. Starting the optimization
+The figure shows which steps must be done for optimize an energy system model.
 	
 .. figure:: ../docs/images/manual/GUI/gui_main_page.png
    :width: 20 %
@@ -76,9 +70,12 @@ The following steps must be performed here:
 
 1. Adding the model definition
 """"""""""""""""""""""""""""""
+Here you can upload your *model_definition.xlsx*. After the file has been uploaded, you can theoretically continue with step 5. However, it is useful to make settings to reduce the computing time, since only limited computing resources are available.
 
 2. Preprocessing
 """"""""""""""""""""""""""""""
+There are several ways to simplify the model. The method can be found here: `Modeling Method <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.03.00_model_simplification.html>`_. In the following, only the application is briefly described.
+
 Timeseries Simplificaton
 ''''''''''''''''''''''
 
@@ -96,7 +93,7 @@ The following algorithms are applicable and must be specified with the following
 	:widths: 5 50 15 10 10 10
    	:header: algorithm,description,index,criterion,period,season
    
-	k_means,The k-means algorithm clusters the time periods (see period) in such a way; that the squared deviation of the cluster centers is minimal. From the time periods of one cluster the mean is calculated and returned as reference period of the cluster. For the decision the vector of a single parameter (see criterion) over the period duration is considered [1].,number of clusters to be considered. The number of clusters equals the number of returned reference days.,Clustering criterion to be considered (temperature; dhi; heat demand; electricity demand),Period length to be clustered (hours; days; or weeks),--
+	k_means,The k-means algorithm clusters the time periods (see period) in such a way; that the squared deviation of the cluster centers is minimal. From the time periods of one cluster the mean is calculated and returned as reference period of the cluster. For the decision the vector of a single parameter (see criterion) over the period duration is considered.,number of clusters to be considered. The number of clusters equals the number of returned reference days.,Clustering criterion to be considered (temperature; dhi; heat demand; electricity demand),Period length to be clustered (hours; days; or weeks),--
 	averaging, successive time periods (e.g. two consecutive days) are averaged and combined into one segment.,number of periods to be averaged,--,length of periods to be averaged (hours; days; weeks),--
 	slicing A, every n-th period is **selected and considered** within the modeling, index = n (every n-th period is selected in the modeling),--,length of periods to be sliced (hours; days; weeks),--
 	slicing B,every n-th period is **deleted and removed** from the modeling, index = n (every n-th period is removed),--,length of periods to be sliced (hours; days; weeks),--
