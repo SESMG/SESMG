@@ -59,8 +59,6 @@ Finally, the SESMG comes with several advantages regarding user-friendliness com
 
 * a set of standard (but still customizable) technical and economic modeling parameters including description and references.
 
-# Projects (?)
-
 An ongoing list of peer review publications, conference proceedings, study works, research projects and more related to the SESMG can be found in the [documentation of the SESMG](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/05.01.00_publications.html "documentation of the SESMG") **LINK NACH PUBLIKATION AKTUALISIEREN**
 
 # Acknowledgements
