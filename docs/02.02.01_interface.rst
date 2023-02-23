@@ -50,7 +50,10 @@ The user interface can be used to
 	- perform optimization and 
 	- to process the results.
 	
-The basis for any application is the so-called *model_definition.xlsx*, wich can be created either manually or automatically.
+The basis for any application is the so-called *model_definition.xlsx*, wich can be created either manually or automatically. When creating manually, the file must be filled in as described below (see `model definition`_). In case of automatic creation, the Upscaling-Tool (see `upscaling tool`_) is used.
+
+`model definition`_
+
 
 .. figure:: ../docs/images/manual/GUI/gui_main_page.png
    :width: 100 %
