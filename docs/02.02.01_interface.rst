@@ -69,7 +69,7 @@ The following steps must be performed here:
 	5. start the optimization
 	
 .. figure:: ../docs/images/manual/GUI/gui_main_page.png
-   :width: 100 %
+   :width: 50 %
    :alt: GUI
    :align: center
 
