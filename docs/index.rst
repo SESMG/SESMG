@@ -1,12 +1,19 @@
 The Spreadsheet Energy System Model Generator 
 =================================================
 
-The Spreadsheet Energy System Model Generator allows the modeling 
-and optimization of energy systems without the need for programming skills. 
-The components defined in this spreadsheet are defined with the 
-included Python program and the open source Python library "oemof", assembled 
-to an energy system and optimized with the open source solver "cbc". The modeling 
-results can be viewed and analyzed using a browser-based results output.
+The **SESMG** is an energy system model generator with the focus on the optimization of urban energy systems, which can, however, also be used for the modeling of other types of energy systems. The **SESMG** is based on the 'Open Energy Modelling Framework' (oemof) and comes, compared to other modeling tools with advantages regarding user-friendliness, as
+ 
+ * the model definition is based on spreadsheets, therefore no programming skills are required for the entire modeling process,
+ * urban energy system models with any size can automatically conceptualized,
+ * visualization of complex results are automatically created in the form of system graphs, Pareto-fronts, energy amounts, capacity diagrams, and many more, as well as
+ * a set of standard (but still customizable) parameters are given, including detailed descriptions and references.
+ 
+Furthermore, the **SESMG** comes with important modeling methods, enabling holistic modeling of spatially high resolution modeling of mixed-use multi energy systems, such as
+ 
+ * considering the multi-energy system (MES) approach
+ * applying multi-objective optimization by using the epsilon-constraint-method, as well as
+ * providing several methods for model-based reduction of computational requirements (run-time and RAM).
+
 
 .. figure:: images/SESMG_principle.png
    :width: 100 %
