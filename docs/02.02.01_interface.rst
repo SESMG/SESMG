@@ -44,8 +44,19 @@ The functions under the topic **Results** are used to analyze results older then
 Interface (Streamlit)
 ---------------------
 
+The user interface can be used to 
+	- create energy system models, 
+	- perform optimization and 
+	- to process the results.
+The basis for any application is the so-called model definition, wich can be created either manually or automatically.
+
+`main page`_
+
+.. _`main page`:
 Main Page
 ^^^^^^^^^^^^^^^^^^^^^
+
+
 
 Input
 """""""""""""""""""""
@@ -96,11 +107,11 @@ For the pre-modeling as described in the methods section, the following specific
 * **Investment Boundary Factor**: Factor to which the investment 
 
 
-
-Short Results
-"""""""""""""""""""""""
-
-Results
-^^^^^^^^^^^^^^^^^^^^^^^
+.. _`result processing`:
+Result Processing
+^^^^^^^^^^^^^^^^^^^^^
 
 
+.. _`urban district upscaling`:
+Urban District Upscaling
+^^^^^^^^^^^^^^^^^^^^^
