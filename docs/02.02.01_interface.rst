@@ -62,11 +62,11 @@ Main Application
 ^^^^^^^^^^^^^^^^^^^^^
 The following steps must be performed here:
 
-	1. adding the model definition
-	2. make model-based runtime and memory usage optimizations
-	3. set solver-settings
-	4. select optional results
-	5. start the optimization
+	1. Adding the model definition
+	2. Preprocessing: Making model-based runtime and memory usage optimizations
+	3. Processing: Setting solver-settings
+	4. Postprocessing: Selecting optional results
+	5. Starting the optimization
 	
 .. figure:: ../docs/images/manual/GUI/gui_main_page.png
    :width: 20 %
@@ -75,21 +75,28 @@ The following steps must be performed here:
 
 test
 
-Input
-"""""""""""""""""""""
+1. Adding the model definition
+""""""""""""""""""""""""""""""
 
+2. Preprocessing
+""""""""""""""""""""""""""""""
 
 xxxx
 ''''''''''''''''''''''
 
-xxxx
+
+3. Processing
+""""""""""""""""""""""""""""""
+
+4. Postprocessing
+""""""""""""""""""""""""""""""
+
+5. Starting the optimization
+""""""""""""""""""""""""""""""
+
+
+Timeseries Simplificaton
 ''''''''''''''''''''''
-
-Model Simplification
-''''''''''''''''''''''
-
-**Time Series Preparation:**
-
 
 Depending on which of the time series preparation algorithms described in the methods section is used, the following specifications must be made:
 
@@ -110,7 +117,8 @@ The following algorithms are applicable and must be specified with the following
 	:header-rows: 1
 
 
-**Pre-Modeling:**
+Premodeling Settings
+''''''''''''''''''''''
 
 
 For the pre-modeling as described in the methods section, the following specifications must be made:
@@ -122,6 +130,14 @@ For the pre-modeling as described in the methods section, the following specific
 * **Investment Boundaries**: Must be checked, if "tightening of technical boundaries" should be carried out.
 
 * **Investment Boundary Factor**: Factor to which the investment 
+
+
+Pareto Point Options
+''''''''''''''''''''''
+
+Advances District Heating Precalculation
+''''''''''''''''''''''
+
 
 
 .. _`result processing`:
