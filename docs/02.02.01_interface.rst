@@ -52,7 +52,7 @@ The user interface can be used to
 	
 The basis for any application is the so-called *model_definition.xlsx*, wich can be created either manually or automatically.
 
-.. figure:: ../docs/images/manual/GUI/main_page.png
+.. figure:: ../docs/images/manual/GUI/gui_main_page.png
    :width: 100 %
    :alt: GUI
    :align: center
