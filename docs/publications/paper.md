@@ -53,7 +53,9 @@ Finally, the SESMG comes with several advantages regarding user-friendliness com
 
 * applicability without any programming knowledge,
 
-* automatic conceptualization of individual urban energy systems with any size, and
+* automatic conceptualization of individual urban energy systems with any size,
+
+* automatic result processing and vizualization of complex relationships in form of system graphs, pareto-fronts, energy amount diagrams, capacity diagrams, and more, as well as
 
 * a set of standard (but still customizable) technical and economic modeling parameters including description and references.
 
