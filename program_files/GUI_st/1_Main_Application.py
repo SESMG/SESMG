@@ -131,10 +131,10 @@ def main_application_sesmg():
                                          "downsampling B": 7,
                                          "heuristic selection": 8,
                                          "random sampling": 9}
-    
+
             # Timeseries Index Range None or 1 to 365
             timeseries_index_range_list = ["None"] + list(range(1, 366))
-    
+
             # Dict of choosable clustering crtieria matching the streamlit \
             # input index for selectbox's preselections
             timeseries_cluster_criteria_dict = {"None": 0,
@@ -142,20 +142,20 @@ def main_application_sesmg():
                                                 "dhi": 2,
                                                 "el_demand_sum": 3,
                                                 "heat_demand_sum": 4}
-    
+
             # Dict of choosable timeseries periods matching the streamlit \
             # input index for selectbox's preselections
             input_timeseries_period_dict = {"None": 0,
                                             "hours": 1,
                                             "days": 2,
                                             "weeks": 3}
-    
+
             # Dict of choosable timeseries periods matching the streamlit \
             # input index for selectbox's preselections
             input_timeseries_season_dict = {"None": 0,
                                             4: 1,
                                             12: 2}
-    
+
             # Timeseries preparation input inside an expander.
             with st.expander(label="Timeseries Simplification"):
                 # Choosing timeseries parameters - algorithm
@@ -166,7 +166,7 @@ def main_application_sesmg():
                             index=settings_cache_dict_reload[
                                 "input_timeseries_algorithm_index"],
                             help=GUI_helper["main_dd_timeser_algorithm"])
-        
+
                 # Choosing timeseries parameters - index
                 GUI_main_dict["input_timeseries_cluster_index"] = \
                     st.selectbox(
@@ -200,13 +200,12 @@ def main_application_sesmg():
                             index=settings_cache_dict_reload[
                                 "input_timeseries_season_index"],
                             help=GUI_helper["main_dd_timeser_season"])
-    
-            # transform input values of Timeseries Simplification to an index \
+            # transform input values of Timeseries Simplification to an index
             # which will be safed in the GUI cache to be able to reload
             # setting.
             # Needs to be an index for st.selectboxes.
             # preparing input_timeseries_algorithm for GUI cache as an
-            # streamlit \
+            # streamlit
             # input index
             GUI_main_dict["input_timeseries_algorithm_index"] = \
                 timeseries_algorithm_dict[
@@ -224,21 +223,21 @@ def main_application_sesmg():
             GUI_main_dict["input_timeseries_criterion_index"] = \
                 timeseries_cluster_criteria_dict[
                     GUI_main_dict["input_timeseries_criterion"]]
-            # preparing input_timeseries_period for GUI cache as an streamlit \
+            # preparing input_timeseries_period for GUI cache as an streamlit
             # input index
             GUI_main_dict["input_timeseries_period_index"] = \
                 input_timeseries_period_dict[
                     GUI_main_dict["input_timeseries_period"]]
-            # preparing input_timeseries_season for GUI cache as an streamlit \
+            # preparing input_timeseries_season for GUI cache as an streamlit
             # input index
             GUI_main_dict["input_timeseries_season_index"] = \
                 input_timeseries_season_dict[
                     GUI_main_dict["input_timeseries_season"]]
-    
-            # Pre-Model setting and pre-model timeseries preparation input \
+
+            # Pre-Model setting and pre-model timeseries preparation input
             # inside an expander.
             with st.expander("Pre-Modeling Settings"):
-        
+
                 # Checkbox to activate the pre-modeling
                 GUI_main_dict["input_activate_premodeling"] = \
                     st.checkbox(
@@ -246,7 +245,7 @@ def main_application_sesmg():
                             value=settings_cache_dict_reload[
                                 "input_activate_premodeling"],
                             help=GUI_helper["main_cb_prem_active"])
-        
+
                 # Activate functions to reduce the maximum design capacity
                 GUI_main_dict["input_premodeling_invest_boundaries"] = \
                     st.checkbox(
@@ -264,7 +263,7 @@ def main_application_sesmg():
                             value=settings_cache_dict_reload[
                                 "input_premodeling_tightening_factor"],
                             help=GUI_helper["main_sl_tightening_factor"])
-        
+
                 # Choosing pre-model timeseries parameters - algorithm
                 GUI_main_dict["input_premodeling_timeseries_algorithm"] = \
                     st.selectbox(
@@ -307,7 +306,7 @@ def main_application_sesmg():
                             index=settings_cache_dict_reload[
                                 "input_premodeling_timeseries_season_index"],
                             help=GUI_helper["main_dd_prem_timeser_season"])
-    
+
             # transform input values of Timeseries Simplification to an index \
             # which will be safed in the GUI cache to be able to reload \
             # setting. Needs to be an index for st.selectboxes.
@@ -356,9 +355,9 @@ def main_application_sesmg():
                         help=GUI_helper["main_ms_pareto_points"])
                 if input_pareto_points is not None:
                     input_pareto_points.sort(reverse=True)
-    
+
                 GUI_main_dict["input_pareto_points"] = input_pareto_points
-    
+
             # Function to upload the distrct heating precalulation inside an \
             # expander.
             with st.expander("Advanced District Heating Precalculation"):
@@ -380,7 +379,7 @@ def main_application_sesmg():
 
         with tab_bar[1]:
             # Functions to input the modeling parameters.
-    
+
             # Slider number of threads
             GUI_main_dict["input_num_threads"] = st.slider(
                 label="Number of threads",
@@ -388,11 +387,11 @@ def main_application_sesmg():
                 max_value=35,
                 help=GUI_helper["main_sl_number_threats"],
                 value=settings_cache_dict_reload["input_num_threads"])
-    
-            # indexing the chosen solver of the cache session as an inputvalue \
+
+            # indexing the chosen solver of the cache session as an inputvalue
             # for st. selectbox
-            # Dict of choosable solvers the streamlit input index for selectbox's \
-            # preselections
+            # Dict of choosable solvers the streamlit input index for
+            # selectbox preselections
             input_solver_dict = {"cbc": 0,
                                  "gurobi": 1}
             # chosing the solver in an select box
@@ -401,7 +400,7 @@ def main_application_sesmg():
                 options=input_solver_dict.keys(),
                 index=settings_cache_dict_reload["input_solver_index"],
                 help=GUI_helper["main_sb_solver"])
-    
+
             # preparing input_timeseries_season for GUI cache as an streamlit \
             # input index
             GUI_main_dict["input_solver_index"] = \
@@ -410,7 +409,7 @@ def main_application_sesmg():
         with tab_bar[2]:
             # Input Postprocessing Parameters
             # Functions to input the postprocessing parameters.
-    
+
             # Input result processing parameters
             GUI_main_dict["input_xlsx_results"] = \
                 st.checkbox(
@@ -427,8 +426,6 @@ def main_application_sesmg():
                     label="Switch Criteria",
                     value=settings_cache_dict_reload["input_criterion_switch"],
                     help=GUI_helper["main_cb_criterion_switch"])
-    
-            
 
     # creating sidebar form submit structure
     with st.sidebar.form("Clear Cache"):
@@ -442,31 +439,12 @@ def main_application_sesmg():
             on_click=change_state_submitted_clear_cache,
             help=GUI_helper["main_fs_clear_cache"])
 
-        # button if latest path should be cleard as well
-        clear_path = st.checkbox(label="Clear result paths",
-                                 help=GUI_helper["main_cb_clear_paths"])
-
     # Clear all GUI settings if clear latest result paths clicked
 # TODO: session state für clear dict
-
-    if st.session_state["state_submitted_clear_cache"] == "done" \
-            and clear_path:
+    if st.session_state["state_submitted_clear_cache"] == "done":
         # create and safe dict, set paths empty
-        clear_GUI_main_settings(result_path="",
-                                premodeling_result_path="",
-                                json_file_path=os.path.dirname(__file__)
+        clear_GUI_main_settings(json_file_path=os.path.dirname(__file__)
                                 + "/GUI_st_cache.json")
-        # reset session state for clear cache
-        st.session_state["state_submitted_clear_cache"] = "not done"
-        # rerun whole script to update GUI settings
-        st.experimental_rerun()
-
-    elif st.session_state["state_submitted_clear_cache"] == "done" \
-            and not clear_path:
-        # create and safe dict, set paths as before
-        clear_GUI_main_settings(result_path=settings_cache_dict_reload["res_path"],
-                                premodeling_result_path=settings_cache_dict_reload["premodeling_res_path"],
-                                json_file_path=os.path.dirname(__file__) + "/GUI_st_cache.json")
         # reset session state for clear cache
         st.session_state["state_submitted_clear_cache"] = "not done"
         # rerun whole script to update GUI settings
@@ -502,7 +480,8 @@ def main_application_sesmg():
                  0 if GUI_main_dict["input_timeseries_season"] == "None"
                  else GUI_main_dict["input_timeseries_season"]]
 
-            # Creating the timeseries preperation settings list for the pre-model
+            # Creating the timeseries preperation settings list for the
+            # pre-model
             GUI_main_dict["pre_model_timeseries_prep_param"] = \
                 [GUI_main_dict["input_premodeling_timeseries_algorithm"],
                  GUI_main_dict["input_premodeling_timeseries_cluster_index"],
@@ -551,8 +530,10 @@ def main_application_sesmg():
                               save_path=GUI_main_dict["res_path"])
 
                     # save GUI settings in result folder
-                    safe_GUI_input_values(input_values_dict=GUI_main_dict,
-                                          json_file_path=st.session_state["state_result_path"] + "/GUI_st_run_settings.json")
+                    safe_GUI_input_values(
+                        input_values_dict=GUI_main_dict,
+                        json_file_path=st.session_state["state_result_path"]
+                        + "/GUI_st_run_settings.json")
 
                 st.header('Modeling completed!')
 
@@ -577,8 +558,10 @@ def main_application_sesmg():
                         GUI_main_dict["res_path"]
 
                     # save GUI settings in result folder
-                    safe_GUI_input_values(input_values_dict=GUI_main_dict,
-                                          json_file_path=st.session_state["state_result_path"] + "/GUI_st_run_settings.json")
+                    safe_GUI_input_values(
+                        input_values_dict=GUI_main_dict,
+                        json_file_path=st.session_state["state_result_path"]
+                        + "/GUI_st_run_settings.json")
 
                 st.header('Modeling completed!')
 

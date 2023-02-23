@@ -23,7 +23,6 @@
     "main_cb_criterion_switch": "???",
     "main_ms_pareto_points": "Choose pareto point(s) if you want to start an pareto optimization run. The chosen value defines the constraint reduction in percent refering to the cost minimal pareto point.",
     "main_fs_clear_cache": "The latest GUI settings are saved on default. Press to reset all GUI settings.",
-    "main_cb_clear_paths": "BRAUCHEN WIR DAS NOCH? Chose if you ale want to clear the latest result paths.",
     "main_info_spinner": "After the optimization process has been run, you will be automatically redirected to the results processing.",
     "udu_fs_start_US_tool": "Starts the generation of an upscaling model definition if you uploaded the files requested and chose a model definition name.",
     "udu_fu_us_sheet": "Upload the urban upscaling sheet. You can find the a blank one HERE @JB?.",

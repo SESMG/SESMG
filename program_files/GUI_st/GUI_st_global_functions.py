@@ -61,17 +61,16 @@ def safe_GUI_input_values(input_values_dict: dict, json_file_path: str):
         json.dump(input_values_dict, outfile, indent=4)
 
 
-def clear_GUI_main_settings(
-        result_path: str, premodeling_result_path: str, json_file_path: str):
+def clear_GUI_main_settings(json_file_path: str):
     """
         Function to clear the  GUI settings dict, reset it to the initial
         values and safe in json path as variables.
 
-        :param result_path: internal path where the latest results were safed
-        :type result_path: str
-        :param premodeling_result_path: internal path where the latest \
-            premodelling results were safed
-        :type premodeling_result_path: str
+        # :param result_path: internal path where the latest results were safed
+        # :type result_path: str
+        # :param premodeling_result_path: internal path where the latest \
+        #     premodelling results were safed
+        # :type premodeling_result_path: str
         :param json_file_path: internal path where json should be safed
         :type json_file_path: str
     """
@@ -114,9 +113,7 @@ def clear_GUI_main_settings(
         "input_criterion_switch": False,
         "input_pareto_points": [],
         "timeseries_prep_param": ["None", "None", "None", "None", 0],
-        "pre_model_timeseries_prep_param": ["None", "None", "None", "None", 0],
-        "res_path": result_path,
-        "premodeling_res_path": premodeling_result_path
+        "pre_model_timeseries_prep_param": ["None", "None", "None", "None", 0]
     }
 
     # safe cleared dict
