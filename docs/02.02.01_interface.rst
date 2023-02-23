@@ -60,7 +60,7 @@ The basis for any application is the so-called *model_definition.xlsx*, wich can
 .. _`main application`:
 Main Application
 ^^^^^^^^^^^^^^^^^^^^^
-The figure shows which steps must be done for optimize an energy system model.
+The figure shows which steps must be done for optimize an energy system model. At the bottom of the side bar you will find a button that deletes all stored data such as time series reduction values.
 	
 .. figure:: ../docs/images/manual/GUI/gui_main_page.png
    :width: 20 %
@@ -89,7 +89,7 @@ Depending on which of the time series preparation algorithms described in the me
 
 The following algorithms are applicable and must be specified with the following additional information. A detailed description of the algorithms can be found in the methods section.
 
-.. csv-table:: Input for the upscaling sheet. Category 1: Building-specific data.
+.. csv-table:: Description of the different algorithm.
 	:widths: 5 50 15 10 10 10
    	:header: algorithm,description,index,criterion,period,season
    
@@ -106,38 +106,48 @@ The following algorithms are applicable and must be specified with the following
 Premodeling Settings
 ''''''''''''''''''''''
 
-For the premodeling as described in the methods section, the following specifications must be made:
-
-* **Active**: Must be checked, if pre-modeling should be carried out.
-* **Time series preparation parameters**: Timeseries-preparation specifications for the *pre-model* must be given.
-* **Investment Boundaries**: Must be checked, if "tightening of technical boundaries" should be carried out.
-* **Investment Boundary Factor**: Factor to which the investment.
+* **Activate Pre-Modeling**: Must be checked, if you want to activate premodelling for your model run.
+* **Investment Boundaries Tightening**: Must be checked, if an Investment Tightening Factor is set.
+* **Investment Tightening Faktor**: *Description coming soon*
+* **Time Series Simplification**: Timeseries simplification for the *pre-model* have to be set (see above for detailed description).
 
 
 Pareto Point Options
 ''''''''''''''''''''''
 
+Choose pareto point(s) if you want to start an pareto optimization run. The chosen value defines the constraint reduction in percent refering to the cost minimal pareto point. The values are given in percent.
+
 Advances District Heating Precalculation
 ''''''''''''''''''''''
-
+*Description coming soon*
 
 3. Processing
 """"""""""""""""""""""""""""""
 
+* **Number of threads**: Number of threads to use for the model run on your machine. You should make sure that the chosen solver supports enough threats (cbc: max. 1 (if no parallelized version), gurobi: max. 8).
+* **Optimization Solver**: Chose on of the supported solver. Make sure that the solver is configurated on your machine. We recommend using the gurobi solver if you can use an academic licence.
+
+
 4. Postprocessing
 """"""""""""""""""""""""""""""
+
+* **Create xlsx-files**:  Must be checked, if you want to get result files of every bus. The field should only be checked if users have in-depth model knowledge.
+* **Create console-log**: Must be checked, if you want to get log-files of of the optimization process. The field should only be checked if users have in-depth model knowledge.
+* **Switch Criteria**: *Description coming soon*
+
+
 
 5. Starting the optimization
 """"""""""""""""""""""""""""""
 
-
-
+The button starts the optimization. After the optimization process you will be automatically redirected to the Result Processing page.
 
 
 
 .. _`result processing`:
 Result Processing
 ^^^^^^^^^^^^^^^^^^^^^
+
 
 
 .. _`urban district upscaling`:
