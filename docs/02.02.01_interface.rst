@@ -68,7 +68,7 @@ The following steps must be performed here:
 	4. select optional results
 	5. start the optimization
 	
-.. figure:: ../docs/images/manual/GUI/gui_main_page.png
+.. figure:: ../docs/images/manual/GUI/gui_layout.png
    :width: 100 %
    :alt: GUI
    :align: center
