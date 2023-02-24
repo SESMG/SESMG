@@ -52,8 +52,7 @@ def result_processing_sidebar():
 
         if st.session_state["state_result_path"] != "not set" and \
                 os.path.join(st.session_state["state_result_path"], "components.csv") \
-                not in glob.glob(st.session_state["state_result_path"]+"/*"):
-
+                not in glob.glob(st.session_state["state_result_path"] + "/*"):
             # header
             st.header("Pareto Results")
 
@@ -240,7 +239,7 @@ def short_result_interactive_dia(result_path_results):
     # filtered dataframe
     filtered_df = result_df[select_headers]
     # plotting
-    fig = px.line(filtered_df)
+    fig = px.line(filtered_df).update_layout(xaxis_title="date", yaxis_title="performance (kW) / storage capacity (kWh)")
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
@@ -262,7 +261,9 @@ def create_energy_amounts_diagram(result_path_amounts):
     list_headers = column_headers_amount[1:]
 
     # create plotly chart
-    fig = px.area(amounts_df, x="run", y=list_headers)
+    fig = px.area(amounts_df, x="run", y=list_headers).update_layout(xaxis_title="Reduced GHG-emissions compared to "
+                                                                                 "the cost minimum (%)",
+                                                                     yaxis_title="energy amounts (kWh)")
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
@@ -314,7 +315,9 @@ def show_pareto(result_path_pareto):
                   x="costs",
                   y="emissions",
                   markers=True,
-                  hover_data=["costs", "emissions"])
+                  hover_data=["costs", "emissions"],
+                  labels={"costs": "costs (EUR / a)", "emissions": "emissions (g CO<sub>2</sub> / a)"}
+                  )
     fig.update_traces(textposition="top right")
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
@@ -381,21 +384,21 @@ if st.session_state["state_result_path"] == "not set":
     st.write(st.session_state["state_result_path"])
 
 elif os.path.join(st.session_state["state_result_path"], "components.csv") \
-        in glob.glob(st.session_state["state_result_path"]+"/*"):
+        in glob.glob(st.session_state["state_result_path"] + "/*"):
 
     # show short result summaries time series information
     short_result_summary_time(
         result_path_summary=st.session_state["state_result_path"]
-        + "/summary.csv")
+                            + "/summary.csv")
 
     # check if GUI settings dict is in result folder
     if os.path.join(st.session_state["state_result_path"],
                     "GUI_st_run_settings.json") \
-            in glob.glob(st.session_state["state_result_path"]+"/*"):
+            in glob.glob(st.session_state["state_result_path"] + "/*"):
         # import json as in a dict
         GUI_run_settings_dict = import_GUI_input_values_json(
             json_file_path=st.session_state["state_result_path"]
-            + "/GUI_st_run_settings.json")
+                           + "/GUI_st_run_settings.json")
         # display some GUI settings if pre-modelling was active
         if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
             # show time series simplification settings
@@ -408,24 +411,24 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
     # show short result summaries key values
     short_result_summary_system(
         result_path_summary=st.session_state["state_result_path"]
-        + "/summary.csv")
+                            + "/summary.csv")
 
     # show energy system graph
     short_result_graph(
         result_path_graph=st.session_state["state_result_path"]
-        + "/graph.gv.png")
+                          + "/graph.gv.png")
     # show components table
     short_result_table(
         result_path_components=st.session_state["state_result_path"]
-        + "/components.csv")
+                               + "/components.csv")
     # show interactive result diagram
     short_result_interactive_dia(
         result_path_results=st.session_state["state_result_path"]
-        + "/results.csv")
+                            + "/results.csv")
 
 
 elif os.path.join(st.session_state["state_result_path"], "components.csv") \
-        not in glob.glob(st.session_state["state_result_path"]+"/*"):
+        not in glob.glob(st.session_state["state_result_path"] + "/*"):
     # show building specific results
     show_pareto(
         result_path_pareto=os.path.join(st.session_state["state_result_path"],
@@ -433,10 +436,10 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
     # show heat amount diagram
     show_energy_amounts(
         result_path_heat_amounts=st.session_state["state_result_path"]
-        + "/heat_amounts.csv",
+                                 + "/heat_amounts.csv",
         result_path_elec_amounts=st.session_state["state_result_path"]
-        + "/elec_amounts.csv")
-# TODO implement
+                                 + "/elec_amounts.csv")
+    # TODO implement
     # show building specific results
     # show_building_specific_results(st.session_state["state_result_path"]
     # + "/???????????.csv")
@@ -447,11 +450,11 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
     # show short result summaries time series informations
     short_result_summary_time(
         result_path_summary=st.session_state["state_pareto_result_path"]
-        + "/summary.csv")
+                            + "/summary.csv")
     # check if GUI settings dict is in result folder
     if os.path.join(st.session_state["state_pareto_result_path"],
                     "GUI_st_run_settings.json") \
-            in glob.glob(st.session_state["state_pareto_result_path"]+"/*"):
+            in glob.glob(st.session_state["state_pareto_result_path"] + "/*"):
         # import json as in a dict
         GUI_run_settings_dict = import_GUI_input_values_json(
             json_file_path=os.path.join(
@@ -469,16 +472,16 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
     # show short result summaries key values
     short_result_summary_system(
         result_path_summary=st.session_state["state_pareto_result_path"]
-        + "/summary.csv")
+                            + "/summary.csv")
     # show components table
     short_result_table(
         result_path_components=st.session_state["state_pareto_result_path"]
-        + "/components.csv")
+                               + "/components.csv")
     # show interactive result diagram
     short_result_interactive_dia(
         result_path_results=st.session_state["state_pareto_result_path"]
-        + "/results.csv")
+                            + "/results.csv")
     # show energy system graph
     short_result_graph(
         result_path_graph=st.session_state["state_pareto_result_path"]
-        + "/graph.gv.png")
+                          + "/graph.gv.png")

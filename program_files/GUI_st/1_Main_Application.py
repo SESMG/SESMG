@@ -377,6 +377,13 @@ def main_application_sesmg():
                 district_heating_precalc_path = st.text_input(
                         "Type in path to your District Heating File input file.")
 
+            GUI_main_dict["input_criterion_switch"] = \
+                st.checkbox(
+                    label="Switch Criteria",
+                    value=settings_cache_dict_reload["input_criterion_switch"],
+                    help=GUI_helper["main_cb_criterion_switch"])
+
+
         with tab_bar[1]:
             # Functions to input the modeling parameters.
 
@@ -421,11 +428,6 @@ def main_application_sesmg():
                     label="Create console-log",
                     value=settings_cache_dict_reload["input_console_results"],
                     help=GUI_helper["main_cb_console_results"])
-            GUI_main_dict["input_criterion_switch"] = \
-                st.checkbox(
-                    label="Switch Criteria",
-                    value=settings_cache_dict_reload["input_criterion_switch"],
-                    help=GUI_helper["main_cb_criterion_switch"])
 
     # creating sidebar form submit structure
     with st.sidebar.form("Clear Cache"):
