@@ -24,11 +24,11 @@ authors:
     orcid: 0000-0002-0767-5014
     affiliation: 1
 affiliations:
- - name: Department of Energy, Building Services and Environmental Engineering, Münster University of Applied Sciences, Germany
+ - name: Münster University of Applied Sciences, Department of Energy, Building Services and Environmental Engineering, Germany
    index: 1
- - name: Department of Energy and Environmental Management, Europa-Universität Flensburg, Germany 
+ - name: Europa-Universität Flensburg, Department of Energy and Environmental Management, Germany 
    index: 2
-date: 31 March 2023
+date: 30 April 2023
 bibliography: paper.bib
 
 ---
