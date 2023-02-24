@@ -121,7 +121,7 @@ Advances District Heating Precalculation
 
 Switch Criteria
 ''''''''''''''''''''''
-If you activate this field, you set instead of the primary costs (e. g. monetary costs), the constraining costs (e. g. GHG-Emissions) as the optimization variable, so you perform an e. g. emission-optimized run.
+If you activate this field, you set instead of the primary costs (e. g. monetary costs), the constraining costs (e. g. GHG-Emissions) as the optimization variable, so you perform an e. g. emission-optimized run. The field is intended for single-criteria optimization only.  In case of multi-criteria optimization, the optimization criteria will be changed automatically.
 
 
 3. Processing
@@ -199,9 +199,3 @@ The model definition is created automatically and can be viewed on the right sid
 5. Downloading the xlsx-file
 """"""""""""""""""""""""""""""
 If you agree with the model definition, it can be downloaded. The model definition serves as a basis for the optimization process and can be used on the Main Application.
-
-
-
-
-
-
