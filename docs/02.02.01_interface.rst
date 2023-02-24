@@ -45,12 +45,11 @@ Interface (Streamlit)
 ---------------------
 
 The user interface can be used to 
-
 	- create energy system models, 
 	- perform optimization and 
 	- to process the results.
 	
-The basis for any application is the so-called *model_definition.xlsx*, wich can be created either manually or automatically. When creating manually, the *model_definition.xlsx* must be filled in as described below (see `model definition`_). In case of automatic creation, the Upscaling-Tool (see `upscaling tool`_) is used. After the *model_definition.xlsx* is filled in, the Main Application (`main application`_) can be started. The structure of the GUI can be seen in the following figure. The sidebar is used to enter input data. The main page is used for description or for displaying results.
+The basis for any application is the so-called *model_definition.xlsx*, wich can be created either manually or automatically. When creating manually, the *model_definition.xlsx* must be filled in as described below (see `model definition`_). In case of automatic creation, the Upscaling-Tool (see `upscaling tool`_) is used. After the *model_definition.xlsx* is filled in, the Main Application (`main application`_) can be started. The structure of the GUI can be seen in the following figure. The sidebar is used to enter input data. The main page is used for descriptions or for displaying results.
 
 .. figure:: ../docs/images/manual/GUI/gui_layout.png
    :width: 50 %
