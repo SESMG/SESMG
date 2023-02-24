@@ -1,9 +1,16 @@
 import pandas
 
 
-def create_source(source_type: str, roof_num: str, building: dict,
-                  sheets: dict, standard_parameters: pandas.ExcelFile,
-                  st_output=None, central=False, min_invest="0") -> dict:
+def create_source(
+    source_type: str,
+    roof_num: str,
+    building: dict,
+    sheets: dict,
+    standard_parameters: pandas.ExcelFile,
+    st_output=None,
+    central=False,
+    min_invest="0",
+) -> dict:
     """
         TODO DOCSTRINGTEXT
         
@@ -44,33 +51,37 @@ def create_source(source_type: str, roof_num: str, building: dict,
         building["longitude"],
         building["roof area {}".format(roof_num)],
     ]
-    
+
     # define the source's label, output bus, input bus
     switch_dict = {
-        "fixed photovoltaic source": [
-            "_pv_source",
-            "_pv_bus",
-            0],
+        "fixed photovoltaic source": ["_pv_source", "_pv_bus", 0],
         "solar_thermal_collector": [
             "_solarthermal_source",
             "_heat_bus",
-            str(source_param[1]) + "_electricity_bus"]
+            str(source_param[1]) + "_electricity_bus",
+        ],
     }
-    
+
     # read the source specific standard parameters
     standard_param = standard_parameters.parse("3_sources")
     if not central:
         standard_param = standard_param.loc[
-            standard_param["source_type"] == "solar_thermal_collector"]
+            standard_param["source_type"] == "solar_thermal_collector"
+        ]
     else:
         standard_param = standard_param.loc[
-            standard_param["source_type"] == "central_solar_thermal_collector"]
+            standard_param["source_type"] == "central_solar_thermal_collector"
+        ]
     # calculate the inlet temperature which is necessary for solar
     # thermal flat plates
     temp_inlet = (
-        (building["flow temperature"]
-         - (2 * float(standard_param["Temperature Difference"])))
-        if source_type == "solar_thermal_collector" else 0)
+        (
+            building["flow temperature"]
+            - (2 * float(standard_param["Temperature Difference"]))
+        )
+        if source_type == "solar_thermal_collector"
+        else 0
+    )
 
     # technical parameters
     source_dict = {
@@ -87,15 +98,16 @@ def create_source(source_type: str, roof_num: str, building: dict,
         "Longitude": source_param[5],
         "input": switch_dict.get(source_type)[2],
         "Temperature Inlet": temp_inlet,
-        "min. investment capacity": float(min_invest)
+        "min. investment capacity": float(min_invest),
     }
     if central:
         source_type = "central_solar_thermal_collector"
 
     # extracts the st source specific standard values from the
     # standard_parameters dataset
-    param, keys = read_standard_parameters(source_type, "3_sources",
-                                           "source_type", standard_parameters)
+    param, keys = read_standard_parameters(
+        source_type, "3_sources", "source_type", standard_parameters
+    )
     for i in range(len(keys)):
         source_dict[keys[i]] = param[keys[i]]
 
@@ -106,8 +118,9 @@ def create_source(source_type: str, roof_num: str, building: dict,
     return append_component(sheets, "sources", source_dict)
 
 
-def create_timeseries_source(sheets: dict, label: str, output: str,
-                             standard_parameters: pandas.ExcelFile) -> dict:
+def create_timeseries_source(
+    sheets: dict, label: str, output: str, standard_parameters: pandas.ExcelFile
+) -> dict:
     """
         TODO DOCSTRINGTEXT
         
@@ -143,18 +156,22 @@ def create_timeseries_source(sheets: dict, label: str, output: str,
 
     # extracts the st source specific standard values from the
     # standard_parameters dataset
-    param, keys = read_standard_parameters("timeseries_source", "3_sources",
-                                           "source_type", standard_parameters)
+    param, keys = read_standard_parameters(
+        "timeseries_source", "3_sources", "source_type", standard_parameters
+    )
     for i in range(len(keys)):
         source_dict[keys[i]] = param[keys[i]]
 
     return append_component(sheets, "sources", source_dict)
 
 
-def create_competition_constraint(limit: float, label: str, roof_num: str,
-                                  sheets: dict,
-                                  standard_parameters: pandas.ExcelFile
-                                  ) -> dict:
+def create_competition_constraint(
+    limit: float,
+    label: str,
+    roof_num: str,
+    sheets: dict,
+    standard_parameters: pandas.ExcelFile,
+) -> dict:
     """
         TODO DOCSTRINGTEXT
         
@@ -180,13 +197,13 @@ def create_competition_constraint(limit: float, label: str, roof_num: str,
 
     # import the photovoltaic and solar thermal standard parameters
     pv_param, pv_keys = read_standard_parameters(
-        "fixed photovoltaic source", "3_sources", "source_type",
-        standard_parameters)
-    
+        "fixed photovoltaic source", "3_sources", "source_type", standard_parameters
+    )
+
     st_param, st_keys = read_standard_parameters(
-        "solar_thermal_collector", "3_sources", "source_type",
-        standard_parameters)
-    
+        "solar_thermal_collector", "3_sources", "source_type", standard_parameters
+    )
+
     # define individual values
     constraint_dict = {
         "component 1": label + "_" + str(roof_num) + "_pv_source",
@@ -200,9 +217,14 @@ def create_competition_constraint(limit: float, label: str, roof_num: str,
     return append_component(sheets, "competition constraints", constraint_dict)
 
 
-def create_sources(building: dict, clustering: bool, sheets: dict,
-                   standard_parameters: pandas.ExcelFile,
-                   st_output=None, central=False) -> dict:
+def create_sources(
+    building: dict,
+    clustering: bool,
+    sheets: dict,
+    standard_parameters: pandas.ExcelFile,
+    st_output=None,
+    central=False,
+) -> dict:
     """
         Algorithm which creates a photovoltaic- and  a solar thermal \
         source as well as the resulting competition constraint for a \
@@ -231,8 +253,11 @@ def create_sources(building: dict, clustering: bool, sheets: dict,
             pandas.Dataframes that will represent the model \
             definition's Spreadsheets which was modified in this method
     """
-    from program_files.urban_district_upscaling.pre_processing \
-        import column_exists, represents_int
+    from program_files.urban_district_upscaling.pre_processing import (
+        column_exists,
+        represents_int,
+    )
+
     # create pv-sources and solar thermal-sources including area
     # competition
     roof_num = 1
@@ -240,28 +265,28 @@ def create_sources(building: dict, clustering: bool, sheets: dict,
         if building[str("roof area %1d" % roof_num)]:
             pv = building["pv {}".format(roof_num)] not in ["No", "no", "0"]
             st = building["st {}".format(roof_num)] not in ["No", "no", "0"]
-            
+
             if pv:
                 pv_column = building["pv {}".format(roof_num)]
                 # if the user inserted an entry deviating yes in the pv
                 # column it has to be the min invest value
                 min_invest = pv_column if represents_int(pv_column) else "0"
-                
+
                 sheets = create_source(
                     source_type="fixed photovoltaic source",
                     roof_num=str(roof_num),
                     building=building,
                     sheets=sheets,
                     standard_parameters=standard_parameters,
-                    min_invest=min_invest
+                    min_invest=min_invest,
                 )
-    
+
             if building["building type"] not in ["0", 0] and st:
                 st_column = building["st {}".format(roof_num)]
                 # if the user inserted an entry deviating yes in the pv
                 # column it has to be the min invest value
                 min_invest = st_column if represents_int(st_column) else "0"
-                
+
                 sheets = create_source(
                     source_type="solar_thermal_collector",
                     roof_num=str(roof_num),
@@ -270,25 +295,25 @@ def create_sources(building: dict, clustering: bool, sheets: dict,
                     st_output=st_output,
                     standard_parameters=standard_parameters,
                     central=central,
-                    min_invest=min_invest
+                    min_invest=min_invest,
                 )
-    
+
                 if not clustering and pv and st:
                     sheets = create_competition_constraint(
                         roof_num=str(roof_num),
                         label=building["label"],
                         sheets=sheets,
                         limit=building["roof area %1d" % roof_num],
-                        standard_parameters=standard_parameters
+                        standard_parameters=standard_parameters,
                     )
-    
+
         roof_num += 1
     return sheets
 
 
-def cluster_sources_information(source: pandas.Series, source_param: dict,
-                                azimuth_type: str, sheets: dict
-                                ) -> (dict, dict):
+def cluster_sources_information(
+    source: pandas.Series, source_param: dict, azimuth_type: str, sheets: dict
+) -> (dict, dict):
     """
         Collects the source information of the selected type, and
         inserts it into the dict containing the cluster specific
@@ -328,11 +353,10 @@ def cluster_sources_information(source: pandas.Series, source_param: dict,
         8: source["Surface Tilt"],
         9: source["Latitude"],
         10: source["Longitude"],
-        11: source["Temperature Inlet"]
+        11: source["Temperature Inlet"],
     }
     for num in param_dict:
-        source_param[source_type + "_{}".format(azimuth_type)][num] \
-            += param_dict[num]
+        source_param[source_type + "_{}".format(azimuth_type)][num] += param_dict[num]
     # remove the considered source from sources sheet
     sheets["sources"] = sheets["sources"].drop(index=source["label"])
     # return the modified source_param dict to the sources clustering
@@ -340,8 +364,9 @@ def cluster_sources_information(source: pandas.Series, source_param: dict,
     return source_param, sheets
 
 
-def sources_clustering(source_param: dict, building: list,
-                       sheets: dict, sheets_clustering: dict) -> (dict, dict):
+def sources_clustering(
+    source_param: dict, building: list, sheets: dict, sheets_clustering: dict
+) -> (dict, dict):
     """
         In this method, the information of the photovoltaic and solar
         thermal systems to be clustered is collected, and the systems
@@ -369,8 +394,7 @@ def sources_clustering(source_param: dict, building: list,
     """
     for index, source in sheets_clustering["sources"].iterrows():
         # collecting information for bundled photovoltaic systems
-        if source["technology"] in [
-                "photovoltaic", "solar_thermal_flat_plate"]:
+        if source["technology"] in ["photovoltaic", "solar_thermal_flat_plate"]:
             # check the azimuth type for clustering in 8 cardinal
             # directions
             dir_dict = {
@@ -398,15 +422,19 @@ def sources_clustering(source_param: dict, building: list,
                     source=source,
                     source_param=source_param,
                     azimuth_type=azimuth_type,
-                    sheets=sheets
+                    sheets=sheets,
                 )
 
     # return the collected data to the main clustering method
     return source_param, sheets
 
 
-def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
-                           standard_parameters: pandas.ExcelFile) -> dict:
+def create_cluster_sources(
+    source_param: dict,
+    cluster: str,
+    sheets: dict,
+    standard_parameters: pandas.ExcelFile,
+) -> dict:
     """
         This method is used to create the clustered sources, which \
         are divided into 8 cardinal directions with averaged parameters.
@@ -435,13 +463,15 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
         name="fixed photovoltaic source",
         param_type="3_sources",
         index="source_type",
-        standard_parameters=standard_parameters)
+        standard_parameters=standard_parameters,
+    )
     st_standard_param, st_standard_keys = read_standard_parameters(
         name="solar_thermal_collector",
         param_type="3_sources",
         index="source_type",
-        standard_parameters=standard_parameters)
-    
+        standard_parameters=standard_parameters,
+    )
+
     bus_created = False
     for azimuth in [
         "north_000",
@@ -465,9 +495,10 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
                 param_dict = {
                     "label": cluster,
                     "azimuth {}".format(azimuth[:-4]): int(azimuth[-3:]),
-                    "roof area {}".format(azimuth[:-4]):
-                        source_param[pv_st + "_{}".format(azimuth[:-4])][1]
-                        / type_param.get(pv_st)[0]["Capacity per Area (kW/m2)"]
+                    "roof area {}".format(azimuth[:-4]): source_param[
+                        pv_st + "_{}".format(azimuth[:-4])
+                    ][1]
+                    / type_param.get(pv_st)[0]["Capacity per Area (kW/m2)"],
                 }
 
                 if not bus_created and pv_st == "pv":
@@ -475,25 +506,24 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
                         label=str(cluster) + "_pv_bus",
                         bus_type="building_pv_bus",
                         sheets=sheets,
-                        standard_parameters=standard_parameters
+                        standard_parameters=standard_parameters,
                     )
                     bus_created = True
-                if pv_st == "pv" \
-                        and source_param["st_{}".format(azimuth[:-4])][0] > 0:
+                if pv_st == "pv" and source_param["st_{}".format(azimuth[:-4])][0] > 0:
                     sheets = create_competition_constraint(
                         limit=param_dict["roof area {}".format(azimuth[:-4])],
                         label=cluster,
                         roof_num=azimuth[:-4],
                         sheets=sheets,
-                        standard_parameters=standard_parameters
+                        standard_parameters=standard_parameters,
                     )
-                    
+
                 # dict defining param location in sources information list
                 pos_dict = {
                     "surface tilt {}".format(azimuth[:-4]): 8,
                     "latitude": 9,
                     "longitude": 10,
-                    "flow temperature": 11
+                    "flow temperature": 11,
                 }
                 for i in pos_dict:
                     param = source_param[pv_st + "_{}".format(azimuth[:-4])]
@@ -504,7 +534,8 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
                     roof_num=azimuth[:-4],
                     building=param_dict,
                     sheets=sheets,
-                    standard_parameters=standard_parameters)
+                    standard_parameters=standard_parameters,
+                )
     return sheets
 
 
