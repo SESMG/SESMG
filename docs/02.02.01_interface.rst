@@ -201,7 +201,7 @@ The model definition is created automatically and can be viewed on the right sid
 
 5. Downloading the xlsx-file
 """"""""""""""""""""""""""""""
- If you agree with the model definition, it can be downloaded. The model definition serves as a basis for the optimization process and can be used on the Main Application.
+If you agree with the model definition, it can be downloaded. The model definition serves as a basis for the optimization process and can be used on the Main Application.
 
 
 
