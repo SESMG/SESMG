@@ -152,11 +152,20 @@ The results differ depending on whether you used only one optimization criterion
 
 a. Single-criteria optimization
 '''''''''''''''''''''''''''''''
+.. figure:: ../docs/images/manual/GUI/gui_result.png
+   :width: 50 %
+   :alt: GUI
+   :align: center
+
 
 *Description coming soon*
 
 b. Multi-critertia optimization
 '''''''''''''''''''''''''''''''
+.. figure:: ../docs/images/manual/GUI/gui_result_pareto.png
+   :width: 50 %
+   :alt: GUI
+   :align: center
 
 *Description coming soon*
 
