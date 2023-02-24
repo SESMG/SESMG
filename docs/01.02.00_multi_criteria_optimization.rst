@@ -6,7 +6,7 @@ Constraint Costs
 
 The multi-criteria optimization approach considered in the SESMG may include up to three optimization criteria:
 
-- The **primary optimization criterion** corresponds to the the [investment costs](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html#investment "investment costs") of an energy system. Beside financial costs any other linearly scalable target value can be applied (e.g., ghg emissions).
+- The **primary optimization criterion** corresponds to the the `investment costs <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html#investment>`_ of an energy system. Beside financial costs any other linearly scalable target value can be applied (e.g., ghg emissions).
 
 - The optional **secondary optimization criterion** can be used to define allowed limits for a second target value. The values of the secondary optimization criterion are referred to as "constraint costs" and can also stand for any linear scalable quantity.
 
