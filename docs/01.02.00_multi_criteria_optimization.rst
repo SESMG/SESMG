@@ -26,7 +26,7 @@ By using the Pareto-optimization, the epsilon-constraint-optimization method is 
 In this multi-objective approach, at first, the boundary scenarious of the solution space are determined, by identifying those scenarios, which allow the (i) minimization of the primary optimization criterion and (ii) minimization of the secondary optimization criterion. Then, starting from scenario (i), the allowed value of the secondary optimization criterion is step wise decreased until scenario (ii) is reached. The intervals at which the limit value is reduced can be defined by the user. If we combine the scenarios, we obtain a Pareto front of optimal scenarios according to different weights of the criteria.
 
 .. figure:: ../docs/images/epsilon_constraint_method.png
-   :width: 100 %
+   :width: 50 %
    :alt: epsilon constraint method
    :align: center
 
