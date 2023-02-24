@@ -17,13 +17,13 @@ from program_files.GUI_st.GUI_st_global_functions import \
 # creating global model run mode dict
 mode_dict = {
     "monetary": [
-        "demo_scenario_monetaer.xlsx",
+        "demo_model_definition_monetaer.xlsx",
         r"/results/demo/financial",
         "Total System Costs",
         "Total Constraint Costs",
     ],
     "emissions": [
-        "demo_scenario_emissionen.xlsx",
+        "demo_model_definition_emissionen.xlsx",
         r"/results/demo/emissions",
         "Total Constraint Costs",
         "Total System Costs",
@@ -103,7 +103,7 @@ def dt_input_sidebar():
         # bool if DH network should be active
         input_dh = st.checkbox(
             label="District Heating Network")
-        # 1 if True, 0 is False to fit with the model defintion sheet
+        # 1 if True, 0 is False to fit with the model definition sheet
         if input_dh:
             input_values_dict["input_dh"] = 1
         else:
@@ -151,9 +151,9 @@ def execute_sesmg_demo(demo_file, demo_results):
     st.session_state["state_submitted_demo_run"] = "not done"
 
 
-def create_demo_scenario(mode):
+def create_demo_model_definition(mode):
     """
-        Modifies financial demo scenario.
+        Modifies demo model definition.
 
         :param mode: ????????????
         :type mode: str
@@ -170,7 +170,7 @@ def create_demo_scenario(mode):
 
     xfile = openpyxl.load_workbook(
         mainpath_pf
-        + "/Demo_Tool/v0.4.0_demo_scenario/"
+        + "/Demo_Tool/v0.4.0_demo_model_definition/"
         + mode_dict.get(mode)[0],
         data_only=True)
 
@@ -216,11 +216,12 @@ def create_demo_scenario(mode):
     xfile.save(
         mainpath_mf
         + mode_dict.get(mode)[1]
-        + "/scenario.xlsx")
+        + "/model_definition.xlsx")
 
     # run sesmg DEMO version
     execute_sesmg_demo(
-        demo_file=mainpath_mf + mode_dict.get(mode)[1] + r"/scenario.xlsx",
+        demo_file=mainpath_mf + mode_dict.get(mode)[1]
+        + r"/model_definition.xlsx",
         demo_results=mainpath_mf + mode_dict.get(mode)[1])
 
 
@@ -353,6 +354,6 @@ demo_parameters_page()
 # show results after submit button was clicked
 if st.session_state["state_submitted_demo_run"] == "done":
     # create demo model definition and start model run
-    create_demo_scenario(mode=input_values_dict["input_criterion"])
+    create_demo_model_definition(mode=input_values_dict["input_criterion"])
     # show generated results
     show_demo_run_results(mode=input_values_dict["input_criterion"])
