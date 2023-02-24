@@ -7,9 +7,11 @@ Your publication/thesis/project is missing? Contact us!
 
 Papers and Conference Proceedings
 ---------------------------------
-- Klemm, Christian; Wiese, Frauke & Vennemann, Peter (2023): "**Model-based run-time and memory reduction for a mixed-use multi-energy system model with high spatial resolution**", *Applied Energy*, 334, 120574, `https://doi.org/10.1016/j.apenergy.2022.120574>`_.
+- Budde, Janik; Klemm, Christian; Tockloth, Jan N.; Becker, Gregor & Vennemann, Peter (2023): "**Automatisierte Modellierung und Optimierung urbaner Energiesysteme**", *6. Regenerative Energietechnik Konferenz in Nordhausen* 09. - 10. Februar 2023, `available here (Page 150-159) <https://www.hs-nordhausen.de/fileadmin/Dateien/Forschung/2021/Tagungsband_RETCon_2023_Web.pdf>`_.
 
-- Becker, Gregor; Klemm, Christian & Vennemann, Peter (2022) "**Open Source District Heating Modeling Tools—A Comparative Study**", *Energies*, 15(21), 8277, `https://doi.org/10.3390/en15218277>`_.
+- Klemm, Christian; Wiese, Frauke & Vennemann, Peter (2023): "**Model-based run-time and memory reduction for a mixed-use multi-energy system model with high spatial resolution**", *Applied Energy*, 334, 120574, `https://doi.org/10.1016/j.apenergy.2022.120574 <https://doi.org/10.1016/j.apenergy.2022.120574>`_.
+
+- Becker, Gregor; Klemm, Christian & Vennemann, Peter (2022): "**Open Source District Heating Modeling Tools—A Comparative Study**", *Energies*, 15(21), 8277, `https://doi.org/10.3390/en15218277 <https://doi.org/10.3390/en15218277>`_.
 
 - Quest, Gemina; Arendt, Rosalie; Klemm, Christian; Bach, Vanessa; Budde, Janik; Vennemann, Peter & Finkbeiner, Matthias (2022): "**Integrated Life Cycle Assessment (LCA) of Power and Heat Supply for a Neighborhood: A Case Study of Herne, Germany**", *Energies*, 15(16), 5900, `https://doi.org/10.3390/en15165900 <https://doi.org/10.3390/en15165900>`_.
 
@@ -17,7 +19,7 @@ Papers and Conference Proceedings
 
 - Klemm, Christian & Vennemann, Peter (2021): "**Modellierung und Optimierung urbaner Energiesysteme im Projekt R2Q**", *4. Regenerative Energietechnik Konferenz in Nordhausen* 18. - 19. Februar 2021, `available here (Page 177-188) <https://www.hs-nordhausen.de/fileadmin/daten/fb_ing/inret/PDFs/tagungsband_retcon21_web_aa3__1_.pdf>`_.
 
-- Klemm, Christian & Vennemann, Peter (2021). "**Modeling and optimization of multi-energy systems in mixed-use districts: A review of existing methods and approaches**". *Renewable and Sustainable Energy Reviews*, 135, 110206, `https://doi.org/10.1016/j.rser.2020.110206 <https://doi.org/10.1016/j.rser.2020.110206>`_.
+- Klemm, Christian & Vennemann, Peter (2021): "**Modeling and optimization of multi-energy systems in mixed-use districts: A review of existing methods and approaches**". *Renewable and Sustainable Energy Reviews*, 135, 110206, `https://doi.org/10.1016/j.rser.2020.110206 <https://doi.org/10.1016/j.rser.2020.110206>`_.
 
 
 Theses
