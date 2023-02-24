@@ -80,27 +80,34 @@ def dt_input_sidebar():
             step=1000)
 
         # input value for ground coupled heat pump
-        input_values_dict["iput_gchp"] = st.number_input(
+        input_values_dict["input_gchp"] = st.number_input(
             label="Heat pump in kW",
             min_value=0,
             max_value=5000,
             step=1000)
 
-        # input value for central thermal storage
-        input_values_dict["input_cts"] = st.number_input(
-            label="Thermal storage in kWh",
+        # # input value for central thermal storage
+        # input_values_dict["input_cts"] = st.number_input(
+        #     label="Thermal storage (central) in kWh",
+        #     min_value=0,
+        #     max_value=10000,
+        #     step=1000)
+
+        # input value for decentral thermal storage
+        input_values_dict["input_dcts"] = st.number_input(
+            label="Thermal storage (decentral) in kWh",
             min_value=0,
             max_value=10000,
             step=1000)
 
         # bool if DH network should be active
         input_dh = st.checkbox(
-            label="Distric Heating Network")
+            label="District Heating Network")
         # 1 if True, 0 is False to fit with the model defintion sheet
         if input_dh:
-            input_values_dict["input_dh"] = "1"
+            input_values_dict["input_dh"] = 1
         else:
-            input_values_dict["input_dh"] = "0"
+            input_values_dict["input_dh"] = 0
 
         input_values_dict["input_criterion"] = st.select_slider(
             label="Optimization criterion",
@@ -128,8 +135,8 @@ def execute_sesmg_demo(demo_file, demo_results):
     sesmg_main(
         scenario_file=demo_file,
         result_path=demo_results,
-        num_threads=2,
-        timeseries_prep=["none", "none", "none", "none", 0],
+        num_threads=1,
+        timeseries_prep=["None", "None", "None", "None", 0],
         graph=False,
         criterion_switch=False,
         xlsx_results=False,
@@ -138,6 +145,10 @@ def execute_sesmg_demo(demo_file, demo_results):
         cluster_dh=False,
         district_heating_path=""
     )
+
+    # reset st.session_state["state_submitted_demo_run"] to stop rerun when
+    # switching to Demo Tool multipage again
+    st.session_state["state_submitted_demo_run"] = "not done"
 
 
 def create_demo_scenario(mode):
@@ -163,10 +174,6 @@ def create_demo_scenario(mode):
         + mode_dict.get(mode)[0],
         data_only=True)
 
-    st.write(xfile)
-    st.write(mainpath_pf)
-    st.write(mainpath_mf)
-
     # PHOTOVOLTAICS
     sheet = xfile["sources"]
     sheet["I3"] = input_values_dict["input_pv"]
@@ -190,17 +197,17 @@ def create_demo_scenario(mode):
     # sheet["M6"] = input_values_dict["ASHP"]
     # GCHP
     sheet = xfile["transformers"]
-    sheet["L5"] = input_values_dict["iput_gchp"]
-    sheet["M5"] = input_values_dict["iput_gchp"]
-    # THERMAL STORAGE
-    sheet = xfile["storages"]
-    sheet["C4"] = input_values_dict["input_dh"]
-    sheet["N4"] = input_values_dict["input_cts"]
-    sheet["O4"] = input_values_dict["input_cts"]
+    sheet["L5"] = input_values_dict["input_gchp"]
+    sheet["M5"] = input_values_dict["input_gchp"]
     # THERMAL STORAGE
     # sheet = xfile["storages"]
-    # sheet["N5"] = input_values_dict["thermal storage (decentralized)"]
-    # sheet["O5"] = input_values_dict["thermal storage (decentralized)"]
+    # sheet["C4"] = input_values_dict["input_dh"]
+    # sheet["N4"] = input_values_dict["input_cts"]
+    # sheet["O4"] = input_values_dict["input_cts"]
+    # THERMAL STORAGE
+    sheet = xfile["storages"]
+    sheet["N5"] = input_values_dict["input_dcts"]
+    sheet["O5"] = input_values_dict["input_dcts"]
     # District Heating
     sheet = xfile["links"]
     sheet["C3"] = input_values_dict["input_dh"]
@@ -232,8 +239,6 @@ def show_demo_run_results(mode):
         mainpath_mf
         + mode_dict.get(mode)[1]
         + r"/summary.csv")
-
-    st.write(df_summary)
 
     summary_headers = list(df_summary)
     # Display and import simulated cost values from summary dataframe
@@ -300,7 +305,7 @@ def demo_parameters_page():
         ["Thermal Storage (decentral)", "49 000 €/MWh",
          "604g/(kWh * a) (invest)", "20 a", "max. 10 MWh", "3 % loss /d"],
         ["District Heating", "86 000 000 €",
-         "????", "40 a", "bianry", "15 % loss"],
+         "????", "40 a", "binary", "15 % loss"],
         # ["HEATPUMP", "22 ct/kWh", "366 g/kWh"],
         # ["Air Source Heat Pump", "1 318 000 €/MW", "12g/kWh", "18 a"],
     ]
