@@ -152,23 +152,21 @@ The results differ depending on whether you used only one optimization criterion
 
 a. Single-criteria optimization
 '''''''''''''''''''''''''''''''
+In a single-criteria optimization, the costs, emissions, and energy demands of the neighborhood are displayed. In addition, you can view the system graph and all building-specific load profiles via the interactive results.
+
 .. figure:: ../docs/images/manual/GUI/gui_result.png
    :width: 50 %
    :alt: GUI
    :align: center
 
-
-*Description coming soon*
-
-b. Multi-critertia optimization
+b. Multi-criteria optimization
 '''''''''''''''''''''''''''''''
+In multi-criteria optimization, several scenarios are calculated. For more information take a look at the method: `Modeling Method <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.02.00_multi_criteria_optimization.html>`_. For each scenario, the results described for a single-criteria optimization can be displayed by selecting the reduction of the scenario (see (1) figure below). In addition, a Pareto diagram and energy amount diagrams are displayed (see (2) figure below).
+
 .. figure:: ../docs/images/manual/GUI/gui_result_pareto.png
    :width: 50 %
    :alt: GUI
    :align: center
-
-*Description coming soon*
-
 
 2. Result processing of existing results
 """"""""""""""""""""""""""""""
