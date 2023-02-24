@@ -11,10 +11,6 @@
 
 ## Software Description
 
-The **SESMG** provides a spreadsheet interface to the Open Energy Modeling Framework (oemof), allowing modeling and optimization of urban energy systems based a spreadsheet.
-
-**SESMG** makes it easier to create oemof-based energy system models.
-
 The **SESMG** is an energy system model generator with the focus on the optimization of urban energy systems, which can, however, also be used for the modeling of other types of energy systems. The **SESMG** is based on the 'Open Energy Modelling Framework' (oemof) and comes, compared to other modeling tools with advantages regarding user-friendliness, as
  
  * the model definition is based on spreadsheets, therefore no programming skills are required for the entire modeling process,
