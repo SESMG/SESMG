@@ -174,19 +174,35 @@ The difference is that you need to select a folder that you want to analyze.
 Urban District Upscaling
 ^^^^^^^^^^^^^^^^^^^^^
 
-The following steps must be performed here:
+The Upscaling-Tool simplifies the creation of the model definition. For more information take a look at the method: `Modeling Method <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.04.00_urban_district_upscaling.html>`_.  
 
-	1. Uploading the upscaling sheet
-	2. Uploading the standard parameter sheet
-	3. Naming the model definition
-	4. Starting the Upscaling-Tool
-
-The model definition is created automatically and can be viewed on the right side. If you agree with the model definition, it can be downloaded. The model definition serves as a basis for the optimization process and can be used on the Main Application.
 
 .. figure:: ../docs/images/manual/GUI/gui_us_tool.png
    :width: 20 %
    :alt: GUI
    :align: center
+
+
+1. Uploading the upscaling sheet
+""""""""""""""""""""""""""""""
+Upload your *upscaling_sheet.xlsx* which contains all building-specific parameters.
+
+2. Uploading the standard parameter sheet
+""""""""""""""""""""""""""""""
+Upload your *standard_parameter.xlsx* which contains all technological parameters.
+
+3. Naming the model definition
+""""""""""""""""""""""""""""""
+You can choose any name for your model definition.
+
+4. Starting the Upscaling-Tool
+""""""""""""""""""""""""""""""
+The model definition is created automatically and can be viewed on the right side.
+
+5. Downloading the xlsx-file
+""""""""""""""""""""""""""""""
+ If you agree with the model definition, it can be downloaded. The model definition serves as a basis for the optimization process and can be used on the Main Application.
+
 
 
 
