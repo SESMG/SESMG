@@ -375,14 +375,13 @@ def main_application_sesmg():
                 # Fileuploader not able to print file path
                 # Upload DH Precalc File
                 district_heating_precalc_path = st.text_input(
-                        "Type in path to your District Heating File input file.")
+                    "Type in path to your District Heating File input file.")
 
             GUI_main_dict["input_criterion_switch"] = \
                 st.checkbox(
                     label="Switch Criteria",
                     value=settings_cache_dict_reload["input_criterion_switch"],
                     help=GUI_helper["main_cb_criterion_switch"])
-
 
         with tab_bar[1]:
             # Functions to input the modeling parameters.
@@ -546,6 +545,7 @@ def main_application_sesmg():
 
                 st.header('Modeling completed!')
 
+                # switch page after the model run completed
                 nav_page(page_name="Result_Processing", timeout_secs=3)
 
             # Starting a pareto modeul rum
@@ -558,7 +558,8 @@ def main_application_sesmg():
                     # run_pareto retuns res path
                     GUI_main_dict["res_path"] = \
                         run_pareto(
-                            limits=[i/100 for i in GUI_main_dict["input_pareto_points"]],
+                            limits=[i/100 for i in
+                                    GUI_main_dict["input_pareto_points"]],
                             model_definition=scenario_input_sheet_path,
                             GUI_main_dict=GUI_main_dict)
 
@@ -578,6 +579,7 @@ def main_application_sesmg():
 
                 st.header('Modeling completed!')
 
+                # switch page after the model run completed
                 nav_page(page_name="Result_Processing", timeout_secs=3)
 
             else:
