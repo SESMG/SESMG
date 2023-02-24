@@ -1,4 +1,4 @@
-Multi-Criteria Optimization
+Multi-Objective Optimization
 ****************************
 
 Constraint Costs
