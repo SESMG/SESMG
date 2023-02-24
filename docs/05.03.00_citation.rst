@@ -11,11 +11,11 @@ Bibtex:
 
     @software{
         Klemm_SESMG_2022, 
-        author = {Klemm, Christian and Becker, Gregor and Budde, Janik and Tockloth, Jan and Vennemann, Peter},
+        author = {Klemm, Christian and Becker, Gregor and Budde, Janik and Tockloth, Jan N. and Vennemann, Peter},
         doi = {10.5281/zenodo.5412026},
         month = {8},
         title = {{SESMG}},
-        url = {https://github.com/chrklemm/SESMG},
+        url = {https://github.com/SESMG/SESMG},
         version = {0.3.0},
         year = {2022}
     }
