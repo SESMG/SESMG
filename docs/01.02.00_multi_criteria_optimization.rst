@@ -4,7 +4,7 @@ Multi-Criteria Optimization
 Constraint Costs
 ================
 
-The multi-criteria optimization approach considered in the SESMG may include up to three optimization criteria:
+The multi-objective optimization approach considered in the SESMG may include up to three optimization criteria:
 
 - The **primary optimization criterion** corresponds to the the `investment costs <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html#investment>`_ of an energy system. Beside financial costs any other linearly scalable target value can be applied (e.g., ghg emissions).
 
@@ -18,12 +18,12 @@ Criterion Switch
 By using the criterion-switch function the primary optimization criterion and secondary optimization criterion are switched for the entire model definition. In this way, scenarios optimized according to different target values can be compared with each other. The tertiary optimization criterion is not affected by the criterion switch function.
 
 
-Epsilon-Constraint-Optimization
+Pareto-Optimization
 =================================
 
 By using the Pareto-optimization, the epsilon-constraint-optimization method is applied to vary the weighting the of the applied optimization criteria are varied. The tertiary optimization criterion is not affected automatically, but can, however, be manually adapted by the user.
 
-In this multi-criteria approach, at first, the boundary scenarious of the solution space are determined, by identifying those scenarios, which allow the (i) minimization of the primary optimization criterion and (ii) minimization of the secondary optimization criterion. Then, starting from scenario (i), the allowed value of the secondary optimization criterion is step wise decreased until scenario (ii) is reached. The intervals at which the limit value is reduced can be defined by the user. If we combine the scenarios, we obtain a Pareto front of optimal scenarios according to different weights of the criteria.
+In this multi-objective approach, at first, the boundary scenarious of the solution space are determined, by identifying those scenarios, which allow the (i) minimization of the primary optimization criterion and (ii) minimization of the secondary optimization criterion. Then, starting from scenario (i), the allowed value of the secondary optimization criterion is step wise decreased until scenario (ii) is reached. The intervals at which the limit value is reduced can be defined by the user. If we combine the scenarios, we obtain a Pareto front of optimal scenarios according to different weights of the criteria.
 
 .. figure:: ../docs/images/epsilon_constraint_method.png
    :width: 100 %
