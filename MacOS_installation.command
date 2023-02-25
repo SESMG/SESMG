@@ -32,5 +32,5 @@ echo Installation completed
 echo Starting SESMG
 echo ----------------------
 
-bin/python$PYVERSION start_script.py
+bin/python$PYVERSION -m streamlit run "program_files/GUI_st/1_Main_Application.py"
 osascript -e 'tell application "Terminal" to quit'

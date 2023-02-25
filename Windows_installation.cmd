@@ -33,4 +33,5 @@ move "%~dp0 "/Run_SESMG_for_Linux.sh "%~dp0 "/files_deviant_operating_system\Run
 @echo Starting SESMG
 @echo ######################
 cd ..
-Scripts\python.exe start_script.py
+Scripts\python.exe -m streamlit run "program_files/GUI_st/1_Main_Application.py"
+
