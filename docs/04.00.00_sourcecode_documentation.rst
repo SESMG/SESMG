@@ -41,10 +41,27 @@ The software product "SESMG" can be divided into the following 4 process phases:
     - `US-Tool Transformer <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Transformer>`_
 
 
-**Preprocessing**
+**Preprocessing**:
 
-    TEXTTEXTTEXT
+    In the "Preprocessing" process step, the characteristic values entered by the
+    user in the spreadsheet are used to create the energy system model based on
+    graph theory. This is then transferred to the "Processing" process step.
 
+    - `Preprocessing create_energy_system <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.create_energy_system>`_
+    - `Preprocessing data_preparation <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.data_preparation>`_
+    - `Preprocessing import_weather_data <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.import_weather_data>`_
+    - `Preprocessing pareto_optimization <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.pareto_optimization>`_
+    - `Preprocessing pre_model_analysis <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.pre_model_analysis>`_
+    - `Preprocessing Spreadsheet_Energy_System_Model_Generator <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator>`_
+    - `Preprocessing Bus <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.components.Bus>`_
+    - `Preprocessing district_heating <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.components.district_heating>`_
+    - `Preprocessing district_heating_calculations <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.components.district_heating_calculations>`_
+    - `Preprocessing district_heating_clustering <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.components.district_heating_clustering>`_
+    - `Preprocessing Link <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.components.Link>`_
+    - `Preprocessing Sink <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.components.Sink>`_
+    - `Preprocessing Source <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.components.Source>`_
+    - `Preprocessing Storage <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.components.Storage>`_
+    - `Preprocessing Transformer <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.components.Transformer>`_
 
 Graphical User Interface (GUI)
 --------------------------------------------
