@@ -242,16 +242,48 @@ def show_demo_run_results(mode):
         + r"/summary.csv")
 
     summary_headers = list(df_summary)
+
+    # change dimension of the values to Mio.€/a and t/a
+    annual_costs = float(round(
+        df_summary[summary_headers[3]] / 1000000,
+        1))
+
+    annual_emissions = float(round(
+        df_summary[summary_headers[4]] / 1000000,
+        1))
+
+    # calculate relative change refered to the status quo
+# TODO Update values!
+    # costs in Mio.€/a
+    stat_quo_costs = 10.6
+    # emissions in t/a
+    stat_quo_emissions = 17200
+    # relative values as str
+    rel_result_costs = \
+        str(round((annual_costs-stat_quo_costs) / stat_quo_costs * 100, 2)) \
+        + " %"
+    rel_result_emissions = \
+        str(round(
+            (annual_emissions-stat_quo_emissions) /
+            stat_quo_emissions * 100, 2)) \
+        + " %"
+
     # Display and import simulated cost values from summary dataframe
-    cost1, cost2, cost3, cost4 = st.columns(4)
-    cost1.metric(label=summary_headers[3], value=round(
-        df_summary[summary_headers[3]], 1))
-    cost2.metric(label=summary_headers[4], value=round(
-        df_summary[summary_headers[4]], 1))
-    cost3.metric(label=summary_headers[5], value=round(
-        df_summary[summary_headers[5]], 1))
-    cost4.metric(label=summary_headers[6], value=round(
-        df_summary[summary_headers[6]], 1))
+    st.subheader("Your solution:")
+    # create metrics
+    cost1, cost2 = st.columns(2)
+    cost1.metric(
+        label="Annual Costs in Mio. €",
+        value=annual_costs,
+        delta=rel_result_costs,
+        delta_color="inverse"
+        )
+    cost2.metric(
+        label="Annual Costs in t",
+        value=annual_emissions,
+        delta=rel_result_emissions,
+        delta_color="inverse"
+        )
 
 
 def demo_start_page():
@@ -259,14 +291,24 @@ def demo_start_page():
         Start page text for the demo tool.
     """
 
-    st.header("Spreadsheet Energy System Model Generator (SESMG)")
-    st.subheader("Welcome using the Demo Tool!")
-    st.write("DEMO-Energy System:")
+    st.header("Welcome using the Demo Tool of the Spreadsheet Energy System \
+              Model Generator (SESMG)")
+    st.subheader("Demo Energy System:")
     st.write("In this DEMO the financial costs and carbon dioxide emissions \
              of a residential area are simulated. For improvement, the \
-             technologies listed below are \n available with the parameters \
+             technologies listed below are available with the parameters \
              below. The simulated scenarios can be compared with the status \
              quo, the financial minimum and the emission minimum.")
+    st.write("The urban area of a fictitious city to be optimized comprises \
+             15 000 inhabitants. The annual heat demand of 52 000 MWh/a is \
+             currently provided by 24 MW gas heating systems. Annually, \
+             14 000 MWh of electricity are purchased via the electricity \
+             wholesale market.")
+    st.write("Which of the technologies on the left would you incorporate and \
+             how would you dimension them into the energy system to minimize \
+             the current cost of €10.6 million/s and/or CO2 emissions of \
+             17 200 t/a?")
+    st.write("Type in your solution on the left side and get it simulated!")
 
 
 def demo_parameters_page():
