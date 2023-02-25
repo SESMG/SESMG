@@ -19,14 +19,10 @@ from program_files.GUI_st.GUI_st_global_functions import \
 # creating global model run mode dict
 mode_dict = {
     "monetary": [
-        "demo_model_definition.xlsx",
-        r"/results/demo",
         "Total System Costs",
         "Total Constraint Costs",
     ],
     "emissions": [
-        "demo_model_definition.xlsx",
-        r"/results/demo",
         "Total Constraint Costs",
         "Total System Costs",
     ],
@@ -40,6 +36,8 @@ mainpath_mf = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.dirname(__file__))))
 # define main path to SESMG program files folder
 mainpath_pf = os.path.join(mainpath_mf, "program_files")
+# define main path to SESMG results/demo folder
+mainpath_rdf = os.path.join(mainpath_mf, "results", "demo")
 
 # setting initial session state for mdoel run
 if "state_submitted_demo_run" not in st.session_state:
@@ -138,6 +136,8 @@ def execute_sesmg_demo(demo_file, demo_results, mode):
         :type demo_file:
         :param demo_results:
         :type demo_results:
+        :param mode: optimization criterion which is chosen in the GUI
+        :type mode: str 
     """
     
     # activate criterion switch if run is optimized to its emissions
@@ -176,8 +176,7 @@ def create_demo_model_definition(mode):
 
     xfile = openpyxl.load_workbook(
         mainpath_pf
-        + "/demo_tool/v0.4.0_demo_model_definition/"
-        + mode_dict.get(mode)[0],
+        + "/demo_tool/v0.4.0_demo_model_definition/demo_model_definition.xlsx",
         data_only=True)
 
     # PHOTOVOLTAICS
@@ -185,56 +184,50 @@ def create_demo_model_definition(mode):
     sheet["I3"] = input_values_dict["input_pv"]
     sheet["J3"] = input_values_dict["input_pv"]
     # SOLAR THERMAL
-    sheet = xfile["sources"]
     sheet["I5"] = input_values_dict["input_st"]
     sheet["J5"] = input_values_dict["input_st"]
     # BATTERY
     sheet = xfile["storages"]
     sheet["N3"] = input_values_dict["input_battery"]
     sheet["O3"] = input_values_dict["input_battery"]
+    # THERMAL STORAGE
+    sheet["N5"] = input_values_dict["input_dcts"]
+    sheet["O5"] = input_values_dict["input_dcts"]
     # CHP
     sheet = xfile["transformers"]
     sheet["C4"] = input_values_dict["input_dh"]
     sheet["L4"] = input_values_dict["input_chp"]
     sheet["M4"] = input_values_dict["input_chp"]
+    # GCHP
+    sheet["L5"] = input_values_dict["input_gchp"]
+    sheet["M5"] = input_values_dict["input_gchp"]
     # ASHP
     # sheet = xfile["transformers"]
     # sheet["L6"] = input_values_dict["ASHP"]
     # sheet["M6"] = input_values_dict["ASHP"]
-    # GCHP
-    sheet = xfile["transformers"]
-    sheet["L5"] = input_values_dict["input_gchp"]
-    sheet["M5"] = input_values_dict["input_gchp"]
     # THERMAL STORAGE
     # sheet = xfile["storages"]
     # sheet["C4"] = input_values_dict["input_dh"]
     # sheet["N4"] = input_values_dict["input_cts"]
     # sheet["O4"] = input_values_dict["input_cts"]
-    # THERMAL STORAGE
-    sheet = xfile["storages"]
-    sheet["N5"] = input_values_dict["input_dcts"]
-    sheet["O5"] = input_values_dict["input_dcts"]
+
     # District Heating
     sheet = xfile["links"]
     sheet["C3"] = input_values_dict["input_dh"]
 
     # check if /demo exists in results direcotry
-    if os.path.join(mainpath_mf, "results", "demo") \
-        not in glob.glob(os.path.join(mainpath_mf, "results", "*")):
+    if mainpath_rdf \
+            not in glob.glob(os.path.join(mainpath_mf, "results", "*")):
         # create /results/demo directory
-        os.mkdir(path=os.path.join(mainpath_mf, "results", "demo"))
+        os.mkdir(path=os.path.join(mainpath_rdf))
         
     # safe motified xlsx file in the results/demo folder
-    xfile.save(
-        mainpath_mf
-        + mode_dict.get(mode)[1]
-        + "/model_definition.xlsx")
+    xfile.save(os.path.join(mainpath_rdf, "model_definition.xlsx"))
 
     # run sesmg DEMO version
     execute_sesmg_demo(
-        demo_file=mainpath_mf + mode_dict.get(mode)[1]
-        + r"/model_definition.xlsx",
-        demo_results=mainpath_mf + mode_dict.get(mode)[1],
+        demo_file=mainpath_rdf + r"/model_definition.xlsx",
+        demo_results=mainpath_rdf,
         mode=input_values_dict["input_criterion"])
 
 
@@ -245,16 +238,12 @@ def show_demo_run_results(mode):
 
     # load summary.csv from results/demo /emissions or /monetary folder
     # which was replaced with the model run above
-    df_summary = pd.read_csv(
-        mainpath_mf
-        + mode_dict.get(mode)[1]
-        + r"/summary.csv")
-    summary_headers = list(df_summary)
+    df_summary = pd.read_csv(mainpath_rdf + r"/summary.csv")
 
     # change dimension of the values to Mio.€/a and t/a
-    annual_costs = float(df_summary[summary_headers[3]] / 1000000)
+    annual_costs = float(df_summary[mode_dict.get(mode)[0]] / 1000000)
 
-    annual_emissions = float(df_summary[summary_headers[4]] / 1000000)
+    annual_emissions = float(df_summary[mode_dict.get(mode)[1]] / 1000000)
 
     # calculate relative change refered to the status quo
 # TODO Update values!
