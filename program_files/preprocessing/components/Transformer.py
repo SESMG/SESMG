@@ -44,10 +44,8 @@ class Transformers:
 
     def get_primary_output_data(self, tf, max_invest=None):
         """ """
-        if max_invest:
-            max_invest = max_invest
-        else:
-            max_invest = tf["max. investment capacity"]
+        if max_invest and max_invest < tf["max. investment capacity"]:
+            tf["max. investment capacity"] = max_invest
         return {
             "outputs": {
                 self.busd[tf["output"]]: Flow(
@@ -56,7 +54,7 @@ class Transformers:
                     investment=Investment(
                         ep_costs=tf["periodical costs"],
                         minimum=tf["min. investment capacity"],
-                        maximum=max_invest,
+                        maximum=tf["max. investment capacity"],
                         periodical_constraint_costs=tf["periodical constraint costs"],
                         existing=tf["existing capacity"],
                         nonconvex=True if tf["non-convex investment"] == 1 else False,

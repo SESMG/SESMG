@@ -18,14 +18,8 @@ from program_files.GUI_st.GUI_st_global_functions import \
 
 # creating global model run mode dict
 mode_dict = {
-    "monetary": [
-        "Total System Costs",
-        "Total Constraint Costs",
-    ],
-    "emissions": [
-        "Total Constraint Costs",
-        "Total System Costs",
-    ],
+    "monetary": ["Total System Costs", "Total Constraint Costs"],
+    "emissions": ["Total Constraint Costs", "Total System Costs"],
 }
 
 # creating global input values dict
