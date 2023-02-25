@@ -1,7 +1,7 @@
 """
-    @author: jtock - jan.tockloth@fh-muenster.de
-    @author: GregorBecker - gregor.becker@fh-muenster.de
-    @authos: chrklemm - christian.klemm@fh-muenster.de
+    jtock - jan.tockloth@fh-muenster.de
+    GregorBecker - gregor.becker@fh-muenster.de
+    chrklemm - christian.klemm@fh-muenster.de
 """
 
 import os
@@ -60,7 +60,7 @@ def dt_input_sidebar():
 
         # input value for solar thermal
         input_values_dict["input_st"] = st.number_input(
-            label="Solar thermal in kW",
+            label="Solar Thermal in kW",
             min_value=0,
             max_value=27700,
             step=1000)
@@ -74,14 +74,14 @@ def dt_input_sidebar():
 
         # input value for combined heat and power plant in kW(electric)
         input_values_dict["input_chp"] = st.number_input(
-            label="Combined heat and power plant in kW(el)",
+            label="Combined Heat and Power Plant in kW(el)",
             min_value=0,
             max_value=1000000,
             step=1000)
 
         # input value for ground coupled heat pump
         input_values_dict["input_gchp"] = st.number_input(
-            label="Heat pump in kW",
+            label="Heat Pump in kW",
             min_value=0,
             max_value=5000,
             step=1000)
@@ -95,7 +95,7 @@ def dt_input_sidebar():
 
         # input value for decentral thermal storage
         input_values_dict["input_dcts"] = st.number_input(
-            label="Thermal storage (decentral) in kWh",
+            label="Thermal Storage (decentral) in kWh",
             min_value=0,
             max_value=10000,
             step=1000)
@@ -110,7 +110,7 @@ def dt_input_sidebar():
             input_values_dict["input_dh"] = 0
 
         input_values_dict["input_criterion"] = st.select_slider(
-            label="Optimization criterion",
+            label="Optimization Criterion",
             options=("monetary", "emissions"))
 
         st.form_submit_button(label="Start Simulation",
@@ -242,22 +242,19 @@ def show_demo_run_results(mode):
         + r"/summary.csv")
 
     summary_headers = list(df_summary)
+    st.write(df_summary)
 
     # change dimension of the values to Mio.€/a and t/a
-    annual_costs = float(round(
-        df_summary[summary_headers[3]] / 1000000,
-        1))
+    annual_costs = float(df_summary[summary_headers[3]] / 1000000)
 
-    annual_emissions = float(round(
-        df_summary[summary_headers[4]] / 1000000,
-        1))
+    annual_emissions = float(df_summary[summary_headers[4]] / 1000000)
 
     # calculate relative change refered to the status quo
 # TODO Update values!
     # costs in Mio.€/a
-    stat_quo_costs = 10.6
+    stat_quo_costs = 10.70828373
     # emissions in t/a
-    stat_quo_emissions = 17200
+    stat_quo_emissions = 17221.43690357
     # relative values as str
     rel_result_costs = \
         str(round((annual_costs-stat_quo_costs) / stat_quo_costs * 100, 2)) \
@@ -273,14 +270,14 @@ def show_demo_run_results(mode):
     # create metrics
     cost1, cost2 = st.columns(2)
     cost1.metric(
-        label="Annual Costs in Mio. €",
-        value=annual_costs,
+        label="Annual Costs in Mil. €",
+        value=round(annual_costs, 2),
         delta=rel_result_costs,
         delta_color="inverse"
         )
     cost2.metric(
         label="Annual Costs in t",
-        value=annual_emissions,
+        value=round(annual_emissions, 2),
         delta=rel_result_emissions,
         delta_color="inverse"
         )
@@ -306,7 +303,7 @@ def demo_start_page():
              wholesale market.")
     st.write("Which of the technologies on the left would you incorporate and \
              how would you dimension them into the energy system to minimize \
-             the current cost of €10.6 million/s and/or CO2 emissions of \
+             the current cost of 10.7 Mil. €/a and/or CO2 emissions of \
              17 200 t/a?")
     st.write("Type in your solution on the left side and get it simulated!")
 
@@ -340,7 +337,8 @@ def demo_parameters_page():
         ["Gas Heating", "1 005 000 €/MW",
          "232g/kWh", "18 a", "endless", "0.92 %"],
         ["Combindes Heat and Power Plant", "760 000 €/MW(el.)",
-         "308 g/kWh(el), 265 g/kWh(th.)", "20 a", "endless", ""],
+         "308 g/kWh(el), 265 g/kWh(th.)", "20 a", "endless",
+         "?? %(el.), ?? %(th.)"],
         ["Ground-coupled Heatpump", "1 444 000 €/MW",
          "8 g/kWh", "20 a", "max. 5 MW", ""],
         # ["Thermal Storage", "35 000 €/MWh",

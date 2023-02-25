@@ -1,7 +1,7 @@
 """
-@author: Janik257
-@author: jtock - jan.tockloth@fh-muenster.de
-@author: GregorBecker - gregor.becker@fh-muenster.de
+    Janik257
+    jtock - jan.tockloth@fh-muenster.de
+    GregorBecker - gregor.becker@fh-muenster.de
 """
 
 import os
