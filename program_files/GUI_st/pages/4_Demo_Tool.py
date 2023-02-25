@@ -220,8 +220,7 @@ def create_demo_model_definition(mode):
 
     # check if /demo exists in results direcotry
     if os.path.join(mainpath_mf, "results", "demo") \
-        not in glob.glob(os.path.join(os.path.dirname(os.path.dirname(
-            os.path.dirname(os.path.dirname(__file__)))), "results", "*")):
+        not in glob.glob(os.path.join(mainpath_mf, "results", "*")):
         # create /results/demo directory
         os.mkdir(path=os.path.join(mainpath_mf, "results", "demo"))
         
@@ -305,11 +304,10 @@ def demo_start_page_graph():
     """
     # import demo tool graph
     image = Image.open(
-        os.path.join(os.path.dirname(os.path.dirname(
-            os.path.dirname(os.path.abspath(__file__)))),
-            "demo_tool",
-            "v0.4.0_demo_model_definition",
-            "demo_system_graph.png"))
+        os.path.join(mainpath_pf,
+                     "demo_tool",
+                     "v0.4.0_demo_model_definition",
+                     "demo_system_graph.png"))
 
     # show image
     st.image(image)
