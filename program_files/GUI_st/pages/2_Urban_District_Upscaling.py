@@ -84,7 +84,7 @@ def standard_page():
     
     """
     read_markdown_document(
-        document_path="us_tool.md",
+        document_path="docs/GUI_texts/us_tool.md",
         folder_path=f'{"docs/images/manual/UpscalingTool/*"}')
 
 

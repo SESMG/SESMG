@@ -107,7 +107,7 @@ def create_central_heat_component(
     # power to gas system
     if comp_type == "power_to_gas":
         sheets = create_power_to_gas_system(
-            label=label, bus=bus, sheets=sheets,
+            label=label, output=bus, sheets=sheets,
             standard_parameters=standard_parameters)
 
     return sheets

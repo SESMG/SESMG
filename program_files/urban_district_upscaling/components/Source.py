@@ -433,12 +433,12 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
     # Define PV Standard-Parameters
     pv_standard_param, pv_standard_keys = read_standard_parameters(
         name="fixed photovoltaic source",
-        param_type="3_sources",
+        parameter_type="3_sources",
         index="source_type",
         standard_parameters=standard_parameters)
     st_standard_param, st_standard_keys = read_standard_parameters(
         name="solar_thermal_collector",
-        param_type="3_sources",
+        parameter_type="3_sources",
         index="source_type",
         standard_parameters=standard_parameters)
     

@@ -1,6 +1,6 @@
 """
-    @author: jtock - jan.tockloth@fh-muenster.de
-    @author: GregorBecker - gregor.becker@fh-muenster.de
+    jtock - jan.tockloth@fh-muenster.de
+    GregorBecker - gregor.becker@fh-muenster.de
 """
 
 import json
@@ -8,21 +8,23 @@ import glob
 import os
 import streamlit as st
 
-from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator\
+from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main, sesmg_main_including_premodel
 
 
 def st_settings_global():
     """
-    Function to define settings for the Streamlit GUI.
-
+        Function to define settings for the Streamlit GUI.
     """
+    menu_items = {
+        'Get Help': 'https://spreadsheet-energy-system-model-generator.'
+                    'readthedocs.io/en/latest/',
+        'Report a Bug': 'https://github.com/SESMG/SESMG/issues'}
     # Global page settings
     st.set_page_config(
         page_title=('SESMG'),
         layout='wide',
-        menu_items={'Get Help': 'https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/',
-                    'Report a Bug': 'https://github.com/SESMG/SESMG/issues'})
+        menu_items=menu_items)
 
 
 def import_GUI_input_values_json(json_file_path: str) -> dict:
@@ -48,7 +50,7 @@ def import_GUI_input_values_json(json_file_path: str) -> dict:
 
 def safe_GUI_input_values(input_values_dict: dict, json_file_path: str):
     """
-        Function so safe a dict as json.
+        Function to safe a dict as json.
 
         :param input_values_dict: name of the dict of input values \
             for specific GUI page
@@ -63,15 +65,10 @@ def safe_GUI_input_values(input_values_dict: dict, json_file_path: str):
 
 def clear_GUI_main_settings(json_file_path: str):
     """
-        Function to clear the  GUI settings dict, reset it to the initial
+        Function to clear the GUI settings dict, reset it to the initial
         values and safe in json path as variables.
 
-        # :param result_path: internal path where the latest results were safed
-        # :type result_path: str
-        # :param premodeling_result_path: internal path where the latest \
-        #     premodelling results were safed
-        # :type premodeling_result_path: str
-        :param json_file_path: internal path where json should be safed
+        :param json_file_path: internal path where json should be saved
         :type json_file_path: str
     """
     # creating the dict of GUI input values to be safed as json
@@ -167,9 +164,25 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
         )
 
 
-def read_markdown_document(document_path, folder_path, main_page=True):
+def read_markdown_document(document_path: str, folder_path: str,
+                           main_page=True):
     """
-
+        Using this method, texts stored in the repository in the form
+        of markdown files can be used as the content of a streamlit
+        page. To do this, the markdown file and the images it contains
+        are loaded and then displayed in streamlit format.
+        
+        :param document_path: path where the markdown file which will \
+            be displayed is stored
+        :type document_path: str
+        :param folder_path: path where the images the to be displayed \
+            file contains are stored
+        :type folder_path: str
+        :param main_page: boolean which differentiates rather the \
+            method is called from the main method or not since the \
+            main page content is the Readme reduced by the \
+            installation part
+        :type main_page: bool
     """
     # Open the README.md file and read all lines
     with open(document_path, 'r', encoding="utf8") as file:

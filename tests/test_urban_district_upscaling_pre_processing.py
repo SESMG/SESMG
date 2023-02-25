@@ -28,7 +28,7 @@ def test_read_standard_parameters():
     
     standard_parameters, standard_keys = read_standard_parameters(
         name="building_heat_bus",
-        param_type="1_buses",
+        parameter_type="1_buses",
         index="bus_type",
         standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
                                              + "/standard_parameters.xlsx")
@@ -222,7 +222,7 @@ def test_create_building_buses(test_building_buses_entry):
     
     sheets = create_building_buses_links(
         building=building,
-        central_elec_bus=True,
+        central_electricity_bus=True,
         sheets=sheets,
         standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
                                              + "/standard_parameters.xlsx"))

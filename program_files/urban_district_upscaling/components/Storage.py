@@ -220,7 +220,7 @@ def create_cluster_storage(storage_type: str, cluster: str,
     # load the storage standard parameter
     standard_param, standard_keys = read_standard_parameters(
             name="building" + storage_dict.get(storage_type)[0],
-            param_type="5_storages",
+            parameter_type="5_storages",
             index="storage_type",
             standard_parameters=standard_parameters)
     # insert standard parameters in the components dataset (dict)

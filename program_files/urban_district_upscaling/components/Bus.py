@@ -36,7 +36,7 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets: dict,
     # standard_parameters dataset
     standard_param, standard_keys = read_standard_parameters(
         name=bus_type,
-        param_type="1_buses",
+        parameter_type="1_buses",
         index="bus_type",
         standard_parameters=standard_parameters
     )
