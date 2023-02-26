@@ -17,7 +17,8 @@ sys.path.insert(1, parent)
 from program_files.GUI_st.GUI_st_global_functions import \
     clear_GUI_main_settings, safe_GUI_input_values, \
     import_GUI_input_values_json, st_settings_global, run_SESMG, \
-    read_markdown_document, create_simplification_index
+    read_markdown_document, create_simplification_index, \
+    create_cluster_simplification_index
 from program_files.preprocessing.pareto_optimization import run_pareto
 
 # settings the initial streamlit page settings
@@ -82,10 +83,14 @@ def main_start_page():
     read_markdown_document("Readme.md", f'{"docs/images/readme/*"}')
 
 
-def main_application_sesmg():
+def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
     """
         Function building the sidebar of the main application including all \
             input options and starting the processes.
+            
+        :return: - **scenario_input_sheet_path** \
+            (st.runtime.uploaded_file_manager.UploadedFile) - model defintion \
+            as a st.UploadedFile
     """
     # Creating Frame as st.form_submit_button
     with st.sidebar.form("Input Parameters"):
@@ -111,8 +116,10 @@ def main_application_sesmg():
         # Header
         st.title("Input Parameters")
 
+        # creating three tabs inside the sidebar
         tab_bar = st.tabs(["Preprocessing", "Processing", "Postprocessing"])
-
+        
+        # create tab 2 for Preprocessing
         with tab_bar[0]:
             # Functions to input the preprocessing parameters
 
@@ -224,11 +231,10 @@ def main_application_sesmg():
                                         output_dict=GUI_main_dict)
             
             # transform input_timeseries_cluster_index seperately
-            if GUI_main_dict["input_timeseries_cluster_index"] == "None":
-                GUI_main_dict["input_timeseries_cluster_index_index"] = 0
-            else:
-                GUI_main_dict["input_timeseries_cluster_index_index"] = \
-                    GUI_main_dict["input_timeseries_cluster_index"]
+            create_cluster_simplification_index(
+                input_value="input_timeseries_cluster_index",
+                input_output_dict=GUI_main_dict,
+                input_value_index="input_timeseries_cluster_index_index")
 
             # Pre-Model setting and pre-model timeseries preparation input
             # inside an expander.
@@ -328,15 +334,10 @@ def main_application_sesmg():
                 output_dict=GUI_main_dict)
             
             # transform input_timeseries_cluster_index seperately
-            if GUI_main_dict["input_premodeling_timeseries_cluster_index"] \
-                    == "None":
-                GUI_main_dict[
-                    "input_premodeling_timeseries_cluster_index_index"] \
-                    = 0
-            else:
-                GUI_main_dict[
-                    "input_premodeling_timeseries_cluster_index_index"] = \
-                    GUI_main_dict["input_premodeling_timeseries_cluster_index"]
+            create_cluster_simplification_index(
+                input_value="input_premodeling_timeseries_cluster_index",
+                input_output_dict=GUI_main_dict,
+                input_value_index="input_premodeling_timeseries_cluster_index_index")
 
             # Elements to set the pareto points.
             with st.expander("Pareto Point Options"):
@@ -347,6 +348,7 @@ def main_application_sesmg():
                     default=settings_cache_dict_reload[
                         "input_pareto_points"],
                     help=GUI_helper["main_ms_pareto_points"])
+                # sort pareto points as required to run sesmg
                 if input_pareto_points is not None:
                     input_pareto_points.sort(reverse=True)
 
@@ -378,6 +380,7 @@ def main_application_sesmg():
                     value=settings_cache_dict_reload["input_criterion_switch"],
                     help=GUI_helper["main_cb_criterion_switch"])
 
+        # create tab 2 for processing
         with tab_bar[1]:
             # Slider number of threads
             GUI_main_dict["input_num_threads"] = st.slider(
@@ -405,6 +408,7 @@ def main_application_sesmg():
             GUI_main_dict["input_solver_index"] = \
                 input_solver_dict[GUI_main_dict["input_solver"]]
 
+       # create tab 2 for postprocessing
         with tab_bar[2]:
             # Input Postprocessing Parameters
             # Functions to input the postprocessing parameters.
@@ -415,149 +419,28 @@ def main_application_sesmg():
                     label="Create xlsx-files",
                     value=settings_cache_dict_reload["input_xlsx_results"],
                     help=GUI_helper["main_cb_xlsx_results"])
+                
             GUI_main_dict["input_console_results"] = \
                 st.checkbox(
                     label="Create console-log",
                     value=settings_cache_dict_reload["input_console_results"],
                     help=GUI_helper["main_cb_console_results"])
-
-    # Starting process if "Visualize existing model results"-button is clicked
-    # if not submitted_vis_existing_results or submitted_optimization:
-    #     # Display the start page
-    if st.session_state["state_submitted_optimization"] == "not done":
-        main_start_page()
-
-    # Starting process if "Start Optimization"-button is clicked
-
-    if st.session_state["state_submitted_optimization"] == "done":
-
-        if not scenario_input_sheet_path:
-
-            # raise an error advice
-            st.error(body=GUI_helper["main_error_defintion"], icon="🚨")
-
-            # reset session state
-            st.session_state["state_submitted_optimization"] = "not done"
-
-            # start main page
-            main_start_page()
-
-        elif scenario_input_sheet_path != "":
-
-            # Creating the timeseries preperation settings list for the \
-            # main model
-            GUI_main_dict["timeseries_prep_param"] = \
-                [GUI_main_dict["input_timeseries_algorithm"],
-                 GUI_main_dict["input_timeseries_cluster_index"],
-                 GUI_main_dict["input_timeseries_criterion"],
-                 GUI_main_dict["input_timeseries_period"],
-                 0 if GUI_main_dict["input_timeseries_season"] == "None"
-                 else GUI_main_dict["input_timeseries_season"]]
-
-            # Creating the timeseries preperation settings list for the
-            # pre-model
-            GUI_main_dict["pre_model_timeseries_prep_param"] = \
-                [GUI_main_dict["input_premodeling_timeseries_algorithm"],
-                 GUI_main_dict["input_premodeling_timeseries_cluster_index"],
-                 GUI_main_dict["input_premodeling_timeseries_criterion"],
-                 GUI_main_dict["input_premodeling_timeseries_period"],
-                 0 if GUI_main_dict["input_premodeling_timeseries_season"]
-                 == "None"
-                 else GUI_main_dict["input_premodeling_timeseries_season"]]
-
-            # safe the GUI_main_dice as a chache for the next session
-            safe_GUI_input_values(input_values_dict=GUI_main_dict,
-                                  json_file_path=os.path.dirname(__file__)
-                                  + "/GUI_st_cache.json")
-
-            # Starting the waiting / processing screen
-            st.spinner(text="Modeling in Progress.")
-
-            # Starting the model run
-            if len(GUI_main_dict["input_pareto_points"]) == 0:
-
-                # create spinner info text
-                st.info(GUI_helper["main_info_spinner"], icon="ℹ️")
-
-                with st.spinner("Modeling in Progress..."):
-
-                    # Setting the path where to safe the modeling results
-                    res_folder_path = os.path.join(os.path.dirname(
-                        os.path.dirname(os.path.dirname(__file__))), 'results')
-                    GUI_main_dict["res_path"] = res_folder_path \
-                        + '/' \
-                        + scenario_input_sheet_path.name.split("/")[-1][:-5] \
-                        + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
-                    os.mkdir(GUI_main_dict["res_path"])
-                    GUI_main_dict["premodeling_res_path"] = \
-                        GUI_main_dict["res_path"] + "/pre_model_results"
-
-                    # safe path as session state for the result processing page
-                    st.session_state["state_result_path"] = \
-                        GUI_main_dict["res_path"]
-                    st.session_state["state_premodeling_res_path"] = \
-                        GUI_main_dict["premodeling_res_path"]
-
-                    # start model run
-                    run_SESMG(GUI_main_dict=GUI_main_dict,
-                              model_definition=scenario_input_sheet_path,
-                              save_path=GUI_main_dict["res_path"])
-
-                    # save GUI settings in result folder
-                    safe_GUI_input_values(
-                        input_values_dict=GUI_main_dict,
-                        json_file_path=st.session_state["state_result_path"]
-                        + "/GUI_st_run_settings.json")
-
-                    # reset session state
-                    st.session_state["state_submitted_optimization"] = \
-                        "not done"
-
-                st.header('Modeling completed!')
-
-                # switch page after the model run completed
-                nav_page(page_name="Result_Processing", timeout_secs=3)
-
-            # Starting a pareto modeul rum
-            elif len(GUI_main_dict["input_pareto_points"]) != 0:
-
-                # create spinner info text
-                st.info(GUI_helper["main_info_spinner"], icon="ℹ️")
-
-                with st.spinner("Modeling in Progress..."):
-                    # run_pareto retuns res path
-                    GUI_main_dict["res_path"] = \
-                        run_pareto(
-                            limits=[i / 100 for i in
-                                    GUI_main_dict["input_pareto_points"]],
-                            model_definition=scenario_input_sheet_path,
-                            GUI_main_dict=GUI_main_dict)
-
-                    # safe path as session state for the result processing page
-                    st.session_state["state_result_path"] = \
-                        GUI_main_dict["res_path"]
-
-                    # save GUI settings in result folder
-                    safe_GUI_input_values(
-                        input_values_dict=GUI_main_dict,
-                        json_file_path=st.session_state["state_result_path"]
-                        + "/GUI_st_run_settings.json")
-
-                    # reset session state
-                    st.session_state["state_submitted_optimization"] = \
-                        "not done"
-
-                st.header('Modeling completed!')
-
-                # switch page after the model run completed
-                nav_page(page_name="Result_Processing", timeout_secs=3)
-
-            else:
-
-                # main_output_result_overview()
-                st.spinner("Modeling in Progress...")
                 
-                
+    return scenario_input_sheet_path
+
+
+def main_error_definition():
+    """
+        Raises an streamlit internal error if model run is startet without \
+        an uploaded model definition
+    """
+    # raise an error advice
+    st.error(body=GUI_helper["main_error_defintion"], icon="🚨")
+
+    # reset session state
+    st.session_state["state_submitted_optimization"] = "not done"
+
+                                
 def main_clear_cache_sidebar():
     """
         Creating the for submit button to clear the GUI cache
@@ -586,6 +469,42 @@ def main_clear_cache_sidebar():
         st.experimental_rerun()
         
 
+def create_result_paths():
+    """
+        Create result paths and result folder. Set session.states
+
+    """
+    # Setting the path where to safe the modeling results
+    res_folder_path = os.path.join(os.path.dirname(
+        os.path.dirname(os.path.dirname(__file__))), 'results')
+    GUI_main_dict["res_path"] = res_folder_path \
+        + '/' \
+        + scenario_input_sheet_path.name.split("/")[-1][:-5] \
+        + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
+    os.mkdir(GUI_main_dict["res_path"])
+    GUI_main_dict["premodeling_res_path"] = \
+        GUI_main_dict["res_path"] + "/pre_model_results"
+    
+    # safe path as session state for the result processing page
+    st.session_state["state_result_path"] = GUI_main_dict["res_path"]
+    st.session_state["state_premodeling_res_path"] = \
+        GUI_main_dict["premodeling_res_path"]
+
+
+def save_run_settings():
+    """
+        Function to safe the GUI setting in the result folder and reset \
+            session state.
+    """
+    # save GUI settings in result folder
+    safe_GUI_input_values(
+        input_values_dict=GUI_main_dict,
+        json_file_path=st.session_state["state_result_path"]
+        + "/GUI_st_run_settings.json")
+
+    # reset session state
+    st.session_state["state_submitted_optimization"] = "not done"
+
 def change_state_submitted_optimization():
     """
         Setup session state for the optimization form-submit as an \
@@ -603,6 +522,71 @@ def change_state_submitted_clear_cache():
     st.session_state["state_submitted_optimization"] = "not done"
 
 
-# Start main page
-main_application_sesmg()
+# staring sidebar elements as standing elements
+scenario_input_sheet_path = main_input_sidebar()
 main_clear_cache_sidebar()
+
+# load the start page if modell run is not submitted
+if st.session_state["state_submitted_optimization"] == "not done":
+    main_start_page()
+
+# starting process is modell run is  submitted
+if st.session_state["state_submitted_optimization"] == "done":
+    
+    # raise error if run is started without uploading a model definition
+    if not scenario_input_sheet_path:
+        
+        # load error messsage
+        main_error_definition()
+
+    elif scenario_input_sheet_path != "":
+
+        # safe the GUI_main_dice as a chache for the next session
+        safe_GUI_input_values(input_values_dict=GUI_main_dict,
+                              json_file_path=os.path.dirname(__file__)
+                              + "/GUI_st_cache.json")
+
+        # create spinner info text
+        st.info(GUI_helper["main_info_spinner"], icon="ℹ️")
+        
+        # function to create the result pasths and store session state
+        create_result_paths()
+        
+        # Starting the model run
+        if len(GUI_main_dict["input_pareto_points"]) == 0:
+
+            with st.spinner("Modeling in Progress..."):
+
+                # start model run
+                run_SESMG(GUI_main_dict=GUI_main_dict,
+                          model_definition=scenario_input_sheet_path,
+                          save_path=GUI_main_dict["res_path"])
+
+                # save GUI settings in result folder and reset session state
+                save_run_settings()
+
+            # switch page after the model run completed
+            nav_page(page_name="Result_Processing", timeout_secs=3)
+
+        # Starting a pareto modeul rum
+        elif len(GUI_main_dict["input_pareto_points"]) != 0:
+
+            with st.spinner("Modeling in Progress..."):
+                
+                # run_pareto retuns res path
+                GUI_main_dict["res_path"] = \
+                    run_pareto(
+                        limits=[i / 100 for i in
+                                GUI_main_dict["input_pareto_points"]],
+                        model_definition=scenario_input_sheet_path,
+                        GUI_main_dict=GUI_main_dict)
+
+                # safe path as session state for the result processing page
+                st.session_state["state_result_path"] = \
+                    GUI_main_dict["res_path"]
+
+                # save GUI settings in result folder and reset session state
+                save_run_settings()
+
+            # switch page after the model run completed
+            nav_page(page_name="Result_Processing", timeout_secs=3)
