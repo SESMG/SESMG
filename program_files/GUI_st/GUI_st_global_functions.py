@@ -221,3 +221,23 @@ def read_markdown_document(document_path: str, folder_path: str,
     # Display any remaining lines in the buffer list using the st.markdown() \
     # function
     st.markdown(''.join(readme_buffer), unsafe_allow_html=True)
+
+
+def create_simplification_index(input_list: list, output_dict: dict):
+    """
+        Creates the streamlit index for timeseries simplification params \
+            as required to reload GUI elements with initial values
+            
+       :param input_list: list with lists for each simplification with three
+           columns: name of the index, list in which the index is definied
+           reguarding to the input cariable name, input variable name
+       :type input_list: list
+       :param output_dict: global defined dict to which the index eswill be
+           written in
+       :type output_dict: dict
+    """
+
+    # iteratale trough the inner lists
+    for var in input_list:
+        
+        output_dict[var[0]] = var[1][output_dict[var[2]]]

@@ -17,7 +17,7 @@ sys.path.insert(1, parent)
 from program_files.GUI_st.GUI_st_global_functions import \
     clear_GUI_main_settings, safe_GUI_input_values, \
     import_GUI_input_values_json, st_settings_global, run_SESMG, \
-    read_markdown_document
+    read_markdown_document, create_simplification_index
 from program_files.preprocessing.pareto_optimization import run_pareto
 
 # settings the initial streamlit page settings
@@ -25,6 +25,14 @@ st_settings_global()
 
 # opening the input value dict, which will be saved as a json
 GUI_main_dict = {}
+
+# Import the saved GUI settings from the last session
+settings_cache_dict_reload = import_GUI_input_values_json(
+    os.path.dirname(__file__) + "/GUI_st_cache.json")
+
+# Import GUI help comments from the comment json and safe as an dict
+GUI_helper = import_GUI_input_values_json(
+    os.path.dirname(__file__) + "/GUI_st_help_comments.json")
 
 
 def nav_page(page_name, timeout_secs=3):
@@ -79,15 +87,6 @@ def main_application_sesmg():
         Function building the sidebar of the main application including all \
             input options and starting the processes.
     """
-
-    # Import the saved GUI settings from the last session
-    settings_cache_dict_reload = import_GUI_input_values_json(
-        os.path.dirname(__file__) + "/GUI_st_cache.json")
-
-    # Import GUI help comments from the comment json and safe as an dict
-    GUI_helper = import_GUI_input_values_json(
-        os.path.dirname(__file__) + "/GUI_st_help_comments.json")
-
     # Creating Frame as st.form_submit_button
     with st.sidebar.form("Input Parameters"):
 
@@ -200,39 +199,32 @@ def main_application_sesmg():
                             index=settings_cache_dict_reload[
                                 "input_timeseries_season_index"],
                             help=GUI_helper["main_dd_timeser_season"])
+            
             # transform input values of Timeseries Simplification to an index
             # which will be safed in the GUI cache to be able to reload
-            # setting.
-            # Needs to be an index for st.selectboxes.
-            # preparing input_timeseries_algorithm for GUI cache as an
-            # streamlit
-            # input index
-            GUI_main_dict["input_timeseries_algorithm_index"] = \
-                timeseries_algorithm_dict[
-                    GUI_main_dict["input_timeseries_algorithm"]]
-            # preparing input_timeseries_cluster_index for GUI cache as an
-            # streamlit input index
+            # setting. Needs to be an index for st.selectboxes.
+            # create list for transformation from simplification input to
+            # index values
+            simpification_index_list = [
+                ["input_timeseries_algorithm_index",
+                 timeseries_algorithm_dict, "input_timeseries_algorithm"],
+                ["input_timeseries_criterion_index",
+                 timeseries_cluster_criteria_dict, "input_timeseries_criterion"],
+                ["input_timeseries_period_index",
+                 input_timeseries_period_dict, "input_timeseries_period"],
+                ["input_timeseries_season_index",
+                 input_timeseries_season_dict, "input_timeseries_season"]]
+            
+            # transform to index values and safe in the GUI_main_dict
+            create_simplification_index(input_list=simpification_index_list,
+                                        output_dict=GUI_main_dict)
+            
+            # transform input_timeseries_cluster_index seperately
             if GUI_main_dict["input_timeseries_cluster_index"] == "None":
                 GUI_main_dict["input_timeseries_cluster_index_index"] = 0
             else:
                 GUI_main_dict["input_timeseries_cluster_index_index"] = \
                     GUI_main_dict["input_timeseries_cluster_index"]
-            # preparing input_timeseries_criterion for GUI cache as an
-            # streamlit \
-            # input index
-            GUI_main_dict["input_timeseries_criterion_index"] = \
-                timeseries_cluster_criteria_dict[
-                    GUI_main_dict["input_timeseries_criterion"]]
-            # preparing input_timeseries_period for GUI cache as an streamlit
-            # input index
-            GUI_main_dict["input_timeseries_period_index"] = \
-                input_timeseries_period_dict[
-                    GUI_main_dict["input_timeseries_period"]]
-            # preparing input_timeseries_season for GUI cache as an streamlit
-            # input index
-            GUI_main_dict["input_timeseries_season_index"] = \
-                input_timeseries_season_dict[
-                    GUI_main_dict["input_timeseries_season"]]
 
             # Pre-Model setting and pre-model timeseries preparation input
             # inside an expander.
@@ -310,14 +302,28 @@ def main_application_sesmg():
             # transform input values of Timeseries Simplification to an index
             # which will be safed in the GUI cache to be able to reload
             # setting. Needs to be an index for st.selectboxes.
-            # preparing input_timeseries_algorithm for GUI cache as an
-            # streamlit
-            # input index
-            GUI_main_dict["input_premodeling_timeseries_algorithm_index"] = \
-                timeseries_algorithm_dict[
-                    GUI_main_dict["input_premodeling_timeseries_algorithm"]]
-            # preparing input_timeseries_cluster_index for GUI cache as an \
-            # streamlit input index
+            # create list for transformation from premodel simplification input
+            # to index values
+            simpification_premodel_index_list = [
+                ["input_premodeling_timeseries_algorithm_index",
+                 timeseries_algorithm_dict,
+                 "input_premodeling_timeseries_algorithm"],
+                ["input_premodeling_timeseries_criterion_index",
+                 timeseries_cluster_criteria_dict,
+                 "input_premodeling_timeseries_criterion"],
+                ["input_premodeling_timeseries_period_index",
+                 input_timeseries_period_dict,
+                 "input_premodeling_timeseries_period"],
+                ["input_premodeling_timeseries_season_index",
+                 input_timeseries_season_dict,
+                 "input_premodeling_timeseries_season"]]
+                
+            # transform to index values and safe in the GUI_main_dict
+            create_simplification_index(
+                input_list=simpification_premodel_index_list,
+                output_dict=GUI_main_dict)
+            
+            # transform input_timeseries_cluster_index seperately
             if GUI_main_dict["input_premodeling_timeseries_cluster_index"] \
                     == "None":
                 GUI_main_dict[
@@ -327,22 +333,6 @@ def main_application_sesmg():
                 GUI_main_dict[
                     "input_premodeling_timeseries_cluster_index_index"] = \
                     GUI_main_dict["input_premodeling_timeseries_cluster_index"]
-            # preparing input_timeseries_criterion for GUI cache as an
-            # streamlit\
-            # input index
-            GUI_main_dict["input_premodeling_timeseries_criterion_index"] = \
-                timeseries_cluster_criteria_dict[
-                    GUI_main_dict["input_premodeling_timeseries_criterion"]]
-            # preparing input_timeseries_period for GUI cache as an streamlit \
-            # input index
-            GUI_main_dict["input_premodeling_timeseries_period_index"] = \
-                input_timeseries_period_dict[
-                    GUI_main_dict["input_premodeling_timeseries_period"]]
-            # preparing input_timeseries_season for GUI cache as an streamlit \
-            # input index
-            GUI_main_dict["input_premodeling_timeseries_season_index"] = \
-                input_timeseries_season_dict[
-                    GUI_main_dict["input_premodeling_timeseries_season"]]
 
             # Elements to set the pareto points.
             with st.expander("Pareto Point Options"):
@@ -377,6 +367,7 @@ def main_application_sesmg():
                 district_heating_precalc_path = st.text_input(
                     "Type in path to your District Heating File input file.")
 
+            # create criterion switch
             GUI_main_dict["input_criterion_switch"] = \
                 st.checkbox(
                     label="Switch Criteria",
@@ -384,8 +375,6 @@ def main_application_sesmg():
                     help=GUI_helper["main_cb_criterion_switch"])
 
         with tab_bar[1]:
-            # Functions to input the modeling parameters.
-
             # Slider number of threads
             GUI_main_dict["input_num_threads"] = st.slider(
                 label="Number of threads",
@@ -427,29 +416,6 @@ def main_application_sesmg():
                     label="Create console-log",
                     value=settings_cache_dict_reload["input_console_results"],
                     help=GUI_helper["main_cb_console_results"])
-
-    # creating sidebar form submit structure
-    with st.sidebar.form("Clear Cache"):
-        # set initial session state for clear cache submit button
-        if "state_submitted_clear_cache" not in st.session_state:
-            st.session_state["state_submitted_clear_cache"] = "not done"
-
-        # create submit button
-        st.form_submit_button(
-            label="Clear all GUI Settings",
-            on_click=change_state_submitted_clear_cache,
-            help=GUI_helper["main_fs_clear_cache"])
-
-    # Clear all GUI settings if clear latest result paths clicked
-# TODO: session state für clear dict
-    if st.session_state["state_submitted_clear_cache"] == "done":
-        # create and safe dict, set paths empty
-        clear_GUI_main_settings(json_file_path=os.path.dirname(__file__)
-                                + "/GUI_st_cache.json")
-        # reset session state for clear cache
-        st.session_state["state_submitted_clear_cache"] = "not done"
-        # rerun whole script to update GUI settings
-        st.experimental_rerun()
 
     # Starting process if "Visualize existing model results"-button is clicked
     # if not submitted_vis_existing_results or submitted_optimization:
@@ -527,6 +493,8 @@ def main_application_sesmg():
                         GUI_main_dict["res_path"]
                     st.session_state["state_premodeling_res_path"] = \
                         GUI_main_dict["premodeling_res_path"]
+                        
+                    st.write(GUI_main_dict)
 
                     # start model run
                     run_SESMG(GUI_main_dict=GUI_main_dict,
@@ -586,7 +554,37 @@ def main_application_sesmg():
 
                 # main_output_result_overview()
                 st.spinner("Modeling in Progress...")
+                
+                
+def main_clear_cache_sidebar():
+    """
+        Creating the for submit button to clear the GUI cache
+    """
+    
 
+    # creating sidebar form submit structure
+    with st.sidebar.form("Clear Cache"):
+        # set initial session state for clear cache submit button
+        if "state_submitted_clear_cache" not in st.session_state:
+            st.session_state["state_submitted_clear_cache"] = "not done"
+
+        # create submit button
+        st.form_submit_button(
+            label="Clear all GUI Settings",
+            on_click=change_state_submitted_clear_cache,
+            help=GUI_helper["main_fs_clear_cache"])
+        
+    # Clear all GUI settings if clear latest result paths clicked
+# TODO: session state für clear dict
+    if st.session_state["state_submitted_clear_cache"] == "done":
+        # create and safe dict, set paths empty
+        clear_GUI_main_settings(json_file_path=os.path.dirname(__file__)
+                                + "/GUI_st_cache.json")
+        # reset session state for clear cache
+        st.session_state["state_submitted_clear_cache"] = "not done"
+        # rerun whole script to update GUI settings
+        st.experimental_rerun()
+        
 
 def change_state_submitted_optimization():
     """
@@ -607,3 +605,4 @@ def change_state_submitted_clear_cache():
 
 # Start main page
 main_application_sesmg()
+main_clear_cache_sidebar()
