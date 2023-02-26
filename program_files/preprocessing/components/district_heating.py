@@ -302,14 +302,14 @@ def create_intersection_forks(street_sec: pandas.DataFrame,
     # append all points on forks dataframe
     for point in road_section_points:
         thermal_net = concat_on_thermal_net_components(
-            "forks",
-            {
+            comp_type="forks",
+            new_dict={
                 "id": point[6:],
                 "lat": road_section_points[point][0],
                 "lon": road_section_points[point][1],
                 "component_type": "Fork",
             },
-            thermal_net
+            thermal_net=thermal_net
         )
     
     return thermal_net
@@ -479,16 +479,17 @@ def adapt_dhnx_style(thermal_net: ThermalNetwork) -> ThermalNetwork:
         :return: - **thermal_net** (ThermalNetwork) - DHNx \
             ThermalNetwork instance after style adaption
     """
-    for i, p in thermal_net.components["consumers"].iterrows():
-        if "consumers" in str(p["id"]):
-            thermal_net.components["consumers"].replace(
-                to_replace=p["id"], value=p["id"][10:], inplace=True
-            )
-    for i, p in thermal_net.components["pipes"].iterrows():
-        if type(p["id"]) != int:
-            thermal_net.components["pipes"].replace(
-                to_replace=p["id"], value=p["id"][5:], inplace=True
-            )
+    consumers = thermal_net.components["consumers"]
+    consumer_df = consumers.loc[consumers["id"].str.contains("consumers")]
+    for num, consumer in consumer_df.iterrows():
+        thermal_net.components["consumers"].replace(
+            to_replace=consumer["id"], value=consumer["id"][10:], inplace=True
+        )
+    pipes = thermal_net.components["pipes"]
+    for num, pipe in pipes.loc[pipes["id"] != type(int)].iterrows():
+        thermal_net.components["pipes"].replace(
+            to_replace=pipe["id"], value=pipe["id"][5:], inplace=True
+        )
             
     # reset the index on the id column of each DataFrame
     for index in ["consumers", "pipes", "producers", "forks"]:
@@ -587,15 +588,15 @@ def create_components(nodes_data: dict, anergy_or_exergy: bool,
     return oemof_opti_model
 
 
-def calc_heat_pipe_attributes(oemof_opti_model, pipe_types
-                              ) -> optimization.OemofInvestOptimizationModel:
+def calc_heat_pipe_attributes(
+        oemof_opti_model: optimization.OemofInvestOptimizationModel,
+        pipe_types: pandas.DataFrame
+) -> optimization.OemofInvestOptimizationModel:
     """
     
     """
     for a in oemof_opti_model.nodes:
-        if str(type(a)) == "<class 'oemof.solph.network.bus.Bus'>":
-            pass
-        else:
+        if str(type(a)) != "<class 'oemof.solph.network.bus.Bus'>":
             label = a.label.tag3
             pipe_row = pipe_types.loc[pipe_types["label_3"] == label]
             if int(pipe_row["nonconvex"]) == 0:
@@ -788,6 +789,53 @@ def connect_anergy_to_system(
     return oemof_opti_model
 
 
+def create_link_between_dh_heat_bus_and_excess_shortage_bus(
+        busd, bus, oemof_opti_model, fork):
+    """
+    
+    """
+    return solph.custom.Link(
+        label=("link-dhnx-" + bus["label"] + "-f{}".format(fork["id"])),
+        inputs={
+            oemof_opti_model.buses[
+                heatpipe.Label("infrastructure",
+                               "heat",
+                               "bus",
+                               str("forks-{}".format(fork["id"])))
+                ]: solph.Flow(),
+            busd[bus["label"]]: solph.Flow(),
+        },
+        outputs={
+            busd[bus["label"]]: solph.Flow(),
+            oemof_opti_model.buses[
+                heatpipe.Label(
+                        "infrastructure",
+                        "heat",
+                        "bus",
+                        str("forks-{}".format(fork["id"])))
+                ]: solph.Flow(),
+        },
+        conversion_factors={
+            (oemof_opti_model.buses[
+                heatpipe.Label(
+                        "infrastructure",
+                        "heat",
+                        "bus",
+                        str("forks-{}".format(fork["id"])))
+                ],
+             busd[bus["label"]]): 1,
+            (busd[bus["label"]],
+             oemof_opti_model.buses[
+                heatpipe.Label(
+                        "infrastructure",
+                        "heat",
+                        "bus",
+                        str("forks-{}".format(fork["id"])))
+             ]): 1
+        },
+    )
+
+
 def add_excess_shortage_to_dh(
         oemof_opti_model: optimization.OemofInvestOptimizationModel,
         nodes_data: dict, busd: dict, thermal_net: ThermalNetwork
@@ -839,61 +887,16 @@ def add_excess_shortage_to_dh(
                             raise ValueError("invalid district heating conn.")
             if lat is None or lon is None:
                 raise ValueError
-            for key, fork in thermal_net.components["forks"].iterrows():
-                if fork["lat"] == lat and fork["lon"] == lon:
-                    oemof_opti_model.nodes.append(
-                        solph.custom.Link(
-                            label=(
-                                "link-dhnx-" + bus["label"] + "-f{}".format(fork["id"])
-                            ),
-                            inputs={
-                                oemof_opti_model.buses[
-                                    heatpipe.Label(
-                                        "infrastructure",
-                                        "heat",
-                                        "bus",
-                                        str("forks-{}".format(fork["id"])),
-                                    )
-                                ]: solph.Flow(),
-                                busd[bus["label"]]: solph.Flow(),
-                            },
-                            outputs={
-                                busd[bus["label"]]: solph.Flow(),
-                                oemof_opti_model.buses[
-                                    heatpipe.Label(
-                                        "infrastructure",
-                                        "heat",
-                                        "bus",
-                                        str("forks-{}".format(fork["id"])),
-                                    )
-                                ]: solph.Flow(),
-                            },
-                            conversion_factors={
-                                (
-                                    oemof_opti_model.buses[
-                                        heatpipe.Label(
-                                            "infrastructure",
-                                            "heat",
-                                            "bus",
-                                            str("forks-{}".format(fork["id"])),
-                                        )
-                                    ],
-                                    busd[bus["label"]],
-                                ): 1,
-                                (
-                                    busd[bus["label"]],
-                                    oemof_opti_model.buses[
-                                        heatpipe.Label(
-                                            "infrastructure",
-                                            "heat",
-                                            "bus",
-                                            str("forks-{}".format(fork["id"])),
-                                        )
-                                    ],
-                                ): 1,
-                            },
-                        )
-                    )
+            forks = thermal_net.components["forks"]
+            fork_node = forks[forks["lat"] == lat & forks["lon"] == lon]
+            for key, fork in fork_node.iterrows():
+                oemof_opti_model.nodes.append(
+                    create_link_between_dh_heat_bus_and_excess_shortage_bus(
+                        busd=busd,
+                        bus=bus,
+                        oemof_opti_model=oemof_opti_model,
+                        fork=fork)
+                )
 
     return oemof_opti_model
 
@@ -923,14 +926,20 @@ def create_producer_connection(
             within the new Transformers
     """
     counter = 0
-    for key, producer in thermal_net.components["forks"].iterrows():
+    forks = thermal_net.components["forks"]
+    for key, producer in forks.loc[forks["bus"].notna()].iterrows():
+        label_5 = "anergy" if anergy_or_exergy else "exergy"
         if str(producer["bus"]) != "nan":
             label = heatpipe.Label(
-                "producers", "heat", "bus", str("producers-{}".format(str(counter))), "anergy" if anergy_or_exergy else "exergy"
+                "producers",
+                "heat",
+                "bus",
+                str("producers-{}".format(str(counter))),
+                label_5
             )
             oemof_opti_model.nodes.append(
                 solph.Transformer(
-                    label=(str(producer["bus"]) + "_dh_source_link_" + ("anergy" if anergy_or_exergy else "exergy")),
+                    label=(str(producer["bus"]) + "_dh_source_link_" + label_5),
                     inputs={busd[producer["bus"]]: solph.Flow(emission_factor=0)},
                     outputs={
                         oemof_opti_model.buses[label]: solph.Flow(emission_factor=0)
