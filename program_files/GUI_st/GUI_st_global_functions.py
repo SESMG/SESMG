@@ -117,26 +117,26 @@ def create_timeseries_parameter_list(GUI_main_dict: dict,
     """
         Creates list of input variables as input preparation for run_semsg \
         with appending input_timseries_season value.
-        
+
         :param GUI_main_dict: global defined dict of GUI input variables
         :type GUI_main_dict: dict
         :param input_values_list: list of input variables which will be \
             writen in a list from the GUI_main_dict
         :type input_values_list: list
-        
+
         :return: - **parameter_list + input_value_season** (list) - list of
             timeseries simplification parameters
     """
-    
+
     # set parameter from the GUI main dict and store them in a list
     parameter_list = \
         [GUI_main_dict[input_value] for input_value in input_value_list]
-    
+
     # set input_timseries_season value
     input_value_season = \
         [0 if GUI_main_dict[input_timseries_season] == "None"
          else GUI_main_dict[input_timseries_season]]
-    
+
     # append input_timseries_season value and return
     return parameter_list + input_value_season
 
@@ -153,20 +153,20 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
         :param save_path: file path where the results will be saved
         :type save_path: str
     """
-    
+
     # prepare timeseries parameter list
     timeseries_prep_parameter_list = \
         ["input_timeseries_algorithm", "input_timeseries_cluster_index",
          "input_timeseries_criterion", "input_timeseries_period"]
-    
+
     # create timeseries parameter list as an input variable for run_sesmg
     timeseries_prep = create_timeseries_parameter_list(
         GUI_main_dict=GUI_main_dict,
         input_value_list=timeseries_prep_parameter_list,
         input_timseries_season="input_timeseries_season")
-    
+
     if not GUI_main_dict["input_activate_premodeling"]:
-        
+
         sesmg_main(
             scenario_file=model_definition,
             result_path=save_path,
@@ -181,21 +181,21 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
 
     # If pre-modeling is activated a second run will be carried out
     else:
-        
+
         # prepare premodell timeseries parameter list
         timeseries_prep_parameter_list = \
             ["input_premodeling_timeseries_algorithm",
              "input_premodeling_timeseries_cluster_index",
              "input_premodeling_timeseries_criterion",
              "input_premodeling_timeseries_period"]
-        
+
         # create premodell timeseries parameter list as an input variable
         # for run_sesmg
         premodel_timeseries_prep = create_timeseries_parameter_list(
             GUI_main_dict=GUI_main_dict,
             input_value_list=timeseries_prep_parameter_list,
             input_timseries_season="input_premodeling_timeseries_season")
-        
+
         sesmg_main_including_premodel(
             scenario_file=model_definition,
             result_path=save_path,
@@ -221,7 +221,7 @@ def read_markdown_document(document_path: str, folder_path: str,
         of markdown files can be used as the content of a streamlit
         page. To do this, the markdown file and the images it contains
         are loaded and then displayed in streamlit format.
-        
+
         :param document_path: path where the markdown file which will \
             be displayed is stored
         :type document_path: str
@@ -244,7 +244,7 @@ def read_markdown_document(document_path: str, folder_path: str,
         # directory and extract the file names
         resource_files = [os.path.basename(x) for x
                           in glob.glob(folder_path)]
-    
+
     non_print = False
     # Iterate over each line of the README.md file
     for line in readme_line:
@@ -267,7 +267,7 @@ def read_markdown_document(document_path: str, folder_path: str,
                     st.image(folder_path[:-1] + f'/{image}')
                     # Clear the buffer list
                     readme_buffer.clear()
-    
+
     # Display any remaining lines in the buffer list using the st.markdown() \
     # function
     st.markdown(''.join(readme_buffer), unsafe_allow_html=True)
@@ -277,7 +277,7 @@ def create_simplification_index(input_list: list, output_dict: dict):
     """
         Creates the streamlit index for timeseries simplification params \
             as required to reload GUI elements with initial values
-            
+
        :param input_list: list with lists for each simplification with three
            columns: name of the index, list in which the index is definied
            reguarding to the input cariable name, input variable name
@@ -289,18 +289,18 @@ def create_simplification_index(input_list: list, output_dict: dict):
 
     # iteratale trough the inner lists
     for var in input_list:
-        
+
         output_dict[var[0]] = var[1][output_dict[var[2]]]
-        
-        
-def create_cluster_simplification_index(input_value: str, 
+
+
+def create_cluster_simplification_index(input_value: str,
                                         input_output_dict: dict,
                                         input_value_index: str):
     """
         Creates the streamlit index for timeseries simplification param \
             clustering as required to reload GUI elements with initial values \
             since clustering index needs to set differntly
-            
+
        :param input_list: name of the input variable in the input_output_dict
        :type input_list: str
        :param output_dict: global defined dict to which the indexes will be
@@ -314,5 +314,3 @@ def create_cluster_simplification_index(input_value: str,
         input_output_dict[input_value_index] = 0
     else:
         input_output_dict[input_value_index] = input_output_dict[input_value]
-
-

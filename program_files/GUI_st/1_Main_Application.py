@@ -87,7 +87,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
     """
         Function building the sidebar of the main application including all \
             input options and starting the processes.
-            
+
         :return: - **scenario_input_sheet_path** \
             (st.runtime.uploaded_file_manager.UploadedFile) - model defintion \
             as a st.UploadedFile
@@ -109,7 +109,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
         st.title("Upload Model Definition")
 
         # fileuploader for the model definition
-        scenario_input_sheet_path = st.file_uploader(
+        model_definition_input = st.file_uploader(
             label="Upload your model definition sheet.",
             help=GUI_helper["main_fu_model_definition"])
 
@@ -118,7 +118,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
 
         # creating three tabs inside the sidebar
         tab_bar = st.tabs(["Preprocessing", "Processing", "Postprocessing"])
-        
+
         # create tab 2 for Preprocessing
         with tab_bar[0]:
             # Functions to input the preprocessing parameters
@@ -225,11 +225,11 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                 ["input_timeseries_season_index",
                  input_timeseries_season_dict,
                  "input_timeseries_season"]]
-            
+
             # transform to index values and safe in the GUI_main_dict
             create_simplification_index(input_list=simpification_index_list,
                                         output_dict=GUI_main_dict)
-            
+
             # transform input_timeseries_cluster_index seperately
             create_cluster_simplification_index(
                 input_value="input_timeseries_cluster_index",
@@ -327,12 +327,12 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                 ["input_premodeling_timeseries_season_index",
                  input_timeseries_season_dict,
                  "input_premodeling_timeseries_season"]]
-                
+
             # transform to index values and safe in the GUI_main_dict
             create_simplification_index(
                 input_list=simpification_premodel_index_list,
                 output_dict=GUI_main_dict)
-            
+
             # transform input_timeseries_cluster_index seperately
             create_cluster_simplification_index(
                 input_value="input_premodeling_timeseries_cluster_index",
@@ -408,7 +408,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
             GUI_main_dict["input_solver_index"] = \
                 input_solver_dict[GUI_main_dict["input_solver"]]
 
-       # create tab 2 for postprocessing
+        # create tab 2 for postprocessing
         with tab_bar[2]:
             # Input Postprocessing Parameters
             # Functions to input the postprocessing parameters.
@@ -419,14 +419,14 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                     label="Create xlsx-files",
                     value=settings_cache_dict_reload["input_xlsx_results"],
                     help=GUI_helper["main_cb_xlsx_results"])
-                
+
             GUI_main_dict["input_console_results"] = \
                 st.checkbox(
                     label="Create console-log",
                     value=settings_cache_dict_reload["input_console_results"],
                     help=GUI_helper["main_cb_console_results"])
-                
-    return scenario_input_sheet_path
+
+    return model_definition_input
 
 
 def main_error_definition():
@@ -440,12 +440,12 @@ def main_error_definition():
     # reset session state
     st.session_state["state_submitted_optimization"] = "not done"
 
-                                
+
 def main_clear_cache_sidebar():
     """
         Creating the for submit button to clear the GUI cache
     """
-    
+
     # creating sidebar form submit structure
     with st.sidebar.form("Clear Cache"):
         # set initial session state for clear cache submit button
@@ -457,7 +457,7 @@ def main_clear_cache_sidebar():
             label="Clear all GUI Settings",
             on_click=change_state_submitted_clear_cache,
             help=GUI_helper["main_fs_clear_cache"])
-        
+
     # Clear all GUI settings if clear latest result paths clicked
     if st.session_state["state_submitted_clear_cache"] == "done":
         # create and safe dict, set paths empty
@@ -467,7 +467,7 @@ def main_clear_cache_sidebar():
         st.session_state["state_submitted_clear_cache"] = "not done"
         # rerun whole script to update GUI settings
         st.experimental_rerun()
-        
+
 
 def create_result_paths():
     """
@@ -479,12 +479,12 @@ def create_result_paths():
         os.path.dirname(os.path.dirname(__file__))), 'results')
     GUI_main_dict["res_path"] = res_folder_path \
         + '/' \
-        + scenario_input_sheet_path.name.split("/")[-1][:-5] \
+        + model_definition_input_file.name.split("/")[-1][:-5] \
         + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
     os.mkdir(GUI_main_dict["res_path"])
     GUI_main_dict["premodeling_res_path"] = \
         GUI_main_dict["res_path"] + "/pre_model_results"
-    
+
     # safe path as session state for the result processing page
     st.session_state["state_result_path"] = GUI_main_dict["res_path"]
     st.session_state["state_premodeling_res_path"] = \
@@ -523,7 +523,7 @@ def change_state_submitted_clear_cache():
 
 
 # staring sidebar elements as standing elements
-scenario_input_sheet_path = main_input_sidebar()
+model_definition_input_file = main_input_sidebar()
 main_clear_cache_sidebar()
 
 # load the start page if modell run is not submitted
@@ -532,14 +532,14 @@ if st.session_state["state_submitted_optimization"] == "not done":
 
 # starting process is modell run is  submitted
 if st.session_state["state_submitted_optimization"] == "done":
-    
+
     # raise error if run is started without uploading a model definition
-    if not scenario_input_sheet_path:
-        
+    if not model_definition_input_file:
+
         # load error messsage
         main_error_definition()
 
-    elif scenario_input_sheet_path != "":
+    elif model_definition_input_file != "":
 
         # safe the GUI_main_dice as a chache for the next session
         safe_GUI_input_values(input_values_dict=GUI_main_dict,
@@ -548,10 +548,10 @@ if st.session_state["state_submitted_optimization"] == "done":
 
         # create spinner info text
         st.info(GUI_helper["main_info_spinner"], icon="ℹ️")
-        
+
         # function to create the result pasths and store session state
         create_result_paths()
-        
+
         # Starting the model run
         if len(GUI_main_dict["input_pareto_points"]) == 0:
 
@@ -559,7 +559,7 @@ if st.session_state["state_submitted_optimization"] == "done":
 
                 # start model run
                 run_SESMG(GUI_main_dict=GUI_main_dict,
-                          model_definition=scenario_input_sheet_path,
+                          model_definition=model_definition_input_file,
                           save_path=GUI_main_dict["res_path"])
 
                 # save GUI settings in result folder and reset session state
@@ -572,13 +572,13 @@ if st.session_state["state_submitted_optimization"] == "done":
         elif len(GUI_main_dict["input_pareto_points"]) != 0:
 
             with st.spinner("Modeling in Progress..."):
-                
+
                 # run_pareto retuns res path
                 GUI_main_dict["res_path"] = \
                     run_pareto(
                         limits=[i / 100 for i in
                                 GUI_main_dict["input_pareto_points"]],
-                        model_definition=scenario_input_sheet_path,
+                        model_definition=model_definition_input_file,
                         GUI_main_dict=GUI_main_dict)
 
                 # safe path as session state for the result processing page
