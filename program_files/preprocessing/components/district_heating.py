@@ -790,10 +790,15 @@ def connect_anergy_to_system(
 
 
 def create_link_between_dh_heat_bus_and_excess_shortage_bus(
-        busd, bus, oemof_opti_model, fork):
+        busd, bus, oemof_opti_model, fork, anergy_or_exergy):
     """
     
+        :param anergy_or_exergy: bool which defines rather the \
+            considered network is an exergy net (False) or an anergy \
+            net (True)
+        :type anergy_or_exergy: bool
     """
+    label_5 = "anergy" if anergy_or_exergy else "exergy"
     return solph.custom.Link(
         label=("link-dhnx-" + bus["label"] + "-f{}".format(fork["id"])),
         inputs={
@@ -801,7 +806,8 @@ def create_link_between_dh_heat_bus_and_excess_shortage_bus(
                 heatpipe.Label("infrastructure",
                                "heat",
                                "bus",
-                               str("forks-{}".format(fork["id"])))
+                               str("forks-{}".format(fork["id"])),
+                               label_5)
                 ]: solph.Flow(),
             busd[bus["label"]]: solph.Flow(),
         },
@@ -812,7 +818,8 @@ def create_link_between_dh_heat_bus_and_excess_shortage_bus(
                         "infrastructure",
                         "heat",
                         "bus",
-                        str("forks-{}".format(fork["id"])))
+                        str("forks-{}".format(fork["id"])),
+                        label_5)
                 ]: solph.Flow(),
         },
         conversion_factors={
@@ -821,7 +828,8 @@ def create_link_between_dh_heat_bus_and_excess_shortage_bus(
                         "infrastructure",
                         "heat",
                         "bus",
-                        str("forks-{}".format(fork["id"])))
+                        str("forks-{}".format(fork["id"])),
+                        label_5)
                 ],
              busd[bus["label"]]): 1,
             (busd[bus["label"]],
@@ -830,7 +838,8 @@ def create_link_between_dh_heat_bus_and_excess_shortage_bus(
                         "infrastructure",
                         "heat",
                         "bus",
-                        str("forks-{}".format(fork["id"])))
+                        str("forks-{}".format(fork["id"])),
+                        label_5)
              ]): 1
         },
     )
@@ -838,8 +847,8 @@ def create_link_between_dh_heat_bus_and_excess_shortage_bus(
 
 def add_excess_shortage_to_dh(
         oemof_opti_model: optimization.OemofInvestOptimizationModel,
-        nodes_data: dict, busd: dict, thermal_net: ThermalNetwork
-) -> optimization.OemofInvestOptimizationModel:
+        nodes_data: dict, busd: dict, thermal_net: ThermalNetwork,
+        anergy_or_exergy: bool) -> optimization.OemofInvestOptimizationModel:
     """
         With the help of this method, it is possible to map an external
         heat supply (e.g. from a neighboring heat network) or the export
@@ -856,46 +865,49 @@ def add_excess_shortage_to_dh(
             create the components of the thermal network for the \
             energy system.
         :type thermal_net: ThermalNetwork
+        :param anergy_or_exergy: bool which defines rather the \
+            considered network is an exergy net (False) or an anergy \
+            net (True)
+        :type anergy_or_exergy: bool
         
         :return: - **oemof_opti_model** \
             (optimization.OemofInvestOptimizationModel) - dh network \
             components + excess and shortage bus
     """
-    busses = []
-    for i, bus in nodes_data["buses"].iterrows():
-        if (
-            bus["district heating conn."] != 0
-            and bus["active"] == 1
-            and bus["district heating conn."] != "dh-system"
-        ):
-            busses.append(bus)
-    for bus in busses:
-        if bus["district heating conn."] not in [0, 1]:
+    buses_df = nodes_data["buses"].loc[nodes_data["buses"]["active"] == 1]
+    # iterate threw all active buses
+    for index, bus in buses_df.iterrows():
+        # check for a district heating conn. deviating from 0, 1, and
+        # dh-system since the name pattern for excess and/or shortage
+        # is <dh-heating-section>-<1/2> second part is for first or
+        # second intersection
+        if bus["district heating conn."] not in [0, 1, "dh-system"]:
             conn_point = bus["district heating conn."].split("-")
-            lat = None
-            lon = None
-            for i, street in nodes_data["district heating"].iterrows():
-                if street["active"]:
-                    if street["label"] == conn_point[0]:
-                        if conn_point[1] == "1":
-                            lat = street["lat. 1st intersection"]
-                            lon = street["lon. 1st intersection"]
-                        elif conn_point[1] == "2":
-                            lat = street["lat. 2nd intersection"]
-                            lon = street["lon. 2nd intersection"]
-                        else:
-                            raise ValueError("invalid district heating conn.")
-            if lat is None or lon is None:
-                raise ValueError
+            district_heating_df = nodes_data["district heating"]
+            street = district_heating_df.loc[
+                (district_heating_df["label"] == conn_point[0])
+                & (district_heating_df["active"] == 1)]
+            if conn_point[1] == "1":
+                lat = float(street["lat. 1st intersection"])
+                lon = float(street["lon. 1st intersection"])
+            elif conn_point[1] == "2":
+                lat = float(street["lat. 2nd intersection"])
+                lon = float(street["lon. 2nd intersection"])
+            else:
+                raise ValueError("invalid district heating conn.")
+            
             forks = thermal_net.components["forks"]
-            fork_node = forks[forks["lat"] == lat & forks["lon"] == lon]
+            fork_node = forks.loc[(forks["lat"] == lat)
+                                  & (forks["lon"] == lon)]
+            
             for key, fork in fork_node.iterrows():
                 oemof_opti_model.nodes.append(
                     create_link_between_dh_heat_bus_and_excess_shortage_bus(
                         busd=busd,
                         bus=bus,
                         oemof_opti_model=oemof_opti_model,
-                        fork=fork)
+                        fork=fork,
+                        anergy_or_exergy=anergy_or_exergy)
                 )
 
     return oemof_opti_model
@@ -1016,7 +1028,8 @@ def create_connect_dhnx(nodes_data: dict, busd: dict,
         oemof_opti_model=oemof_opti_model,
         nodes_data=nodes_data,
         busd=busd,
-        thermal_net=thermal_net)
+        thermal_net=thermal_net,
+        anergy_or_exergy=anergy_or_exergy)
     
     oemof_opti_model = create_producer_connection(
         oemof_opti_model=oemof_opti_model,
