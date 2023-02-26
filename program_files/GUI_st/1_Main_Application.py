@@ -160,46 +160,46 @@ def main_application_sesmg():
                 # Choosing timeseries parameters - algorithm
                 GUI_main_dict["input_timeseries_algorithm"] = \
                     st.selectbox(
-                            label="Algorithm",
-                            options=timeseries_algorithm_dict.keys(),
-                            index=settings_cache_dict_reload[
-                                "input_timeseries_algorithm_index"],
-                            help=GUI_helper["main_dd_timeser_algorithm"])
+                        label="Algorithm",
+                        options=timeseries_algorithm_dict.keys(),
+                        index=settings_cache_dict_reload[
+                            "input_timeseries_algorithm_index"],
+                        help=GUI_helper["main_dd_timeser_algorithm"])
 
                 # Choosing timeseries parameters - index
                 GUI_main_dict["input_timeseries_cluster_index"] = \
                     st.selectbox(
-                            label="Index",
-                            options=timeseries_index_range_list,
-                            index=settings_cache_dict_reload[
-                                "input_timeseries_cluster_index_index"],
-                            help=GUI_helper["main_dd_timeser_cluster_index"])
+                        label="Index",
+                        options=timeseries_index_range_list,
+                        index=settings_cache_dict_reload[
+                            "input_timeseries_cluster_index_index"],
+                        help=GUI_helper["main_dd_timeser_cluster_index"])
                 # Choosing timeseries parameters - cluster criterion
                 GUI_main_dict["input_timeseries_criterion"] = \
                     st.selectbox(
-                            label="Cluster Criterion",
-                            options=timeseries_cluster_criteria_dict.keys(),
-                            index=settings_cache_dict_reload[
-                                "input_timeseries_criterion_index"],
-                            help=GUI_helper[
-                                "main_dd_timeser_cluster_criterion"])
+                        label="Cluster Criterion",
+                        options=timeseries_cluster_criteria_dict.keys(),
+                        index=settings_cache_dict_reload[
+                            "input_timeseries_criterion_index"],
+                        help=GUI_helper[
+                            "main_dd_timeser_cluster_criterion"])
                 # Choosing timeseries parameters - period
                 GUI_main_dict["input_timeseries_period"] = \
                     st.selectbox(
-                            label="Period",
-                            options=input_timeseries_period_dict.keys(),
-                            index=settings_cache_dict_reload[
-                                "input_timeseries_period_index"],
-                            help=GUI_helper["main_dd_timeser_period"])
+                        label="Period",
+                        options=input_timeseries_period_dict.keys(),
+                        index=settings_cache_dict_reload[
+                            "input_timeseries_period_index"],
+                        help=GUI_helper["main_dd_timeser_period"])
                 # Choosing timeseries parameters - season
                 GUI_main_dict["input_timeseries_season"] = \
                     st.selectbox(
-                            label="Season",
-                            options=input_timeseries_season_dict.keys(),
-                            index=settings_cache_dict_reload[
-                                "input_timeseries_season_index"],
-                            help=GUI_helper["main_dd_timeser_season"])
-            
+                        label="Season",
+                        options=input_timeseries_season_dict.keys(),
+                        index=settings_cache_dict_reload[
+                            "input_timeseries_season_index"],
+                        help=GUI_helper["main_dd_timeser_season"])
+
             # transform input values of Timeseries Simplification to an index
             # which will be safed in the GUI cache to be able to reload
             # setting. Needs to be an index for st.selectboxes.
@@ -207,13 +207,17 @@ def main_application_sesmg():
             # index values
             simpification_index_list = [
                 ["input_timeseries_algorithm_index",
-                 timeseries_algorithm_dict, "input_timeseries_algorithm"],
+                 timeseries_algorithm_dict,
+                 "input_timeseries_algorithm"],
                 ["input_timeseries_criterion_index",
-                 timeseries_cluster_criteria_dict, "input_timeseries_criterion"],
+                 timeseries_cluster_criteria_dict,
+                 "input_timeseries_criterion"],
                 ["input_timeseries_period_index",
-                 input_timeseries_period_dict, "input_timeseries_period"],
+                 input_timeseries_period_dict,
+                 "input_timeseries_period"],
                 ["input_timeseries_season_index",
-                 input_timeseries_season_dict, "input_timeseries_season"]]
+                 input_timeseries_season_dict,
+                 "input_timeseries_season"]]
             
             # transform to index values and safe in the GUI_main_dict
             create_simplification_index(input_list=simpification_index_list,
@@ -233,71 +237,71 @@ def main_application_sesmg():
                 # Checkbox to activate the pre-modeling
                 GUI_main_dict["input_activate_premodeling"] = \
                     st.checkbox(
-                            label="Activate Pre-Modeling",
-                            value=settings_cache_dict_reload[
-                                "input_activate_premodeling"],
-                            help=GUI_helper["main_cb_prem_active"])
+                        label="Activate Pre-Modeling",
+                        value=settings_cache_dict_reload[
+                            "input_activate_premodeling"],
+                        help=GUI_helper["main_cb_prem_active"])
 
                 # Activate functions to reduce the maximum design capacity
                 GUI_main_dict["input_premodeling_invest_boundaries"] = \
                     st.checkbox(
-                            label="Investment Boundaries Tightening",
-                            value=settings_cache_dict_reload[
-                                "input_premodeling_invest_boundaries"],
-                            help=GUI_helper["main_cb_thightening_active"])
+                        label="Investment Boundaries Tightening",
+                        value=settings_cache_dict_reload[
+                            "input_premodeling_invest_boundaries"],
+                        help=GUI_helper["main_cb_thightening_active"])
                 # Slider to set the tightening factor for maximum design
                 # capacity
                 GUI_main_dict["input_premodeling_tightening_factor"] = \
                     st.slider(
-                            label="Investment Tightening Factor",
-                            min_value=1,
-                            max_value=100,
-                            value=settings_cache_dict_reload[
-                                "input_premodeling_tightening_factor"],
-                            help=GUI_helper["main_sl_tightening_factor"])
+                        label="Investment Tightening Factor",
+                        min_value=1,
+                        max_value=100,
+                        value=settings_cache_dict_reload[
+                            "input_premodeling_tightening_factor"],
+                        help=GUI_helper["main_sl_tightening_factor"])
 
                 # Choosing pre-model timeseries parameters - algorithm
                 GUI_main_dict["input_premodeling_timeseries_algorithm"] = \
                     st.selectbox(
-                            label="Algorithm (Pre-Model)",
-                            options=timeseries_algorithm_dict.keys(),
-                            index=settings_cache_dict_reload[
-                                "input_premodeling_timeseries_algorithm_index"],
-                            help=GUI_helper["main_dd_prem_timeser_algorithm"])
+                        label="Algorithm (Pre-Model)",
+                        options=timeseries_algorithm_dict.keys(),
+                        index=settings_cache_dict_reload[
+                            "input_premodeling_timeseries_algorithm_index"],
+                        help=GUI_helper["main_dd_prem_timeser_algorithm"])
                 # Choosing pre-model timeseries parameters - index
                 GUI_main_dict["input_premodeling_timeseries_cluster_index"] = \
                     st.selectbox(
-                            label="Index (Pre-Model)",
-                            options=timeseries_index_range_list,
-                            index=settings_cache_dict_reload[
-                                "input_premodeling_timeseries_cluster_index_index"],
-                            help=GUI_helper[
-                                "main_dd_prem_timeser_cluster_index"])
+                        label="Index (Pre-Model)",
+                        options=timeseries_index_range_list,
+                        index=settings_cache_dict_reload[
+                            "input_premodeling_timeseries_cluster_index_index"],
+                        help=GUI_helper[
+                            "main_dd_prem_timeser_cluster_index"])
                 # Choosing pre-model timeseries parameters - cluster criterion
                 GUI_main_dict["input_premodeling_timeseries_criterion"] = \
                     st.selectbox(
-                            label="Cluster Criterion (Pre-Model)",
-                            options=timeseries_cluster_criteria_dict.keys(),
-                            index=settings_cache_dict_reload[
-                                "input_premodeling_timeseries_criterion_index"],
-                            help=GUI_helper[
-                                "main_dd_prem_timeser_cluster_criterion"])
+                        label="Cluster Criterion (Pre-Model)",
+                        options=timeseries_cluster_criteria_dict.keys(),
+                        index=settings_cache_dict_reload[
+                            "input_premodeling_timeseries_criterion_index"],
+                        help=GUI_helper[
+                            "main_dd_prem_timeser_cluster_criterion"])
                 # Choosing pre-model timeseries parameters - period
                 GUI_main_dict["input_premodeling_timeseries_period"] = \
                     st.selectbox(
-                            label="Period (Pre-Model)",
-                            options=input_timeseries_period_dict.keys(),
-                            index=settings_cache_dict_reload[
-                                "input_premodeling_timeseries_period_index"],
-                            help=GUI_helper["main_dd_prem_timeser_period"])
+                        label="Period (Pre-Model)",
+                        options=input_timeseries_period_dict.keys(),
+                        index=settings_cache_dict_reload[
+                            "input_premodeling_timeseries_period_index"],
+                        help=GUI_helper["main_dd_prem_timeser_period"])
                 # Choosing pre-model timeseries parameters - season
                 GUI_main_dict["input_premodeling_timeseries_season"] = \
                     st.selectbox(
-                            label="Season (Pre-Model)",
-                            options=input_timeseries_season_dict.keys(),
-                            index=settings_cache_dict_reload[
-                                "input_premodeling_timeseries_season_index"],
-                            help=GUI_helper["main_dd_prem_timeser_season"])
+                        label="Season (Pre-Model)",
+                        options=input_timeseries_season_dict.keys(),
+                        index=settings_cache_dict_reload[
+                            "input_premodeling_timeseries_season_index"],
+                        help=GUI_helper["main_dd_prem_timeser_season"])
 
             # transform input values of Timeseries Simplification to an index
             # which will be safed in the GUI cache to be able to reload
@@ -338,11 +342,11 @@ def main_application_sesmg():
             with st.expander("Pareto Point Options"):
                 # Multiselect element
                 input_pareto_points = st.multiselect(
-                        label="Pareto Points",
-                        options=list(range(1, 100)),
-                        default=settings_cache_dict_reload[
-                            "input_pareto_points"],
-                        help=GUI_helper["main_ms_pareto_points"])
+                    label="Pareto Points",
+                    options=list(range(1, 100)),
+                    default=settings_cache_dict_reload[
+                        "input_pareto_points"],
+                    help=GUI_helper["main_ms_pareto_points"])
                 if input_pareto_points is not None:
                     input_pareto_points.sort(reverse=True)
 
@@ -357,10 +361,10 @@ def main_application_sesmg():
                 # Checkboxes modeling while using district heating clustering.
                 GUI_main_dict["input_cluster_dh"] = \
                     st.checkbox(
-                            label="Clustering District Heating Network",
-                            value=settings_cache_dict_reload[
-                                "input_cluster_dh"],
-                            help=GUI_helper["main_cb_dh_clustering_active"])
+                        label="Clustering District Heating Network",
+                        value=settings_cache_dict_reload[
+                            "input_cluster_dh"],
+                        help=GUI_helper["main_cb_dh_clustering_active"])
                 # TODO: change to file uploader
                 # Fileuploader not able to print file path
                 # Upload DH Precalc File
@@ -493,8 +497,6 @@ def main_application_sesmg():
                         GUI_main_dict["res_path"]
                     st.session_state["state_premodeling_res_path"] = \
                         GUI_main_dict["premodeling_res_path"]
-                        
-                    st.write(GUI_main_dict)
 
                     # start model run
                     run_SESMG(GUI_main_dict=GUI_main_dict,
@@ -526,7 +528,7 @@ def main_application_sesmg():
                     # run_pareto retuns res path
                     GUI_main_dict["res_path"] = \
                         run_pareto(
-                            limits=[i/100 for i in
+                            limits=[i / 100 for i in
                                     GUI_main_dict["input_pareto_points"]],
                             model_definition=scenario_input_sheet_path,
                             GUI_main_dict=GUI_main_dict)
@@ -561,7 +563,6 @@ def main_clear_cache_sidebar():
         Creating the for submit button to clear the GUI cache
     """
     
-
     # creating sidebar form submit structure
     with st.sidebar.form("Clear Cache"):
         # set initial session state for clear cache submit button
@@ -575,7 +576,6 @@ def main_clear_cache_sidebar():
             help=GUI_helper["main_fs_clear_cache"])
         
     # Clear all GUI settings if clear latest result paths clicked
-# TODO: session state für clear dict
     if st.session_state["state_submitted_clear_cache"] == "done":
         # create and safe dict, set paths empty
         clear_GUI_main_settings(json_file_path=os.path.dirname(__file__)
