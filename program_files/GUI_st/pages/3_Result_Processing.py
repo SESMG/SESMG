@@ -12,7 +12,7 @@ import plotly.express as px
 from PIL import Image
 
 from program_files.GUI_st.GUI_st_global_functions import \
-    import_GUI_input_values_json, st_settings_global
+    import_GUI_input_values_json, st_settings_global, read_markdown_document
 
 
 def result_processing_sidebar():
@@ -385,10 +385,18 @@ if "state_result_path" not in st.session_state:
 # start sidebar functions
 result_processing_sidebar()
 
+
+def standard_page():
+    """
+
+    """
+    read_markdown_document(
+        document_path="docs/GUI_texts/results.md",
+        folder_path=f'{"docs/images/manual/Results/*"}')
+
 # show introduction page if no result paths are not set
 if st.session_state["state_result_path"] == "not set":
-    st.write("This ia a dummy. You can choose your result folder here as ....")
-    st.write(st.session_state["state_result_path"])
+    standard_page()
 
 elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         in glob.glob(st.session_state["state_result_path"] + "/*"):
