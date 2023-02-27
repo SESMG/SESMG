@@ -1,7 +1,7 @@
-import pandas as pd
+import pandas
 import numpy as np
 import demandlib.bdew as bdew
-import datetime
+from datetime import datetime
 import logging
 
 
@@ -27,8 +27,7 @@ def extract_single_periods(data_set, column_name, period):
     cluster_df = data_set[column_name]
     # extract single periods as lists and add them to a list
     cluster_vectors = []
-    timesteps = factor_dict.get(period,
-                                default=ValueError("Non supported period"))
+    timesteps = factor_dict.get(str(period))
     for i in range(0, int(len(cluster_df) / timesteps)):
         cluster_vector = []
         for j in range(timesteps):
@@ -63,7 +62,7 @@ def calculate_cluster_means(data_set, cluster_number: int,
     column_names = [data_set.columns[i] for i in
                     range(1, len(data_set.columns))]
     # Define pandas Dataframe for final data_set
-    prep_data_set = pd.DataFrame()
+    prep_data_set = pandas.DataFrame()
     # Loop for every column of the weather data set
     for i in range(len(column_names)):
         # Extract individual weather data set for the current weather
@@ -95,13 +94,19 @@ def calculate_cluster_means(data_set, cluster_number: int,
     return prep_data_set
 
 
-def append_timeseries_to_weatherdata_sheet(nodes_data: dict):
+def append_timeseries_to_weatherdata_sheet(nodes_data: dict
+                                           ) -> pandas.DataFrame:
     """
-    Merges the time series of the weather data set and the time series. This
-    allows the weather data and time series to be processed together for
-    cluster algorithms, reducing the error-proneness of sepparate processing.
-    :param data_set:
-    :return:
+        Merges the time series of the weather data set and the time
+        series. This allows the weather data and time series to be
+        processed together for cluster algorithms, reducing the
+        error-proneness of separate processing.
+        
+        :param nodes_data: dictionary containing the data of the \
+            user's model definition file
+        :type nodes_data: dict
+        
+        :return: **nodes_data["timeseries]** (pandas.DataFrame)
     """
 
     # Adding the weather data set to the timeseries data set
@@ -115,14 +120,16 @@ def append_timeseries_to_weatherdata_sheet(nodes_data: dict):
         # with the ending "_x" and "_y". Those are identified, and renamed,
         # respectively deleted.
         if column_name[-2:] == "_x":
-            nodes_data['timeseries'].rename(columns={column_name: column_name[:-2]}, inplace=True)
+            nodes_data['timeseries'].rename(columns={
+                column_name: column_name[:-2]}, inplace=True)
         elif column_name[-2:] == "_y":
             del nodes_data['timeseries'][column_name]
 
     return nodes_data['timeseries']
 
-
-#def calculate_cluster_medoids(data_set, cluster_number: int,
+# TODO @cklm this method was commented out completely and not used by
+#  any other method can we remove it
+# def calculate_cluster_medoids(data_set, cluster_number: int,
 #                            cluster_labels, period: str):
 #    """
 #        Determines weather medoid of the individual clusters for a
@@ -143,7 +150,6 @@ def append_timeseries_to_weatherdata_sheet(nodes_data: dict):
 #            containing the prepared weather data set
 #
 #    """
-
 
     # column_names = [data_set.columns[i] for i in
     #                 range(1, len(data_set.columns))]
@@ -172,7 +178,8 @@ def append_timeseries_to_weatherdata_sheet(nodes_data: dict):
     #         cluster_dataset_array = np.array(cluster_dataset)
     #         # Appends the calculated mean values to the 'reference_data_
     #         # set' list
-    #         reference_data_set += cluster_dataset_array.argmin(distMatrix.sum(axis=0)).tolist()
+    #         reference_data_set += cluster_dataset_array.argmin(
+    #                               distMatrix.sum(axis=0)).tolist()
     #     # Appends the calculated reference days for the current weather
     #     # data column to the final weather data set
     #     prep_data_set[column_names[i]] = reference_data_set
@@ -194,13 +201,11 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str):
         :type period: str
     """
     factor_dict = {"hours": 1, "days": 24, "weeks": 168}
-    
-    variable_cost_factor = int(nodes_data['energysystem']['periods']) \
-        / int(factor_dict.get(period,
-                              default=ValueError("unsupported period"))
-              * clusters)
-    logging.info('VARIABLE COST FACTOR')
-    logging.info(variable_cost_factor)
+    timesteps = factor_dict.get(period)
+    variable_cost_factor = \
+        int(nodes_data['energysystem']['periods']) / (timesteps * clusters)
+    logging.info('\t VARIABLE COST FACTOR')
+    logging.info("\t " + str(variable_cost_factor))
     
     # Adapting Costs and Constraint Costs
     for sheet in nodes_data:
@@ -213,16 +218,11 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str):
     nodes_data['sinks']['annual demand'] = \
         nodes_data['sinks']['annual demand'] / variable_cost_factor
 
-    timedelta = str(clusters
-                    * factor_dict.get(period,
-                                      default=ValueError("unsupported period"))
-                    - 1) + ' hours'
+    timedelta = str(clusters * timesteps - 1) + ' hours'
     nodes_data['energysystem']['end date'] = \
         nodes_data['energysystem']['start date'] \
-        + pd.Timedelta(timedelta)
-    nodes_data['energysystem']['periods'] = \
-        int(factor_dict.get(period, default=ValueError("unsupported period"))
-        * clusters)
+        + pandas.Timedelta(timedelta)
+    nodes_data['energysystem']['periods'] = timesteps * clusters
 
 
 def slp_sink_adaption(nodes_data: dict):
@@ -248,30 +248,28 @@ def slp_sink_adaption(nodes_data: dict):
                      'l1', 'l2']
     slp_list = heat_slp_list + elec_slp_list + heat_slp_com
 
-    slp_profiles = pd.DataFrame()
+    slp_profiles = pandas.DataFrame()
     weather_data = nodes_data["weather data"].copy()
 
-    # Creating Timesystem and Dataframe (required for the creation of standard
-    # load profiles)
+    # Creating Timesystem and Dataframe (required for the creation of
+    # standard load profiles)
     ts = next(nodes_data['energysystem'].iterrows())[1]
     temp_resolution = str(ts['temporal resolution'])
     periods = int(ts["periods"])
     start_date = str(ts['start date'])
-    start_date = \
-        datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
+    start_date = datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')
 
-
-    # Creating standard load profile time series for sinks refering to heat or
-    # electric standard load profiles
+    # Creating standard load profile time series for sinks referring to
+    # heat or electric standard load profiles
     for i, j in nodes_data["sinks"].iterrows():
-        demand = pd.DataFrame(
-            index=pd.date_range(datetime.datetime(start_date.year,
-                                                  start_date.month,
-                                                  start_date.day,
-                                                  start_date.hour),
-                                periods=periods, freq=temp_resolution))
+        demand = pandas.DataFrame(
+            index=pandas.date_range(datetime(start_date.year,
+                                             start_date.month,
+                                             start_date.day,
+                                             start_date.hour),
+                                    periods=periods, freq=temp_resolution))
 
-        if j["load profile"] in heat_slp_list or j["load profile"] in heat_slp_com:
+        if j["load profile"] in heat_slp_list + heat_slp_com:
             # sets the parameters of the heat slps
             args = {'temperature': weather_data['temperature'],
                     'shlp_type': j["load profile"],
@@ -281,8 +279,11 @@ def slp_sink_adaption(nodes_data: dict):
             if j["load profile"] in heat_slp_list:
                 args.update({'building_class': j['building class']})
             # Add heat SLP to Timeseries-Dataframe
-            slp=bdew.HeatBuilding(demand.index, **args).get_bdew_profile()
-            nodes_data['timeseries'].insert(loc=len(nodes_data['timeseries'].columns), column=j["label"]+'.fix',value=slp.tolist())
+            slp = bdew.HeatBuilding(demand.index, **args).get_bdew_profile()
+            nodes_data['timeseries'].insert(
+                    loc=len(nodes_data['timeseries'].columns),
+                    column=j["label"] + '.fix',
+                    value=slp.tolist())
 
             # Replacing SLP-index with timeseries index
             nodes_data["sinks"].at[i, 'load profile'] = 'timeseries'
@@ -291,19 +292,20 @@ def slp_sink_adaption(nodes_data: dict):
 
         # creates time series for electricity slps
         elif j["load profile"] in elec_slp_list:
-            year = datetime.datetime.strptime(str(ts['start date']),
-                                              '%Y-%m-%d %H:%M:%S').year
+            year = datetime.strptime(str(ts['start date']),
+                                     '%Y-%m-%d %H:%M:%S').year
             # Imports standard load profiles
             e_slp = bdew.ElecSlp(year)
-            # TODO Discuss if this is right !!! ( dyn_function_h0 )
             demand = e_slp.get_profile({j['load profile']: 1})
             # creates time series based on standard load profiles
             slp = demand.resample(temp_resolution).mean()
-            slp_list = [item for sublist in slp.values.tolist() for item in sublist]
+            slp_list = [item for sublist in slp.values.tolist()
+                        for item in sublist]
             del slp_list[:-int(ts['periods'])]
             nodes_data['timeseries'].insert(
                 loc=len(nodes_data['timeseries'].columns),
-                column=j["label"] + '.fix', value=slp_list)
+                column=j["label"] + '.fix',
+                value=slp_list)
             # nodes_data['timeseries'].append(slp, ignore_index=True)
 
             # Replacing SLP-index with timeseries index
@@ -311,18 +313,14 @@ def slp_sink_adaption(nodes_data: dict):
             # Replacing Nominal-Value
             nodes_data["sinks"].at[i, 'nominal value'] = j['annual demand']
 
-
         elif j["load profile"] == "timeseries":
             pass
         else:
-            raise ValueError('Invalid Load Profile for '+ str(j["label"]))
-
-    # Add newly created slp-timeseries to timeseries dataframe
-    # nodes_data['timeseries'] = nodes_data['timeseries'].append(slp_profiles, ignore_index=True, sort=False)
+            raise ValueError('Invalid Load Profile for ' + str(j["label"]))
 
 
-def k_means_timeseries_adaption(nodes_data: dict, clusters: int,
-                                cluster_labels, period: str):
+def timeseries_adaption(nodes_data: dict, clusters: int,
+                        cluster_labels: np.array, period: str):
     """
         TODO missing
         :param nodes_data: system parameters
@@ -344,20 +342,16 @@ def k_means_timeseries_adaption(nodes_data: dict, clusters: int,
                                 period=period)
     
     clusters = len(nodes_data["timeseries"]) // len(nodes_data["weather data"])
-    # Rename columns of the new timeseries-dataset
     
-    if period == 'hours':
-        prep_timeseries['timestamp'] = \
-            nodes_data['timeseries']['timestamp'][
-            :int(len(nodes_data['timeseries']))]
-    elif period == 'days':
-        prep_timeseries['timestamp'] = \
-            nodes_data['timeseries']['timestamp'][
-            :int(len(nodes_data['timeseries']) / clusters)]
-    elif period == 'weeks':
-        prep_timeseries['timestamp'] = \
-            nodes_data['timeseries']['timestamp'][
-            :int(len(nodes_data['timeseries']) / (clusters * 7))]
+    # dictionary holding the factor the timeseries length is divided by
+    cluster_dict = {'hours': 1, "days": clusters, "weeks": (clusters * 7)}
+    
+    # Rename columns of the new timeseries-dataset
+    prep_timeseries['timestamp'] = \
+        nodes_data['timeseries']['timestamp'][
+        :int(len(nodes_data['timeseries'] / cluster_dict.get(period)))]
+    
+    # change the nodes data timeseries sheet to the new prepared one
     nodes_data['timeseries'] = prep_timeseries
 
 
@@ -408,7 +402,7 @@ def timeseries_preparation(timeseries_prep_param: list,
                                           period=cluster_period)
 
     # K-MEDOIDS ALGORITHM
-    if data_prep == 'k_medoids':
+    elif data_prep == 'k_medoids':
         k_means_medoids.k_medoids_algorithm(cluster_period=cluster_period,
                                             days_per_cluster=days_per_cluster,
                                             criterion=cluster_criterion,
@@ -460,54 +454,10 @@ def timeseries_preparation(timeseries_prep_param: list,
     # ADAPTS THE PARAMETERS OF THE ENERGY SYSTEM
     if data_prep != 'none':
         path = result_path + "/modified_scenario.xlsx"
-        writer = pd.ExcelWriter(path, engine='xlsxwriter')
+        writer = pandas.ExcelWriter(path, engine='xlsxwriter')
         nodes_data['weather data'].to_excel(writer, sheet_name='weather data')
         nodes_data['timeseries'].to_excel(writer, sheet_name='time series')
         nodes_data['energysystem'].to_excel(writer, sheet_name='energysystem')
         nodes_data['sinks'].to_excel(writer, sheet_name='sinks')
         writer.close()
         scenario_file = path
-
-
-def change_optimization_criterion(nodes_data: dict):
-    """
-    Swaps the primary optimization criterion ("costs") with the
-    secondary criterion ("constraint costs") in the entire scenario. The
-    constraint limit is adjusted.
-
-    @ Christian Klemm - christian.klemm@fh-muenster.de
-
-    :param nodes_data: dictionary containing the parameters of the scenario
-    :type nodes_data: dict
-    
-    """
-    
-    for sheet in [*nodes_data]:
-        switch_dict = {
-            'constraint cost limit': 'cost limit',
-            'cost limit': 'constraint cost limit',
-            'variable costs': 'variable constraint costs',
-            'variable constraint costs': 'variable costs',
-            'periodical constraint costs': 'periodical costs',
-            'periodical costs': 'periodical constraint costs',
-            'variable output constraint costs': 'variable output costs',
-            'variable output costs': 'variable output constraint costs',
-            'variable output constraint costs 2': 'variable output costs 2',
-            'variable output costs 2': 'variable output constraint costs 2',
-            'variable input constraint costs': 'variable input costs',
-            'variable input costs': 'variable input constraint costs',
-            'excess constraint costs': 'excess costs',
-            'excess costs': 'excess constraint costs',
-            'shortage constraint costs': 'shortage costs',
-            'shortage costs': 'shortage constraint costs',
-            'fix investment constraint costs': 'fix investment costs',
-            'fix investment costs': 'fix investment constraint costs'}
-    
-        column_names = nodes_data[sheet].columns.values
-        column_names_list = column_names.tolist()
-    
-        column_names_list = [
-            (switch_dict.get(x) if x in switch_dict.keys() else x)
-            for x in column_names_list]
-    
-        nodes_data[sheet].columns = column_names_list

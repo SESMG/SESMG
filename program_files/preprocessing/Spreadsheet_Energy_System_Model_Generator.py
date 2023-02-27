@@ -161,7 +161,8 @@ import pandas as pd
 from threading import *
 import sys
 from program_files.preprocessing import (create_energy_system,
-                                         data_preparation)
+                                         data_preparation,
+                                         pareto_optimization)
 from program_files.preprocessing.components import (
     district_heating, Bus, Source, Sink, Transformer, Storage, Link)
 from program_files.preprocessing.create_graph import ESGraphRenderer
@@ -222,7 +223,7 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
 
     # CRITERION SWITCH
     if criterion_switch:
-        data_preparation.change_optimization_criterion(nodes_data)
+        pareto_optimization.change_optimization_criterion(nodes_data)
 
     if sys.platform.startswith("win"):
         scheme_path = \

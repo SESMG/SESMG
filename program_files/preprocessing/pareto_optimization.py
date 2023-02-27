@@ -1,5 +1,6 @@
 """
-    GregorBecker - gregor.becker@fh-muenster.de
+    Gregor Becker - gregor.becker@fh-muenster.de
+    Christian Klemm - christian.klemm@fh-muenster.de
 """
 
 import os
@@ -287,3 +288,45 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict):
                          sink_known=sink_types)
     
     return directory
+
+
+def change_optimization_criterion(nodes_data: dict):
+    """
+        Swaps the primary optimization criterion ("costs") with the
+        secondary criterion ("constraint costs") in the entire model \
+        definition. The constraint limit is adjusted.
+    
+        :param nodes_data: dictionary containing the parameters of the \
+            model definition
+        :type nodes_data: dict
+    """
+    
+    for sheet in [*nodes_data]:
+        switch_dict = {
+            'constraint cost limit': 'cost limit',
+            'cost limit': 'constraint cost limit',
+            'variable costs': 'variable constraint costs',
+            'variable constraint costs': 'variable costs',
+            'periodical constraint costs': 'periodical costs',
+            'periodical costs': 'periodical constraint costs',
+            'variable output constraint costs': 'variable output costs',
+            'variable output costs': 'variable output constraint costs',
+            'variable output constraint costs 2': 'variable output costs 2',
+            'variable output costs 2': 'variable output constraint costs 2',
+            'variable input constraint costs': 'variable input costs',
+            'variable input costs': 'variable input constraint costs',
+            'excess constraint costs': 'excess costs',
+            'excess costs': 'excess constraint costs',
+            'shortage constraint costs': 'shortage costs',
+            'shortage costs': 'shortage constraint costs',
+            'fix investment constraint costs': 'fix investment costs',
+            'fix investment costs': 'fix investment constraint costs'}
+        
+        column_names = nodes_data[sheet].columns.values
+        column_names_list = column_names.tolist()
+        
+        column_names_list = [
+            (switch_dict.get(x) if x in switch_dict.keys() else x)
+            for x in column_names_list]
+        
+        nodes_data[sheet].columns = column_names_list

@@ -9,7 +9,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from program_files.preprocessing.data_preparation \
     import calculate_cluster_means, append_timeseries_to_weatherdata_sheet,\
     variable_costs_date_adaption, extract_single_periods, \
-    k_means_timeseries_adaption
+    timeseries_adaption
 
 
 def calculate_k_means_clusters(cluster_number: int, weather_data: dict,
@@ -171,8 +171,7 @@ def k_means_algorithm(cluster_period: int, days_per_cluster: int,
     
     # Adapts Other Parameters (despite weather data) of the energy system
     variable_costs_date_adaption(nodes_data, clusters, period)
-    k_means_timeseries_adaption(nodes_data, clusters,
-                                cluster_labels, period)
+    timeseries_adaption(nodes_data, clusters, cluster_labels, period)
     
     
 def k_medoids_algorithm(cluster_period: int, days_per_cluster: int,
