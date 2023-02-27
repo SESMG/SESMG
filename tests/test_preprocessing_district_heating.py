@@ -16,7 +16,10 @@ def test_append_pipe():
         import append_pipe
     import dhnx
     thermal_net = dhnx.network.ThermalNetwork()
-    append_pipe("forks-1", "forks-2", 30.0, "test-street", thermal_net)
+    append_pipe(nodes=["forks-1", "forks-2"],
+                length=30.0,
+                street="test-street",
+                thermal_net=thermal_net)
     assert "forks-1" == str(thermal_net.components["pipes"]["from_node"][0])
     assert "forks-2" == str(thermal_net.components["pipes"]["to_node"][0])
     assert 30.0 == float(thermal_net.components["pipes"]["length"])
