@@ -43,9 +43,6 @@ def extract_single_periods(data_set, column_name, period):
     return cluster_vectors
 
 
-
-
-
 def calculate_cluster_means(data_set, cluster_number: int,
                             cluster_labels, period: str):
     """
@@ -249,19 +246,20 @@ def k_means_parameter_adaption(nodes_data: dict, clusters: int, period: str):
         nodes_data['energysystem']['periods'] = int(clusters)
 
 
-def slp_sink_adaption(nodes_data):
+def slp_sink_adaption(nodes_data: dict):
     """
-    calculates the standard load profil timeseries, saves them to the
-    timeseries data-sheet and changes the timeseries-reference for the
-    respective sinks within the sinks-sheet.
-
-    This step is required, so that the slp-timeseries will be considered during
-    the timeseries adaptions.
-
-    :param nodes_data:
-    :return:
+        calculates the standard load profile timeseries, saves them to
+        the timeseries data-sheet and changes the timeseries-reference
+        for the respective sinks within the sinks-sheet.
+    
+        This step is required, so that the slp-timeseries will be
+        considered during the timeseries adaptions.
+    
+        :param nodes_data: dict containing the data from the user's \
+            model definition
+        :type nodes_data: dict
+        :return:
     """
-
 
     # Lists of possible standard load profiles
     heat_slp_list = ['efh', 'mfh']
@@ -504,58 +502,33 @@ def change_optimization_criterion(nodes_data: dict):
     :type nodes_data: dict
     
     """
-
-    def switch_column_names(nd: dict, scenario_sheet: str):
-        """
-        For a defined component type (scenario_sheet) the optimization
-        criterion ("costs") is swapped by the secondary criterion ("constraint
-        costs")
-
-        :param nd: dictionary containing the parameters of the scenario
-        :type nd: dict
-        :param scenario_sheet: defines the component type, the parameters are
-                               to be swapped.
-        :type scenario_sheet: str
-        """
-        column_names = nd[scenario_sheet].columns.values
+    
+    for sheet in [*nodes_data]:
+        switch_dict = {
+            'constraint cost limit': 'cost limit',
+            'cost limit': 'constraint cost limit',
+            'variable costs': 'variable constraint costs',
+            'variable constraint costs': 'variable costs',
+            'periodical constraint costs': 'periodical costs',
+            'periodical costs': 'periodical constraint costs',
+            'variable output constraint costs': 'variable output costs',
+            'variable output costs': 'variable output constraint costs',
+            'variable output constraint costs 2': 'variable output costs 2',
+            'variable output costs 2': 'variable output constraint costs 2',
+            'variable input constraint costs': 'variable input costs',
+            'variable input costs': 'variable input constraint costs',
+            'excess constraint costs': 'excess costs',
+            'excess costs': 'excess constraint costs',
+            'shortage constraint costs': 'shortage costs',
+            'shortage costs': 'shortage constraint costs',
+            'fix investment constraint costs': 'fix investment costs',
+            'fix investment costs': 'fix investment constraint costs'}
+    
+        column_names = nodes_data[sheet].columns.values
         column_names_list = column_names.tolist()
-
-        column_names_list = \
-            ['variable constraint costs' if x == 'variable costs'
-             else 'variable costs' if x == 'variable constraint costs'
-             else 'periodical costs' if x == 'periodical constraint costs'
-             else 'periodical constraint costs' if x == 'periodical costs'
-             else 'variable output costs'
-             if x == 'variable output constraint costs'
-             else 'variable output constraint costs'
-             if x == 'variable output costs'
-             else 'variable output costs 2'
-             if x == 'variable output constraint costs 2'
-             else 'variable output constraint costs 2'
-             if x == 'variable output costs 2'
-             else 'variable input costs'
-             if x == 'variable input constraint costs'
-             else 'variable input constraint costs'
-             if x == 'variable input costs'
-             else 'excess costs' if x == 'excess constraint costs'
-             else 'excess constraint costs' if x == 'excess costs'
-             else 'shortage costs' if x == 'shortage constraint costs'
-             else 'shortage constraint costs' if x == 'shortage costs'
-             else 'fix investment costs' if x == 'fix investment constraint costs'
-             else 'fix investment constraint costs' if x == 'fix investment costs'
-             else x for x in column_names_list]
-
-        nd[scenario_sheet].columns = column_names_list
-
-    for i in [*nodes_data]:
-        switch_column_names(nodes_data, i)
-
-    # Sets the constraint Limit to "None"
-    nodes_data['energysystem']['constraint costs'] = 'None'
-
-    # Prints information
-    print('''Primary and secondary cost criterion successfully swapped.
-    ATTENTION, PLEASE NOTE:
-    1. The new constraint limit was automatically set to "None"
-    2. The swap does currently not support fix investment costs 
-    (non-convex-investments).''')
+    
+        column_names_list = [
+            (switch_dict.get(x) if x in switch_dict.keys() else x)
+            for x in column_names_list]
+    
+        nodes_data[sheet].columns = column_names_list
