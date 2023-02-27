@@ -6,9 +6,7 @@ import os
 
 
 # TODO find another way to get the combination of cluster and building id
-label_Cluster = {
-    "building_ID": "test_cluster"
-}
+label_Cluster = {"building_ID": "test_cluster"}
 
 # creating a list to reduce the number of rows
 decentral_components_list = [

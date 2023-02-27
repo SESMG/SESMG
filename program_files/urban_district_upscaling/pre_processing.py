@@ -42,8 +42,9 @@ def append_component(sheets: dict, sheet: str, comp_parameter: dict) -> dict:
     return sheets
 
 
-def read_standard_parameters(name: str, param_type: str, index: str,
-                             standard_parameters: pandas.ExcelFile):
+def read_standard_parameters(
+    name: str, param_type: str, index: str, standard_parameters: pandas.ExcelFile
+):
     """
         searches the right entry within the standard parameter sheet
 
@@ -80,8 +81,11 @@ def read_standard_parameters(name: str, param_type: str, index: str,
 
 
 def create_standard_parameter_comp(
-        specific_param: dict, standard_parameter_info: list, sheets,
-        standard_parameters: pandas.ExcelFile) -> dict:
+    specific_param: dict,
+    standard_parameter_info: list,
+    sheets,
+    standard_parameters: pandas.ExcelFile,
+) -> dict:
     """
         creates a component with standard_parameters, based on the
         standard parameters given in the "standard_parameters" dataset
@@ -112,20 +116,18 @@ def create_standard_parameter_comp(
         standard_parameter_info[0],
         standard_parameter_info[1],
         standard_parameter_info[2],
-        standard_parameters
+        standard_parameters,
     )
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
         specific_param[standard_keys[i]] = standard_param[standard_keys[i]]
     # appends the new created component to storages sheet
-    return append_component(sheets,
-                            standard_parameter_info[1][2:],
-                            specific_param)
+    return append_component(sheets, standard_parameter_info[1][2:], specific_param)
 
 
-def create_heat_pump_buses_links(building: dict, gchps: dict, sheets: dict,
-                                 standard_parameters: pandas.ExcelFile
-                                 ) -> dict:
+def create_heat_pump_buses_links(
+    building: dict, gchps: dict, sheets: dict, standard_parameters: pandas.ExcelFile
+) -> dict:
     """
         In this method, all buses and links required for the heat pumps\
         are created and attached to the "buses" and "links" dataframes \
@@ -157,27 +159,27 @@ def create_heat_pump_buses_links(building: dict, gchps: dict, sheets: dict,
         gchp_bool = True
         gchp_heat_bus = building["parcel ID"][-9:] + "_heat_bus"
         gchp_electricity_bus = building["parcel ID"][-9:] + "_hp_elec_bus"
-    
+
     # if a heatpump is investable for the considered building
     if gchp_bool or building["ashp"] in true_bools:
         # building hp electricity bus
         sheets = Bus.create_standard_parameter_bus(
-                label=str(building["label"]) + "_hp_elec_bus",
-                bus_type="building_hp_electricity_bus",
-                sheets=sheets,
-                standard_parameters=standard_parameters
+            label=str(building["label"]) + "_hp_elec_bus",
+            bus_type="building_hp_electricity_bus",
+            sheets=sheets,
+            standard_parameters=standard_parameters,
         )
         # electricity link from building electricity bus to hp
         # electricity bus
         sheets = Link.create_link(
-                label=str(building["label"]) + "_building_hp_elec_link",
-                bus_1=str(building["label"]) + "_electricity_bus",
-                bus_2=str(building["label"]) + "_hp_elec_bus",
-                link_type="building_hp_elec_link",
-                sheets=sheets,
-                standard_parameters=standard_parameters
+            label=str(building["label"]) + "_building_hp_elec_link",
+            bus_1=str(building["label"]) + "_electricity_bus",
+            bus_2=str(building["label"]) + "_hp_elec_bus",
+            link_type="building_hp_elec_link",
+            sheets=sheets,
+            standard_parameters=standard_parameters,
         )
-    
+
         if gchp and gchp_electricity_bus is not None:
             # electricity link from building hp electricity bus to
             # parcel hp electricity bus
@@ -187,7 +189,7 @@ def create_heat_pump_buses_links(building: dict, gchps: dict, sheets: dict,
                 bus_2=gchp_electricity_bus,
                 link_type="building_hp_elec_link",
                 sheets=sheets,
-                standard_parameters=standard_parameters
+                standard_parameters=standard_parameters,
             )
             # heat link from parcel hp heat bus to building heat bus
             sheets = Link.create_link(
@@ -196,22 +198,22 @@ def create_heat_pump_buses_links(building: dict, gchps: dict, sheets: dict,
                 bus_2=str(building["label"]) + "_heat_bus",
                 link_type="building_hp_heat_link",
                 sheets=sheets,
-                standard_parameters=standard_parameters
+                standard_parameters=standard_parameters,
             )
     return sheets
-    
-    
+
+
 def column_exists(building: pandas.Series, column: str) -> bool:
     """
-        Method which is used to check rather the column exists (True)
-        within the building Series or not (False).
-        
-        :param building: Series which contains the building data
-        :type building: pandas.Series
-        :param column: label of the investigated column
-        :type column: str
-        
-        :return: - **None** (bool) -
+    Method which is used to check rather the column exists (True)
+    within the building Series or not (False).
+
+    :param building: Series which contains the building data
+    :type building: pandas.Series
+    :param column: label of the investigated column
+    :type column: str
+
+    :return: - **None** (bool) -
     """
     # test rather the column exists
     try:
@@ -222,17 +224,17 @@ def column_exists(building: pandas.Series, column: str) -> bool:
     # else return true
     else:
         return True
-    
-    
+
+
 def represents_int(entry: str) -> bool:
     """
-        Method which is used to check rather the entry can be converted
-        into an integer.
-        
-        :param entry: entry under investigation
-        :type entry: str
-        
-        :return: - **None** (bool) -
+    Method which is used to check rather the entry can be converted
+    into an integer.
+
+    :param entry: entry under investigation
+    :type entry: str
+
+    :return: - **None** (bool) -
     """
     # test rather the entry is convertible
     try:
@@ -243,11 +245,14 @@ def represents_int(entry: str) -> bool:
     # else return true
     else:
         return True
-    
+
 
 def create_building_buses_links(
-        building: dict, central_elec_bus: bool, sheets: dict,
-        standard_parameters: pandas.ExcelFile) -> dict:
+    building: dict,
+    central_elec_bus: bool,
+    sheets: dict,
+    standard_parameters: pandas.ExcelFile,
+) -> dict:
     """
         In this method, all buses and links required for one building\
         are created and attached to the "buses" and "links" dataframes \
@@ -287,14 +292,14 @@ def create_building_buses_links(
         bus = "building_ind_electricity_bus"
     else:
         bus = "building_com_electricity_bus"
-        
+
     if pv_bus or building["building type"] not in ["0", 0]:
         # create the building electricity bus
         sheets = Bus.create_standard_parameter_bus(
             label=(str(building["label"]) + "_electricity_bus"),
             bus_type=bus,
             sheets=sheets,
-            standard_parameters=standard_parameters
+            standard_parameters=standard_parameters,
         )
         # create link from central electricity bus to building
         # electricity bus if the central electricity exchange is enabled
@@ -305,7 +310,7 @@ def create_building_buses_links(
                 bus_2=str(building["label"]) + "_electricity_bus",
                 link_type="building_central_building_link",
                 sheets=sheets,
-                standard_parameters=standard_parameters
+                standard_parameters=standard_parameters,
             )
 
     if building["building type"] not in ["0", 0]:
@@ -314,30 +319,31 @@ def create_building_buses_links(
             label=str(building["label"]) + "_heat_bus",
             bus_type="building_heat_bus",
             sheets=sheets,
-            coords=[building["latitude"],
-                    building["longitude"],
-                    1 if building["central heat"] in true_bools else 0],
-            standard_parameters=standard_parameters
+            coords=[
+                building["latitude"],
+                building["longitude"],
+                1 if building["central heat"] in true_bools else 0,
+            ],
+            standard_parameters=standard_parameters,
         )
-        
+
     if pv_bus:
         # create building pv bus
         sheets = Bus.create_standard_parameter_bus(
             label=str(building["label"]) + "_pv_bus",
             bus_type="building_pv_bus",
             sheets=sheets,
-            standard_parameters=standard_parameters
+            standard_parameters=standard_parameters,
         )
 
         # create link from pv bus to building electricity bus
         sheets = Link.create_link(
-            label=str(building["label"])
-            + "_pv_self_consumption_electricity_link",
+            label=str(building["label"]) + "_pv_self_consumption_electricity_link",
             bus_1=str(building["label"]) + "_pv_bus",
             bus_2=str(building["label"]) + "_electricity_bus",
             link_type="building_pv_building_link",
             sheets=sheets,
-            standard_parameters=standard_parameters
+            standard_parameters=standard_parameters,
         )
         # create link from pv bus to central electricity bus if the
         # central electricity exchange is enabled
@@ -348,14 +354,13 @@ def create_building_buses_links(
                 bus_2="central_electricity_bus",
                 link_type="building_pv_central_link",
                 sheets=sheets,
-                standard_parameters=standard_parameters
+                standard_parameters=standard_parameters,
             )
 
     return sheets
 
 
-def load_input_data(plain_sheet: str, standard_parameter_path: str,
-                    pre_scenario: str):
+def load_input_data(plain_sheet: str, standard_parameter_path: str, pre_scenario: str):
     """
         This method is used to convert the three ExcelFiles necessary \
         for the upscaling tool into pandas structures and then return \
@@ -387,10 +392,8 @@ def load_input_data(plain_sheet: str, standard_parameter_path: str,
     # get spreadsheet units from plain sheet
     for sheet in worksheets:
         sheets.update({sheet: pandas.DataFrame(columns=(columns[sheet]))})
-        units_series = pandas.Series(
-            data={a: "x" for a in sheets[sheet].keys()})
-        sheets[sheet] = pandas.concat([sheets[sheet],
-                                       pandas.DataFrame([units_series])])
+        units_series = pandas.Series(data={a: "x" for a in sheets[sheet].keys()})
+        sheets[sheet] = pandas.concat([sheets[sheet], pandas.DataFrame([units_series])])
     worksheets += ["weather data", "time series", "pipe types"]
 
     # load standard parameters from standard parameter file
@@ -413,8 +416,7 @@ def load_input_data(plain_sheet: str, standard_parameter_path: str,
     return sheets, central, parcel, tool, worksheets, standard_parameters
 
 
-def get_central_comp_active_status(central: pandas.DataFrame, technology: str
-                                   ) -> bool:
+def get_central_comp_active_status(central: pandas.DataFrame, technology: str) -> bool:
     """
         Method used to check if the central component technology is \
         enabled.
@@ -435,8 +437,12 @@ def get_central_comp_active_status(central: pandas.DataFrame, technology: str
         return False
 
 
-def create_gchp(tool: pandas.DataFrame, parcels: pandas.DataFrame,
-                sheets: dict, standard_parameters: pandas.ExcelFile):
+def create_gchp(
+    tool: pandas.DataFrame,
+    parcels: pandas.DataFrame,
+    sheets: dict,
+    standard_parameters: pandas.ExcelFile,
+):
     """
         Method that creates a GCHP and its buses for the parcel and \
         appends them to the sheets return structure.
@@ -475,19 +481,19 @@ def create_gchp(tool: pandas.DataFrame, parcels: pandas.DataFrame,
             transformer_type="building_gchp_transformer",
             sheets=sheets,
             standard_parameters=standard_parameters,
-            flow_temp="60"
+            flow_temp="60",
         )
         sheets = Bus.create_standard_parameter_bus(
             label=gchp + "_hp_elec_bus",
             bus_type="building_hp_electricity_bus",
             sheets=sheets,
-            standard_parameters=standard_parameters
+            standard_parameters=standard_parameters,
         )
         sheets = Bus.create_standard_parameter_bus(
             label=gchp + "_heat_bus",
             bus_type="building_heat_bus",
             sheets=sheets,
-            standard_parameters=standard_parameters
+            standard_parameters=standard_parameters,
         )
     return gchps, sheets
 
@@ -512,15 +518,16 @@ def urban_district_upscaling_pre_processing(
 
     print("Creating scenario sheet...")
     # loading typical scenario structure from plain sheet
-    sheets, central, parcel, tool, worksheets, standard_parameters = \
-        load_input_data(paths[3], paths[1], paths[0])
-    
+    sheets, central, parcel, tool, worksheets, standard_parameters = load_input_data(
+        paths[3], paths[1], paths[0]
+    )
+
     for sheet_tbc in [
         "energysystem",
         "weather data",
         "time series",
         "district heating",
-        "8_pipe_types"
+        "8_pipe_types",
     ]:
         if sheet_tbc not in pandas.ExcelFile(paths[0]).sheet_names:
             if sheet_tbc in standard_parameters.sheet_names:
@@ -532,7 +539,8 @@ def urban_district_upscaling_pre_processing(
                     sheet_tbc,
                     parse_dates=["timestamp"]
                     if sheet_tbc in ["weather data", "time series"]
-                    else [],)
+                    else [],
+                )
             if "4 - time series data" in pandas.ExcelFile(paths[0]).sheet_names:
                 sheets["weather data"] = pandas.ExcelFile(paths[0]).parse(
                     "4 - time series data", parse_dates=["timestamp"]
@@ -542,7 +550,7 @@ def urban_district_upscaling_pre_processing(
                 )
             if "3.1 - streets" in pandas.ExcelFile(paths[0]).sheet_names:
                 sheets["district heating"] = pandas.ExcelFile(paths[0]).parse(
-                     "3.1 - streets"
+                    "3.1 - streets"
                 )
         else:
             sheets[sheet_tbc] = pandas.ExcelFile(paths[0]).parse(
@@ -551,7 +559,7 @@ def urban_district_upscaling_pre_processing(
                 if sheet_tbc in ["weather data", "time series"]
                 else [],
             )
-    
+
     # set variable for central heating / electricity if activated to
     # decide rather a house can be connected to the central heat
     # network / central electricity network or not
@@ -563,7 +571,8 @@ def urban_district_upscaling_pre_processing(
 
     # create central components
     sheets = Central_components.central_comp(
-        central, true_bools, sheets, standard_parameters)
+        central, true_bools, sheets, standard_parameters
+    )
 
     gchps, sheets = create_gchp(tool, parcel, sheets, standard_parameters)
     for num, building in tool[tool["active"] == 1].iterrows():
@@ -571,13 +580,14 @@ def urban_district_upscaling_pre_processing(
             building=building,
             sheets=sheets,
             central_elec_bus=central_electricity_network,
-            standard_parameters=standard_parameters
+            standard_parameters=standard_parameters,
         )
         sheets = create_heat_pump_buses_links(
             building=building,
             gchps=gchps,
             sheets=sheets,
-            standard_parameters=standard_parameters)
+            standard_parameters=standard_parameters,
+        )
 
         sheets = Sink.create_sinks(
             building=building, standard_parameters=standard_parameters, sheets=sheets
@@ -589,18 +599,21 @@ def urban_district_upscaling_pre_processing(
 
         # create sources
         sheets = Source.create_sources(
-            building=building, clustering=clustering, sheets=sheets,
-            standard_parameters=standard_parameters
+            building=building,
+            clustering=clustering,
+            sheets=sheets,
+            standard_parameters=standard_parameters,
         )
         # create transformer
         sheets = Transformer.building_transformer(
-            building=building, p2g_link=p2g_link,
-            sheets=sheets, standard_parameters=standard_parameters
+            building=building,
+            p2g_link=p2g_link,
+            sheets=sheets,
+            standard_parameters=standard_parameters,
         )
         # create storages
         sheets = Storage.building_storages(
-            building=building, sheets=sheets,
-            standard_parameters=standard_parameters
+            building=building, sheets=sheets, standard_parameters=standard_parameters
         )
 
         print(str(building["label"]) + " subsystem added to scenario sheet.")

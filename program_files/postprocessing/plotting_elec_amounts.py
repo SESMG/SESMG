@@ -2,8 +2,12 @@ import pandas
 import os
 
 
-def pv_elec_amount(components_df: pandas.DataFrame, pv_st: str,
-                   dataframe: pandas.DataFrame, amounts_dict: dict):
+def pv_elec_amount(
+    components_df: pandas.DataFrame,
+    pv_st: str,
+    dataframe: pandas.DataFrame,
+    amounts_dict: dict,
+):
     """
     method which is used to get the pv system earnings in total and
     azimuth specific as well as the output buses for later excess
@@ -45,8 +49,8 @@ def pv_elec_amount(components_df: pandas.DataFrame, pv_st: str,
 
 
 def collect_electricity_amounts(
-        dataframes: dict, nodes_data: dict, result_path: str,
-        sink_known: dict) -> None:
+    dataframes: dict, nodes_data: dict, result_path: str, sink_known: dict
+) -> None:
     """
     main function of the algorithm to plot an electricity amount plot
     after running an pareto optimization
@@ -68,8 +72,9 @@ def collect_electricity_amounts(
     from program_files.postprocessing.plotting import (
         get_dataframe_from_nodes_data,
         get_value,
-        dict_to_dataframe
+        dict_to_dataframe,
     )
+
     # data frame to plot the amounts using matplotlib
     elec_amounts = pandas.DataFrame()
     elec_amounts_dict = {}
@@ -82,14 +87,12 @@ def collect_electricity_amounts(
         if key != "0":
             reductionco2 = (
                 sum(dataframes[key]["constraints/CU"]) / emissions_100_percent
-                )
+            )
         else:
-            reductionco2 = ((
+            reductionco2 = (
                 sum(dataframes[key]["periodical costs/CU"])
                 + sum(dataframes[key]["variable costs/CU"])
-                )
-                / emissions_100_percent
-                )
+            ) / emissions_100_percent
         elec_amounts_dict.update(
             {
                 "run": str(key),
@@ -126,7 +129,7 @@ def collect_electricity_amounts(
                 "central_elec": [],
                 "central_elec_excess": [],
                 "central_consumption": [],
-                "reductionco2": reductionco2
+                "reductionco2": reductionco2,
             }
         )
         dataframe = dataframes[key].copy()
@@ -137,15 +140,14 @@ def collect_electricity_amounts(
         # input buses of the sinks
         df_sinks = components_df[(components_df["annual demand"].notna())]
         df_sinks = pandas.concat(
-                [df_sinks,
-                 components_df[(components_df["nominal value"].notna())]]
+            [df_sinks, components_df[(components_df["nominal value"].notna())]]
         ).drop_duplicates()
         buses = []
         for sink in sink_known:
             if sink_known[sink][0] and sink in df_sinks["label"].values:
                 buses.append(df_sinks.loc[df_sinks["label"] == sink]["input"].values[0])
                 elec_amounts_dict["Electricity_Demand"].append(
-                        get_value(sink, "input 1/kWh", dataframe)
+                    get_value(sink, "input 1/kWh", dataframe)
                 )
 
         # get the energy system's links
@@ -156,26 +158,36 @@ def collect_electricity_amounts(
         for num, link in df_links.iterrows():
             if link["bus2"] in buses:
                 link_buses.append(link["bus1"])
-                
+
         # search for duplicate buses in building link connections
         seen = set()
         central_buses = [x for x in link_buses if x in seen or seen.add(x)]
         central_buses = list(dict.fromkeys(central_buses))
         seen = set()
-        decentral_buses = [x for x in link_buses if x not in seen
-                           and not seen.add(x)]
-        decentral_buses = list(set(list(dict.fromkeys(decentral_buses)))
-                               - set(central_buses))
+        decentral_buses = [x for x in link_buses if x not in seen and not seen.add(x)]
+        decentral_buses = list(
+            set(list(dict.fromkeys(decentral_buses))) - set(central_buses)
+        )
         # get all components that are connected directly to the central
         # elec bus
         series_central_elec = pandas.Series()
         for i in range(0, len(central_buses)):
-            series_central_elec = pandas.concat([series_central_elec,
-                components_df.loc[components_df["output"] == central_buses[i]]
-                ["label"]])
-            series_central_elec = pandas.concat([series_central_elec,
-                components_df.loc[components_df["output2"] == central_buses[i]]
-                ["label"]])
+            series_central_elec = pandas.concat(
+                [
+                    series_central_elec,
+                    components_df.loc[components_df["output"] == central_buses[i]][
+                        "label"
+                    ],
+                ]
+            )
+            series_central_elec = pandas.concat(
+                [
+                    series_central_elec,
+                    components_df.loc[components_df["output2"] == central_buses[i]][
+                        "label"
+                    ],
+                ]
+            )
         for i in series_central_elec.values:
             output = get_value(i, "output 1/kWh", dataframe)
             elec_amounts_dict["fuelcell"].append(output)
@@ -183,93 +195,137 @@ def collect_electricity_amounts(
         # Based on the central buses, further buses are searched via the links
         link_buses = []
         for num, link in df_links.iterrows():
-            if link["bus2"] in central_buses \
-                    and link["bus1"] not in decentral_buses:
+            if link["bus2"] in central_buses and link["bus1"] not in decentral_buses:
                 link_buses.append(link["bus1"])
         for j in ["output", "output2"]:
             series_central_elec = pandas.Series()
             for i in range(0, len(link_buses)):
                 series_central_elec = pandas.concat(
-                    [series_central_elec, components_df.loc[
-                        components_df[j] == link_buses[i]]["label"]])
+                    [
+                        series_central_elec,
+                        components_df.loc[components_df[j] == link_buses[i]]["label"],
+                    ]
+                )
 
             for i in series_central_elec.values:
-                if str(components_df.loc[components_df["label"] == i]
-                       ["transformer type"].values[0]) == "GenericTransformer":
+                if (
+                    str(
+                        components_df.loc[components_df["label"] == i][
+                            "transformer type"
+                        ].values[0]
+                    )
+                    == "GenericTransformer"
+                ):
                     # TODO since we do not differentiate the chp's fuel we
                     # TODO have to use the label
-                    output = get_value(i,
-                                       "output 1/kWh" if j == "output"
-                                       else "output 2/kWh",
-                                       dataframe)
+                    output = get_value(
+                        i,
+                        "output 1/kWh" if j == "output" else "output 2/kWh",
+                        dataframe,
+                    )
                     if "wc" in i:
                         elec_amounts_dict["central_wc_elec"].append(output)
                         elec_amounts_dict["central_wc_elec_excess"].append(
-                                get_value(components_df.loc[
-                                              components_df["label"] == i]
-                                          [j].values[0] + "_excess",
-                                          "input 1/kWh",
-                                          dataframe)
+                            get_value(
+                                components_df.loc[components_df["label"] == i][
+                                    j
+                                ].values[0]
+                                + "_excess",
+                                "input 1/kWh",
+                                dataframe,
+                            )
                         )
                     elif "ng" in i:
                         elec_amounts_dict["central_ng_elec"].append(output)
                         elec_amounts_dict["central_ng_elec_excess"].append(
-                                get_value(components_df.loc[
-                                              components_df["label"] == i]
-                                          [j].values[0] + "_excess",
-                                          "input 1/kWh",
-                                          dataframe)
+                            get_value(
+                                components_df.loc[components_df["label"] == i][
+                                    j
+                                ].values[0]
+                                + "_excess",
+                                "input 1/kWh",
+                                dataframe,
+                            )
                         )
                     elif "bg" in i:
                         elec_amounts_dict["central_bg_elec"].append(output)
                         elec_amounts_dict["central_bg_elec_excess"].append(
-                                get_value(components_df.loc[
-                                              components_df["label"] == i]
-                                          [j].values[0] + "_excess",
-                                          "input 1/kWh",
-                                          dataframe)
+                            get_value(
+                                components_df.loc[components_df["label"] == i][
+                                    j
+                                ].values[0]
+                                + "_excess",
+                                "input 1/kWh",
+                                dataframe,
+                            )
                         )
                     elif "pe" in i:
                         elec_amounts_dict["central_pe_elec"].append(output)
                         elec_amounts_dict["central_pe_elec_excess"].append(
-                                get_value(components_df.loc[
-                                              components_df["label"] == i]
-                                          [j].values[0] + "_excess",
-                                          "input 1/kWh",
-                                          dataframe)
+                            get_value(
+                                components_df.loc[components_df["label"] == i][
+                                    j
+                                ].values[0]
+                                + "_excess",
+                                "input 1/kWh",
+                                dataframe,
+                            )
                         )
                     else:
                         elec_amounts_dict["central_elec"].append(output)
                         elec_amounts_dict["central_elec_excess"].append(
-                                get_value(components_df.loc[
-                                              components_df["label"] == i]
-                                          [j].values[0] + "_excess",
-                                          "input 1/kWh",
-                                          dataframe)
+                            get_value(
+                                components_df.loc[components_df["label"] == i][
+                                    j
+                                ].values[0]
+                                + "_excess",
+                                "input 1/kWh",
+                                dataframe,
+                            )
                         )
                 # search for central timeseries source
-                if str(components_df.loc[components_df["label"] == i]
-                       ["technology"].values[0]) == "timeseries":
+                if (
+                    str(
+                        components_df.loc[components_df["label"] == i][
+                            "technology"
+                        ].values[0]
+                    )
+                    == "timeseries"
+                ):
                     output = get_value(i, "output 1/kWh", dataframe)
                     elec_amounts_dict["central_elec"].append(output)
                     elec_amounts_dict["central_elec_excess"].append(
-                        get_value(components_df.loc[
-                                      components_df["label"] == i]
-                                  ["output"].values[0] + "_excess",
-                                  "input 1/kWh",
-                                  dataframe)
+                        get_value(
+                            components_df.loc[components_df["label"] == i][
+                                "output"
+                            ].values[0]
+                            + "_excess",
+                            "input 1/kWh",
+                            dataframe,
+                        )
                     )
         for i in range(0, len(central_buses)):
-            series_central_elec = pandas.concat([series_central_elec,
-                components_df.loc[components_df["input"] == central_buses[i]]
-                ["label"]])
+            series_central_elec = pandas.concat(
+                [
+                    series_central_elec,
+                    components_df.loc[components_df["input"] == central_buses[i]][
+                        "label"
+                    ],
+                ]
+            )
         for i in series_central_elec.values:
-            if str(components_df.loc[components_df["label"] == i]
-                   ["transformer type"].values[0]) == "GenericTransformer":
+            if (
+                str(
+                    components_df.loc[components_df["label"] == i][
+                        "transformer type"
+                    ].values[0]
+                )
+                == "GenericTransformer"
+            ):
                 elec_amounts_dict["central_consumption"].append(
                     get_value(i, "input 1/kWh", dataframe)
                 )
-        
+
         # get the PV-Systems' amounts using pv_elec amount method above
         elec_amounts_dict, pv_buses = pv_elec_amount(
             components_df.copy(), "photovoltaic", dataframe, elec_amounts_dict
@@ -279,7 +335,7 @@ def collect_electricity_amounts(
             elec_amounts_dict["PV_excess"].append(
                 get_value(str(bus) + "_excess", "input 1/kWh", dataframe)
             )
-        
+
         # get the energy system's solar thermal flat plates from nodes
         # data TODO CSP
         df_st = components_df[
@@ -290,17 +346,14 @@ def collect_electricity_amounts(
         for num, comp in df_st.iterrows():
             input1 = get_value(comp["label"], "input 1/kWh", dataframe)
             input2 = get_value(comp["label"], "input 2/kWh", dataframe)
-            elec_amounts_dict["ST_elec"].append(
-                input1 if input1 < input2 else input2
-            )
-        
+            elec_amounts_dict["ST_elec"].append(input1 if input1 < input2 else input2)
+
         # get the energy system's heat pumps from nodes data
         df_hp = components_df[
             (components_df.isin(["CompressionHeatTransformer"])).any(axis=1)
         ]
-        df_hp = pandas.concat([
-            df_hp,
-            (components_df.isin(["AbsorptionHeatTransformer"])).any(axis=1)]
+        df_hp = pandas.concat(
+            [df_hp, (components_df.isin(["AbsorptionHeatTransformer"])).any(axis=1)]
         )
         # append the electric consumption of the heat pumps on the elec
         # amounts dict
@@ -308,25 +361,19 @@ def collect_electricity_amounts(
             input1 = get_value(comp["label"], "input 1/kWh", dataframe)
             input2 = get_value(comp["label"], "input 2/kWh", dataframe)
             if comp["heat source"] == "Ground":
-                elec_amounts_dict["GCHP"].append(
-                    input1 if input1 < input2 else input2
-                )
+                elec_amounts_dict["GCHP"].append(input1 if input1 < input2 else input2)
             elif comp["heat source"] == "Air":
-                elec_amounts_dict["ASHP"].append(
-                    input1 if input1 < input2 else input2
-                )
+                elec_amounts_dict["ASHP"].append(input1 if input1 < input2 else input2)
             elif comp["heat source"] == "Water":
-                elec_amounts_dict["SWHP"].append(
-                    input1 if input1 < input2 else input2
-                )
+                elec_amounts_dict["SWHP"].append(input1 if input1 < input2 else input2)
 
         # get the energy system's sinks from nodes data
-        #df_sinks = components_df[(components_df["annual demand"].notna())]
-        #df_sinks = pandas.concat(
+        # df_sinks = components_df[(components_df["annual demand"].notna())]
+        # df_sinks = pandas.concat(
         #    [df_sinks, components_df[(components_df["nominal value"].notna())]]
-        #).drop_duplicates()
+        # ).drop_duplicates()
         ## collect the amount of electricity demand
-        #for num, sink in df_sinks.iterrows():
+        # for num, sink in df_sinks.iterrows():
         #    if sink_known[sink["label"]][0]:
         #        elec_amounts_dict["Electricity_Demand"].append(
         #            get_value(sink["label"], "input 1/kWh", dataframe)
@@ -343,10 +390,9 @@ def collect_electricity_amounts(
                 elec_amounts_dict["Electric_heating"].append(
                     get_value(comp["label"], "input 1/kWh", dataframe)
                 )
-        
+
         # get the energy system's generic storages from nodes data
-        df_storage = components_df[
-            (components_df.isin(["Generic"])).any(axis=1)]
+        df_storage = components_df[(components_df.isin(["Generic"])).any(axis=1)]
         # append the electric losses and output of generic battery
         # storages on the elec amounts dict
         for num, comp in df_storage.iterrows():
@@ -355,17 +401,16 @@ def collect_electricity_amounts(
                 elec_amounts_dict["Battery_output"].append(value)
                 input_val = get_value(comp["label"], "input 1/kWh", dataframe)
                 elec_amounts_dict["Battery_losses"].append(input_val - value)
-        
+
         # get the energy system's shortage buses
         df_buses = components_df[(components_df["shortage"] == 1)]
         # append the imported elec amount on elec amounts dict
         for num, comp in df_buses.iterrows():
             if "elec" in comp["label"]:
                 elec_amounts_dict["grid_import"].append(
-                    get_value(comp["label"] + "_shortage",
-                              "output 1/kWh", dataframe)
+                    get_value(comp["label"] + "_shortage", "output 1/kWh", dataframe)
                 )
-        
+
         # get the energy system's links
         df_links = components_df[(components_df["bus1"].notna())]
         # append the electricity transport from pv systems to local
@@ -381,5 +426,3 @@ def collect_electricity_amounts(
         elec_amounts = dict_to_dataframe(elec_amounts_dict, elec_amounts)
     elec_amounts.set_index("run", inplace=True, drop=False)
     elec_amounts.to_csv(result_path + "/elec_amounts.csv")
-
-

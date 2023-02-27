@@ -114,9 +114,9 @@ def append_flows(label, comp_dict, df_result_table):
         if str(type(comp_dict[flow])) not in ["<class 'float'>", "<class 'int'>"]:
             if sum(comp_dict[flow]) != 0:
                 dict_of_columns[label + flow_type_dict[flow]] = comp_dict[flow]
-    df_result_table = pandas.concat([df_result_table,
-                                     pandas.DataFrame(dict_of_columns)],
-                                    axis=1)
+    df_result_table = pandas.concat(
+        [df_result_table, pandas.DataFrame(dict_of_columns)], axis=1
+    )
     return df_result_table
 
 

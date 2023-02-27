@@ -198,7 +198,6 @@ class demo_frame_class(MethodsGUI):
         print(self.results_dict)
 
     def plot_results_scatter(self):
-
         plt.xlabel("Mio. EUR/a")
         plt.ylabel("t/a")
 

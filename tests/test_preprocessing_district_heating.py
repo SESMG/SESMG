@@ -1,7 +1,7 @@
 def test_create_fork():
-    from program_files.preprocessing.components.district_heating \
-        import create_fork
+    from program_files.preprocessing.components.district_heating import create_fork
     import dhnx
+
     thermal_net = dhnx.network.ThermalNetwork()
     create_fork(["x", 10, 10, "x", 0.5, "test"], 1, thermal_net, "testbus")
     assert 10 == int(thermal_net.components["forks"]["lat"])
@@ -12,9 +12,9 @@ def test_create_fork():
 
 
 def test_append_pipe():
-    from program_files.preprocessing.components.district_heating \
-        import append_pipe
+    from program_files.preprocessing.components.district_heating import append_pipe
     import dhnx
+
     thermal_net = dhnx.network.ThermalNetwork()
     append_pipe("forks-1", "forks-2", 30.0, "test-street", thermal_net)
     assert "forks-1" == str(thermal_net.components["pipes"]["from_node"][0])

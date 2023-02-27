@@ -14,8 +14,9 @@ from program_files.preprocessing.components.district_heating_clustering import *
 thermal_net = dhnx.network.ThermalNetwork()
 
 
-def concat_on_thermal_net_components(comp_type: str, new_dict: dict,
-                                     thermal_net) -> None:
+def concat_on_thermal_net_components(
+    comp_type: str, new_dict: dict, thermal_net
+) -> None:
     """
     outsourced the concatenation which is part of several algorithm
     steps
@@ -31,11 +32,10 @@ def concat_on_thermal_net_components(comp_type: str, new_dict: dict,
     """
     # create consumers forks pandas Dataframe for thermal network
     thermal_net.components[comp_type] = pd.concat(
-        [thermal_net.components[comp_type],
-         pd.DataFrame([pd.Series(data=new_dict)])]
+        [thermal_net.components[comp_type], pd.DataFrame([pd.Series(data=new_dict)])]
     )
-    
-    
+
+
 def clear_thermal_net():
     """
     Method used to clear the pandas dataframes of thermal network
@@ -70,8 +70,7 @@ def create_fork(point: list, label: int, thermal_net, bus=None):
     concat_on_thermal_net_components("forks", fork_dict, thermal_net)
 
 
-def append_pipe(from_node: str, to_node: str, length: float, street: str,
-                thermal_net):
+def append_pipe(from_node: str, to_node: str, length: float, street: str, thermal_net):
     """
     method which is used to append the heatpipeline specified by the
     methods parameter to the list of pipes
@@ -160,7 +159,7 @@ def create_connection_points(consumers, road_sections):
                     "label": consumer["label"],
                     "street": foot_point[5],
                 },
-                thermal_net
+                thermal_net,
             )
             # add fork of perpendicular foot point to the dataframe
             # of forks
@@ -172,7 +171,7 @@ def create_connection_points(consumers, road_sections):
                 foot_point[0][:-5],
                 foot_point[3],
                 label,
-                thermal_net
+                thermal_net,
             )
             consumer_counter += 1
             logging.info("\t Connected {} to district heating network".format(label))
@@ -204,7 +203,7 @@ def create_intersection_forks(street_sec: pd.DataFrame) -> None:
                     }
                 )
                 fork_num += 1
-            
+
     # append all points on forks dataframe
     for point in road_section_points:
         concat_on_thermal_net_components(
@@ -215,7 +214,7 @@ def create_intersection_forks(street_sec: pd.DataFrame) -> None:
                 "lon": road_section_points[point][1],
                 "component_type": "Fork",
             },
-            thermal_net
+            thermal_net,
         )
 
 
@@ -244,21 +243,23 @@ def create_producer_connection_point(nodes_data: pd.DataFrame, road_sections):
                     "component_type": "Producer",
                     "active": 1,
                 },
-                thermal_net
+                thermal_net,
             )
             foot_point = get_nearest_perp_foot_point(
                 bus, road_sections, number, "producers"
             )
             create_fork(
-                foot_point, len(thermal_net.components["forks"]) + 1,
-                thermal_net, bus["label"]
+                foot_point,
+                len(thermal_net.components["forks"]) + 1,
+                thermal_net,
+                bus["label"],
             )
             append_pipe(
                 "producers-{}".format(number),
                 "forks-{}".format(len(thermal_net.components["forks"])),
                 foot_point[3],
                 bus["label"],
-                thermal_net
+                thermal_net,
             )
             number += 1
             logging.info(
@@ -381,22 +382,21 @@ def create_components(nodes_data, anergy_or_exergy):
     start_date = str(nodes_data["energysystem"]["start date"].values[0])
     # changes names of data columns,
     # so it fits the needs of the feedinlib
-    name_dc = {"min. investment capacity": "cap_min",
-               "max. investment capacity": "cap_max",
-               "periodical costs": "capex_pipes",
-               "fix investment costs": "fix_costs",
-               "periodical constraint costs": "periodical_constraint_costs",
-               "fix investment constraint costs": "fix_constraint_costs"}
+    name_dc = {
+        "min. investment capacity": "cap_min",
+        "max. investment capacity": "cap_max",
+        "periodical costs": "capex_pipes",
+        "fix investment costs": "fix_costs",
+        "periodical constraint costs": "periodical_constraint_costs",
+        "fix investment constraint costs": "fix_constraint_costs",
+    }
     nodes_data["pipe types"] = nodes_data["pipe types"].rename(columns=name_dc)
-      
+
     # set standard investment options that do not require user modification
     invest_opt = {
         "consumers": {
             "bus": pd.DataFrame(
-                {"label_2": "heat",
-                 "active": 1,
-                 "excess": 0,
-                 "shortage": 0}, index=[0]
+                {"label_2": "heat", "active": 1, "excess": 0, "shortage": 0}, index=[0]
             ),
             "demand": pd.DataFrame(
                 {"label_2": "heat", "active": 1, "nominal_value": 1}, index=[0]
@@ -416,8 +416,20 @@ def create_components(nodes_data, anergy_or_exergy):
             "source": pd.DataFrame({"label_2": "heat", "active": 0}, index=[0]),
         },
         "network": {
-            "pipes": nodes_data["pipe types"].loc[(nodes_data["pipe types"]["anergy_or_exergy"] == ("anergy" if anergy_or_exergy else "exergy")) & (nodes_data["pipe types"]["distribution_pipe"] == 1)],
-            "pipes_houses": nodes_data["pipe types"].loc[(nodes_data["pipe types"]["anergy_or_exergy"] == ("anergy" if anergy_or_exergy else "exergy")) & (nodes_data["pipe types"]["building_pipe"] == 1)],
+            "pipes": nodes_data["pipe types"].loc[
+                (
+                    nodes_data["pipe types"]["anergy_or_exergy"]
+                    == ("anergy" if anergy_or_exergy else "exergy")
+                )
+                & (nodes_data["pipe types"]["distribution_pipe"] == 1)
+            ],
+            "pipes_houses": nodes_data["pipe types"].loc[
+                (
+                    nodes_data["pipe types"]["anergy_or_exergy"]
+                    == ("anergy" if anergy_or_exergy else "exergy")
+                )
+                & (nodes_data["pipe types"]["building_pipe"] == 1)
+            ],
         },
     }
     # start dhnx algorithm to create dh components
@@ -433,7 +445,7 @@ def create_components(nodes_data, anergy_or_exergy):
             + str(start_date[0:4])
         ),
         frequence=(str(frequency[0])).upper(),
-        label_5="anergy" if anergy_or_exergy else "exergy"
+        label_5="anergy" if anergy_or_exergy else "exergy",
     )
     return oemof_opti_model
 
@@ -443,27 +455,31 @@ def calc_heat_pipe_attributes(oemof_opti_model, anergy_or_exergy, nodes_data):
         if str(type(a)) == "<class 'oemof.solph.network.bus.Bus'>":
             pass
         else:
-            label = a.label.tag3	
-            if int(nodes_data["pipe types"].loc[
-                       nodes_data["pipe types"]["label_3"] == label][
-                       "nonconvex"]) == 0:
+            label = a.label.tag3
+            if (
+                int(
+                    nodes_data["pipe types"].loc[
+                        nodes_data["pipe types"]["label_3"] == label
+                    ]["nonconvex"]
+                )
+                == 0
+            ):
                 ep_costs = getattr(
                     a.outputs[list(a.outputs.keys())[0]].investment, "ep_costs"
                 )
                 length = ep_costs / float(
                     nodes_data["pipe types"].loc[
-                        nodes_data["pipe types"]["label_3"] == label][
-                        "capex_pipes"]
+                        nodes_data["pipe types"]["label_3"] == label
+                    ]["capex_pipes"]
                 )
                 setattr(
-                        a.outputs[list(a.outputs.keys())[0]].investment,
-                        "periodical_constraint_costs",
-                        length
-                        * float(
-                            nodes_data["pipe types"].loc[
-                                nodes_data["pipe types"]["label_3"] == label][
-                                "periodical_constraint_costs"
-                            ]
+                    a.outputs[list(a.outputs.keys())[0]].investment,
+                    "periodical_constraint_costs",
+                    length
+                    * float(
+                        nodes_data["pipe types"].loc[
+                            nodes_data["pipe types"]["label_3"] == label
+                        ]["periodical_constraint_costs"]
                     ),
                 )
             else:
@@ -472,36 +488,34 @@ def calc_heat_pipe_attributes(oemof_opti_model, anergy_or_exergy, nodes_data):
                 )
                 length = fix_costs / float(
                     nodes_data["pipe types"].loc[
-                        nodes_data["pipe types"]["label_3"] == label][
-                        "fix_costs"]
+                        nodes_data["pipe types"]["label_3"] == label
+                    ]["fix_costs"]
                 )
-                
+
             setattr(
-                    a.outputs[list(a.outputs.keys())[0]].investment,
-                    "periodical_constraint_costs",
-                    length
-                    * float(
-                            nodes_data["pipe types"].loc[
-                                nodes_data["pipe types"]["label_3"] == label][
-                                "periodical_constraint_costs"
-                            ]
-                    ),
+                a.outputs[list(a.outputs.keys())[0]].investment,
+                "periodical_constraint_costs",
+                length
+                * float(
+                    nodes_data["pipe types"].loc[
+                        nodes_data["pipe types"]["label_3"] == label
+                    ]["periodical_constraint_costs"]
+                ),
             )
             setattr(
-                    a.outputs[list(a.outputs.keys())[0]].investment,
-                    "fix_constraint_costs",
-                    length
-                    * float(
-                            nodes_data["pipe types"].loc[
-                                nodes_data["pipe types"]["label_3"] == label][
-                                "fix_constraint_costs"
-                            ]
-                    ),
+                a.outputs[list(a.outputs.keys())[0]].investment,
+                "fix_constraint_costs",
+                length
+                * float(
+                    nodes_data["pipe types"].loc[
+                        nodes_data["pipe types"]["label_3"] == label
+                    ]["fix_constraint_costs"]
+                ),
             )
-            
+
             setattr(a.inputs[list(a.inputs.keys())[0]], "emission_factor", 0)
             setattr(a.outputs[list(a.outputs.keys())[0]], "emission_factor", 0)
-            
+
     return oemof_opti_model
 
 
@@ -518,25 +532,29 @@ def connect_dh_to_system(oemof_opti_model, busd, nodes_data):
             model within connection to the main model
     """
     oemof_opti_model = remove_redundant_sinks(oemof_opti_model)
-    oemof_opti_model = calc_heat_pipe_attributes(oemof_opti_model, False,
-                                                 nodes_data)
-    
+    oemof_opti_model = calc_heat_pipe_attributes(oemof_opti_model, False, nodes_data)
+
     # create link to connect consumers heat bus to the dh-system
     for num, consumer in thermal_net.components["consumers"].iterrows():
-        
-        label = heatpipe.Label("consumers", "heat", "bus",
-                               "consumers-{}".format(consumer["id"]), "exergy")
-        
+        label = heatpipe.Label(
+            "consumers", "heat", "bus", "consumers-{}".format(consumer["id"]), "exergy"
+        )
+
         inputs = {oemof_opti_model.buses[label]: solph.Flow(emission_factor=0)}
-        
+
         outputs = {
             busd[consumer["input"]]: solph.Flow(
                 investment=solph.Investment(
                     ep_costs=float(
-                        nodes_data["pipe types"].loc[nodes_data["pipe types"]["label_3"] == "dh_heatstation"]["capex_pipes"]),
+                        nodes_data["pipe types"].loc[
+                            nodes_data["pipe types"]["label_3"] == "dh_heatstation"
+                        ]["capex_pipes"]
+                    ),
                     periodical_constraint_costs=float(
-                        nodes_data["pipe types"].loc[nodes_data["pipe types"]["label_3"] == "dh_heatstation"][
-                            "periodical_constraint_costs"]),
+                        nodes_data["pipe types"].loc[
+                            nodes_data["pipe types"]["label_3"] == "dh_heatstation"
+                        ]["periodical_constraint_costs"]
+                    ),
                     minimum=0,
                     maximum=999 * len(consumer["input"]),
                     existing=0,
@@ -544,23 +562,26 @@ def connect_dh_to_system(oemof_opti_model, busd, nodes_data):
                     fix_constraint_costs=0,
                 ),
                 emission_factor=0,
-            )}
-        
+            )
+        }
+
         conversion_factors = {
             (label, busd[consumer["input"]]): float(
-                nodes_data["pipe types"].loc[nodes_data["pipe types"]["label_3"] =="dh_heatstation"]["efficiency"])
+                nodes_data["pipe types"].loc[
+                    nodes_data["pipe types"]["label_3"] == "dh_heatstation"
+                ]["efficiency"]
+            )
         }
-        
+
         oemof_opti_model.nodes.append(
             solph.Transformer(
-                label=("dh_heat_house_station_"
-                       + consumer["label"].split("_")[0]),
+                label=("dh_heat_house_station_" + consumer["label"].split("_")[0]),
                 inputs=inputs,
                 outputs=outputs,
-                conversion_factors=conversion_factors
+                conversion_factors=conversion_factors,
             )
         )
-        
+
     return oemof_opti_model
 
 
@@ -579,60 +600,63 @@ def connect_anergy_to_system(oemof_opti_model, busd, nodes_data):
     import oemof.thermal.compression_heatpumps_and_chillers as cmpr_hp_chiller
 
     oemof_opti_model = remove_redundant_sinks(oemof_opti_model)
-    oemof_opti_model = calc_heat_pipe_attributes(oemof_opti_model, True,
-                                                 nodes_data)
+    oemof_opti_model = calc_heat_pipe_attributes(oemof_opti_model, True, nodes_data)
 
     # create link to connect consumers heat bus to the dh-system
     for num, consumer in thermal_net.components["consumers"].iterrows():
         # TODO Temperaturen? from pre scenario
         # calculation of COPs with set parameters
         cops_hp = cmpr_hp_chiller.calc_cops(
-                temp_high=168 * [60],
-                temp_low=168 * [20],
-                quality_grade=0.6,
-                temp_threshold_icing=2,
-                factor_icing=1,
-                mode="heat_pump",
+            temp_high=168 * [60],
+            temp_low=168 * [20],
+            quality_grade=0.6,
+            temp_threshold_icing=2,
+            factor_icing=1,
+            mode="heat_pump",
         )
-        
-        label = heatpipe.Label("consumers", "heat", "bus",
-                               "consumers-{}".format(consumer["id"]), "anergy")
+
+        label = heatpipe.Label(
+            "consumers", "heat", "bus", "consumers-{}".format(consumer["id"]), "anergy"
+        )
         # TODO elec bus
-        inputs = {busd["ID_electricity_bus"]: solph.Flow(emission_factor=0),
-                  oemof_opti_model.buses[label]: solph.Flow(emission_factor=0)}
-    
+        inputs = {
+            busd["ID_electricity_bus"]: solph.Flow(emission_factor=0),
+            oemof_opti_model.buses[label]: solph.Flow(emission_factor=0),
+        }
+
         outputs = {
             busd[consumer["input"]]: solph.Flow(
-                    investment=solph.Investment(
-                            ep_costs=float(
-                                nodes_data["pipe types"].loc["anergy_heat_pump"][
-                                        "costs"]),
-                            periodical_constraint_costs=float(
-                                nodes_data["pipe types"].loc["anergy_heat_pump"][
-                                        "constraint costs"]),
-                            minimum=0,
-                            maximum=999 * len(consumer["input"]),
-                            existing=0,
-                            nonconvex=False,
-                            fix_constraint_costs=0,
+                investment=solph.Investment(
+                    ep_costs=float(
+                        nodes_data["pipe types"].loc["anergy_heat_pump"]["costs"]
                     ),
-                    emission_factor=0,
-            )}
-    
-        conversion_factors = {
-            oemof_opti_model.buses[label]: [
-                ((cop - 1) / cop) / 1 for cop in cops_hp],
-            busd["ID_electricity_bus"]: [1 / cop for cop in cops_hp]
+                    periodical_constraint_costs=float(
+                        nodes_data["pipe types"].loc["anergy_heat_pump"][
+                            "constraint costs"
+                        ]
+                    ),
+                    minimum=0,
+                    maximum=999 * len(consumer["input"]),
+                    existing=0,
+                    nonconvex=False,
+                    fix_constraint_costs=0,
+                ),
+                emission_factor=0,
+            )
         }
-    
+
+        conversion_factors = {
+            oemof_opti_model.buses[label]: [((cop - 1) / cop) / 1 for cop in cops_hp],
+            busd["ID_electricity_bus"]: [1 / cop for cop in cops_hp],
+        }
+
         oemof_opti_model.nodes.append(
-                solph.Transformer(
-                        label=("anergy_heat_pump_"
-                               + consumer["label"].split("_")[0]),
-                        inputs=inputs,
-                        outputs=outputs,
-                        conversion_factors=conversion_factors
-                )
+            solph.Transformer(
+                label=("anergy_heat_pump_" + consumer["label"].split("_")[0]),
+                inputs=inputs,
+                outputs=outputs,
+                conversion_factors=conversion_factors,
+            )
         )
 
     return oemof_opti_model
@@ -758,11 +782,19 @@ def create_producer_connection(oemof_opti_model, busd, test):
     for key, producer in thermal_net.components["forks"].iterrows():
         if str(producer["bus"]) != "nan":
             label = heatpipe.Label(
-                "producers", "heat", "bus", str("producers-{}".format(str(counter))), "anergy" if test else "exergy"
+                "producers",
+                "heat",
+                "bus",
+                str("producers-{}".format(str(counter))),
+                "anergy" if test else "exergy",
             )
             oemof_opti_model.nodes.append(
                 solph.Transformer(
-                    label=(str(producer["bus"]) + "_dh_source_link_" + ("anergy" if test else "exergy")),
+                    label=(
+                        str(producer["bus"])
+                        + "_dh_source_link_"
+                        + ("anergy" if test else "exergy")
+                    ),
                     inputs={busd[producer["bus"]]: solph.Flow(emission_factor=0)},
                     outputs={
                         oemof_opti_model.buses[label]: solph.Flow(emission_factor=0)
@@ -777,8 +809,7 @@ def create_producer_connection(oemof_opti_model, busd, test):
     return oemof_opti_model
 
 
-def create_connect_dhnx(nodes_data, busd, clustering=False,
-                        anergy_or_exergy=False):
+def create_connect_dhnx(nodes_data, busd, clustering=False, anergy_or_exergy=False):
     """
     At this point, the preparations of the heating network to use
     the dhnx package are completed. For this purpose, it is checked
@@ -811,42 +842,47 @@ def create_connect_dhnx(nodes_data, busd, clustering=False,
             if "consumers" in str(j) and "heat" in str(j) and "demand" in str(j):
                 oemof_opti_model.nodes[i].outputs.pop(j)
 
-    oemof_opti_model = \
-        add_excess_shortage_to_dh(oemof_opti_model, nodes_data, busd)
-    oemof_opti_model = \
-        create_producer_connection(oemof_opti_model, busd, anergy_or_exergy)
+    oemof_opti_model = add_excess_shortage_to_dh(oemof_opti_model, nodes_data, busd)
+    oemof_opti_model = create_producer_connection(
+        oemof_opti_model, busd, anergy_or_exergy
+    )
     return oemof_opti_model.nodes
 
 
 def create_dh_map(result_path):
     import matplotlib.pyplot as plt
+
     static_map = dhnx.plotting.StaticMap(thermal_net)
     static_map.draw(background_map=False)
     plt.title("Given network")
     components = {
         "forks": [thermal_net.components.forks, "tab:grey"],
-        "consumers": [thermal_net.components.consumers,
-                      "tab:green"],
-        "producers": [thermal_net.components.producers,
-                      "tab:red"]
+        "consumers": [thermal_net.components.consumers, "tab:green"],
+        "producers": [thermal_net.components.producers, "tab:red"],
     }
     for i in components:
         plt.scatter(
-                components[i][0]["lon"],
-                components[i][0]["lat"],
-                color=components[i][1],
-                label=i,
-                zorder=2.5,
-                s=50)
+            components[i][0]["lon"],
+            components[i][0]["lat"],
+            color=components[i][1],
+            label=i,
+            zorder=2.5,
+            s=50,
+        )
     plt.text(-2, 32, "P0", fontsize=14)
     plt.text(82, 0, "P1", fontsize=14)
     plt.legend()
     plt.savefig(result_path + "/district_heating.jpeg")
-    
+
 
 def district_heating(
-    nodes_data, nodes, busd, district_heating_path, result_path, cluster_dh,
-    anergy_or_exergy
+    nodes_data,
+    nodes,
+    busd,
+    district_heating_path,
+    result_path,
+    cluster_dh,
+    anergy_or_exergy,
 ):
     """
     The district_heating method represents the main method of heat
@@ -899,8 +935,7 @@ def district_heating(
                 # save the created dataframes to improve runtime of a
                 # second optimization run
                 for i in ["consumers", "pipes", "producers", "forks"]:
-                    thermal_net.components[i].to_csv(result_path
-                                                     + "/" + i + ".csv")
+                    thermal_net.components[i].to_csv(result_path + "/" + i + ".csv")
 
                 create_dh_map(result_path)
                 dh = True
@@ -917,11 +952,9 @@ def district_heating(
             thermal_net.components[i].to_csv(result_path + "/" + i + ".csv")
     if dh:
         if cluster_dh == 1:
-            new_nodes = create_connect_dhnx(nodes_data, busd, True,
-                                            anergy_or_exergy)
+            new_nodes = create_connect_dhnx(nodes_data, busd, True, anergy_or_exergy)
         else:
-            new_nodes = create_connect_dhnx(nodes_data, busd, False,
-                                            anergy_or_exergy)
+            new_nodes = create_connect_dhnx(nodes_data, busd, False, anergy_or_exergy)
         for i in new_nodes:
             nodes.append(i)
     return nodes
