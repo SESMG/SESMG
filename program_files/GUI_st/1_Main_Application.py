@@ -80,7 +80,12 @@ def main_start_page():
         Definition of the start page for the GUI with introducing texts.
     """
 
-    read_markdown_document("Readme.md", f'{"docs/images/readme/*"}')
+    reduced_readme = read_markdown_document(
+        "Readme.md", f'{"docs/images/readme/*"}')
+
+    # Display any remaining lines in the readme using the st.markdown() \
+    # function
+    st.markdown(''.join(reduced_readme), unsafe_allow_html=True)
 
 
 def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:

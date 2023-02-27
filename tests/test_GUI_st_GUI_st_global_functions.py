@@ -10,7 +10,7 @@ import os
 def test_GUI_main_dict():
     """
         Redefining the GUI_main_dict which is inputvariable for all global \
-            GUI functions
+        GUI functions
     """
 
     return {"input_timeseries_algorithm": "slicing A",
@@ -49,9 +49,9 @@ def test_GUI_main_dict():
 def test_create_timeseries_parameter_list(test_GUI_main_dict):
     """
         Testing if the function creates the in the parameter list in the \
-            order as required for the run_sesmg function which is [algorithm, \
-            cluster_index, cluster_criterion, cluster_period, cluster_season].\
-            If valid it is also valid for the premodel_parameter_list.
+        order as required for the run_sesmg function which is [algorithm, \
+        cluster_index, cluster_criterion, cluster_period, cluster_season].\
+        If valid it is also valid for the premodel_parameter_list.
     """
 
     from program_files.GUI_st.GUI_st_global_functions \
@@ -77,7 +77,7 @@ def test_create_timeseries_parameter_list(test_GUI_main_dict):
 def test_import_GUI_input_values_json(test_GUI_main_dict):
     """
         Testing the json upload and the definition of the dict is working as \
-            required
+        required
     """
     from program_files.GUI_st.GUI_st_global_functions \
         import import_GUI_input_values_json
@@ -95,7 +95,7 @@ def test_import_GUI_input_values_json(test_GUI_main_dict):
 def test_create_simplification_index(test_GUI_main_dict):
     """
         Testing if the function is creating the indexes in the GUI_main_dict \
-            as required and is uding the correct values.
+        as required and is uding the correct values.
     """
     from program_files.GUI_st.GUI_st_global_functions \
         import create_simplification_index
@@ -165,7 +165,7 @@ def test_create_simplification_index(test_GUI_main_dict):
 def test_create_cluster_simplification_index(test_GUI_main_dict):
     """
         Testing if the function is changing the globally defined GUI_main_dict\
-            as required.
+        as required.
     """
     from program_files.GUI_st.GUI_st_global_functions \
         import create_cluster_simplification_index
@@ -181,3 +181,33 @@ def test_create_cluster_simplification_index(test_GUI_main_dict):
         input_value_index="input_timeseries_cluster_index_index")
 
     assert changed_test_dict == test_GUI_main_dict
+
+
+@pytest.mark.xfail
+def test_read_markdown_document():
+    """
+        Testing if the function is still removing the installation part of \
+        the README.md correctly to show the rest in the GUI. Test is supposed \
+        to fail if it contains a str which is used to describe the \
+        installation process.
+    """
+    from program_files.GUI_st.GUI_st_global_functions \
+        import read_markdown_document
+
+    # creating the reduced README file as a str in a list
+    reduced_readme = read_markdown_document(
+        document_path="Readme.md",
+        folder_path=f'{"docs/images/readme/*"}')
+
+    assert "install coinor-cbc" in reduced_readme[0]
+
+
+
+
+
+
+
+
+
+
+

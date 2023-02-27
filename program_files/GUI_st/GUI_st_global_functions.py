@@ -215,11 +215,11 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
 
 
 def read_markdown_document(document_path: str, folder_path: str,
-                           main_page=True):
+                           main_page=True) -> list:
     """
-        Using this method, texts stored in the repository in the form
-        of markdown files can be used as the content of a streamlit
-        page. To do this, the markdown file and the images it contains
+        Using this method, texts stored in the repository in the form \
+        of markdown files can be used as the content of a streamlit \
+        page. To do this, the markdown file and the images it contains \
         are loaded and then displayed in streamlit format.
 
         :param document_path: path where the markdown file which will \
@@ -233,6 +233,10 @@ def read_markdown_document(document_path: str, folder_path: str,
             main page content is the Readme reduced by the \
             installation part
         :type main_page: bool
+        
+        :return: - **readme_buffer** (list) - list of markdown text which is \
+        educed by the parts between ## Quick Start ## SESMG Features \
+            & Releases based on the readme.md
     """
     # Open the README.md file and read all lines
     with open(document_path, 'r', encoding="utf8") as file:
@@ -268,9 +272,7 @@ def read_markdown_document(document_path: str, folder_path: str,
                     # Clear the buffer list
                     readme_buffer.clear()
 
-    # Display any remaining lines in the buffer list using the st.markdown() \
-    # function
-    st.markdown(''.join(readme_buffer), unsafe_allow_html=True)
+    return readme_buffer
 
 
 def create_simplification_index(input_list: list, input_output_dict: dict):

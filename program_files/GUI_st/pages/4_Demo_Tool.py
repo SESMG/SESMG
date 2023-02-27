@@ -131,9 +131,9 @@ def execute_sesmg_demo(demo_file, demo_results, mode):
         :param demo_results:
         :type demo_results:
         :param mode: optimization criterion which is chosen in the GUI
-        :type mode: str 
+        :type mode: str
     """
-    
+
     # activate criterion switch if run is optimized to its emissions
     if mode == "emissions":
         criterion_switch = True
@@ -276,9 +276,12 @@ def demo_start_page():
         Start page text for the demo tool.
     """
     # import markdown text from GUI files
-    read_markdown_document(
+    imported_markdown = read_markdown_document(
         document_path="docs/GUI_texts/demo_tool.md",
         folder_path="")
+
+    # show markdown text
+    st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
 
 
 def demo_start_page_graph():
@@ -311,7 +314,7 @@ def demo_parameters_page():
     #     ["Gas Import", "6.29 ct/kWh", "?"],
     #     ["Electricity Import", "31.22 ct/kWh", "366 g/kWh"],
     #     ["Electricity Export", "- 6.8 ct/kWh", "- 27 g/kWh"]]
-    
+
     model_demands_price = [
         ["Electricity", "14 000 000 kWh/a", "h0 Load Profile",
          "Gas Import", "6.29 ct/kWh", "?"],
@@ -355,7 +358,7 @@ def demo_parameters_page():
     # stdf2.dataframe(data=pd.DataFrame(
     #     data=model_prices,
     #     columns=["Energy Form", "Specific Costs", "Specific Emissions"]))
-    
+
     st.dataframe(data=pd.DataFrame(
         data=model_demands_price,
         columns=["Energy Demand", "Demand", "Usage Pattern",
@@ -375,6 +378,7 @@ def change_state_submitted_demo_run():
             change event as on-click to switch the state.
     """
     st.session_state["state_submitted_demo_run"] = "done"
+
 
 # run demo application
 # initialize global streamlit settings

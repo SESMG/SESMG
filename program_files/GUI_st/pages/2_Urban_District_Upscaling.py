@@ -82,10 +82,13 @@ def standard_page():
     """
     
     """
-    read_markdown_document(
+    reduced_readme = read_markdown_document(
         document_path="docs/GUI_texts/us_tool.md",
         folder_path=f'{"docs/images/manual/UpscalingTool/*"}')
 
+    # Display any remaining lines in the buffer list using the st.markdown() \
+    # function
+    st.markdown(''.join(reduced_readme), unsafe_allow_html=True)
 
 # second column
 def after_processing_page():
