@@ -17,7 +17,7 @@ def get_dataframe_from_nodes_data(nodes_data):
             "weather data",
             "district heating",
             "competition constraints",
-            "pipe types",
+            "pipe types"
         ]:
             nodes_data[key].set_index("label", inplace=True, drop=False)
             if counter == 0:
@@ -80,7 +80,7 @@ def create_sink_differentiation_dict(model_definition: pandas.DataFrame):
         :return: - **sink_types** (dict) -
     """
     sink_types = {}
-
+    
     for num, sink in model_definition.iterrows():
         if sink["sector"] == "electricity":
             sink_types.update({sink["label"]: [True, False, False]})
@@ -88,5 +88,5 @@ def create_sink_differentiation_dict(model_definition: pandas.DataFrame):
             sink_types.update({sink["label"]: [False, True, False]})
         else:
             sink_types.update({sink["label"]: [False, False, True]})
-
+    
     return sink_types

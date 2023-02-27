@@ -45,11 +45,11 @@ class Links:
     @staticmethod
     def get_flow(link: pandas.Series):
         """
-        The parameterization of the output flow of the link
-        component has been outsourced to this static method.
-
-        :param link: nodes data row of the link in creation
-        :type link: pandas.Series
+            The parameterization of the output flow of the link
+            component has been outsourced to this static method.
+            
+            :param link: nodes data row of the link in creation
+            :type link: pandas.Series
         """
         # if the link is directed the total costs result from one flow
         # which is the reason for the assignment of the total costs to
@@ -68,10 +68,8 @@ class Links:
             fix_investment_costs = link["fix investment costs"] / 2
             fix_constr_costs = link["fix investment constraint costs"] / 2
         else:
-            raise SystemError(
-                "Parameter (un)directed not filled correctly "
-                "for the component " + link["label"]
-            )
+            raise SystemError("Parameter (un)directed not filled correctly "
+                              "for the component " + link["label"])
 
         return Flow(
             variable_costs=link["variable output costs"],
@@ -82,7 +80,8 @@ class Links:
                 minimum=link["min. investment capacity"],
                 maximum=link["max. investment capacity"],
                 existing=link["existing capacity"],
-                nonconvex=True if link["non-convex investment"] == 1 else False,
+                nonconvex=True if link["non-convex investment"] == 1
+                else False,
                 offset=fix_investment_costs,
                 fix_constraint_costs=fix_constr_costs,
             ),
@@ -90,9 +89,9 @@ class Links:
 
     def __init__(self, nodes_data: dict, nodes: list, busd: dict):
         """
-        Inits the Links class.
-
-        Christian Klemm - christian.klemm@fh-muenster.de
+            Inits the Links class.
+    
+            Christian Klemm - christian.klemm@fh-muenster.de
         """
         # renames variables
         self.busd = busd

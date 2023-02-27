@@ -114,7 +114,9 @@ class Sinks:
         for i, ins in self.insulation[self.insulation["active"] == 1].iterrows():
             # if insulation sink == sink under investigation (above)
             if ins["sink"] == de["label"]:
-                ep_costs, ep_constr_costs, temp = self.calc_insulation_parameter(ins)
+                ep_costs, ep_constr_costs, temp = \
+                    self.calc_insulation_parameter(
+                    ins)
                 if "existing" in self.insulation:
                     if not ins["existing"]:
                         # add capacity specific costs to self.insulation
@@ -134,10 +136,11 @@ class Sinks:
                     # add capacity specific costs to self.insulation
                     self.insulation.loc[i, "ep_costs_kW"] = ep_costs
                     # add capacity specific emissions to self.insulation
-                    self.insulation.loc[i, "ep_constr_costs_kW"] = ep_constr_costs
+                    self.insulation.loc[
+                        i, "ep_constr_costs_kW"] = ep_constr_costs
                     maximum = max(temp)
                     existing = 0
-
+                    
                 self.nodes_sinks.append(
                     Source(
                         label="{}-insulation".format(ins["label"]),
@@ -150,7 +153,7 @@ class Sinks:
                                     minimum=0,
                                     maximum=maximum,
                                     fix_constraint_costs=0,
-                                    existing=existing,
+                                    existing=existing
                                 ),
                                 emission_factor=0,
                                 fix=(args["fix"] / args["fix"].max()),

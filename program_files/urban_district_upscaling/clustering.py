@@ -11,13 +11,9 @@ from program_files.urban_district_upscaling.components import (
 true_bools = ["yes", "Yes", 1, "1"]
 
 
-def clustering_transformers(
-    sheets: dict,
-    sink_parameters: list,
-    transformer_parameters: dict,
-    cluster: str,
-    standard_parameters: pandas.ExcelFile,
-):
+def clustering_transformers(sheets: dict, sink_parameters: list,
+                            transformer_parameters: dict, cluster: str,
+                            standard_parameters: pandas.ExcelFile):
     """
         TODO METHOD DESCRIPTION
         
@@ -51,20 +47,20 @@ def clustering_transformers(
                         cluster=cluster,
                         fuel_type="gas",
                         sheets=sheets,
-                        standard_parameters=standard_parameters,
+                        standard_parameters=standard_parameters
                     )
                 # create cluster hp electricity bus with building type \
                 # weighted shortage costs
-                elif technology in ["ashp", "gchp"] and str(
-                    cluster
-                ) + "_gchp_building_link" not in list(sheets["links"]["label"]):
+                elif technology in ["ashp", "gchp"] \
+                        and str(cluster) + "_gchp_building_link" not \
+                        in list(sheets["links"]["label"]):
                     # create hp building type averaged price
                     sheets = Bus.create_cluster_averaged_bus(
                         sink_parameters=sink_parameters,
                         cluster=cluster,
                         fuel_type="hp_elec",
                         sheets=sheets,
-                        standard_parameters=standard_parameters,
+                        standard_parameters=standard_parameters
                     )
                     # electricity link from building electricity bus to hp
                     # electricity bus
@@ -74,7 +70,7 @@ def clustering_transformers(
                         bus_2=str(cluster) + "_hp_elec_bus",
                         link_type="building_hp_elec_link",
                         sheets=sheets,
-                        standard_parameters=standard_parameters,
+                        standard_parameters=standard_parameters
                     )
                 # create cluster's gasheating system
                 sheets = Transformer.create_cluster_transformer(
@@ -82,19 +78,14 @@ def clustering_transformers(
                     cluster_parameters=transformer_parameters,
                     cluster=cluster,
                     sheets=sheets,
-                    standard_parameters=standard_parameters,
+                    standard_parameters=standard_parameters
                 )
     return sheets
 
 
-def create_cluster_heat_bus(
-    transformer_parameters: dict,
-    clustering_dh: bool,
-    sink_parameters: list,
-    cluster: str,
-    sheets: dict,
-    standard_parameters: pandas.ExcelFile,
-):
+def create_cluster_heat_bus(transformer_parameters: dict, clustering_dh: bool,
+                            sink_parameters: list, cluster: str, sheets: dict,
+                            standard_parameters: pandas.ExcelFile):
     """
         TODO METHOD DESCRIPTION
         
@@ -145,8 +136,7 @@ def create_cluster_heat_bus(
                     (sum(lons) / len(lons)) if len(lons) > 0 else 0,
                     "1" if len(lats) > 0 else "0",
                 ],
-                standard_parameters=standard_parameters,
-            )
+                standard_parameters=standard_parameters)
             sheets["buses"].set_index("label", inplace=True, drop=False)
     return sheets
 
@@ -158,36 +148,31 @@ def collect_clustering_information(
     source_param,
     storage_parameters,
     transformer_parameters,
-    sheets_clustering,
+    sheets_clustering
 ):
+
     # collect cluster intern source information
     source_param, sheets = Source.sources_clustering(
         source_param=source_param,
         building=building,
         sheets=sheets,
-        sheets_clustering=sheets_clustering,
-    )
+        sheets_clustering=sheets_clustering)
 
     # collect cluster intern transformer information
-    (
-        heat_buses_gchps,
-        transformer_parameters,
-        sheets,
-    ) = Transformer.transformer_clustering(
-        building=building,
-        sheets_clustering=sheets_clustering,
-        cluster_parameters=transformer_parameters,
-        sheets=sheets,
-        heat_buses_gchps=heat_buses_gchps,
-    )
+    heat_buses_gchps, transformer_parameters, sheets = \
+        Transformer.transformer_clustering(
+            building=building,
+            sheets_clustering=sheets_clustering,
+            cluster_parameters=transformer_parameters,
+            sheets=sheets,
+            heat_buses_gchps=heat_buses_gchps)
 
     # collect cluster intern storage information
     storage_parameters, sheets = Storage.storage_clustering(
         building=building,
         sheets_clustering=sheets_clustering,
         storage_parameter=storage_parameters,
-        sheets=sheets,
-    )
+        sheets=sheets)
 
     return (
         source_param,
@@ -259,15 +244,11 @@ def get_dict_building_cluster(tool: pandas.DataFrame) -> dict:
     return cluster_ids
 
 
-def collect_building_information(
-    cluster_ids,
-    cluster,
-    sheets,
-    heat_buses_gchps,
-    standard_parameters,
-    sheets_clustering,
-):
-    """ """
+def collect_building_information(cluster_ids, cluster, sheets, heat_buses_gchps,
+                                 standard_parameters, sheets_clustering):
+    """
+    
+    """
     # cluster sinks parameter
     # [res_electricity_demand, com_electricity_demand,
     #  ind_electricity_demand, heat_buses, res_heat_demand,
@@ -309,26 +290,27 @@ def collect_building_information(
         "st_west": [0] * 12,
         "st_north_west": [0] * 12,
     }
-
+    
     # remove the not longer used links
     sheets = Link.delete_non_used_links(
-        sheets_clustering=sheets_clustering, cluster_ids=cluster_ids, sheets=sheets
-    )
-
+        sheets_clustering=sheets_clustering,
+        cluster_ids=cluster_ids,
+        sheets=sheets)
+    
     for building in cluster_ids:
         for index, sink in sheets_clustering["sinks"].iterrows():
             # collecting information for sinks
             sink_parameters = Sink.sink_clustering(
-                building=building, sink=sink, sink_parameters=sink_parameters
-            )
+                building=building,
+                sink=sink,
+                sink_parameters=sink_parameters)
 
         # create cluster elec buses
         sheets = Bus.create_cluster_electricity_buses(
             building=building,
             cluster=cluster,
             sheets=sheets,
-            standard_parameters=standard_parameters,
-        )
+            standard_parameters=standard_parameters)
 
         (
             source_param,
@@ -343,26 +325,27 @@ def collect_building_information(
             source_param,
             storage_parameters,
             transformer_parameters,
-            sheets_clustering,
+            sheets_clustering
         )
 
         sheets = Link.create_cluster_pv_links(
             cluster=cluster,
             sheets=sheets,
             standard_parameters=standard_parameters,
-            sink_parameters=sink_parameters,
-        )
-
+            sink_parameters=sink_parameters)
+            
         if transformer_parameters["gasheating"][0] > 0:
             sheets = Link.add_cluster_naturalgas_bus_links(
-                sheets=sheets, cluster=cluster, standard_parameters=standard_parameters
+                sheets=sheets,
+                cluster=cluster,
+                standard_parameters=standard_parameters
             )
-
+        
         # update the sources in and output
         sheets = Source.update_sources_in_output(
             building, sheets_clustering, cluster, sheets
         )
-
+    
     return (
         sheets,
         sink_parameters,
@@ -399,9 +382,7 @@ def create_cluster_components(
     )
     # SOURCES
     # create cluster's sources and competition constraints
-    sheets = Source.create_cluster_sources(
-        source_param, cluster, sheets, standard_parameters
-    )
+    sheets = Source.create_cluster_sources(source_param, cluster, sheets, standard_parameters)
     for i in ["battery", "thermal"]:
         # STORAGES
         if storage_parameters[i][0] > 0:
@@ -411,8 +392,7 @@ def create_cluster_components(
                 cluster=cluster,
                 storage_parameter=storage_parameters,
                 sheets=sheets,
-                standard_parameters=standard_parameters,
-            )
+                standard_parameters=standard_parameters)
 
     sheets = create_cluster_heat_bus(
         transformer_parameters=transformer_parameters,
@@ -420,19 +400,14 @@ def create_cluster_components(
         clustering_dh=clustering_dh,
         sink_parameters=sink_parameters,
         sheets=sheets,
-        standard_parameters=standard_parameters,
-    )
+        standard_parameters=standard_parameters)
 
     return sheets
 
 
-def clustering_method(
-    tool: pandas.DataFrame,
-    sheets: dict,
-    standard_parameters: pandas.ExcelFile,
-    central_electricity_network: bool,
-    clustering_dh: bool,
-):
+def clustering_method(tool: pandas.DataFrame, sheets: dict,
+                      standard_parameters: pandas.ExcelFile,
+                      central_electricity_network: bool, clustering_dh: bool):
     """
         TODO DOCSTRING TEXT
         
@@ -464,7 +439,7 @@ def clustering_method(
         sheets_clustering.update({sheet: sheet_edited})
     sheets = remove_buses(sheets=sheets, sheets_clustering=sheets_clustering)
     heat_buses_gchps = []
-
+    
     for cluster in cluster_ids:
         # reset all indices to delete the right rows in pandas dataframe
         for sheet in ["transformers", "storages", "links", "sinks", "sources", "buses"]:
@@ -472,21 +447,16 @@ def clustering_method(
                 sheets[sheet].set_index("label", inplace=True, drop=False)
 
         if cluster_ids[cluster]:
-            (
-                sheets,
-                sink_parameters,
-                heat_buses_gchps,
-                source_param,
-                storage_parameters,
-                transformer_parameters,
-            ) = collect_building_information(
-                cluster_ids=cluster_ids[cluster],
-                cluster=cluster,
-                sheets=sheets,
-                heat_buses_gchps=heat_buses_gchps,
-                standard_parameters=standard_parameters,
-                sheets_clustering=sheets_clustering,
-            )
+
+            sheets, sink_parameters, heat_buses_gchps, source_param, \
+                storage_parameters, transformer_parameters = \
+                collect_building_information(
+                    cluster_ids=cluster_ids[cluster],
+                    cluster=cluster,
+                    sheets=sheets,
+                    heat_buses_gchps=heat_buses_gchps,
+                    standard_parameters=standard_parameters,
+                    sheets_clustering=sheets_clustering)
 
             sheets = create_cluster_components(
                 standard_parameters,
@@ -509,8 +479,7 @@ def clustering_method(
                     bus_2=str(i[1]),
                     link_type="building_hp_elec_link",
                     sheets=sheets,
-                    standard_parameters=standard_parameters,
-                )
+                    standard_parameters=standard_parameters)
 
     buses = sheets["buses"].copy()
 

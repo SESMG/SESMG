@@ -8,16 +8,20 @@ import logging
 import pandas
 
 from program_files.GUI_st.GUI_st_global_functions import run_SESMG
-from program_files.postprocessing.pareto_curve_plotting import collect_pareto_data
-from program_files.postprocessing.plotting import create_sink_differentiation_dict
-from program_files.postprocessing.plotting_elec_amounts import (
-    collect_electricity_amounts,
-)
-from program_files.postprocessing.plotting_heat_amounts import collect_heat_amounts
-from program_files.preprocessing.create_energy_system import import_model_definition
+from program_files.postprocessing.pareto_curve_plotting \
+    import collect_pareto_data
+from program_files.postprocessing.plotting \
+    import create_sink_differentiation_dict
+from program_files.postprocessing.plotting_elec_amounts \
+    import collect_electricity_amounts
+from program_files.postprocessing.plotting_heat_amounts \
+    import collect_heat_amounts
+from program_files.preprocessing.create_energy_system \
+    import import_model_definition
 
 
-def create_scenario_save_folder(model_definition, directory: str, limit="") -> str:
+def create_scenario_save_folder(model_definition, directory: str,
+                                limit="") -> str:
     """
         In this method, the folder necessary for a Pareto run
         (name pattern
@@ -40,9 +44,9 @@ def create_scenario_save_folder(model_definition, directory: str, limit="") -> s
             results of the pareto point will be stored
     """
     # extract the model_name from model_definition file path
-    if type(model_definition) == str:
+    if type(model_definition) == str:    
         model_name = model_definition.split("/")[-1][:-5]
-    else:
+    else: 
         model_name = model_definition.name.split("/")[-1][:-5]
     # append the limit on the model name if it's not an empty string
     if limit:
@@ -55,7 +59,7 @@ def create_scenario_save_folder(model_definition, directory: str, limit="") -> s
     os.mkdir(save_path)
     return save_path
 
-
+        
 def calc_constraint_limits(result_folders: dict, limits: list) -> dict:
     """
         This method reads out the emissions of the monetary-driven
@@ -96,10 +100,9 @@ def calc_constraint_limits(result_folders: dict, limits: list) -> dict:
     # get constraints of the second optimization since it is an emission
     # driven one the costs attribute is summed
     result2 = pandas.read_csv(str(result_folders["1"][0]) + "/components.csv")
-    constr_min_2 = float(
-        sum(result2["variable costs/CU"]) + sum(result2["periodical costs/CU"])
-    )
-
+    constr_min_2 = float(sum(result2["variable costs/CU"])
+                         + sum(result2["periodical costs/CU"]))
+    
     # divide solvable range in "limits" intervals
     for limit in limits:
         interval_width = float(constr_min_1 - constr_min_2)
@@ -108,7 +111,7 @@ def calc_constraint_limits(result_folders: dict, limits: list) -> dict:
 
 
 def create_transformation_model_definitions(
-    constraints: dict, model_definition, directory: str, limits: list
+        constraints: dict, model_definition, directory: str, limits: list
 ) -> dict:
     """
         After the emission limits have been calculated in the
@@ -154,7 +157,8 @@ def create_transformation_model_definitions(
         files[str(limit)].append(file_name + "_" + str(limit) + ".xlsx")
         # create new model definition and save it to the created path
         writer = pandas.ExcelWriter(files[str(limit)][-1], engine="xlsxwriter")
-        nodes_data["energysystem"].loc[1, "constraint cost limit"] = float(constraint)
+        nodes_data["energysystem"].loc[1, "constraint cost limit"] = \
+            float(constraint)
         nodes_data["time series"] = nodes_data["timeseries"]
         nodes_data.pop("timeseries")
         for sheet in nodes_data.keys():
@@ -203,13 +207,15 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict):
     """
     # create one directory to collect all runs
     directory = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-        "results/" + datetime.now().strftime("%Y-%m-%d--%H-%M-%S"),
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            "results/" + datetime.now().strftime("%Y-%m-%d--%H-%M-%S"),
     )
     os.mkdir(directory)
-
-    logging.info("Optimization of the following runs " + str(limits) + " started!")
-
+    
+    logging.info("Optimization of the following runs "
+                 + str(limits)
+                 + " started!")
+    
     # FIRST CRITERION
     result_folders = {"0": []}
     # TODO enable more than one scenario (districts)
@@ -219,7 +225,7 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict):
     result_folders["0"].append(save_path)
     # run the optimization of the first criterion minimum
     run_SESMG(GUI_main_dict, model_definition, save_path)
-
+    
     # SECOND CRITERION
     # TODO enable more than one scenario (districts)
     # set the save path
@@ -227,64 +233,57 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict):
     # append optimum of first criterion driven run to the list of
     # result folders
     result_folders.update({"1": [save_path2]})
-
+    
     # switch the criterion switch parameter in the gui input parameter
-    GUI_main_dict["input_criterion_switch"] = not GUI_main_dict[
-        "input_criterion_switch"
-    ]
+    GUI_main_dict["input_criterion_switch"] = \
+        not GUI_main_dict["input_criterion_switch"]
     # run the optimization of the second criterion minimum
     run_SESMG(GUI_main_dict, model_definition, save_path2)
-
+    
     # SEMI OPTIMAL OPTIMIZATION
     # calculate the emission limits for the semi optimal model definitions
     constraints = calc_constraint_limits(result_folders, limits)
     # create the new model definitions with specific constraint limits
     files = create_transformation_model_definitions(
-        constraints, model_definition, directory, limits
-    )
+        constraints, model_definition, directory, limits)
 
     # switch the criterion switch parameter in the gui input parameter
-    GUI_main_dict["input_criterion_switch"] = not GUI_main_dict[
-        "input_criterion_switch"
-    ]
-
+    GUI_main_dict["input_criterion_switch"] = \
+        not GUI_main_dict["input_criterion_switch"]
+    
     # run the semi optimal optimizations
     for limit in limits:
         result_folders.update({str(limit): []})
         for model_definition in files[str(limit)]:
-            save_path = create_scenario_save_folder(model_definition, directory)
+            save_path = create_scenario_save_folder(model_definition,
+                                                    directory)
             result_folders[str(limit)].append(save_path)
             run_SESMG(GUI_main_dict, model_definition, save_path)
-
+            
     result_dfs = {}
     for folder in result_folders:
         result_dfs.update(
-            {folder: pandas.read_csv(result_folders[folder][0] + "/components.csv")}
-        )
-
+            {folder: pandas.read_csv(result_folders[folder][0]
+                                     + "/components.csv")})
+    
     # create csv file for pareto plotting
     collect_pareto_data(
         result_dfs=dict(sorted(result_dfs.items(), reverse=True)),
-        result_path=os.path.dirname(save_path),
-    )
-
+        result_path=os.path.dirname(save_path))
+    
     sink_types = create_sink_differentiation_dict(
-        import_model_definition(model_definition)["sinks"]
-    )
-
+            import_model_definition(model_definition)["sinks"])
+    
     # create amount csv files
     collect_electricity_amounts(
         dataframes=result_dfs,
         nodes_data=import_model_definition(model_definition),
         result_path=os.path.dirname(save_path),
-        sink_known=sink_types,
-    )
+        sink_known=sink_types)
 
-    collect_heat_amounts(
-        dataframes=result_dfs,
-        nodes_data=import_model_definition(model_definition),
-        result_path=os.path.dirname(save_path),
-        sink_known=sink_types,
-    )
-
+    collect_heat_amounts(dataframes=result_dfs,
+                         nodes_data=import_model_definition(model_definition),
+                         result_path=os.path.dirname(save_path),
+                         sink_known=sink_types)
+    
     return directory

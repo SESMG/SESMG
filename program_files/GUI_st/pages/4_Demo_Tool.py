@@ -8,10 +8,10 @@ import os
 import openpyxl
 import streamlit as st
 import pandas as pd
-from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import (
-    sesmg_main,
-)
-from program_files.GUI_st.GUI_st_global_functions import st_settings_global
+from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
+    import sesmg_main
+from program_files.GUI_st.GUI_st_global_functions import \
+    st_settings_global
 
 
 # creating global model run mode dict
@@ -47,44 +47,55 @@ def dt_input_sidebar():
     """
 
     with st.sidebar.form("Simulation input"):
+
         # input value for model run name
         st.text_input(label="Name")
 
         # input value for photovoltaiks
         input_values_dict["input_pv"] = st.number_input(
-            label="Photovoltaic in kW", min_value=0, max_value=10000, step=1000
-        )
+            label="Photovoltaic in kW",
+            min_value=0,
+            max_value=10000,
+            step=1000)
 
         # input value for solar thermal
         input_values_dict["input_st"] = st.number_input(
-            label="Solar thermal in kW", min_value=0, max_value=27700, step=1000
-        )
+            label="Solar thermal in kW",
+            min_value=0,
+            max_value=27700,
+            step=1000)
 
         # input value for central thermal storage
         input_values_dict["input_battery"] = st.number_input(
-            label="Battery in kWh", min_value=0, max_value=10000, step=1000
-        )
+            label="Battery in kWh",
+            min_value=0,
+            max_value=10000,
+            step=1000)
 
         # input value for combined heat and power plant in kW(electric)
         input_values_dict["input_chp"] = st.number_input(
             label="Combined heat and power plant in kW(el)",
             min_value=0,
             max_value=1000000,
-            step=1000,
-        )
+            step=1000)
 
         # input value for ground coupled heat pump
         input_values_dict["iput_gchp"] = st.number_input(
-            label="Heat pump in kW", min_value=0, max_value=5000, step=1000
-        )
+            label="Heat pump in kW",
+            min_value=0,
+            max_value=5000,
+            step=1000)
 
         # input value for central thermal storage
         input_values_dict["input_cts"] = st.number_input(
-            label="Thermal storage in kWh", min_value=0, max_value=10000, step=1000
-        )
+            label="Thermal storage in kWh",
+            min_value=0,
+            max_value=10000,
+            step=1000)
 
         # bool if DH network should be active
-        input_dh = st.checkbox(label="Distric Heating Network")
+        input_dh = st.checkbox(
+            label="Distric Heating Network")
         # 1 if True, 0 is False to fit with the model defintion sheet
         if input_dh:
             input_values_dict["input_dh"] = "1"
@@ -92,12 +103,11 @@ def dt_input_sidebar():
             input_values_dict["input_dh"] = "0"
 
         input_values_dict["input_criterion"] = st.select_slider(
-            label="Optimization criterion", options=("monetary", "emissions")
-        )
+            label="Optimization criterion",
+            options=("monetary", "emissions"))
 
-        st.form_submit_button(
-            label="Start Simulation", on_click=change_state_submitted_demo_run
-        )
+        st.form_submit_button(label="Start Simulation",
+                              on_click=change_state_submitted_demo_run)
 
         if st.form_submit_button:
             return input_values_dict
@@ -106,12 +116,12 @@ def dt_input_sidebar():
 
 def execute_sesmg_demo(demo_file, demo_results):
     """
-    Excecutes the optimization algorithm.
+        Excecutes the optimization algorithm.
 
-    :param demo_file:
-    :type demo_file:
-    :param demo_results:
-    :type demo_results:
+        :param demo_file:
+        :type demo_file:
+        :param demo_results:
+        :type demo_results:
     """
 
     # run sesmg main function with reduced / fixed input options
@@ -126,31 +136,32 @@ def execute_sesmg_demo(demo_file, demo_results):
         console_results=False,
         solver="cbc",
         cluster_dh=False,
-        district_heating_path="",
+        district_heating_path=""
     )
 
 
 def create_demo_scenario(mode):
     """
-    Modifies financial demo scenario.
+        Modifies financial demo scenario.
 
-    :param mode: ????????????
-    :type mode: str
-    :param mode: ????????????
-    :type mode: dict
+        :param mode: ????????????
+        :type mode: str
+        :param mode: ????????????
+        :type mode: dict
     """
 
     # define main path to SESMG program files folder
-    mainpath_pf = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    mainpath_pf = os.path.dirname(os.path.dirname(
+        os.path.dirname(__file__)))
     # define main path to SESMG main folder
-    mainpath_mf = os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    )
+    mainpath_mf = os.path.dirname(os.path.dirname(
+        os.path.dirname(os.path.dirname(__file__))))
 
     xfile = openpyxl.load_workbook(
-        mainpath_pf + "/Demo_Tool/v0.4.0_demo_scenario/" + mode_dict.get(mode)[0],
-        data_only=True,
-    )
+        mainpath_pf
+        + "/Demo_Tool/v0.4.0_demo_scenario/"
+        + mode_dict.get(mode)[0],
+        data_only=True)
 
     st.write(xfile)
     st.write(mainpath_pf)
@@ -195,157 +206,122 @@ def create_demo_scenario(mode):
     sheet["C3"] = input_values_dict["input_dh"]
 
     # safe motified xlsx file in the results/demo folder
-    xfile.save(mainpath_mf + mode_dict.get(mode)[1] + "/scenario.xlsx")
+    xfile.save(
+        mainpath_mf
+        + mode_dict.get(mode)[1]
+        + "/scenario.xlsx")
 
     # run sesmg DEMO version
     execute_sesmg_demo(
         demo_file=mainpath_mf + mode_dict.get(mode)[1] + r"/scenario.xlsx",
-        demo_results=mainpath_mf + mode_dict.get(mode)[1],
-    )
+        demo_results=mainpath_mf + mode_dict.get(mode)[1])
 
 
 def show_demo_run_results(mode):
     """
-    Loading and displaying demo run results.
+        Loading and displaying demo run results.
     """
 
     # define main path to SESMG main folder
-    mainpath_mf = os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    )
+    mainpath_mf = os.path.dirname(os.path.dirname(
+        os.path.dirname(os.path.dirname(__file__))))
 
     # load summary.csv from results/demo /emissions or /monetary folder
     # which was replaced with the model run above
-    df_summary = pd.read_csv(mainpath_mf + mode_dict.get(mode)[1] + r"/summary.csv")
+    df_summary = pd.read_csv(
+        mainpath_mf
+        + mode_dict.get(mode)[1]
+        + r"/summary.csv")
 
     st.write(df_summary)
 
     summary_headers = list(df_summary)
     # Display and import simulated cost values from summary dataframe
     cost1, cost2, cost3, cost4 = st.columns(4)
-    cost1.metric(
-        label=summary_headers[3], value=round(df_summary[summary_headers[3]], 1)
-    )
-    cost2.metric(
-        label=summary_headers[4], value=round(df_summary[summary_headers[4]], 1)
-    )
-    cost3.metric(
-        label=summary_headers[5], value=round(df_summary[summary_headers[5]], 1)
-    )
-    cost4.metric(
-        label=summary_headers[6], value=round(df_summary[summary_headers[6]], 1)
-    )
+    cost1.metric(label=summary_headers[3], value=round(
+        df_summary[summary_headers[3]], 1))
+    cost2.metric(label=summary_headers[4], value=round(
+        df_summary[summary_headers[4]], 1))
+    cost3.metric(label=summary_headers[5], value=round(
+        df_summary[summary_headers[5]], 1))
+    cost4.metric(label=summary_headers[6], value=round(
+        df_summary[summary_headers[6]], 1))
 
 
 def demo_start_page():
     """
-    Start page text for the demo tool.
+        Start page text for the demo tool.
     """
 
     st.header("Spreadsheet Energy System Model Generator (SESMG)")
     st.subheader("Welcome using the Demo Tool!")
     st.write("DEMO-Energy System:")
-    st.write(
-        "In this DEMO the financial costs and carbon dioxide emissions \
+    st.write("In this DEMO the financial costs and carbon dioxide emissions \
              of a residential area are simulated. For improvement, the \
              technologies listed below are \n available with the parameters \
              below. The simulated scenarios can be compared with the status \
-             quo, the financial minimum and the emission minimum."
-    )
+             quo, the financial minimum and the emission minimum.")
 
 
 def demo_parameters_page():
     """
-    Overview of the technical and energy system parameters.
+        Overview of the technical and energy system parameters.
     """
 
-    # TODO: Update to actual values and drop not used elements & unify wording!
+# TODO: Update to actual values and drop not used elements & unify wording!
 
     model_demands = [
         ["Electricity", "14 000 000 kWh/a", "h0 Load Profile"],
-        ["Heat", "52 203 000 kWh/a", "EFH Load Profile"],
-    ]
+        ["Heat", "52 203 000 kWh/a", "EFH Load Profile"]
+        ]
 
     model_prices = [
         ["Gas Import", "6.29 ct/kWh", "?"],
         ["Electricity Import", "31.22 ct/kWh", "366 g/kWh"],
-        ["Electricity Export", "- 6.8 ct/kWh", "- 27 g/kWh"],
-    ]
+        ["Electricity Export", "- 6.8 ct/kWh", "- 27 g/kWh"]
+        ]
 
     model_parameter = [
         # ['Windturbines': '2 000 000 €/MW, 8 g/kWh, 20 a, max. 29.7 MW'],
-        ["Photovoltaics", "1 070 000 €/MW", "27 g/kWh", "20 a", "max. 10 MW", ""],
-        ["Solar Thermal", "846 000 €/MW", "12 g/kWh", "20 a", "max. 27.7 MW", ""],
-        [
-            "Battery",
-            "1 000 000 €/MWh",
-            "3.96 kg/(kWh * a) (invest)",
-            "20 a",
-            "max. 10 MWh",
-            "",
-        ],
-        ["Gas Heating", "1 005 000 €/MW", "232g/kWh", "18 a", "endless", "0.92 %"],
-        [
-            "Combindes Heat and Power Plant",
-            "760 000 €/MW(el.)",
-            "308 g/kWh(el), 265 g/kWh(th.)",
-            "20 a",
-            "endless",
-            "",
-        ],
-        [
-            "Ground-coupled Heatpump",
-            "1 444 000 €/MW",
-            "8 g/kWh",
-            "20 a",
-            "max. 5 MW",
-            "",
-        ],
+        ["Photovoltaics", "1 070 000 €/MW",
+         "27 g/kWh", "20 a", "max. 10 MW", ""],
+        ["Solar Thermal", "846 000 €/MW",
+         "12 g/kWh", "20 a", "max. 27.7 MW", ""],
+        ["Battery", "1 000 000 €/MWh",
+         "3.96 kg/(kWh * a) (invest)", "20 a", "max. 10 MWh", ""],
+        ["Gas Heating", "1 005 000 €/MW",
+         "232g/kWh", "18 a", "endless", "0.92 %"],
+        ["Combindes Heat and Power Plant", "760 000 €/MW(el.)",
+         "308 g/kWh(el), 265 g/kWh(th.)", "20 a", "endless", ""],
+        ["Ground-coupled Heatpump", "1 444 000 €/MW",
+         "8 g/kWh", "20 a", "max. 5 MW", ""],
         # ["Thermal Storage", "35 000 €/MWh",
         #  "743 g/(kWh * a)", "20 a", "3 % loss /d"],
-        [
-            "Thermal Storage (decentral)",
-            "49 000 €/MWh",
-            "604g/(kWh * a) (invest)",
-            "20 a",
-            "max. 10 MWh",
-            "3 % loss /d",
-        ],
-        ["District Heating", "86 000 000 €", "????", "40 a", "bianry", "15 % loss"],
+        ["Thermal Storage (decentral)", "49 000 €/MWh",
+         "604g/(kWh * a) (invest)", "20 a", "max. 10 MWh", "3 % loss /d"],
+        ["District Heating", "86 000 000 €",
+         "????", "40 a", "bianry", "15 % loss"],
         # ["HEATPUMP", "22 ct/kWh", "366 g/kWh"],
         # ["Air Source Heat Pump", "1 318 000 €/MW", "12g/kWh", "18 a"],
     ]
 
     stdf1, stdf2 = st.columns(2)
     # display dataframe for model demands
-    stdf1.dataframe(
-        data=pd.DataFrame(
-            data=model_demands, columns=["Energy Form", "Demand", "Usage Pattern"]
-        )
-    )
+    stdf1.dataframe(data=pd.DataFrame(
+        data=model_demands,
+        columns=["Energy Form", "Demand", "Usage Pattern"]))
 
     # display dataframe for specific import & export cots
-    stdf2.dataframe(
-        data=pd.DataFrame(
-            data=model_prices,
-            columns=["Energy Form", "Specific Costs", "Specific Emissions"],
-        )
-    )
+    stdf2.dataframe(data=pd.DataFrame(
+        data=model_prices,
+        columns=["Energy Form", "Specific Costs", "Specific Emissions"]))
 
     # display dataframe for technology parameter
-    st.dataframe(
-        data=pd.DataFrame(
-            data=model_parameter,
-            columns=[
-                "Technology",
-                "Specific Costs",
-                "Specific Emissions",
-                "Design Lifetime",
-                "Investment Capacity",
-                "Additional Information",
-            ],
-        )
-    )
+    st.dataframe(data=pd.DataFrame(
+        data=model_parameter,
+        columns=["Technology", "Specific Costs", "Specific Emissions",
+                 "Design Lifetime", "Investment Capacity",
+                 "Additional Information"]))
 
 
 def change_state_submitted_demo_run():
