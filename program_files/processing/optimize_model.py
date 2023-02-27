@@ -28,7 +28,7 @@ def constraint_optimization_against_two_values(
     # PERIODICAL CONSTRAINTS #
     ##########################
     # extract all investment flows where periodical constraints apply
-    for i, o in om.flows:
+    for (i, o) in om.flows:
         if hasattr(om.flows[i, o].investment, "periodical_constraint_costs"):
             invest_flows[(i, o)] = om.flows[i, o].investment
     limit_name = "invest_limit_" + "periodical_constraints"
@@ -50,7 +50,7 @@ def constraint_optimization_against_two_values(
     ##########################
     invest_flows2 = {}
     # extract all investment flows where fix constraints apply
-    for i, o in om.flows:
+    for (i, o) in om.flows:
         if hasattr(om.flows[i, o].investment, "fix_constraint_costs"):
             invest_flows2[(i, o)] = om.flows[i, o].investment
     limit_name1 = "invest_limit_" + "nonconvex_constraints"
@@ -71,7 +71,7 @@ def constraint_optimization_against_two_values(
     ##########################
     flows = {}
     # extract all investment flows where variable constraints apply
-    for i, o in om.flows:
+    for (i, o) in om.flows:
         if hasattr(om.flows[i, o], "emission_factor"):
             flows[(i, o)] = om.flows[i, o]
     limit_name2 = "integral_limit_" + "variable_constraints"
@@ -135,7 +135,7 @@ def constraint_optimization_against_two_values(
             expr=(
                 (
                     getattr(om, limit_name)
-                    # + getattr(om, limit_name1)
+                    #+ getattr(om, limit_name1)
                     + getattr(om, limit_name2)
                     + getattr(om, limit_name4)
                     + getattr(om, limit_name3)
@@ -214,11 +214,12 @@ def competition_constraint(om, nd, energy_system):
 def constraint_optimization_of_criterion_adherence_to_a_minval(
     om: solph.Model, limit: float
 ) -> solph.Model:
+
     import pyomo.environ as po
     from oemof.solph.plumbing import sequence
 
     flows = {}
-    for i, o in om.flows:
+    for (i, o) in om.flows:
         if hasattr(om.flows[i, o].investment, "constraint2"):
             flows[(i, o)] = om.flows[i, o].investment
 
@@ -351,7 +352,7 @@ def least_cost_model(
     logging.info("   " + "Starting Optimization with " + solver + "-Solver")
 
     # solving the linear problem using the given solver
-    if solver == "gurobi":
+    if solver== 'gurobi':
         om.solve(solver=solver, cmdline_options={"threads": num_threads})
     else:
         om.solve(solver=solver)

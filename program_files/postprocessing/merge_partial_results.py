@@ -4,8 +4,7 @@ import xlsxwriter
 import os
 from datetime import datetime
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import (
-    sesmg_main,
-    sesmg_main_including_premodel,
+    sesmg_main, sesmg_main_including_premodel
 )
 
 
@@ -33,7 +32,7 @@ def merge_component_csvs(limits, files, directory, result_folders):
         components_csvs.update({limit: []})
         for scenario in result_folders[limit]:
             components_csvs[limit].append(
-                pd.read_csv(directory + scenario[7:] + "/components.csv")
+                    pd.read_csv(directory + scenario[7:] + "/components.csv")
             )
     for limit in limits:
         for dataframe in components_csvs[limit]:
@@ -56,32 +55,25 @@ def calc_constraint_limits(result_folders, limits):
     constr_min_1 = float(sum(result["constraints/CU"]))
     # get constraints of the second optimization
     result2 = pd.read_csv(str(result_folders["0"][0]) + "/components.csv")
-    constr_min_2 = float(
-        sum(result2["variable costs/CU"]) + sum(result2["periodical costs/CU"])
-    )
+    constr_min_2 = float(sum(result2["variable costs/CU"])
+                         + sum(result2["periodical costs/CU"]))
     # devide solvable range in "limits" intervals
     for i in limits:
-        constraints.update(
-            {i: constr_min_1 - float(constr_min_1 - constr_min_2) * float(i)}
-        )
+        constraints.update({i: constr_min_1 - float(
+            constr_min_1 - constr_min_2) * float(i)})
     return constraints
 
 
 def run_pareto(
-    limits,
-    scenario,
-    gui_variables,
-    timeseries_prep_param,
-    pre_modeling,
-    pre_model_timeseries_prep,
-    investment_boundaries,
-    investment_boundary_factor,
-    pre_model_path,
+        limits, scenario, gui_variables, timeseries_prep_param, pre_modeling,
+        pre_model_timeseries_prep, investment_boundaries,
+        investment_boundary_factor,
+        pre_model_path
 ):
     # create one directory to collect all runs
     directory = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-        "results/" + datetime.now().strftime("%Y-%m-%d--%H-%M-%S"),
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            "results/" + datetime.now().strftime("%Y-%m-%d--%H-%M-%S"),
     )
     os.mkdir(directory)
     print(limits)
@@ -90,11 +82,9 @@ def run_pareto(
     # set the save path
     scenario_name = os.path.basename(scenario)[:-5]
     save_path = str(
-        directory
-        + "/"
-        + scenario_name
-        + str(datetime.now().strftime("_%Y-%m-%d--%H-%M-%S"))
-    )
+            directory + "/"
+            + scenario_name
+            + str(datetime.now().strftime("_%Y-%m-%d--%H-%M-%S")))
     # append optimum of first criterion driven run to the list of
     # result folders
     result_folders["1"].append(save_path)
@@ -102,158 +92,163 @@ def run_pareto(
     os.mkdir(save_path)
     if not pre_modeling:
         sesmg_main(
-            scenario_file=scenario,
-            result_path=save_path,
-            num_threads=gui_variables["num_threads"].get(),
-            timeseries_prep=timeseries_prep_param,
-            graph=__get_cb_state(gui_variables["graph_state"]),
-            criterion_switch=False,
-            xlsx_results=__get_cb_state(gui_variables["xlsx_select_state"]),
-            console_results=__get_cb_state(gui_variables["console_select_state"]),
-            solver=gui_variables["solver_select"].get(),
-            district_heating_path=gui_variables["dh_path"].get(),
-            cluster_dh=gui_variables["cluster_dh"].get(),
-        )
-
+                scenario_file=scenario,
+                result_path=save_path,
+                num_threads=gui_variables["num_threads"].get(),
+                timeseries_prep=timeseries_prep_param,
+                graph=__get_cb_state(gui_variables["graph_state"]),
+                criterion_switch=False,
+                xlsx_results=__get_cb_state(
+                        gui_variables["xlsx_select_state"]),
+                console_results=__get_cb_state(
+                        gui_variables["console_select_state"]),
+                solver=gui_variables["solver_select"].get(),
+                district_heating_path=gui_variables["dh_path"].get(),
+                cluster_dh=gui_variables["cluster_dh"].get())
+    
     # If pre-modeling is activated a second run will be carried out
     elif pre_modeling:
         sesmg_main_including_premodel(
-            scenario_file=scenario,
-            result_path=save_path,
-            num_threads=gui_variables["num_threads"].get(),
-            timeseries_prep=timeseries_prep_param,
-            graph=__get_cb_state(gui_variables["graph_state"]),
-            criterion_switch=__get_cb_state(gui_variables["criterion_state"]),
-            xlsx_results=__get_cb_state(gui_variables["xlsx_select_state"]),
-            console_results=__get_cb_state(gui_variables["console_select_state"]),
-            solver=gui_variables["solver_select"].get(),
-            district_heating_path=gui_variables["dh_path"].get(),
-            cluster_dh=gui_variables["cluster_dh"].get(),
-            pre_model_timeseries_prep=pre_model_timeseries_prep,
-            investment_boundaries=investment_boundaries,
-            investment_boundary_factor=investment_boundary_factor,
-            pre_model_path=pre_model_path,
+                scenario_file=scenario,
+                result_path=save_path,
+                num_threads=gui_variables["num_threads"].get(),
+                timeseries_prep=timeseries_prep_param,
+                graph=__get_cb_state(gui_variables["graph_state"]),
+                criterion_switch=__get_cb_state(
+                        gui_variables["criterion_state"]),
+                xlsx_results=__get_cb_state(
+                        gui_variables["xlsx_select_state"]),
+                console_results=__get_cb_state(
+                        gui_variables["console_select_state"]),
+                solver=gui_variables["solver_select"].get(),
+                district_heating_path=gui_variables["dh_path"].get(),
+                cluster_dh=gui_variables["cluster_dh"].get(),
+                pre_model_timeseries_prep=pre_model_timeseries_prep,
+                investment_boundaries=investment_boundaries,
+                investment_boundary_factor=investment_boundary_factor,
+                pre_model_path=pre_model_path
         )
-
+    
     print(save_path)
     # TODO enable more than one scenario (districts)
     # set the save path
     scenario_name = os.path.basename(scenario)[:-5]
     save_path2 = str(
-        directory
-        + "/"
-        + scenario_name
-        + "_0"
-        + str(datetime.now().strftime("_%Y-%m-%d--%H-%M-%S"))
-    )
+            directory + "/"
+            + scenario_name + "_0"
+            + str(datetime.now().strftime("_%Y-%m-%d--%H-%M-%S")))
     print(save_path2)
     # append optimum of first criterion driven run to the list of
     # result folders
     result_folders.update({"0": [save_path2]})
     # create new folder in which the results will be stored
     os.mkdir(save_path2)
-
+    
     if not pre_modeling:
         sesmg_main(
-            scenario_file=scenario,
-            result_path=save_path2,
-            num_threads=gui_variables["num_threads"].get(),
-            timeseries_prep=timeseries_prep_param,
-            graph=__get_cb_state(gui_variables["graph_state"]),
-            criterion_switch=True,
-            xlsx_results=__get_cb_state(gui_variables["xlsx_select_state"]),
-            console_results=__get_cb_state(gui_variables["console_select_state"]),
-            solver=gui_variables["solver_select"].get(),
-            district_heating_path=gui_variables["dh_path"].get(),
-            cluster_dh=gui_variables["cluster_dh"].get(),
-        )
-
+                scenario_file=scenario,
+                result_path=save_path2,
+                num_threads=gui_variables["num_threads"].get(),
+                timeseries_prep=timeseries_prep_param,
+                graph=__get_cb_state(gui_variables["graph_state"]),
+                criterion_switch=True,
+                xlsx_results=__get_cb_state(
+                        gui_variables["xlsx_select_state"]),
+                console_results=__get_cb_state(
+                        gui_variables["console_select_state"]),
+                solver=gui_variables["solver_select"].get(),
+                district_heating_path=gui_variables["dh_path"].get(),
+                cluster_dh=gui_variables["cluster_dh"].get())
+    
     # If pre-modeling is activated a second run will be carried out
     elif pre_modeling:
         sesmg_main_including_premodel(
-            scenario_file=scenario,
-            result_path=save_path2,
-            num_threads=gui_variables["num_threads"].get(),
-            timeseries_prep=timeseries_prep_param,
-            graph=__get_cb_state(gui_variables["graph_state"]),
-            criterion_switch=True,
-            xlsx_results=__get_cb_state(gui_variables["xlsx_select_state"]),
-            console_results=__get_cb_state(gui_variables["console_select_state"]),
-            solver=gui_variables["solver_select"].get(),
-            district_heating_path=gui_variables["dh_path"].get(),
-            cluster_dh=gui_variables["cluster_dh"].get(),
-            pre_model_timeseries_prep=pre_model_timeseries_prep,
-            investment_boundaries=investment_boundaries,
-            investment_boundary_factor=investment_boundary_factor,
-            pre_model_path=pre_model_path,
+                scenario_file=scenario,
+                result_path=save_path2,
+                num_threads=gui_variables["num_threads"].get(),
+                timeseries_prep=timeseries_prep_param,
+                graph=__get_cb_state(gui_variables["graph_state"]),
+                criterion_switch=True,
+                xlsx_results=__get_cb_state(
+                        gui_variables["xlsx_select_state"]),
+                console_results=__get_cb_state(
+                        gui_variables["console_select_state"]),
+                solver=gui_variables["solver_select"].get(),
+                district_heating_path=gui_variables["dh_path"].get(),
+                cluster_dh=gui_variables["cluster_dh"].get(),
+                pre_model_timeseries_prep=pre_model_timeseries_prep,
+                investment_boundaries=investment_boundaries,
+                investment_boundary_factor=investment_boundary_factor,
+                pre_model_path=pre_model_path
         )
-
+    
     constraints = calc_constraint_limits(result_folders, limits)
     print(constraints)
-    files = create_transformation_scenarios(constraints, scenario, directory, limits)
-
+    files = create_transformation_scenarios(constraints, scenario, directory,
+                                            limits)
+    
     for limit in limits:
         result_folders.update({str(limit): []})
         for scenario in files[limit]:
             scenario_name = os.path.basename(scenario)[:-5]
             print(scenario_name)
             gui_variables["save_path"].set(
-                str(
-                    directory
-                    + "/"
-                    + scenario_name
-                    + str(datetime.now().strftime("_%Y-%m-%d--%H-%M-%S"))
-                )
+                    str(
+                            directory + "/"
+                            + scenario_name
+                            + str(
+                                datetime.now().strftime("_%Y-%m-%d--%H-%M-%S"))
+                    )
             )
             # create new folder in which the results will be stored
             os.mkdir(gui_variables["save_path"].get())
             result_folders[str(limit)].append(gui_variables["save_path"].get())
             if not pre_modeling:
                 sesmg_main(
-                    scenario_file=scenario,
-                    result_path=gui_variables["save_path"].get(),
-                    num_threads=gui_variables["num_threads"].get(),
-                    timeseries_prep=timeseries_prep_param,
-                    graph=__get_cb_state(gui_variables["graph_state"]),
-                    criterion_switch=False,
-                    xlsx_results=__get_cb_state(gui_variables["xlsx_select_state"]),
-                    console_results=__get_cb_state(
-                        gui_variables["console_select_state"]
-                    ),
-                    solver=gui_variables["solver_select"].get(),
-                    district_heating_path=gui_variables["dh_path"].get(),
-                    cluster_dh=gui_variables["cluster_dh"].get(),
-                )
-
+                        scenario_file=scenario,
+                        result_path=gui_variables["save_path"].get(),
+                        num_threads=gui_variables["num_threads"].get(),
+                        timeseries_prep=timeseries_prep_param,
+                        graph=__get_cb_state(gui_variables["graph_state"]),
+                        criterion_switch=False,
+                        xlsx_results=__get_cb_state(
+                                gui_variables["xlsx_select_state"]),
+                        console_results=__get_cb_state(
+                                gui_variables["console_select_state"]),
+                        solver=gui_variables["solver_select"].get(),
+                        district_heating_path=gui_variables["dh_path"].get(),
+                        cluster_dh=gui_variables["cluster_dh"].get())
+            
             # If pre-modeling is activated a second run will be carried out
             elif pre_modeling:
                 sesmg_main_including_premodel(
-                    scenario_file=scenario,
-                    result_path=gui_variables["save_path"].get(),
-                    num_threads=gui_variables["num_threads"].get(),
-                    timeseries_prep=timeseries_prep_param,
-                    graph=__get_cb_state(gui_variables["graph_state"]),
-                    criterion_switch=False,
-                    xlsx_results=__get_cb_state(gui_variables["xlsx_select_state"]),
-                    console_results=__get_cb_state(
-                        gui_variables["console_select_state"]
-                    ),
-                    solver=gui_variables["solver_select"].get(),
-                    district_heating_path=gui_variables["dh_path"].get(),
-                    cluster_dh=gui_variables["cluster_dh"].get(),
-                    pre_model_timeseries_prep=pre_model_timeseries_prep,
-                    investment_boundaries=investment_boundaries,
-                    investment_boundary_factor=investment_boundary_factor,
-                    pre_model_path=pre_model_path,
+                        scenario_file=scenario,
+                        result_path=gui_variables["save_path"].get(),
+                        num_threads=gui_variables["num_threads"].get(),
+                        timeseries_prep=timeseries_prep_param,
+                        graph=__get_cb_state(gui_variables["graph_state"]),
+                        criterion_switch=False,
+                        xlsx_results=__get_cb_state(
+                                gui_variables["xlsx_select_state"]),
+                        console_results=__get_cb_state(
+                                gui_variables["console_select_state"]),
+                        solver=gui_variables["solver_select"].get(),
+                        district_heating_path=gui_variables["dh_path"].get(),
+                        cluster_dh=gui_variables["cluster_dh"].get(),
+                        pre_model_timeseries_prep=pre_model_timeseries_prep,
+                        investment_boundaries=investment_boundaries,
+                        investment_boundary_factor=investment_boundary_factor,
+                        pre_model_path=pre_model_path
                 )
     return result_folders
 
 
-def create_transformation_scenarios(constraints, scenario_names, directory, limits):
+def create_transformation_scenarios(constraints, scenario_names, directory,
+                                    limits):
     files = {}
     for limit in limits:
         files.update({str(limit): []})
-
+    
     for counter in limits:
         constraint = constraints[counter]
         xls = pd.ExcelFile(scenario_names)
@@ -270,25 +265,15 @@ def create_transformation_scenarios(constraints, scenario_names, directory, limi
             "competition constraints": xls.parse("competition constraints"),
             "insulation": xls.parse("insulation"),
             "district heating": xls.parse("district heating"),
-            "pipe types": xls.parse("pipe types"),
+            "pipe types": xls.parse("pipe types")
         }
         files[str(counter)].append(
-            directory
-            + "/"
-            + scenario_names.split("/")[-1][:-5]
-            + "_"
-            + str(counter)
-            + ".xlsx"
-        )
+            directory + "/" + scenario_names.split("/")[-1][:-5] + "_" + str(
+                counter) + ".xlsx")
         writer = pd.ExcelWriter(
-            directory
-            + "/"
-            + scenario_names.split("/")[-1][:-5]
-            + "_"
-            + str(counter)
-            + ".xlsx",
-            engine="xlsxwriter",
-        )
+                directory + "/" + scenario_names.split("/")[-1][
+                                  :-5] + "_" + str(counter) + ".xlsx",
+                engine="xlsxwriter")
         nd["energysystem"].loc[1, "constraint cost limit"] = float(constraint)
         for i in nd.keys():
             nd[i].to_excel(writer, sheet_name=str(i), index=False)
@@ -301,8 +286,8 @@ def create_transformation_scenarios(constraints, scenario_names, directory, limi
 # todo: clarify the link below!
 if __name__ == "__main__":
     merge_component_csvs(
-        [],
-        "",
-        "/Users/gregorbecker/Desktop/SESMG-dev_open_district_upscaling-3/results",
-        {"1": ["results/a_test", "results/b_test", "results/c_test"]},
+            [],
+            "",
+            "/Users/gregorbecker/Desktop/SESMG-dev_open_district_upscaling-3/results",
+            {"1": ["results/a_test", "results/b_test", "results/c_test"]},
     )

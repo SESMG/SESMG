@@ -11,21 +11,19 @@ from st_aggrid import AgGrid, GridUpdateMode
 import plotly.express as px
 from PIL import Image
 
-from program_files.GUI_st.GUI_st_global_functions import (
-    import_GUI_input_values_json,
-    st_settings_global,
-)
+from program_files.GUI_st.GUI_st_global_functions import \
+    import_GUI_input_values_json, st_settings_global
 
 
 def result_processing_sidebar():
     """
-    Function to create the sidebar.
+        Function to create the sidebar.
     """
 
     # Import GUI help comments from the comment json and safe as an dict
     GUI_helper = import_GUI_input_values_json(
-        os.path.dirname(os.path.dirname(__file__)) + "/GUI_st_help_comments.json"
-    )
+        os.path.dirname(os.path.dirname(__file__))
+        + "/GUI_st_help_comments.json")
 
     # create sidebar
     with st.sidebar:
@@ -33,53 +31,41 @@ def result_processing_sidebar():
 
         # read sub folders in the result folder directory
         existing_result_foldernames_list = [
-            os.path.basename(x) for x in glob.glob(f'{"results/*"}')
-        ]
+            os.path.basename(x) for x in glob.glob(f'{"results/*"}')]
         existing_result_foldernames_list.sort()
         # create select box with the folder names which are in the results folder
         existing_result_folder = st.selectbox(
             label="Choose the result folder",
             options=existing_result_foldernames_list,
-            help=GUI_helper["res_dd_result_folder"],
-        )
+            help=GUI_helper["res_dd_result_folder"])
 
         # check box if user wants to reload existing results
-        run_existing_results = st.button(
-            label="Load Existing Results", help=GUI_helper["res_b_load_results"]
-        )
+        run_existing_results = st.button(label="Load Existing Results",
+                                         help=GUI_helper["res_b_load_results"])
 
         if run_existing_results:
             # set session state with full folder path to the result folder
-            st.session_state["state_result_path"] = os.path.join(
-                os.path.dirname(
-                    os.path.dirname(
-                        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                    )
-                ),
-                "results",
-                existing_result_folder,
-            )
+            st.session_state["state_result_path"] = \
+                os.path.join(os.path.dirname(os.path.dirname(
+                    os.path.dirname(os.path.dirname(
+                        os.path.abspath(__file__))))), "results", existing_result_folder)
 
-        if st.session_state["state_result_path"] != "not set" and os.path.join(
-            st.session_state["state_result_path"], "components.csv"
-        ) not in glob.glob(st.session_state["state_result_path"] + "/*"):
+        if st.session_state["state_result_path"] != "not set" and \
+                os.path.join(st.session_state["state_result_path"], "components.csv") \
+                not in glob.glob(st.session_state["state_result_path"] + "/*"):
             # header
             st.header("Pareto Results")
 
             # read out sub folders of pareto list
             existing_result_foldernames_list = next(
-                os.walk(st.session_state["state_result_path"])
-            )[1]
+                os.walk(st.session_state["state_result_path"]))[1]
             # split folder names and safe pareto point positions in a list
-            pareto_points_list = [
-                directory.split("_")[-2]
-                for directory in existing_result_foldernames_list
-            ]
+            pareto_points_list = [directory.split(
+                "_")[-2] for directory in existing_result_foldernames_list]
 
             # create dict with pareto point positions and folder names
             pareto_folder_dict = dict(
-                zip(pareto_points_list, existing_result_foldernames_list)
-            )
+                zip(pareto_points_list, existing_result_foldernames_list))
             # sort pareto point list
             pareto_points_list.sort()
             # create select box to choose the pareto point you want to see
@@ -87,15 +73,12 @@ def result_processing_sidebar():
             pareto_point_chosen = st.selectbox(
                 label="Choose the pareto point",
                 options=pareto_points_list,
-                help=GUI_helper["res_dd_pareto_point"],
-            )
+                help=GUI_helper["res_dd_pareto_point"])
 
             # create session_state to initialize the pareto result overviews
             st.session_state["state_pareto_point_chosen"] = pareto_point_chosen
-            st.session_state["state_pareto_result_path"] = os.path.join(
-                st.session_state["state_result_path"],
-                pareto_folder_dict[pareto_point_chosen],
-            )
+            st.session_state["state_pareto_result_path"] = \
+                os.path.join(st.session_state["state_result_path"], pareto_folder_dict[pareto_point_chosen])
             # st.session_state["state_pareto_result_path"] = \
             #     st.session_state["state_result_path"] + \
             #     "/" + pareto_folder_dict[pareto_point_chosen]
@@ -103,10 +86,10 @@ def result_processing_sidebar():
 
 def short_result_summary_time(result_path_summary):
     """
-    Function displaying the results time series informations.
+        Function displaying the results time series informations.
 
-    :param result_path_summary: path to a result summary.csv file
-    :type result_path_summary: str
+        :param result_path_summary: path to a result summary.csv file
+        :type result_path_summary: str
     """
     st.subheader("Result Overview")
     # Import summary.csv and create dataframe
@@ -139,71 +122,59 @@ def short_result_summary_system(result_path_summary):
     # TODO: add delta functions based on the latest results
     # Display and import simulated cost values from summary dataframe
     cost1, cost2, cost3, cost4 = st.columns(4)
-    cost1.metric(
-        label=summary_headers[3], value=round(df_summary[summary_headers[3]], 1)
-    )
-    cost2.metric(
-        label=summary_headers[4], value=round(df_summary[summary_headers[4]], 1)
-    )
-    cost3.metric(
-        label=summary_headers[5], value=round(df_summary[summary_headers[5]], 1)
-    )
-    cost4.metric(
-        label=summary_headers[6], value=round(df_summary[summary_headers[6]], 1)
-    )
+    cost1.metric(label=summary_headers[3], value=round(
+        df_summary[summary_headers[3]], 1))
+    cost2.metric(label=summary_headers[4], value=round(
+        df_summary[summary_headers[4]], 1))
+    cost3.metric(label=summary_headers[5], value=round(
+        df_summary[summary_headers[5]], 1))
+    cost4.metric(label=summary_headers[6], value=round(
+        df_summary[summary_headers[6]], 1))
 
     # Display and import simulated energy values from summary dataframe
     # adding two blank rows
     ener1, ener2, ener3, ener4 = st.columns(4)
-    ener1.metric(
-        label=summary_headers[7], value=round(df_summary[summary_headers[7]], 1)
-    )
-    ener2.metric(
-        label=summary_headers[8], value=round(df_summary[summary_headers[8]], 1)
-    )
+    ener1.metric(label=summary_headers[7], value=round(
+        df_summary[summary_headers[7]], 1))
+    ener2.metric(label=summary_headers[8], value=round(
+        df_summary[summary_headers[8]], 1))
 
 
 def short_result_simplifications(result_GUI_settings_dict):
     """
-    Function to display model simplification settings in addition
-        to the timeseries information.
-    :param result_path_components: dict including the last runs GUI
-        settings
-    :type result_path_components: dict
+        Function to display model simplification settings in addition
+            to the timeseries information.
+        :param result_path_components: dict including the last runs GUI
+            settings
+        :type result_path_components: dict
     """
     alg1, alg2 = st.columns(2)
-    alg1.metric(
-        label="Simplification Algorithm",
-        value=result_GUI_settings_dict["input_timeseries_algorithm"],
-    )
+    alg1.metric(label="Simplification Algorithm",
+                value=result_GUI_settings_dict["input_timeseries_algorithm"])
     # create 5 columns. one for each simplification input field
     simp1, simp2, simp3, simp4 = st.columns(4)
     simp1.metric(
         label="Simplification Index",
-        value=result_GUI_settings_dict["input_timeseries_cluster_index"],
-    )
+        value=result_GUI_settings_dict["input_timeseries_cluster_index"])
     simp2.metric(
         label="Cluster Criterion",
-        value=result_GUI_settings_dict["input_timeseries_criterion"],
-    )
+        value=result_GUI_settings_dict["input_timeseries_criterion"])
     simp3.metric(
         label="Simplification Period",
-        value=result_GUI_settings_dict["input_timeseries_period"],
-    )
+        value=result_GUI_settings_dict["input_timeseries_period"])
     simp4.metric(
         label="Cluster Season",
-        value=result_GUI_settings_dict["input_timeseries_season"],
-    )
+        value=result_GUI_settings_dict["input_timeseries_season"])
 
 
 def short_result_premodelling(result_GUI_settings_dict):
     """
-    Function to display premodel settings in addition to
-        the timeseries information.
+        Function to display premodel settings in addition to
+            the timeseries information.
 
-    :param result_path_components: dict including the last
-        runs GUI settings
-    :type result_path_components: dict
+        :param result_path_components: dict including the last
+            runs GUI settings
+        :type result_path_components: dict
     """
     # check if investment boundaries were active to show tightening factor
     # create columns for pre-modelling information
@@ -211,24 +182,22 @@ def short_result_premodelling(result_GUI_settings_dict):
     pre1, pre2, pre3, pre4 = st.columns(4)
     pre1.metric(
         label="Premodelling Active",
-        value=result_GUI_settings_dict["input_activate_premodeling"],
-    )
+        value=result_GUI_settings_dict["input_activate_premodeling"])
     pre2.metric(
         label="Investment Bounderies",
-        value=result_GUI_settings_dict["input_premodeling_invest_boundaries"],
-    )
+        value=result_GUI_settings_dict["input_premodeling_invest_boundaries"])
     if result_GUI_settings_dict["input_premodeling_invest_boundaries"]:
         pre3.metric(
             label="Tightening Factor",
-            value=result_GUI_settings_dict["input_premodeling_tightening_factor"],
-        )
+            value=result_GUI_settings_dict
+            ["input_premodeling_tightening_factor"])
 
 
 def short_result_table(result_path_components):
     """
-    Function to create tabel of components.
-    :param result_path_components: path to a result components.csv file
-    :type result_path_components: str
+        Function to create tabel of components.
+        :param result_path_components: path to a result components.csv file
+        :type result_path_components: str
     """
     # Header
     st.subheader("Result Table")
@@ -246,20 +215,16 @@ def short_result_table(result_path_components):
     # Inject CSS with Markdown
     st.markdown(hide_dataframe_row_index, unsafe_allow_html=True)
     # Creating st_aggrid table
-    AgGrid(
-        df_components,
-        height=400,
-        fit_columns_on_grid_load=True,
-        update_mode=GridUpdateMode.SELECTION_CHANGED,
-    )
+    AgGrid(df_components, height=400, fit_columns_on_grid_load=True,
+           update_mode=GridUpdateMode.SELECTION_CHANGED)
 
 
 def short_result_interactive_dia(result_path_results):
     """
-    Function to create interactive results.
+        Function to create interactive results.
 
-    :param result_path_results: path to a result results.csv file
-    :type result_path_results: str
+        :param result_path_results: path to a result results.csv file
+        :type result_path_results: str
     """
     # Header
     st.subheader("Interactive Results")
@@ -274,9 +239,7 @@ def short_result_interactive_dia(result_path_results):
     # filtered dataframe
     filtered_df = result_df[select_headers]
     # plotting
-    fig = px.line(filtered_df).update_layout(
-        xaxis_title="date", yaxis_title="performance (kW) / storage capacity (kWh)"
-    )
+    fig = px.line(filtered_df).update_layout(xaxis_title="date", yaxis_title="performance (kW) / storage capacity (kWh)")
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
@@ -298,21 +261,20 @@ def create_energy_amounts_diagram(result_path_amounts):
     list_headers = column_headers_amount[1:]
 
     # create plotly chart
-    fig = px.area(amounts_df, x="run", y=list_headers).update_layout(
-        xaxis_title="Reduced GHG-emissions compared to " "the cost minimum (%)",
-        yaxis_title="energy amounts (kWh)",
-    )
+    fig = px.area(amounts_df, x="run", y=list_headers).update_layout(xaxis_title="Reduced GHG-emissions compared to "
+                                                                                 "the cost minimum (%)",
+                                                                     yaxis_title="energy amounts (kWh)")
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
 def show_energy_amounts(result_path_heat_amounts, result_path_elec_amounts):
     """
-    Function to create heat amounts.
+        Function to create heat amounts.
 
-    :param result_path_heat_amounts: path to a result heat_amounts.csv file
-    :type result_path_heat_amounts: str
-    :param result_path_elec_amounts: path to a result elec_amounts.csv file
-    :type result_path_elec_amounts: str
+        :param result_path_heat_amounts: path to a result heat_amounts.csv file
+        :type result_path_heat_amounts: str
+        :param result_path_elec_amounts: path to a result elec_amounts.csv file
+        :type result_path_elec_amounts: str
     """
     # Header
     st.subheader("Energy Amount Diagrams")
@@ -322,26 +284,26 @@ def show_energy_amounts(result_path_heat_amounts, result_path_elec_amounts):
         # TODO: fix displayed amounts!
         # create heat amount diagram
         with tab1:
-            create_energy_amounts_diagram(result_path_amounts=result_path_heat_amounts)
+            create_energy_amounts_diagram(
+                result_path_amounts=result_path_heat_amounts)
         # create elec amount diagram
         with tab2:
-            create_energy_amounts_diagram(result_path_amounts=result_path_elec_amounts)
+            create_energy_amounts_diagram(
+                result_path_amounts=result_path_elec_amounts)
 
     # comment that diagrams are not always valid / can be wrong
-    st.write(
-        "Info: The energy amount diagrams are only valid if the model \
+    st.write("Info: The energy amount diagrams are only valid if the model \
              definition created with the Urban Upscaling Tool. \
              Otherwise there is no guarantee that there are no components \
-             missing in the diagrams."
-    )
+             missing in the diagrams.")
 
 
 def show_pareto(result_path_pareto):
     """
-    Function to create heat amounts.
+        Function to create heat amounts.
 
-    :param result_path_results: path to a result heat_amounts.csv file
-    :type result_path_results: str
+        :param result_path_results: path to a result heat_amounts.csv file
+        :type result_path_results: str
     """
     # Header
     st.subheader("Pareto Diagram")
@@ -349,27 +311,23 @@ def show_pareto(result_path_pareto):
     # load pareto.csv
     pareto_df = pd.read_csv(result_path_pareto)
     # create and show pareto plot incl. point values
-    fig = px.line(
-        pareto_df,
-        x="costs",
-        y="emissions",
-        markers=True,
-        hover_data=["costs", "emissions"],
-        labels={
-            "costs": "costs (EUR / a)",
-            "emissions": "emissions (g CO<sub>2</sub> / a)",
-        },
-    )
+    fig = px.line(pareto_df,
+                  x="costs",
+                  y="emissions",
+                  markers=True,
+                  hover_data=["costs", "emissions"],
+                  labels={"costs": "costs (EUR / a)", "emissions": "emissions (g CO<sub>2</sub> / a)"}
+                  )
     fig.update_traces(textposition="top right")
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
 def show_building_specific_results(result_path_building_specific):
     """
-    Function to create heat amounts.
+        Function to create heat amounts.
 
-    :param result_path_results: path to a result heat_amounts.csv file
-    :type result_path_results: str
+        :param result_path_results: path to a result heat_amounts.csv file
+        :type result_path_results: str
     """
     # Header
     with st.expander("Building specific results"):
@@ -388,17 +346,18 @@ def show_building_specific_results(result_path_building_specific):
             # building specific figure
             # todo filter due to label in order to reduce the number
             # of buildings
-            fig = px.bar(df_building_specific_data, x="Building", y=column_headers)
+            fig = px.bar(df_building_specific_data,
+                         x="Building", y=column_headers)
             st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
 def short_result_graph(result_path_graph):
     """
-    Function to display the energy systems structure in a streamlit
-        expander.
+        Function to display the energy systems structure in a streamlit
+            expander.
 
-    :param result_path_graph: path to a result graph.gv.png file
-    :type result_path_graph: str
+        :param result_path_graph: path to a result graph.gv.png file
+        :type result_path_graph: str
     """
     # Header
     st.subheader("Energy System Graph")
@@ -424,113 +383,105 @@ if st.session_state["state_result_path"] == "not set":
     st.write("This ia a dummy. You can choose your result folder here as ....")
     st.write(st.session_state["state_result_path"])
 
-elif os.path.join(st.session_state["state_result_path"], "components.csv") in glob.glob(
-    st.session_state["state_result_path"] + "/*"
-):
+elif os.path.join(st.session_state["state_result_path"], "components.csv") \
+        in glob.glob(st.session_state["state_result_path"] + "/*"):
+
     # show short result summaries time series information
     short_result_summary_time(
-        result_path_summary=st.session_state["state_result_path"] + "/summary.csv"
-    )
+        result_path_summary=st.session_state["state_result_path"]
+                            + "/summary.csv")
 
     # check if GUI settings dict is in result folder
-    if os.path.join(
-        st.session_state["state_result_path"], "GUI_st_run_settings.json"
-    ) in glob.glob(st.session_state["state_result_path"] + "/*"):
+    if os.path.join(st.session_state["state_result_path"],
+                    "GUI_st_run_settings.json") \
+            in glob.glob(st.session_state["state_result_path"] + "/*"):
         # import json as in a dict
         GUI_run_settings_dict = import_GUI_input_values_json(
             json_file_path=st.session_state["state_result_path"]
-            + "/GUI_st_run_settings.json"
-        )
+                           + "/GUI_st_run_settings.json")
         # display some GUI settings if pre-modelling was active
         if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
             # show time series simplification settings
-            short_result_simplifications(result_GUI_settings_dict=GUI_run_settings_dict)
+            short_result_simplifications(
+                result_GUI_settings_dict=GUI_run_settings_dict)
         if GUI_run_settings_dict["input_activate_premodeling"]:
             # show time series simplification settings
-            short_result_premodelling(result_GUI_settings_dict=GUI_run_settings_dict)
+            short_result_premodelling(
+                result_GUI_settings_dict=GUI_run_settings_dict)
     # show short result summaries key values
     short_result_summary_system(
-        result_path_summary=st.session_state["state_result_path"] + "/summary.csv"
-    )
+        result_path_summary=st.session_state["state_result_path"]
+                            + "/summary.csv")
 
     # show energy system graph
     short_result_graph(
-        result_path_graph=st.session_state["state_result_path"] + "/graph.gv.png"
-    )
+        result_path_graph=st.session_state["state_result_path"]
+                          + "/graph.gv.png")
     # show components table
     short_result_table(
-        result_path_components=st.session_state["state_result_path"] + "/components.csv"
-    )
+        result_path_components=st.session_state["state_result_path"]
+                               + "/components.csv")
     # show interactive result diagram
     short_result_interactive_dia(
-        result_path_results=st.session_state["state_result_path"] + "/results.csv"
-    )
+        result_path_results=st.session_state["state_result_path"]
+                            + "/results.csv")
 
 
-elif os.path.join(
-    st.session_state["state_result_path"], "components.csv"
-) not in glob.glob(st.session_state["state_result_path"] + "/*"):
+elif os.path.join(st.session_state["state_result_path"], "components.csv") \
+        not in glob.glob(st.session_state["state_result_path"] + "/*"):
     # show building specific results
     show_pareto(
-        result_path_pareto=os.path.join(
-            st.session_state["state_result_path"], "pareto.csv"
-        )
-    )
+        result_path_pareto=os.path.join(st.session_state["state_result_path"],
+                                        "pareto.csv"))
     # show heat amount diagram
     show_energy_amounts(
         result_path_heat_amounts=st.session_state["state_result_path"]
-        + "/heat_amounts.csv",
+                                 + "/heat_amounts.csv",
         result_path_elec_amounts=st.session_state["state_result_path"]
-        + "/elec_amounts.csv",
-    )
+                                 + "/elec_amounts.csv")
     # TODO implement
     # show building specific results
     # show_building_specific_results(st.session_state["state_result_path"]
     # + "/???????????.csv")
 
     # open short results for the chosen pareto point incl. header
-    st.subheader(
-        "Short Results for Pareto Point: "
-        + st.session_state["state_pareto_point_chosen"]
-    )
+    st.subheader("Short Results for Pareto Point: " +
+                 st.session_state["state_pareto_point_chosen"])
     # show short result summaries time series informations
     short_result_summary_time(
         result_path_summary=st.session_state["state_pareto_result_path"]
-        + "/summary.csv"
-    )
+                            + "/summary.csv")
     # check if GUI settings dict is in result folder
-    if os.path.join(
-        st.session_state["state_pareto_result_path"], "GUI_st_run_settings.json"
-    ) in glob.glob(st.session_state["state_pareto_result_path"] + "/*"):
+    if os.path.join(st.session_state["state_pareto_result_path"],
+                    "GUI_st_run_settings.json") \
+            in glob.glob(st.session_state["state_pareto_result_path"] + "/*"):
         # import json as in a dict
         GUI_run_settings_dict = import_GUI_input_values_json(
             json_file_path=os.path.join(
-                st.session_state["state_pareto_result_path"], "GUI_st_run_settings.json"
-            )
-        )
+                st.session_state["state_pareto_result_path"],
+                "GUI_st_run_settings.json"))
         # display some GUI settings if pre-modelling was active
         if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
             # show time series simplification settings
-            short_result_simplifications(result_GUI_settings_dict=GUI_run_settings_dict)
+            short_result_simplifications(
+                result_GUI_settings_dict=GUI_run_settings_dict)
         if GUI_run_settings_dict["input_activate_premodeling"]:
             # show time series simplification settings
-            short_result_premodelling(result_GUI_settings_dict=GUI_run_settings_dict)
+            short_result_premodelling(
+                result_GUI_settings_dict=GUI_run_settings_dict)
     # show short result summaries key values
     short_result_summary_system(
         result_path_summary=st.session_state["state_pareto_result_path"]
-        + "/summary.csv"
-    )
+                            + "/summary.csv")
     # show components table
     short_result_table(
         result_path_components=st.session_state["state_pareto_result_path"]
-        + "/components.csv"
-    )
+                               + "/components.csv")
     # show interactive result diagram
     short_result_interactive_dia(
         result_path_results=st.session_state["state_pareto_result_path"]
-        + "/results.csv"
-    )
+                            + "/results.csv")
     # show energy system graph
     short_result_graph(
-        result_path_graph=st.session_state["state_pareto_result_path"] + "/graph.gv.png"
-    )
+        result_path_graph=st.session_state["state_pareto_result_path"]
+                          + "/graph.gv.png")

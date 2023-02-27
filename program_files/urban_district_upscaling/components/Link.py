@@ -1,14 +1,8 @@
 import pandas
 
 
-def create_link(
-    label: str,
-    bus_1: str,
-    bus_2: str,
-    link_type: str,
-    sheets,
-    standard_parameters: pandas.ExcelFile,
-) -> dict:
+def create_link(label: str, bus_1: str, bus_2: str, link_type: str, sheets,
+                standard_parameters: pandas.ExcelFile) -> dict:
     """
         Creates a link with standard_parameters, based on the standard
         parameters given in the "standard_parameters" dataset and adds
@@ -40,12 +34,12 @@ def create_link(
         specific_param={"label": label, "bus1": bus_1, "bus2": bus_2},
         standard_parameter_info=[link_type, "6_links", "link_type"],
         sheets=sheets,
-        standard_parameters=standard_parameters,
+        standard_parameters=standard_parameters
     )
 
 
 def create_central_electricity_bus_connection(
-    cluster: str, sheets: dict, standard_parameters: pandas.ExcelFile
+        cluster: str, sheets: dict, standard_parameters: pandas.ExcelFile
 ) -> dict:
     """
         TODO DOCSTRINGTEXT
@@ -71,7 +65,7 @@ def create_central_electricity_bus_connection(
             bus_2=cluster + "_electricity_bus",
             link_type="building_central_building_link",
             sheets=sheets,
-            standard_parameters=standard_parameters,
+            standard_parameters=standard_parameters
         )
         sheets["links"].set_index("label", inplace=True, drop=False)
     # add link from cluster pv bus to cluster electricity bus
@@ -84,18 +78,13 @@ def create_central_electricity_bus_connection(
             bus_2=cluster + "_electricity_bus",
             link_type="building_pv_central_link",
             sheets=sheets,
-            standard_parameters=standard_parameters,
-        )
+            standard_parameters=standard_parameters)
         sheets["links"].set_index("label", inplace=True, drop=False)
     return sheets
 
 
-def create_cluster_pv_links(
-    cluster: str,
-    sheets: dict,
-    sink_parameters: list,
-    standard_parameters: pandas.ExcelFile,
-) -> dict:
+def create_cluster_pv_links(cluster: str, sheets: dict, sink_parameters: list,
+                            standard_parameters: pandas.ExcelFile) -> dict:
     """
         In this method, the PV bus of the cluster is connected to the
         central electricity bus, if the cluster power demand > 0, it is
@@ -124,9 +113,8 @@ def create_cluster_pv_links(
             bus_2="central_electricity_bus",
             link_type="building_pv_central_link",
             sheets=sheets,
-            standard_parameters=standard_parameters,
-        )
-
+            standard_parameters=standard_parameters)
+        
         # if the considered cluster has an electricity demand the link
         # between the cluster electricity bus and the cluster pv sources
         # will be created
@@ -137,15 +125,14 @@ def create_cluster_pv_links(
                 bus_2=cluster + "_electricity_bus",
                 link_type="building_pv_building_link",
                 sheets=sheets,
-                standard_parameters=standard_parameters,
-            )
+                standard_parameters=standard_parameters)
         sheets["links"].set_index("label", inplace=True, drop=False)
     return sheets
 
 
-def add_cluster_naturalgas_bus_links(
-    sheets: dict, cluster: str, standard_parameters: pandas.ExcelFile
-) -> dict:
+def add_cluster_naturalgas_bus_links(sheets: dict, cluster: str,
+                                     standard_parameters: pandas.ExcelFile
+                                     ) -> dict:
     """
         In this method, the naturalgas bus of the cluster is connected
         to the central natural gas bus.
@@ -170,15 +157,14 @@ def add_cluster_naturalgas_bus_links(
             bus_2=cluster + "_gas_bus",
             link_type="central_naturalgas_building_link",
             sheets=sheets,
-            standard_parameters=standard_parameters,
+            standard_parameters=standard_parameters
         )
         sheets["links"].set_index("label", inplace=True, drop=False)
     return sheets
 
 
-def delete_non_used_links(
-    sheets_clustering: dict, cluster_ids: dict, sheets: dict
-) -> dict:
+def delete_non_used_links(sheets_clustering: dict, cluster_ids: dict,
+                          sheets: dict) -> dict:
     """
         Within this method all non clustered links which are no longer
         in use after the clustering process are removed and the
@@ -199,13 +185,12 @@ def delete_non_used_links(
             pandas.Dataframes that will represent the model \
             definition's Spreadsheets which was modified in this method
     """
-
+    
     # iterate threw all links that are within the sheets dictionary
     # this is necessary since sheets clustering is only a copy of the
     # unclustered file while sheets will be changed within this method
-    df_links = sheets_clustering["links"][
-        sheets_clustering["links"]["label"].isin(sheets["links"].index)
-    ]
+    df_links = sheets_clustering["links"][sheets_clustering["links"][
+        "label"].isin(sheets["links"].index)]
     for num, link in df_links.iterrows():
         for building in cluster_ids:
             # first label part

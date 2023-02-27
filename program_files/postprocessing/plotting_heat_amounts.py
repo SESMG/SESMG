@@ -14,9 +14,8 @@ def st_heat_amount(components_df, pv_st, dataframe, amounts_dict):
     return amounts_dict
 
 
-def collect_heat_amounts(
-    dataframes: dict, nodes_data: dict, result_path: str, sink_known: dict
-):
+def collect_heat_amounts(dataframes: dict, nodes_data: dict,
+                         result_path: str, sink_known: dict):
     """
     main function of the algorithm to plot an heat amount plot after
     running an pareto optimization
@@ -38,9 +37,8 @@ def collect_heat_amounts(
     from program_files.postprocessing.plotting import (
         get_dataframe_from_nodes_data,
         get_value,
-        dict_to_dataframe,
+        dict_to_dataframe
     )
-
     # data frame to plot the amounts using matplotlib
     heat_amounts = pandas.DataFrame()
     heat_amounts_dict = {}
@@ -104,15 +102,17 @@ def collect_heat_amounts(
         # TODO concentrated solar power
         # get the ST-Systems' amounts using st_heat_amount method above
         heat_amounts_dict = st_heat_amount(
-            components_df, "solar_thermal_flat_plate", dataframe, heat_amounts_dict
+            components_df, "solar_thermal_flat_plate", dataframe,
+            heat_amounts_dict
         )
-
+        
         # get the energy system's heat pumps from nodes data
         df_hp = components_df[
             (components_df.isin(["CompressionHeatTransformer"])).any(axis=1)
         ]
         df_hp = pandas.concat(
-            [df_hp, (components_df.isin(["AbsorptionHeatTransformer"])).any(axis=1)]
+            [df_hp,
+             (components_df.isin(["AbsorptionHeatTransformer"])).any(axis=1)]
         )
         # append the heat production of the heat pumps on the heat
         # amounts dict
@@ -126,7 +126,7 @@ def collect_heat_amounts(
                 heat_amounts_dict["ASHP"].append(
                     get_value(comp["label"], "output 1/kWh", dataframe)
                 )
-
+                
         # get the energy system's sinks from nodes data
         df_sinks = components_df[(components_df["annual demand"].notna())]
         df_sinks = pandas.concat(
@@ -148,7 +148,7 @@ def collect_heat_amounts(
                 heat_amounts_dict["Thermalstorage_output"].append(value)
                 input_val = get_value(storage["label"], "input 1/kWh", dataframe)
                 heat_amounts_dict["Thermalstorage_losses"].append(input_val - value)
-
+        
         # get the energy system's generic transformers from nodes data
         df_gen_transformer = components_df[
             (components_df.isin(["GenericTransformer"])).any(axis=1)
@@ -176,9 +176,7 @@ def collect_heat_amounts(
         df_insulation = components_df[components_df["U-value new"].notna()]
         for num, insulation in df_insulation.iterrows():
             cap_sink = get_value(insulation["sink"], "capacity/kW", dataframe)
-            cap_insulation = get_value(
-                insulation["label"] + "-insulation", "capacity/kW", dataframe
-            )
+            cap_insulation = get_value(insulation["label"] + "-insulation", "capacity/kW", dataframe)
             value_sink = get_value(insulation["sink"], "input 1/kWh", dataframe)
             # append the heat savings of the insulations on the heat
             # amounts dict
@@ -193,31 +191,23 @@ def collect_heat_amounts(
                 "output 1/kWh"
             ].values
         )
-        df_central_heat = components_df[
-            components_df["district heating conn."] == "dh-system"
-        ]
+        df_central_heat = components_df[components_df["district heating conn."]
+                                        == "dh-system"]
         df_comp_heat = pandas.DataFrame()
         for i in ["output", "output2"]:
             for num, bus in df_central_heat.iterrows():
-                df_comp_heat = pandas.concat(
-                    [df_comp_heat, components_df.loc[components_df[i] == bus["label"]]]
-                )
+               df_comp_heat = pandas.concat(
+                    [df_comp_heat,
+                     components_df.loc[components_df[i] == bus["label"]]])
             for num, comp in df_comp_heat.iterrows():
-                if (
-                    str(
-                        components_df.loc[components_df["label"] == comp["label"]][
-                            "transformer type"
-                        ].values[0]
-                    )
-                    == "GenericTransformer"
-                ):
+                if str(components_df.loc[components_df["label"] == comp["label"]]
+                       ["transformer type"].values[0]) == "GenericTransformer":
                     # TODO since we do not differentiate the chp's fuel we
                     # TODO have to use the label
-                    output = get_value(
-                        comp["label"],
-                        "output 1/kWh" if i == "output" else "output 2/kWh",
-                        dataframe,
-                    )
+                    output = get_value(comp["label"],
+                                       "output 1/kWh" if i == "output"
+                                       else "output 2/kWh",
+                                       dataframe)
                     if comp["output2"] != "None":
                         if "wc" in comp["label"]:
                             heat_amounts_dict["central_wc_heat_chp"].append(output)
@@ -242,19 +232,16 @@ def collect_heat_amounts(
                             heat_amounts_dict["central_pe_heat"].append(output)
                         else:
                             heat_amounts_dict["central_heat"].append(output)
-                if (
-                    str(
-                        components_df.loc[components_df["label"] == comp["label"]][
-                            "transformer type"
-                        ].values[0]
-                    )
-                    == "CompressionHeatTransformer"
-                ):
-                    output = get_value(comp["label"], "output 1/kWh", dataframe)
+                if str(components_df.loc[
+                           components_df["label"] == comp["label"]]
+                       ["transformer type"].values[0]) == "CompressionHeatTransformer":
+                    output = get_value(comp["label"],
+                                       "output 1/kWh",
+                                       dataframe)
                     if comp["heat source"] == "Water" and i == "output":
                         heat_amounts_dict["central_SWHP"].append(output)
                     elif comp["heat source"] == "Ground" and i == "output":
                         heat_amounts_dict["central_GCHP"].append(output)
-
+                      
         heat_amounts = dict_to_dataframe(heat_amounts_dict, heat_amounts)
     heat_amounts.to_csv(result_path + "/heat_amounts.csv")

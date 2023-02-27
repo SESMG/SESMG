@@ -58,9 +58,8 @@ class Sources:
             - Gregor Becker - gregor.becker@fh-muenster.de
     """
 
-    def create_source(
-        self, so: dict, timeseries_args: dict, output=None, variable_costs=None
-    ):
+    def create_source(self, so: dict, timeseries_args: dict, output=None,
+                      variable_costs=None):
         """
         Creates an oemof source with fixed or unfixed timeseries
 
@@ -109,12 +108,8 @@ class Sources:
                             fix_constraint_costs=so["fix investment constraint costs"],
                         ),
                         **timeseries_args,
-                        variable_costs=so["variable costs"]
-                        if not variable_costs
-                        else variable_costs[0],
-                        emission_factor=so["variable constraint costs"]
-                        if not variable_costs
-                        else variable_costs[1]
+                        variable_costs=so["variable costs"] if not variable_costs else variable_costs[0],
+                        emission_factor=so["variable constraint costs"] if not variable_costs else variable_costs[1]
                     )
                 },
             )
@@ -184,9 +179,8 @@ class Sources:
         # Returns logging info
         logging.info("\t Timeseries Source created: " + so["label"])
 
-    def create_feedin_source(
-        self, feedin: pd.Series, so: dict, output=None, variable_costs=None
-    ):
+    def create_feedin_source(self, feedin: pd.Series, so: dict, output=None,
+                             variable_costs=None):
         """ """
         if so["fixed"] == 1:
             # sets the attribute for a fixed pv_source
@@ -430,12 +424,9 @@ class Sources:
                     self.busd[so["label"] + "_bus"]: Flow(emission_factor=0),
                     self.busd[so["input"]]: Flow(emission_factor=0),
                 },
-                outputs={
-                    self.busd[so["output"]]: Flow(
-                        variable_costs=so["variable costs"],
-                        emission_factor=so["variable constraint costs"],
-                    )
-                },
+                outputs={self.busd[so["output"]]: Flow(
+                    variable_costs=so["variable costs"],
+                    emission_factor=so["variable constraint costs"])},
                 conversion_factors={
                     self.busd[so["label"] + "_bus"]: 1,
                     self.busd[so["input"]]: so["Electric Consumption"]

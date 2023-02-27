@@ -42,7 +42,8 @@ def set_esys_data(nodes_data: dict, location: Point, variables: str) -> dict:
     }
 
 
-def import_open_fred_weather_data(nodes_data: dict, lat: float, lon: float) -> dict:
+def import_open_fred_weather_data(nodes_data: dict, lat: float, lon: float
+                                  ) -> dict:
     """
         This method downloads the windpowerlib and the pvlib relevant
         weather data from the OpenEnergyPlatform and assembles them to
@@ -65,33 +66,27 @@ def import_open_fred_weather_data(nodes_data: dict, lat: float, lon: float) -> d
     """
     # location of area under investigation
     location = Point(lon, lat)
-
+    
     # log the city and country of the given coords
-    geo_info = geocoder.osm([lat, lon], method="reverse")
-    logging.info(
-        "\t The inserted Open Fred coordinates point on "
-        + geo_info.json["city"]
-        + " in "
-        + geo_info.json["country"]
-        + "."
-    )
-
+    geo_info = geocoder.osm([lat, lon], method='reverse')
+    logging.info("\t The inserted Open Fred coordinates point on "
+                 + geo_info.json['city'] + " in "
+                 + geo_info.json['country'] + ".")
+    
     # get windpowerlib relevant weather data from OPEN Fred
-    wind_df = Weather(
-        **set_esys_data(nodes_data, location, "windpowerlib"), **defaultdb()
-    ).df(location=location, lib="windpowerlib")
+    wind_df = Weather(**set_esys_data(nodes_data, location, "windpowerlib"),
+                      **defaultdb()).df(location=location, lib="windpowerlib")
     # meaning the half hour values
     wind_df = wind_df.resample("1h").mean()
     wind_df.reset_index(drop=True, inplace=True)
 
     # get pv system weather data from OPEN Fred
-    pv_df = Weather(**set_esys_data(nodes_data, location, "pvlib"), **defaultdb()).df(
-        location=location, lib="pvlib"
-    )
+    pv_df = Weather(**set_esys_data(nodes_data, location, "pvlib"),
+                    **defaultdb()).df(location=location, lib="pvlib")
     # resample pv system data from quarter-hourly to hourly resolution
     pv_df = pv_df.resample("1h").mean()
     pv_df.reset_index(drop=True, inplace=True)
-
+    
     # create weather data sheet
     data = {
         "pressure": wind_df["pressure"],

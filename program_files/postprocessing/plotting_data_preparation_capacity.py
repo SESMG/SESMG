@@ -24,10 +24,7 @@ def pv_st_capacity(components_df, pv_st, dataframe, capacities_dict):
 
 
 def create_capacity_plots(dataframes: dict, nodes_data, result_path):
-    from program_files.postprocessing.plotting import (
-        get_dataframe_from_nodes_data,
-        get_value,
-    )
+    from program_files.postprocessing.plotting import get_dataframe_from_nodes_data, get_value
 
     capacities = pd.DataFrame()
     capacities_dict = {}
@@ -79,26 +76,18 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
                 "central_pe_heat": [],
                 "h2_Storage": [],
                 "electrolysis": [],
-                "reductionco2": (
-                    sum(dataframes[key]["constraints/CU"]) / emissions_100_percent
-                )
-                if key != "0"
-                else (
-                    (
-                        sum(dataframes[key]["variable costs/CU"])
-                        + sum(dataframes[key]["periodical costs/CU"])
-                    )
-                    / emissions_100_percent
-                ),
+                "reductionco2": (sum(dataframes[key]["constraints/CU"])
+                / emissions_100_percent) if key != "0" else
+                ((sum(dataframes[key]["variable costs/CU"]) + sum(dataframes[key]["periodical costs/CU"]))
+                / emissions_100_percent),
             }
         )
         dataframe = dataframes[key].copy()
         dataframe.reset_index(inplace=True, drop=False)
         components_df = get_dataframe_from_nodes_data(nodes_data)
         # get central heat buses
-        df_central_heat = components_df[
-            components_df["district heating conn."] == "dh-system"
-        ]["label"].values
+        df_central_heat = components_df[components_df["district heating conn."]
+                                        == "dh-system"]["label"].values
         # PV-System
         capacities_dict = pv_st_capacity(
             components_df.copy(), "photovoltaic", dataframe, capacities_dict
@@ -139,9 +128,8 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
         for num, comp in df_gen_transformer.iterrows():
             # TODO used label for differentiation of heating system
             # TODO fuels
-            if not (
-                comp["output"] in df_central_heat or comp["output2"] in df_central_heat
-            ):
+            if not (comp["output"] in df_central_heat
+                    or comp["output2"] in df_central_heat):
                 if "electric" in comp["input"]:
                     value = get_value(comp["label"], "capacity/kW", dataframe)
                     capacities_dict["Electric_heating"].append(value)
@@ -172,20 +160,16 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
                 "capacity/kW"
             ].values
         )
-
-        df_central_heat = components_df[
-            components_df["district heating conn."] == "dh-system"
-        ]
+        
+        df_central_heat = components_df[components_df["district heating conn."]
+                                        == "dh-system"]
         for num, bus in df_central_heat.iterrows():
             for i in ["output", "output2"]:
-                for num2, comp in components_df[
-                    components_df[i] == bus["label"]
-                ].iterrows():
+                for num2, comp in components_df[components_df[i]
+                                                == bus["label"]].iterrows():
                     if comp["transformer type"] == "GenericTransformer":
                         if comp["output2"] == "None":
-                            capacity = get_value(
-                                comp["label"], "capacity/kW", dataframe
-                            )
+                            capacity = get_value(comp["label"], "capacity/kW", dataframe)
                             if "wc" in comp["label"]:
                                 capacities_dict["central_wc_heat"].append(capacity)
                             # TODO necessary since natural gas' abbreviation
@@ -199,33 +183,39 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
                             else:
                                 capacities_dict["central_heat"].append(capacity)
                         else:
-                            capacity = get_value(
-                                comp["label"], "capacity/kW", dataframe
-                            )
+                            capacity = get_value(comp["label"], "capacity/kW",
+                                                 dataframe)
                             if "wc" in comp["label"]:
-                                capacities_dict["central_wc_chp"].append(capacity)
+                                capacities_dict["central_wc_chp"].append(
+                                    capacity)
                             elif "ng" in comp["label"]:
-                                capacities_dict["central_ng_chp"].append(capacity)
+                                capacities_dict["central_ng_chp"].append(
+                                    capacity)
                             elif "bg" in comp["label"]:
-                                capacities_dict["central_bg_chp"].append(capacity)
+                                capacities_dict["central_bg_chp"].append(
+                                    capacity)
                             elif "pe" in comp["label"]:
-                                capacities_dict["central_pe_chp"].append(capacity)
+                                capacities_dict["central_pe_chp"].append(
+                                    capacity)
                             else:
-                                capacities_dict["central_chp"].append(capacity)
-
+                                capacities_dict["central_chp"].append(
+                                    capacity)
+                                
         df_h2 = components_df[components_df["label"].str.contains("h2")]
-
+            
         for num, comp in df_h2.iterrows():
             if comp["storage type"] == "Generic":
                 value = get_value(comp["label"], "capacity/kW", dataframe)
                 capacities_dict["h2_Storage"].append(value)
             else:
-                df_comps = components_df[components_df["output"] == comp["label"]]
+                df_comps = components_df[components_df["output"]
+                                         == comp["label"]]
                 for num2, comp2 in df_comps.iterrows():
                     if comp2["transformer type"] == "GenericTransformer":
-                        value = get_value(comp2["label"], "capacity/kW", dataframe)
+                        value = get_value(comp2["label"], "capacity/kW",
+                                          dataframe)
                         capacities_dict["electrolysis"].append(value)
-
+                    
         for i in capacities_dict:
             if i != "run" and i != "reductionco2":
                 capacities_dict[i] = sum(capacities_dict[i])
@@ -288,19 +278,16 @@ def create_capacity_plots(dataframes: dict, nodes_data, result_path):
 
 if __name__ == "__main__":
     from program_files.preprocessing.create_energy_system import import_scenario
-
     create_capacity_plots(
-        {
-            "1": pd.read_csv("<path_to_csv_file>"),
-            "0.75": pd.read_csv(),
-            "0.5": pd.read_csv(),
-            "0.35": pd.read_csv(),
-            "0.25": pd.read_csv(),
-            "0.15": pd.read_csv(),
-            "0": pd.read_csv(),
-        },
-        # scenario file path
-        import_scenario(),
-        # result_path
-        str(),
+            {"1": pd.read_csv("<path_to_csv_file>"),
+             "0.75": pd.read_csv(),
+             "0.5": pd.read_csv(),
+             "0.35": pd.read_csv(),
+             "0.25": pd.read_csv(),
+             "0.15": pd.read_csv(),
+             "0": pd.read_csv()},
+            # scenario file path
+            import_scenario(),
+            # result_path
+            str(),
     )

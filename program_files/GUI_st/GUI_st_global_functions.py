@@ -8,10 +8,8 @@ import glob
 import os
 import streamlit as st
 
-from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import (
-    sesmg_main,
-    sesmg_main_including_premodel,
-)
+from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator\
+    import sesmg_main, sesmg_main_including_premodel
 
 
 def st_settings_global():
@@ -21,13 +19,10 @@ def st_settings_global():
     """
     # Global page settings
     st.set_page_config(
-        page_title=("SESMG"),
-        layout="wide",
-        menu_items={
-            "Get Help": "https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/",
-            "Report a Bug": "https://github.com/SESMG/SESMG/issues",
-        },
-    )
+        page_title=('SESMG'),
+        layout='wide',
+        menu_items={'Get Help': 'https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/',
+                    'Report a Bug': 'https://github.com/SESMG/SESMG/issues'})
 
 
 def import_GUI_input_values_json(json_file_path: str) -> dict:
@@ -62,7 +57,7 @@ def safe_GUI_input_values(input_values_dict: dict, json_file_path: str):
             input values
         :type json_file_path: str
     """
-    with open(json_file_path, "w", encoding="utf-8") as outfile:
+    with open(json_file_path, 'w', encoding="utf-8") as outfile:
         json.dump(input_values_dict, outfile, indent=4)
 
 
@@ -118,13 +113,12 @@ def clear_GUI_main_settings(json_file_path: str):
         "input_criterion_switch": False,
         "input_pareto_points": [],
         "timeseries_prep_param": ["None", "None", "None", "None", 0],
-        "pre_model_timeseries_prep_param": ["None", "None", "None", "None", 0],
+        "pre_model_timeseries_prep_param": ["None", "None", "None", "None", 0]
     }
 
     # safe cleared dict
-    safe_GUI_input_values(
-        input_values_dict=GUI_main_dict_cleared, json_file_path=json_file_path
-    )
+    safe_GUI_input_values(input_values_dict=GUI_main_dict_cleared,
+                          json_file_path=json_file_path)
 
 
 def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
@@ -151,8 +145,7 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
             console_results=GUI_main_dict["input_console_results"],
             solver=GUI_main_dict["input_solver"],
             district_heating_path="",
-            cluster_dh=GUI_main_dict["input_cluster_dh"],
-        )
+            cluster_dh=GUI_main_dict["input_cluster_dh"])
 
     # If pre-modeling is activated a second run will be carried out
     else:
@@ -169,25 +162,26 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
             cluster_dh=GUI_main_dict["input_cluster_dh"],
             pre_model_timeseries_prep=GUI_main_dict["pre_model_timeseries_prep_param"],
             investment_boundaries=GUI_main_dict["input_premodeling_invest_boundaries"],
-            investment_boundary_factor=GUI_main_dict[
-                "input_premodeling_tightening_factor"
-            ],
-            pre_model_path=GUI_main_dict["premodeling_res_path"],
+            investment_boundary_factor=GUI_main_dict["input_premodeling_tightening_factor"],
+            pre_model_path=GUI_main_dict["premodeling_res_path"]
         )
 
 
 def read_markdown_document(document_path, folder_path, main_page=True):
-    """ """
+    """
+
+    """
     # Open the README.md file and read all lines
-    with open(document_path, "r", encoding="utf8") as file:
+    with open(document_path, 'r', encoding="utf8") as file:
         readme_line = file.readlines()
         # Create an empty buffer list to temporarily store the lines of \
         # the README.md file
         readme_buffer = []
         # Use the glob library to search for all files in the Resources \
         # directory and extract the file names
-        resource_files = [os.path.basename(x) for x in glob.glob(folder_path)]
-
+        resource_files = [os.path.basename(x) for x
+                          in glob.glob(folder_path)]
+    
     non_print = False
     # Iterate over each line of the README.md file
     for line in readme_line:
@@ -204,13 +198,13 @@ def read_markdown_document(document_path, folder_path, main_page=True):
                 # If an image is found, display the buffer list up to
                 # the last line
                 if image in line:
-                    st.markdown("".join(readme_buffer[:-1]))
+                    st.markdown(''.join(readme_buffer[:-1]))
                     # Display the image from the Resources folder using
                     # the image name from the resource_files list
-                    st.image(folder_path[:-1] + f"/{image}")
+                    st.image(folder_path[:-1] + f'/{image}')
                     # Clear the buffer list
                     readme_buffer.clear()
-
+    
     # Display any remaining lines in the buffer list using the st.markdown() \
     # function
-    st.markdown("".join(readme_buffer), unsafe_allow_html=True)
+    st.markdown(''.join(readme_buffer), unsafe_allow_html=True)
