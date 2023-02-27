@@ -228,7 +228,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
 
             # transform to index values and safe in the GUI_main_dict
             create_simplification_index(input_list=simpification_index_list,
-                                        output_dict=GUI_main_dict)
+                                        input_output_dict=GUI_main_dict)
 
             # transform input_timeseries_cluster_index seperately
             create_cluster_simplification_index(
@@ -331,7 +331,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
             # transform to index values and safe in the GUI_main_dict
             create_simplification_index(
                 input_list=simpification_premodel_index_list,
-                output_dict=GUI_main_dict)
+                input_output_dict=GUI_main_dict)
 
             # transform input_timeseries_cluster_index seperately
             create_cluster_simplification_index(

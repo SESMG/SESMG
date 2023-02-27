@@ -273,7 +273,7 @@ def read_markdown_document(document_path: str, folder_path: str,
     st.markdown(''.join(readme_buffer), unsafe_allow_html=True)
 
 
-def create_simplification_index(input_list: list, output_dict: dict):
+def create_simplification_index(input_list: list, input_output_dict: dict):
     """
         Creates the streamlit index for timeseries simplification params \
             as required to reload GUI elements with initial values
@@ -282,15 +282,15 @@ def create_simplification_index(input_list: list, output_dict: dict):
            columns: name of the index, list in which the index is definied
            reguarding to the input cariable name, input variable name
        :type input_list: list
-       :param output_dict: global defined dict to which the indexes will be
-           written in
-       :type output_dict: dict
+       :param input_output_dict: global defined dict to which the indexes will
+           be written in
+       :type input_output_dict: dict
     """
 
     # iteratale trough the inner lists
     for var in input_list:
 
-        output_dict[var[0]] = var[1][output_dict[var[2]]]
+        input_output_dict[var[0]] = var[1][input_output_dict[var[2]]]
 
 
 def create_cluster_simplification_index(input_value: str,
@@ -301,8 +301,8 @@ def create_cluster_simplification_index(input_value: str,
             clustering as required to reload GUI elements with initial values \
             since clustering index needs to set differntly
 
-       :param input_list: name of the input variable in the input_output_dict
-       :type input_list: str
+       :param input_value: name of the input variable in the input_output_dict
+       :type input_value: str
        :param output_dict: global defined dict to which the indexes will be
            written in
        :type output_dict: dict

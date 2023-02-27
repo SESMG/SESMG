@@ -5,8 +5,13 @@
 import pytest
 import os
 
+
 @pytest.fixture
 def test_GUI_main_dict():
+    """
+        Redefining the GUI_main_dict which is inputvariable for all global \
+            GUI functions
+    """
 
     return {"input_timeseries_algorithm": "slicing A",
             "input_timeseries_cluster_index": 83,
@@ -43,7 +48,10 @@ def test_GUI_main_dict():
 
 def test_create_timeseries_parameter_list(test_GUI_main_dict):
     """
-        TODO
+        Testing if the function creates the in the parameter list in the \
+            order as required for the run_sesmg function which is [algorithm, \
+            cluster_index, cluster_criterion, cluster_period, cluster_season].\
+            If valid it is also valid for the premodel_parameter_list.
     """
 
     from program_files.GUI_st.GUI_st_global_functions \
@@ -68,7 +76,8 @@ def test_create_timeseries_parameter_list(test_GUI_main_dict):
 
 def test_import_GUI_input_values_json(test_GUI_main_dict):
     """
-        TODO @gregorbecker
+        Testing the json upload and the definition of the dict is working as \
+            required
     """
     from program_files.GUI_st.GUI_st_global_functions \
         import import_GUI_input_values_json
@@ -81,3 +90,94 @@ def test_import_GUI_input_values_json(test_GUI_main_dict):
         json_file_path=path_to_test_json)
 
     assert imported_dict == test_GUI_main_dict
+
+
+def test_create_simplification_index(test_GUI_main_dict):
+    """
+        Testing if the function is creating the indexes in the GUI_main_dict \
+            as required and is uding the correct values.
+    """
+    from program_files.GUI_st.GUI_st_global_functions \
+        import create_simplification_index
+
+    # dict for timeseries algorithm input as key and streamlitindex as value
+    timeseries_algorithm_dict = {"None": 0,
+                                 "k_means": 1,
+                                 "k_medoids": 2,
+                                 "averaging": 3,
+                                 "slicing A": 4,
+                                 "slicing B": 5,
+                                 "downsampling A": 6,
+                                 "downsampling B": 7,
+                                 "heuristic selection": 8,
+                                 "random sampling": 9}
+
+    # dict for timeseries clustering crtieria input as key and streamlit \
+    # index as value
+    timeseries_cluster_criteria_dict = {"None": 0,
+                                        "temperature": 1,
+                                        "dhi": 2,
+                                        "el_demand_sum": 3,
+                                        "heat_demand_sum": 4}
+
+    # dict for timeseries periods input as key and streamlit index as value
+    input_timeseries_period_dict = {"None": 0,
+                                    "hours": 1,
+                                    "days": 2,
+                                    "weeks": 3}
+
+    # dict for timeseries clustering crtieria input as key and streamlit \
+    # index as value
+    input_timeseries_season_dict = {"None": 0,
+                                    4: 1,
+                                    12: 2}
+
+    # input values list of sublists with parameters
+    simpification_index_list = [
+        ["input_timeseries_algorithm_index",
+         timeseries_algorithm_dict,
+         "input_timeseries_algorithm"],
+        ["input_timeseries_criterion_index",
+         timeseries_cluster_criteria_dict,
+         "input_timeseries_criterion"],
+        ["input_timeseries_period_index",
+         input_timeseries_period_dict,
+         "input_timeseries_period"],
+        ["input_timeseries_season_index",
+         input_timeseries_season_dict,
+         "input_timeseries_season"]]
+
+    # change targeted values of the test_GUI_main_dict to cleared values
+    reduced_test_dict = test_GUI_main_dict
+    reduced_test_dict["input_timeseries_algorithm_index"] = 0
+    reduced_test_dict["input_timeseries_criterion_index"] = 0
+    reduced_test_dict["input_timeseries_period_index"] = 0
+    reduced_test_dict["input_timeseries_season_index"] = 0
+
+    # start function to create the keys and indexes in the GUI_main_dict
+    create_simplification_index(
+        input_list=simpification_index_list,
+        input_output_dict=reduced_test_dict)
+
+    assert reduced_test_dict == test_GUI_main_dict
+
+
+def test_create_cluster_simplification_index(test_GUI_main_dict):
+    """
+        Testing if the function is changing the globally defined GUI_main_dict\
+            as required.
+    """
+    from program_files.GUI_st.GUI_st_global_functions \
+        import create_cluster_simplification_index
+
+    # change the targeted value to a wrong values
+    changed_test_dict = test_GUI_main_dict
+    changed_test_dict["input_timeseries_cluster_index_index"] = 0
+
+    # run function with reduced dict
+    create_cluster_simplification_index(
+        input_value="input_timeseries_cluster_index",
+        input_output_dict=changed_test_dict,
+        input_value_index="input_timeseries_cluster_index_index")
+
+    assert changed_test_dict == test_GUI_main_dict
