@@ -588,50 +588,6 @@ def create_components(nodes_data: dict, anergy_or_exergy: bool,
     return oemof_opti_model
 
 
-def calc_heat_pipe_attributes(
-        oemof_opti_model: optimization.OemofInvestOptimizationModel,
-        pipe_types: pandas.DataFrame
-) -> optimization.OemofInvestOptimizationModel:
-    """
-    
-    """
-    for a in oemof_opti_model.nodes:
-        if str(type(a)) != "<class 'oemof.solph.network.bus.Bus'>":
-            label = a.label.tag3
-            pipe_row = pipe_types.loc[pipe_types["label_3"] == label]
-            if int(pipe_row["nonconvex"]) == 0:
-                ep_costs = getattr(
-                    a.outputs[list(a.outputs.keys())[0]].investment, "ep_costs"
-                )
-                length = ep_costs / float(pipe_row["capex_pipes"])
-                setattr(
-                    a.outputs[list(a.outputs.keys())[0]].investment,
-                    "periodical_constraint_costs",
-                    length * float(pipe_row["periodical_constraint_costs"])
-                )
-            else:
-                fix_costs = getattr(
-                    a.outputs[list(a.outputs.keys())[0]].investment, "offset"
-                )
-                length = fix_costs / float(pipe_row["fix_costs"])
-                
-            setattr(
-                a.outputs[list(a.outputs.keys())[0]].investment,
-                "periodical_constraint_costs",
-                length * float(pipe_row["periodical_constraint_costs"])
-            )
-            setattr(
-                a.outputs[list(a.outputs.keys())[0]].investment,
-                "fix_constraint_costs",
-                length * float(pipe_row["fix_constraint_costs"]),
-            )
-            
-            setattr(a.inputs[list(a.inputs.keys())[0]], "emission_factor", 0)
-            setattr(a.outputs[list(a.outputs.keys())[0]], "emission_factor", 0)
-            
-    return oemof_opti_model
-
-
 def connect_dh_to_system(
         oemof_opti_model: optimization.OemofInvestOptimizationModel,
         busd: dict, pipe_types: pandas.DataFrame, thermal_net: ThermalNetwork
@@ -941,27 +897,26 @@ def create_producer_connection(
     forks = thermal_net.components["forks"]
     for key, producer in forks.loc[forks["bus"].notna()].iterrows():
         label_5 = "anergy" if anergy_or_exergy else "exergy"
-        if str(producer["bus"]) != "nan":
-            label = heatpipe.Label(
-                "producers",
-                "heat",
-                "bus",
-                str("producers-{}".format(str(counter))),
-                label_5
+        label = heatpipe.Label(
+            "producers",
+            "heat",
+            "bus",
+            str("producers-{}".format(str(counter))),
+            label_5
+        )
+        oemof_opti_model.nodes.append(
+            solph.Transformer(
+                label=(str(producer["bus"]) + "_dh_source_link_" + label_5),
+                inputs={busd[producer["bus"]]: solph.Flow(emission_factor=0)},
+                outputs={oemof_opti_model.buses[label]: solph.Flow(
+                    emission_factor=0)
+                },
+                conversion_factors={
+                    (oemof_opti_model.buses[label], busd[producer["bus"]]): 1
+                },
             )
-            oemof_opti_model.nodes.append(
-                solph.Transformer(
-                    label=(str(producer["bus"]) + "_dh_source_link_" + label_5),
-                    inputs={busd[producer["bus"]]: solph.Flow(emission_factor=0)},
-                    outputs={
-                        oemof_opti_model.buses[label]: solph.Flow(emission_factor=0)
-                    },
-                    conversion_factors={
-                        (oemof_opti_model.buses[label], busd[producer["bus"]]): 1
-                    },
-                )
-            )
-            counter += 1
+        )
+        counter += 1
 
     return oemof_opti_model
 

@@ -2,7 +2,9 @@ from sympy import Symbol, solve
 from pyproj import Transformer
 import numpy
 import math
+import pandas
 from operator import itemgetter
+import dhnx.optimization.optimization_models as optimization
 
 
 transf_WGS84_GK = Transformer.from_crs("EPSG:4326", "EPSG:31466")
@@ -159,8 +161,8 @@ def calc_street_lengths(connection_points: list) -> list:
         Calculates the distances between the points of a given street
         given as connection_points.
 
-        :param connection_points: list of connection_points on the
-                                  given street
+        :param connection_points: list of connection_points on the \
+            given street
         :type connection_points: list
         :return: **ordered_road_section_points** (list) - list \
             containing all points of a certain street in an ordered \
@@ -171,17 +173,17 @@ def calc_street_lengths(connection_points: list) -> list:
     connection_points.sort(key=itemgetter(4))
     ordered_road_section_points = []
     for point in range(0, len(connection_points) - 1):
+        current_point = connection_points[point]
+        next_point = connection_points[point + 1]
         # Calculation of the mean latitude
-        lat = (connection_points[point][1] + connection_points[point + 1][1]) / 2
+        lat = (current_point[1] + next_point[1]) / 2
         # Calculation of the x distance according to:
         # (lon1 - lon2) * 111.3km * cos(lat)
-        dx = (
-            111.3
-            * (connection_points[point][2] - connection_points[point + 1][2])
-            * numpy.cos(numpy.deg2rad(lat))
-        )
+        dx = (111.3
+              * (current_point[2] - next_point[2])
+              * numpy.cos(numpy.deg2rad(lat)))
         # Calculation of the y distance according to: (lat1 - lat2) * 111.3km
-        dy = 111.3 * (connection_points[point][1] - connection_points[point + 1][1])
+        dy = 111.3 * (current_point[1] - next_point[1])
         # Calculation of the actual distance and conversion to meters
         distance = math.sqrt(dx**2 + dy**2) * 1000
         # append the calculated distance and the information of the two
@@ -192,14 +194,87 @@ def calc_street_lengths(connection_points: list) -> list:
         # 3. (lat1, lon1)
         # 4. (lat2, lon2)
         ordered_road_section_points.append(
-            [
-                "{} - {}".format(
-                    connection_points[point][0], connection_points[point + 1][0]
-                ),
-                distance,
-                (connection_points[point][1], connection_points[point][2]),
-                (connection_points[point + 1][1], connection_points[point + 1][2]),
-            ]
+            ["{} - {}".format(current_point[0], next_point[0]),
+             distance,
+             (current_point[1], current_point[2]),
+             (next_point[1], next_point[2])]
         )
 
     return ordered_road_section_points
+
+
+def calc_heat_pipe_attributes(
+        oemof_opti_model: optimization.OemofInvestOptimizationModel,
+        pipe_types: pandas.DataFrame
+) -> optimization.OemofInvestOptimizationModel:
+    """
+        In this method, the DHNx components, which were created for a
+        purely monetary consideration of the heat network, are extended
+        by the emissions approach common in the SESMG. For this
+        purpose, the length of the component is determined based on the
+        component already created, and the emissions caused are then
+        calculated based on this length. These are then assigned to the
+        investment attribute of the respective pipe section as an
+        emission value. Finally, the extended model is returned.
+        
+        :param oemof_opti_model: DHNx Model containing the thermal \
+            network components
+        :type oemof_opti_model: \
+            optimization.OemofInvestOptimizationModel
+        :param pipe_types: DataFrame containing the model definition's \
+            pipe types sheet
+        :type pipe_types: pandas.DataFrame
+        
+        :return: - **oemof_opti_model** \
+            (optimization.OemofInvestOptimizationModel) - DHNx Model \
+            which was extended by the SESMG common emission approach
+    """
+    # iterate threw all thermal network components
+    for a in oemof_opti_model.nodes:
+        # check rather the component is not a bus
+        if str(type(a)) != "<class 'oemof.solph.network.bus.Bus'>":
+            # get the component's pipe type data frame row
+            pipe_row = pipe_types.loc[pipe_types["label_3"] == a.label.tag3]
+            # if the pipe type is a linear one
+            if int(pipe_row["nonconvex"]) == 0:
+                # get the components periodical costs
+                ep_costs = getattr(
+                    a.outputs[list(a.outputs.keys())[0]].investment, "ep_costs"
+                )
+                # calculate the length by dividing the pipes periodical
+                # costs by the specific periodical costs per meter
+                length = ep_costs / float(pipe_row["capex_pipes"])
+
+            # if the pipe type is non convex
+            else:
+                # get the components fix investment costs
+                fix_costs = getattr(
+                    a.outputs[list(a.outputs.keys())[0]].investment, "offset"
+                )
+                # calculate the length by dividing the pipes fix
+                # investment costs by the specific fix investment costs
+                # per meter
+                length = fix_costs / float(pipe_row["fix_costs"])
+                
+            # set the periodical constraint costs which are
+            # calculated by the multiplication of length and
+            # specific periodical emissions per meter
+            setattr(
+                a.outputs[list(a.outputs.keys())[0]].investment,
+                "periodical_constraint_costs",
+                length * float(pipe_row["periodical_constraint_costs"])
+            )
+            # set the fix investment constraint costs which are
+            # calculated by the multiplication of length and
+            # specific fix investment emissions per meter
+            setattr(
+                    a.outputs[list(a.outputs.keys())[0]].investment,
+                    "fix_constraint_costs",
+                    length * float(pipe_row["fix_constraint_costs"]),
+            )
+            # since no variable emissions apply it is set to 0 for each
+            # direction
+            setattr(a.inputs[list(a.inputs.keys())[0]], "emission_factor", 0)
+            setattr(a.outputs[list(a.outputs.keys())[0]], "emission_factor", 0)
+    
+    return oemof_opti_model
