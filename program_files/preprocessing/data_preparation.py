@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import demandlib.bdew as bdew
 import datetime
+import logging
 
 
 def extract_single_periods(data_set, column_name, period):
@@ -20,19 +21,14 @@ def extract_single_periods(data_set, column_name, period):
             every single day
             
     """
+    factor_dict = {"hours": 1, "days": 24, "weeks": 168}
 
-    if period == "days":
-        timesteps = 24
-    elif period == "weeks":
-        timesteps = 168
-    elif period == "hours":
-        timesteps = 1
-    else:
-        raise ValueError("Non supported period")
     # extract data_set of cluster_criterion
     cluster_df = data_set[column_name]
     # extract single periods as lists and add them to a list
     cluster_vectors = []
+    timesteps = factor_dict.get(period,
+                                default=ValueError("Non supported period"))
     for i in range(0, int(len(cluster_df) / timesteps)):
         cluster_vector = []
         for j in range(timesteps):
@@ -184,66 +180,49 @@ def append_timeseries_to_weatherdata_sheet(nodes_data: dict):
 #    return prep_data_set
 
 
-def k_means_parameter_adaption(nodes_data: dict, clusters: int, period: str):
+def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str):
     """
         To be able to work with the adapted weather data set some
         parameters from nodes_data must be changed.
 
-        :param nodes_data: system parameters
+        :param nodes_data: dict containing the model definition's \
+            spreadsheets data
         :type nodes_data: dict
         :param clusters: Number of clusters
         :type clusters: int
         :param period: defines rather hours, days or weeks were selected
+        :type period: str
     """
-    # Adapting variable costs
-    if period == 'days':
-        variable_cost_factor = int(nodes_data['energysystem']['periods']) \
-                               / int(24*clusters)
-        print('VARIABLE COST FACTOR')
-        print(variable_cost_factor)
-    elif period == 'weeks':
-        variable_cost_factor = int(nodes_data['energysystem']['periods']) \
-                               / int(7*24 * clusters)
-        print('VARIABLE COST FACTOR')
-        print(variable_cost_factor)
-    elif period == 'hours':
-        variable_cost_factor = int(nodes_data['energysystem']['periods']) \
-                               / int(clusters)
-        print('VARIABLE COST FACTOR')
-        print(variable_cost_factor)
-    else:
-        raise ValueError("unsupported period")
-
+    factor_dict = {"hours": 1, "days": 24, "weeks": 168}
+    
+    variable_cost_factor = int(nodes_data['energysystem']['periods']) \
+        / int(factor_dict.get(period,
+                              default=ValueError("unsupported period"))
+              * clusters)
+    logging.info('VARIABLE COST FACTOR')
+    logging.info(variable_cost_factor)
+    
     # Adapting Costs and Constraint Costs
     for sheet in nodes_data:
         for column in nodes_data[sheet].columns:
-            if "variable" in column:
+            if (sheet == "buses" and "costs" in column) \
+                    or ("variable" in column):
                 nodes_data[sheet][column] *= variable_cost_factor
-            # workaround for excess and shortage costs
-            if sheet == "buses":
-                if "costs" in column:
-                    nodes_data[sheet][column] *= variable_cost_factor
 
     # Adapting Demands
     nodes_data['sinks']['annual demand'] = \
         nodes_data['sinks']['annual demand'] / variable_cost_factor
 
-    # Adapting timesystem parameters
-    if period == 'days':
-        nodes_data['energysystem']['end date'] = \
-            nodes_data['energysystem']['start date'] \
-            + pd.Timedelta(str(clusters*24-1)+' hours')
-        nodes_data['energysystem']['periods'] = int(24*clusters)
-    elif period == 'weeks':
-        nodes_data['energysystem']['end date'] = \
-            nodes_data['energysystem']['start date'] \
-            + pd.Timedelta(str(clusters*7*24-1)+' hours')
-        nodes_data['energysystem']['periods'] = int(7*24*clusters)
-    elif period == 'hours':
-        nodes_data['energysystem']['end date'] = \
-            nodes_data['energysystem']['start date'] \
-            + pd.Timedelta(str(clusters-1)+' hours')
-        nodes_data['energysystem']['periods'] = int(clusters)
+    timedelta = str(clusters
+                    * factor_dict.get(period,
+                                      default=ValueError("unsupported period"))
+                    - 1) + ' hours'
+    nodes_data['energysystem']['end date'] = \
+        nodes_data['energysystem']['start date'] \
+        + pd.Timedelta(timedelta)
+    nodes_data['energysystem']['periods'] = \
+        int(factor_dict.get(period, default=ValueError("unsupported period"))
+        * clusters)
 
 
 def slp_sink_adaption(nodes_data: dict):

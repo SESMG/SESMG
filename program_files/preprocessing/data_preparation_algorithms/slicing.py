@@ -4,7 +4,7 @@
 import pandas
 
 from program_files.preprocessing.data_preparation \
-    import extract_single_periods, k_means_parameter_adaption
+    import extract_single_periods, variable_costs_date_adaption
 
 
 def adaption_energy_system_parameter(prep_weather_data: pandas.DataFrame,
@@ -46,9 +46,9 @@ def adaption_energy_system_parameter(prep_weather_data: pandas.DataFrame,
         raise ValueError("Non supported period")
     
     # Adapts Other Parameters (despite weather data) of the energy system
-    k_means_parameter_adaption(nodes_data=nodes_data,
-                               clusters=adaption_clusters,
-                               period=period)
+    variable_costs_date_adaption(nodes_data=nodes_data,
+                                 clusters=adaption_clusters,
+                                 period=period)
 
 
 def data_set_slicing(n_days: int, data_set: pandas.DataFrame, period: str

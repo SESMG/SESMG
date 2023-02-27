@@ -8,7 +8,7 @@ from sklearn.neighbors import KNeighborsClassifier
 
 from program_files.preprocessing.data_preparation \
     import calculate_cluster_means, append_timeseries_to_weatherdata_sheet,\
-    k_means_parameter_adaption, extract_single_periods, \
+    variable_costs_date_adaption, extract_single_periods, \
     k_means_timeseries_adaption
 
 
@@ -170,7 +170,7 @@ def k_means_algorithm(cluster_period: int, days_per_cluster: int,
     nodes_data['weather data'] = prep_weather_data
     
     # Adapts Other Parameters (despite weather data) of the energy system
-    k_means_parameter_adaption(nodes_data, clusters, period)
+    variable_costs_date_adaption(nodes_data, clusters, period)
     k_means_timeseries_adaption(nodes_data, clusters,
                                 cluster_labels, period)
     
@@ -226,7 +226,7 @@ def k_medoids_algorithm(cluster_period: int, days_per_cluster: int,
     nodes_data['timeseries'] = weather_data
 
     # Adapts Other Parameters (despite weather data) of the energy system
-    k_means_parameter_adaption(nodes_data, clusters, period)
+    variable_costs_date_adaption(nodes_data, clusters, period)
 
     k_medoids_timeseries_adaption(nodes_data, clusters,
                                   cluster_labels, period)

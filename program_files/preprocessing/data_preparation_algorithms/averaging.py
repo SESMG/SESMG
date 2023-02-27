@@ -3,7 +3,7 @@
 """
 import numpy
 from program_files.preprocessing.data_preparation \
-    import calculate_cluster_means, k_means_parameter_adaption, \
+    import calculate_cluster_means, variable_costs_date_adaption, \
     k_means_timeseries_adaption
 
 
@@ -71,6 +71,6 @@ def timeseries_averaging(cluster_period: str, days_per_cluster: int,
     nodes_data['weather data'] = prep_weather_data
     
     # Adapts Other Parameters (despite weather data) of the energy system
-    k_means_parameter_adaption(nodes_data, clusters, period)
+    variable_costs_date_adaption(nodes_data, clusters, period)
     
     k_means_timeseries_adaption(nodes_data, clusters, cluster_labels, period)

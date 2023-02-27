@@ -5,7 +5,7 @@ import datetime
 import pandas
 
 from program_files.preprocessing.data_preparation \
-    import k_means_parameter_adaption, append_timeseries_to_weatherdata_sheet
+    import variable_costs_date_adaption, append_timeseries_to_weatherdata_sheet
 
 
 def hierarchical_selection(nodes_data, scheme, period, seasons, scheme_path):
@@ -385,7 +385,7 @@ def hierarchical_selection(nodes_data, scheme, period, seasons, scheme_path):
     else:
         raise ValueError("period chosen not possible")
     
-    k_means_parameter_adaption(nodes_data=nodes_data,
-                               clusters=int(len(nodes_data['weather data'])
-                                            / period_length),
-                               period=period)
+    variable_costs_date_adaption(nodes_data=nodes_data,
+                                 clusters=int(len(nodes_data['weather data'])
+                                              / period_length),
+                                 period=period)

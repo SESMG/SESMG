@@ -2,7 +2,7 @@
     Christian Klemm - christian.klemm@fh-muenster.de
 """
 from program_files.preprocessing.data_preparation \
-    import k_means_parameter_adaption
+    import variable_costs_date_adaption
 
 
 def timeseries_downsampling(nodes_data: dict, n_timesteps: int):
@@ -26,10 +26,10 @@ def timeseries_downsampling(nodes_data: dict, n_timesteps: int):
     nodes_data['energysystem']['temporal resolution'] = \
         str(n_timesteps) + nodes_data['energysystem']['temporal resolution']
     
-    k_means_parameter_adaption(nodes_data=nodes_data,
-                               clusters=int(nodes_data['energysystem']
-                                            ['periods'] / n_timesteps),
-                               period="hours")
+    variable_costs_date_adaption(nodes_data=nodes_data,
+                                 clusters=int(nodes_data['energysystem']
+                                              ['periods'] / n_timesteps),
+                                 period="hours")
     # bring periods and end date back to the old value due to
     # manipulating the temporal resolution
     nodes_data['energysystem']['periods'] = periods
@@ -67,6 +67,6 @@ def timeseries_downsampling2(nodes_data: dict, n_timesteps: int):
     nodes_data['weather data'] = prep_weather_data
     nodes_data['timeseries'] = prep_timeseries
     # adapt the variable cost parameter
-    k_means_parameter_adaption(nodes_data=nodes_data,
-                               clusters=int(len(prep_timeseries)),
-                               period="hours")
+    variable_costs_date_adaption(nodes_data=nodes_data,
+                                 clusters=int(len(prep_timeseries)),
+                                 period="hours")

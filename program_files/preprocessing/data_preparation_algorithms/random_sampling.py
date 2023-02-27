@@ -6,7 +6,7 @@ import random
 import pandas
 
 from program_files.preprocessing.data_preparation \
-    import k_means_parameter_adaption, extract_single_periods
+    import variable_costs_date_adaption, extract_single_periods
 
 
 def random_sampling(nodes_data: dict, period: str, number_of_samples: int):
@@ -53,7 +53,7 @@ def random_sampling(nodes_data: dict, period: str, number_of_samples: int):
         for j in random_integers:
             reference_data_set = reference_data_set + data_set_column[j]
 
-        # Appends the calculated reference days for the curent weather
+        # Appends the calculated reference days for the current weather
         # data column to the final weather data set
         prep_data_set[column_names[i]] = reference_data_set
 
@@ -75,9 +75,9 @@ def random_sampling(nodes_data: dict, period: str, number_of_samples: int):
     else:
         raise ValueError("Non supported period")
 
-    k_means_parameter_adaption(nodes_data=nodes_data,
-                               clusters=int(adaption_clusters),
-                               period=period)
+    variable_costs_date_adaption(nodes_data=nodes_data,
+                                 clusters=int(adaption_clusters),
+                                 period=period)
 
     data_set = nodes_data['timeseries']
     column_names = [data_set.columns[i]
