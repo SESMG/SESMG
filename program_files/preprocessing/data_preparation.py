@@ -222,7 +222,7 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str):
     nodes_data['energysystem']['end date'] = \
         nodes_data['energysystem']['start date'] \
         + pandas.Timedelta(timedelta)
-    nodes_data['energysystem']['periods'] = timesteps * clusters
+    nodes_data['energysystem']['periods'] = (timesteps * clusters)
 
 
 def slp_sink_adaption(nodes_data: dict):
@@ -237,7 +237,6 @@ def slp_sink_adaption(nodes_data: dict):
         :param nodes_data: dict containing the data from the user's \
             model definition
         :type nodes_data: dict
-        :return:
     """
 
     # Lists of possible standard load profiles
@@ -349,7 +348,7 @@ def timeseries_adaption(nodes_data: dict, clusters: int,
     # Rename columns of the new timeseries-dataset
     prep_timeseries['timestamp'] = \
         nodes_data['timeseries']['timestamp'][
-        :int(len(nodes_data['timeseries'] / cluster_dict.get(period)))]
+        :int(len(nodes_data['timeseries']) / cluster_dict.get(period))]
     
     # change the nodes data timeseries sheet to the new prepared one
     nodes_data['timeseries'] = prep_timeseries

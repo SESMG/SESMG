@@ -8,7 +8,6 @@ from datetime import datetime
 import logging
 import pandas
 
-from program_files.GUI_st.GUI_st_global_functions import run_SESMG
 from program_files.postprocessing.pareto_curve_plotting \
     import collect_pareto_data
 from program_files.postprocessing.plotting \
@@ -206,6 +205,8 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict):
         :return: - **directory** (str) - path where the pareto runs \
             were stored
     """
+    from program_files.GUI_st.GUI_st_global_functions import run_SESMG
+
     # create one directory to collect all runs
     directory = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
