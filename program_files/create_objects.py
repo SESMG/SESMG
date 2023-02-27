@@ -1846,6 +1846,7 @@ class Storages:
                     )
                 },
                 loss_rate=s["capacity loss"],
+                initial_storage_level=s["initial capacity"],
                 inflow_conversion_factor=s["efficiency inflow"],
                 outflow_conversion_factor=s["efficiency outflow"],
                 invest_relation_input_capacity=s["input/capacity ratio"],
