@@ -157,9 +157,7 @@ Christian Klemm - christian.klemm@fh-muenster.de
 import logging
 from oemof.tools import logger
 import os
-import pandas as pd
 from threading import *
-import sys
 from program_files.preprocessing import (create_energy_system,
                                          data_preparation,
                                          pareto_optimization)
@@ -225,25 +223,14 @@ def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
     if criterion_switch:
         pareto_optimization.change_optimization_criterion(nodes_data)
 
-    if sys.platform.startswith("win"):
-        scheme_path = \
-            os.path.join(os.path.dirname(__file__)
-                         + r'\technical_data\hierarchical_selection'
-                           r'_schemes.xlsx')
-    else:
-        scheme_path = \
-            os.path.join(os.path.dirname(os.path.dirname(__file__))
-                         + r'/technical_data/hierarchical_selection'
-                           r'_schemes.xlsx')
     # Timeseries Preprocessing
     data_preparation.timeseries_preparation(
         timeseries_prep_param=timeseries_prep,
         nodes_data=nodes_data,
-        scheme_path=scheme_path,
         result_path=result_path)
 
     if timeseries_prep[0] != 'none':
-        scenario_file = result_path + "/modified_scenario.xlsx"
+        scenario_file = result_path + "/modified_model_definition.xlsx"
 
     # CREATES AN ENERGYSYSTEM AS DEFINED IN THE SCENARIO FILE
     esys = create_energy_system.define_energy_system(nodes_data=nodes_data)

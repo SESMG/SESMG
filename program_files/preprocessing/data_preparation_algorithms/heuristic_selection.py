@@ -3,12 +3,13 @@
 """
 import datetime
 import pandas
+import os
 
 from program_files.preprocessing.data_preparation \
     import variable_costs_date_adaption, append_timeseries_to_weatherdata_sheet
 
 
-def hierarchical_selection(nodes_data, scheme, period, seasons, scheme_path):
+def hierarchical_selection(nodes_data, scheme, period, seasons):
     """
         Algorithm for the hierarchical selection of representative time
         periods of a weather data set. In this embodiment, the following
@@ -352,6 +353,12 @@ def hierarchical_selection(nodes_data, scheme, period, seasons, scheme_path):
                 prep_weather_data = prep_weather_data.append(selected_week)
         
         return prep_weather_data
+
+    # get scheme path for heuristic selection from technical data folder
+    scheme_path = \
+        os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                     'technical_data',
+                     'hierarchical_selection_schemes.xlsx')
     
     reorder_weather_data()
     period_data_slices = create_period_weather_data(period)

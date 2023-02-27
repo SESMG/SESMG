@@ -356,7 +356,6 @@ def timeseries_adaption(nodes_data: dict, clusters: int,
 
 def timeseries_preparation(timeseries_prep_param: list,
                            nodes_data: dict,
-                           scheme_path: str,
                            result_path: str):
     """
         Evaluates the passed parameters for timeseries preparation and
@@ -370,9 +369,6 @@ def timeseries_preparation(timeseries_prep_param: list,
         :type timeseries_prep_param: list
         :param nodes_data: Dictionary containing the energy systems data
         :type nodes_data: dict
-        :param scheme_path: Path, where the xlsx-file with possible
-                            heuristic selection schemes is stored.
-        :type scheme_path: str
         :param result_path:
         :type result_path: str
         :return:
@@ -452,7 +448,7 @@ def timeseries_preparation(timeseries_prep_param: list,
 
     # ADAPTS THE PARAMETERS OF THE ENERGY SYSTEM
     if data_prep != 'none':
-        path = result_path + "/modified_scenario.xlsx"
+        path = result_path + "/modified_model_definition.xlsx"
         writer = pandas.ExcelWriter(path, engine='xlsxwriter')
         nodes_data['weather data'].to_excel(writer, sheet_name='weather data')
         nodes_data['timeseries'].to_excel(writer, sheet_name='time series')
