@@ -208,6 +208,65 @@ def building_transformer(building: dict, p2g_link: bool, sheets: dict,
     return sheets
 
 
+def create_gchp(tool: pandas.DataFrame, parcels: pandas.DataFrame,
+                sheets: dict, standard_parameters: pandas.ExcelFile):
+    """
+        Method that creates a GCHP and its buses for the parcel and \
+        appends them to the sheets return structure.
+
+        :param tool: DataFrame containing the building data from the \
+            upscaling tool's input file
+        :type tool: pandas.DataFrame
+        :param parcels: DataFrame containing the energy system's \
+            parcels as well as their size
+        :type parcels: pandas.DataFrame
+        :param sheets: dictionary containing the pandas.Dataframes that\
+                will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+    """
+    from program_files.urban_district_upscaling.components import Bus
+    # TODO parcel ID and ID parcel have to be unified
+    # TODO how to solve the "true bools" data structure
+    # create GCHPs parcel wise
+    gchps = {}
+    for num, parcel in parcels.iterrows():
+        build_parcel = tool[
+            (tool["active"].isin(["Yes", "yes", 1]))
+            & (tool["gchp"].isin(["Yes", "yes", 1]))
+            & (tool["parcel ID"] == parcel["ID parcel"])
+            ]
+        if not build_parcel.empty:
+            gchps.update({parcel["ID parcel"][-9:]: parcel["gchp area (m²)"]})
+    # create gchp relevant components
+    for gchp in gchps:
+        # TODO What supply temperature do we use here, do we have to
+        #  average that of the buildings?
+        sheets = create_transformer(
+                building_id=gchp,
+                area=gchps[gchp],
+                transformer_type="building_gchp_transformer",
+                sheets=sheets,
+                standard_parameters=standard_parameters,
+                flow_temp="60"
+        )
+        sheets = Bus.create_standard_parameter_bus(
+                label=gchp + "_hp_elec_bus",
+                bus_type="building_hp_electricity_bus",
+                sheets=sheets,
+                standard_parameters=standard_parameters
+        )
+        sheets = Bus.create_standard_parameter_bus(
+                label=gchp + "_heat_bus",
+                bus_type="building_heat_bus",
+                sheets=sheets,
+                standard_parameters=standard_parameters
+        )
+    return gchps, sheets
+
+
 def cluster_transformer_information(transformer: pandas.DataFrame,
                                     cluster_parameters: dict, technology: str,
                                     sheets: dict):

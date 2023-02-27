@@ -508,6 +508,47 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
     return sheets
 
 
+def create_pv_bus_links(building: dict, sheets: dict,
+                        standard_parameters: pandas.ExcelFile,
+                        central_electricity_bus: bool):
+    """
+    
+    """
+    from program_files.urban_district_upscaling.components import Bus, Link
+    # create building pv bus
+    sheets = Bus.create_standard_parameter_bus(
+        label=str(building["label"]) + "_pv_bus",
+        bus_type="building_pv_bus",
+        sheets=sheets,
+        standard_parameters=standard_parameters
+    )
+
+    # create link from pv bus to building electricity bus
+    sheets = Link.create_link(
+        label=str(building["label"])
+        + "_pv_self_consumption_electricity_link",
+        bus_1=str(building["label"]) + "_pv_bus",
+        bus_2=str(building["label"]) + "_electricity_bus",
+        link_type="building_pv_building_link",
+        sheets=sheets,
+        standard_parameters=standard_parameters
+    )
+    
+    # create link from pv bus to central electricity bus if the
+    # central electricity exchange is enabled
+    if central_electricity_bus:
+        sheets = Link.create_link(
+            label=str(building["label"]) + "_pv_central_electricity_link",
+            bus_1=str(building["label"]) + "_pv_bus",
+            bus_2="central_electricity_bus",
+            link_type="building_pv_central_link",
+            sheets=sheets,
+            standard_parameters=standard_parameters
+        )
+    
+    return sheets
+
+
 def update_sources_in_output(building, sheets_clustering, cluster, sheets):
     """ """
     # change sources output bus

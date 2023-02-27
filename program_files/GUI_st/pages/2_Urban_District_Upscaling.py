@@ -67,8 +67,7 @@ def us_application():
                     urban_district_upscaling_pre_processing(
                         paths=us_path_list,
                         clustering=False,
-                        clustering_dh=False,
-                        streamlit=True)
+                        clustering_dh=False)
 
     st.sidebar.download_button(label="Download your model definition",
                                data=model_definition_df,

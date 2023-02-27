@@ -54,6 +54,70 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets: dict,
     return append_component(sheets, "buses", bus_dict)
 
 
+def check_rather_building_needs_pv_bus(building: dict) -> bool:
+    """
+    
+    """
+    from program_files import column_exists
+    # set pv bus status to true if the column pv <num> is "yes" or "1"
+    pv_bus = False
+    roof_num = 1
+    while column_exists(building, str("roof area %1d" % roof_num)):
+        if building["pv %1d" % roof_num] not in ["No", "no", "0"]:
+            pv_bus = True
+        roof_num += 1
+        
+    return pv_bus
+
+
+def create_building_electricity_bus_link(bus, sheets, building,
+                                         standard_parameters,
+                                         central_electricity_bus):
+    """
+    
+    """
+    from program_files.urban_district_upscaling.components import Link
+    pv_bus = check_rather_building_needs_pv_bus(building=building)
+    # create the building electricity bus if the building has a pv
+    # system or gets an electricity demand later on
+    if pv_bus or building["building type"] not in ["0", 0]:
+        # create the building electricity bus
+        sheets = create_standard_parameter_bus(
+                label=(str(building["label"]) + "_electricity_bus"),
+                bus_type=bus,
+                sheets=sheets,
+                standard_parameters=standard_parameters
+        )
+        # create link from central electricity bus to building
+        # electricity bus if the central electricity exchange is enabled
+        if central_electricity_bus:
+            sheets = Link.create_link(
+                    label=str(building["label"]) + "_central_electricity_link",
+                    bus_1="central_electricity_bus",
+                    bus_2=str(building["label"]) + "_electricity_bus",
+                    link_type="building_central_building_link",
+                    sheets=sheets,
+                    standard_parameters=standard_parameters
+            )
+            
+    return sheets
+
+
+def get_building_type_specific_electricity_bus_label(building: dict):
+    """
+    
+    """
+    # define the building electricity bus type based on the building
+    # type
+    if building["building type"] in ["SFB", "MFB", "0", 0]:
+        bus = "building_res_electricity_bus"
+    elif building["building type"] == "IND":
+        bus = "building_ind_electricity_bus"
+    else:
+        bus = "building_com_electricity_bus"
+    
+    return bus
+
 def create_cluster_electricity_buses(building: list, cluster: str,
                                      sheets: dict,
                                      standard_parameters: pandas.ExcelFile

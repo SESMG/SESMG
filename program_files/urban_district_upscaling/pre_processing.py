@@ -6,6 +6,7 @@
 import xlsxwriter
 import pandas
 import logging
+from io import BytesIO
 
 import program_files.urban_district_upscaling.clustering as clustering_py
 from program_files.urban_district_upscaling.components import (
@@ -18,7 +19,6 @@ from program_files.urban_district_upscaling.components import (
     Insulation,
     Central_components,
 )
-from io import BytesIO
 
 
 def append_component(sheets: dict, sheet: str, comp_parameter: dict) -> dict:
@@ -41,8 +41,11 @@ def append_component(sheets: dict, sheet: str, comp_parameter: dict) -> dict:
             pandas.Dataframes that will represent the model \
             definition's Spreadsheets which was modified in this method
     """
+    # convert dict comp parameter in pandas Series
     series = pandas.Series(comp_parameter)
+    # concat mew row on sheets[sheet]
     sheets[sheet] = pandas.concat([sheets[sheet], pandas.DataFrame([series])])
+    # return sheets dict with new row in sheets[sheet]
     return sheets
 
 
@@ -219,11 +222,12 @@ def column_exists(building: pandas.Series, column: str) -> bool:
         :param column: label of the investigated column
         :type column: str
         
-        :return: - **None** (bool) -
+        :return: - **None** (bool) - boolean which signalizes whether \
+            the column exists or not
     """
     # test rather the column exists
     try:
-        test = building[column]
+        building[column]
     # if an error is thrown return false
     except KeyError:
         return False
@@ -259,7 +263,7 @@ def create_building_buses_links(
     """
         In this method, all buses and links required for one building
         are created and attached to the "buses" and "links" dataframes
-        in the sheet dictionary.
+        in the sheets dictionary.
         
         :param building: dictionary containing the building specific \
                 parameters
@@ -278,44 +282,20 @@ def create_building_buses_links(
             pandas.Dataframes that will represent the model \
             definition's Spreadsheets
     """
-
-    # foreach building the three necessary buses will be created
-    pv_bus = False
-    roof_num = 1
-    while column_exists(building, str("roof area %1d" % roof_num)):
-        if building["pv %1d" % roof_num] not in ["No", "no", "0"]:
-            pv_bus = True
-        roof_num += 1
-
-    # define the building electricity bus type based on the building
-    # type
-    if building["building type"] in ["SFB", "MFB", "0", 0]:
-        bus = "building_res_electricity_bus"
-    elif building["building type"] == "IND":
-        bus = "building_ind_electricity_bus"
-    else:
-        bus = "building_com_electricity_bus"
+    # run check rather the current building needs a pv bus
+    pv_bus = Bus.check_rather_building_needs_pv_bus(building=building)
+    
+    # get building type specific electricity bus label
+    bus = Bus.get_building_type_specific_electricity_bus_label(
+        building=building)
+    
+    sheets = Bus.create_building_electricity_bus_link(
+        bus=bus,
+        sheets=sheets,
+        standard_parameters=standard_parameters,
+        central_electricity_bus=central_electricity_bus,
+        building=building)
         
-    if pv_bus or building["building type"] not in ["0", 0]:
-        # create the building electricity bus
-        sheets = Bus.create_standard_parameter_bus(
-            label=(str(building["label"]) + "_electricity_bus"),
-            bus_type=bus,
-            sheets=sheets,
-            standard_parameters=standard_parameters
-        )
-        # create link from central electricity bus to building
-        # electricity bus if the central electricity exchange is enabled
-        if central_electricity_bus:
-            sheets = Link.create_link(
-                label=str(building["label"]) + "_central_electricity_link",
-                bus_1="central_electricity_bus",
-                bus_2=str(building["label"]) + "_electricity_bus",
-                link_type="building_central_building_link",
-                sheets=sheets,
-                standard_parameters=standard_parameters
-            )
-
     if building["building type"] not in ["0", 0]:
         # house heat bus
         sheets = Bus.create_standard_parameter_bus(
@@ -330,35 +310,11 @@ def create_building_buses_links(
         )
         
     if pv_bus:
-        # create building pv bus
-        sheets = Bus.create_standard_parameter_bus(
-            label=str(building["label"]) + "_pv_bus",
-            bus_type="building_pv_bus",
+        sheets = Source.create_pv_bus_links(
+            building=building,
             sheets=sheets,
-            standard_parameters=standard_parameters
-        )
-
-        # create link from pv bus to building electricity bus
-        sheets = Link.create_link(
-            label=str(building["label"])
-            + "_pv_self_consumption_electricity_link",
-            bus_1=str(building["label"]) + "_pv_bus",
-            bus_2=str(building["label"]) + "_electricity_bus",
-            link_type="building_pv_building_link",
-            sheets=sheets,
-            standard_parameters=standard_parameters
-        )
-        # create link from pv bus to central electricity bus if the
-        # central electricity exchange is enabled
-        if central_electricity_bus:
-            sheets = Link.create_link(
-                label=str(building["label"]) + "_pv_central_electricity_link",
-                bus_1=str(building["label"]) + "_pv_bus",
-                bus_2="central_electricity_bus",
-                link_type="building_pv_central_link",
-                sheets=sheets,
-                standard_parameters=standard_parameters
-            )
+            standard_parameters=standard_parameters,
+            central_electricity_bus=central_electricity_bus)
 
     return sheets
 
@@ -442,102 +398,12 @@ def get_central_comp_active_status(central: pandas.DataFrame, technology: str
         return True
     else:
         return False
-
-
-def create_gchp(tool: pandas.DataFrame, parcels: pandas.DataFrame,
-                sheets: dict, standard_parameters: pandas.ExcelFile):
-    """
-        Method that creates a GCHP and its buses for the parcel and \
-        appends them to the sheets return structure.
-        
-        :param tool: DataFrame containing the building data from the \
-            upscaling tool's input file
-        :type tool: pandas.DataFrame
-        :param parcels: DataFrame containing the energy system's \
-            parcels as well as their size
-        :type parcels: pandas.DataFrame
-        :param sheets: dictionary containing the pandas.Dataframes that\
-                will represent the model definition's Spreadsheets
-        :type sheets: dict
-        :param standard_parameters: pandas imported ExcelFile \
-            containing the non-building specific technology data
-        :type standard_parameters: pandas.ExcelFile
-    """
-    # TODO parcel ID and ID parcel have to be unified
-    # TODO how to solve the "true bools" data structure
-    # create GCHPs parcel wise
-    gchps = {}
-    for num, parcel in parcels.iterrows():
-        build_parcel = tool[
-            (tool["active"].isin(["Yes", "yes", 1]))
-            & (tool["gchp"].isin(["Yes", "yes", 1]))
-            & (tool["parcel ID"] == parcel["ID parcel"])
-        ]
-        if not build_parcel.empty:
-            gchps.update({parcel["ID parcel"][-9:]: parcel["gchp area (m²)"]})
-    # create gchp relevant components
-    for gchp in gchps:
-        # TODO What supply temperature do we use here, do we have to
-        #  average that of the buildings?
-        sheets = Transformer.create_transformer(
-            building_id=gchp,
-            area=gchps[gchp],
-            transformer_type="building_gchp_transformer",
-            sheets=sheets,
-            standard_parameters=standard_parameters,
-            flow_temp="60"
-        )
-        sheets = Bus.create_standard_parameter_bus(
-            label=gchp + "_hp_elec_bus",
-            bus_type="building_hp_electricity_bus",
-            sheets=sheets,
-            standard_parameters=standard_parameters
-        )
-        sheets = Bus.create_standard_parameter_bus(
-            label=gchp + "_heat_bus",
-            bus_type="building_heat_bus",
-            sheets=sheets,
-            standard_parameters=standard_parameters
-        )
-    return gchps, sheets
-
-
-def urban_district_upscaling_pre_processing(
-    paths: list, clustering: bool, clustering_dh: bool, streamlit=False
-):
-    """
-        The Urban District Upsclaing Pre Processing method is used to
-        systematically create a model definition for a few 10 to a few
-        hundred buildings based on a US input sheet filled in by the
-        user, which includes investment alternative selection and
-        building specific data to determine consumption and renovation
-        status, and a spreadsheet which includes technology specific
-        standard data (standard_parameter).
-
-        :param paths: path of the us input sheet file [0] \
-                      path of the standard_parameter file [1] \
-                      path to which the model definition should be \
-                      created [2]\
-                      path to plain sheet file (holding structure) [3]
-        :type paths: list
-        :param clustering: boolean for decision rather the buildings are
-                           clustered spatially
-        :type clustering: bool
-        :param clustering_dh: boolean for decision rather the district
-            heating connection will be clustered cluster_id wise
-        :type clustering_dh: bool
-        :param streamlit: Since the deployment of the model definition \
-            in streamlit is different than in the old TK Inter GUI, \
-            the boolean streamlit is used to distinguish between the \
-            two deployment types.
-        :type streamlit: bool
-    """
-
-    logging.info("Creating model definition sheet...")
-    # loading typical model definition structure from plain sheet
-    sheets, central, parcel, tool, worksheets, standard_parameters = \
-        load_input_data(paths[3], paths[1], paths[0])
     
+    
+def copying_sheets(paths, standard_parameters, sheets):
+    """
+    
+    """
     for sheet_tbc in [
         "energysystem",
         "weather data",
@@ -574,6 +440,43 @@ def urban_district_upscaling_pre_processing(
                 if sheet_tbc in ["weather data", "time series"]
                 else [],
             )
+    return sheets
+
+
+def urban_district_upscaling_pre_processing(
+    paths: list, clustering: bool, clustering_dh: bool
+):
+    """
+        The Urban District Upsclaing Pre Processing method is used to
+        systematically create a model definition for a few 10 to a few
+        hundred buildings based on a US input sheet filled in by the
+        user, which includes investment alternative selection and
+        building specific data to determine consumption and renovation
+        status, and a spreadsheet which includes technology specific
+        standard data (standard_parameter).
+
+        :param paths: path of the us input sheet file [0] \
+                      path of the standard_parameter file [1] \
+                      path to which the model definition should be \
+                      created [2]\
+                      path to plain sheet file (holding structure) [3]
+        :type paths: list
+        :param clustering: boolean for decision rather the buildings are
+                           clustered spatially
+        :type clustering: bool
+        :param clustering_dh: boolean for decision rather the district
+            heating connection will be clustered cluster_id wise
+        :type clustering_dh: bool
+    """
+
+    logging.info("Creating model definition sheet...")
+    # loading typical model definition structure from plain sheet
+    sheets, central, parcel, tool, worksheets, standard_parameters = \
+        load_input_data(paths[3], paths[1], paths[0])
+    
+    sheets = copying_sheets(paths=paths,
+                            standard_parameters=standard_parameters,
+                            sheets=sheets)
     
     # set variable for central heating / electricity if activated to
     # decide rather a house can be connected to the central heat
@@ -588,7 +491,12 @@ def urban_district_upscaling_pre_processing(
     sheets = Central_components.central_comp(
         central, ["Yes", "yes", 1], sheets, standard_parameters)
 
-    gchps, sheets = create_gchp(tool, parcel, sheets, standard_parameters)
+    gchps, sheets = Transformer.create_gchp(
+        tool=tool,
+        parcels=parcel,
+        sheets=sheets,
+        standard_parameters=standard_parameters)
+    
     for num, building in tool[tool["active"] == 1].iterrows():
         sheets = create_building_buses_links(
             building=building,
@@ -645,24 +553,13 @@ def urban_district_upscaling_pre_processing(
             central_electricity_network=central_electricity_network,
             clustering_dh=clustering_dh,
         )
-    if streamlit:
-        output = BytesIO()
-        # open the new excel file and add all the created components
-        j = 0
-        writer = pandas.ExcelWriter(output, engine="xlsxwriter")
-        for i in sheets:
-            sheets[i].to_excel(writer, worksheets[j], index=False)
-            j = j + 1
-        writer.close()
-        processed_data = output.getvalue()
-        return processed_data
-    # TODO to be removed when establishing the new GUI
-    else:
-        # open the new excel file and add all the created components
-        j = 0
-        writer = pandas.ExcelWriter(paths[2], engine="xlsxwriter")
-        for i in sheets:
-            sheets[i].to_excel(writer, worksheets[j], index=False)
-            j = j + 1
-        logging.info("Scenario created. It can now be executed.")
-        writer.close()
+    output = BytesIO()
+    # open the new excel file and add all the created components
+    j = 0
+    writer = pandas.ExcelWriter(output, engine="xlsxwriter")
+    for i in sheets:
+        sheets[i].to_excel(writer, worksheets[j], index=False)
+        j = j + 1
+    writer.close()
+    processed_data = output.getvalue()
+    return processed_data
