@@ -196,7 +196,8 @@ def test_read_markdown_document():
 
     # creating the reduced README file as a str in a list
     reduced_readme = read_markdown_document(
-        document_path="Readme.md",
+        document_path=os.path.join(
+            os.path.dirname(__file__), "Readme.md"),
         folder_path=f'{"docs/images/readme/*"}')
 
     assert "install coinor-cbc" in reduced_readme[0]
