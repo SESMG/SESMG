@@ -1846,7 +1846,9 @@ class Storages:
                     )
                 },
                 loss_rate=s["capacity loss"],
-                initial_storage_level=s["initial capacity"],
+                initial_storage_level=s["initial capacity"], 
+                min_storage_level=s["capacity min"],
+                max_storage_level=s["capacity max"],
                 inflow_conversion_factor=s["efficiency inflow"],
                 outflow_conversion_factor=s["efficiency outflow"],
                 invest_relation_input_capacity=s["input/capacity ratio"],
@@ -1958,7 +1960,7 @@ class Storages:
                 if s["storage type"] == "Generic":
                     self.generic_storage(s)
 
-                # Create Generic Storage
+                # Create Stratified Storage
                 if s["storage type"] == "Stratified":
                     self.stratified_thermal_storage(s, nodes_data["weather data"])
 
