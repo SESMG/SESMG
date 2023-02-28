@@ -194,7 +194,7 @@ def test_positive_read_markdown_document():
     # creating the reduced README file as a str in a list
     reduced_readme = read_markdown_document(
         document_path=os.path.join(
-            os.path.dirname(os.path.dirname(__file__)), "Readme.md"),
+            os.path.dirname(os.path.dirname(__file__)), "README.md"),
         folder_path=f'{"docs/images/readme/*"}')
 
     # iterate through the list and check if unique text part bevor and \
@@ -226,7 +226,7 @@ def test_negative_read_markdown_document():
     # creating the reduced README file as a str in a list
     reduced_readme = read_markdown_document(
         document_path=os.path.join(
-            os.path.dirname(__file__), "Readme.md"),
+            os.path.dirname(__file__), "README.md"),
         folder_path=f'{"docs/images/readme/*"}')
 
     # iterate through the list and check if part which is suppost to be \
