@@ -824,7 +824,6 @@ class Results:
                             comp["transformer type"] == "GenericTransformer"
                             or comp["transformer type"] == "GenericCHP"
                         ):
-
                             self.df_result_table[
                                 comp["label"] + "_input"
                             ] = self.comp_input1
@@ -841,7 +840,6 @@ class Results:
                             comp["transformer type"] == "CompressionHeatTransformer"
                             or comp["transformer type"] == "AbsorptionHeatTransformer"
                         ):
-
                             self.df_result_table[
                                 comp["label"] + "_el_input"
                             ] = self.comp_input1

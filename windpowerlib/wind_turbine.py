@@ -125,7 +125,6 @@ class WindTurbine(object):
         turbine_type=None,
         **kwargs
     ):
-
         self.hub_height = hub_height
         self.turbine_type = turbine_type
         self.rotor_diameter = rotor_diameter

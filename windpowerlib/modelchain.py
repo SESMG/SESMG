@@ -146,7 +146,6 @@ class ModelChain(object):
         hellman_exp=None,
         **kwargs
     ):
-
         self.power_plant = power_plant
         self.obstacle_height = obstacle_height
         self.wind_speed_model = wind_speed_model

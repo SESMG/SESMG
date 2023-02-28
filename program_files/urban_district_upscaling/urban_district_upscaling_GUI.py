@@ -80,7 +80,6 @@ class upscaling_frame_class:
         subprocess.call(os.path.dirname(__file__) + "/overview.xlsx", shell=True)
 
     def __init__(self, window, tab_control, upscaling_frame):
-
         self.pre_scenario_path = StringVar(
             window, os.path.join(os.path.dirname(__file__), r"pre_scenario.xlsx")
         )

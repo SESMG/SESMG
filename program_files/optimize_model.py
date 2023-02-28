@@ -22,7 +22,7 @@ def constraint_optimization_against_two_values(
     from oemof.solph.plumbing import sequence
 
     invest_flows = {}
-    for (i, o) in om.flows:
+    for i, o in om.flows:
         if hasattr(om.flows[i, o].investment, "periodical_constraint_costs"):
             invest_flows[(i, o)] = om.flows[i, o].investment
 
@@ -42,7 +42,7 @@ def constraint_optimization_against_two_values(
 
     ############
     flows = {}
-    for (i, o) in om.flows:
+    for i, o in om.flows:
         if hasattr(om.flows[i, o], "emission_factor"):
             flows[(i, o)] = om.flows[i, o]
 

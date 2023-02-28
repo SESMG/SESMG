@@ -644,7 +644,6 @@ def hierarchical_selection(nodes_data, scheme, period, seasons, scheme_path):
 
         absolute_minimum = 99999999
         for i in range(len(data_set)):
-
             if value == "extreme":
                 weekly_minimum = identify_timeseries_minimum(
                     data_set=data_set[i], column_name=criterion

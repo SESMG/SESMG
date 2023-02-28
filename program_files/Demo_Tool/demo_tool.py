@@ -161,7 +161,6 @@ class demo_frame_class:
         ]
 
     def save_results(self):
-
         interim_results = [
             float(self.monetary_costs.get()),
             float(self.emission_costs.get()),
@@ -188,7 +187,6 @@ class demo_frame_class:
         print(self.results_dict)
 
     def plot_results_scatter(self):
-
         plt.xlabel("Mio. EUR/a")
         plt.ylabel("t/a")
 

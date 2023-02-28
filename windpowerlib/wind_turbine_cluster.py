@@ -39,7 +39,6 @@ class WindTurbineCluster(object):
     """
 
     def __init__(self, wind_farms, name="", **kwargs):
-
         self.wind_farms = wind_farms
         self.name = name
 
