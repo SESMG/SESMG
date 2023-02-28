@@ -333,7 +333,7 @@ def sesmg_main_including_premodel(scenario_file: str, result_path: str, num_thre
     # create updated scenario for main-modeling run
     print('UPDATING DATA BASED ON PRE-MODEL RESULTS')
     update_model_according_pre_model_results(
-        scenario_path=scenario_file,
+        model_definition_path=scenario_file,
         results_components_path=result_path + '/pre_model/components.csv',
         updated_scenario_path=result_path + '/updated_scenario.xlsx',
         investment_boundary_factor=investment_boundary_factor,
