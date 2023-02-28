@@ -183,8 +183,37 @@ def test_create_cluster_simplification_index(test_GUI_main_dict):
     assert changed_test_dict == test_GUI_main_dict
 
 
+def test_positive_read_markdown_document():
+    """
+        Testing if function is loading the README.md as required and if it is \
+        only dropping the required part
+    """
+    from program_files.GUI_st.GUI_st_global_functions \
+        import read_markdown_document
+
+    # creating the reduced README file as a str in a list
+    reduced_readme = read_markdown_document(
+        document_path=os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), "Readme.md"),
+        folder_path=f'{"docs/images/readme/*"}')
+
+    # iterate through the list and check if unique text part bevor and \
+    # behind the reduced part are printed as required
+    # testing part before drop
+    for item in reduced_readme:
+        if item.find("(oemof)") != -1:
+            test_target_1 = True
+
+    # testing part behind drop
+    for item in reduced_readme:
+        if item.find("Code of Conduct") != -1:
+            test_target_2 = True
+
+    assert test_target_1 and test_target_2 == True
+
+
 @pytest.mark.xfail
-def test_read_markdown_document():
+def test_negative_read_markdown_document():
     """
         Testing if the function is still removing the installation part of \
         the README.md correctly to show the rest in the GUI. Test is supposed \
@@ -200,15 +229,10 @@ def test_read_markdown_document():
             os.path.dirname(__file__), "Readme.md"),
         folder_path=f'{"docs/images/readme/*"}')
 
-    assert "install coinor-cbc" in reduced_readme[0]
+    # iterate through the list and check if part which is suppost to be \
+    # dropped is not in the list of str
+    for item in reduced_readme:
+        if item.find("install coinor-cbc") != -1:
+            test_target = True
 
-
-
-
-
-
-
-
-
-
-
+    assert test_target == True
