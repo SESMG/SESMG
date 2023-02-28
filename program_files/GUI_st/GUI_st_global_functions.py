@@ -265,6 +265,7 @@ def read_markdown_document(document_path: str, folder_path: str,
                 # If an image is found, display the buffer list up to
                 # the last line
                 if image in line:
+# TODO @gregorbecker: können wir die st. Beffehle in die GUI verschieben?
                     st.markdown(''.join(readme_buffer[:-1]))
                     # Display the image from the Resources folder using
                     # the image name from the resource_files list

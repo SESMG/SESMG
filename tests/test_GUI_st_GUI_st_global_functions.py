@@ -162,10 +162,10 @@ def test_create_simplification_index(test_GUI_main_dict):
     assert reduced_test_dict == test_GUI_main_dict
 
 
-def test_create_cluster_simplification_index(test_GUI_main_dict):
+def test_create_cluster_simplification_index_value(test_GUI_main_dict):
     """
         Testing if the function is changing the globally defined GUI_main_dict\
-        as required.
+        as required if the input value a an int.
     """
     from program_files.GUI_st.GUI_st_global_functions \
         import create_cluster_simplification_index
@@ -179,6 +179,29 @@ def test_create_cluster_simplification_index(test_GUI_main_dict):
         input_value="input_timeseries_cluster_index",
         input_output_dict=changed_test_dict,
         input_value_index="input_timeseries_cluster_index_index")
+
+    assert changed_test_dict == test_GUI_main_dict
+    
+    
+def test_create_cluster_simplification_index_none(test_GUI_main_dict):
+    """
+        Testing if the function is changing the globally defined GUI_main_dict\
+        as required if the input value a an "None".
+    """
+    from program_files.GUI_st.GUI_st_global_functions \
+        import create_cluster_simplification_index
+
+    # change the targeted value to a wrong values
+    changed_test_dict = test_GUI_main_dict
+    changed_test_dict["input_timeseries_cluster_index_index"] = "None"
+
+    # run function with reduced dict
+    create_cluster_simplification_index(
+        input_value="input_timeseries_cluster_index",
+        input_output_dict=changed_test_dict,
+        input_value_index="input_timeseries_cluster_index_index")
+    
+    test_GUI_main_dict["input_timeseries_cluster_index_index"] = 0
 
     assert changed_test_dict == test_GUI_main_dict
 
