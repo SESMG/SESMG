@@ -79,8 +79,6 @@ def constraint_optimization_against_two_values(
     for num in om.GenericInvestmentStorageBlock.INVESTSTORAGES.data():
         if hasattr(num.investment, "periodical_constraint_costs"):
             comp[num] = num.investment
-        if hasattr(num.investment, "fix_constraint_costs"):
-            comp_fix[num] = num.investment
     # Setting the equation representing the sum of the periodic
     # emissions
     limit_name3 = "invest_limit_storage"
