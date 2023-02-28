@@ -22,12 +22,16 @@ def constraint_optimization_against_two_values(
     from oemof.solph.plumbing import sequence
 
     invest_flows = {}
+    ##########################
+    # PERIODICAL CONSTRAINTS #
+    ##########################
+    # extract all investment flows where periodical constraints apply
     for (i, o) in om.flows:
         if hasattr(om.flows[i, o].investment, "periodical_constraint_costs"):
             invest_flows[(i, o)] = om.flows[i, o].investment
-
-    limit_name = "invest_limit_" + "space"
-
+    limit_name = "invest_limit_" + "periodical_constraints"
+    # Setting the equation representing the sum of the periodic
+    # emissions
     setattr(
         om,
         limit_name,
@@ -39,18 +43,21 @@ def constraint_optimization_against_two_values(
             )
         ),
     )
-
-    ############
+    
+    ##########################
+    # VARIABLE CONSTRAINTS   #
+    ##########################
     flows = {}
+    # extract all investment flows where variable constraints apply
     for (i, o) in om.flows:
         if hasattr(om.flows[i, o], "emission_factor"):
             flows[(i, o)] = om.flows[i, o]
-
-    limit_name1 = "integral_limit_" + "emission_factor"
-
+    limit_name2 = "integral_limit_" + "variable_constraints"
+    # Setting the equation representing the sum of the variable
+    # emissions
     setattr(
         om,
-        limit_name1,
+        limit_name2,
         po.Expression(
             expr=sum(
                 om.flow[inflow, outflow, t]
@@ -61,15 +68,53 @@ def constraint_optimization_against_two_values(
             )
         ),
     )
+    
+    ##########################
+    # STORAGE CONSTRAINTS    #
+    ##########################
+    comp = {}
+    comp_fix = {}
+    # extract all investment flows where periodical / fix constraints
+    # apply
+    for num in om.GenericInvestmentStorageBlock.INVESTSTORAGES.data():
+        if hasattr(num.investment, "periodical_constraint_costs"):
+            comp[num] = num.investment
+        if hasattr(num.investment, "fix_constraint_costs"):
+            comp_fix[num] = num.investment
+    # Setting the equation representing the sum of the periodic
+    # emissions
+    limit_name3 = "invest_limit_storage"
+    setattr(
+        om,
+        limit_name3,
+        po.Expression(
+            expr=sum(
+                om.GenericInvestmentStorageBlock.invest[num]
+                * getattr(comp[num], "periodical_constraint_costs")
+                for num in comp
+            )
+        ),
+    )
 
+    # Setting the equation representing the overall limit for the sum of
+    # all appearing constraints
     setattr(
         om,
         limit_name + "_constraint",
         po.Constraint(
-            expr=((getattr(om, limit_name) + getattr(om, limit_name1)) <= limit)
+            expr=(
+                (
+                    getattr(om, limit_name)
+                    #+ getattr(om, limit_name1)
+                    + getattr(om, limit_name2)
+                    #+ getattr(om, limit_name4)
+                    + getattr(om, limit_name3)
+                )
+                <= limit
+            )
         ),
     )
-
+    # Return of the opimization model extended by the new equations
     return om
 
 
