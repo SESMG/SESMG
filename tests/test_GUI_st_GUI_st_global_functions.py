@@ -195,7 +195,7 @@ def test_positive_read_markdown_document():
     reduced_readme = read_markdown_document(
         document_path=os.path.join(
             os.path.dirname(os.path.dirname(__file__)), "README.md"),
-        folder_path=f'{"docs/images/readme/*"}')
+        folder_path="empty")
 
     # iterate through the list and check if unique text part bevor and \
     # behind the reduced part are printed as required
@@ -227,7 +227,7 @@ def test_negative_read_markdown_document():
     reduced_readme = read_markdown_document(
         document_path=os.path.join(
             os.path.dirname(__file__), "README.md"),
-        folder_path=f'{"docs/images/readme/*"}')
+        folder_path="empty")
 
     # iterate through the list and check if part which is suppost to be \
     # dropped is not in the list of str
