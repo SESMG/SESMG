@@ -196,9 +196,9 @@ Preprocessing/data_preparation/downsampling
    :undoc-members:
    :show-inheritance:
 
-Preprocessing/data_preparation/heuristic_sampling
+Preprocessing/data_preparation/heuristic_selection
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
-.. automodule:: program_files.preprocessing.data_preparation_algorithms.heuristic_sampling
+.. automodule:: program_files.preprocessing.data_preparation_algorithms.heuristic_selection
    :members:
    :undoc-members:
    :show-inheritance:
