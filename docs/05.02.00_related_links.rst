@@ -1,18 +1,18 @@
 Related links
 *************************************************
 
-`Spreadsheet Energy System Model Generator on GIT <https://git.fh-muenster.de/ck546038/spreadsheet-energy-system-model-generator>`_
+`Spreadsheet Energy System Model Generator (SESMG) on GitHub <https://github.com/SESMG/SESMG>`_
 
-`Open Energy Modelling Framework (oemof) documentation <https://oemof.readthedocs.io/en/stable/>`_
+`Open Energy Modelling Framework (oemof) documentation <https://oemof.readthedocs.io/en/latest/>`_
 
-`Open Energy Modelling Framework (oemof) on Github <https://github.com/oemof>`_
+`Open Energy Modelling Framework (oemof) on GitHub <https://github.com/oemof>`_
 
-`Feedinlib Documentation <https://feedinlib.readthedocs.io/en/latest/>`_
+`feedinlib documentation <https://feedinlib.readthedocs.io/en/latest/>`_
 
-`Demandlib Documentation <https://demandlib.readthedocs.io/en/latest/>`_
+`demandlib documentation <https://demandlib.readthedocs.io/en/latest/>`_
 
-`Richardsonpy on Github <https://github.com/RWTH-EBC/richardsonpy>`_
+`richardsonpy on Github <https://github.com/RWTH-EBC/richardsonpy>`_
 
 `R2Q research project <https://www.fh-muenster.de/forschungskooperationen/r2q/index.php>`_
 
-`energy system modeling group @ Münster University of Applied Sciences <https://www.fh-muenster.de/egu/ueber-uns/vennemann/energiesystemmodellierung.php>`_
+`Energy system modeling group @ Münster University of Applied Sciences <https://www.fh-muenster.de/egu/ueber-uns/vennemann/energiesystemmodellierung.php>`_
