@@ -1,6 +1,8 @@
 """
     Christian Klemm - christian.klemm@fh-muenster.de
 """
+import pandas
+import numpy as np
 from sklearn.cluster import KMeans
 from sklearn_extra.cluster import KMedoids
 from sklearn.neighbors import NearestNeighbors
@@ -12,8 +14,10 @@ from program_files.preprocessing.data_preparation \
     timeseries_adaption
 
 
-def calculate_k_means_clusters(cluster_number: int, weather_data: dict,
-                               cluster_criterion: str, period: str):
+def calculate_k_means_clusters(cluster_number: int,
+                               weather_data: pandas.DataFrame,
+                               cluster_criterion: str, period: str
+                               ) -> np.array:
     """
         Applies the k-means algorithm to a list of day-weather-vectors.
         Caution: weather data set must be available in hourly resolution!
@@ -21,15 +25,15 @@ def calculate_k_means_clusters(cluster_number: int, weather_data: dict,
         :param cluster_number: Number of k-mean-clusters
         :type cluster_number: int
         :param weather_data: weather_data, the clusters should be applied to
-        :type weather_data: dict
+        :type weather_data: pandas.DataFrame
         :param cluster_criterion: weather_parameter/column name which
             should be applied as cluster criterion
         :type cluster_criterion: str
         :param period: defines rather days or weeks were selected
         :type period: str
 
-        :return: - **model.labels_** - Chronological list, which days of the
-            weather data set belongs to which cluster
+        :return: - **model.labels_** (np.array) - Chronological list, \
+            which days of the weather data set belongs to which cluster
 
     """
     cluster_vectors = extract_single_periods(data_set=weather_data,
@@ -40,24 +44,28 @@ def calculate_k_means_clusters(cluster_number: int, weather_data: dict,
     return model.labels_
 
 
-def calculate_k_medoids_clusters(cluster_number: int, weather_data: dict,
-                                 cluster_criterion: str, period: str):
+def calculate_k_medoids_clusters(cluster_number: int,
+                                 weather_data: pandas.DataFrame,
+                                 cluster_criterion: str, period: str
+                                 ) -> np.array:
     """
-        Applies the k-medoids algorithm to a list of day-weather-vectors.
-        Caution: weather data set must be available in hourly resolution!
+        Applies the k-medoids algorithm to a list of
+        day-weather-vectors. Caution: weather data set must be
+        available in hourly resolution!
 
         :param cluster_number: Number of k-mean-clusters
         :type cluster_number: int
-        :param weather_data: weather_data, the clusters should be applied to
-        :type weather_data: dict
-        :param cluster_criterion: weather_parameter/column name which
+        :param weather_data: weather_data, the clusters should be \
+            applied to
+        :type weather_data: pandas.DataFrame
+        :param cluster_criterion: weather_parameter/column name which \
             should be applied as cluster criterion
         :type cluster_criterion: str
         :param period: defines rather days or weeks were selected
         :type period: str
 
-        :return: - **model.labels_** - Chronological list, which days of the
-            weather data set belongs to which cluster
+        :return: - **model.labels_** (np.array) - Chronological list, \
+            which days of the weather data set belongs to which cluster
 
     """
     cluster_vectors = extract_single_periods(data_set=weather_data,
