@@ -106,4 +106,4 @@ def timeseries_averaging(cluster_period: str, days_per_cluster: int,
     mean_adapt_timeseries_weatherdata(clusters=clusters,
                                       cluster_labels=cluster_labels,
                                       period=period,
-                                      nodes_data=nodes_data
+                                      nodes_data=nodes_data)
