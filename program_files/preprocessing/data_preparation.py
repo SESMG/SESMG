@@ -5,22 +5,26 @@ from datetime import datetime
 import logging
 
 
-def extract_single_periods(data_set, column_name, period):
+def extract_single_periods(data_set: pandas.DataFrame, column_name: str,
+                           period: str) -> list:
     """
         Extracts individual periods of a certain column of a weather data
         set as lists. Caution: weather data set must be available in
         hourly resolution!
 
         :param data_set: weather data set to be extracted
+        :type data_set: pandas.DataFrame
         :param column_name: column name of which the extraction should
                             be applied
-        :param period: indicates what kind of periods shall be extracted.
-                       Possible arguments: "days", "weeks", "hours".
+        :type column_name: str
+        :param period: indicates what kind of periods shall be \
+            extracted. Possible arguments: "days", "weeks", "hours".
+        :type period: str
 
-        :return: - **cluster_vectors** - list, containing a list/vector for
-            every single day
-            
+        :return: - **cluster_vectors** (list) - list, containing a \
+            list/vector for every single day
     """
+    # dictionary holding the factor which the clusters are divided by
     factor_dict = {"hours": 1, "days": 24, "weeks": 168}
 
     # extract data_set of cluster_criterion
@@ -28,6 +32,7 @@ def extract_single_periods(data_set, column_name, period):
     # extract single periods as lists and add them to a list
     cluster_vectors = []
     timesteps = factor_dict.get(str(period))
+    # iterate threw the length of the timeseries after shortening
     for i in range(0, int(len(cluster_df) / timesteps)):
         cluster_vector = []
         for j in range(timesteps):
@@ -38,15 +43,15 @@ def extract_single_periods(data_set, column_name, period):
     return cluster_vectors
 
 
-def calculate_cluster_means(data_set, cluster_number: int,
-                            cluster_labels, period: str):
+def calculate_cluster_means(data_set: pandas.DataFrame, cluster_number: int,
+                            cluster_labels, period: str) -> pandas.DataFrame:
     """
         Determines weather averages of the individual clusters for a
         weather dataset, based on predetermined cluster allocation.
         Caution: weather data set must be available in hourly resolution!
 
         :param data_set: data_set, the clusters should be applied to
-        :type data_set: pd.core.frame.DataFrame
+        :type data_set: pandas.DataFrame
         :param cluster_number: Number of clusters
         :type cluster_number: int
         :param cluster_labels: Chronological list, which days of the
@@ -55,8 +60,8 @@ def calculate_cluster_means(data_set, cluster_number: int,
         :param period: defines rather days or weeks were selected
         :type period: str
 
-        :return: - **prep_data_set** (pd.Dataframe) - pandas dataframe
-            containing the prepared weather data set
+        :return: - **prep_data_set** (pandas.core.frame.Dataframe) - \
+            pandas dataframe containing the prepared weather data set
        
     """
     column_names = [data_set.columns[i] for i in
@@ -106,7 +111,9 @@ def append_timeseries_to_weatherdata_sheet(nodes_data: dict
             user's model definition file
         :type nodes_data: dict
         
-        :return: **nodes_data["timeseries]** (pandas.DataFrame)
+        :return: **nodes_data ["timeseries"]** \
+            (pandas.core.frame.DataFrame) - DataFrame containing the \
+            updated model definition timeseries data
     """
 
     # Adding the weather data set to the timeseries data set
@@ -127,65 +134,6 @@ def append_timeseries_to_weatherdata_sheet(nodes_data: dict
 
     return nodes_data['timeseries']
 
-# TODO @cklm this method was commented out completely and not used by
-#  any other method can we remove it
-# def calculate_cluster_medoids(data_set, cluster_number: int,
-#                            cluster_labels, period: str):
-#    """
-#        Determines weather medoid of the individual clusters for a
-#        weather dataset, based on predetermined cluster allocation.
-#        Caution: weather data set must be available in hourly resolution!
-#
-#        :param data_set: data_set, the clusters should be applied to
-#        :type data_set: pd.core.frame.DataFrame
-#        :param cluster_number: Number of clusters
-#        :type cluster_number: int
-#        :param cluster_labels: Chronological list, which days of the
-#            weather data set belongs to which cluster
-#        :type cluster_labels: np.array
-#        :param period: defines rather days or weeks were selected
-#        :type period: str
-#
-#        :return: - **prep_data_set** (pd.Dataframe) - pandas dataframe
-#            containing the prepared weather data set
-#
-#    """
-
-    # column_names = [data_set.columns[i] for i in
-    #                 range(1, len(data_set.columns))]
-    # # Define pandas Dataframe for final data_set
-    # prep_data_set = pd.DataFrame()
-    # # Loop for every column of the weather data set
-    # for i in range(len(column_names) - 1):
-    #     # Extract individual weather data set for the current weather
-    #     # data column
-    #     data_set_column = extract_single_periods(data_set=data_set,
-    #                                              column_name=column_names[i],
-    #                                              period=period)
-    #     # Define empty list used later
-    #     reference_data_set = []
-    #     # Loop for every k-cluster
-    #     for j in range(0, cluster_number):
-    #         # Define empty list used later
-    #         cluster_dataset = []
-    #         # Loop for every day of the weather data set
-    #         for k in range(len(data_set_column)):
-    #             # if the day belongs to the current cluster, it will be
-    #             # appended to 'cluster_dataset'
-    #             if cluster_labels[k] == j:
-    #                 cluster_dataset.append(data_set_column[k])
-    #         # Calculates the medoid for ever hour of the current cluster
-    #         cluster_dataset_array = np.array(cluster_dataset)
-    #         # Appends the calculated mean values to the 'reference_data_
-    #         # set' list
-    #         reference_data_set += cluster_dataset_array.argmin(
-    #                               distMatrix.sum(axis=0)).tolist()
-    #     # Appends the calculated reference days for the current weather
-    #     # data column to the final weather data set
-    #     prep_data_set[column_names[i]] = reference_data_set
-
-#    return prep_data_set
-
 
 def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str):
     """
@@ -204,6 +152,7 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str):
     timesteps = factor_dict.get(period)
     variable_cost_factor = \
         int(nodes_data['energysystem']['periods']) / (timesteps * clusters)
+    # log the calculated variable cost factor
     logging.info('\t VARIABLE COST FACTOR')
     logging.info("\t " + str(variable_cost_factor))
     
@@ -242,12 +191,11 @@ def slp_sink_adaption(nodes_data: dict):
     # Lists of possible standard load profiles
     heat_slp_list = ['efh', 'mfh']
     heat_slp_com = ['gmf', 'gpd', 'ghd', 'gwa', 'ggb', 'gko',
-                     'gbd', 'gba', 'gmk', 'gbh', 'gga', 'gha']
+                    'gbd', 'gba', 'gmk', 'gbh', 'gga', 'gha']
     elec_slp_list = ['h0', 'g0', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'l0',
                      'l1', 'l2']
-    slp_list = heat_slp_list + elec_slp_list + heat_slp_com
-
-    slp_profiles = pandas.DataFrame()
+ 
+    # create a copy of the weather data sheet
     weather_data = nodes_data["weather data"].copy()
 
     # Creating Timesystem and Dataframe (required for the creation of
@@ -321,18 +269,21 @@ def slp_sink_adaption(nodes_data: dict):
 def timeseries_adaption(nodes_data: dict, clusters: int,
                         cluster_labels: np.array, period: str):
     """
-        TODO missing
-        :param nodes_data: system parameters
+        In this method, the cluster mean is calculated first and then
+        the timestamps of the timeseries sheet are adjusted. The newly
+        created timeseries sheet is set as the timeseries sheet for
+        the nodes data dictionary in the last step.
+        
+        :param nodes_data: system parameters imported from the users \
+            model definition spread sheet
         :type nodes_data: dict
         :param clusters: Number of clusters
         :type clusters: int
-        :param cluster_labels: Chronological list, which days of the weather
-                               data set belongs to which cluster
-
+        :param cluster_labels: Chronological list, which days of the \
+            weather data set belongs to which cluster
         :type cluster_labels: np.array
         :param period: defines rather hours, days or weeks were selected
         :type period: str
-
     """
     prep_timeseries = \
         calculate_cluster_means(data_set=nodes_data['timeseries'].copy(),
@@ -354,8 +305,7 @@ def timeseries_adaption(nodes_data: dict, clusters: int,
     nodes_data['timeseries'] = prep_timeseries
 
 
-def timeseries_preparation(timeseries_prep_param: list,
-                           nodes_data: dict,
+def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
                            result_path: str):
     """
         Evaluates the passed parameters for timeseries preparation and
@@ -367,11 +317,12 @@ def timeseries_preparation(timeseries_prep_param: list,
                                       cluster_criterion, cluster_period,
                                       cluster_season]
         :type timeseries_prep_param: list
-        :param nodes_data: Dictionary containing the energy systems data
+        :param nodes_data: Dictionary containing the energy systems \
+            resulting from the user's model definition
         :type nodes_data: dict
-        :param result_path:
+        :param result_path: path where the modified model definition \
+            file will be stored after timeseries adaption
         :type result_path: str
-        :return:
     """
     from program_files.preprocessing.data_preparation_algorithms \
         import slicing, downsampling, averaging, heuristic_selection, \
@@ -386,7 +337,7 @@ def timeseries_preparation(timeseries_prep_param: list,
 
     if data_prep != 'none':
         # Adapting Standard Load Profile-Sinks
-        slp_sink_adaption(nodes_data)
+        slp_sink_adaption(nodes_data=nodes_data)
 
     # K-MEANS ALGORITHM
     if data_prep == 'k_means':
@@ -438,8 +389,7 @@ def timeseries_preparation(timeseries_prep_param: list,
         heuristic_selection.hierarchical_selection(nodes_data=nodes_data,
                                                    scheme=int(n_timesteps),
                                                    period=cluster_period,
-                                                   seasons=cluster_seasons,
-                                                   scheme_path=scheme_path)
+                                                   seasons=cluster_seasons)
 
     elif data_prep == 'random sampling':
         random_sampling.random_sampling(nodes_data=nodes_data,
@@ -455,4 +405,3 @@ def timeseries_preparation(timeseries_prep_param: list,
         nodes_data['energysystem'].to_excel(writer, sheet_name='energysystem')
         nodes_data['sinks'].to_excel(writer, sheet_name='sinks')
         writer.close()
-        scenario_file = path
