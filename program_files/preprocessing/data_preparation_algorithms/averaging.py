@@ -7,6 +7,48 @@ from program_files.preprocessing.data_preparation \
     timeseries_adaption
 
 
+def mean_adapt_timeseries_weatherdata(
+        clusters: int, cluster_labels: list, period: str, nodes_data: dict):
+    """
+        Using this method, the mean values of the clusters are formed
+        and then cost values as well as time series and weather data
+        are adjusted to the new data set length.
+        
+        :param clusters: number of clustered chosen by the user's input
+        :type clusters: int
+        :param cluster_labels: list holding the cluster labels \
+            represented by integers between 0 and (clusters - 1)
+        :type cluster_labels: list
+        :param period: str holding the user's period decision
+        :type period: str
+        :param nodes_data: dictionary holding the user' model \
+            model definition spreadsheet
+    """
+    weather_data = nodes_data["weather data"]
+    # Apply the Clusters to the entire weather_dataset
+    prep_weather_data = calculate_cluster_means(data_set=weather_data,
+                                                cluster_number=clusters,
+                                                cluster_labels=cluster_labels,
+                                                period=period)
+
+    # Rename columns of the new weather_dataset
+    prep_weather_data['timestamp'] = \
+        weather_data['timestamp'][:len(prep_weather_data)]
+
+    # Replaces the weather data set in nodes_data by the new one
+    nodes_data['weather data'] = prep_weather_data
+
+    # Adapts Other Parameters (despite weather data) of the energy system
+    variable_costs_date_adaption(nodes_data=nodes_data,
+                                 clusters=clusters,
+                                 period=period)
+
+    timeseries_adaption(nodes_data=nodes_data,
+                        clusters=clusters,
+                        cluster_labels=cluster_labels,
+                        period=period)
+
+
 def timeseries_averaging(cluster_period: str, days_per_cluster: int,
                          nodes_data: dict, period: str):
     """
@@ -61,25 +103,7 @@ def timeseries_averaging(cluster_period: str, days_per_cluster: int,
             cluster_labels.append(clusters - 1)
     cluster_labels = numpy.array(cluster_labels)
     
-    # Apply the Clusters to the entire weather_dataset
-    prep_weather_data = calculate_cluster_means(data_set=weather_data,
-                                                cluster_number=clusters,
-                                                cluster_labels=cluster_labels,
-                                                period=period)
-    
-    # Rename columns of the new weather_dataset
-    prep_weather_data['timestamp'] = \
-        weather_data['timestamp'][:len(prep_weather_data)]
-    
-    # Replaces the weather data set in nodes_data by the new one
-    nodes_data['weather data'] = prep_weather_data
-    
-    # Adapts Other Parameters (despite weather data) of the energy system
-    variable_costs_date_adaption(nodes_data=nodes_data,
-                                 clusters=clusters,
-                                 period=period)
-    
-    timeseries_adaption(nodes_data=nodes_data,
-                        clusters=clusters,
-                        cluster_labels=cluster_labels,
-                        period=period)
+    mean_adapt_timeseries_weatherdata(clusters=clusters,
+                                      cluster_labels=cluster_labels,
+                                      period=period,
+                                      nodes_data=nodes_data
