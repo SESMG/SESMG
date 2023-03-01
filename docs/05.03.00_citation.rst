@@ -3,20 +3,20 @@ Citation
 
 Please cite the SESMG in the following way:
 
-"Klemm, C., Becker, G., Budde, J., Tockloth, J., & Vennemann, P. (2023). SESMG (Version 0.4.0) [Computer software]. https://doi.org/10.5281/zenodo.5412026"
+"Klemm, C., Becker, G., Budde, J., Tockloth, J., & Vennemann, P. (2022). SESMG (Version 0.4.0) [Computer software]. https://doi.org/10.5281/zenodo.5412026"
 
 Bibtex:
 
 .. code-block:: latex
 
     @software{
-        Klemm_SESMG_2023, 
+        Klemm_SESMG_2022, 
         author = {Klemm, Christian and Becker, Gregor and Budde, Janik and Tockloth, Jan N. and Vennemann, Peter},
         doi = {10.5281/zenodo.5412026},
-        month = {8},
+        month = {11},
         title = {{SESMG}},
         url = {https://github.com/SESMG/SESMG},
         version = {0.4.0},
-        year = {2023}
+        year = {2022}
     }
 
