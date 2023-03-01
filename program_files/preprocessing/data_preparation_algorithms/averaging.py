@@ -28,30 +28,34 @@ def timeseries_averaging(cluster_period: str, days_per_cluster: int,
         :raise: - **ValueError** - Error raised if the chosen period \
             is not supported
     """
-    if cluster_period == 'hours':
-        clusters = 8760 // int(days_per_cluster)
-    elif cluster_period == 'days':
-        clusters = 365 // int(days_per_cluster)
-    elif cluster_period == 'weeks':
-        clusters = 52 // int(days_per_cluster)
-    else:
-        raise ValueError("period chosen not possible")
-    
+    # create a local copy of the weather data sheet
     weather_data = nodes_data['weather data']
     
-    if period == 'days':
-        periods = int(len(weather_data) / 24)
-    elif period == 'weeks':
-        periods = int(len(weather_data) / (24 * 7))
-    elif period == 'hours':
-        periods = int(len(weather_data))
-    else:
-        raise ValueError("period chosen not possible")
+    # calculate the number of clusters based on the timeseries length of
+    # the chosen period type divided by one cluster length
+    cluster_dict = {"hours": 8760, "days": 365, "weeks": 52}
+    try:
+        clusters = cluster_dict.get(cluster_period) // int(days_per_cluster)
+    except TypeError:
+        raise ValueError("Non supported period")
     
+    # calculate the number of periods by dividing the weather data
+    # length by the hourly time horizon of one hour/day/week
+    period_dict = {"hours": 1, "days": 24, "weeks": 168}
+    try:
+        periods = int(len(weather_data) / period_dict.get(period))
+    except TypeError:
+        raise ValueError("Non supported period")
+
     cluster_labels = []
-    for i in range(clusters):
-        for j in range(periods // clusters):
-            cluster_labels.append(i)
+    # iterate threw the amount of clusters
+    for cluster_number in range(clusters):
+        # append cluster length times cluster number on cluster labels
+        for cluster_length in range(periods // clusters):
+            cluster_labels.append(cluster_number)
+    
+    # If there is a remainder when dividing period by clusters, the last
+    # cluster number is added to the list of cluster labels again.
     if periods % clusters >= 0:
         for k in range(periods % clusters):
             cluster_labels.append(clusters - 1)
@@ -71,6 +75,11 @@ def timeseries_averaging(cluster_period: str, days_per_cluster: int,
     nodes_data['weather data'] = prep_weather_data
     
     # Adapts Other Parameters (despite weather data) of the energy system
-    variable_costs_date_adaption(nodes_data, clusters, period)
+    variable_costs_date_adaption(nodes_data=nodes_data,
+                                 clusters=clusters,
+                                 period=period)
     
-    timeseries_adaption(nodes_data, clusters, cluster_labels, period)
+    timeseries_adaption(nodes_data=nodes_data,
+                        clusters=clusters,
+                        cluster_labels=cluster_labels,
+                        period=period)

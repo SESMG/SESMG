@@ -1,3 +1,6 @@
+"""
+    Christian Klemm - christian.klemm@fh-muenster.de
+"""
 import pandas
 import numpy as np
 import demandlib.bdew as bdew
