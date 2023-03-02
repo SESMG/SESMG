@@ -288,6 +288,8 @@ def demo_start_page_graph():
     """
         Imports graph to be displayed in the start page.
     """
+    
+    st.subheader("Energy System Graph")
     # import demo tool graph
     image = Image.open(
         os.path.join(mainpath_pf,
@@ -359,12 +361,14 @@ def demo_parameters_page():
     #     data=model_prices,
     #     columns=["Energy Form", "Specific Costs", "Specific Emissions"]))
 
+    st.subheader("Energy Demands and Import / Export Costs")
     st.dataframe(data=pd.DataFrame(
         data=model_demands_price,
         columns=["Energy Demand", "Demand", "Usage Pattern",
                  "Energy Form", "Specific Costs", "Specific Emissions"]))
 
     # display dataframe for technology parameter
+    st.subheader("Technology Parameters")
     st.dataframe(data=pd.DataFrame(
         data=model_parameter,
         columns=["Technology", "Specific Costs", "Specific Emissions",
