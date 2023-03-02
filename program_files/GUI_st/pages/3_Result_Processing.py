@@ -216,11 +216,24 @@ def short_result_table(result_path_components):
                 """
 
     # create table
+    # set min hight which is the header height
+    ag_min_height = 40
+    # set right per row
+    ag_row_height = 27.6
+    # calculate logical height based on the df length
+    logical_df_height = ag_min_height + len(df_components) * ag_row_height
+    # set maximum height for st.AgGrid Table
+    ag_max_height = 500
+
     # Inject CSS with Markdown
     st.markdown(hide_dataframe_row_index, unsafe_allow_html=True)
-    # Creating st_aggrid table
-    AgGrid(df_components, height=400, fit_columns_on_grid_load=True,
-           update_mode=GridUpdateMode.SELECTION_CHANGED)
+
+    # Creating st_aggrid table with setting the height to the min of the \
+    # logical height or the max height
+    AgGrid(df_components,
+           fit_columns_on_grid_load=True,
+           height=min(logical_df_height, ag_max_height))
+
 
 
 def short_result_interactive_dia(result_path_results):
@@ -244,7 +257,7 @@ def short_result_interactive_dia(result_path_results):
     filtered_df = result_df[select_headers]
     # plotting
     fig = px.line(filtered_df).update_layout(
-        xaxis_title="date",
+        xaxis_title="timestep (hour)",
         yaxis_title="performance (kW) / storage capacity (kWh)")
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
