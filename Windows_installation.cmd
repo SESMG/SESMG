@@ -11,9 +11,8 @@ py -%PYVERSION% -m venv "%~dp0 "
 cd Scripts/
 start /b activate.bat
 
-cd ..
 mkdir %userprofile%\.streamlit
-move .streamlit/credentials.toml %userprofile%\.streamlit\credentials.toml
+move ..\.streamlit\credentials.toml %userprofile%\.streamlit\credentials.toml
 
 pip install pipwin
 pipwin install gdal
