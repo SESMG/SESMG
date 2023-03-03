@@ -353,7 +353,7 @@ Contributing to the troubleshooting
 
 Were you able to solve a bug that was not listed here yet? Help other users and report it by following these simple steps:
 
-1. Open https://github.com/chrklemm/SESMG/edit/master/docs/troubleshooting/troubleshooting.rst
+1. Open https://github.com/SESMG/SESMG/blob/master/docs/03.00.00_trouble_shooting.rst
 
 2. Click on the pencil icon in the upper right corner to edit the file.
 
