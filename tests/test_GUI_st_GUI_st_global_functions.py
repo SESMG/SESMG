@@ -193,7 +193,7 @@ def test_create_cluster_simplification_index_none(test_GUI_main_dict):
 
     # change the targeted value to a wrong values
     changed_test_dict = test_GUI_main_dict
-    changed_test_dict["input_timeseries_cluster_index_index"] = "None"
+    changed_test_dict["input_timeseries_cluster_index"] = "None"
 
     # run function with reduced dict
     create_cluster_simplification_index(
