@@ -19,9 +19,9 @@ Peer Review Papers
 
 Conference Proceedings
 ---------------------------------
-- Budde, Janik; Klemm, Christian; Tockloth, Jan N.; Becker, Gregor & Vennemann, Peter (2023): "**Automatisierte Modellierung und Optimierung urbaner Energiesysteme**", *6. Regenerative Energietechnik Konferenz in Nordhausen* 09. - 10. Februar 2023, `available here (Page 150-159) <https://www.hs-nordhausen.de/fileadmin/Dateien/Forschung/2021/Tagungsband_RETCon_2023_Web.pdf>`_.
+- Budde, Janik; Klemm, Christian; Tockloth, Jan N.; Becker, Gregor & Vennemann, Peter (2023): "**Automatisierte Modellierung und Optimierung urbaner Energiesysteme**", *6. Regenerative Energietechnik Konferenz in Nordhausen 09. - 10. Februar 2023*, `available here (Page 150-159) <https://www.hs-nordhausen.de/fileadmin/Dateien/Forschung/2021/Tagungsband_RETCon_2023_Web.pdf>`_.
 
-- Klemm, Christian & Vennemann, Peter (2021): "**Modellierung und Optimierung urbaner Energiesysteme im Projekt R2Q**", *4. Regenerative Energietechnik Konferenz in Nordhausen* 18. - 19. Februar 2021, `available here (Page 177-188) <https://www.hs-nordhausen.de/fileadmin/daten/fb_ing/inret/PDFs/tagungsband_retcon21_web_aa3__1_.pdf>`_.
+- Klemm, Christian & Vennemann, Peter (2021): "**Modellierung und Optimierung urbaner Energiesysteme im Projekt R2Q**", *4. Regenerative Energietechnik Konferenz in Nordhausen 18. - 19. Februar 2021*, `available here (Page 177-188) <https://www.hs-nordhausen.de/fileadmin/daten/fb_ing/inret/PDFs/tagungsband_retcon21_web_aa3__1_.pdf>`_.
 
 Theses
 ------
