@@ -59,7 +59,7 @@ Finally, the SESMG comes with several advantages regarding user-friendliness com
 
 * a set of standard (but still customizable) technical and economic modeling parameters including description and references.
 
-An ongoing list of peer review publications, conference proceedings, study works, research projects and more related to the SESMG can be found in the [documentation of the SESMG](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/05.01.00_publications.html "documentation of the SESMG") **LINK NACH PUBLIKATION AKTUALISIEREN**
+The SESMg comes with a [detailed documentation](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/ "detailed documentation") , including step-by-step instructions, explanations of all modeling methods and troubleshooting with known application errors. In addition, the documentation includes an ongoing list of peer review publications, conference proceedings, study works, research projects, and other publications related to the SESMG.
 
 # Acknowledgements
 The authors would like to thank the oemof user and developer community for the development of the Open Energy Modeling Framework and for discussions regarding the development of the SESMG. This research has been conducted within the R2Q project, funded by the German Federal Ministry of Education and Research (BMBF), grant number 033W102A.
