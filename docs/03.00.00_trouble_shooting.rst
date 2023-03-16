@@ -36,6 +36,18 @@ Error I-003: py not found
 
 **Debugging:** Re-install your python-version and make sure to check the "Add pyton to PATH" option at the beginning of the installation
 
+Error I-004: subprocess-exited-with-error
+-------------------------------------------------
+**Error Message:** ::
+
+   Installation buid dependencies ... error
+   error: subprocess-exited-with-error
+   
+   pip subprocess to install build dependencies did not run successfully.
+
+**Possible Error Cause:** maybe the wrong python version was installed. There is a difference between the 32- or 64-bit version.
+
+**Debugging:** check if you have a 32- or 64-bit machine and if you installed the correct python version. De- and reinstall to correct.
 
 Modeling
 =================================================
