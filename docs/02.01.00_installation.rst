@@ -30,25 +30,55 @@ Windows users can finde the versions here: `Python download page for windows <ht
    :width: 50 %
    :align: center
    
+
+
+
+2. Download the Spreadsheet Energy System Model Generator from `GitHub <https://github.com/SESMG/SESMG>`_ as .zip folder and xxtract the .zip folder into any directory on the computer.
+''''''''''''''''''''''''''''''''''''''''''''
+
+
 .. figure:: images/manual/Installation/sesmg_installation_ms_3.png
    :width: 50 %
    :align: center
+
+
+3. Download Graphiz here: `Graphiz download <https://graphviz.org/download/>`_
+''''''''''''''''''''''''''''''''''''''''''''
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_4.png
    :width: 50 %
    :align: center
 
+
+.. note:: 
+
+	Make sure to select "Add Graphiz to system path for all usesr" at the beginning of the installation.
+
 .. figure:: images/manual/Installation/sesmg_installation_ms_5.png
    :width: 50 %
    :align: center
    
+
+4. Download CBC solver here: `CBC solver for windows <https://www.coin-or.org/download/binary/Cbc/>`_. Alternatively you can uses the `direct download link <https://www.coin-or.org/download/binary/Cbc/Cbc-2.10-win64-msvc16-mdd.zip>`_
+''''''''''''''''''''''''''''''''''''''''''''
+
 .. figure:: images/manual/Installation/sesmg_installation_ms_6.png
    :width: 50 %
    :align: center
    
+
+.. note:: 
+
+	Extract the .zip file and copy the cbc solver (..\Cbc-2.10.5-x86_64-w64-mingw32\bin\cbc) into the SESMG directory.
+
 .. figure:: images/manual/Installation/sesmg_installation_ms_7.png
    :width: 50 %
    :align: center
+
+
+4. Execute the windows_installation.cmd and add your python version.
+''''''''''''''''''''''''''''''''''''''''''''
+
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_8.png
    :width: 50 %
@@ -58,55 +88,20 @@ Windows users can finde the versions here: `Python download page for windows <ht
    :width: 50 %
    :align: center
 
+
+4. Have fun with the SESMG.
+''''''''''''''''''''''''''''''''''''''''''''
+
+
 .. figure:: images/manual/Installation/sesmg_installation_ms_10.png
    :width: 50 %
    :align: center
-
-
-1. Install Python (version 3.5 or higher) 
-
-
-.. note:: 
-
-	Make sure to select "Add pyton to PATH" at the beginning of the Python installation.
-
-
-- go to the `Python download page <https://www.python.org/downloads/>`_
-- chose a Python version (e.g., "Python 3.7.6") and click "download"
-- download an installer (e.g., "Windows x86-64 executable installer")
-- execute the installer on your computer
-	
-
-2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/chrklemm/SESMG/tree/master>`_ as .zip folder.
-
-
-3. Extract the .zip folder into any directory on the computer.
-
-4. Download the CBC-solver from `here <http://ampl.com/dl/open/cbc/cbc-win64.zip>`_
-
-
-5. Extract the CBC solver into the folder of the Spreadsheet Energy System Model Generator
-
-6. Install "Graphviz"
-
-- go to `Graphviz download page <https://graphviz.gitlab.io/download/>`_ 
-- select and download the graphviz version for your device (e.g. `graphviz-2.38.msi for Windows <https://graphviz.gitlab.io/_pages/Download/windows/graphviz-2.38.msi>`_)
-
-.. note:: 
-
-	Make sure to select the correct installation location for Graphviz!!
-
-- Execute the installation manager you just downloaded. Choose the following directory for the installation: "C:\\Program Files (x86)\\Graphviz2.38\\" (should be the default settings)
-
-7. Execute the "Windows_installation.cmd" file.
 
 
 .. note:: 
 
 	If you receive a "Your computer has been protected by Windows" error message, click "More Information," and then "Run Anyway".
 
-
-8. The Spreadsheet Energy System Model Generator has been installed.
 
 MacOS
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
