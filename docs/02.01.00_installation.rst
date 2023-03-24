@@ -5,6 +5,57 @@ Installation
 Windows
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. figure:: images/manual/Installation/sesmg_installation_ms_1.png
+   :width: 50 %
+   :alt: Process of the SESMG including the Upscaling Tool [2].
+   :align: center
+
+.. figure:: images/manual/Installation/sesmg_installation_ms_2.png
+   :width: 50 %
+   :alt: Process of the SESMG including the Upscaling Tool [2].
+   :align: center
+   
+.. figure:: images/manual/Installation/sesmg_installation_ms_3.png
+   :width: 50 %
+   :alt: Process of the SESMG including the Upscaling Tool [2].
+   :align: center
+
+.. figure:: images/manual/Installation/sesmg_installation_ms_4.png
+   :width: 50 %
+   :alt: Process of the SESMG including the Upscaling Tool [2].
+   :align: center
+
+.. figure:: images/manual/Installation/sesmg_installation_ms_5.png
+   :width: 50 %
+   :alt: Process of the SESMG including the Upscaling Tool [2].
+   :align: center
+   
+.. figure:: images/manual/Installation/sesmg_installation_ms_6.png
+   :width: 50 %
+   :alt: Process of the SESMG including the Upscaling Tool [2].
+   :align: center
+   
+.. figure:: images/manual/Installation/sesmg_installation_ms_7.png
+   :width: 50 %
+   :alt: Process of the SESMG including the Upscaling Tool [2].
+   :align: center
+
+.. figure:: images/manual/Installation/sesmg_installation_ms_8.png
+   :width: 50 %
+   :alt: Process of the SESMG including the Upscaling Tool [2].
+   :align: center
+   
+.. figure:: images/manual/Installation/sesmg_installation_ms_9.png
+   :width: 50 %
+   :alt: Process of the SESMG including the Upscaling Tool [2].
+   :align: center
+
+.. figure:: images/manual/Installation/sesmg_installation_ms_10.png
+   :width: 50 %
+   :alt: Process of the SESMG including the Upscaling Tool [2].
+   :align: center
+
+
 1. Install Python (version 3.5 or higher) 
 
 
