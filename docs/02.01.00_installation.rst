@@ -5,7 +5,7 @@ Installation
 Windows
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. Install Python (3.7 or higher)
+1. Install Python (3.7, 3.8 or 3.9)
 ''''''''''''''''''''''''''''''''''''''''''''
 Windows users can finde the versions here: `Python download page for windows <https://www.python.org/downloads/windows/>`_
 
@@ -33,7 +33,7 @@ Windows users can finde the versions here: `Python download page for windows <ht
 
 
 
-2. Download the Spreadsheet Energy System Model Generator from `GitHub <https://github.com/SESMG/SESMG>`_ as .zip folder and xxtract the .zip folder into any directory on the computer.
+2. Download the Spreadsheet Energy System Model Generator from `GitHub <https://github.com/SESMG/SESMG>`_ as .zip folder and extract the .zip folder into any directory on the computer.
 ''''''''''''''''''''''''''''''''''''''''''''
 
 
@@ -106,7 +106,7 @@ Windows users can finde the versions here: `Python download page for windows <ht
 MacOS
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. Install Python (version 3.5 or higher) 
+1. Install Python (version 3.7, 3.8 or 3.9) 
 
 
 .. note:: 
@@ -136,7 +136,7 @@ MacOS
 Linux 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. Install Python (version 3.5 or higher)
+1. Install Python (version 3.7, 3.8 or 3.9)
 
 - go to `<https://phoenixnap.com/kb/how-to-install-python-3-ubuntu/>`_
 - use Python3.7 instead of Python3.8
