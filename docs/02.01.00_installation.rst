@@ -69,7 +69,7 @@ Windows users can finde the versions here: `Python download page for windows <ht
 
 .. note:: 
 
-	Extract the .zip file and copy the cbc solver (.. \ Cbc-2.10.5-x86_64-w64-mingw32 \ bin \ cbc) into the SESMG directory.
+	Extract the .zip file and copy the cbc solver (go to the bin-folder and use the cbc-exe) into the SESMG directory.
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_7.png
    :width: 50 %
