@@ -76,7 +76,7 @@ Windows users can finde the versions here: `Python download page for windows <ht
    :align: center
 
 
-4. Execute the windows_installation.cmd and add your python version (for me the installation took 6 minutes).
+5. Execute the windows_installation.cmd and add your python version (for me the installation took 6 minutes).
 ''''''''''''''''''''''''''''''''''''''''''''
 
 
@@ -89,7 +89,7 @@ Windows users can finde the versions here: `Python download page for windows <ht
    :align: center
 
 
-4. Have fun with the SESMG.
+6. Have fun with the SESMG.
 ''''''''''''''''''''''''''''''''''''''''''''
 
 
