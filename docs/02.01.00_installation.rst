@@ -52,7 +52,7 @@ Windows users can finde the versions here: `Python download page for windows <ht
 
 .. note:: 
 
-	Make sure to select "Add Graphiz to system path for all usesr" at the beginning of the installation, otherwise you can use the default settings.
+	Make sure to select "Add Graphiz to system path for all users" at the beginning of the installation, otherwise you can use the default settings.
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_5.png
    :width: 50 %
