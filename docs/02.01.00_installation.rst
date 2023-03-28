@@ -59,7 +59,7 @@ Windows users can finde the versions here: `Python download page for windows <ht
    :align: center
    
 
-4a. Download CBC solver here: `CBC solver for windows <https://www.coin-or.org/download/binary/Cbc/>`_. Alternatively you can uses the `direct download link <https://www.coin-or.org/download/binary/Cbc/Cbc-2.10-win64-msvc16-mdd.zip>`_
+4. Download CBC solver here: `CBC solver for windows <https://www.coin-or.org/download/binary/Cbc/>`_. Alternatively you can uses the `direct download link <https://www.coin-or.org/download/binary/Cbc/Cbc-2.10-win64-msvc16-mdd.zip>`_
 ''''''''''''''''''''''''''''''''''''''''''''
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_6.png
