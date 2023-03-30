@@ -93,7 +93,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
         Function building the sidebar of the main application including all \
             input options and starting the processes.
 
-        :return: - **scenario_input_sheet_path** \
+        :return: - **model_definition_input_sheet_path** \
             (st.runtime.uploaded_file_manager.UploadedFile) - model defintion \
             as a st.UploadedFile
     """
@@ -109,7 +109,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
             on_click=change_state_submitted_optimization,
             help=GUI_helper["main_fs_start_optimization"])
 
-        # Functions to upload the scenario sheet file.
+        # Functions to upload the model definition sheet file.
         # Header
         st.title("Upload Model Definition")
 
