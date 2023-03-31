@@ -360,15 +360,17 @@ Error M-028: invalid literal for int()
 **Debugging:** Make sure, that you have defined the parameters for the timeseries preparation correctly. Try changing the values for 'Period' and 'Season' to other values than 'none'.
 
 
-Error M-029: KeyError: 'sector'
+Error M-029: KeyError: 
 -------------------------------------------------
 **Error Message:** ::
 
+   KeyError: '*variable*'
+   ...
    raise KeyError(key) from err
 
-**Possible Error Cause:** In the model definiton the 'sector'-column in the sheed 'sinks' has to be filled out.
+**Possible Error Cause:** There could be a a missing value in the model definition. Check the column with the name of the '*variable*'. The '*variable*'can have several values / names.
 
-**Debugging:** Make sure, that you have filled out the 'sector'-column in the sheed 'sinks'. Use the actual version of the model definition spreadsheed. 
+**Debugging:** Make sure, that you have filled out the column and that the values are correct. Use the actual version of the model definition spreadsheed. 
 
 
 Contributing to the troubleshooting
