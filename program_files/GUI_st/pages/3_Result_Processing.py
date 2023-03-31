@@ -235,7 +235,6 @@ def short_result_table(result_path_components):
            height=min(logical_df_height, ag_max_height))
 
 
-
 def short_result_interactive_dia(result_path_results):
     """
         Function to create interactive results.
@@ -387,6 +386,15 @@ def short_result_graph(result_path_graph):
         st.image(es_graph)
 
 
+def standard_page():
+    """
+        Loading the start page from a markdown document.
+    """
+    read_markdown_document(
+        document_path="docs/GUI_texts/results.md",
+        folder_path=f'{"docs/images/manual/Results/*"}')
+
+
 # starting page functions
 # initialize global page settings
 st_settings_global()
@@ -397,15 +405,6 @@ if "state_result_path" not in st.session_state:
 
 # start sidebar functions
 result_processing_sidebar()
-
-
-def standard_page():
-    """
-
-    """
-    read_markdown_document(
-        document_path="docs/GUI_texts/results.md",
-        folder_path=f'{"docs/images/manual/Results/*"}')
 
 # show introduction page if no result paths are not set
 if st.session_state["state_result_path"] == "not set":
