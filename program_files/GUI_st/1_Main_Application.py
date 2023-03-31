@@ -510,6 +510,7 @@ def save_run_settings():
     # reset session state
     st.session_state["state_submitted_optimization"] = "not done"
 
+
 def change_state_submitted_optimization():
     """
         Setup session state for the optimization form-submit as an \
@@ -554,11 +555,11 @@ if st.session_state["state_submitted_optimization"] == "done":
         # create spinner info text
         st.info(GUI_helper["main_info_spinner"], icon="ℹ️")
 
-        # function to create the result pasths and store session state
-        create_result_paths()
-
         # Starting the model run
         if len(GUI_main_dict["input_pareto_points"]) == 0:
+
+            # function to create the result pasths and store session state
+            create_result_paths()
 
             with st.spinner("Modeling in Progress..."):
 
