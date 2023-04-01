@@ -120,10 +120,6 @@ MacOS
 - chose a Python version (e.g., "Python 3.7.6") and click "download"
 - download an installer (e.g., "Python 3.7.6 macOS 64-bit installer")
 - execute the installer on your computer
-	
-.. note::
-
-	During this step, the cbc solver was automatically isntalled. The gurobi solver may be used as **alternative** to the cbc-solver. Be aware, that the gurobi-solver is not open-source and a license is required. However, the gurobi may be faster for certain types of optimization problems, especially for those containing binary decisions. The installation procedure of the gurobi solver is described in detail here: https://www.gurobi.com/documentation/quickstart.html
 
 
 2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/chrklemm/SESMG/tree/master>`_ as .zip folder.
@@ -136,6 +132,10 @@ MacOS
 	If your device does not have homebrew installed, install it by typing ``/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`` in your terminal.
 	
 4. Excecute the "MacOS_installation.command" file.
+
+.. note::
+
+	During this step, the cbc solver was automatically installed. The gurobi solver may be used as **alternative** to the cbc-solver. Be aware, that the gurobi-solver is not open-source and a license is required. However, the gurobi may be faster for certain types of optimization problems, especially for those containing binary decisions. The installation procedure of the gurobi solver is described in detail here: https://www.gurobi.com/documentation/quickstart.html
 
 5. The Spreadsheet Energy System Model Generator has been installed.
 
