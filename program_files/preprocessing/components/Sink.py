@@ -99,7 +99,7 @@ class Sinks:
             
             .. math::
             
-                P = \frac{\Delta U \cdot \Delta T \cdot A}{1000\frac{W}{kW}}
+                P = (\Delta U \cdot \Delta T \cdot A) / (1000~(W / kW))
     
             :params: - **ins** (pandas.Series) - considered insulation \
                 row
