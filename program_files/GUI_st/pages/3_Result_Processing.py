@@ -386,15 +386,6 @@ def short_result_graph(result_path_graph):
         st.image(es_graph)
 
 
-def standard_page():
-    """
-        Loading the start page from a markdown document.
-    """
-    read_markdown_document(
-        document_path="docs/GUI_texts/results.md",
-        folder_path=f'{"docs/images/manual/Results/*"}')
-
-
 # starting page functions
 # initialize global page settings
 st_settings_global()
@@ -408,7 +399,9 @@ result_processing_sidebar()
 
 # show introduction page if no result paths are not set
 if st.session_state["state_result_path"] == "not set":
-    standard_page()
+    read_markdown_document(
+        document_path="docs/GUI_texts/results.md",
+        folder_path=f'{"docs/images/manual/Results/*"}')
 
 elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         in glob.glob(st.session_state["state_result_path"] + "/*"):
