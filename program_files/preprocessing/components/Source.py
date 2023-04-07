@@ -66,7 +66,7 @@ class Sources:
         :type nodes_data: dict
         :param busd: dictionary containing the buses of the energy system
         :type busd: dict
-        :param nodes: list of components created before(can be empty)
+        :param nodes: list of components created before (can be empty)
         :type nodes: list
     """
 
@@ -75,7 +75,7 @@ class Sources:
         """
             Creates an oemof source with fixed or unfixed timeseries
     
-            :param source: dictionary containing all information for \
+            :param source: Series containing all information for \
                 the creation of an oemof source. At least the \
                 following key-value-pairs have to be included:
     
@@ -92,7 +92,7 @@ class Sources:
                     - variable costs
                     - variable constraint costs
 
-            :type source: dict
+            :type source: pandas.Series
             :param timeseries_args: dictionary rather containing the
                                     'fix-attribute' or the 'min-' and
                                     'max-attribute' of a source
@@ -144,7 +144,7 @@ class Sources:
             (no maximum or minimum) with the use of the create_source
             method.
     
-            :param source: dictionary containing all information for the \
+            :param source: Series containing all information for the \
                 creation of an oemof source. At least the following \
                 key-value-pairs have to be included:
                     - 'label'
@@ -168,7 +168,7 @@ class Sources:
             source, which is limited by a lower and an upper time
             series.
     
-            :param source: dictionary containing all information for \
+            :param source: Series containing all information for \
                 the creation of an oemof source. At least the \
                 following key-value-pairs have to be included:
     
@@ -219,7 +219,7 @@ class Sources:
             :param feedin: time series holding the sources relative \
                 output capacity
             :type feedin: pandas.Series
-            :param source: dictionary containing all information for \
+            :param source: Series containing all information for \
                 the creation of an oemof source. At least the \
                 following key-value-pairs have to be included:
                     
@@ -263,7 +263,7 @@ class Sources:
             and creates a source object with the yield as time series
             and the use of the create_source method.
     
-            :param source: dictionary containing all information for \
+            :param source: Series containing all information for \
                 the creation of an oemof source. At least the \
                 following key-value-pairs have to be included:
     
@@ -323,7 +323,7 @@ class Sources:
             creates a source object with the yield as time series and
             the use of the create_source method.
     
-            :param source: dictionary containing all information for \
+            :param source: Series containing all information for \
                 the creation of an oemof source. At least the \
                 following key-value-pairs have to be included:
     
@@ -369,7 +369,7 @@ class Sources:
             The following key-value-pairs have to be included in the
             keyword arguments:
     
-            :type source: dict
+            :type source: pandas.Series
             :param source: has to contain the following keyword \
                 arguments:
     
