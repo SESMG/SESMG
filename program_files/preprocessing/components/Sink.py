@@ -24,17 +24,17 @@ class Sinks:
         :param nodes_data: dictionary containing parameters of sinks \
             to be created. The following data have to be provided:
                 
-                - 'label'
-                - 'sector'
-                - 'active'
-                - 'fixed'
-                - 'input'
-                - 'load profile'
-                - 'nominal value'
-                - 'annual demand'
-                - 'occupants' (only needed for the Richardson sinks)
-                - 'building class'
-                - 'wind class'
+                - label
+                - sector
+                - active
+                - fixed
+                - input
+                - load profile
+                - nominal value
+                - annual demand
+                - occupants (only needed for the Richardson sinks)
+                - building class
+                - wind class
                 
         :type nodes_data: dict
         :param busd: dictionary containing the buses of the energy \
@@ -83,8 +83,8 @@ class Sinks:
             Temperature difference is calculated according to:
             
             .. math::
-            &
-            \Delta T = T_{indoor} - T_{outdoor}
+            
+                \Delta T = T_{indoor} - T_{outdoor}
 
             is only calculated for the time steps in which the \
             temperature falls below the heating limit temperature.
@@ -92,17 +92,17 @@ class Sinks:
             U-value difference is calculated according to:
             
             .. math::
-            &
-            \Delta U = U_{old} - U_{new}
+            
+                \Delta U = U_{old} - U_{new}
             
             Calculation of the capacity that can be saved according to:
             
             .. math::
-            &
-            P = \frac{\Delta U \cdot \Delta T \cdot A}{1000\frac{W}{kW}}
+            
+                P = \frac{\Delta U \cdot \Delta T \cdot A}{1000\frac{W}{kW}}
     
-            :param ins: considered insulation row
-            :type ins: pd.Series
+            :params: - **ins** (pandas.Series) - considered insulation \
+                row
             
             :returns: - **ep_costs** (float) - periodical costs of the \
                             considered insulation
@@ -314,7 +314,7 @@ class Sinks:
             :type sink: pandas.Series
         """
         
-        # Importing timesystem parameters from the scenario
+        # Importing timesystem parameters from the model definition
         temp_resolution = self.energysystem["temporal resolution"]
 
         # Converting start date into datetime format
