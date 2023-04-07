@@ -84,7 +84,7 @@ class Sinks:
             
             .. math::
             
-                \Delta T = T_{indoor} - T_{outdoor}
+                \Delta T = T_{\mathrm{indoor}} - T_{\mathrm{outdoor}}
 
             is only calculated for the time steps in which the \
             temperature falls below the heating limit temperature.
@@ -93,13 +93,13 @@ class Sinks:
             
             .. math::
             
-                \Delta U = U_{old} - U_{new}
+                \Delta U = U_{\mathrm{old}} - U_{\mathrm{new}}
             
             Calculation of the capacity that can be saved according to:
             
             .. math::
             
-                P = (\Delta U \cdot \Delta T \cdot A) / (1000~(W / kW))
+                P = (\Delta U \cdot \Delta T \cdot A) / (1000\mathrm{(W / kW)})
     
             :params: - **ins** (pandas.Series) - considered insulation \
                 row
@@ -288,7 +288,7 @@ class Sinks:
         self.create_sink(sink, args=args)
 
         # returns logging info
-        logging.info("\t Sink created: " + de["label"])
+        logging.info("\t Sink created: " + sink["label"])
 
     def slp_sink(self, sink: pandas.Series):
         """
