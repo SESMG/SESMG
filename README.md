@@ -29,6 +29,9 @@ Furthermore, the **SESMG** comes with important modeling methods, enabling holis
 ## Quick Start 
 [![Generic badge](https://img.shields.io/badge/content-how-green.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
+Please note: A detailed description of the installation process for Windows, MacOS and Linux can be found in the [documentation (chapter installation)](
+https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html). The Quick Start installation guide is only recommended for advanced users or users with programming experience!
+
 ### Step 1) Download Python 3.7 or newer (Python 3.10 was not tested yet)
 
 - go to the Python download page
