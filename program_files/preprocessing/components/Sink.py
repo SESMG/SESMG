@@ -81,6 +81,7 @@ class Sinks:
             Calculation of insulation measures for the considered sink
             
             Temperature difference is calculated according to:
+            
             .. math::
             &
             \Delta T = T_{indoor} - T_{outdoor}
@@ -89,11 +90,13 @@ class Sinks:
             temperature falls below the heating limit temperature.
     
             U-value difference is calculated according to:
+            
             .. math::
             &
             \Delta U = U_{old} - U_{new}
             
             Calculation of the capacity that can be saved according to:
+            
             .. math::
             &
             P = \frac{\Delta U \cdot \Delta T \cdot A}{1000\frac{W}{kW}}
@@ -146,8 +149,8 @@ class Sinks:
                 creation of an oemof sink. At least the following \
                 key-value-pairs have to be included:
                 
-                     - 'label'
-                     - 'input'
+                     - label
+                     - input
     
             :type sink: pandas.Series
             :param nominal_value: Float containing the nominal demand \
@@ -232,8 +235,8 @@ class Sinks:
                 creation of an oemof sink. For this function the \
                 following key-value-pairs have to be included:
                     
-                    - 'label'
-                    - 'nominal value'
+                    - label
+                    - nominal value
 
             :type sink: pandas.Series
         """
@@ -259,9 +262,9 @@ class Sinks:
                 creation of an oemof sink. At least the following \
                 key-value-pairs have to be included:
     
-                    - 'label'
-                    - 'nominal value'
-                    - 'fixed'
+                    - label
+                    - nominal value
+                    - fixed
 
             :type sink: pandas.Series
         """
@@ -302,11 +305,11 @@ class Sinks:
                 creation of an oemof sink. At least the following \
                 key-value-pairs have to be included:
     
-                    - 'label'
-                    - 'load profile'
-                    - 'annual demand'
-                    - 'building class'
-                    - 'wind class'
+                    - label
+                    - load profile
+                    - annual demand
+                    - building class
+                    - wind class
 
             :type sink: pandas.Series
         """
@@ -384,10 +387,10 @@ class Sinks:
                 creation of an oemof sink. At least the following \
                 key-value-pairs have to be included:
     
-                    - 'label'
-                    - 'fixed'
-                    - 'annual demand'
-                    - 'occupants'
+                    - label
+                    - fixed
+                    - annual demand
+                    - occupants
 
             :type sink: pandas.Series
             

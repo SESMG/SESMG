@@ -49,7 +49,7 @@ class Links:
             :param link: nodes data row of the link in creation
             :type link: pandas.Series
             
-            :returns: *-* (oemof.solph.custom.Flow) - oemof Flow \
+            :returns: **-** (oemof.solph.custom.Flow) - oemof Flow \
                 object with the output's parameter given in the link \
                 parameter
         """
