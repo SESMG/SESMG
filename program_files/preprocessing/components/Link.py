@@ -1,3 +1,6 @@
+"""
+    Christian Klemm - christian.klemm@fh-muenster.de
+"""
 from oemof.solph import Investment, Flow
 from oemof.solph.custom import Link
 import logging
@@ -6,12 +9,11 @@ import pandas
 
 class Links:
     """
-        Creates links objects as defined in 'nodes_data' and adds them
+        Creates link objects as defined in 'nodes_data' and adds them
         to the list of components 'nodes'.
     
-        :param nodes_data: dictionary containing data from excel
-                           scenario file. The following data have to be
-                           provided:
+        :param nodes_data: dictionary containing data from excel model \
+            definition file. The following data have to be provided:
     
                                 - active,
                                 - label,
@@ -21,35 +23,35 @@ class Links:
                                 - bus2,
                                 - periodical costs,
                                 - periodical constraint costs,
-                                - variable costs,
-                                - variable constraint costs,
+                                - variable output costs,
+                                - variable output constraint costs,
                                 - non-convex investment,
                                 - fix investment costs,
                                 - fix investment constraint costs,
                                 - min. investment capacity,
                                 - max. investment capacity,
                                 - existing capacity
+
         :type nodes_data: dict
-        :param nodes: list of components created before(can be empty)
+        :param nodes: list of components created before (can be empty)
         :type nodes: list
         :param busd: dictionary containing the buses of the energy \
             system
         :type busd: dict
-        
-        Christian Klemm - christian.klemm@fh-muenster.de
     """
 
-    # intern variables
-    busd = None
-
     @staticmethod
-    def get_flow(link: pandas.Series):
+    def get_flow(link: pandas.Series) -> Flow:
         """
             The parameterization of the output flow of the link
             component has been outsourced to this static method.
             
             :param link: nodes data row of the link in creation
             :type link: pandas.Series
+            
+            :returns: *-* (oemof.solph.custom.Flow) - oemof Flow \
+                object with the output's parameter given in the link \
+                parameter
         """
         # if the link is directed the total costs result from one flow
         # which is the reason for the assignment of the total costs to
@@ -90,8 +92,6 @@ class Links:
     def __init__(self, nodes_data: dict, nodes: list, busd: dict):
         """
             Inits the Links class.
-    
-            Christian Klemm - christian.klemm@fh-muenster.de
         """
         # renames variables
         self.busd = busd
