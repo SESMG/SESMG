@@ -256,7 +256,6 @@ Preprocessing/components/Bus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.components.Bus
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/components/district_heating
@@ -284,14 +283,12 @@ Preprocessing/components/Link
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.components.Link
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/components/Sink
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.components.Sink
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/components/Source
