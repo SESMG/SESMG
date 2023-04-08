@@ -117,14 +117,18 @@ Go to the `Python download page <https://www.python.org/downloads/>`_ and downlo
    :width: 50 %
    :align: center
    
+Execute the installer on your computer.
+
 .. note:: 
 
 	Make sure to select "Add pyton to PATH" at the beginning of the Python installation.
-
-Execute the installer on your computer.
-
+	
 
 2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/SESMG/SESMG/tree/master>`_ as .zip folder.
+
+.. figure:: images/manual/Installation/sesmg_installation_ms_3.png
+   :width: 50 %
+   :align: center
 
 .. note:: 
 
@@ -134,10 +138,6 @@ Execute the installer on your computer.
 
 	Homebrew requires Xcode command line tools for macOS. Check if you already have it installed by using ``xcode-select --help``. If no error occures it is already installed. Otherwise run ``xcode-select --install`` in your terminal.
 
-.. figure:: images/manual/Installation/sesmg_installation_ms_3.png
-   :width: 50 %
-   :align: center
-   
 3. Extract the .zip folder into any directory on the computer.
 	
 4. Excecute the "MacOS_installation.command" file and enter your python version to the terminal.
