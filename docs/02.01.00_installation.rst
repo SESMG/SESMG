@@ -106,7 +106,7 @@ MacOS
 
 1. Install Python (version 3.7, 3.8 or 3.9) 
 
-Go to the `Python download page <https://www.python.org/downloads/>`_ and download an installer.
+Go to the `Python download page for macOS <https://www.python.org/downloads/macos/>`_ and download an installer.
 
 .. note:: 
 
