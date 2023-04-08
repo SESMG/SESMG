@@ -10,15 +10,12 @@ Windows users can finde the versions here: `Python download page for windows <ht
 
 .. note:: 
 
-	Make sure to use the installer referring to your windows version (e.g. "Windows x86-64 executable installer" for windows 64-bit version.)
-
+	Make sure to use the installer referring to your windows version (e.g. "Windows x86-64 executable installer" for windows 64-bit version). You can check the build in bit version following `these steps <https://support.microsoft.com/en-us/windows/32-bit-and-64-bit-windows-frequently-asked-questions-c6ca9541-8dce-4d48-0415-94a3faa2e13d>`_.
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_1.png
    :width: 50 %
    :align: center
    
-
-
 
 .. note:: 
 
@@ -109,7 +106,7 @@ Go to the `Python download page for macOS <https://www.python.org/downloads/maco
 
 .. note:: 
 
-	Make sure to use the installer referring to your chip (Intel-only or universal2) version (e.g. "macOS 64-bit universal2 installer" for mac with Apple M1 / M2).
+	Make sure to use the installer referring to your chip (Intel-only or universal2) version (e.g. "macOS 64-bit universal2 installer" for mac with Apple M1 / M2). You can check the kind of buil in chip by opening the "About this Mac" option behind the apple icon in the above left corner.
 
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_1.png
