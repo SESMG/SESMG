@@ -110,26 +110,42 @@ MacOS
 
 1. Install Python (version 3.7, 3.8 or 3.9) 
 
+- go to the `Python download page <https://www.python.org/downloads/>`_
+- download an installer (e.g., "Python 3.7.6 macOS 64-bit installer")
 
+.. note:: 
+
+	Make sure to use the installer referring to your chip (Intel-only or universal2) version (e.g. "macOS 64-bit universal2 installer" for mac with Apple M1 / M2.)
+
+
+.. figure:: images/manual/Installation/sesmg_installation_ms_1.png
+   :width: 50 %
+   :align: center
+   
 .. note:: 
 
 	Make sure to select "Add pyton to PATH" at the beginning of the Python installation.
 
-
-- go to the `Python download page <https://www.python.org/downloads/>`_
-- chose a Python version (e.g., "Python 3.7.6") and click "download"
-- download an installer (e.g., "Python 3.7.6 macOS 64-bit installer")
 - execute the installer on your computer
 
 
-2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/chrklemm/SESMG/tree/master>`_ as .zip folder.
-
-
-3. Extract the .zip folder into any directory on the computer.
+2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/SESMG/SESMG/tree/master>`_ as .zip folder.
 
 .. note:: 
 
-	If your device does not have homebrew installed, install it by typing ``/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`` in your terminal.
+	If your device does not have homebrew installed, install it by typing ``/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`` in your terminal. For macOS
+	
+.. note:: 
+
+	Homebrew requires Xcode command line tools for macOS. Check if you already have it installed by using ``xcode-select --help``. If no error occures it is already installed. Otherwise run ``xcode-select --install`` in your terminal.
+
+.. figure:: images/manual/Installation/sesmg_installation_ms_3.png
+   :width: 50 %
+   :align: center
+   
+3. Extract the .zip folder into any directory on the computer.
+
+
 	
 4. Excecute the "MacOS_installation.command" file.
 
