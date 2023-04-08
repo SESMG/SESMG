@@ -345,10 +345,13 @@ Error M-026: Key Error (sequences) III
 
    ... in get_sequence return_list.append([component["sequences"][(i, "flow")]])
 
-**Possible Error Cause:** No power supply is provided. The error can occur if only one air source heat pump is considered for the heat supply and the outdoor air temperature is higher than the flow temperature of the heating system.
+**Possible Error Cause I:** No power supply is provided. The error can occur if only one air source heat pump is considered for the heat supply and the outdoor air temperature is higher than the flow temperature of the heating system.
 
-**Debugging:** Using a higher flow temperature or a lower outdoor air temperature, consider an alternative technology
+**Debugging I:** Using a higher flow temperature or a lower outdoor air temperature, consider an alternative technology
 
+**Possible Error Cause II:** There are storages with a missing initial capacity. 
+
+**Debugging II:** Make sure the initial capacity is equal or higher than the minimal capacity.
 
 Error M-027: Key Error (Index) II
 -------------------------------------------------
