@@ -365,7 +365,7 @@ Within this sheet, the storages of the energy system are defined. The following 
 - **output/capacity ratio** (invest): Indicates the performance with which the storage can be discharged (see also  `here <https://oemof-solph.readthedocs.io/en/latest/usage.html#using-an-investment-object-with-the-genericstorage-component>`_).
 - **efficiency inflow**: Specifies the charging efficiency.
 - **efficiency outflow**: Specifies the discharging efficiency.
-- **initial capacity**: Specifies how far the storage is loaded at time 0 of the simulation. Value must be between 0 and 1.
+- **initial capacity**: Specifies how far the storage is loaded at time 0 of the simulation. Value must be between 0 and 1. The initial capacity value must be equal or higher than the 'capacity min' value.
 - **capacity min**: Specifies the minimum amount of storage that must be loaded at any given time. Value must be between 0 and 1.
 - **capacity max**: Specifies the maximum amount of storage that can be loaded at any given time. Value must be between 0 and 1.
 
