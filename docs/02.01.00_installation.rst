@@ -56,8 +56,7 @@ Windows users can finde the versions here: `Python download page for windows <ht
    :align: center
    
 
-4. Download CBC solver here: `CBC solver for windows <https://www.coin-or.org/download/binary/Cbc/>`_. Alternatively you can uses the `direct download link <https://www.coin-or.org/download/binary/Cbc/Cbc-2.10-win64-msvc16-mdd.zip>`_
-''''''''''''''''''''''''''''''''''''''''''''
+4. Download cbc solver here: `cbc solver for windows <https://www.coin-or.org/download/binary/Cbc/>`_. Alternatively you can uses the `direct download link <https://www.coin-or.org/download/binary/Cbc/Cbc-2.10-win64-msvc16-mdd.zip>`_
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_6.png
    :width: 50 %
@@ -66,7 +65,7 @@ Windows users can finde the versions here: `Python download page for windows <ht
 
 .. note:: 
 
-	Extract the .zip file and copy the cbc solver (go to the bin-folder and use the cbc-exe) into the SESMG directory.
+	Extract the .zip file and copy the cbc solver (go to the bin-folder and use the cbc.exe) into the SESMG directory.
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_7.png
    :width: 50 %
@@ -164,7 +163,7 @@ Enter your python version.
    
 .. note::
 
-	During this step, the cbc solver was automatically installed. The gurobi solver may be used as **alternative** to the cbc-solver. Be aware, that the gurobi-solver is not open-source and a license is required. However, the gurobi may be faster for certain types of optimization problems, especially for those containing binary decisions. The installation procedure of the gurobi solver is described in detail here: https://www.gurobi.com/documentation/quickstart.html
+	During this step, the cbc solver was automatically installed. The gurobi solver may be used as **alternative** to the cbc solver. Be aware, that the gurobi-solver is not open-source and a license is required. However, the gurobi may be faster for certain types of optimization problems, especially for those containing binary decisions. The installation procedure of the gurobi solver is described in detail here: https://www.gurobi.com/documentation/quickstart.html
 
 5. The Spreadsheet Energy System Model Generator has been installed. Have fun with the SESMG.
 
@@ -213,11 +212,11 @@ Linux
 
 ``$ sudo apt-get install graphviz``
 	
-7. Install the CBC-Solver 
+7. Install the CBC Solver 
 
 ``$ sudo apt-get install coinor-cbc``
 
-The gurobi solver may be used as **alternative** to the cbc-solver. Be aware, that the gurobi-solver is not open-source and a license is required. However, the gurobi may be faster for certain types of optimization problems, especially for those containing binary decisions. The installation procedure of the gurobi solver is described in detail here: https://www.gurobi.com/documentation/quickstart.html
+The gurobi solver may be used as **alternative** to the cbc solver. Be aware, that the gurobi-solver is not open-source and a license is required. However, the gurobi may be faster for certain types of optimization problems, especially for those containing binary decisions. The installation procedure of the gurobi solver is described in detail here: https://www.gurobi.com/documentation/quickstart.html
 	
 8. Execute the "Linux_installtion.sh" file. By first going to the path of the SESMG directory and then running the following:
 
