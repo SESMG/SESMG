@@ -145,7 +145,7 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
     """
         Function to run SESMG main based on the GUI input values dict.
 
-        :param GUI_main_dict: TODO ...
+        :param GUI_main_dict: global defined dict of GUI input variables
         :type GUI_main_dict: dict
         :param model_definition: file path of the model definition to \
             be optimized

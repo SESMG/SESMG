@@ -345,7 +345,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                 input_value_index="input_premodeling_timeseries_cluster_index_index")
 
             # Elements to set the pareto points.
-            with st.expander("Pareto Point Options"):
+            with st.expander("Multi-Objective Optimization"):
                 # Multiselect element
                 input_pareto_points = st.multiselect(
                     label="Pareto Points",
@@ -359,24 +359,26 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
 
                 GUI_main_dict["input_pareto_points"] = input_pareto_points
 
-            # Function to upload the distrct heating precalulation inside an \
-            # expander.
-            with st.expander("Advanced District Heating Precalculation"):
-                # TODO: check functionality of underlaying functions and
-                #  implement \
-                # in streamlit GUI
-                # Checkboxes modeling while using district heating clustering.
-                GUI_main_dict["input_cluster_dh"] = \
-                    st.checkbox(
-                        label="Clustering District Heating Network",
-                        value=settings_cache_dict_reload[
-                            "input_cluster_dh"],
-                        help=GUI_helper["main_cb_dh_clustering_active"])
-                # TODO: change to file uploader
-                # Fileuploader not able to print file path
-                # Upload DH Precalc File
-                district_heating_precalc_path = st.text_input(
-                    "Type in path to your District Heating File input file.")
+# TODO: function needs to be added again!
+            # # Function to upload the distrct heating precalulation inside an \
+            # # expander.
+            # with st.expander("Advanced District Heating Precalculation"):
+            #     # TODO: check functionality of underlaying functions and
+            #     #  implement \
+            #     # in streamlit GUI
+            #     # Checkboxes modeling while using district heating clustering.
+            #     GUI_main_dict["input_cluster_dh"] = \
+            #         st.checkbox(
+            #             label="Clustering District Heating Network",
+            #             value=settings_cache_dict_reload[
+            #                 "input_cluster_dh"],
+            #             help=GUI_helper["main_cb_dh_clustering_active"])
+            #     # TODO: change to file uploader
+            #     # Fileuploader not able to print file path
+            #     # Upload DH Precalc File
+            #     district_heating_precalc_path = st.text_input(
+            #         "Type in path to your District Heating File input file.")
+            GUI_main_dict["input_cluster_dh"] = False
 
             # create criterion switch
             GUI_main_dict["input_criterion_switch"] = \
