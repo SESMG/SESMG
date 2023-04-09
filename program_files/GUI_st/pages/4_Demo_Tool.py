@@ -319,7 +319,7 @@ def demo_parameters_page():
 
     model_demands_price = [
         ["Electricity", "14 000 000 kWh/a", "h0 Load Profile",
-         "Gas Import", "6.29 ct/kWh", "?"],
+         "Gas Import", "6.29 ct/kWh",],
         ["Heat", "52 203 000 kWh/a", "EFH Load Profile",
          "Electricity Import", "31.22 ct/kWh", "366 g/kWh"],
         ["", "", "",
@@ -336,16 +336,14 @@ def demo_parameters_page():
         ["Gas Heating", "1 005 000 €/MW",
          "232g/kWh", "18 a", "endless", "0.92 %"],
         ["Combindes Heat and Power Plant", "760 000 €/MW(el.)",
-         "308 g/kWh(el), 265 g/kWh(th.)", "20 a", "endless",
-         "?? %(el.), ?? %(th.)"],
+         "308 g/kWh(el), 265 g/kWh(th.)", "20 a", "endless",],
         ["Ground-coupled Heatpump", "1 444 000 €/MW",
          "8 g/kWh", "20 a", "max. 5 MW", ""],
         # ["Thermal Storage", "35 000 €/MWh",
         #  "743 g/(kWh * a)", "20 a", "3 % loss /d"],
         ["Thermal Storage (decentral)", "49 000 €/MWh",
          "604g/(kWh * a) (invest)", "20 a", "max. 10 MWh", "3 % loss /d"],
-        ["District Heating", "86 000 000 €",
-         "????", "40 a", "binary", "15 % loss"],
+        ["District Heating", "86 000 000 €", , "40 a", "binary", "15 % loss"],
         # ["HEATPUMP", "22 ct/kWh", "366 g/kWh"],
         # ["Air Source Heat Pump", "1 318 000 €/MW", "12g/kWh", "18 a"],
     ]
