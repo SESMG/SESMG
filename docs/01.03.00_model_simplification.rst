@@ -64,7 +64,7 @@ Available selection schemes:
 Acronyms: hp=highest peak, lv=lowest valley, ha=highest average, la=lowest average
 
 
-Further schemes can be added here: https://github.com/SESMG/SESMG/blob/master/program_files/technical_data/hierarchical_selection_schemes.xlsx
+Further schemes can be added as described here: https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.05_technical_data.rst#heuristic-selection-patterns
 
 
 random sampling
