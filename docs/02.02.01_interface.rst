@@ -98,7 +98,7 @@ The following algorithms are applicable and must be specified with the following
 	slicing B,every n-th period is **deleted and removed** from the modeling, index = n (every n-th period is removed),--,length of periods to be sliced (hours; days; weeks),--
 	downsampling A,Adaption of the temporal *resolution*. Every n-th period (selected by index column) is **used** for the modeling. For example; the resolution can be changed from a 1-hourly to a 3-hourly (index = 3) temporal resolution [1].,index = n (setting the new resolution),--,--,--
 	downsampling B, Adaption of the temporal *resolution*. Every n-th period (selected by index column) is **deleted** for the modeling. ,index = n (determination of the time steps to be deleted),--,--,--
-	heuristic selection,representative time periods of a time series are selected from certain selection criteria, applied selection scheme (available schemes are listed within the sesmg folder SESMG\program_files\technical_data\hierarchical_selection_schemes.xlsx,--,length of periods to be selected (days or weeks),--
+	heuristic selection,representative time periods of a time series are selected from certain selection criteria, applied selection scheme (available schemes are listed `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.03.00_model_simplification.html#heuristic-selection>`_ ,--,length of periods to be selected (days or weeks),--
 	random sampling,a given number of random periods are selected and used as representatives,number of periods to be selected.,--,length of periods to be selected randomly (days or weeks,--
 
 
