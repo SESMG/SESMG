@@ -9,7 +9,7 @@
     "main_dd_timeser_cluster_criterion": "Criterion according to which cluster algorithms are applied. Detailed information is given in the documentation.",
     "main_dd_timeser_period": "Time periods which are clustered together (weeks, days, hours). Detailed information is given in the documentation",
     "main_dd_timeser_season": "Time periods within which clustering takes place (year, seasons, months). Detailed information is given in the documentation.",
-    "main_cb_prem_active": "Activates premodelling for your model run.",
+    "main_cb_prem_active": "Activates pre-modeling for your model run.",
     "main_cb_thightening_active": "Must be checked if “tightening of technical boundaries” should be carried out.",
     "main_sl_tightening_factor": "?",
     "main_dd_prem_timeser_algorithm": "Indication of the simplification algorithm to be applied. Detailed information is given in the documentation.",
