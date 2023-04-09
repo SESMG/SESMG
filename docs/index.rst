@@ -50,6 +50,7 @@ Manual
 * :doc:`02.02.02_model_definition`
 * :doc:`02.02.03_urban_district_upscaling`
 * :doc:`02.02.04_results`
+* :doc:`02.02.05_technical_data`
 * :doc:`02.03.00_demo`
 	
 	
