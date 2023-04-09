@@ -53,10 +53,14 @@ class Storages:
         :type nodes: list
     """
 
-    def create_sink(self, storage: pandas.Series, loss_rate: pandas.Series,
-                    storage_levels: list, fixed_losses: list):
+    def create_storage(self, storage: pandas.Series, loss_rate: pandas.Series,
+                       storage_levels: list, fixed_losses: list):
         """
-           
+            Within this method the previously prepared storage
+            parameters are used to create an oemof storage object with
+            the given parameters and add it to the class intern list
+            nodes which is returned to the main algorithm at the end.
+            
             :param storage: Series containing all information for \
                 the creation of an oemof storage. At least the \
                 following key-value-pairs have to be included:
@@ -156,7 +160,7 @@ class Storages:
                 creation of an oemof storage.
             :type storage: dict
         """
-        self.create_sink(
+        self.create_storage(
             storage,
             storage["capacity loss"],
             storage_levels=[storage["capacity min"], storage["capacity max"]],
@@ -197,7 +201,7 @@ class Storages:
                 storage["temperature low"],
                 data["temperature"])
         
-        self.create_sink(
+        self.create_storage(
             storage=storage,
             loss_rate=loss_rate,
             storage_levels=[storage["capacity min"], storage["capacity max"]],
