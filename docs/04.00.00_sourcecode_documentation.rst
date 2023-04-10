@@ -172,7 +172,6 @@ Preprocessing/create_energy_system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.create_energy_system
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/data_preparation
@@ -228,7 +227,6 @@ Preprocessing/import_weather_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.import_weather_data
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/pareto_optimization

@@ -1,4 +1,3 @@
-import pandas as pd
 import pandas
 import logging
 
@@ -150,7 +149,7 @@ def technical_pre_selection(components_xlsx: pandas.DataFrame,
 
 def tightening_investment_boundaries(components_xlsx: pandas.DataFrame,
                                      result_components: pandas.DataFrame,
-                                     investment_boundary_factor: int):
+                                     investment_boundary_factor: int) -> None:
     """
         tightens investment boundaries
         
@@ -192,7 +191,7 @@ def tightening_investment_boundaries(components_xlsx: pandas.DataFrame,
 
 def update_component_scenario_sheet(updated_data: pandas.DataFrame,
                                     model_definition_sheet_name: str,
-                                    updated_scenario_path: str):
+                                    updated_scenario_path: str) -> None:
     """
         updates the original data within the updated model definition
         sheet
@@ -226,13 +225,13 @@ def update_component_scenario_sheet(updated_data: pandas.DataFrame,
 
 
 def deactivate_respective_competition_constraints(
-        scenario_path, list_of_deactivated_components):
+        scenario_path, list_of_deactivated_components) -> pandas.DataFrame:
     """
         identifies which competition constraints contains deactivated \
         components. The respective competition constraints are \
         deactivated in an updated dataframe
     """
-    competition_constraints_xlsx = pd.read_excel(
+    competition_constraints_xlsx = pandas.read_excel(
             scenario_path, sheet_name='competition constraints')
 
     for i, constraint in competition_constraints_xlsx.iterrows():
@@ -360,7 +359,7 @@ def insulation_technical_pre_selection(components_xlsx, result_components):
 def update_model_according_pre_model_results(
         model_definition_path: str, results_components_path: str,
         updated_scenario_path: str, investment_boundary_factor: int,
-        investment_boundaries: bool):
+        investment_boundaries: bool) -> None:
     """
         Carries out technical pre-selection and tightens investment \
         boundaries for a scenario, based on a previously performed \
@@ -377,7 +376,7 @@ def update_model_according_pre_model_results(
             scenario shall be saved
         :type updated_scenario_path: str
         :param investment_boundary_factor: the investment boundaries \
-            will be tightened to the respective investment decision of\
+            will be tightened to the respective investment decision of \
             the pre-run multiplied by this factor.
         :type investment_boundary_factor: int
         :param investment_boundaries: decision whether tightening of \

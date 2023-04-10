@@ -72,14 +72,14 @@ def calc_constraint_limits(result_folders: dict, limits: list) -> dict:
         
         .. math::
             emissions_{mon} =
-                \mathrm{emissions of monetary-driven minimum}
+                \text{emissions of monetary-driven minimum}
             
             emissions_{emi} =
-                \mathrm{emissions of emission-driven minimum}
+                \text{emissions of emission-driven minimum}
             
-            \mathrm{interval width} = emission_{mon} - emission_{min}
+            \text{interval width} = emission_{mon} - emission_{min}
         
-            constraints[x] = emissions_{mon} - limits[x] *  \mathrm{interval width}
+            constraints[x] = emissions_{mon} - limits[x] *  \text{interval width}
 
         The list of limits is then returned as constraints.
         
@@ -167,7 +167,7 @@ def create_transformation_model_definitions(
     return files
 
 
-def run_pareto(limits: list, model_definition, GUI_main_dict: dict):
+def run_pareto(limits: list, model_definition, GUI_main_dict: dict) -> str:
     """
         This method represents the main function of Pareto
         optimization. For this purpose, the model is first run
@@ -291,7 +291,7 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict):
     return directory
 
 
-def change_optimization_criterion(nodes_data: dict):
+def change_optimization_criterion(nodes_data: dict) -> None:
     """
         Swaps the primary optimization criterion ("costs") with the
         secondary criterion ("constraint costs") in the entire model \
