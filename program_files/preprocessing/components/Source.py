@@ -71,7 +71,7 @@ class Sources:
     """
 
     def create_source(self, source: pandas.Series, timeseries_args: dict,
-                      output=None, variable_costs_list=None):
+                      output=None, variable_costs_list=None) -> None:
         """
             Creates an oemof source with fixed or unfixed timeseries
     
@@ -138,7 +138,7 @@ class Sources:
             )
         )
 
-    def commodity_source(self, source: pandas.Series):
+    def commodity_source(self, source: pandas.Series) -> None:
         """
             Creates an oemof source object with flexible time series
             (no maximum or minimum) with the use of the create_source
@@ -159,7 +159,7 @@ class Sources:
         # Returns logging info
         logging.info("\t Commodity Source created: " + source["label"])
 
-    def timeseries_source(self, source: pandas.Series):
+    def timeseries_source(self, source: pandas.Series) -> None:
         """
             Creates an oemof source object from a pre-defined
             timeseries with the use of the create_source method.
@@ -210,7 +210,7 @@ class Sources:
 
     def create_feedin_source(self, feedin: pandas.Series,
                              source: pandas.Series, output=None,
-                             variable_costs=None):
+                             variable_costs=None) -> None:
         """
             In this method, the parameterization of the output flow \
             for sources has been outsourced, since it is not source \
@@ -255,7 +255,7 @@ class Sources:
         # returns logging info
         logging.info("\t Source created: " + source["label"])
 
-    def pv_source(self, source: pandas.Series):
+    def pv_source(self, source: pandas.Series) -> None:
         """
             Creates an oemof photovoltaic source object.
     
@@ -315,7 +315,7 @@ class Sources:
 
         self.create_feedin_source(feedin=feedin, source=source)
 
-    def windpower_source(self, source: pandas.Series):
+    def windpower_source(self, source: pandas.Series) -> None:
         """
             Creates an oemof windpower source object.
     
@@ -358,7 +358,7 @@ class Sources:
         
         self.create_feedin_source(feedin, source)
 
-    def solar_heat_source(self, source: pandas.Series):
+    def solar_heat_source(self, source: pandas.Series) -> None:
         """
             Creates a solar thermal collector source object.
     

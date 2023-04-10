@@ -141,7 +141,7 @@ class Sinks:
             return 0, 0, [0]
 
     def create_sink(self, sink: pandas.Series, nominal_value=None,
-                    load_profile=None, args=None):
+                    load_profile=None, args=None) -> None:
         """
             Creates an oemof sink with fixed or unfixed timeseries.
 
@@ -226,7 +226,7 @@ class Sinks:
                                 fix=(args["fix"] / args["fix"].max()),
                             )}))
 
-    def unfixed_sink(self, sink: pandas.Series):
+    def unfixed_sink(self, sink: pandas.Series) -> None:
         """
             Creates a sink object with an unfixed energy input and the
             use of the create_sink method.
@@ -245,7 +245,7 @@ class Sinks:
         # returns logging info
         logging.info("\t Sink created: " + sink["label"])
 
-    def timeseries_sink(self, sink: pandas.Series):
+    def timeseries_sink(self, sink: pandas.Series) -> None:
         """
             Creates a sink object with a fixed input. The input must be
             given as a time series in the model definition file.
@@ -290,7 +290,7 @@ class Sinks:
         # returns logging info
         logging.info("\t Sink created: " + sink["label"])
 
-    def slp_sink(self, sink: pandas.Series):
+    def slp_sink(self, sink: pandas.Series) -> None:
         """
             Creates a sink with a residential or commercial
             SLP time series.
@@ -376,7 +376,7 @@ class Sinks:
         # returns logging info
         logging.info("\t Sink created: " + sink["label"])
 
-    def richardson_sink(self, sink: pandas.Series):
+    def richardson_sink(self, sink: pandas.Series) -> None:
         """
             Creates a sink with stochastically generated input, using
             richardson.py. Used for the modelling of residential

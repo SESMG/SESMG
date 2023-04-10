@@ -54,7 +54,7 @@ class Storages:
     """
 
     def create_storage(self, storage: pandas.Series, loss_rate: pandas.Series,
-                       storage_levels: list, fixed_losses: list):
+                       storage_levels: list, fixed_losses: list) -> None:
         """
             Within this method the previously prepared storage
             parameters are used to create an oemof storage object with
@@ -150,7 +150,7 @@ class Storages:
         # returns logging info
         logging.info("\t Storage created: " + storage["label"])
 
-    def generic_storage(self, storage: pandas.Series):
+    def generic_storage(self, storage: pandas.Series) -> None:
         """
             Creates a generic storage object with the parameters
             given in 'nodes_data' and adds it to the list of components
@@ -167,7 +167,7 @@ class Storages:
             fixed_losses=[0, 0],
         )
 
-    def stratified_thermal_storage(self, storage: pandas.Series):
+    def stratified_thermal_storage(self, storage: pandas.Series) -> None:
         """
             Creates a stratified thermal storage object with the
             parameters given in 'nodes_data' and adds it to the list of
