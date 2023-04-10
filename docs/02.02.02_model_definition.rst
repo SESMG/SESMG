@@ -325,24 +325,24 @@ Absorption Heat Transformer
 The following parameters are only required, if "transformer type" is set to "AbsorptionHeatTransformer":
 
 - **name**: Defines the way of calculating the efficiency of the absorption heat transformer. Possible inputs are: "Rotartica", "Safarik", "Broad_01", "Broad_02", and "Kuehn". "Broad_02" refers to a double-effect absorption chiller model, whereas the other keys refer to single-effect absorption chiller models.
-- **high temperature** in (°C): Temperature of the heat source, that drives the absorption heat transformer.
-- **chilling temperature** in (°C): Output temperature which is needed for the cooling demand.
+- **temperature high** in (°C): Temperature of the heat source, that drives the absorption heat transformer.
+- **temperature low** in (°C): Output temperature which is needed for the cooling demand.
 - **electrical input conversion factor**: Specifies the relation of electricity consumption to energy input. Example: A value of 0,05 means, that the system comsumes 5 % of the input energy as electric energy.
 - **recooling temperature difference** in (°C): Defines the temperature difference between temperature source for recooling and recooling cycle.
 - **heat capacity of source**: Defines the heat capacity of the connected heat source e.g. extracted waste heat.
 
   
 .. csv-table:: Exemplary input for the transformers sheet
-   :header: label,comment,active,transformer type,mode,input,input2,output,output2,input2 / input,efficiency,efficiency2,existing capacity,min. investment capacity,max. investment capacity,non-convex investment,fix investment costs,variable input costs,variable input costs 2,variable output costs,variable output costs 2,periodical costs,variable input constraint costs,variable input constraint costs 2,variable output constraint costs,variable output constraint costs 2,periodical constraint costs,heat source,temperature high,temperature low,quality grade,area,length of the geoth. probe,heat extraction,min. borehole area,temp. threshold icing,factor icing,name,high temperature,chilling temperature,electrical input conversion factor,recooling temperature difference,min. share of flue gas loss,max. share of flue gas loss,min. electric power,max. electric power,min. electric efficiency, max. electric efficiency,minimal thermal output power,elec. power loss index,back pressure
+   :header: label,comment,active,transformer type,mode,input,input2,output,output2,input2 / input,efficiency,efficiency2,existing capacity,min. investment capacity,max. investment capacity,non-convex investment,fix investment costs,variable input costs,variable input costs 2,variable output costs,variable output costs 2,periodical costs,variable input constraint costs,variable input constraint costs 2,variable output constraint costs,variable output constraint costs 2,periodical constraint costs,heat source,temperature high,temperature low,quality grade,area,length of the geoth. probe,heat extraction,min. borehole area,temp. threshold icing,factor icing,name,electrical input conversion factor,recooling temperature difference,min. share of flue gas loss,max. share of flue gas loss,min. electric power,max. electric power,min. electric efficiency, max. electric efficiency,minimal thermal output power,elec. power loss index,back pressure
 
-	,,,,,,,,,,,,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),,(°C),(°C),,(m²),(`m`),(kW/(m*a)),(m²),(°C),,,(°C),(°C),,(°C),,,(kW),(kW),,,(kW)
- 	ID_gasheating_transformer,,1,GenericTransformer,0,ID_gas_bus,0,ID_heat_bus,None,0,0.85,0,10,0,20,0,0,0,0,0,0,70,0,0,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_TwoInput_transformer,high pressure pump,0,GenericTwoInputTransformer,None,ID_water_intake_bus,ID_electricity_intake_bus,ID_water_output_bus,None,0.84,0.88,0,0,0,4000,0,0,0,0,0,0,6.600,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_GCHP_transformer,ground-coupled heat pump,1,CompressionHeatTransformer,heat_pump,ID_hp_electricity_bus,0,ID_heat_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,115.57,0,0,0,0,0,Ground,60,0,0.6,1000,100,0.05,100,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_ASCH_transformer,air source chiller,1,CompressionHeatTransformer,chiller,ID_hp_electricity_bus,0,ID_cooling_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,100,0,0,0,0,0,Air,0,-10,0.4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_AbsCH_transformer,absorption chiller,1,AbsorptionHeatTransformer,chiller,ID_hp_electricity_bus,0,ID_cooling_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Kuehn,85,10,0.05,6,0,0,0,0,0,0,0,0,0
-	ID_ASHP_transformer,air source heat pump,1,CompressionHeatTransformer,heat_pump,ID_hp_electricity_bus,0,ID_heat_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,112.78,0,0,0,0,0,Air,60,0,0.4,0,0,0,0,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_chp_transformer,,0,GenericTransformer,0,district_gas_bus,0,district_chp_electricity_bus,district_heat_bus,0,0.35,0.55,0,0,20,0,0,0,0,0,0,50,130,0,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	,,,,,,,,,,,,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),,(°C),(°C),,(m²),(`m`),(kW/(m*a)),(m²),(°C),,,,(°C),,,(kW),(kW),,,(kW)
+ 	ID_gasheating_transformer,,1,GenericTransformer,0,ID_gas_bus,0,ID_heat_bus,None,0,0.85,0,10,0,20,0,0,0,0,0,0,70,0,0,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_TwoInput_transformer,high pressure pump,0,GenericTwoInputTransformer,None,ID_water_intake_bus,ID_electricity_intake_bus,ID_water_output_bus,None,0.84,0.88,0,0,0,4000,0,0,0,0,0,0,6.600,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_GCHP_transformer,ground-coupled heat pump,1,CompressionHeatTransformer,heat_pump,ID_hp_electricity_bus,0,ID_heat_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,115.57,0,0,0,0,0,Ground,60,0,0.6,1000,100,0.05,100,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_ASCH_transformer,air source chiller,1,CompressionHeatTransformer,chiller,ID_hp_electricity_bus,0,ID_cooling_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,100,0,0,0,0,0,Air,0,-10,0.4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_AbsCH_transformer,absorption chiller,1,AbsorptionHeatTransformer,chiller,ID_hp_electricity_bus,0,ID_cooling_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,100,0,0,0,0,0,0,85,10,0,0,0,0,0,0,0,Kuehn,0.05,6,0,0,0,0,0,0,0,0,0
+	ID_ASHP_transformer,air source heat pump,1,CompressionHeatTransformer,heat_pump,ID_hp_electricity_bus,0,ID_heat_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,112.78,0,0,0,0,0,Air,60,0,0.4,0,0,0,0,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0
+	ID_chp_transformer,,0,GenericTransformer,0,district_gas_bus,0,district_chp_electricity_bus,district_heat_bus,0,0.35,0.55,0,0,20,0,0,0,0,0,0,50,130,0,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	
 .. figure:: ../docs/images/manual/ScenarioSpreadsheet/BSP_Graph_transformer.png
    :width: 100 %

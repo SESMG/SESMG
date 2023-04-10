@@ -616,9 +616,20 @@ class Transformers:
                 following key-value-pairs have to be included:
     
                     - label,
-                    -
-                    - name
-                        - name refers to models of absorption heat \
+                    - variable input costs,
+                    - variable input constraint costs,
+                    - variable output costs,
+                    - variable output constraint costs,
+                    - periodical costs,
+                    - periodical constraint costs,
+                    - non-convex investment,
+                    - fix investment costs,
+                    - fix investment constraint costs,
+                    - efficiency,
+                    - min. investment capacity,
+                    - max. investment capacity,
+                    - existing capacity,
+                    - name: name refers to models of absorption heat \
                           transformers with different equation \
                           parameters. See documentation for possible \
                           inputs.

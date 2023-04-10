@@ -307,5 +307,4 @@ Preprocessing/components/Transformer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.components.Transformer
    :members:
-   :undoc-members:
    :show-inheritance:
