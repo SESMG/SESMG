@@ -12,7 +12,7 @@ Sourcecode Documentation
     - `GUI GUI_st_global_functions <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.GUI_st.GUI_st_global_functions>`_
     - `GUI 1_Main_Application <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.GUI_st.1_Main_Application>`_
     - `GUI 2_Urban_District_Upscaling <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.GUI_st.pages.2_Urban_District_Upscaling>`_
-    - `GUI 3_Result_Processing <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/004.00.00_sourcecode_documentation.html#module-program_files.GUI_st.pages.3_Result_Processing>`_
+    - `GUI 3_Result_Processing <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.GUI_st.pages.3_Result_Processing>`_
 
 
 The software product "SESMG" can be divided into the following 4 process phases:
@@ -114,7 +114,6 @@ US_Tool/components/Bus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Bus
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/components/Central_components
@@ -233,7 +232,6 @@ Preprocessing/pareto_optimization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.pareto_optimization
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/pre_model_analysis
