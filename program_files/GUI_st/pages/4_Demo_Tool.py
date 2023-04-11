@@ -343,7 +343,7 @@ def demo_parameters_page():
         #  "743 g/(kWh * a)", "20 a", "3 % loss /d"],
         ["Thermal Storage (decentral)", "49 000 €/MWh",
          "604g/(kWh * a) (invest)", "20 a", "max. 10 MWh", "3 % loss /d"],
-        ["District Heating", "86 000 000 €", , "40 a", "binary", "15 % loss"],
+        ["District Heating", "86 000 000 €", "", "40 a", "binary", "15 % loss"],
         # ["HEATPUMP", "22 ct/kWh", "366 g/kWh"],
         # ["Air Source Heat Pump", "1 318 000 €/MW", "12g/kWh", "18 a"],
     ]
