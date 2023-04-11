@@ -142,7 +142,7 @@ def execute_sesmg_demo(demo_file, demo_results, mode):
         
     # run sesmg main function with reduced / fixed input options
     sesmg_main(
-        scenario_file=demo_file,
+        model_definition_file=demo_file,
         result_path=demo_results,
         num_threads=1,
         timeseries_prep=["None", "None", "None", "None", 0],

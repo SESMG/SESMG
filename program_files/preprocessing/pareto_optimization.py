@@ -64,18 +64,21 @@ def calc_constraint_limits(result_folders: dict, limits: list) -> dict:
     """
         This method reads out the emissions of the monetary-driven
         minimum as well as those of the emissions-driven minimum, which
-        narrows down the solvable range of the model definition. Based
-        on these interval limits, the emission limits for the
-        transformation points (GUI given limits) are then calculated.
-        Here, 0.2 represented a reduction of 20% of the interval width.
+        narrows down the solvable range (interval width) of the model
+        definition. Based on these interval limits, the emission limits
+        for the transformation points (as given in the GUI) are
+        calculated. Here, 0.2 represented a reduction of 20% of the
+        interval width. The optimization will result a result scenario
+        which is limited to 80% (equal or lower) of the emissions
+        calculated for the monetary minimum scenario.
         Consequently, it is calculated as follows:
         
         .. math::
             emissions_{mon} =
-                \mathrm{emissions~of~monetary-driven~minimum}
+                \mathrm{emissions~of~monetary~driven~minimum}
             
             emissions_{emi} =
-                \mathrm{emissions~of~emission-driven~minimum}
+                \mathrm{emissions~of~emission~driven~minimum}
             
             \mathrm{interval~width} = emission_{mon} - emission_{min}
         

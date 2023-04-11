@@ -168,7 +168,7 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
     if not GUI_main_dict["input_activate_premodeling"]:
 
         sesmg_main(
-            scenario_file=model_definition,
+            model_definition_file=model_definition,
             result_path=save_path,
             num_threads=GUI_main_dict["input_num_threads"],
             timeseries_prep=timeseries_prep,
@@ -197,7 +197,7 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
             input_timseries_season="input_premodeling_timeseries_season")
 
         sesmg_main_including_premodel(
-            scenario_file=model_definition,
+            model_definition_file=model_definition,
             result_path=save_path,
             num_threads=GUI_main_dict["input_num_threads"],
             timeseries_prep=timeseries_prep,
@@ -210,7 +210,6 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
             pre_model_timeseries_prep=premodel_timeseries_prep,
             investment_boundaries=GUI_main_dict["input_premodeling_invest_boundaries"],
             investment_boundary_factor=GUI_main_dict["input_premodeling_tightening_factor"],
-            pre_model_path=GUI_main_dict["premodeling_res_path"],
             graph=False)
 
 
