@@ -72,14 +72,14 @@ def calc_constraint_limits(result_folders: dict, limits: list) -> dict:
         
         .. math::
             emissions_{mon} =
-                \text{emissions of monetary-driven minimum}
+                \mathrm{emissions~of~monetary-driven~minimum}
             
             emissions_{emi} =
-                \text{emissions of emission-driven minimum}
+                \mathrm{emissions~of~emission-driven~minimum}
             
-            \text{interval width} = emission_{mon} - emission_{min}
+            \mathrm{interval~width} = emission_{mon} - emission_{min}
         
-            constraints[x] = emissions_{mon} - limits[x] *  \text{interval width}
+            constraints[x] = emissions_{mon} - limits[x] *  \mathrm{interval~width}
 
         The list of limits is then returned as constraints.
         
