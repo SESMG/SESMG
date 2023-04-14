@@ -1,5 +1,5 @@
 
-.. _`application`:
+.. _`upscaling tool`:
 Application
 ^^^^^^^^^^^^^^^^^^^^^
 
