@@ -1,23 +1,41 @@
-.. _`upscaling tool`:
 
-Urban District Upscaling
--------------------------------------
+.. _`application`:
+Application
+^^^^^^^^^^^^^^^^^^^^^
+
+The Upscaling-Tool simplifies the creation of the model definition. For more information take a look at the method: `Modeling Method <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.04.00_urban_district_upscaling.html>`_.  
 
 
-The modeling method of the Urban District Upscaling can be found here:  `Modeling Method Urban District Upscaling <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.04.00_urban_district_upscaling.html>`_. All relevant data for the application be found here: `Urban District Upscaling Folder <https://github.com/SESMG/SESMG/tree/master/program_files/urban_district_upscaling>`_ The usage is described in this chapter.
+.. figure:: ../docs/images/manual/GUI/gui_us_tool.png
+   :width: 20 %
+   :alt: GUI
+   :align: center
 
-The upscaling tool can be used with the following steps:
 
-1. Fill the `upscaling sheet`_.
-2. If necessary, adjust the `standard parameter`_-sheet, for example if electricity prices have increased. 
-3. Execute the upscaling tool to generate a energy system model with the structure described below.
-4. Execute the automatically generated *model_definition.xlsx*.
+1. Uploading the upscaling sheet
+""""""""""""""""""""""""""""""
+Upload your *upscaling_sheet.xlsx* which contains all building-specific parameters.
+
+2. Uploading the standard parameter sheet
+""""""""""""""""""""""""""""""
+Upload your *standard_parameter.xlsx* which contains all technological parameters.
+
+3. Naming the model definition
+""""""""""""""""""""""""""""""
+You can choose any name for your model definition.
+
+4. Starting the Upscaling-Tool
+""""""""""""""""""""""""""""""
+The model definition is created automatically and can be viewed on the right side.
+
+5. Downloading the xlsx-file
+""""""""""""""""""""""""""""""
+If you agree with the model definition, it can be downloaded. The model definition serves as a basis for the optimization process and can be used on the Main Application.
 
 .. _`upscaling sheet`:
-
 Upscaling Sheet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-This part of the documentation is taken from Budde's master's thesis [1].
+This part of the documentation is taken from Budde's master's thesis [1] and guides how the upscaling sheet can be adapted.
 
 Category 1
 """""""""""""""""""""""""""""""""""""
