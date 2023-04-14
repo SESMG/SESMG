@@ -42,7 +42,12 @@ def create_central_electricity_bus_connection(
         cluster: str, sheets: dict, standard_parameters: pandas.ExcelFile
 ) -> dict:
     """
-        TODO DOCSTRINGTEXT
+        In this method, clustered buildings are connected to the local
+        electricity market. For this purpose, a link is created between
+        the cluster power bus and the central power bus and, if
+        available, another link between the cluster pv bus and the
+        central power bus. These are attached to the return structure
+        "sheets".
         
         :param cluster: Cluster id
         :type cluster: str
@@ -188,7 +193,7 @@ def delete_non_used_links(sheets_clustering: dict, cluster_ids: dict,
     
     # iterate threw all links that are within the sheets dictionary
     # this is necessary since sheets clustering is only a copy of the
-    # unclustered file while sheets will be changed within this method
+    # un-clustered file while sheets will be changed within this method
     df_links = sheets_clustering["links"][sheets_clustering["links"][
         "label"].isin(sheets["links"].index)]
     for num, link in df_links.iterrows():

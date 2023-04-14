@@ -120,21 +120,18 @@ US_Tool/components/Central_components
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Central_components
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/components/Insulation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Insulation
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/components/Link
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Link
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/components/Sink
