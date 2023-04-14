@@ -1,7 +1,8 @@
 
 .. _`main application`:
 Main Application
-^^^^^^^^^^^^^^^^^^^^^
+----------------
+
 The figure shows which steps must be done for optimize an energy system model. At the bottom of the side bar you will find a button that deletes all stored data such as time series reduction values.
 	
 .. figure:: ../docs/images/manual/GUI/gui_main_page.png
@@ -11,15 +12,15 @@ The figure shows which steps must be done for optimize an energy system model. A
 
 
 1. Adding the model definition
-""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Here you can upload your *model_definition.xlsx*. After the file has been uploaded, you can theoretically continue with step 5. However, it is useful to make settings to reduce the computing time, since only limited computing resources are available.
 
 2. Preprocessing
-""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 There are several ways to simplify the model. The method can be found here: `Modeling Method <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.03.00_model_simplification.html>`_. In the following, only the application is briefly described.
 
 Timeseries Simplificaton
-''''''''''''''''''''''
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Depending on which of the time series preparation algorithms described in the methods section is used, the following specifications must be made:
 
 * **Algorithm**: Indication of the simplification algorithm to be applied.
@@ -45,7 +46,7 @@ The following algorithms are applicable and must be specified with the following
 
 
 Premodeling Settings
-''''''''''''''''''''''
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 * **Activate Pre-Modeling**: Must be checked, if you want to activate premodelling for your model run.
 * **Investment Boundaries Tightening**: Must be checked, if an Investment Tightening Factor is set.
 * **Investment Tightening Faktor**: *Description coming soon*
@@ -53,32 +54,32 @@ Premodeling Settings
 
 
 Pareto Point Options
-''''''''''''''''''''''
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Choose pareto point(s) if you want to start an pareto optimization run. The chosen value defines the constraint reduction in percent refering to the cost minimal pareto point. The values are given in percent.
 
 Advances District Heating Precalculation
-''''''''''''''''''''''
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 *Description coming soon*
 
 
 Switch Criteria
-''''''''''''''''''''''
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 If you activate this field, you set instead of the primary costs (e. g. monetary costs), the constraining costs (e. g. GHG-Emissions) as the optimization variable, so you perform an e. g. emission-optimized run. The field is intended for single-criteria optimization only.  In case of multi-criteria optimization, the optimization criteria will be changed automatically.
 
 
 3. Processing
-""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 * **Number of threads**: Number of threads to use for the model run on your machine. You should make sure that the chosen solver supports enough threats (cbc: max. 1 (if no parallelized version), gurobi: max. 8).
 * **Optimization Solver**: Chose on of the supported solver. Make sure that the solver is configurated on your machine. We recommend using the gurobi solver if you can use an academic licence.
 
 
 4. Postprocessing
-""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 * **Create xlsx-files**:  Must be checked, if you want to get result files of every bus. The field should only be checked if users have in-depth model knowledge.
 * **Create console-log**: Must be checked, if you want to get log-files of of the optimization process. The field should only be checked if users have in-depth model knowledge.
 
 5. Starting the optimization
-""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The button starts the optimization. After the optimization process you will be automatically redirected to the Result Processing page.
 
 
