@@ -61,6 +61,20 @@ Error I-005: subprocess-exited-with-error
 
 **Debugging:** check if you have a 32- or 64-bit machine and if you installed the correct python version. De- and reinstall to correct.
 
+Error I-006: Could not find a local HDF5 installation (macOS M1/M2)
+-------------------------------------------------
+**Error Message:** ::
+
+   * USE_PKGCONFIG: True
+  .. ERROR:: Could not find a local HDF5 installation.
+     You may need to explicitly state where your local HDF5 headers and
+     library can be found by setting the ``HDF5_DIR`` environment
+     variable or by using the ``--hdf5`` command-line option.
+
+**Possible Error Cause:** The packages were installed to an unexpected path by homebrew, which is an Apple CPU M1 / M2 issue.
+
+**Debugging:** Type following lines separately in the terminal: ``(echo; echo 'export HDF5_DIR=/opt/homebrew/opt/hdf5') >> /Users/$(whoami)/.zprofile`` and ``(echo; echo 'export BLOSC_DIR=/opt/homebrew/opt/c-blosc') >> /Users/$(whoami)/.zprofile``.
+
 Modeling
 =================================================
 
