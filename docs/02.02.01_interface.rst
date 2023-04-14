@@ -20,7 +20,7 @@ Here you can upload your *model_definition.xlsx*. After the file has been upload
 There are several ways to simplify the model. The method can be found here: `Modeling Method <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.03.00_model_simplification.html>`_. In the following, only the application is briefly described.
 
 Timeseries Simplificaton
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+''''''''''''''''''''''''''
 Depending on which of the time series preparation algorithms described in the methods section is used, the following specifications must be made:
 
 * **Algorithm**: Indication of the simplification algorithm to be applied.
@@ -46,7 +46,7 @@ The following algorithms are applicable and must be specified with the following
 
 
 Premodeling Settings
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+''''''''''''''''''''''''''
 * **Activate Pre-Modeling**: Must be checked, if you want to activate premodelling for your model run.
 * **Investment Boundaries Tightening**: Must be checked, if an Investment Tightening Factor is set.
 * **Investment Tightening Faktor**: *Description coming soon*
@@ -54,16 +54,16 @@ Premodeling Settings
 
 
 Pareto Point Options
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+''''''''''''''''''''''''''
 Choose pareto point(s) if you want to start an pareto optimization run. The chosen value defines the constraint reduction in percent refering to the cost minimal pareto point. The values are given in percent.
 
 Advances District Heating Precalculation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+''''''''''''''''''''''''''
 *Description coming soon*
 
 
 Switch Criteria
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+''''''''''''''''''''''''''
 If you activate this field, you set instead of the primary costs (e. g. monetary costs), the constraining costs (e. g. GHG-Emissions) as the optimization variable, so you perform an e. g. emission-optimized run. The field is intended for single-criteria optimization only.  In case of multi-criteria optimization, the optimization criteria will be changed automatically.
 
 
