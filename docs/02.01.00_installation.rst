@@ -100,6 +100,10 @@ The gurobi solver may be used as **alternative** to the cbc-solver. Be aware, th
 MacOS
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. note:: 
+
+	We recommend installing the SESMG as an admin or user with admin rights.
+
 1. Install Python (version 3.7, 3.8 or 3.9) 
 
 Go to the `Python download page for macOS <https://www.python.org/downloads/macos/>`_ and download an installer.
