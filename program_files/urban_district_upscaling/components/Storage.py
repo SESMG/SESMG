@@ -157,7 +157,7 @@ def storage_clustering(building: list, sheets_clustering: dict,
 
 def cluster_storage_information(storage: pandas.Series,
                                 storage_parameter: dict, storage_type: str,
-                                sheets: dict):
+                                sheets: dict) -> (dict, dict):
     """
         Collects the transformer information of the selected type, and
         inserts it into the dict containing the cluster specific
@@ -175,6 +175,13 @@ def cluster_storage_information(storage: pandas.Series,
         :param sheets: dictionary containing the pandas.Dataframes that\
             will represent the model definition's Spreadsheets
         :type sheets: dict
+        
+        :returns: - **storage_parameter** (dict) - dictionary holding \
+                        the collected storage information
+                  -  **sheets** (dict) - dictionary containing the \
+                        pandas.Dataframes that will represent the \
+                        model definition's Spreadsheets which was \
+                        modified in this method
     """
     # counter
     storage_parameter[storage_type][0] += 1
