@@ -1,5 +1,5 @@
 ---
-title: 'Spreadsheet Energy System Model Generator (SESMG): A tool for the optimization of urban energy systems'
+title: 'The Spreadsheet Energy System Model Generator (SESMG): A tool for the optimization of urban energy systems'
 tags:
   - Python
   - Energy System Modeling
