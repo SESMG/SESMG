@@ -174,8 +174,8 @@ def delete_non_used_links(sheets_clustering: dict, cluster_ids: dict,
         Within this method all non clustered links which are no longer
         in use after the clustering process are removed and the
         
-        :param sheets_clustering: copy of the scenario created within \
-            the pre_processing.py
+        :param sheets_clustering: copy of the model definition created \
+            within the pre_processing.py
         :type sheets_clustering: dict
         :param cluster_ids: dictionary holding the clusters' buildings \
             information which are represented by lists containing the \

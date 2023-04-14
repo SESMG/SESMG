@@ -138,7 +138,6 @@ US_Tool/components/Sink
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Sink
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/components/Source

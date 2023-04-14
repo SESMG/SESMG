@@ -117,13 +117,13 @@ def central_comp(central: pandas.DataFrame, true_bools: list, sheets: dict,
                  standard_parameters: pandas.ExcelFile) -> dict:
     """
         In this method, the central components of the energy system are
-        added to the scenario, first checking if a heating network is
-        foreseen and if so, creating the feeding components, and then
-        creating Power to Gas and battery storage if defined in the pre
-        scenario.
+        added to the model definition, first checking if a heating
+        network is foreseen and if so, creating the feeding components,
+        and then creating Power to Gas and battery storage if defined
+        in the US-Input sheet.
 
-        :param central: pandas Dataframe holding the information from the \
-            prescenario file "central" sheet
+        :param central: pandas Dataframe holding the information from \
+            the US-Input file "central" sheet
         :type central: pd.Dataframe
         :param true_bools: list containing the entries that are \
             evaluated as true
