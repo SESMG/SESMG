@@ -1,3 +1,8 @@
+"""
+    Christian Klemm - christian.klemm@fh-muenster.de
+    Gregor Becker - gregor.becker@fh-muenster.de
+    Janik Budde - janik.budde@fh-muenster.de
+"""
 import pandas
 
 technology_dict = {
@@ -20,9 +25,11 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
                        standard_parameters: pandas.ExcelFile,
                        flow_temp: str, building_type=None,
                        area="0", label="None", specific="None",
-                       output="None", min_invest="0"):
+                       output="None", min_invest="0") -> dict:
     """
-        TODO DOCSTRING
+        Sets the specific parameters for a transformer component,
+        creates them and appends them to the return data structure
+        "sheets" afterwards.
         
         :param building_id: building label
         :type building_id: str
@@ -43,11 +50,17 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
         :type building_type: str
         :param area: potential area for gchps
         :type area: str
-        :param label: TODO
+        :param label: since this method is used to create decentral as \
+            well as central transformer components the label specifies \
+            the first part of the components label.
         :type label: str
-        :param specific: TODO
+        :param specific: with the help of the specific attribute the \
+            transformer's fuel type is chosen
         :type specific: str
-        :param output:
+        :param output: within the output attribute a transformer \
+            individual output bus label can be set. This attribute \
+            does not have to be filled for each transformer type which \
+            is the reason for the standard value.
         :type output: str
         :param min_invest: if the user's input contains an already \
             existing transformer it's capacity is the min investment \
@@ -71,7 +84,6 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
                 [label + "_heating_plant", label, output, "None"],
             "central_" + specific + "_transformer":
                 [label + "_heatpump", "heatpump_electricity", output, "None"],
-            # TODO
             "central_biomass_transformer":
                 ["biomass", "biomass", output, "None"],
             "central_electrolysis_transformer":
@@ -143,7 +155,12 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
 def building_transformer(building: dict, p2g_link: bool, sheets: dict,
                          standard_parameters: pandas.ExcelFile) -> dict:
     """
-        TODO DOCSTRINGTEXT
+        In this method, the transformer investment options that can be
+        applied to a considered building by the user are created. This
+        includes ASHP, Gas heating system, Electric heating system, oil
+        heating system and woodstove. In the creation process, these
+        are attached to the return data structure "sheets", which in
+        the end will represent the model definition spreadsheet.
         
         :param building: dictionary holding the building specific data
         :type building: dict
@@ -209,7 +226,8 @@ def building_transformer(building: dict, p2g_link: bool, sheets: dict,
 
 
 def create_gchp(tool: pandas.DataFrame, parcels: pandas.DataFrame,
-                sheets: dict, standard_parameters: pandas.ExcelFile):
+                sheets: dict, standard_parameters: pandas.ExcelFile
+                ) -> (dict, dict):
     """
         Method that creates a GCHP and its buses for the parcel and \
         appends them to the sheets return structure.
@@ -226,6 +244,13 @@ def create_gchp(tool: pandas.DataFrame, parcels: pandas.DataFrame,
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
+        
+        :returns:   - **gchps** (dict) - dictionary holding the gchp \
+                        label area combination
+                    - **sheets** (dict) - dictionary containing the \
+                        pandas.Dataframes that will represent the \
+                        model definition's Spreadsheets which was \
+                        modified in this method
     """
     from program_files.urban_district_upscaling.components import Bus
     # TODO parcel ID and ID parcel have to be unified
@@ -269,7 +294,7 @@ def create_gchp(tool: pandas.DataFrame, parcels: pandas.DataFrame,
 
 def cluster_transformer_information(transformer: pandas.DataFrame,
                                     cluster_parameters: dict, technology: str,
-                                    sheets: dict):
+                                    sheets: dict) -> (dict, dict):
     """
         Collects the transformer information of the selected type, and
         inserts it into the dict containing the cluster specific
@@ -288,7 +313,13 @@ def cluster_transformer_information(transformer: pandas.DataFrame,
             will represent the model definition's Spreadsheets
         :type sheets: dict
 
-        :return:
+        :returns: - **cluster_parameters** (dict) - dictionary holding \
+                        the clustered information of the deleted \
+                        transformers
+                  - **sheets** (dict) - dictionary containing the \
+                        pandas.Dataframes that will represent the \
+                        model definition's Spreadsheets which was \
+                        modified in this method
     """
     param_dict = {
         0: 1,
@@ -314,29 +345,32 @@ def cluster_transformer_information(transformer: pandas.DataFrame,
 
 
 def transformer_clustering(building: pandas.DataFrame, sheets: dict,
-                           sheets_clustering: dict, cluster_parameters: dict,
-                           heat_buses_gchps: list):
+                           sheets_clustering: dict, cluster_parameters: dict
+                           ) -> (dict, dict):
     """
         Main method to collect the information about the transformer
         (gasheating, ashp, gchp, electric heating), which are located
         in the considered cluster.
 
-        :param building: DataFrame containing the building row from the\
-            pre scenario sheet
+        :param building: DataFrame containing the building row from \
+            the US-Input sheet
         :type building: pandas.Dataframe
         :param sheets: dictionary containing the pandas.Dataframes that\
             will represent the model definition's Spreadsheets
         :type sheets: dict
-        :param sheets_clustering:
+        :param sheets_clustering: copy of the model definition created \
+            within the pre_processing.py
         :type sheets_clustering: dict
         :param cluster_parameters: dictionary containing the collected \
             transformer information
         :type cluster_parameters: dict
-        :param heat_buses_gchps: list, used to collect the gchps heat \
-            output buses
-        :type heat_buses_gchps: list
 
-        :return:
+        :returns: - **cluster_parameters** (dict) - dictionary \
+                        containing the collected transformer information
+                  - **sheets** (dict) - dictionary containing the \
+                        pandas.Dataframes that will represent the \
+                        model definition's Spreadsheets which was \
+                        modified in this method
     """
     for index, transformer in sheets_clustering["transformers"].iterrows():
         label = transformer["label"]
@@ -373,14 +407,17 @@ def transformer_clustering(building: pandas.DataFrame, sheets: dict,
                     sheets["transformers"] = \
                         sheets["transformers"].drop(index=transformer["label"])
     # return the collected data to the main clustering method
-    return heat_buses_gchps, cluster_parameters, sheets
+    return cluster_parameters, sheets
 
 
 def create_cluster_transformer(technology: str, cluster_parameters: dict,
                                cluster: str, sheets: dict,
                                standard_parameters: pandas.ExcelFile) -> dict:
     """
-        TODO METHOD DESCRIPTION
+        After collecting the attributes of the building specific
+        transformers and deleting them, this method creates the
+        clustered transformer components and appends them to the return
+        data structure "sheets".
         
         :param technology: str containing the transformer type
         :type technology: str
@@ -416,7 +453,7 @@ def create_cluster_transformer(technology: str, cluster_parameters: dict,
     
     standard_param, keys = read_standard_parameters(
         name=type_dict.get(technology),
-        param_type="4_transformers",
+        parameter_type="4_transformers",
         index="transformer_type",
         standard_parameters=standard_parameters
     )

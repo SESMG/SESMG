@@ -159,13 +159,12 @@ def collect_clustering_information(
         sheets_clustering=sheets_clustering)
 
     # collect cluster intern transformer information
-    heat_buses_gchps, transformer_parameters, sheets = \
+    transformer_parameters, sheets = \
         Transformer.transformer_clustering(
             building=building,
             sheets_clustering=sheets_clustering,
             cluster_parameters=transformer_parameters,
-            sheets=sheets,
-            heat_buses_gchps=heat_buses_gchps)
+            sheets=sheets)
 
     # collect cluster intern storage information
     storage_parameters, sheets = Storage.storage_clustering(

@@ -22,7 +22,7 @@ def create_storage(
     standard_parameters: pandas.ExcelFile, bus=None, min_invest="0"
 ) -> dict:
     """
-        Sets the specific parameters for a battery, and creates them
+        Sets the specific parameters for a storage, and creates them
         afterwards.
     
         :param building_id: building label

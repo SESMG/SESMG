@@ -156,7 +156,6 @@ US_Tool/components/Transformer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Transformer
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing
