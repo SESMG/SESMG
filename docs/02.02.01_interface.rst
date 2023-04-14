@@ -42,7 +42,7 @@
 	 .. note::
 		The detailed modelling results are also stored within the "results" folder.
 
-Interface (Streamlit)
+Interface
 ---------------------
 
 The user interface can be used to 
@@ -140,69 +140,3 @@ If you activate this field, you set instead of the primary costs (e. g. monetary
 The button starts the optimization. After the optimization process you will be automatically redirected to the Result Processing page.
 
 
-
-.. _`result processing`:
-Result Processing
-^^^^^^^^^^^^^^^^^^^^^
-
-You will be automatically directed to this page after the optimization process (1) or you may want to analyze existing results (2) again.
-
-1. Result processing after optimization process
-""""""""""""""""""""""""""""""
-The results differ depending on whether you used only one optimization criterion (a) or whether you did a multi-criteria optimization (b).
-
-a. Single-criteria optimization
-'''''''''''''''''''''''''''''''
-In a single-criteria optimization, the costs, emissions, and energy demands of the neighborhood are displayed. In addition, you can view the system graph and all building-specific load profiles via the interactive results.
-
-.. figure:: ../docs/images/manual/GUI/gui_result.png
-   :width: 50 %
-   :alt: GUI
-   :align: center
-
-b. Multi-criteria optimization
-'''''''''''''''''''''''''''''''
-In multi-criteria optimization, several scenarios are calculated. For more information take a look at the method: `Modeling Method <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.02.00_multi_criteria_optimization.html>`_. For each scenario, the results described for a single-criteria optimization can be displayed by selecting the reduction of the scenario (see (1) figure below). In addition, a Pareto diagram and energy amount diagrams are displayed (see (2) figure below).
-
-.. figure:: ../docs/images/manual/GUI/gui_result_pareto.png
-   :width: 50 %
-   :alt: GUI
-   :align: center
-
-2. Result processing of existing results
-""""""""""""""""""""""""""""""
-The difference is that you need to select a folder that you want to analyze.
-
-
-.. _`urban district upscaling`:
-Urban District Upscaling
-^^^^^^^^^^^^^^^^^^^^^
-
-The Upscaling-Tool simplifies the creation of the model definition. For more information take a look at the method: `Modeling Method <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.04.00_urban_district_upscaling.html>`_.  
-
-
-.. figure:: ../docs/images/manual/GUI/gui_us_tool.png
-   :width: 20 %
-   :alt: GUI
-   :align: center
-
-
-1. Uploading the upscaling sheet
-""""""""""""""""""""""""""""""
-Upload your *upscaling_sheet.xlsx* which contains all building-specific parameters.
-
-2. Uploading the standard parameter sheet
-""""""""""""""""""""""""""""""
-Upload your *standard_parameter.xlsx* which contains all technological parameters.
-
-3. Naming the model definition
-""""""""""""""""""""""""""""""
-You can choose any name for your model definition.
-
-4. Starting the Upscaling-Tool
-""""""""""""""""""""""""""""""
-The model definition is created automatically and can be viewed on the right side.
-
-5. Downloading the xlsx-file
-""""""""""""""""""""""""""""""
-If you agree with the model definition, it can be downloaded. The model definition serves as a basis for the optimization process and can be used on the Main Application.
