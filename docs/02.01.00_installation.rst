@@ -137,6 +137,10 @@ Execute the installer on your computer.
 .. note:: 
 
 	Homebrew requires Xcode command line tools for macOS. Check if you already have it installed by using ``xcode-select --help``. If no error occures it is already installed. Otherwise run ``xcode-select --install`` in your terminal.
+	
+.. note:: 
+
+	For Apple CPU M1/M2: Make sure to follow the instrutions while installing homebrew. If there is a message to run two lines of code: do so and run them separately in your terminal. Look for: ``(echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> /Users/YOURUSERNAME/.zprofile`` and eval "$(/opt/homebrew/bin/brew shellenv)"`` with your username. Do not run those lines if not requested.
 
 3. Extract the .zip folder into any directory on the computer.
 	
