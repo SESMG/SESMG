@@ -144,7 +144,6 @@ US_Tool/components/Source
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Source
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/components/Storage

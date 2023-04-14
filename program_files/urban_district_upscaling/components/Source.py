@@ -1,11 +1,20 @@
+"""
+    Christian Klemm - christian.klemm@fh-muenster.de
+    Gregor Becker - gregor.becker@fh-muenster.de
+    Janik Budde - janik.budde@fh-muenster.de
+"""
 import pandas
 
 
-def create_source(source_type: str, roof_num: str, building: dict,
+def create_source(source_type: str, roof_num: str, building: pandas.Series,
                   sheets: dict, standard_parameters: pandas.ExcelFile,
                   st_output=None, central=False, min_invest="0") -> dict:
     """
-        TODO DOCSTRINGTEXT
+        In this method, the parameterization of a source component is
+        performed. Then, the modifiable attributes are merged with
+        those stored in the standard parameters of the SESMG. Finally,
+        the component is created and attached to the return data
+        structure "sheets" from which the model definition is created.
         
         :param source_type: define rather a photovoltaic or a \
             solarthermal source has to be created
@@ -14,7 +23,7 @@ def create_source(source_type: str, roof_num: str, building: dict,
         :type roof_num: str
         :param building: building specific data (e.g. azimuth, \
             surface tilt etc.)
-        :type building: dict
+        :type building: pandas.Series
         :param sheets: dictionary containing the pandas.Dataframes that\
             will represent the model definition's Spreadsheets
         :type sheets: dict
@@ -27,6 +36,11 @@ def create_source(source_type: str, roof_num: str, building: dict,
         :param central: parameter which defines rather the source is a\
             central source (True) or a decentral one (False)
         :type central: bool
+        :param min_invest: If there is already an existing plant, the \
+            user can specify its capacity. This capacity value is \
+            passed to the algorithm via min_invest and represents the \
+            entry for "min. investment capacity".
+        :type min_invest: str
         
         :return: - **sheets** (dict) - dictionary containing the \
             pandas.Dataframes that will represent the model \
@@ -109,7 +123,15 @@ def create_source(source_type: str, roof_num: str, building: dict,
 def create_timeseries_source(sheets: dict, label: str, output: str,
                              standard_parameters: pandas.ExcelFile) -> dict:
     """
-        TODO DOCSTRINGTEXT
+        This method can be used to create a time series source. This
+        source receives the investment data specified in the standard
+        parameters and the time series given by the user in the US
+        input sheet.
+
+        Warning: Currently, only one type of timeseries source can be
+        used, since the "timeseries_source" line in the standard
+        parameters is used. In the coming time it will be implemented
+        that also the use of multiple types will be possible.
         
         :param sheets: dictionary containing the pandas.Dataframes that\
             will represent the model definition's Spreadsheets
@@ -156,7 +178,11 @@ def create_competition_constraint(limit: float, label: str, roof_num: str,
                                   standard_parameters: pandas.ExcelFile
                                   ) -> dict:
     """
-        TODO DOCSTRINGTEXT
+        Using the create competition constraint method, the area
+        competition between a PV and a solar thermal system is added to
+        the competition constraints spreadsheet. This is also done via
+        the return structure "sheets", which finally represents the
+        model definition.
         
         :param limit: max available roof area which can rather be used \
             for photovoltaic or solar thermal sources
@@ -200,7 +226,7 @@ def create_competition_constraint(limit: float, label: str, roof_num: str,
     return append_component(sheets, "competition constraints", constraint_dict)
 
 
-def create_sources(building: dict, clustering: bool, sheets: dict,
+def create_sources(building: pandas.Series, clustering: bool, sheets: dict,
                    standard_parameters: pandas.ExcelFile,
                    st_output=None, central=False) -> dict:
     """
@@ -208,9 +234,9 @@ def create_sources(building: dict, clustering: bool, sheets: dict,
         source as well as the resulting competition constraint for a \
         roof part under consideration
         
-        :param building: dictionary containing the building specific \
+        :param building: Series containing the building specific \
             parameters
-        :type building: dict
+        :type building: pandas.Series
         :param clustering: boolean which definies rather the resulting \
             energy system is spatially clustered or not
         :type clustering: bool
@@ -344,7 +370,7 @@ def sources_clustering(source_param: dict, building: list,
                        sheets: dict, sheets_clustering: dict) -> (dict, dict):
     """
         In this method, the information of the photovoltaic and solar
-        thermal systems to be clustered is collected, and the systems
+        thermal systems to be clustered are collected, and the systems
         whose information has been collected are deleted.
         
         :param source_param: dictionary containing the cluster summed \
@@ -356,8 +382,8 @@ def sources_clustering(source_param: dict, building: list,
         :param sheets: dictionary containing the pandas.Dataframes that\
             will represent the model definition's Spreadsheets
         :type sheets: dict
-        :param sheets_clustering: copy of the scenario created within \
-            the pre_processing.py
+        :param sheets_clustering: copy of the model definition created \
+            within the pre_processing.py
         :type sheets_clustering: dict
 
         :return: - **source_param** (dict) - dict extended by a new \
@@ -508,11 +534,33 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
     return sheets
 
 
-def create_pv_bus_links(building: dict, sheets: dict,
+def create_pv_bus_links(building: pandas.Series, sheets: dict,
                         standard_parameters: pandas.ExcelFile,
-                        central_electricity_bus: bool):
+                        central_electricity_bus: bool) -> dict:
     """
+        In this method, the PV bus of the considered building is
+        created and connected to the in-house electricity bus and, if
+        available, to the central electricity bus. The created
+        components are appended to the return data structure "sheets",
+        which represents the model definition at the end.
     
+        :param building: Series containing the building specific \
+            parameters
+        :type building: pandas.Series
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+        :param central_electricity_bus: boolean representing the \
+            user's decision rather a local electricity exchange is \
+            possible or not
+        :type central_electricity_bus: bool
+        
+         :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
     from program_files.urban_district_upscaling.components import Bus, Link
     # create building pv bus
@@ -549,19 +597,47 @@ def create_pv_bus_links(building: dict, sheets: dict,
     return sheets
 
 
-def update_sources_in_output(building, sheets_clustering, cluster, sheets):
-    """ """
+def update_sources_in_output(building: pandas.Series, sheets_clustering: dict,
+                             cluster: str, sheets: dict) -> dict:
+    """
+        In this method, the input and output buses of the source
+        components are corrected to the cluster buses. For this
+        purpose, it is checked whether a building label is present in
+        the input or output. Finally, the return data structure
+        "sheets" is updated.
+    
+        :param building: Series containing the building specific \
+            parameters
+        :type building: pandas.Series
+        :param sheets_clustering: copy of the model definition created \
+            within the pre_processing.py
+        :type sheets_clustering: dict
+        :param cluster: Cluster ID
+        :type cluster: str
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
+    """
     # change sources output bus
-    for i, j in sheets_clustering["sources"].iterrows():
-        heat_elec = {
+    # iterate threw all created sources of the non-clustered algorithm
+    for num, source in sheets_clustering["sources"].iterrows():
+        buses = {
             "heat": ["output", "_heat_bus"],
             "elec": ["input", "_electricity_bus"],
         }
-        for k in heat_elec:
-            if building[0] in str(j[heat_elec[k][0]]) and k in str(j[heat_elec[k][0]]):
-                sheets["sources"][heat_elec[k][0]] = sheets["sources"][
-                    heat_elec[k][0]
-                ].replace(
-                    [str(building[0]) + heat_elec[k][1], str(cluster) + heat_elec[k][1]]
+        for bus in buses:
+            # if the building's label and the bus_type is within the
+            # sources input or output the entry will be replaced by the
+            # cluster's bus label
+            if building[0] in str(source[buses[bus][0]]) \
+                    and bus in str(source[buses[bus][0]]):
+                sheets["sources"][buses[bus][0]] = \
+                    sheets["sources"][buses[bus][0]].replace(
+                        [str(building[0]) + buses[bus][1],
+                         str(cluster) + buses[bus][1]]
                 )
     return sheets
