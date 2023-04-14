@@ -1,3 +1,8 @@
+"""
+    Christian Klemm - christian.klemm@fh-muenster.de
+    Gregor Becker - gregor.becker@fh-muenster.de
+    Janik Budde - janik.budde@fh-muenster.de
+"""
 import pandas
 
 storage_dict = {
@@ -22,7 +27,7 @@ def create_storage(
     
         :param building_id: building label
         :type building_id: str
-        :param storage_type: string which definies which storage type \
+        :param storage_type: string which defines which storage type \
             will be created
         :type storage_type: str
         :param de_centralized: string which differentiates rather the \
@@ -71,7 +76,9 @@ def create_storage(
 def building_storages(building: dict, sheets: dict,
                       standard_parameters: pandas.ExcelFile) -> dict:
     """
-        TODO DOCSTRING TEXT
+        In this method, the investment alternatives for in-house
+        storage (batteries or thermal storage) are created and attached
+        to the return data structure "sheets".
         
         :param building: dictionary containing the building specific \
             parameters
@@ -123,8 +130,8 @@ def storage_clustering(building: list, sheets_clustering: dict,
         :param building: list containing the building label [0], the \
             building's parcel ID [1] and the building type [2]
         :type building: list
-        :param sheets_clustering: copy of the scenario created within \
-            the pre_processing.py
+        :param sheets_clustering: copy of the model definition created \
+            within the pre_processing.py
         :type sheets_clustering: dict
         :param storage_parameter: dictionary containing the collected \
             storage information

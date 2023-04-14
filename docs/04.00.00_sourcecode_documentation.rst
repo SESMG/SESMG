@@ -150,7 +150,6 @@ US_Tool/components/Storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Storage
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/components/Transformer

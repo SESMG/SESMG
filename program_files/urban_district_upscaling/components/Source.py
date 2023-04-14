@@ -129,9 +129,10 @@ def create_timeseries_source(sheets: dict, label: str, output: str,
         input sheet.
 
         Warning: Currently, only one type of timeseries source can be
-        used, since the "timeseries_source" line in the standard
-        parameters is used. In the coming time it will be implemented
-        that also the use of multiple types will be possible.
+        used, since the "timeseries_source" row in the standard
+        parameters is explicitly used. In the upcoming commits it will
+        be implemented  that also the use of multiple types will be
+        possible.
         
         :param sheets: dictionary containing the pandas.Dataframes that\
             will represent the model definition's Spreadsheets
