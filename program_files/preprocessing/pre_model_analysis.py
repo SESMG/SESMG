@@ -290,7 +290,16 @@ def dh_technical_pre_selection(components_xlsx: pandas.DataFrame,
 
 def bus_technical_pre_selection(components_xlsx, result_components):
     """
-    
+        deactivates the district heating connection for those busses for
+        which no connection has been carried out during optimization
+
+        :param components_xlsx: DataFrame holding the currently \
+            considered sheet of the model definition file
+        :type components_xlsx: pandas.DataFrame
+        :param result_components: DataFrame holding the currently \
+            considered components of the result data components.csv file
+        :type result_components: pandas.DataFrame
+
     """
     bus_xlsx = components_xlsx
     no_invest_list = ['0.0', '0', '0.00', '---', '-0', '-0.0', '-0.00']
@@ -339,6 +348,13 @@ def insulation_technical_pre_selection(components_xlsx, result_components):
     """
         deactivates district heating investment decisions for which no
         investments has been carried out
+
+        :param components_xlsx: DataFrame holding the currently \
+            considered sheet of the model definition file
+        :type components_xlsx: pandas.DataFrame
+        :param result_components: DataFrame holding the currently \
+            considered components of the result data components.csv file
+        :type result_components: pandas.DataFrame
     """
     # create list of insulation measures for which an investment has
     # been carried out
