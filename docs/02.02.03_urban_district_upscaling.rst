@@ -1,7 +1,7 @@
 
 .. _`upscaling tool`:
-Application
-^^^^^^^^^^^^^^^^^^^^^
+Upscaling Tool
+----------------
 
 The Upscaling-Tool simplifies the creation of the model definition. For more information take a look at the method: `Modeling Method <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.04.00_urban_district_upscaling.html>`_.  
 
