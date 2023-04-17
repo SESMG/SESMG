@@ -142,10 +142,8 @@ Execute the installer on your computer.
 .. note:: 
 
 	For Apple CPU M1/M2: Make sure to follow the instrutions while installing homebrew. If there is a message to run two lines of code: do so and run them separately in your terminal. Look for: ``(echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> /Users/YOURUSERNAME/.zprofile`` and eval "$(/opt/homebrew/bin/brew shellenv)"`` with your username. Do not run those lines if not requested.
-
-3. Extract the .zip folder into any directory on the computer.
 	
-4. Excecute the "MacOS_installation.command" file and enter your python version to the terminal.
+3. Excecute the "MacOS_installation.command" file and enter your python version to the terminal.
 
 .. figure:: images/manual/Installation/sesmg_installation_mac_1.png
    :width: 50 %
@@ -171,7 +169,7 @@ Enter your python version.
 
 	During this step, the cbc solver was automatically installed. The gurobi solver may be used as **alternative** to the cbc solver. Be aware, that the gurobi-solver is not open-source and a license is required. However, the gurobi may be faster for certain types of optimization problems, especially for those containing binary decisions. The installation procedure of the gurobi solver is described in detail here: https://www.gurobi.com/documentation/quickstart.html
 
-5. The Spreadsheet Energy System Model Generator has been installed. Have fun with the SESMG.
+4. The Spreadsheet Energy System Model Generator has been installed. Have fun with the SESMG.
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_10.png
    :width: 50 %
@@ -215,16 +213,16 @@ Linux
 
 ``$ sudo apt-get install coinor-cbc``
 
-5. Install the libpq-dev to avoid a psycopg2 error:
+6. Install the libpq-dev to avoid a psycopg2 error:
 
 ``$ sudo apt-get install libpq-dev``
 
 The gurobi solver may be used as **alternative** to the cbc solver. Be aware, that the gurobi-solver is not open-source and a license is required. However, the gurobi may be faster for certain types of optimization problems, especially for those containing binary decisions. The installation procedure of the gurobi solver is described in detail here: https://www.gurobi.com/documentation/quickstart.html
 	
-6. Execute the "Linux_installtion.sh" file. By first navigating to the path of the SESMG directory and then running the following:
+7. Execute the "Linux_installtion.sh" file. By first navigating to the path of the SESMG directory and then running the following:
 
 ``$ sudo sh Linux_installation.sh``
 
-7. The Spreadsheet Energy System Model Generator has been installed. Open a browser and open up: ``localhost:8501``.
+8. The Spreadsheet Energy System Model Generator has been installed. Open a browser and open up: ``localhost:8501``.
 
 
