@@ -74,10 +74,10 @@ GUI/GUI_st_global_functions
 
 GUI/1_Main_Application
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: program_files.GUI_st.1_Main_Application
-
-    .. automethod:: program_files.GUI_st.1_Main_Application.nav_page
-
+.. automodule:: docs.docu_gui
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 
 GUI/pages/2_Urban_District_Upscaling
