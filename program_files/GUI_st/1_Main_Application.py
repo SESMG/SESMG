@@ -81,7 +81,7 @@ def main_start_page():
     """
 
     reduced_readme = read_markdown_document(
-        "Readme.md", f'{"docs/images/readme/*"}')
+        "README.md", f'{"docs/images/readme/*"}')
 
     # Display any remaining lines in the readme using the st.markdown() \
     # function
