@@ -3,4 +3,5 @@ import os
 
 subprocess.call("streamlit run {}".format(
                 os.path.dirname(os.path.dirname(__file__)) +
-                "/program_files/GUI_st/1_Main_Application.py"), shell=True)
+                "/program_files/GUI_st/1_Main_Application.py"), shell=True,
+                timeout=100)
