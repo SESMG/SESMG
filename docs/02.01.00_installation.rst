@@ -124,7 +124,8 @@ Execute the installer on your computer.
 	Make sure to select "Add pyton to PATH" at the beginning of the Python installation.
 	
 
-2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/SESMG/SESMG/tree/master>`_ as .zip folder.
+2. Download the Spreadsheet Energy System Model Generator from `GitHub <https://github.com/SESMG/SESMG>`_ as .zip folder and extract the .zip folder into any directory on the computer.
+
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_3.png
    :width: 50 %
@@ -186,47 +187,44 @@ Linux
 1. Install Python (version 3.7, 3.8 or 3.9)
 
 - go to `<https://phoenixnap.com/kb/how-to-install-python-3-ubuntu/>`_
-- use Python3.7 instead of Python3.8
 
-.. note::
-	
-	Make sure that the alias python3 is set to Python3.7.x.
-	If not use update-alternatives to change it and test ist afterwards.
-	
-1.1 Update alternatives:
-
-``$ sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 2``
-
-1.2 Testing:
+1.1 Make sure a Python 3 Version is installed:
 
 ``$ python3 --version``
 	 
-2. Download the Spreadsheet Energy System Model Generator from `GIT <https://github.com/SESMG/SESMG/tree/master>`_ as .zip folder.
+2. Download the Spreadsheet Energy System Model Generator from `GitHub <https://github.com/SESMG/SESMG>`_ as .zip folder and extract the .zip folder into any directory on the computer.
 
-3. Extract the .zip folder into any directory on the computer.
 
-4. Install PIP 
+.. figure:: images/manual/Installation/sesmg_installation_ms_3.png
+   :width: 50 %
+   :align: center
+   
+.. note::
+	
+	If no packages have ever been installed on the computer using apt-get, ``sudo apt-get update`` must be executed first.
+
+3. Install pip: 
 
 ``$ sudo apt-get install python3-pip``
-
-5. Install tkinter 
-
-``$ sudo apt-get install python3.7-tk``
 	
-6. Install Graphviz
+4. Install Graphviz:
 
 ``$ sudo apt-get install graphviz``
 	
-7. Install the CBC Solver 
+5. Install the CBC Solver: 
 
 ``$ sudo apt-get install coinor-cbc``
 
+5. Install the libpq-dev to avoid a psycopg2 error:
+
+``$ sudo apt-get install libpq-dev``
+
 The gurobi solver may be used as **alternative** to the cbc solver. Be aware, that the gurobi-solver is not open-source and a license is required. However, the gurobi may be faster for certain types of optimization problems, especially for those containing binary decisions. The installation procedure of the gurobi solver is described in detail here: https://www.gurobi.com/documentation/quickstart.html
 	
-8. Execute the "Linux_installtion.sh" file. By first going to the path of the SESMG directory and then running the following:
+6. Execute the "Linux_installtion.sh" file. By first navigating to the path of the SESMG directory and then running the following:
 
 ``$ sudo sh Linux_installation.sh``
 
-9. The Spreadsheet Energy System Model Generator has been installed.
+7. The Spreadsheet Energy System Model Generator has been installed. Open a browser and open up: ``localhost:8501``.
 
 
