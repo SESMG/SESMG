@@ -40,24 +40,13 @@ https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01
 - download the operating system specific installer (e.g. “Windows x86-64 executable installer”)
 - execute the installer on your computer
 
-Linux only: 
-- run `$ sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 2`
-- test by running `$ python3 --version`
+### Step 2) Download the Spreadsheet Energy System Model Generator from `GitHub <https://github.com/SESMG/SESMG>`_ as .zip folder and extract the .zip folder into any directory on the computer. 
 
-### Step 2) Download the Spreadsheet Energy System Model Generator from GIT as .zip folder 
-
-### Step 3) Extract the .zip folder into any directory on the computer
-Watch out: we do not support spaces in the path yet. It will lead to an error if there is one.
-
-### Step 4) Install pip (Linux only)
+### Step 3) Install pip (Linux only)
 
 run `$ sudo apt-get install python3-pip`
 
-### Step 5) Install tkinter (Linux only)
-
-run `$ sudo apt-get install python3.7-tk`
-
-### Step 6) Download the CBC-solver (Windows and Linux only) 
+### Step 4) Download the CBC-solver (Windows and Linux only) 
 
 #### For Windows:
 
@@ -71,7 +60,7 @@ Download [here](http://ampl.com/dl/open/cbc/cbc-win64.zip)
 
 run `$ sudo apt-get install coinor-cbc`
 
-### Step 7) Install Graphviz (Windows and Linux only) 
+### Step 5) Install Graphviz (Windows and Linux only) 
 
 #### For Windows:
 Download [here](https://graphviz.gitlab.io/download/)
@@ -83,7 +72,11 @@ Download [here](https://graphviz.gitlab.io/download/)
 
 run `$ sudo apt-get install graphviz`
 
-### Step 8) Start the operating system specific installation file. 
+### Step 6) Install libpq-dev to avoid a psycopg2 error (Linux only)
+
+run `$ sudo apt-get install libpq-dev`
+
+### Step 7) Start the operating system specific installation file. 
 
 
 ## SESMG Features & Releases 
