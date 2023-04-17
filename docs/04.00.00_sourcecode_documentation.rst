@@ -10,9 +10,6 @@ Sourcecode Documentation
     can be visualized and evaluated.
 
     - `GUI GUI_st_global_functions <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.GUI_st.GUI_st_global_functions>`_
-    - `GUI 1_Main_Application <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.GUI_st.1_Main_Application>`_
-    - `GUI 2_Urban_District_Upscaling <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.GUI_st.pages.2_Urban_District_Upscaling>`_
-    - `GUI 3_Result_Processing <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.GUI_st.pages.3_Result_Processing>`_
 
 
 The software product "SESMG" can be divided into the following 4 process phases:
@@ -69,31 +66,7 @@ GUI/GUI_st_global_functions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.GUI_st.GUI_st_global_functions
    :members:
-   :undoc-members:
    :show-inheritance:
-
-GUI/1_Main_Application
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: docs.docu_gui
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-GUI/pages/2_Urban_District_Upscaling
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. .. automodule:: program_files.GUI_st.pages.2_Urban_District_Upscaling
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-GUI/pages/3_Result_Processing
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. .. automodule:: program_files.GUI_st.pages.3_Result_Processing
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 
 Urban District Upscaling Tool
 -------------------------------------------------------
