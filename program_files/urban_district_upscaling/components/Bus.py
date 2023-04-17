@@ -147,7 +147,8 @@ def create_building_electricity_bus_link(
     return sheets
 
 
-def get_building_type_specific_electricity_bus_label(building: dict) -> str:
+def get_building_type_specific_electricity_bus_label(building: pandas.Series
+                                                     ) -> str:
     """
         In this method, based on the building_type column, the
         distinction between RES, COM and IND is made.
