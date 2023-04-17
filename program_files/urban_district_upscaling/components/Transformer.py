@@ -344,7 +344,7 @@ def cluster_transformer_information(transformer: pandas.DataFrame,
     return cluster_parameters, sheets
 
 
-def transformer_clustering(building: pandas.DataFrame, sheets: dict,
+def transformer_clustering(building: list, sheets: dict,
                            sheets_clustering: dict, cluster_parameters: dict
                            ) -> (dict, dict):
     """
@@ -352,9 +352,9 @@ def transformer_clustering(building: pandas.DataFrame, sheets: dict,
         (gasheating, ashp, gchp, electric heating), which are located
         in the considered cluster.
 
-        :param building: DataFrame containing the building row from \
+        :param building: list containing the building information from \
             the US-Input sheet
-        :type building: pandas.Dataframe
+        :type building: list
         :param sheets: dictionary containing the pandas.Dataframes that\
             will represent the model definition's Spreadsheets
         :type sheets: dict

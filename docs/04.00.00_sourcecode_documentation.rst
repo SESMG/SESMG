@@ -74,14 +74,12 @@ US_Tool/pre_processing
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.pre_processing
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/clustering
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.clustering
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/components/Bus
