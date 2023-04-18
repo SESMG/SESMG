@@ -17,3 +17,13 @@ The xlsx-file contains an individual sheet for each applicable heursitic selecti
 - **value**: indicates, whether the lowest, the highest or the most average value of the selected criterion within the selected period will be chosen. Possible values are: lowest, highest, average
 
 - **average/extreme**: indicates whether extreme values or average values of a reference period will be considered. For example, whether the period with the highest (value=highest) maximum (average/extreme=extreme) temperature (criterion=temperature) or the highest (value=highest) average (average/extreme=average) temperature (criterion=temperature) will be selected. Possible values are: extreme, average
+
+characteristic_parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^
+A database of absorption chillers has been created in the characteristic_parameters file. This can be extended by the user if required.
+
+.. warning::
+
+    This database was taken from the examples of `oemof thermal <https://github.com/oemof/oemof-thermal/blob/master/examples/absorption_heatpump_and_chiller/data/characteristic_parameters.csv>`_ it is therefore not occupied by the developing team of the SESMG. A description of the parameters can be taken from oemof.thermal and papers by Ziegler.
+
+
