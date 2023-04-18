@@ -190,8 +190,7 @@ class Storages:
 
         data = self.weather_data
         # Import weather Data
-        data.index = pandas.to_datetime(data.index.values, utc=True)
-        data.index = pandas.to_datetime(data.index).tz_convert("Europe/Berlin")
+        data.index = pandas.to_datetime(data.index.values)
         # calculations for stratified thermal storage
         loss_rate, fixed_losses_relative, fixed_losses_absolute = \
             calculate_losses(
