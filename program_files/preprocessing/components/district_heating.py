@@ -2,9 +2,7 @@ import pandas
 import dhnx
 from dhnx.plotting import StaticMap
 from dhnx.network import ThermalNetwork
-import dhnx.optimization.oemof_heatpipe as heatpipe
 import dhnx.optimization.optimization_models as optimization
-import oemof.solph as solph
 import logging
 from program_files.preprocessing.components.district_heating_calculations \
     import *
@@ -934,8 +932,11 @@ def create_connect_dhnx(nodes_data: dict, busd: dict,
                                          anergy_or_exergy=anergy_or_exergy,
                                          thermal_net=thermal_net)
     if clustering:
-        connect_clustered_dh_to_system(oemof_opti_model=oemof_opti_model,
-                                       busd=busd)
+        oemof_opti_model = connect_clustered_dh_to_system(
+            oemof_opti_model=oemof_opti_model,
+            busd=busd,
+            thermal_network=thermal_net,
+            nodes_data=nodes_data)
     else:
         # connect non dh and dh system using links to represent losses
         if anergy_or_exergy:
@@ -954,7 +955,8 @@ def create_connect_dhnx(nodes_data: dict, busd: dict,
     for i in range(len(oemof_opti_model.nodes)):
         outputs = oemof_opti_model.nodes[i].outputs.copy()
         for j in outputs.keys():
-            if "consumers" in str(j) and "heat" in str(j) and "demand" in str(j):
+            if "consumers" in str(j) and "heat" in str(j) \
+                    and "demand" in str(j):
                 oemof_opti_model.nodes[i].outputs.pop(j)
 
     oemof_opti_model = add_excess_shortage_to_dh(
@@ -1042,7 +1044,8 @@ def use_data_of_already_calculated_thermal_network_data(
     # if the user has chosen the clustering of the thermal network
     # within the GUI it is triggered here
     if cluster_dh:
-        clustering_dh_network(nodes_data)
+        thermal_net = clustering_dh_network(nodes_data=nodes_data,
+                                            thermal_network=thermal_net)
     # save the calculated thermal network data within the optimization
     # result path
     save_thermal_network_data(thermal_net=thermal_net, path=result_path)
