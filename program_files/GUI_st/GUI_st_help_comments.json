@@ -32,7 +32,9 @@
     "udu_b_download_model_def": "Download the recently generated model definition.",
     "res_dd_result_folder": "Choose the an existing results folder which you want to open. The folder must be placed in the .../results/ directory of the SESMG application.",
     "res_b_load_results": "Loads existings results on click.",
-    "res_dd_pareto_point": "Choose the pareto point which you want to see in the short result overview."
+    "res_dd_pareto_point": "Choose the pareto point which you want to see in the short result overview.",
+    "demo_ni_kw_kwh": "kW is a unit of power, while kWh is a unit of energy. kW describes the rate at which energy is being used or generated, while kWh describes the total amount of energy consumed or produced over time.",
+    "demo_sb_heat_network_chp": "A, heat network and a CHP unit can only be built in combination in the Demo Tool. This is because it would not make sense to build a CHP or a heating network individually."
 }
 
 

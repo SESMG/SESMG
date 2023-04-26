@@ -13,8 +13,11 @@ from PIL import Image
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main
 from program_files.GUI_st.GUI_st_global_functions import \
-    st_settings_global, read_markdown_document
+    st_settings_global, read_markdown_document, import_GUI_input_values_json
 
+# Import GUI help comments from the comment json and safe as a dict
+GUI_helper = import_GUI_input_values_json(
+    os.path.dirname(os.path.dirname(__file__)) + "/GUI_st_help_comments.json")
 
 # creating global model run mode dict
 mode_dict = {
@@ -50,9 +53,9 @@ def dt_input_sidebar():
 
         # input value for model run name
         st.text_input(label="Name",
-                      value="Name")
+                      value="")
 
-        # input value for photovoltaiks
+        # input value for photovoltaics
         input_values_dict["input_pv"] = st.number_input(
             label="Photovoltaic in kW",
             min_value=0,
@@ -66,49 +69,67 @@ def dt_input_sidebar():
             max_value=27700,
             step=1)
 
+        # input value for air source heat pump
+        input_values_dict["input_ashp"] = st.number_input(
+            label="Air source heat pump in kW",
+            min_value=0,
+            max_value=5000,
+            step=1)
+
+        # input value for ground coupled heat pump
+        input_values_dict["input_gchp"] = st.number_input(
+            label="Ground coupled heat pump in kW",
+            min_value=0,
+            max_value=5000,
+            step=1)
+
         # input value for central thermal storage
         input_values_dict["input_battery"] = st.number_input(
             label="Battery in kWh",
             min_value=0,
             max_value=10000,
-            step=1)
-
-        # input value for combined heat and power plant in kW(electric)
-        input_values_dict["input_chp"] = st.number_input(
-            label="Combined Heat and Power Plant in kW(el)",
-            min_value=0,
-            max_value=1000000,
-            step=1)
-
-        # input value for ground coupled heat pump
-        input_values_dict["input_gchp"] = st.number_input(
-            label="Heat Pump in kW",
-            min_value=0,
-            max_value=5000,
-            step=1)
-
-        # # input value for central thermal storage
-        # input_values_dict["input_cts"] = st.number_input(
-        #     label="Thermal storage (central) in kWh",
-        #     min_value=0,
-        #     max_value=10000,
-        #     step=1000)
+            step=1,
+            help=GUI_helper["demo_ni_kw_kwh"])
 
         # input value for decentral thermal storage
         input_values_dict["input_dcts"] = st.number_input(
             label="Thermal Storage (decentral) in kWh",
             min_value=0,
             max_value=10000,
-            step=1)
+            step=1,
+            help=GUI_helper["demo_ni_kw_kwh"])
 
-        # bool if DH network should be active
-        input_dh = st.checkbox(
-            label="District Heating Network")
-        # 1 if True, 0 is False to fit with the model definition sheet
-        if input_dh:
-            input_values_dict["input_dh"] = 1
-        else:
-            input_values_dict["input_dh"] = 0
+        # selectbox for the scize of the District Heating Network
+        input_dh = st.selectbox(
+            label="District Heating Network",
+            options=["No District Heating Network","urban", "sub-urban", "rural"],
+            help=GUI_helper["demo_sb_heat_network_chp"])
+
+        # the for-loop iterates through each item in 'cases' and sets  the value for each parameter in a separate input values dictionary.
+        #If input_dh is equal to the name of the option in cases, then the values for the input parameters in input_values_dict are taken from the params dictionary. Otherwise, the values are set to zero.
+
+        cases = {
+            "No District Heating Network": {
+                "input_chp": 0,
+                "input_dh": 0
+            },
+            "urban": {
+                "input_chp_urban": 1,
+                "input_dh_urban": 1
+            },
+            "sub-urban": {
+                "input_chp_sub_urban": 1,
+                "input_dh_sub_urban": 1
+            },
+            "rural": {
+                "input_chp_rural": 1,
+                "input_dh_rural": 1
+            }
+        }
+
+        for option, params in cases.items():
+            for key, val in params.items():
+                input_values_dict[key] = val if input_dh == option else 0
 
         input_values_dict["input_criterion"] = st.select_slider(
             label="Optimization Criterion",
@@ -119,6 +140,7 @@ def dt_input_sidebar():
 
         if st.form_submit_button:
             return input_values_dict
+
     return None
 
 
@@ -150,7 +172,7 @@ def execute_sesmg_demo(demo_file, demo_results, mode):
         criterion_switch=criterion_switch,
         xlsx_results=False,
         console_results=False,
-        solver="cbc",
+        solver="gurobi",
         cluster_dh=False,
         district_heating_path=""
     )
@@ -187,27 +209,30 @@ def create_demo_model_definition(mode):
     # THERMAL STORAGE
     sheet["N5"] = input_values_dict["input_dcts"]
     sheet["O5"] = input_values_dict["input_dcts"]
-    # CHP
-    sheet = xfile["transformers"]
-    sheet["C4"] = input_values_dict["input_dh"]
-    sheet["L4"] = input_values_dict["input_chp"]
-    sheet["M4"] = input_values_dict["input_chp"]
     # GCHP
-    sheet["L5"] = input_values_dict["input_gchp"]
-    sheet["M5"] = input_values_dict["input_gchp"]
+    sheet = xfile["transformers"]
+    sheet["L7"] = input_values_dict["input_gchp"]
+    sheet["M7"] = input_values_dict["input_gchp"]
     # ASHP
-    # sheet = xfile["transformers"]
-    # sheet["L6"] = input_values_dict["ASHP"]
-    # sheet["M6"] = input_values_dict["ASHP"]
+    sheet["L8"] = input_values_dict["input_ashp"]
+    sheet["M8"] = input_values_dict["input_ashp"]
+
     # THERMAL STORAGE
     # sheet = xfile["storages"]
     # sheet["C4"] = input_values_dict["input_dh"]
     # sheet["N4"] = input_values_dict["input_cts"]
     # sheet["O4"] = input_values_dict["input_cts"]
 
-    # District Heating
+    # DISTRICT HEATING AND CHP
     sheet = xfile["links"]
-    sheet["C3"] = input_values_dict["input_dh"]
+    sheet["C3"] = input_values_dict["input_dh_urban"]
+    sheet["C4"] = input_values_dict["input_dh_sub_urban"]
+    sheet["C5"] = input_values_dict["input_dh_rural"]
+    sheet = xfile["transformers"]
+    sheet["C4"] = input_values_dict["input_chp_urban"]
+    sheet["C5"] = input_values_dict["input_chp_sub_urban"]
+    sheet["C6"] = input_values_dict["input_chp_rural"]
+
 
     # check if /demo exists in results direcotry
     if mainpath_rdf \
@@ -240,9 +265,8 @@ def show_demo_run_results(mode):
     annual_emissions = float(df_summary[mode_dict.get(mode)[1]] / 1000000)
 
     # calculate relative change refered to the status quo
-# TODO Update values!
     # costs in Mio.€/a
-    stat_quo_costs = 10.70828373
+    stat_quo_costs = 13.68616781
     # emissions in t/a
     stat_quo_emissions = 17221.43690357
     # relative values as str
@@ -277,103 +301,25 @@ def demo_start_page():
     """
     # import markdown text from GUI files
     imported_markdown = read_markdown_document(
-        document_path="docs/GUI_texts/demo_tool.md",
-        folder_path="")
+        document_path="docs/GUI_texts/demo_tool_text.md",
+        folder_path=f'{"docs/images/manual/DemoTool/*"}')
 
     # show markdown text
     st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
 
+    img = "docs/images/manual/DemoTool/demo_system_graph.png"
+    st.image(img, caption="", width=500)
 
-def demo_start_page_graph():
-    """
-        Imports graph to be displayed in the start page.
-    """
-    
-    st.subheader("Energy System Graph")
-    # import demo tool graph
-    image = Image.open(
-        os.path.join(mainpath_pf,
-                     "demo_tool",
-                     "v0.4.0_demo_model_definition",
-                     "demo_system_graph.png"))
+    # import markdown tables from GUI files
+    imported_markdown = read_markdown_document(
+        document_path="docs/GUI_texts/demo_tool_tables.md",
+        folder_path=f'{"docs/images/manual/DemoTool/*"}')
 
-    # show image
-    st.image(image)
+    # show markdown text
+    st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
 
-
-def demo_parameters_page():
-    """
-        Overview of the technical and energy system parameters.
-    """
-
-# TODO: Update to actual values and drop not used elements & unify wording!
-
-    # model_demands = [
-    #     ["Electricity", "14 000 000 kWh/a", "h0 Load Profile"],
-    #     ["Heat", "52 203 000 kWh/a", "EFH Load Profile"]]
-
-    # model_prices = [
-    #     ["Gas Import", "6.29 ct/kWh", "?"],
-    #     ["Electricity Import", "31.22 ct/kWh", "366 g/kWh"],
-    #     ["Electricity Export", "- 6.8 ct/kWh", "- 27 g/kWh"]]
-
-    model_demands_price = [
-        ["Electricity", "14 000 000 kWh/a", "h0 Load Profile",
-         "Gas Import", "6.29 ct/kWh", "?"],
-        ["Heat", "52 203 000 kWh/a", "EFH Load Profile",
-         "Electricity Import", "31.22 ct/kWh", "366 g/kWh"],
-        ["", "", "",
-         "Electricity Export", "- 6.8 ct/kWh", "- 27 g/kWh"]]
-
-    model_parameter = [
-        # ['Windturbines': '2 000 000 €/MW, 8 g/kWh, 20 a, max. 29.7 MW'],
-        ["Photovoltaics", "1 070 000 €/MW",
-         "27 g/kWh", "20 a", "max. 10 MW", ""],
-        ["Solar Thermal", "846 000 €/MW",
-         "12 g/kWh", "20 a", "max. 27.7 MW", ""],
-        ["Battery", "1 000 000 €/MWh",
-         "3.96 kg/(kWh * a) (invest)", "20 a", "max. 10 MWh", ""],
-        ["Gas Heating", "1 005 000 €/MW",
-         "232g/kWh", "18 a", "endless", "0.92 %"],
-        ["Combindes Heat and Power Plant", "760 000 €/MW(el.)",
-         "308 g/kWh(el), 265 g/kWh(th.)", "20 a", "endless",
-         "?? %(el.), ?? %(th.)"],
-        ["Ground-coupled Heatpump", "1 444 000 €/MW",
-         "8 g/kWh", "20 a", "max. 5 MW", ""],
-        # ["Thermal Storage", "35 000 €/MWh",
-        #  "743 g/(kWh * a)", "20 a", "3 % loss /d"],
-        ["Thermal Storage (decentral)", "49 000 €/MWh",
-         "604g/(kWh * a) (invest)", "20 a", "max. 10 MWh", "3 % loss /d"],
-        ["District Heating", "86 000 000 €",
-         "????", "40 a", "binary", "15 % loss"],
-        # ["HEATPUMP", "22 ct/kWh", "366 g/kWh"],
-        # ["Air Source Heat Pump", "1 318 000 €/MW", "12g/kWh", "18 a"],
-    ]
-
-    # stdf1, stdf2 = st.columns(2)
-    # # display dataframe for model demands
-    # stdf1.dataframe(data=pd.DataFrame(
-    #     data=model_demands,
-    #     columns=["Energy Form", "Demand", "Usage Pattern"]))
-
-    # # display dataframe for specific import & export cots
-    # stdf2.dataframe(data=pd.DataFrame(
-    #     data=model_prices,
-    #     columns=["Energy Form", "Specific Costs", "Specific Emissions"]))
-
-    st.subheader("Energy Demands and Import / Export Costs")
-    st.dataframe(data=pd.DataFrame(
-        data=model_demands_price,
-        columns=["Energy Demand", "Demand", "Usage Pattern",
-                 "Energy Form", "Specific Costs", "Specific Emissions"]))
-
-    # display dataframe for technology parameter
-    st.subheader("Technology Parameters")
-    st.dataframe(data=pd.DataFrame(
-        data=model_parameter,
-        columns=["Technology", "Specific Costs", "Specific Emissions",
-                 "Design Lifetime", "Investment Capacity",
-                 "Additional Information"]))
+    img = "docs/images/manual/DemoTool/district_heating_network.png"
+    st.image(img, caption="", width=500)
 
 
 def change_state_submitted_demo_run():
@@ -394,14 +340,7 @@ input_values_dict = dt_input_sidebar()
 # creating main demo tool
 # loading start page
 demo_start_page()
-# set columns
-democol1, democol2 = st.columns(spec=[3, 1.5])
-with democol1:
-    # loading parameter overview
-    demo_parameters_page()
-with democol2:
-    # loading system graph
-    demo_start_page_graph()
+
 
 # show results after submit button was clicked
 if st.session_state["state_submitted_demo_run"] == "done":
