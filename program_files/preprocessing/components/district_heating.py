@@ -579,7 +579,8 @@ def create_components(nodes_data: dict, anergy_or_exergy: bool,
             + str(start_date[0:4])
         ),
         frequence=(str(frequency[0])).upper(),
-        label_5=label_5
+        label_5=label_5,
+        bidirectional_pipes=True
     )
     return oemof_opti_model
 
