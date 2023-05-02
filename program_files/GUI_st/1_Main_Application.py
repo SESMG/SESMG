@@ -18,7 +18,7 @@ from program_files.GUI_st.GUI_st_global_functions import \
     clear_GUI_main_settings, safe_GUI_input_values, \
     import_GUI_input_values_json, st_settings_global, run_SESMG, \
     read_markdown_document, create_simplification_index, \
-    create_cluster_simplification_index
+    create_cluster_simplification_index, load_result_folder_list
 from program_files.preprocessing.pareto_optimization import run_pareto
 
 # settings the initial streamlit page settings
@@ -359,26 +359,32 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
 
                 GUI_main_dict["input_pareto_points"] = input_pareto_points
 
-# TODO: function needs to be added again!
-            # # Function to upload the distrct heating precalulation inside an \
-            # # expander.
-            # with st.expander("Advanced District Heating Precalculation"):
-            #     # TODO: check functionality of underlaying functions and
-            #     #  implement \
-            #     # in streamlit GUI
-            #     # Checkboxes modeling while using district heating clustering.
-            #     GUI_main_dict["input_cluster_dh"] = \
-            #         st.checkbox(
-            #             label="Clustering District Heating Network",
-            #             value=settings_cache_dict_reload[
-            #                 "input_cluster_dh"],
-            #             help=GUI_helper["main_cb_dh_clustering_active"])
-            #     # TODO: change to file uploader
-            #     # Fileuploader not able to print file path
-            #     # Upload DH Precalc File
-            #     district_heating_precalc_path = st.text_input(
-            #         "Type in path to your District Heating File input file.")
-            GUI_main_dict["input_cluster_dh"] = False
+#TODO: function needs to be added again!
+            # Function to upload the distrct heating precalulation inside an \
+            # expander.
+            with st.expander("Advanced District Heating Precalculation"):
+                # Checkboxes modeling when using district heating clustering.
+                GUI_main_dict["input_cluster_dh"] = \
+                    st.checkbox(
+                        label="Clustering District Heating Network",
+                        value=settings_cache_dict_reload[
+                            "input_cluster_dh"])
+                # read sub folders in the result folder directory un wich \
+                # the preresults are stored
+                existing_result_foldernames_list = load_result_folder_list()
+                # create select box with the folder names which are in the \
+                # results folder
+                existing_result_folder = st.selectbox(
+                    label="Choose the result folder",
+                    options=existing_result_foldernames_list,
+                    help=GUI_helper["main_dd_result_folder"])
+                # create path to precalc folder
+                GUI_main_dict["input_cluster_dh_folder"] = \
+                    os.path.join(os.path.dirname(os.path.dirname(
+                                    os.path.dirname(
+                                        os.path.abspath(__file__)))),
+                                 "results",
+                                 existing_result_folder)
 
             # create criterion switch
             GUI_main_dict["input_criterion_switch"] = \

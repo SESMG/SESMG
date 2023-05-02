@@ -12,7 +12,8 @@ import plotly.express as px
 from PIL import Image
 
 from program_files.GUI_st.GUI_st_global_functions import \
-    import_GUI_input_values_json, st_settings_global, read_markdown_document
+    import_GUI_input_values_json, st_settings_global, read_markdown_document, \
+    load_result_folder_list
 
 
 def result_processing_sidebar():
@@ -30,9 +31,8 @@ def result_processing_sidebar():
         st.header("Result Overview")
 
         # read sub folders in the result folder directory
-        existing_result_foldernames_list = [
-            os.path.basename(x) for x in glob.glob(f'{"results/*"}')]
-        existing_result_foldernames_list.sort()
+        existing_result_foldernames_list = load_result_folder_list()
+        
         # create select box with the folder names which are in the results folder
         existing_result_folder = st.selectbox(
             label="Choose the result folder",
@@ -123,8 +123,6 @@ def short_result_summary_system(result_path_summary):
     # format thousands separator
     # TODO: Tausendertrennung
     # df_summary = df_summary.iloc[1,:].style.format(thousands=" ",precision=0)
-    # TODO: add delta functions based on the latest results
-    # Display and import simulated cost values from summary dataframe
     cost1, cost2, cost3, cost4 = st.columns(4)
     cost1.metric(label=summary_headers[3], value=round(
         df_summary[summary_headers[3]], 1))
@@ -313,8 +311,8 @@ def show_energy_amounts(result_path_heat_amounts, result_path_elec_amounts):
     st.write("Info: The energy amount diagrams are only valid if the model \
              definition created with the Urban Upscaling Tool. \
              Otherwise there is no guarantee that there are no components \
-             missing in the diagrams.")
-
+             missing in the diagrams. Note that only components considered \
+             during the optimization are shown as option for vizualization.")
 
 def show_pareto(result_path_pareto):
     """

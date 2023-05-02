@@ -208,7 +208,7 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
             xlsx_results=GUI_main_dict["input_xlsx_results"],
             console_results=GUI_main_dict["input_console_results"],
             solver=GUI_main_dict["input_solver"],
-            district_heating_path="",
+            district_heating_path=GUI_main_dict["input_cluster_dh_folder"],
             cluster_dh=GUI_main_dict["input_cluster_dh"],
             pre_model_timeseries_prep=premodel_timeseries_prep,
             investment_boundaries=GUI_main_dict["input_premodeling_invest_boundaries"],
@@ -320,3 +320,25 @@ def create_cluster_simplification_index(input_value: str,
         input_output_dict[input_value_index] = 0
     else:
         input_output_dict[input_value_index] = input_output_dict[input_value]
+        
+        
+def load_result_folder_list():
+    
+    """
+        Load the folder names of the existing result folders.
+        
+        :return: - **existing_result_foldernames_list** (list) - list of \
+        exsting folder names.
+    """
+
+    # read sub folders in the result folder directory
+    existing_result_foldernames_list = [
+        os.path.basename(x) for x in glob.glob(f'{"results/*"}')]
+    # sort list
+    existing_result_foldernames_list.sort()
+    
+    return existing_result_foldernames_list
+
+
+
+

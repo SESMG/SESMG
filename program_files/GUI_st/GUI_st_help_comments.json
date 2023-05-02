@@ -20,6 +20,7 @@
     "main_cb_console_results": "Choose to enable detailed model information as terminal output.",
     "main_cb_criterion_switch": "Choose to switch primary and secondary criterion.",
     "main_ms_pareto_points": "Choose pareto point(s) if you want to start a pareto optimization run. The chosen value defines the constraint reduction in percent refering to the cost minimal pareto point.",
+    "main_dd_result_folder": "Choose the an existing results folder in which the precalculation was done. The folder must be placed in the .../results/ directory of the SESMG application.",
     "main_fs_clear_cache": "The latest GUI settings are saved on default. Press to reset all GUI settings.",
     "main_info_spinner": "After the optimization process has been running, you will be automatically directed to the results processing page.",
     "main_error_defintion": "Model definition is missing! Plase make sure to upload a model definition file.",

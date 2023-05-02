@@ -240,7 +240,6 @@ def show_demo_run_results(mode):
     annual_emissions = float(df_summary[mode_dict.get(mode)[1]] / 1000000)
 
     # calculate relative change refered to the status quo
-# TODO Update values!
     # costs in Mio.€/a
     stat_quo_costs = 10.70828373
     # emissions in t/a
@@ -305,8 +304,6 @@ def demo_parameters_page():
     """
         Overview of the technical and energy system parameters.
     """
-
-# TODO: Update to actual values and drop not used elements & unify wording!
 
     # model_demands = [
     #     ["Electricity", "14 000 000 kWh/a", "h0 Load Profile"],
