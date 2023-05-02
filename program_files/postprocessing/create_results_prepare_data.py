@@ -36,7 +36,7 @@ def add_component_to_loc(label: str, comp_dict: list,
         :type comp_dict: list
         :param df_list_of_components: DataFrame containing the list of \
             components which will be the components.csv afterwards
-        :type: pandas.DataFrame
+        :type df_list_of_components: pandas.DataFrame
         :param maxinvest: str holding the maximum possible investment
         :type maxinvest: str
         

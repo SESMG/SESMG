@@ -8,10 +8,8 @@ from datetime import datetime
 import logging
 import pandas
 
-from program_files.postprocessing.pareto_curve_plotting \
-    import collect_pareto_data
 from program_files.postprocessing.plotting \
-    import create_sink_differentiation_dict
+    import create_sink_differentiation_dict, collect_pareto_data
 from program_files.postprocessing.plotting_elec_amounts \
     import collect_electricity_amounts
 from program_files.postprocessing.plotting_heat_amounts \
@@ -20,8 +18,8 @@ from program_files.preprocessing.create_energy_system \
     import import_model_definition
 
 
-def create_scenario_save_folder(model_definition, directory: str,
-                                limit="") -> str:
+def create_model_definition_save_folder(model_definition, directory: str,
+                                        limit="") -> str:
     """
         In this method, the folder necessary for a Pareto run
         (name pattern
@@ -68,9 +66,9 @@ def calc_constraint_limits(result_folders: dict, limits: list) -> dict:
         definition. Based on these interval limits, the emission limits
         for the transformation points (as given in the GUI) are
         calculated. Here, 0.2 represented a reduction of 20% of the
-        interval width. The optimization will result a result scenario
-        which is limited to 80% (equal or lower) of the emissions
-        calculated for the monetary minimum scenario.
+        interval width. The optimization will result a result model
+        definition which is limited to 80% (equal or lower) of the
+        emissions calculated for the monetary minimum model definition.
         Consequently, it is calculated as follows:
         
         .. math::
@@ -223,8 +221,9 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict) -> str:
     
     # FIRST CRITERION
     result_folders = {"0": []}
-    # TODO enable more than one scenario (districts)
-    save_path = create_scenario_save_folder(model_definition, directory, "0")
+    # TODO enable more than one model definition (districts)
+    save_path = create_model_definition_save_folder(model_definition,
+                                                    directory, "0")
     # append optimum of first criterion driven run to the list of
     # result folders
     result_folders["0"].append(save_path)
@@ -232,9 +231,10 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict) -> str:
     run_SESMG(GUI_main_dict, model_definition, save_path)
     
     # SECOND CRITERION
-    # TODO enable more than one scenario (districts)
+    # TODO enable more than one model definition (districts)
     # set the save path
-    save_path2 = create_scenario_save_folder(model_definition, directory, "1")
+    save_path2 = create_model_definition_save_folder(model_definition,
+                                                     directory, "1")
     # append optimum of first criterion driven run to the list of
     # result folders
     result_folders.update({"1": [save_path2]})
@@ -260,8 +260,8 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict) -> str:
     for limit in limits:
         result_folders.update({str(limit): []})
         for model_definition in files[str(limit)]:
-            save_path = create_scenario_save_folder(model_definition,
-                                                    directory)
+            save_path = create_model_definition_save_folder(model_definition,
+                                                            directory)
             result_folders[str(limit)].append(save_path)
             run_SESMG(GUI_main_dict, model_definition, save_path)
             
