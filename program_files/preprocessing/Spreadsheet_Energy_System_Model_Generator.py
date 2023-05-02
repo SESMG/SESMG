@@ -160,7 +160,7 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
         
     # creates the data used for the results presentation in the GUI
     create_results.Results(
-        nd=nodes_data, optimization_model=om, energy_system=esys,
+        nodes_data=nodes_data, optimization_model=om, energy_system=esys,
         result_path=result_path, console_log=console_results,
         cluster_dh=cluster_dh)
 
