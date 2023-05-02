@@ -163,21 +163,18 @@ Preprocessing/data_preparation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.data_preparation
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/data_preparation/averaging
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 .. automodule:: program_files.preprocessing.data_preparation_algorithms.averaging
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/data_preparation/downsampling
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 .. automodule:: program_files.preprocessing.data_preparation_algorithms.downsampling
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/data_preparation/heuristic_selection
@@ -198,14 +195,12 @@ Preprocessing/data_preparation/random_sampling
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 .. automodule:: program_files.preprocessing.data_preparation_algorithms.random_sampling
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/data_preparation/slicing
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 .. automodule:: program_files.preprocessing.data_preparation_algorithms.slicing
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/import_weather_data
