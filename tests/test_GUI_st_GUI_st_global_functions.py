@@ -66,7 +66,7 @@ def test_create_timeseries_parameter_list(test_GUI_main_dict):
     parameter_list = create_timeseries_parameter_list(
         GUI_main_dict=test_GUI_main_dict,
         input_value_list=timeseries_prep_parameter_list,
-        input_timseries_season="input_timeseries_season")
+        input_timeseries_season="input_timeseries_season")
 
     # define target list
     target_parameter_list = ["slicing A", 83, "None", "days", 4]
