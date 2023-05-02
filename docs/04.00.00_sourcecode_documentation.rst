@@ -332,7 +332,6 @@ Postprocessing/plotting
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.postprocessing.plotting
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Postprocessing/plotting_capacities
