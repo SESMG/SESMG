@@ -370,7 +370,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                             "input_cluster_dh"])
 
                 # Checkboxes to activate dh precalc.
-                input_activate_dh_precalc = st.checkbox(
+                GUI_main_dict["input_activate_dh_precalc"] = st.checkbox(
                         label="Activate District Heating Precalculations",
                         value=settings_cache_dict_reload[
                             "input_activate_dh_precalc"])
@@ -392,7 +392,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                     existing_result_folder)
 
                 # set the path to dh precalc if active or not
-                if input_activate_dh_precalc:
+                if GUI_main_dict["input_activate_dh_precalc"]:
                     # create path to precalc folder
                     GUI_main_dict["input_dh_folder"] = \
                         os.path.join(os.path.dirname(os.path.dirname(
