@@ -127,8 +127,8 @@ def create_timeseries_parameter_list(GUI_main_dict: dict,
             down menu in the GUI
         :type input_timeseries_season: str
 
-        :return: - **parameter_list + input_value_season** (list) - list of
-            timeseries simplification parameters
+        :return: - **parameter_list + input_value_season** (list) - \
+            list of timeseries simplification parameters
     """
 
     # set parameter from the GUI main dict and store them in a list
