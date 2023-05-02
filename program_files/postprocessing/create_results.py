@@ -119,8 +119,53 @@ def charts(nodes_data: dict, optimization_model: solph.Model,
 
 class Results:
     """
-        Class for preparing Plotly results and logging the results of
-        Cbc-Solver
+        Returns a list of all defined components with the following
+        information:
+
+        +------------+----------------------------------------------+
+        |component   |   information                                |
+        +------------+----------------------------------------------+
+        |sinks       |   Total Energy Demand                        |
+        +------------+----------------------------------------------+
+        |sources     |   Total Energy Input, Max. Capacity,         |
+        |            |   Variable Costs, Periodical Costs           |
+        +------------+----------------------------------------------+
+        |transformers|   Total Energy Output, Max. Capacity,        |
+        |            |   Variable Costs, Investment Capacity,       |
+        |            |   Periodical Costs                           |
+        +------------+----------------------------------------------+
+        |storages    |   Energy Output, Energy Input, Max. Capacity,|
+        |            |   Total variable costs, Investment Capacity, |
+        |            |   Periodical Costs                           |
+        +------------+----------------------------------------------+
+        |links       |   Total Energy Output                        |
+        +------------+----------------------------------------------+
+
+        Furthermore, a list of recommended investments is printed.
+
+        The algorithm uses the following steps:
+
+            1. logging the component type for example "sinks"
+            2. creating pandas dataframe out of the results of the
+               optimization consisting of every single flow in/out
+               a component
+            3. calculating the investment and the costs regarding
+               the flows
+            4. adding the component to the list of components (loc)
+               which is part of the plotly dash and is the content
+               of components.csv
+            5. logging the component specific text with its parameters
+               in the console
+
+        :param nodes_data: dictionary containing data from excel \
+            model definition file
+        :type nodes_data: dict
+        :param optimization_model: optimized energy system
+        :type optimization_model: oemof.solph.Model
+        :param energy_system: original (unoptimized) energy system
+        :type energy_system: oemof.solph.Energysystem
+        :param result_path: Path where the results are saved.
+        :type result_path: str
     """
 
     results = None
@@ -139,53 +184,7 @@ class Results:
         cluster_dh: bool,
     ):
         """
-            Returns a list of all defined components with the following
-            information:
-
-            +------------+----------------------------------------------+
-            |component   |   information                                |
-            +------------+----------------------------------------------+
-            |sinks       |   Total Energy Demand                        |
-            +------------+----------------------------------------------+
-            |sources     |   Total Energy Input, Max. Capacity,         |
-            |            |   Variable Costs, Periodical Costs           |
-            +------------+----------------------------------------------+
-            |transformers|   Total Energy Output, Max. Capacity,        |
-            |            |   Variable Costs, Investment Capacity,       |
-            |            |   Periodical Costs                           |
-            +------------+----------------------------------------------+
-            |storages    |   Energy Output, Energy Input, Max. Capacity,|
-            |            |   Total variable costs, Investment Capacity, |
-            |            |   Periodical Costs                           |
-            +------------+----------------------------------------------+
-            |links       |   Total Energy Output                        |
-            +------------+----------------------------------------------+
-
-            Furthermore, a list of recommended investments is printed.
-
-            The algorithm uses the following steps:
-
-                1. logging the component type for example "sinks"
-                2. creating pandas dataframe out of the results of the
-                   optimization consisting of every single flow in/out
-                   a component
-                3. calculating the investment and the costs regarding
-                   the flows
-                4. adding the component to the list of components (loc)
-                   which is part of the plotly dash and is the content
-                   of components.csv
-                5. logging the component specific text with its parameters
-                   in the console
-
-            :param nodes_data: dictionary containing data from excel \
-                model definition file
-            :type nodes_data: dict
-            :param optimization_model: optimized energy system
-            :type optimization_model: oemof.solph.Model
-            :param energy_system: original (unoptimized) energy system
-            :type energy_system: oemof.solph.Energysystem
-            :param result_path: Path where the results are saved.
-            :type result_path: str
+            Inits the Results class.
         """
 
         # remove all old entries from method intern variables
