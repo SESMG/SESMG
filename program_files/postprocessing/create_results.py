@@ -23,7 +23,7 @@ def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str):
         optimized energy system as .xlsx file
 
         :param nodes_data: dictionary containing data from excel \
-            scenario file
+            model definition file
         :type nodes_data: dict
         :param optimization_model: optimized energy system
         :type optimization_model: oemof.solph.model
@@ -82,8 +82,8 @@ def charts(nodes_data: dict, optimization_model: solph.Model,
         Plots model results in- and outgoing flows of every bus of a
         given, optimized energy system (based on matplotlib)
 
-        :param nodes_data: dictionary containing data from excel
-                            scenario file
+        :param nodes_data: dictionary containing data from excel \
+            model definition file
         :type nodes_data: dict
         :param optimization_model: optimized energy system
         :type optimization_model: oemof.solph.Model
@@ -178,7 +178,7 @@ class Results:
                    in the console
 
             :param nodes_data: dictionary containing data from excel \
-                scenario file
+                model definition file
             :type nodes_data: dict
             :param optimization_model: optimized energy system
             :type optimization_model: oemof.solph.Model
@@ -234,7 +234,7 @@ class Results:
             
             logging_investments(investments_to_be_made=investments_to_be_made)
 
-        # Importing time system parameters from the scenario
+        # Importing time system parameters from the model definition
         ts = next(nodes_data["energysystem"].iterrows())[1]
         temp_resolution = ts["temporal resolution"]
         start_date = ts["start date"]
