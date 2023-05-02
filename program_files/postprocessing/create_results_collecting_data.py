@@ -33,9 +33,8 @@ def check_for_link_storage(nd, nodes_data: pandas.DataFrame) -> str:
     return return_str
 
 
-def get_sequence(
-    flow, component: dict, nd, output_flow: bool, esys: solph.EnergySystem
-) -> list:
+def get_sequence(flow, component: dict, nd, output_flow: bool,
+                 esys: solph.EnergySystem) -> list:
     """
         method to get the in- and outflow's sequences from the oemof
         produced structures
@@ -47,8 +46,8 @@ def get_sequence(
         :type component: dict
         :param nd: component under investigation
         :type nd: different oemof solph components
-        :param output_flow: boolean which decides rather the cosindered\
-            flows (flow) are output flows
+        :param output_flow: boolean which decides rather the \
+            considered flows (flow) are output flows
         :type output_flow: bool
         :param esys: oemof energy system variable holding the energy \
             system status before optimization used to reduce the
@@ -387,16 +386,16 @@ def collect_data(nodes_data, results, esys, result_path):
     total_demand = 0
     total_usage = 0
     # dictionary containing energy system components data
-    # label: [flow input1, flow input2, flow output1, flow output2, capacity,
-    # investment, periodical costs, max. investment, variable costs,
-    # constraint costs, component type]
+    # label: [flow input1, flow input2, flow output1, flow output2,
+    # capacity, investment, periodical costs, max. investment, variable
+    # costs, constraint costs, component type]
     comp_dict = {}
     for nd in esys.nodes:
         if not isinstance(nd, Bus):
             investment = None
             comp_label = str(nd.label)
             if isinstance(nd, HeatPipeline):
-                # make heatpipline labels easier to read in the list of
+                # make heatpipeline labels easier to read in the list of
                 # components (loc)
                 loc_label = change_heatpipelines_label(nd.label, result_path)
             else:
@@ -415,6 +414,7 @@ def collect_data(nodes_data, results, esys, result_path):
                 comp_output1,
                 comp_output2,
             ]
+            
             # get the nodes capacity
             comp_dict[loc_label] = get_capacities(
                 comp_type, comp_dict[loc_label], results, comp_label
@@ -469,4 +469,5 @@ def collect_data(nodes_data, results, esys, result_path):
                 total_usage += sum(comp_output1)
             # get the component's type for the loc
             comp_dict[loc_label].append(get_comp_type(nd))
+            
     return comp_dict, total_demand, total_usage

@@ -71,16 +71,16 @@ The software product "SESMG" can be divided into the following 4 process phases:
 
     TODO ADD DESCRIPTION
 
-    - `Postprocessing building_specific_results <LINK>`_
-    - `Postprocessing create_results <LINK>`_
-    - `Postprocessing create_results_collecting_data <LINK>`_
+    - `Postprocessing building_specific_results <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.building_specific_results>`_
+    - `Postprocessing create_results <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.create_results>`_
+    - `Postprocessing create_results_collecting_data <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.create_results_collecting_data>`_
     - `Postprocessing create_results_console_logging <LINK>`_
-    - `Postprocessing create_results_prepare_data <LINK>`_
-    - `Postprocessing pareto_curve_plotting <LINK>`_
-    - `Postprocessing plotting <LINK>`_
-    - `Postprocessing plotting_capacities <LINK>`_
-    - `Postprocessing plotting_elec_amounts <LINK>`_
-    - `Postprocessing plotting_heat_amounts <LINK>`_
+    - `Postprocessing create_results_prepare_data <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.create_results_prepare_data>`_
+    - `Postprocessing pareto_curve_plotting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.pareto_curve_plotting>`_
+    - `Postprocessing plotting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.plotting>`_
+    - `Postprocessing plotting_capacities <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.plotting_capacities>`_
+    - `Postprocessing plotting_elec_amounts <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.plotting_elec_amounts>`_
+    - `Postprocessing plotting_heat_amounts <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.plotting_heat_amounts>`_
 
 Graphical User Interface (GUI)
 -------------------------------------------------------
@@ -313,7 +313,6 @@ Postprocessing/create_results
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.postprocessing.create_results
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Postprocessing/create_results_collecting_data
