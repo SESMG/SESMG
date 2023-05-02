@@ -159,7 +159,7 @@ def prepare_data(comp_dict, total_demand, nd, result_path, df_result_table):
             comp_dict[label[:-10]][8] = comp_dict[label][8]
             comp_dict[label[:-10]][9] += comp_dict[label][9]
             comp_dict.pop(label)
-        elif comp_dict[label][10] == "dh":
+        elif comp_dict[label][8] == "dh": # TODO hier stimmt was nicht
             pipe_data = pandas.read_csv(result_path + "/pipes.csv")
             comp_dict[get_dh_label(label, pipe_data)] = comp_dict.pop(label)
     (

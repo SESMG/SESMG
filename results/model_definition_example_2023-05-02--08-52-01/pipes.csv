@@ -1,0 +1,6 @@
+id,id,from_node,to_node,length,component_type,street
+1,1,forks-0,consumers-0,13299.295945375557,Pipe,ID1
+2,2,producers-0,forks-4,15047.65569470813,Pipe,district_heat_bus
+3,3,forks-1,forks-4,576249.3824197064,Pipe,ID_street1
+4,4,forks-4,forks-0,6381.901998995252,Pipe,ID_street1
+5,5,forks-0,forks-2,585875.8211200516,Pipe,ID_street1
