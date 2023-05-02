@@ -58,7 +58,7 @@ def get_sequence(flow, component: dict, node, output_flow: bool,
             dependency of the correctness of user's input
         :type esys: solph.EnergySystem
         
-        :return - **return_list** (list) - list containing the found \
+        :return: - **return_list** (list) - list containing the found \
             flows sequences
     """
     return_list = []
