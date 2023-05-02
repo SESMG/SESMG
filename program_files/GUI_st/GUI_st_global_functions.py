@@ -99,6 +99,8 @@ def clear_GUI_main_settings(json_file_path: str):
         "input_premodeling_timeseries_cluster_index_index": 0,
         "input_pareto_points": [],
         "input_cluster_dh": False,
+        "input_dh_folder_index": 0,
+        "input_activate_dh_precalc": False,
         "input_criterion_switch": False,
         "input_num_threads": 1,
         "input_solver": "cbc",

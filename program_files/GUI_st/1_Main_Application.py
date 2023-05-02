@@ -359,7 +359,6 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
 
                 GUI_main_dict["input_pareto_points"] = input_pareto_points
 
-#TODO: function needs to be added again!
             # Function to upload the distrct heating precalulation inside an \
             # expander.
             with st.expander("Advanced District Heating Precalculation"):
@@ -369,6 +368,13 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                         label="Clustering District Heating Network",
                         value=settings_cache_dict_reload[
                             "input_cluster_dh"])
+
+                # Checkboxes to activate dh precalc.
+                input_activate_dh_precalc = st.checkbox(
+                        label="Activate District Heating Precalculations",
+                        value=settings_cache_dict_reload[
+                            "input_activate_dh_precalc"])
+
                 # read sub folders in the result folder directory un wich \
                 # the preresults are stored
                 existing_result_foldernames_list = load_result_folder_list()
@@ -377,14 +383,25 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                 existing_result_folder = st.selectbox(
                     label="Choose the result folder",
                     options=existing_result_foldernames_list,
-                    help=GUI_helper["main_dd_result_folder"])
-                # create path to precalc folder
-                GUI_main_dict["input_cluster_dh_folder"] = \
-                    os.path.join(os.path.dirname(os.path.dirname(
-                                    os.path.dirname(
-                                        os.path.abspath(__file__)))),
-                                 "results",
-                                 existing_result_folder)
+                    help=GUI_helper["main_dd_result_folder"],
+                    index=settings_cache_dict_reload[
+                        "input_dh_folder_index"])
+
+                GUI_main_dict["input_dh_folder_index"] = \
+                    existing_result_foldernames_list.index(
+                    existing_result_folder)
+
+                # set the path to dh precalc if active or not
+                if input_activate_dh_precalc:
+                    # create path to precalc folder
+                    GUI_main_dict["input_dh_folder"] = \
+                        os.path.join(os.path.dirname(os.path.dirname(
+                                        os.path.dirname(
+                                            os.path.abspath(__file__)))),
+                                     "results",
+                                     existing_result_folder)
+                else:
+                    GUI_main_dict["input_dh_folder"] = ""
 
             # create criterion switch
             GUI_main_dict["input_criterion_switch"] = \
