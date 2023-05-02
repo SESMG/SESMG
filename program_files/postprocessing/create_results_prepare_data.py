@@ -1,3 +1,7 @@
+"""
+    Christian Klemm - christian.klemm@fh-muenster.de
+    Gregor Becker - gregor.becker@fh-muenster.de
+"""
 import pandas
 
 # columns_of_plotly_table
@@ -17,15 +21,34 @@ copt = [
 ]
 
 
-def add_component_to_loc(label, comp_dict, df_list_of_components, maxinvest="---"):
+def add_component_to_loc(label: str, comp_dict: list,
+                         df_list_of_components: pandas.DataFrame,
+                         maxinvest="---") -> pandas.DataFrame:
     """
-    adds the given component with its parameters to
-    list of components (loc)
+        adds the given component with it's parameters to list of
+        components (loc)
+        
+        :param label: str containing the component's label shown in \
+            list of components (loc)
+        :type label: str
+        :param comp_dict: list holding the energy system component's \
+            information as specified in the main method collect_data
+        :type comp_dict: list
+        :param df_list_of_components: DataFrame containing the list of \
+            components which will be the components.csv afterwards
+        :type: pandas.DataFrame
+        :param maxinvest: str holding the maximum possible investment
+        :type maxinvest: str
+        
+        :return: - **df_list_of_components** (pandas.DataFrame) - \
+            DataFrame containing the updated (new added line) list of \
+            components which will be the components.csv afterwards
     """
     if str(type(comp_dict[4])) not in ["<class 'float'>", "<class 'int'>"]:
         capacity = max(comp_dict[4])
     else:
         capacity = comp_dict[4]
+    # add the new component's line to the list of components dataframe
     df_list_of_components = pandas.concat(
         [
             df_list_of_components,
@@ -53,55 +76,35 @@ def add_component_to_loc(label, comp_dict, df_list_of_components, maxinvest="---
     return df_list_of_components
 
 
-def get_dh_label(label, param):
-    label_parts = str(label).split("-")
-    diameter = str(label).split("_")[2]
-    if "consumers" in str(label_parts):
-        pipe = param.loc[param["to_node"] == "consumers-" + label_parts[-1]]
-        name = (
-            str(pipe["street"].values[0])
-            + "_"
-            + str(diameter)
-            + "_f"
-            + str(label_parts[-3])
-            + "_to_c"
-            + str(label_parts[-1])
-        )
-    elif "producers" in str(label_parts):
-        pipe = param.loc[param["from_node"] == "producers-" + label_parts[-3]]
-        name = (
-            "producer"
-            + str(pipe["street"].values[0])
-            + "_"
-            + str(diameter)
-            + "_p"
-            + str(label_parts[-3])
-            + "_to_f"
-            + str(label_parts[-1])
-        )
-    else:
-        name = ""
-        pipe_dict = {"_": [-1, -3], "_revers_": [-3, -1]}
-        for i in pipe_dict:
-            pipe = param.loc[
-                (param["to_node"] == "forks-" + label_parts[pipe_dict[i][0]])
-                & (param["from_node"] == "forks-" + label_parts[pipe_dict[i][1]])
-            ]
-            if not pipe.empty:
-                name = (
-                    str(pipe["street"].values[0])
-                    + i
-                    + str(diameter)
-                    + "_f"
-                    + str(label_parts[-3])
-                    + "_to_f"
-                    + str(label_parts[-1])
-                )
-
-    return str(name)
-
-
-def append_flows(label, comp_dict, df_result_table):
+def append_flows(label: str, comp_dict: list,
+                 df_result_table: pandas.DataFrame) -> pandas.DataFrame:
+    """
+        In this method, the time series of inflows and outflows as well
+        as the capacities of the component (comp_dict) are appended to
+        the data structure df_result_table. Here, each time series
+        represents a column. This data structure is stored at the end
+        of the result processing as file result.csv in the result
+        folder of the model definition and represents the basis for the
+        plotting in the GUI.
+        
+        :param label: str containing the component's label shown in \
+            list of components (loc)
+        :type label: str
+        :param comp_dict: list holding the energy system component's \
+            information as specified in the main method collect_data
+        :type comp_dict: list
+        :param df_result_table: DataFrame containing the energy \
+            system's flows which will be plotted within the GUI and \
+            exported in the result.csv file in the model definition's \
+            result folder
+        :type df_result_table: pandas.DataFrame
+    
+        :return: - **df_result_table** (pandas.DataFrame) - \
+            DataFrame containing the updated energy system's flows \
+            (added new columns) which will be plotted within the GUI \
+            and exported in the result.csv file in the model \
+            definition's result folder
+    """
     flow_type_dict = {
         0: "_input1",
         1: "_input2",
@@ -110,22 +113,69 @@ def append_flows(label, comp_dict, df_result_table):
         4: "_capacity",
     }
     dict_of_columns = {}
+    # append the components flows to the dict of columns for later
+    # plotting within the GUI
     for flow in flow_type_dict:
-        if str(type(comp_dict[flow])) not in ["<class 'float'>", "<class 'int'>"]:
+        if str(type(comp_dict[flow])) not in ["<class 'float'>",
+                                              "<class 'int'>"]:
             if sum(comp_dict[flow]) != 0:
                 dict_of_columns[label + flow_type_dict[flow]] = comp_dict[flow]
+    # add the new added columns to the df results table which will be
+    # the results.csv in the model definition's result folder
     df_result_table = pandas.concat([df_result_table,
                                      pandas.DataFrame(dict_of_columns)],
                                     axis=1)
     return df_result_table
 
 
-def prepare_loc(comp_dict, df_result_table, df_list_of_components):
+def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
+                df_list_of_components: pandas.DataFrame
+                ) -> (pandas.DataFrame, float, float, float, pandas.DataFrame):
+    """
+        In this method, on the one hand, the components as well as
+        their flows are added to the list of components (loc) and to
+        the df_result_table and, on the other hand, the costs
+        (variable and periodic) as well as emissions of the energy
+        system are balanced.
+        
+        :param comp_dict: dictionary holding the energy systems' \
+            components data e.g. investment, periodical costs, etc.
+        :type comp_dict: dict
+        :param df_result_table: DataFrame containing the energy \
+            system's flows which will be plotted within the GUI and \
+            exported in the result.csv file in the model definition's \
+            result folder
+        :type df_result_table: pandas.DataFrame
+        :param df_list_of_components: DataFrame containing the list of \
+            components which will be the components.csv afterwards
+        :type df_list_of_components: pandas.DataFrame
+        
+        :return: - **df_list_of_components** (pandas.DataFrame) - \
+                    DataFrame containing the list of components which \
+                    will be the components.csv afterwards
+                 - **total_periodical_costs** (float) - total \
+                    periodical costs of the considered energy system
+                 - **total_variable_costs** (float) - total \
+                    variable costs of the considered energy system
+                 - **total_constrain_costs** (float) - total \
+                    constraint costs of the considered energy system
+                 - **df_list_of_components** (pandas.DataFrame) - \
+                    DataFrame containing the energy system's flows \
+                    which will be plotted within the GUI and exported \
+                    in the result.csv file in the model definition's \
+                    result folder
+    """
+    # clear the old values
     total_periodical_costs = 0
     total_variable_costs = 0
     total_constraint_costs = 0
+    # iterate threw all components add their flows to the results.csv
+    # and it's parameters to the list of components (loc)
     for label in comp_dict:
-        df_result_table = append_flows(str(label), comp_dict[label], df_result_table)
+        df_result_table = append_flows(
+            label=str(label),
+            comp_dict=comp_dict[label],
+            df_result_table=df_result_table)
         df_list_of_components = add_component_to_loc(
             label=label,
             comp_dict=comp_dict[label],
@@ -145,30 +195,74 @@ def prepare_loc(comp_dict, df_result_table, df_list_of_components):
     )
 
 
-def prepare_data(comp_dict, total_demand, nd, result_path, df_result_table):
+def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict
+                 ) -> (pandas.DataFrame, float, float, float, pandas.DataFrame,
+                       float):
+    """
+        This method is the main method of data preparation for
+        subsequent export and/or display in the GUI of the energy
+        system's result data.
+    
+        :param comp_dict: dictionary holding the energy systems' \
+            components data e.g. investment, periodical costs, etc.
+        :type comp_dict: dict
+        :param total_demand: float holding the energy systems final \
+            energy demand calculated based on the energy systems' sinks
+        :type total_demand: float
+        :param nodes_data: dictionary containing data from excel \
+                model definition file
+        :type nodes_data: dict
+        
+        :return: - **df_list_of_components** (pandas.DataFrame) - \
+                    DataFrame containing the list of components which \
+                    will be the components.csv afterwards
+                 - **total_periodical_costs** (float) - total \
+                    periodical costs of the considered energy system
+                 - **total_variable_costs** (float) - total \
+                    variable costs of the considered energy system
+                 - **total_constrain_costs** (float) - total \
+                    constraint costs of the considered energy system
+                 - **df_list_of_components** (pandas.DataFrame) - \
+                    DataFrame containing the energy system's flows \
+                    which will be plotted within the GUI and exported \
+                    in the result.csv file in the model definition's \
+                    result folder
+                 - **total_demand** (float) - total final energy \
+                    demand of the considered energy system
+    """
     df_list_of_components = pandas.DataFrame(columns=copt)
+    df_result_table = pandas.DataFrame()
+    # iterate threw all the energy systems' components
     for label in comp_dict.copy():
+        # reduce the energy system's final energy demand by the flow of
+        # the insulation measures source components
         if "insulation" in label:
             total_demand -= sum(comp_dict[label][2])
             comp_dict[label][-1] = "insulation"
+        # get rid of non investable components like the ambient sources
+        # of heat pumps
         elif "high_temp" in label or "low_temp" in label:
             comp_dict.pop(label)
-        elif "collector" in label and label[:-10] in list(nd["sources"]["label"]):
+        # handling the investment structure of solar thermal collector
+        # component
+        elif "collector" in label \
+                and label[:-10] in list(nodes_data["sources"]["label"]):
             for i in range(0, 3):
                 comp_dict[label[:-10]][i] = comp_dict[label][i]
             comp_dict[label[:-10]][8] = comp_dict[label][8]
             comp_dict[label[:-10]][9] += comp_dict[label][9]
             comp_dict.pop(label)
-        elif comp_dict[label][8] == "dh": # TODO hier stimmt was nicht
-            pipe_data = pandas.read_csv(result_path + "/pipes.csv")
-            comp_dict[get_dh_label(label, pipe_data)] = comp_dict.pop(label)
+    # after updating the comp_dict data structure prepare the result
+    # dataframes
     (
         df_list_of_components,
         total_periodical_costs,
         total_variable_costs,
         total_constraint_costs,
         df_result_table,
-    ) = prepare_loc(comp_dict, df_result_table, df_list_of_components)
+    ) = prepare_loc(comp_dict=comp_dict,
+                    df_result_table=df_result_table,
+                    df_list_of_components=df_list_of_components)
     return (
         df_list_of_components,
         total_periodical_costs,

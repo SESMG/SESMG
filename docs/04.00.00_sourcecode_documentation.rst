@@ -319,7 +319,6 @@ Postprocessing/create_results_collecting_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.postprocessing.create_results_collecting_data
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Postprocessing/create_results_console_logging

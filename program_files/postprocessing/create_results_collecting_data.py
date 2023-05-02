@@ -1,3 +1,7 @@
+"""
+    Christian Klemm - christian.klemm@fh-muenster.de
+    Gregor Becker - gregor.becker@fh-muenster.de
+"""
 import oemof.solph as solph
 from oemof.network.network import Bus, Sink, Source
 from oemof.solph.custom import Link

@@ -127,7 +127,7 @@ class Results:
     esys = None
     comp_capacity = None
     df_list_of_components = None
-    df_result_table = pd.DataFrame()
+    df_result_table = None
 
     def __init__(
         self,
@@ -190,11 +190,9 @@ class Results:
 
         # remove all old entries from method intern variables
         investments_to_be_made = {}
-        total_usage = 0
         # define class variables
         self.esys = energy_system
         self.results = solph.processing.results(optimization_model)
-        self.df_result_table = pd.DataFrame()
 
         # collect the energy system results which have to be extracted
         # from the component specific result object
@@ -214,9 +212,7 @@ class Results:
             total_demand,
         ) = prepare_data(comp_dict=comp_dict,
                          total_demand=total_demand,
-                         nd=nodes_data,
-                         result_path=result_path,
-                         df_result_table=self.df_result_table)
+                         nodes_data=nodes_data)
         
         # SUMMARY
         meta_results = solph.processing.meta_results(optimization_model)
