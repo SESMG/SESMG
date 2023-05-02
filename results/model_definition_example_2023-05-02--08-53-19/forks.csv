@@ -1,5 +1,0 @@
-id,id,lat,lon,component_type,street,t,bus
-0,0,50.01392638905663,7.227338574955038,Fork,ID_street1,0.498325983707215,
-1,1,45.0,5.0,Fork,,,
-2,2,55.0,10.0,Fork,,,
-4,4,49.95925172516623,7.200466893728587,Fork,ID_street1,0.492864166641302,district_heat_bus
