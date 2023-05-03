@@ -32,34 +32,47 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd: dict,
                         
     # TODO Verlust der Hausübergabe Station
                 #  15.8689kWh/(m*a) bei 1500 Vollaststunden/a
+                
+    # TODO implement exergy or anergy distinction
     """
     oemof_opti_model = district_heating.remove_redundant_sinks(
         oemof_opti_model=oemof_opti_model)
+    oemof_opti_model = district_heating_calculations.calc_heat_pipe_attributes(
+            oemof_opti_model=oemof_opti_model,
+            pipe_types=nodes_data["pipe types"])
     # create link to connect consumers heat bus to the dh-system
     for num, consumer in thermal_network.components["consumers"].iterrows():
         bus = solph.Bus(label="clustered_consumers_{}".format(consumer["id"]))
         oemof_opti_model.nodes.append(bus)
         busd["clustered_consumers_{}".format(consumer["id"])] = bus
-        link = nodes_data["pipe types"].loc["clustered_consumer_link"]
+        link = nodes_data["pipe types"].loc[
+            nodes_data["pipe types"]["label_3"] == "clustered_consumer_link"]
+        pipes = thermal_network.components["pipes"]
+        pipe = pipes.loc[pipes["to_node"] == "consumers-{}".format(
+            consumer["id"])]
+        print(pipe["length"])
         # link inputs of clustered house connection
         inputs = {
             oemof_opti_model.buses[heatpipe.Label(
                 "consumers",
                 "heat",
                 "bus",
-                "consumers-{}".format(consumer["id"]))]: solph.Flow(
+                "consumers-{}".format(consumer["id"]),
+                "exergy")]: solph.Flow(
                     investment=solph.Investment(
-                        ep_costs=float(link["periodical costs"]
-                                       * consumer["length"]),
+                        ep_costs=float(link["capex_pipes"]
+                                       * pipe["length"][0]),
                         periodical_constraint_costs=float(
-                            link["periodical constraint costs"]
-                            * consumer["length"]
-                        ),
+                            link["periodical_constraint_costs"]
+                            * pipe["length"][0]),
                         maximum=200 * len(consumer["input"]),
                         minimum=0,
                         existing=0,
                         nonconvex=False,
-                    )
+                        fix_constraint_costs=0
+                    ),
+                    emission_factor=0,
+                    variable_costs=0
                 )
         }
         
@@ -67,21 +80,23 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd: dict,
             solph.Transformer(
                 label=(
                     "pipe-clustered{}-".format(consumer["id"])
-                    + str(consumer["length"])
+                    + str(pipe["length"][0])
                 ),
                 inputs=inputs,
                 outputs={
                     busd["clustered_consumers_{}".format(consumer["id"])]:
-                        solph.Flow()
+                        solph.Flow(emission_factor=0, variable_costs=0)
                 },
                 conversion_factors={
                     busd["clustered_consumers_{}".format(consumer["id"])]: 1
-                    - (((15.8689 / 1500) * consumer["length"]) / 24.42)
+                    - (((15.8689 / 1500) * pipe["length"][0]) / 24.42)
                 },
             )
         )
+        
         counter = 1
-        housestation = nodes_data["pipe types"].loc["dh_heatstation"]
+        housestation = nodes_data["pipe types"].loc[
+            nodes_data["pipe types"]["label_3"] == "dh_heatstation"]
         for consumer_input in consumer["input"]:
             oemof_opti_model.nodes.append(
                 solph.Transformer(
@@ -91,18 +106,21 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd: dict,
                     inputs={
                         busd[
                             "clustered_consumers_{}".format(consumer["id"])
-                        ]: solph.Flow()
+                        ]: solph.Flow(emission_factor=0, variable_costs=0)
                     },
                     outputs={
                         busd[consumer_input]: solph.Flow(
                             investment=solph.Investment(
-                                ep_costs=float(housestation[
-                                                   "periodical costs"]),
+                                ep_costs=float(housestation["capex_pipes"]),
+                                periodical_constraint_costs=0,
                                 minimum=0,
                                 maximum=999 * len(consumer["input"]),
                                 existing=0,
                                 nonconvex=False,
-                            )
+                                fix_constraint_costs=0
+                            ),
+                            emission_factor=0,
+                            variable_costs=0
                         )
                     },
                     conversion_factors={
@@ -140,12 +158,18 @@ def clustering_dh_network(nodes_data: dict, thermal_network: ThermalNetwork
     forks_street = {}
     active_streets = nodes_data["district heating"].loc[
         nodes_data["district heating"]["active"] == 1]
+    # iterate threw all active street section's given in the district
+    # heating spreadsheet
     for index, street in active_streets.iterrows():
+        # iterate threw all forks and search the ones with matching
+        # street label
         street_forks = []
         for num, fork in forks.iterrows():
-            if fork["street"] == street["street section name"]:
+            if fork["street"] == street["label"]:
                 street_forks.append(fork["id"])
-        forks_street.update({street["street section name"]: street_forks})
+        # update the dict holding the combination of the street label
+        # and a list of it's connected forks
+        forks_street.update({street["label"]: street_forks})
         
     streets_pipe_length = {}
     # get the length of all pipes connecting street part to consumer of
@@ -153,17 +177,25 @@ def clustering_dh_network(nodes_data: dict, thermal_network: ThermalNetwork
     for street in forks_street:
         if forks_street[street]:
             num = 0
+            # iterate threw the forks of the studied street section
+            # (street) change the integer id to forks-<ID>
             for fork in forks_street[street]:
                 forks_street[street][num] = "forks-{}".format(fork)
                 num += 1
+            # iterate threw all of the energy systems' pipes searching
+            # pipes connecting a consumer with one of the forks of the
+            # previously created dictionary
             for num, pipe in pipes.iterrows():
+                # from node in the created list and to node contains
+                # consumers
                 if pipe["from_node"] in forks_street[street] \
                         and "consumers" in pipe["to_node"]:
+                    # create the list which will be added to the
+                    # collection dictionary (street_pipe_length)
                     pipe_part = [pipe["id"], pipe["from_node"],
                                  pipe["to_node"], pipe["length"]]
-                    
                     if street not in streets_pipe_length:
-                        streets_pipe_length.update({street: pipe_part})
+                        streets_pipe_length.update({street: [pipe_part]})
                     else:
                         streets_pipe_length[street].append(pipe_part)
                     thermal_network.components["pipes"] = \
@@ -175,7 +207,9 @@ def clustering_dh_network(nodes_data: dict, thermal_network: ThermalNetwork
     for street in streets_pipe_length:
         counter, lat, lon = 0, 0, 0
         inputs = []
+        # iterate threw the collected street consumers' information
         for street_consumer in streets_pipe_length[street]:
+            # search fot the corresponding consumer
             for num, consumer in consumers.iterrows():
                 if street_consumer[2] == "consumers-{}".format(consumer["id"]):
                     counter += 1
@@ -187,9 +221,10 @@ def clustering_dh_network(nodes_data: dict, thermal_network: ThermalNetwork
                     ] = thermal_network.components["consumers"].drop(
                         index=consumer["id"]
                     )
+        # collect the consumers information streetwise
         streets_consumer.update({street: [counter, lat, lon, inputs]})
+        
     counter = 0
-    
     # clear pipes Dataframe
     for num, pipe in thermal_network.components["pipes"].iterrows():
         thermal_network.components["pipes"] = \
@@ -208,9 +243,11 @@ def clustering_dh_network(nodes_data: dict, thermal_network: ThermalNetwork
         for i in streets_pipe_length[street]:
             length += i[3]
         streets_pipe_length.update({street: length})
+    
     street_sections = district_heating.convert_dh_street_sections_list(
         nodes_data["district heating"].copy()
     )
+    
     # create the clustered consumer and its fork and pipe
     for street in streets_consumer:
         # add consumer to thermal network components (dummy
@@ -277,6 +314,7 @@ def clustering_dh_network(nodes_data: dict, thermal_network: ThermalNetwork
     street_sections = district_heating.convert_dh_street_sections_list(
         nodes_data["district heating"].copy()
     )
+    
     thermal_network = district_heating.create_intersection_forks(
         street_sec=nodes_data["district heating"],
         thermal_net=thermal_network)
@@ -287,4 +325,6 @@ def clustering_dh_network(nodes_data: dict, thermal_network: ThermalNetwork
     thermal_network = district_heating.create_supply_line(
         streets=nodes_data["district heating"],
         thermal_net=thermal_network)
-    return district_heating.adapt_dhnx_style(thermal_net=thermal_network)
+    
+    return district_heating.adapt_dhnx_style(thermal_net=thermal_network,
+                                             cluster_dh=False)

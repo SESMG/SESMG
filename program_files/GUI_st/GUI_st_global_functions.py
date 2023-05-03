@@ -181,7 +181,7 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
             xlsx_results=GUI_main_dict["input_xlsx_results"],
             console_results=GUI_main_dict["input_console_results"],
             solver=GUI_main_dict["input_solver"],
-            district_heating_path="",
+            district_heating_path=GUI_main_dict["input_dh_folder"],
             cluster_dh=GUI_main_dict["input_cluster_dh"])
 
     # If pre-modeling is activated a second run will be carried out
@@ -210,7 +210,7 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
             xlsx_results=GUI_main_dict["input_xlsx_results"],
             console_results=GUI_main_dict["input_console_results"],
             solver=GUI_main_dict["input_solver"],
-            district_heating_path=GUI_main_dict["input_cluster_dh_folder"],
+            district_heating_path=GUI_main_dict["input_dh_folder"],
             cluster_dh=GUI_main_dict["input_cluster_dh"],
             pre_model_timeseries_prep=premodel_timeseries_prep,
             investment_boundaries=GUI_main_dict["input_premodeling_invest_boundaries"],
