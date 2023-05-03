@@ -367,13 +367,15 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                     st.checkbox(
                         label="Clustering District Heating Network",
                         value=settings_cache_dict_reload[
-                            "input_cluster_dh"])
+                            "input_cluster_dh"],
+                        help=GUI_helper["main_cb_cluster_dh"])
 
                 # Checkboxes to activate dh precalc.
                 GUI_main_dict["input_activate_dh_precalc"] = st.checkbox(
                         label="Activate District Heating Precalculations",
                         value=settings_cache_dict_reload[
-                            "input_activate_dh_precalc"])
+                            "input_activate_dh_precalc"],
+                        help=GUI_helper["main_cb_activate_dh_precalc"])
 
                 # read sub folders in the result folder directory un wich \
                 # the preresults are stored
