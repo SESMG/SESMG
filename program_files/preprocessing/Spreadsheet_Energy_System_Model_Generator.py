@@ -212,9 +212,13 @@ def sesmg_main_including_premodel(
             first optimization run which is used to reduced the model \
             definition's amount of components.
         :type pre_model_timeseries_prep: list
-        :param investment_boundaries: TODO @chrklemm
+        :param investment_boundaries: Indicates whether "tightening of \
+            technical boundaries", i.e. limiting of investment limits \
+            based on the pre-model, is executed.
         :type investment_boundaries: bool
-        :param investment_boundary_factor: TODO @chrklemm
+        :param investment_boundary_factor: Factor by which investment \
+            decisions of the pre-model are multiplied to limit the \
+            investment limits in the main model.
         :type investment_boundary_factor: int
         :param solver: str holding the user chosen solver
         :type solver: str
