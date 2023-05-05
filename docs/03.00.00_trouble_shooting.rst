@@ -402,7 +402,7 @@ Error M-029: KeyError (variable)
 **Debugging:** Make sure, that you have filled out the column and that the values are correct. Use the actual version of the model definition spreadsheed. 
 
 
-Error M-029: KeyError (Sector)
+Error M-030: KeyError (Sector)
 -------------------------------------------------
 **Error Message:** ::
 
@@ -413,6 +413,7 @@ Error M-029: KeyError (Sector)
 **Possible Error Cause:** You did not label the sinks in the sector column correct.
 
 **Debugging:** Label the sinks according to their sector of use like '*electricity*' or '*heat*'.
+
 
 
 Contributing to the troubleshooting
