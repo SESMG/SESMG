@@ -326,7 +326,7 @@ Error M-023: nearest foot point
    IndexError: list index out of range
 
 **Possible Error Cause:** The producer could not be connected to the defined heat network. This is probably due to the fact that a right-angled connection to the producer is not possible to the defined pipes.
-**Debugging:** Make sure that the producers can be connected to the heat network with a right angle. It is possible that the producer is too far away from the network.
+**Debugging:** Make sure that the producers can be connected to the heat network with a right angle. It is possible that the producer is too far away from the network. Make sure that you deactivate the district heating connection in each bus, when you dont use a heat network.
 
 
 Error M-024: KeyError: 'lon'
