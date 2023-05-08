@@ -32,7 +32,7 @@ def result_processing_sidebar():
 
         # read sub folders in the result folder directory
         existing_result_foldernames_list = load_result_folder_list()
-        
+
         # create select box with the folder names which are in the
         # results folder
         existing_result_folder = st.selectbox(
@@ -295,7 +295,6 @@ def show_energy_amounts(result_path_heat_amounts, result_path_elec_amounts):
 
     with st.subheader("Energy Amounts"):
         tab1, tab2 = st.tabs(["Heat Amounts", "Electricity Amounts"])
-        # TODO: fix displayed amounts!
         # create heat amount diagram
         with tab1:
             create_energy_amounts_diagram(
@@ -311,6 +310,7 @@ def show_energy_amounts(result_path_heat_amounts, result_path_elec_amounts):
              Otherwise there is no guarantee that there are no components \
              missing in the diagrams. Note that only components considered \
              during the optimization are shown as option for vizualization.")
+
 
 def show_pareto(result_path_pareto):
     """
@@ -458,7 +458,7 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
     # TODO implement
     # show building specific results
     # show_building_specific_results(st.session_state["state_result_path"]
-    # + "/???????????.csv")
+    # + .csv")
 
     # open short results for the chosen pareto point incl. header
     st.subheader("Short Results for Pareto Point: " +
