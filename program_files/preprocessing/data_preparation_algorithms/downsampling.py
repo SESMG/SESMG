@@ -5,7 +5,7 @@ from program_files.preprocessing.data_preparation \
     import variable_costs_date_adaption
 
 
-def timeseries_downsampling(nodes_data: dict, n_timesteps: int):
+def timeseries_downsampling(nodes_data: dict, n_timesteps: int) -> None:
     """
         uses every n-th period of timeseries and weather data
 
@@ -36,7 +36,7 @@ def timeseries_downsampling(nodes_data: dict, n_timesteps: int):
     nodes_data['energysystem']['end date'] = end_date
 
 
-def timeseries_downsampling2(nodes_data: dict, n_timesteps: int):
+def timeseries_downsampling2(nodes_data: dict, n_timesteps: int) -> None:
     """
         cuts every n-th period of timeseries and weather data
 

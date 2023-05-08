@@ -78,7 +78,7 @@ def calculate_k_medoids_clusters(cluster_number: int,
 
 
 def k_medoids_timeseries_adaption(nodes_data: dict, clusters: int,
-                                  cluster_labels, period: str):
+                                  cluster_labels, period: str) -> None:
     """
         Identifies k-cluster periods from the original timeseries and merges
         them to a new set of timeseries. A new consecutive time index, starting
@@ -121,7 +121,7 @@ def k_medoids_timeseries_adaption(nodes_data: dict, clusters: int,
 
 
 def k_means_algorithm(cluster_period: int, days_per_cluster: int,
-                      criterion: str, nodes_data: dict, period: str):
+                      criterion: str, nodes_data: dict, period: str) -> None:
     """
         identifies k-cluster periods based on the k-means algorithm
         based on a given criteria. Based on the selected periods, for all
@@ -199,7 +199,7 @@ def k_means_algorithm(cluster_period: int, days_per_cluster: int,
     
     
 def k_medoids_algorithm(cluster_period: int, days_per_cluster: int,
-                        criterion: str, nodes_data: dict, period: str):
+                        criterion: str, nodes_data: dict, period: str) -> None:
     """
         identifies k-cluster periods based on the k-medoids algorithm
         based on a given criteria. Based on the selected periods, for

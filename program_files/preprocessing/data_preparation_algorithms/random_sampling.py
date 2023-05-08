@@ -11,7 +11,8 @@ from program_files.preprocessing.data_preparation \
 
 def create_new_random_data_set(random_integers: list,
                                data_set: pandas.DataFrame, period: str,
-                               weatherdata_or_timeseries=True):
+                               weatherdata_or_timeseries=True
+                               ) -> pandas.DataFrame:
     """
         In this method, the new DataFrames for the subsequent
         optimization of the energy system are created and returned to
@@ -28,6 +29,9 @@ def create_new_random_data_set(random_integers: list,
             the considered DataFrame is weather data (True) or \
             timeseries (False)
         :type weatherdata_or_timeseries: bool
+        
+        :return: - **prep_data_set** (pandas.DataFrame) - dataframe \
+            containing the sampled data dataframe
     """
     column_names = [data_set.columns[i]
                     for i in range(1, len(data_set.columns))]
@@ -55,7 +59,8 @@ def create_new_random_data_set(random_integers: list,
     return prep_data_set
 
 
-def random_sampling(nodes_data: dict, period: str, number_of_samples: int):
+def random_sampling(nodes_data: dict, period: str, number_of_samples: int
+                    ) -> None:
     """
         In the Random Sampling method, the time series and weather data
         Dataframes are truncated to the time horizon selected by the

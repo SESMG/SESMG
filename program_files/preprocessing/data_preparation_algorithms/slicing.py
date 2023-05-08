@@ -9,7 +9,7 @@ from program_files.preprocessing.data_preparation \
 
 def adaption_energy_system_parameter(prep_weather_data: pandas.DataFrame,
                                      nodes_data: dict, period: str,
-                                     weather_data: pandas.DataFrame):
+                                     weather_data: pandas.DataFrame) -> None:
     """
         Within this method the adaption clusters are calculated and the
         energy system parameters are adapted afterwards.
@@ -150,7 +150,7 @@ def data_set_slicing2(n_days: int, data_set: pandas.DataFrame, period: str
     return prep_data_set
 
 
-def timeseries_slicing(n_days: int, nodes_data: dict, period: str):
+def timeseries_slicing(n_days: int, nodes_data: dict, period: str) -> None:
     """
         uses every n-th period of the given data_set and cuts the rest
         out of the data_set
@@ -183,7 +183,7 @@ def timeseries_slicing(n_days: int, nodes_data: dict, period: str):
     nodes_data['timeseries'] = prep_timeseries
 
 
-def timeseries_slicing2(n_days: int, nodes_data: dict, period: str):
+def timeseries_slicing2(n_days: int, nodes_data: dict, period: str) -> None:
     """
         cuts out every nth period from the given data_set and leaves the
         remaining periods for further consideration

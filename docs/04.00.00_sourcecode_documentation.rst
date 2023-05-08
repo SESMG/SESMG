@@ -181,14 +181,12 @@ Preprocessing/data_preparation/heuristic_selection
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 .. automodule:: program_files.preprocessing.data_preparation_algorithms.heuristic_selection
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/data_preparation/k_means_medoids
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 .. automodule:: program_files.preprocessing.data_preparation_algorithms.k_means_medoids
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/data_preparation/random_sampling

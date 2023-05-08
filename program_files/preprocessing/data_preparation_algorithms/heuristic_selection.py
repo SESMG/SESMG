@@ -9,7 +9,8 @@ from program_files.preprocessing.data_preparation \
     import variable_costs_date_adaption, append_timeseries_to_weatherdata_sheet
 
 
-def hierarchical_selection(nodes_data, scheme, period, seasons):
+def hierarchical_selection(nodes_data: dict, scheme: str, period: str,
+                           seasons: int) -> None:
     """
         Algorithm for the hierarchical selection of representative time
         periods of a weather data set. In this embodiment, the following
@@ -38,7 +39,8 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
                                        system parameters and timeseries
     """
     
-    def extract_data_slices(data_set, timesteps: int):
+    def extract_data_slices(data_set: pandas.DataFrame, timesteps: int
+                            ) -> list:
         """
             extracts slices of a defined length of a dataset. E.g.
             slices of weeks
@@ -48,7 +50,9 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
             :type data_set: pandas.DataFrame
             :param timesteps: length of the to extracted slices
             :type timesteps: int
-            :return: **list** extracted slices of the given data set
+            
+            :return: - **list_of_data_slices** (list) - extracted \
+                slices of the given data set
         """
         list_of_data_slices = []
         for i in range(len(data_set) // timesteps):
@@ -56,7 +60,8 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
             list_of_data_slices.append(period_data_set)
         return list_of_data_slices
     
-    def identify_timeseries_minimum(data_set, column_name: str):
+    def identify_timeseries_minimum(data_set: pandas.DataFrame,
+                                    column_name: str) -> float:
         """
             returns the minimum value of a certain column of a given
             data_set
@@ -65,25 +70,30 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
             :type data_set: pandas.DataFrame
             :param column_name: column under investigation
             :type column_name: str
-            :return: **float** minimum value of a column
+            
+            :return: - **-** (float) - minimum value of a column
         """
         return min(data_set[column_name])
     
-    def identify_minimum_week(data_set, criterion, value):
+    def identify_minimum_week(data_set: pandas.DataFrame, criterion: str,
+                              value: str) -> pandas.DataFrame:
         """
             Returns the week with a minimum value of a certain column.
-            Either the week with the absolute minimum value, or the week
-            with the average minimum value can be selected.
+            Either the week with the absolute minimum value, or the
+            week with the average minimum value can be selected.
 
-            :param data_set: Data set from which the slices are extracted
-            :type data_set:
-            :param criterion: column, which is the criterion of the selection
+            :param data_set: Data set from which the slices are \
+                extracted
+            :type data_set: pandas.DataFrame
+            :param criterion: column, which is the criterion of the \
+                selection
             :type criterion: str
-            :param value: 'extreme' for absolute minimum value, 'average' for
-                           average minimum value selection
+            :param value: 'extreme' for absolute minimum value, \
+                'average' for average minimum value selection
             :type value: str
-            :return: minimum_week: **pandas.Dataframe** Dataset of the
-                                   selected minimum week
+            
+            :return: - **minimum_week** (pandas.Dataframe) - Dataset \
+                of the selected minimum week
         """
         
         absolute_minimum = 99999999
@@ -106,40 +116,47 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
         
         return minimum_week
     
-    def identify_timeseries_maximum(data_set, column_name):
+    def identify_timeseries_maximum(data_set: pandas.DataFrame,
+                                    column_name: str) -> float:
         """
             returns the maximum value of a certain column of a given
             data_set
 
-            :param data_set:
+            :param data_set: Data set from which the slices are \
+                extracted
             :type data_set: pandas.DataFrame
             :param column_name: column under investigation
             :type column_name: str
-            :return: **float** maximum value of a column
+            
+            :return: - **-** (float) - maximum value of a column
         """
         return max(data_set[column_name])
     
-    def identify_timeseries_average(data_set, column_name):
+    def identify_timeseries_average(data_set: pandas.DataFrame,
+                                    column_name: str) -> float:
         """
             returns the average value of a certain column of a given
             data_set.
 
-            :param data_set: Data set from which the slices are extracted
+            :param data_set: Data set from which the slices are \
+                extracted
             :type data_set: pandas.DataFrame
             :param column_name: column under investigation
             :type column_name: str
-            :return: **float** average of a column
+            :return: - **-** (float) - average of a column
         """
         list = data_set[column_name]
         return 0 if len(list) == 0 else sum(list) / len(list)
     
-    def identify_maximum_week(data_set, criterion: str, value: str):
+    def identify_maximum_week(data_set: pandas.DataFrame, criterion: str,
+                              value: str) -> pandas.DataFrame:
         """
             Returns the week with a maximum value of a certain column.
-            Either the week with the absolute maximum value, or the week
-            with the average maximum value can be selected.
+            Either the week with the absolute maximum value, or the
+            week with the average maximum value can be selected.
 
-            :param data_set: Data set from which the slices are extracted
+            :param data_set: Data set from which the slices are \
+                extracted
             :type data_set: pandas.DataFrame
             :param criterion: column, which is the criterion of the
                               selection
@@ -147,8 +164,8 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
             :param value: 'extreme' for absolute maximum value,
                           'average' for average maximum value selection
             :type value: str
-            :return: minimum_week: **pandas.Dataframe** Dataset of the
-                                   selected maximum week
+            :return: - **maximum_week** (pandas.Dataframe) - Dataset \
+                of the selected maximum week
         """
         absolute_maximum = -99999999
         for i in range(len(data_set)):
@@ -169,18 +186,20 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
         
         return maximum_week
     
-    def identify_average_week(data_set, criterion: str):
+    def identify_average_week(data_set: pandas.DataFrame,
+                              criterion: str) -> pandas.DataFrame:
         """
             Returns the week with the most average series of a certain
             column.
 
-            :param data_set: Data set from which the slices are extracted
+            :param data_set: Data set from which the slices are \
+                extracted
             :type data_set: pandas.DataFrame
             :param criterion: column, which is the criterion of the
                               selection
             :type criterion: str
-            :return: minimum_week: **pandas.Dataframe** Dataset of the
-                                   selected maximum week
+            :return: - **average_data** (pandas.Dataframe) - Dataset \
+                of the selected average week
         """
         # Creates a list with the average value of every week
         list_of_averages = []
@@ -202,7 +221,7 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
         
         return average_data
     
-    def reorder_weather_data():
+    def reorder_weather_data() -> None:
         """
             Reorder weather data set due to the meteorological beginning
             of winter on the 01.12.
@@ -237,15 +256,16 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
         nodes_data["timeseries"].reset_index(inplace=True, drop=False)
         nodes_data["weather data"] = nodes_data["timeseries"].copy()
     
-    def create_period_weather_data(period: str):
+    def create_period_weather_data(period: str) -> list:
         """
              Splits the weather data_set in nodes_data into weekly od
-             dayly weather data sets
+             daily weather data sets
 
-             :param period: defines rather dayly or weekly weather data
-                            set is created
+             :param period: defines rather dayly or weekly weather \
+                data set is created
              :type period: str
-             :return: **pandas.Dataframe** shortend weather data data set
+             :return: **-** (list) - shortened weather \
+                data data set
         """
         # Splits the given weather data_set in nodes_data into weekly
         # weather data sets
@@ -259,22 +279,24 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
         return extract_data_slices(data_set=nodes_data['weather data'],
                                    timesteps=period_length)
     
-    def create_period_season_weather_data(period_data_slices, seasons: int):
+    def create_period_season_weather_data(period_data_slices: list,
+                                          seasons: int) -> list:
         """
             Splits a given weather data (one year) set into weekly
             weather data slices and sorts them into lists of every
-            season of the year (each season is defined by a length of 13
-            weeks) and returns a list, containing a list of weather
+            season of the year (each season is defined by a length of
+            13 weeks) and returns a list, containing a list of weather
             data weeks for every season.
 
 
-            :param period_data_slices: weather data already shortend to
-                                       dayly or weakly resolution
-            :type period_data_slices: pandas.DataFrame
+            :param period_data_slices: weather data already shortend \
+                to daily or weakly resolution
+            :type period_data_slices: list
             :param seasons: number of seasons
             :type seasons: int
-            :return: list, containing list of weekly weather data slices
-                     of every season.
+            
+            :return: - **season_data** (list) - list, containing list \
+                of weekly weather data slices of every season.
         """
         
         season_length = len(period_data_slices) // seasons
@@ -289,25 +311,28 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
         
         return season_data
     
-    def select_heuristic_periods(heuristic_periods,
-                                 period_data_slices,
-                                 season_data,
-                                 seasons):
+    def select_heuristic_periods(heuristic_periods: list,
+                                 period_data_slices: list,
+                                 season_data: list,
+                                 seasons: int) -> pandas.DataFrame:
         """
             Selects and returns representative values of time series
             according to a given heuristic scheme.
 
-            :param heuristic_periods: defined heuristic periods to be selected
+            :param heuristic_periods: defined heuristic periods to be \
+                selected
             :type heuristic_periods: list
-            :param period_data_slices: pandas.DataFrame
-            :param season_data: containing list of weekly weather data slices
-                                of every season.
+            :param period_data_slices: list containing the periods \
+                data slices
+            :type period_data_slices: list
+            :param season_data: containing list of weekly weather data \
+                slices of every season.
             :type season_data: list
-            :param seasons: number of seasons for hierarchical selections,
-                        e.g. 12 for months or 4 for annual seasons
+            :param seasons: number of seasons for hierarchical \
+                selections, e.g. 12 for months or 4 for annual seasons
             :type seasons: int
-            :return prep_weather_data: **pandas.DataFrame** dataframe containing the sampled
-                                        weather data data frame
+            :return - **prep_weather_data** (pandas.DataFrame) - \
+                dataframe containing the sampled weather data data frame
         """
         prep_weather_data = pandas.DataFrame()
         
@@ -384,16 +409,17 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
                      'technical_data/hierarchical_selection_schemes.xlsx')
     
     reorder_weather_data()
-    period_data_slices = create_period_weather_data(period)
-    season_data = create_period_season_weather_data(period_data_slices,
-                                                    seasons=seasons)
+    period_data_slices = create_period_weather_data(period=period)
+    season_data = create_period_season_weather_data(
+        period_data_slices=period_data_slices, seasons=seasons)
     prep_weather_data = pandas.DataFrame()
     scheme_df = pandas.read_excel(scheme_path, sheet_name=str(scheme))
     heuristic_periods = scheme_df.values.tolist()
-    prep_weather_data = select_heuristic_periods(heuristic_periods,
-                                                 period_data_slices,
-                                                 season_data,
-                                                 seasons)
+    prep_weather_data = select_heuristic_periods(
+        heuristic_periods=heuristic_periods,
+        period_data_slices=period_data_slices,
+        season_data=season_data,
+        seasons=seasons)
     
     for col in nodes_data['timeseries']:
         prep_weather_data[col] = nodes_data['timeseries'][col]

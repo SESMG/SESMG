@@ -8,7 +8,8 @@ from program_files.preprocessing.data_preparation \
 
 
 def mean_adapt_timeseries_weatherdata(
-        clusters: int, cluster_labels: list, period: str, nodes_data: dict):
+        clusters: int, cluster_labels: list, period: str, nodes_data: dict
+) -> None:
     """
         Using this method, the mean values of the clusters are formed
         and then cost values as well as time series and weather data
@@ -50,7 +51,7 @@ def mean_adapt_timeseries_weatherdata(
 
 
 def timeseries_averaging(cluster_period: str, days_per_cluster: int,
-                         nodes_data: dict, period: str):
+                         nodes_data: dict, period: str) -> None:
     """
         Averages the values of the time series, how many values are
         averaged is defined by the variable clusters.

@@ -138,7 +138,8 @@ def append_timeseries_to_weatherdata_sheet(nodes_data: dict
     return nodes_data['timeseries']
 
 
-def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str):
+def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str
+                                 ) -> None:
     """
         To be able to work with the adapted weather data set some
         parameters from nodes_data must be changed.
@@ -177,7 +178,7 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str):
     nodes_data['energysystem']['periods'] = (timesteps * clusters)
 
 
-def slp_sink_adaption(nodes_data: dict):
+def slp_sink_adaption(nodes_data: dict) -> None:
     """
         calculates the standard load profile timeseries, saves them to
         the timeseries data-sheet and changes the timeseries-reference
@@ -270,7 +271,7 @@ def slp_sink_adaption(nodes_data: dict):
 
 
 def timeseries_adaption(nodes_data: dict, clusters: int,
-                        cluster_labels: np.array, period: str):
+                        cluster_labels: np.array, period: str) -> None:
     """
         In this method, the cluster mean is calculated first and then
         the timestamps of the timeseries sheet are adjusted. The newly
@@ -309,16 +310,14 @@ def timeseries_adaption(nodes_data: dict, clusters: int,
 
 
 def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
-                           result_path: str):
+                           result_path: str) -> None:
     """
         Evaluates the passed parameters for timeseries preparation and
         starts the corresponding simplification/clustering algorithm.
 
-        :param timeseries_prep_param: List of timeseries preparation
-                                      parameters with the scheme
-                                      [algorithm, cluster_index,
-                                      cluster_criterion, cluster_period,
-                                      cluster_season]
+        :param timeseries_prep_param: List of timeseries preparation \
+            parameters with the scheme [algorithm, cluster_index, \
+            cluster_criterion, cluster_period, cluster_season]
         :type timeseries_prep_param: list
         :param nodes_data: Dictionary containing the energy systems \
             resulting from the user's model definition
