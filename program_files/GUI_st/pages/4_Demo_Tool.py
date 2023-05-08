@@ -182,7 +182,7 @@ def execute_sesmg_demo(demo_file, demo_results, mode):
         criterion_switch=criterion_switch,
         xlsx_results=False,
         console_results=False,
-        solver="gurobi",
+        solver="cbc",
         cluster_dh=False,
         district_heating_path=""
     )
