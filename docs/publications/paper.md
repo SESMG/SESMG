@@ -34,7 +34,7 @@ bibliography: paper.bib
 ---
 # Summary
 
-The Spreadsheet Energy System Model Generator (SESMG) is a tool for modeling and optimizing energy systems with a focus on urban systems. The SESMG has a very low barrier to entry, as no programming skills are required and spreadsheets are used to define individual models. It includes advanced modeling features such as the application of the multi-energy system (MES) approach, multi-objective optimization, model-based methods for reducing computational requirements, and automated conceptualization and result processing of urban energy systems with high spatial resolution. Due to the good usability and the applied modeling methods, urban energy systems can be modeled and optimized with comparatively low effort.
+The Spreadsheet Energy System Model Generator (SESMG) is a tool for modeling and optimizing energy systems with a focus on urban systems. The SESMG has a very low threshold to entry, as no programming skills are required and spreadsheets are used to define individual models. It includes advanced modeling features such as the application of the multi-energy system (MES) approach, multi-objective optimization, model-based methods for reducing computational requirements, and automated conceptualization and result processing of urban energy systems with high spatial resolution. Due to the good usability and the applied modeling methods, urban energy systems can be modeled and optimized with comparatively low effort.
 
 # Statement of need
 Planning and optimizing the design of urban energy systems is becoming increasingly complex [@Zhang.2018] due to sector coupling, the use of decentralized renewable energy sources with volatile production, the use of diverse energy storage systems, the growing importance of new energy sectors such as hydrogen, as well as the increasing relevance of multiple planning objectives. In this context, urban energy systems are defined as “the combined process of acquiring and using energy in a given spatial entity with a high density and differentiation of residents, buildings, commercial sectors, infrastructure, and energy sectors (e.g., heat, electricity, fuels)” [@Klemm.Indicators]. Traditionally, such systems are designed by simulating and comparing a limited number of pre-defined energy supply scenarios, without using optimization methods. Individual buildings, consumption sectors, or energy sectors are rarely planned and designed holistically, but rather separately from each other [@Lukszo.2018]. Finally, planning processes are often driven by financial interests only, rather than considering additional planning objectives such as minimizing green house gas (ghg) emissions, or final energy demand. To fully exploit all synergies and to avoid conflicting interests due to interdependencies of increasingly entangled energy systems [@Pfenninger.2014], it is necessary to carry out holistic planning [@Lukszo.2018]. Therefore, all energy sectors, planning objectives, as well as an entire spatial entity should be considered within a holistic analysis [@UN.2015]. Thereby, not only certain, but all theoretically possible supply scenarios should be compared by using optimization algorithms [@DeCarolis.2017] in order to ensure that those scenarios are identified that allow the minimization of the planning objectives by a given ratio [@Klemm.Indicators]. All these requirements on planning and optimization methods result in increasingly high computing requirements, especially in run-time and random access memory (RAM) [@Klemm.2023]. To limit the necessary computing capacities to an acceptable extend, modelers may make decisions regarding the temporal and spatial resolution of the system. Alternatively, model-based or solver-based methods can be used to reduce the computational requirements [@Cao.2019], with only slight differences in the quality of the results.
@@ -49,15 +49,15 @@ The Spreadsheet Energy System Model Generator (SESMG) is based on the Open Energ
 
 The SESMG enables the optimization of multi-sectoral and spatial synergies of entire urban energy systems with an adaptable number of buildings. Due to the multi-criteria result output in the form of a Pareto front, transformation processes between status quo, financial cost minimized and ghg emission minimized target scenarios can be identified.
 
-Finally, the SESMG provides several advantages regarding user-friendliness compared to other modeling tools due to
+Effort has been made to provide a user friendly interface and an efficienct work-flow, that
 
-* applicability **without any programming knowledge**,
+* can be applied **without any programming knowledge**,
 
-* **automatic conceptualization** of individual urban energy systems with any size,
+* **automatically conceptualizes** individual urban energy systems of any size,
 
-* **automatic result processing** and vizualization of complex relationships in form of system graphs, Pareto fronts, energy amount diagrams, and more, as well as
+* **automatic processes and visualizes results** of complex relationships in form of system graphs, Pareto fronts, energy amount diagrams, and more, as well as
 
-* a set of **standard (but still customizable) technical and economic modeling parameters** including description and references.
+* comes with a broad set of **standard (but still customizable) technical and economic modeling parameters** including description and references.
 
 The SESMG comes with a [detailed documentation](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/ "detailed documentation"), including step-by-step instructions, explanations of all modeling methods and troubleshooting with known application errors. In addition, the documentation includes an ongoing list of peer review publications, conference proceedings, study works, research projects, and other publications related to the SESMG.
 
