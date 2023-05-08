@@ -31,7 +31,7 @@ GUI_main_dict = {}
 settings_cache_dict_reload = import_GUI_input_values_json(
     os.path.dirname(__file__) + "/GUI_st_cache.json")
 
-# Import GUI help comments from the comment json and safe as an dict
+# Import GUI help comments from the comment json and safe as a dict
 GUI_helper = import_GUI_input_values_json(
     os.path.dirname(__file__) + "/GUI_st_help_comments.json")
 
