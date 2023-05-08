@@ -445,13 +445,13 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         result_path_summary=st.session_state["state_pareto_result_path"]
         + "/summary.csv")
     # check if GUI settings dict is in result folder
-    if os.path.join(st.session_state["state_pareto_result_path"],
+    if os.path.join(st.session_state["state_result_path"],
                     "GUI_st_run_settings.json") \
-            in glob.glob(st.session_state["state_pareto_result_path"] + "/*"):
+            in glob.glob(st.session_state["state_result_path"] + "/*"):
         # import json as in a dict
         GUI_run_settings_dict = import_GUI_input_values_json(
             json_file_path=os.path.join(
-                st.session_state["state_pareto_result_path"],
+                st.session_state["state_result_path"],
                 "GUI_st_run_settings.json"))
         # display some GUI settings if pre-modelling was active
         if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
