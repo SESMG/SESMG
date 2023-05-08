@@ -1,7 +1,7 @@
 """
-    jtock - jan.tockloth@fh-muenster.de
-    GregorBecker - gregor.becker@fh-muenster.de
-    chrklemm - christian.klemm@fh-muenster.de
+    Jan N. Tockloth - jan.tockloth@fh-muenster.de
+    Gregor Becker - gregor.becker@fh-muenster.de
+    Christian Klemm - christian.klemm@fh-muenster.de
     benblankenstein - bb917322@fh-muenster.de
 """
 
@@ -41,12 +41,12 @@ if "state_submitted_demo_run" not in st.session_state:
     st.session_state["state_submitted_demo_run"] = "not done"
 
 
-def dt_input_sidebar()  -> dict:
+def dt_input_sidebar() -> dict:
     """
-        Creating the demotool input values in the sidebar.
+        Creating the demo tool input values in the sidebar.
 
-        :return: **input_values_dict** (dict) - Dict of input values from the \
-            GUI sidebar
+        :return: **input_values_dict** (dict) - Dict of input values \
+            from the GUI sidebar
     """
 
     with st.sidebar.form("Simulation input"):
@@ -339,7 +339,7 @@ def demo_start_page() -> None:
     st.image(img, caption="", width=500)
 
 
-def change_state_submitted_demo_run():
+def change_state_submitted_demo_run() -> None:
     """
         Setup session state for the demo run form-submit as an \
             change event as on-click to switch the state.

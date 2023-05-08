@@ -1,7 +1,7 @@
 """
-    Janik257
-    jtock - jan.tockloth@fh-muenster.de
-    GregorBecker - gregor.becker@fh-muenster.de
+    Janik Budde - janik.budde@fh-muenster.de
+    Jan N. Tockloth - jan.tockloth@fh-muenster.de
+    Gregor Becker - gregor.becker@fh-muenster.de
 """
 
 import os

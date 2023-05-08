@@ -1,6 +1,6 @@
 """
-    jtock - jan.tockloth@fh-muenster.de
-    GregorBecker - gregor.becker@fh-muenster.de
+    Jan N. Tockloth - jan.tockloth@fh-muenster.de
+    Gregor Becker - gregor.becker@fh-muenster.de
 """
 
 import json
@@ -328,12 +328,12 @@ def create_cluster_simplification_index(input_value: str,
         input_output_dict[input_value_index] = input_output_dict[input_value]
 
 
-def load_result_folder_list():
+def load_result_folder_list() -> list:
     """
         Load the folder names of the existing result folders.
 
-        :return: - **existing_result_foldernames_list** (list) - list of \
-        exsting folder names.
+        :return: - **existing_result_foldernames_list** (list) - list \
+            of exsting folder names.
     """
 
     # read sub folders in the result folder directory

@@ -1,7 +1,7 @@
 """
-    jtock - jan.tockloth@fh-muenster.de
-    GregorBecker - gregor.becker@fh-muenster.de
-    janik257
+    Jan N. Tockloth - jan.tockloth@fh-muenster.de
+    Gregor Becker - gregor.becker@fh-muenster.de
+    Janik Budde - janik.budde@fh-muenster.de
 """
 import sys
 import os
@@ -36,7 +36,7 @@ GUI_helper = import_GUI_input_values_json(
     os.path.dirname(__file__) + "/GUI_st_help_comments.json")
 
 
-def nav_page(page_name, timeout_secs=3):
+def nav_page(page_name, timeout_secs=3) -> None:
     """
         Javascript used to switch between to Streamlit pages
         automatically.
@@ -75,7 +75,7 @@ def nav_page(page_name, timeout_secs=3):
     html(nav_script)
 
 
-def main_start_page():
+def main_start_page() -> None:
     """
         Definition of the start page for the GUI with introducing texts.
     """
@@ -462,7 +462,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
     return model_definition_input
 
 
-def main_error_definition():
+def main_error_definition() -> None:
     """
         Raises an streamlit internal error if model run is startet without \
         an uploaded model definition
@@ -474,7 +474,7 @@ def main_error_definition():
     st.session_state["state_submitted_optimization"] = "not done"
 
 
-def main_clear_cache_sidebar():
+def main_clear_cache_sidebar() -> None:
     """
         Creating the for submit button to clear the GUI cache
     """
@@ -502,7 +502,7 @@ def main_clear_cache_sidebar():
         st.experimental_rerun()
 
 
-def create_result_paths():
+def create_result_paths() -> None:
     """
         Create result paths and result folder. Set session.states
 
@@ -524,7 +524,7 @@ def create_result_paths():
         GUI_main_dict["premodeling_res_path"]
 
 
-def save_run_settings():
+def save_run_settings() -> None:
     """
         Function to safe the GUI setting in the result folder and reset \
             session state.
@@ -539,7 +539,7 @@ def save_run_settings():
     st.session_state["state_submitted_optimization"] = "not done"
 
 
-def change_state_submitted_optimization():
+def change_state_submitted_optimization() -> None:
     """
         Setup session state for the optimization form-submit as an \
             change event as on-click to switch the state.
@@ -547,7 +547,7 @@ def change_state_submitted_optimization():
     st.session_state["state_submitted_optimization"] = "done"
 
 
-def change_state_submitted_clear_cache():
+def change_state_submitted_clear_cache() -> None:
     """
         Setup session state for the clear_cache form-submit as an \
             change event as on-click to switch the state.

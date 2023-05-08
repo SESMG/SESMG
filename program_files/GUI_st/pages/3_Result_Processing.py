@@ -1,6 +1,6 @@
 """
-    Jan Tockloth - jan.tockloth@fh-muenster.de
-    GregorBecker - gregor.becker@fh-muenster.de
+    Jan N. Tockloth - jan.tockloth@fh-muenster.de
+    Gregor Becker - gregor.becker@fh-muenster.de
     Janik Budde - janik.budde@fh-muenster.de
 """
 import glob
@@ -16,7 +16,7 @@ from program_files.GUI_st.GUI_st_global_functions import \
     load_result_folder_list
 
 
-def result_processing_sidebar():
+def result_processing_sidebar() -> None:
     """
         Function to create the sidebar.
     """
@@ -89,7 +89,7 @@ def result_processing_sidebar():
             #     "/" + pareto_folder_dict[pareto_point_chosen]
 
 
-def short_result_summary_time(result_path_summary):
+def short_result_summary_time(result_path_summary) -> None:
     """
         Function displaying the results time series informations.
 
@@ -108,7 +108,7 @@ def short_result_summary_time(result_path_summary):
                  value=str(df_summary['Resolution'][0]))
 
 
-def short_result_summary_system(result_path_summary):
+def short_result_summary_system(result_path_summary) -> None:
     """
         Function displaying the short result summary overview of the energy \
             system.
@@ -140,13 +140,13 @@ def short_result_summary_system(result_path_summary):
         df_summary[summary_headers[8]], 1))))
 
 
-def short_result_simplifications(result_GUI_settings_dict):
+def short_result_simplifications(result_GUI_settings_dict: dict) -> None:
     """
         Function to display model simplification settings in addition
             to the timeseries information.
-        :param result_path_components: dict including the last runs GUI
-            settings
-        :type result_path_components: dict
+        :param result_GUI_settings_dict: dict including the last runs \
+            GUI settings
+        :type result_GUI_settings_dict: dict
     """
     alg1, alg2 = st.columns(2)
     alg1.metric(label="Simplification Algorithm",
@@ -167,14 +167,14 @@ def short_result_simplifications(result_GUI_settings_dict):
         value=result_GUI_settings_dict["input_timeseries_season"])
 
 
-def short_result_premodelling(result_GUI_settings_dict):
+def short_result_premodelling(result_GUI_settings_dict: dict) -> None:
     """
         Function to display premodel settings in addition to
             the timeseries information.
 
-        :param result_path_components: dict including the last
+        :param result_GUI_settings_dict: dict including the last
             runs GUI settings
-        :type result_path_components: dict
+        :type result_GUI_settings_dict: dict
     """
     # check if investment boundaries were active to show tightening factor
     # create columns for pre-modelling information
@@ -193,10 +193,11 @@ def short_result_premodelling(result_GUI_settings_dict):
             ["input_premodeling_tightening_factor"])
 
 
-def short_result_table(result_path_components):
+def short_result_table(result_path_components: str) -> None:
     """
-        Function to create tabel of components.
-        :param result_path_components: path to a result components.csv file
+        Function to create table of components.
+        :param result_path_components: path to a result components.csv \
+            file
         :type result_path_components: str
     """
     # Header
@@ -231,7 +232,7 @@ def short_result_table(result_path_components):
            height=min(logical_df_height, ag_max_height))
 
 
-def short_result_interactive_dia(result_path_results):
+def short_result_interactive_dia(result_path_results: str) -> None:
     """
         Function to create interactive results.
 
@@ -257,7 +258,7 @@ def short_result_interactive_dia(result_path_results):
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
-def create_energy_amounts_diagram(result_path_amounts):
+def create_energy_amounts_diagram(result_path_amounts: str) -> None:
     """
         Function to create energy amount diagrams in streamlit.
 
@@ -275,19 +276,22 @@ def create_energy_amounts_diagram(result_path_amounts):
     list_headers = column_headers_amount[1:]
 
     # create plotly chart
-    fig = px.area(amounts_df, x="run", y=list_headers).update_layout(
+    fig = px.area(amounts_df, x="reductionco2", y=list_headers).update_layout(
         xaxis_title="Reduced GHG-emissions compared to the cost minimum (%)",
         yaxis_title="energy amounts (kWh)")
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
-def show_energy_amounts(result_path_heat_amounts, result_path_elec_amounts):
+def show_energy_amounts(result_path_heat_amounts: str,
+                        result_path_elec_amounts: str) -> None:
     """
         Function to create heat amounts.
 
-        :param result_path_heat_amounts: path to a result heat_amounts.csv file
+        :param result_path_heat_amounts: path to a result \
+            heat_amounts.csv file
         :type result_path_heat_amounts: str
-        :param result_path_elec_amounts: path to a result elec_amounts.csv file
+        :param result_path_elec_amounts: path to a result \
+            elec_amounts.csv file
         :type result_path_elec_amounts: str
     """
     # Header
@@ -312,12 +316,13 @@ def show_energy_amounts(result_path_heat_amounts, result_path_elec_amounts):
              during the optimization are shown as option for vizualization.")
 
 
-def show_pareto(result_path_pareto):
+def show_pareto(result_path_pareto: str) -> None:
     """
         Function to create heat amounts.
 
-        :param result_path_results: path to a result heat_amounts.csv file
-        :type result_path_results: str
+        :param result_path_pareto: path to a result \
+            pareto.csv file
+        :type result_path_pareto: str
     """
     # Header
     st.subheader("Pareto Diagram")
@@ -337,36 +342,7 @@ def show_pareto(result_path_pareto):
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
-#def show_building_specific_results(result_path_building_specific):
-#    """
-#        Function to create heat amounts.
-#
-#        :param result_path_results: path to a result heat_amounts.csv file
-#        :type result_path_results: str
-#    """
-#    # Header
-#    with st.expander("Building specific results"):
-#        df_building_specific_data = pd.read_csv(result_path_building_specific)
-#
-#        tab1, tab2 = st.tabs(["🗃 Data", "📈 Chart"])
-#        with tab1:
-#            # show the dataframe
-#            st.write(df_building_specific_data)
-#
-#        with tab2:
-#            # get the y values for the chart
-#            column_headers = list(df_building_specific_data.columns.values)
-#            # delete building column
-#            column_headers.pop(0)
-#            # building specific figure
-#            # todo filter due to label in order to reduce the number
-#            # of buildings
-#            fig = px.bar(df_building_specific_data,
-#                         x="Building", y=column_headers)
-#            st.plotly_chart(fig, theme="streamlit", use_container_width=True)
-
-
-def short_result_graph(result_path_graph):
+def short_result_graph(result_path_graph: str) -> None:
     """
         Function to display the energy systems structure in a streamlit
             expander.
@@ -455,10 +431,6 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         + "/heat_amounts.csv",
         result_path_elec_amounts=st.session_state["state_result_path"]
         + "/elec_amounts.csv")
-    # TODO implement
-    # show building specific results
-    # show_building_specific_results(st.session_state["state_result_path"]
-    # + .csv")
 
     # open short results for the chosen pareto point incl. header
     st.subheader("Short Results for Pareto Point: " +
