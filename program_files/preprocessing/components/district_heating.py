@@ -1,3 +1,6 @@
+"""
+    Gregor Becker - gregor.becker@fh-muenster.de
+"""
 import pandas
 import dhnx
 from dhnx.plotting import StaticMap

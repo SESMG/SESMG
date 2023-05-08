@@ -1,3 +1,6 @@
+"""
+    Gregor Becker - gregor.becker@fh-muenster.de
+"""
 from sympy import Symbol, solve
 from pyproj import Transformer
 import numpy

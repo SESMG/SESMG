@@ -1,3 +1,6 @@
+"""
+    Gregor Becker - gregor.becker@fh-muenster.de
+"""
 from program_files.preprocessing.components import district_heating, \
     district_heating_calculations
 import oemof.solph as solph
@@ -15,7 +18,9 @@ def connect_clustered_dh_to_system(
         based created sinks to the thermal network components created
         before.
         
-        NOTE: 1. The calculation of the periodical cost of the
+        NOTE:
+        
+              1. The calculation of the periodical cost of the
                  clustered heat pipeline is based on the linearization
                  of the heatpipe type due to the iterative approach see
                  parameters sheet.
@@ -314,7 +319,7 @@ def clear_thermal_network_dataframes(thermal_network: ThermalNetwork
             energy system.
         :type thermal_network: ThermalNetwork
         
-        :return: - **thermal_network** (ThermalNetwork) - DHNx \
+        :return: **thermal_network** (ThermalNetwork) - DHNx \
             ThermalNetwork instance used to create the components of \
             the thermal network for the energy system. Within this \
             method the not longer used forks and pipes were deleted.
