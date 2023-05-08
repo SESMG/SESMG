@@ -11,16 +11,17 @@ transf_WGS84_GK = Transformer.from_crs("EPSG:4326", "EPSG:31466")
 transf_GK_WGS84 = Transformer.from_crs("EPSG:31466", "EPSG:4326")
 
 
-def convert_dh_street_sections_list(street_sec):
+def convert_dh_street_sections_list(street_sec: pandas.DataFrame
+                                    ) -> pandas.DataFrame:
     """
-    Convert street sections Dataframe to Gaussian Kruger (GK)
-    to reduce redundancy.
+        Convert street sections Dataframe to Gaussian Kruger (GK)
+        to reduce redundancy.
 
-    :param street_sec: Dataframe holding start and end points
-                            of the streets under investigation
-    :type street_sec: pd.Dataframe
-    :return: **street_sections** (pd.Dataframe) - holding converted
-                                                    points
+        :param street_sec: Dataframe holding start and end points
+                                of the streets under investigation
+        :type street_sec: pandas.DataFrame
+        :return: - **street_sec** (pandas.DataFrame) - holding \
+            converted points
     """
     # iterating threw the given street points and converting each active
     # one to EPSG31466
@@ -40,7 +41,9 @@ def convert_dh_street_sections_list(street_sec):
     return street_sec
 
 
-def calc_perpendicular_distance_line_point(p1, p2, p3, converted=False):
+def calc_perpendicular_distance_line_point(p1: numpy.array, p2: numpy.array,
+                                           p3: numpy.array, converted=False
+                                           ) -> list:
     """
         Determination of the perpendicular foot point as well as the
         distance between point and straight line.
@@ -72,6 +75,11 @@ def calc_perpendicular_distance_line_point(p1, p2, p3, converted=False):
         :param converted: defines rather the points are given in \
             EPSG 31466 or not
         :type converted: bool
+        
+        :return: - **-** (list) - list containing the perpendicular \
+            foot point longitude [0] and longitude [1] the distance to \
+            the distance to the investigated point as well as it's \
+            t value which is the relative position on the street section
     """
     # check rather the third point is already converted or not
     if not converted:
@@ -107,22 +115,23 @@ def calc_perpendicular_distance_line_point(p1, p2, p3, converted=False):
         return []
 
 
-def get_nearest_perp_foot_point(building, streets, index, building_type):
+def get_nearest_perp_foot_point(building: dict, streets: pandas.DataFrame,
+                                index: int, building_type: str) -> list:
     """
-        Uses the calc_perpendicular_distance_line_point method and finds
-        the shortest distance to a road from its results.
+        Uses the calc_perpendicular_distance_line_point method and
+        finds the shortest distance to a road from its results.
 
         :param building: coordinates of the building under investigation
         :type building: dict
         :param streets: Dataframe holding all street section of the
                         territory under investigation
-        :type streets: pd.Dataframe
+        :type streets: pandas.Dataframe
         :param index: integer used for unique indexing of the foot points.
         :type index: int
         :param building_type: specifies building type
         :type building_type: str
         :return: - **foot_point** (list) - list containing information \
-                                           of the perpendicular foot point
+                    of the perpendicular foot point
     """
     foot_points = []
     (lat, lon) = transf_WGS84_GK.transform(
@@ -164,6 +173,7 @@ def calc_street_lengths(connection_points: list) -> list:
         :param connection_points: list of connection_points on the \
             given street
         :type connection_points: list
+        
         :return: **ordered_road_section_points** (list) - list \
             containing all points of a certain street in an ordered \
             sequence
