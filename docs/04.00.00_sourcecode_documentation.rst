@@ -239,7 +239,6 @@ Preprocessing/components/district_heating
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.components.district_heating
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/components/district_heating_calculations
