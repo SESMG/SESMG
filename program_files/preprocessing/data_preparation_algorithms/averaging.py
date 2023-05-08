@@ -61,8 +61,8 @@ def timeseries_averaging(cluster_period: str, days_per_cluster: int,
         :param days_per_cluster: contains the gui input of the chosen \
             index (possible entries: 1 - 365)
         :type days_per_cluster: int
-        :param nodes_data: dictionary containing the excel worksheets
-                           from the used scenario workbook
+        :param nodes_data: dictionary containing the excel worksheets \
+            from the used model definition workbook
         :type nodes_data: dict
         :param period: defines rather days or weeks were selected
         :type period: str

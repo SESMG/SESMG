@@ -219,7 +219,6 @@ Preprocessing/pre_model_analysis
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.pre_model_analysis
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/Spreadsheet_Energy_System_Model_Generator

@@ -3,6 +3,7 @@
 """
 import pandas
 import numpy as np
+import logging
 from sklearn.cluster import KMeans
 from sklearn_extra.cluster import KMedoids
 from sklearn.neighbors import NearestNeighbors
@@ -133,7 +134,7 @@ def k_means_algorithm(cluster_period: int, days_per_cluster: int,
         system optimization model in which the time-series will be applied.
 
          and merges them to a new shortened
-        timeseries with a consective timeindex which has the same
+        timeseries with a consecutive timeindex which has the same
         start date as the original time-series.
         
         :param cluster_period: contains the gui input of the chosen \
@@ -144,9 +145,8 @@ def k_means_algorithm(cluster_period: int, days_per_cluster: int,
         :type days_per_cluster: int
         :param criterion: criterion chosen for k_mean algorithm
         :type criterion: str
-        :param nodes_data: dictionary containing the excel worksheets from
-                           the used scenario workbook
-
+        :param nodes_data: dictionary containing the excel worksheets \
+            from the used model definition workbook
         :type nodes_data: dict
         :param period: defines rather days or weeks were selected
         :type period: str
@@ -202,14 +202,15 @@ def k_medoids_algorithm(cluster_period: int, days_per_cluster: int,
                         criterion: str, nodes_data: dict, period: str):
     """
         identifies k-cluster periods based on the k-medoids algorithm
-        based on a given criteria. Based on the selected periods, for all
-        timeseries weather data, the respective periods are identified and
-        merged to new shortened timeseries with consecutive time-indices
-        which start with the same start date as the original timeseries.
-        Afterwards, all variable costs are multiplied by the shortening
-        factor (variable cost factor) of the time-series to ensure the
-        same ratio between variable and periodical costs for the energy
-        system optimization model in which the time-series will be applied.
+        based on a given criteria. Based on the selected periods, for
+        all timeseries weather data, the respective periods are
+        identified and merged to new shortened timeseries with
+        consecutive time-indices which start with the same start date
+        as the original timeseries. Afterwards, all variable costs are
+        multiplied by the shortening factor (variable cost factor) of
+        the time-series to ensure the same ratio between variable and
+        periodical costs for the energy system optimization model in
+        which the time-series will be applied.
         
         :param cluster_period: contains the gui input of the chosen \
             period type (possible entries: hours, days, weeks)
@@ -219,9 +220,8 @@ def k_medoids_algorithm(cluster_period: int, days_per_cluster: int,
         :type days_per_cluster: int
         :param criterion: criterion chosen for k_mean algorithm
         :type criterion: str
-        :param nodes_data: dictionary containing the excel worksheets from
-                           the used scenario workbook
-
+        :param nodes_data: dictionary containing the excel worksheets \
+            from the used model definition workbook
         :type nodes_data: dict
         :param period: defines rather days or weeks were selected
         :type period: str
@@ -231,12 +231,12 @@ def k_medoids_algorithm(cluster_period: int, days_per_cluster: int,
     """
     if cluster_period == 'days':
         clusters = 365 // int(days_per_cluster)
-        print('days per cluster: ' + str(days_per_cluster))
-        print('clusters: ' + str(clusters))
+        logging.info('days per cluster: ' + str(days_per_cluster))
+        logging.info('clusters: ' + str(clusters))
     elif cluster_period == 'weeks':
         clusters = 52 // int(days_per_cluster)
-        print('days per cluster: ' + str(days_per_cluster))
-        print('clusters: ' + str(clusters))
+        logging.info('days per cluster: ' + str(days_per_cluster))
+        logging.info('clusters: ' + str(clusters))
     else:
         raise ValueError("period chosen not possible")
     # Merge the timeseries and weather data sets, sothat that all timeseries'

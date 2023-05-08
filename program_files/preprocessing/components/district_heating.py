@@ -87,7 +87,7 @@ def clear_thermal_net(thermal_net: dhnx.network.ThermalNetwork
             holding information of an older optimization run
         :type thermal_net: dhnx.network.ThermalNetwork
         
-        :return: - **thermal_net** (dhnx.network.ThermalNetwork) - \
+        :return: **thermal_net** (dhnx.network.ThermalNetwork) - \
             cleared instance of the DHNx ThermalNetwork
     """
     for dataframe in ["forks", "consumers", "pipes", "producers"]:
@@ -112,7 +112,7 @@ def create_fork(point: list, label: int, thermal_net: ThermalNetwork, bus=None
         :param bus: bus is used for producers forks identification
         :type bus: str
         
-        :return: - **None** (ThermalNetwork) - DHNx ThermalNetwork \
+        :return: - **-** (ThermalNetwork) - DHNx ThermalNetwork \
             instance on which the new fork was appended.
     """
     # create the fork specific dict based on the parameter data
@@ -542,7 +542,7 @@ def create_components(nodes_data: dict, anergy_or_exergy: bool,
             energy system.
         :type thermal_net: ThermalNetwork
     
-        :return: **oemof_opti_model** (dhnx.optimization) - model \
+        :return: - **oemof_opti_model** (dhnx.optimization) - model \
             holding dh components
     """
     frequency = nodes_data["energysystem"]["temporal resolution"].values
@@ -876,7 +876,7 @@ def create_connect_dhnx(nodes_data: dict, busd: dict,
         :type thermal_net: ThermalNetwork
         :param clustering: used to define rather the spatial \
             clustering algorithm is used or not
-        :type clustering
+        :type clustering: bool
         :param anergy_or_exergy: bool which defines rather the \
             considered network is an exergy net (False) or an anergy \
             net (True)
@@ -927,7 +927,7 @@ def create_connect_dhnx(nodes_data: dict, busd: dict,
     return oemof_opti_model.nodes
 
 
-def create_dh_map(thermal_net: ThermalNetwork, result_path: str):
+def create_dh_map(thermal_net: ThermalNetwork, result_path: str) -> None:
     """
         Within this method the calculated thermal network is plotted as
         a matplotlib pyplot which can be used for verification of the
@@ -938,7 +938,7 @@ def create_dh_map(thermal_net: ThermalNetwork, result_path: str):
             energy system.
         :type thermal_net: ThermalNetwork
         :param result_path: path where the resulting map will be stored
-        :type result_path
+        :type result_path: str
     """
     import matplotlib.pyplot as plt
     static_map = StaticMap(thermal_net).draw(background_map=False)

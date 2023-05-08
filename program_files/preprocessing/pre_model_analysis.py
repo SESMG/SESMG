@@ -14,7 +14,7 @@ def filter_result_component_types(components: pandas.DataFrame,
             be searched for
         :type component_type: str
         
-        :return: - **None** (pandas.DataFrame) - return the filtered \
+        :return: - **-** (pandas.DataFrame) - return the filtered \
             pandas.DataFrame
     """
     # search for entries of the components.csv with a given type
@@ -54,10 +54,10 @@ def update_component_investment_decisions(
         :type investment_boundaries: bool
         
         :return: - **components_xlsx** (pandas.DataFrame) - updated \
-            DataFrame after the deactivation and investment tightening \
-            process
+                        DataFrame after the deactivation and \
+                        investment tightening process
                  - **list_of_deactivated_components** (list) - list \
-            holding the deactivated components
+                        holding the deactivated components
     """
     # return components type results
     result_components = filter_result_component_types(
@@ -189,9 +189,9 @@ def tightening_investment_boundaries(components_xlsx: pandas.DataFrame,
                     invest_boundary
 
 
-def update_component_scenario_sheet(updated_data: pandas.DataFrame,
-                                    model_definition_sheet_name: str,
-                                    updated_scenario_path: str) -> None:
+def update_component_model_definition_sheet(
+        updated_data: pandas.DataFrame, model_definition_sheet_name: str,
+        updated_model_definition_path: str) -> None:
     """
         updates the original data within the updated model definition
         sheet
@@ -202,21 +202,21 @@ def update_component_scenario_sheet(updated_data: pandas.DataFrame,
         :param model_definition_sheet_name: String holding the sheet \
             name to be stored using the pandas ExcelWriter
         :type model_definition_sheet_name: str
-        :param updated_scenario_path: path where the update Excel file \
-            will be stored
-        :type updated_scenario_path: str
+        :param updated_model_definition_path: path where the update \
+            Excel file will be stored
+        :type updated_model_definition_path: str
     """
     sheets = ['buses', 'district heating', 'sources',
               'transformers', 'storages', 'links']
 
     if model_definition_sheet_name in sheets:
         # adding an empty row at the top of the dataframe (replacing the
-        # unit row in the original scenario file)
+        # unit row in the original model definition file)
         updated_data = pandas.DataFrame(
             [[0 for x in range(len(updated_data.columns))]],
             columns=updated_data.columns).append(updated_data)
 
-    writer = pandas.ExcelWriter(updated_scenario_path,
+    writer = pandas.ExcelWriter(updated_model_definition_path,
                                 engine="openpyxl",
                                 mode="a",
                                 if_sheet_exists="replace")
@@ -225,14 +225,22 @@ def update_component_scenario_sheet(updated_data: pandas.DataFrame,
 
 
 def deactivate_respective_competition_constraints(
-        scenario_path, list_of_deactivated_components) -> pandas.DataFrame:
+        model_definition_path: str,
+        list_of_deactivated_components: list) -> pandas.DataFrame:
     """
         identifies which competition constraints contains deactivated \
         components. The respective competition constraints are \
         deactivated in an updated dataframe
+        
+        :param model_definition_path: file path of the \
+            pre-model-definition-file which shall be adapted
+        :type model_definition_path: str
+        :param list_of_deactivated_components: list holding the \
+            deactivated components
+        :type list_of_deactivated_components: list
     """
     competition_constraints_xlsx = pandas.read_excel(
-            scenario_path, sheet_name='competition constraints')
+            model_definition_path, sheet_name='competition constraints')
 
     for i, constraint in competition_constraints_xlsx.iterrows():
         if constraint['component 1'] in list_of_deactivated_components:
@@ -244,7 +252,7 @@ def deactivate_respective_competition_constraints(
 
 
 def dh_technical_pre_selection(components_xlsx: pandas.DataFrame,
-                               result_components: pandas.DataFrame):
+                               result_components: pandas.DataFrame) -> None:
     """
         deactivates district heating investment decisions for which no
         investments has been carried out
@@ -288,7 +296,8 @@ def dh_technical_pre_selection(components_xlsx: pandas.DataFrame,
             components_xlsx.at[num, 'active'] = 0
 
 
-def bus_technical_pre_selection(components_xlsx, result_components):
+def bus_technical_pre_selection(components_xlsx: pandas.DataFrame,
+                                result_components: pandas.DataFrame) -> None:
     """
         deactivates the district heating connection for those busses for
         which no connection has been carried out during optimization
@@ -317,19 +326,17 @@ def bus_technical_pre_selection(components_xlsx, result_components):
                 section_name = dh_section['ID'].split('_dh_source_link_')[0]
                 dh_investment_list.append(section_name)
                 
-    print("WARNING: IF THE ORIGINAL BUS NAME CONTAINED THE STRING "
-          "'dh_heat_house_station' THIS ANALYSIS IS NOT VALID!")
-    print("WARNING: IF THE ORIGINAL BUS NAME CONTAINED THE STRING "
-          "'dh_source_link' THIS ANALYSIS IS NOT VALID!")
-    print("WARNING: IF THE ORIGINAL BUS NAME ARE DUPLICATES BEFORE USING"
-          " '_' ANALYSIS IS NOT VALID!")
-    print("WARNING: IF THE ORIGINAL BUS NAME CONTAINED THE STRING "
-          "'_Diameter_' THIS ANALYSIS IS NOT VALID!")
+    logging.info("WARNING: IF THE ORIGINAL BUS NAME CONTAINED THE STRING "
+                 "'dh_heat_house_station' THIS ANALYSIS IS NOT VALID!")
+    logging.info("WARNING: IF THE ORIGINAL BUS NAME CONTAINED THE STRING "
+                 "'dh_source_link' THIS ANALYSIS IS NOT VALID!")
+    logging.info("WARNING: IF THE ORIGINAL BUS NAME ARE DUPLICATES BEFORE "
+                 "USING '_' ANALYSIS IS NOT VALID!")
+    logging.info("WARNING: IF THE ORIGINAL BUS NAME CONTAINED THE STRING "
+                 "'_Diameter_' THIS ANALYSIS IS NOT VALID!")
 
     # deactivate those bus connections for which no investment has been
     # carried out
-    print('dh_investment_list')
-    print(dh_investment_list)
     for num, dh_bus in bus_xlsx.iterrows():
         label = str(dh_bus['label'])
         if str(dh_bus['district heating conn.']) not in no_invest_list:
@@ -344,7 +351,9 @@ def bus_technical_pre_selection(components_xlsx, result_components):
                 bus_xlsx.at[num, 'district heating conn.'] = 0
 
 
-def insulation_technical_pre_selection(components_xlsx, result_components):
+def insulation_technical_pre_selection(components_xlsx: pandas.DataFrame,
+                                       result_components: pandas.DataFrame
+                                       ) -> None:
     """
         deactivates district heating investment decisions for which no
         investments has been carried out
@@ -374,23 +383,23 @@ def insulation_technical_pre_selection(components_xlsx, result_components):
 
 def update_model_according_pre_model_results(
         model_definition_path: str, results_components_path: str,
-        updated_scenario_path: str, investment_boundary_factor: int,
+        updated_model_definition_path: str, investment_boundary_factor: int,
         investment_boundaries: bool) -> None:
     """
-        Carries out technical pre-selection and tightens investment \
-        boundaries for a scenario, based on a previously performed \
-        pre-model.
+        Carries out technical pre-selection and tightens investment
+        boundaries for a model definition, based on a previously
+        performed pre-model.
 
         :param model_definition_path: file path of the \
             pre-model-definition-file which shall be adapted
         :type model_definition_path: str
         :param results_components_path: folder path of the \
-            pre-model-results on which base the scenario shall be \
-            adapted
+            pre-model-results on which base the model definition shall \
+            be adapted
         :type results_components_path: str
-        :param updated_scenario_path: file path, where the adapted \
-            scenario shall be saved
-        :type updated_scenario_path: str
+        :param updated_model_definition_path: file path, where the
+            adapted model definition shall be saved
+        :type updated_model_definition_path: str
         :param investment_boundary_factor: the investment boundaries \
             will be tightened to the respective investment decision of \
             the pre-run multiplied by this factor.
@@ -407,8 +416,8 @@ def update_model_according_pre_model_results(
     # import the components.csv of the pre-model's result data
     components = pandas.read_csv(filepath_or_buffer=results_components_path)
 
-    # Copy original scenario sheet to new file
-    with pandas.ExcelWriter(updated_scenario_path) as writer:
+    # Copy original model definition sheet to new file
+    with pandas.ExcelWriter(updated_model_definition_path) as writer:
         for sheet in model_definition_xlsx:
             model_definition_xlsx[sheet].to_excel(writer, sheet_name=sheet)
 
@@ -416,8 +425,8 @@ def update_model_according_pre_model_results(
     complete_list_of_deactivated_components = []
 
     # list of lists of component types. the first value of the sub-lists
-    # represent the name of the component type in the scenario sheet,
-    # the second values the component name in the result sheets
+    # represent the name of the component type in the model definition
+    # sheet, the second values the component name in the result sheets
     component_types = [['buses', 'transformer'],
                        ['transformers', 'transformer'],
                        ['sources', 'source'],
@@ -447,22 +456,22 @@ def update_model_according_pre_model_results(
             += list_of_deactivated_components
         
         # save updated data
-        update_component_scenario_sheet(
+        update_component_model_definition_sheet(
             updated_data=updated_components,
             model_definition_sheet_name=model_definition_type_name,
-            updated_scenario_path=updated_scenario_path)
+            updated_model_definition_path=updated_model_definition_path)
         
     # deactivate the competition constraint of components that are not
     # longer part of the energy system
     updated_constraints = deactivate_respective_competition_constraints(
-        scenario_path=model_definition_path,
+        model_definition_path=model_definition_path,
         list_of_deactivated_components=complete_list_of_deactivated_components)
     
     # save the changes done in the competition constraints sheet
-    update_component_scenario_sheet(
-        updated_scenario_path=updated_scenario_path,
+    update_component_model_definition_sheet(
+        updated_model_definition_path=updated_model_definition_path,
         updated_data=updated_constraints,
         model_definition_sheet_name='competition constraints')
     
-    logging.info('\t Scenario updated according to the results of the '
+    logging.info('\t Model definition updated according to the results of the '
                  'pre-model.')
