@@ -377,6 +377,8 @@ if st.session_state["state_result_path"] == "not set":
         document_path="docs/GUI_texts/results.md",
         folder_path=f'{"docs/images/manual/Results/*"}')
 
+# check if components.csv is in the result folder. Loading result page \
+# elements for a non-pareto run if so.
 elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         in glob.glob(st.session_state["state_result_path"] + "/*"):
 
@@ -420,7 +422,8 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         result_path_results=st.session_state["state_result_path"]
         + "/results.csv")
 
-
+# check if components.csv is in the result folder. Loading result page \
+# elements for a pareto run if not.
 elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         not in glob.glob(st.session_state["state_result_path"] + "/*"):
     # show building specific results
