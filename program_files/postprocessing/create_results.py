@@ -167,6 +167,12 @@ class Results:
         :type energy_system: oemof.solph.Energysystem
         :param result_path: Path where the results are saved.
         :type result_path: str
+        :param console_log: boolean which decides rather the results \
+            will be logged in the console or not
+        :type console_log: bool
+        :param cluster_dh: boolean which decides rather the thermal \
+            network was spatially clustered or not
+        :type cluster_dh: bool
     """
 
     results = None
