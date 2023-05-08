@@ -41,7 +41,7 @@ if "state_submitted_demo_run" not in st.session_state:
     st.session_state["state_submitted_demo_run"] = "not done"
 
 
-def dt_input_sidebar():
+def dt_input_sidebar()  -> dict:
     """
         Creating the demotool input values in the sidebar.
 
@@ -158,7 +158,7 @@ def dt_input_sidebar():
     return None
 
 
-def execute_sesmg_demo(demo_file, demo_results, mode):
+def execute_sesmg_demo(demo_file: str, demo_results: str, mode: str) -> None:
     """
         Excecutes the optimization algorithm.
 
@@ -197,7 +197,7 @@ def execute_sesmg_demo(demo_file, demo_results, mode):
     st.session_state["state_submitted_demo_run"] = "not done"
 
 
-def create_demo_model_definition():
+def create_demo_model_definition() -> None:
     """
         Modifies the demo model definition.
     """
@@ -261,7 +261,7 @@ def create_demo_model_definition():
         mode=input_values_dict["input_criterion"])
 
 
-def show_demo_run_results(mode):
+def show_demo_run_results(mode: str) -> None:
     """
         Loading and displaying demo run results.
 
@@ -309,7 +309,7 @@ def show_demo_run_results(mode):
         delta_color="inverse")
 
 
-def demo_start_page():
+def demo_start_page() -> None:
     """
         Start page text, images and tables for the demo tool.
     """

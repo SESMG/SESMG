@@ -12,7 +12,7 @@ from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main, sesmg_main_including_premodel
 
 
-def st_settings_global():
+def st_settings_global() -> None:
     """
         Function to define settings for the Streamlit GUI.
     """
@@ -48,7 +48,8 @@ def import_GUI_input_values_json(json_file_path: str) -> dict:
     return GUI_settings_cache_dict_reload
 
 
-def safe_GUI_input_values(input_values_dict: dict, json_file_path: str):
+def safe_GUI_input_values(input_values_dict: dict,
+                          json_file_path: str) -> None:
     """
         Function to safe a dict as json.
 
@@ -63,7 +64,7 @@ def safe_GUI_input_values(input_values_dict: dict, json_file_path: str):
         json.dump(input_values_dict, outfile, indent=4)
 
 
-def clear_GUI_main_settings(json_file_path: str):
+def clear_GUI_main_settings(json_file_path: str) -> None:
     """
         Function to clear the GUI settings dict, reset it to the initial
         values and safe in json path as variables.
@@ -146,7 +147,9 @@ def create_timeseries_parameter_list(GUI_main_dict: dict,
     return parameter_list + input_value_season
 
 
-def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
+def run_SESMG(GUI_main_dict: dict,
+              model_definition: str,
+              save_path: str) -> None:
     """
         Function to run SESMG main based on the GUI input values dict.
 
@@ -237,7 +240,7 @@ def read_markdown_document(document_path: str, folder_path: str,
             main page content is the Readme reduced by the \
             installation part
         :type main_page: bool
-        
+
         :return: - **readme_buffer** (list) - list of markdown text which is \
         educed by the parts between ## Quick Start ## SESMG Features \
             & Releases based on the readme.md
@@ -279,7 +282,8 @@ def read_markdown_document(document_path: str, folder_path: str,
     return readme_buffer
 
 
-def create_simplification_index(input_list: list, input_output_dict: dict):
+def create_simplification_index(input_list: list,
+                                input_output_dict: dict) -> None:
     """
         Creates the streamlit index for timeseries simplification params
         as required to reload GUI elements with initial values.
@@ -301,7 +305,7 @@ def create_simplification_index(input_list: list, input_output_dict: dict):
 
 def create_cluster_simplification_index(input_value: str,
                                         input_output_dict: dict,
-                                        input_value_index: str):
+                                        input_value_index: str) -> None:
     """
         Creates the streamlit index for timeseries simplification param
         clustering as required to reload GUI elements with initial
@@ -322,13 +326,12 @@ def create_cluster_simplification_index(input_value: str,
         input_output_dict[input_value_index] = 0
     else:
         input_output_dict[input_value_index] = input_output_dict[input_value]
-        
-        
+
+
 def load_result_folder_list():
-    
     """
         Load the folder names of the existing result folders.
-        
+
         :return: - **existing_result_foldernames_list** (list) - list of \
         exsting folder names.
     """
@@ -338,9 +341,5 @@ def load_result_folder_list():
         os.path.basename(x) for x in glob.glob(f'{"results/*"}')]
     # sort list
     existing_result_foldernames_list.sort()
-    
+
     return existing_result_foldernames_list
-
-
-
-
