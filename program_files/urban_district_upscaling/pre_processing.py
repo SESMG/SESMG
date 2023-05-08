@@ -223,7 +223,7 @@ def column_exists(building: pandas.Series, column: str) -> bool:
         :param column: label of the investigated column
         :type column: str
         
-        :return: - **None** (bool) - boolean which signalizes whether \
+        :return: - **-** (bool) - boolean which signalizes whether \
             the column exists or not
     """
     # test rather the column exists
@@ -245,7 +245,7 @@ def represents_int(entry: str) -> bool:
         :param entry: entry under investigation
         :type entry: str
         
-        :return: **None** (bool) - boolean which signs rather the \
+        :return: **-** (bool) - boolean which signs rather the \
             considered column is an integer or not
     """
     # test rather the entry is convertible
@@ -411,7 +411,7 @@ def get_central_comp_active_status(central: pandas.DataFrame, technology: str
         :param technology: central component to be checked
         :type technology: str
 
-        :return: - **None** (bool) - return rather the technology is \
+        :return: - **-** (bool) - return rather the technology is \
             active (True) or not (False)
     """
     entry = central.loc[central["technology"] == technology]

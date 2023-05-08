@@ -268,7 +268,7 @@ def get_dict_building_cluster(tool: pandas.DataFrame) -> dict:
             parameters which result from the Upscaling Tool's input file
         :type tool: pandas.Dataframe
         
-        :returns: - **cluster_ids** (dict) - dict holding the Cluster \
+        :returns: **cluster_ids** (dict) - dict holding the Cluster \
             ID buildings combination
     """
     # create a dictionary holding the combination of cluster ID the included
