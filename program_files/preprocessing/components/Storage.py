@@ -158,7 +158,7 @@ class Storages:
     
             :param storage: Series containing all information for the \
                 creation of an oemof storage.
-            :type storage: dict
+            :type storage: pandas.Series
         """
         self.create_storage(
             storage,

@@ -19,58 +19,58 @@ class Transformers:
         :param nodes_data: dictionary containing data from excel model \
             definition file. The following data have to be provided:
     
-                - label,
-                - active,
-                - transformer type,
-                - mode,
-                - input,
-                - input2,
-                - output,
-                - output2,
-                - input2 / input,
-                - efficiency,
-                - efficiency2,
-                - variable input costs,
-                - variable input constraint costs,
-                - variable input costs 2,
-                - variable input constraint costs 2,
-                - variable output costs,
-                - variable output constraint costs,
-                - variable output costs 2,
-                - variable output constraint costs 2,
-                - existing capacity,
-                - max. investment capacity,
-                - min. investment capacity,
-                - periodical costs,
-                - periodical constraint costs,
-                - non-convex investment,
-                - fix investment costs,
-                - fix investment constraint costs,
-                - heat source,
-                - temperature high,
-                - temperature low,
-                - quality grade,
-                - area,
-                - length of geoth. probe,
-                - heat extraction,
-                - min. borehole area,
-                - temp. threshold icing,
-                - factor icing,
-                - name,
-                - electrical input conversion factor,
-                - recooling temperature difference,
-                - heat capacity of source,
-                - min. share of flue gas loss,
-                - max. share of flue gas loss,
-                - min. electric power,
-                - max. electric power,
-                - min. electric efficiency,
-                - max. electric efficiency,
-                - minimal thermal output power,
-                - elec. power loss index,
+                - label
+                - active
+                - transformer type
+                - mode
+                - input
+                - input2
+                - output
+                - output2
+                - input2 / input
+                - efficiency
+                - efficiency2
+                - variable input costs
+                - variable input constraint costs
+                - variable input costs 2
+                - variable input constraint costs 2
+                - variable output costs
+                - variable output constraint costs
+                - variable output costs 2
+                - variable output constraint costs 2
+                - existing capacity
+                - max. investment capacity
+                - min. investment capacity
+                - periodical costs
+                - periodical constraint costs
+                - non-convex investment
+                - fix investment costs
+                - fix investment constraint costs
+                - heat source
+                - temperature high
+                - temperature low
+                - quality grade
+                - area
+                - length of geoth. probe
+                - heat extraction
+                - min. borehole area
+                - temp. threshold icing
+                - factor icing
+                - name
+                - electrical input conversion factor
+                - recooling temperature difference
+                - heat capacity of source
+                - min. share of flue gas loss
+                - max. share of flue gas loss
+                - min. electric power
+                - max. electric power
+                - min. electric efficiency
+                - max. electric efficiency
+                - minimal thermal output power
+                - elec. power loss index
                 - back pressure
                 
-        :type nodes_data: dict
+        :type nodes_data: dic
         :param busd: dictionary containing the buses of the energy \
             system
         :type busd: dict
@@ -190,29 +190,29 @@ class Transformers:
                 for the creation of an oemof transformer. At least the
                 following key-value-pairs have to be included:
     
-                    - label,
-                    - input,
-                    - input2,
-                    - output,
-                    - output2,
-                    - efficiency,
-                    - efficiency2,
-                    - input2 / input,
-                    - variable input costs,
-                    - variable input constraint costs,
-                    - variable input costs 2,
-                    - variable input constraint costs 2,
-                    - variable output costs,
-                    - variable output constraint costs,
-                    - variable output costs 2,
-                    - variable output constraint costs 2,
-                    - periodical costs,
-                    - periodical constraint costs,
-                    - min. investment capacity,
-                    - max. investment capacity,
-                    - existing capacity,
-                    - non-convex investment,
-                    - fix investment costs,
+                    - label
+                    - input
+                    - input2
+                    - output
+                    - output2
+                    - efficiency
+                    - efficiency2
+                    - input2 / input
+                    - variable input costs
+                    - variable input constraint costs
+                    - variable input costs 2
+                    - variable input constraint costs 2
+                    - variable output costs
+                    - variable output constraint costs
+                    - variable output costs 2
+                    - variable output constraint costs 2
+                    - periodical costs
+                    - periodical constraint costs
+                    - min. investment capacity
+                    - max. investment capacity
+                    - existing capacity
+                    - non-convex investment
+                    - fix investment costs
                     - fix investment constraint costs
                     
             :type transformer: pandas.Series
@@ -299,7 +299,7 @@ class Transformers:
                 for the creation of an oemof transformer. At least the \
                 following key-value-pairs have to be included:
                 
-                    - label,
+                    - labe
                     - mode
                     
             :type transformer: pandas.Series
@@ -336,32 +336,34 @@ class Transformers:
                 for the creation of an oemof transformer. At least the \
                 following key-value-pairs have to be included:
     
-                - label,
-                - variable input costs,
-                - variable input constraint costs,
-                - variable output costs,
-                - variable output constraint costs,
-                - min. investment capacity,
-                - max. investment capacity,
-                - existing capacity,
-                - efficiency,
-                - periodical costs,
-                - periodical constraint costs,
-                - non-convex investment,
-                - fix investment costs,
-                - fix investment constraint costs,
+                - label
+                - variable input costs
+                - variable input constraint costs
+                - variable output costs
+                - variable output constraint costs
+                - min. investment capacity
+                - max. investment capacity
+                - existing capacity
+                - efficiency
+                - periodical costs
+                - periodical constraint costs
+                - non-convex investment
+                - fix investment costs
+                - fix investment constraint costs
                 - mode:
+                    
                     - 'heat_pump' or
                     - 'chiller'
-                - heat source,
-                - temperature high,
-                - temperature low,
-                - quality grade,
-                - area,
-                - length of the geoth. probe,
-                - heat extraction,
-                - min. borehole area,
-                - temp. threshold icing,
+                
+                - heat source
+                - temperature high
+                - temperature low
+                - quality grade
+                - area
+                - length of the geoth. probe
+                - heat extraction
+                - min. borehole area
+                - temp. threshold icing
                 - factor icing
             
             :type transformer: pd.Series
@@ -530,24 +532,24 @@ class Transformers:
                 the creation of an oemof transformer. At least the \
                 following key-value-pairs have to be included:
     
-                    - label,
-                    - input,
-                    - output,
-                    - output2,
-                    - variable input costs,
-                    - variable input constraint costs,
-                    - variable output costs,
-                    - variable output constraint costs,
-                    - variable output costs 2,
-                    - variable output constraint costs 2,
-                    - min. share of flue gass loss,
-                    - max. share of flue gass loss,
-                    - min. electric power,
-                    - max. electric power,
-                    - min. electric efficiency,
-                    - max. electric efficiency,
-                    - minmal thermal output power,
-                    - elec. power loss index,
+                    - label
+                    - input
+                    - output
+                    - output2
+                    - variable input costs
+                    - variable input constraint costs
+                    - variable output costs
+                    - variable output constraint costs
+                    - variable output costs 2
+                    - variable output constraint costs 2
+                    - min. share of flue gass loss
+                    - max. share of flue gass loss
+                    - min. electric power
+                    - max. electric power
+                    - min. electric efficiency
+                    - max. electric efficiency
+                    - minmal thermal output power
+                    - elec. power loss index
                     - back pressure
     
             :type transformer: pandas.Series
@@ -615,27 +617,27 @@ class Transformers:
                 the creation of an oemof transformer. At least the \
                 following key-value-pairs have to be included:
     
-                    - label,
-                    - variable input costs,
-                    - variable input constraint costs,
-                    - variable output costs,
-                    - variable output constraint costs,
-                    - periodical costs,
-                    - periodical constraint costs,
-                    - non-convex investment,
-                    - fix investment costs,
-                    - fix investment constraint costs,
-                    - efficiency,
-                    - min. investment capacity,
-                    - max. investment capacity,
-                    - existing capacity,
+                    - label
+                    - variable input costs
+                    - variable input constraint costs
+                    - variable output costs
+                    - variable output constraint costs
+                    - periodical costs
+                    - periodical constraint costs
+                    - non-convex investment
+                    - fix investment costs
+                    - fix investment constraint costs
+                    - efficiency
+                    - min. investment capacity
+                    - max. investment capacity
+                    - existing capacity
                     - name: name refers to models of absorption heat \
                           transformers with different equation \
                           parameters. See documentation for possible \
                           inputs.
-                    - temperature high,
-                    - temperature low,
-                    - electrical input conversion factor,
+                    - temperature high
+                    - temperature low
+                    - electrical input conversion factor
                     - recooling temperature difference
     
             :type transformer: pandas.Series

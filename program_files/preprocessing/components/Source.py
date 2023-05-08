@@ -508,7 +508,7 @@ class Sources:
             "{:2.2f}".format(numpy.sum(irradiance)) + " kWh/(m²a)"
         )
 
-    def __init__(self, nodes_data: dict, nodes: list, busd: dict):
+    def __init__(self, nodes_data: dict, nodes: list, busd: dict) -> None:
         """
             Inits the source class
         """

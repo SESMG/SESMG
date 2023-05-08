@@ -454,7 +454,7 @@ class Sinks:
         # returns logging info
         logging.info("\t Sink created: " + sink["label"])
 
-    def __init__(self, nodes_data: dict, busd: dict, nodes: list):
+    def __init__(self, nodes_data: dict, busd: dict, nodes: list) -> None:
         """
             Inits the sink class.
         """

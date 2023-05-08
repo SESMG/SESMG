@@ -32,7 +32,7 @@ def load_thermal_network_data(thermal_net: ThermalNetwork, path: str
     return thermal_net
 
 
-def save_thermal_network_data(thermal_net: ThermalNetwork, path: str):
+def save_thermal_network_data(thermal_net: ThermalNetwork, path: str) -> None:
     """
         Method to save the calculated thermal network data.
 

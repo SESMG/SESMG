@@ -15,21 +15,21 @@ class Links:
         :param nodes_data: dictionary containing data from excel model \
             definition file. The following data have to be provided:
     
-                - active,
-                - label,
-                - (un)directed,
-                - efficiency,
-                - bus1,
-                - bus2,
-                - periodical costs,
-                - periodical constraint costs,
-                - variable output costs,
-                - variable output constraint costs,
-                - non-convex investment,
-                - fix investment costs,
-                - fix investment constraint costs,
-                - min. investment capacity,
-                - max. investment capacity,
+                - active
+                - label
+                - (un)directed
+                - efficiency
+                - bus1
+                - bus2
+                - periodical costs
+                - periodical constraint costs
+                - variable output costs
+                - variable output constraint costs
+                - non-convex investment
+                - fix investment costs
+                - fix investment constraint costs
+                - min. investment capacity
+                - max. investment capacity
                 - existing capacity
 
         :type nodes_data: dict
@@ -89,7 +89,7 @@ class Links:
             ),
         )
 
-    def __init__(self, nodes_data: dict, nodes: list, busd: dict):
+    def __init__(self, nodes_data: dict, nodes: list, busd: dict) -> None:
         """
             Inits the Links class.
         """
