@@ -415,6 +415,17 @@ Error M-030: KeyError (Sector)
 **Debugging:** Label the sinks according to their sector of use like '*electricity*' or '*heat*'.
 
 
+Error M-031: Existing capacity for non-convex investment decision
+-------------------------------------------------
+**Error Message:** ::
+
+   AttributeError: Values for 'offset' and 'existing' are given in investement attributes. 
+    These two options cannot be considered at the same time.
+
+**Possible Error Cause:** When non-convex investment decisions are selected, no existing capacities are allowed. 
+
+**Debugging:** Make sure no existing-capacities are given for components including non-convex decissions. If an existing capacity is required an additional component can be used for considering this capacity. 
+
 
 Contributing to the troubleshooting
 =================================================
