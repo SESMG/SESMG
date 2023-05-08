@@ -2,14 +2,14 @@
     jtock - jan.tockloth@fh-muenster.de
     GregorBecker - gregor.becker@fh-muenster.de
     chrklemm - christian.klemm@fh-muenster.de
+    benblankenstein - bb917322@fh-muenster.de
 """
 
 import os
-import openpyxl
 import glob
+import openpyxl
 import streamlit as st
 import pandas as pd
-from PIL import Image
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main
 from program_files.GUI_st.GUI_st_global_functions import \
@@ -102,11 +102,14 @@ def dt_input_sidebar():
         # selectbox for the scize of the District Heating Network
         input_dh = st.selectbox(
             label="District Heating Network",
-            options=["No District Heating Network","urban", "sub-urban", "rural"],
+            options=["No District Heating Network", "urban", "sub-urban",
+                     "rural"],
             help=GUI_helper["demo_sb_heat_network_chp"])
 
-        # the for-loop iterates through each item in 'cases' and sets  the value for each parameter in a separate input values dictionary.
-        #If input_dh is equal to the name of the option in cases, then the values for the input parameters in input_values_dict are taken from the params dictionary. Otherwise, the values are set to zero.
+        # If input_dh is equal to the name of the options, then the \
+        # values for the input parameters in input_values_dict are taken from \
+        # the params dictionary. Otherwise, the values are set binary.
+        # Vales are set according to the chosen dh network.
 
         if input_dh == "No District Heating Network":
             input_values_dict["input_chp_urban"] = 0
@@ -116,7 +119,7 @@ def dt_input_sidebar():
             input_values_dict["input_chp_rural"] = 0
             input_values_dict["input_dh_rural"] = 0
 
-        if input_dh == "urban":
+        elif input_dh == "urban":
             input_values_dict["input_chp_urban"] = 1
             input_values_dict["input_dh_urban"] = 1
             input_values_dict["input_chp_sub_urban"] = 0
@@ -124,7 +127,7 @@ def dt_input_sidebar():
             input_values_dict["input_chp_rural"] = 0
             input_values_dict["input_dh_rural"] = 0
 
-        if input_dh == "sub-urban":
+        elif input_dh == "sub-urban":
             input_values_dict["input_chp_urban"] = 1
             input_values_dict["input_dh_urban"] = 1
             input_values_dict["input_chp_sub_urban"] = 1
@@ -132,7 +135,7 @@ def dt_input_sidebar():
             input_values_dict["input_chp_rural"] = 0
             input_values_dict["input_dh_rural"] = 0
 
-        if input_dh == "rural":
+        elif input_dh == "rural":
             input_values_dict["input_chp_urban"] = 1
             input_values_dict["input_dh_urban"] = 1
             input_values_dict["input_chp_sub_urban"] = 1
@@ -140,11 +143,12 @@ def dt_input_sidebar():
             input_values_dict["input_chp_rural"] = 1
             input_values_dict["input_dh_rural"] = 1
 
-
+        # create slider to choose the optimization criterion
         input_values_dict["input_criterion"] = st.select_slider(
             label="Optimization Criterion",
             options=("monetary", "emissions"))
 
+        # button to run the demotool
         st.form_submit_button(label="Start Simulation",
                               on_click=change_state_submitted_demo_run)
 
@@ -158,10 +162,11 @@ def execute_sesmg_demo(demo_file, demo_results, mode):
     """
         Excecutes the optimization algorithm.
 
-        :param demo_file:
-        :type demo_file:
-        :param demo_results:
-        :type demo_results:
+        :param demo_file: path to the model definition file which is creating \
+            the demo tool
+        :type demo_file: str
+        :param demo_results: path to the demo tool result folder
+        :type demo_results: str
         :param mode: optimization criterion which is chosen in the GUI
         :type mode: str
     """
@@ -171,7 +176,7 @@ def execute_sesmg_demo(demo_file, demo_results, mode):
         criterion_switch = True
     else:
         criterion_switch = False
-        
+
     # run sesmg main function with reduced / fixed input options
     sesmg_main(
         model_definition_file=demo_file,
@@ -192,12 +197,9 @@ def execute_sesmg_demo(demo_file, demo_results, mode):
     st.session_state["state_submitted_demo_run"] = "not done"
 
 
-def create_demo_model_definition(mode):
+def create_demo_model_definition():
     """
-        Modifies demo model definition.
-
-        :param mode: optimization criterion which is chosen in the GUI
-        :type mode: str
+        Modifies the demo model definition.
     """
 
     xfile = openpyxl.load_workbook(
@@ -243,13 +245,12 @@ def create_demo_model_definition(mode):
     sheet["C5"] = input_values_dict["input_chp_sub_urban"]
     sheet["C6"] = input_values_dict["input_chp_rural"]
 
-
     # check if /demo exists in results direcotry
     if mainpath_rdf \
             not in glob.glob(os.path.join(mainpath_mf, "results", "*")):
         # create /results/demo directory
         os.mkdir(path=os.path.join(mainpath_rdf))
-        
+
     # safe motified xlsx file in the results/demo folder
     xfile.save(os.path.join(mainpath_rdf, "model_definition.xlsx"))
 
@@ -263,6 +264,9 @@ def create_demo_model_definition(mode):
 def show_demo_run_results(mode):
     """
         Loading and displaying demo run results.
+
+        :param mode: optimization criterion which is chosen in the GUI
+        :type mode: str
     """
 
     # load summary.csv from results/demo /emissions or /monetary folder
@@ -307,8 +311,9 @@ def show_demo_run_results(mode):
 
 def demo_start_page():
     """
-        Start page text for the demo tool.
+        Start page text, images and tables for the demo tool.
     """
+
     # import markdown text from GUI files
     imported_markdown = read_markdown_document(
         document_path="docs/GUI_texts/demo_tool_text.md",
@@ -317,6 +322,7 @@ def demo_start_page():
     # show markdown text
     st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
 
+    # upload demo tool graph image
     img = "docs/images/manual/DemoTool/demo_system_graph.png"
     st.image(img, caption="", width=500)
 
@@ -328,7 +334,7 @@ def demo_start_page():
     # show markdown text
     st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
 
-
+    # upload dh image
     img = "docs/images/manual/DemoTool/district_heating_network.png"
     st.image(img, caption="", width=500)
 
@@ -356,6 +362,6 @@ demo_start_page()
 # show results after submit button was clicked
 if st.session_state["state_submitted_demo_run"] == "done":
     # create demo model definition and start model run
-    create_demo_model_definition(mode=input_values_dict["input_criterion"])
+    create_demo_model_definition()
     # show generated results
     show_demo_run_results(mode=input_values_dict["input_criterion"])

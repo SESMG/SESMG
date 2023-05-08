@@ -11,7 +11,7 @@ inhabitants. The annual heat demand of 52 000 MWh/a is currently provided by
 via the electricity wholesale market.  
 Which of the technologies on the left would you incorporate and how 
 would you dimension them into the energy system to minimize the current cost 
-of 10.7 Mil. €/a and/or CO2 emissions of 17 200 t/a?  
+of 13.7 Mil. €/a and/or CO2 emissions of 17 200 t/a?  
 Type in your solution on the left side and get it simulated!
 </div>
 
