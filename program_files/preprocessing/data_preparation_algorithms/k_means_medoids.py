@@ -124,18 +124,15 @@ def k_means_algorithm(cluster_period: int, days_per_cluster: int,
                       criterion: str, nodes_data: dict, period: str) -> None:
     """
         identifies k-cluster periods based on the k-means algorithm
-        based on a given criteria. Based on the selected periods, for all
-        timeseries weather data, the respective periods are identified and
-        merged to new shortened timeseries with consecutive time-indices
-        which start with the same start date as the original timeseries.
-        Afterwards, all variable costs are multiplied by the shortening
-        factor (variable cost factor) of the time-series to ensure the
-        same ratio between variable and periodical costs for the energy
-        system optimization model in which the time-series will be applied.
-
-         and merges them to a new shortened
-        timeseries with a consecutive timeindex which has the same
-        start date as the original time-series.
+        based on a given criteria. Based on the selected periods, for
+        all timeseries weather data, the respective periods are
+        identified and merged to new shortened timeseries with
+        consecutive time-indices which start with the same start date
+        as the original timeseries. Afterwards, all variable costs are
+        multiplied by the shortening factor (variable cost factor) of
+        the time-series to ensure the same ratio between variable and
+        periodical costs for the energy system optimization model in
+        which the time-series will be applied.
         
         :param cluster_period: contains the gui input of the chosen \
             period type (possible entries: days, weeks)

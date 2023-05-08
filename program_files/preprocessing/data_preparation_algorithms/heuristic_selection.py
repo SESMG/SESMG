@@ -23,20 +23,20 @@ def hierarchical_selection(nodes_data: dict, scheme: str, period: str,
         - Week with the highest average sun duration
 
 
-        :param nodes_data: SESMG-nodes data, containing weather data,
-                           energy system parameters and timeseries
+        :param nodes_data: SESMG-nodes data, containing weather data, \
+            energy system parameters and timeseries
         :type nodes_data: dict
         :param scheme: ID of heuristic selection scheme to be applied
         :type scheme: str
-        :param period: specifies whether 'days' or 'weeks' are applied
-                       as heuristic selection reference periods
+        :param period: specifies whether 'days' or 'weeks' are applied \
+            as heuristic selection reference periods
         :type period: str
-        :param seasons: number of seasons for hierarchical selections,
-                        e.g. 12 for months or 4 for annual seasons
+        :param seasons: number of seasons for hierarchical selections, \
+            e.g. 12 for months or 4 for annual seasons
         :type seasons: int
-        :return: **nodes_data** (dict): modified SESMG-nodes data,
-                                       containing weather data, energy
-                                       system parameters and timeseries
+        :return: - **nodes_data** (dict): modified SESMG-nodes data, \
+                    containing weather data, energy system parameters \
+                    and timeseries
     """
     
     def extract_data_slices(data_set: pandas.DataFrame, timesteps: int
