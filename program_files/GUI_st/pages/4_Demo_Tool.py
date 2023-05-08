@@ -2,7 +2,7 @@
     Jan N. Tockloth - jan.tockloth@fh-muenster.de
     Gregor Becker - gregor.becker@fh-muenster.de
     Christian Klemm - christian.klemm@fh-muenster.de
-    benblankenstein - bb917322@fh-muenster.de
+    Benjamin Blankenstein - bb917322@fh-muenster.de
 """
 
 import os

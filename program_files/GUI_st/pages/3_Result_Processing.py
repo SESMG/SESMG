@@ -110,8 +110,8 @@ def short_result_summary_time(result_path_summary) -> None:
 
 def short_result_summary_system(result_path_summary) -> None:
     """
-        Function displaying the short result summary overview of the energy \
-            system.
+        Function displaying the short result summary overview of the
+        energy system.
 
         :param result_path_summary: path to a result summary.csv file
         :type result_path_summary: str
@@ -143,7 +143,8 @@ def short_result_summary_system(result_path_summary) -> None:
 def short_result_simplifications(result_GUI_settings_dict: dict) -> None:
     """
         Function to display model simplification settings in addition
-            to the timeseries information.
+        to the timeseries information.
+        
         :param result_GUI_settings_dict: dict including the last runs \
             GUI settings
         :type result_GUI_settings_dict: dict
@@ -169,8 +170,8 @@ def short_result_simplifications(result_GUI_settings_dict: dict) -> None:
 
 def short_result_premodelling(result_GUI_settings_dict: dict) -> None:
     """
-        Function to display premodel settings in addition to
-            the timeseries information.
+        Function to display premodel settings in addition to the
+        timeseries information.
 
         :param result_GUI_settings_dict: dict including the last
             runs GUI settings
@@ -196,6 +197,7 @@ def short_result_premodelling(result_GUI_settings_dict: dict) -> None:
 def short_result_table(result_path_components: str) -> None:
     """
         Function to create table of components.
+        
         :param result_path_components: path to a result components.csv \
             file
         :type result_path_components: str
@@ -262,8 +264,8 @@ def create_energy_amounts_diagram(result_path_amounts: str) -> None:
     """
         Function to create energy amount diagrams in streamlit.
 
-        :param result_path_amounts: path to a result heat_amounts.csv or \
-            elec_amounts.csv file
+        :param result_path_amounts: path to a result heat_amounts.csv \
+            or elec_amounts.csv file
         :type result_path_amounts: str
     """
     # loading result.csv as a dataframe
@@ -345,7 +347,7 @@ def show_pareto(result_path_pareto: str) -> None:
 def short_result_graph(result_path_graph: str) -> None:
     """
         Function to display the energy systems structure in a streamlit
-            expander.
+        expander.
 
         :param result_path_graph: path to a result graph.gv.png file
         :type result_path_graph: str
