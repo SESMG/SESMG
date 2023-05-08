@@ -50,7 +50,8 @@ def append_component(sheets: dict, sheet: str, comp_parameter: dict) -> dict:
 
 
 def read_standard_parameters(name: str, parameter_type: str, index: str,
-                             standard_parameters: pandas.ExcelFile):
+                             standard_parameters: pandas.ExcelFile
+                             ) -> (pandas.DataFrame, list):
     """
         searches the right entry within the standard parameter sheet
 
@@ -244,7 +245,8 @@ def represents_int(entry: str) -> bool:
         :param entry: entry under investigation
         :type entry: str
         
-        :return: **None** (bool) -
+        :return: **None** (bool) - boolean which signs rather the \
+            considered column is an integer or not
     """
     # test rather the entry is convertible
     try:
@@ -258,16 +260,16 @@ def represents_int(entry: str) -> bool:
     
 
 def create_building_buses_links(
-        building: dict, central_electricity_bus: bool, sheets: dict,
+        building: pandas.Series, central_electricity_bus: bool, sheets: dict,
         standard_parameters: pandas.ExcelFile) -> dict:
     """
         In this method, all buses and links required for one building
         are created and attached to the "buses" and "links" dataframes
         in the sheets dictionary.
         
-        :param building: dictionary containing the building specific \
+        :param building: Series containing the building specific \
                 parameters
-        :type building: dict
+        :type building: pandas.Series
         :param central_electricity_bus: defines rather buildings can \
             be connected to central electricity net or not
         :type central_electricity_bus: bool
@@ -320,7 +322,9 @@ def create_building_buses_links(
 
 
 def load_input_data(plain_sheet: str, standard_parameter_path: str,
-                    us_input_sheet: str):
+                    us_input_sheet: str
+                    ) -> (dict, pandas.DataFrame, pandas.DataFrame,
+                          pandas.DataFrame, list, pandas.ExcelFile):
     """
         This method is used to convert the three ExcelFiles necessary \
         for the upscaling tool into pandas structures and then return \
@@ -337,6 +341,23 @@ def load_input_data(plain_sheet: str, standard_parameter_path: str,
         :param us_input_sheet: string containing the path to the \
             upscaling tool input file
         :type us_input_sheet: str
+        
+        :returns: - **sheets** (dict) - dictionary containing the \
+                        pandas.Dataframes that will represent the \
+                        model definition's Spreadsheets
+                  - **central** (pandas.DataFrame) - DataFrame \
+                        holding the US-Input sheets' central component \
+                        Spreadsheet
+                  - **parcel** (pandas.DataFrame) - DataFrame \
+                        holding the US-Input sheets' parcel Spreadsheet
+                  - **tool** (pandas.DataFrame) - DataFrame \
+                        holding the US-Input sheets' building data and \
+                         building investment data
+                  - **worksheets** (list) - list containing the model \
+                        definition's spreadsheets
+                  - **standard_parameters** (pandas.ExcelFile) - \
+                        pandas imported ExcelFile containing the \
+                        non-building specific technology data
     """
     sheets = {}
     columns = {}
@@ -400,10 +421,32 @@ def get_central_comp_active_status(central: pandas.DataFrame, technology: str
         return False
     
     
-def copying_sheets(paths, standard_parameters, sheets):
+def copying_sheets(paths: list, standard_parameters: pandas.ExcelFile,
+                   sheets: dict) -> dict:
     """
+        In this method, the data sheets that need to be transferred
+        from the US input table to the model definition are
+        transferred. For this purpose, the return data structure
+        "sheets" is processed and then returned to the main method.
     
+        :param paths: path of the us input sheet file [0] \
+                      path of the standard_parameter file [1] \
+                      path to which the model definition should be \
+                      created [2]\
+                      path to plain sheet file (holding structure) [3]
+        :type paths: list
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+        :param sheets: dictionary containing the pandas.Dataframes that\
+                will represent the model definition's Spreadsheets
+        :type sheets: dict
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
     """
+    us_input_sheets = pandas.ExcelFile(paths[0]).sheet_names
     for sheet_tbc in [
         "energysystem",
         "weather data",
@@ -411,7 +454,7 @@ def copying_sheets(paths, standard_parameters, sheets):
         "district heating",
         "8_pipe_types"
     ]:
-        if sheet_tbc not in pandas.ExcelFile(paths[0]).sheet_names:
+        if sheet_tbc not in us_input_sheets:
             if sheet_tbc in standard_parameters.sheet_names:
                 if sheet_tbc == "8_pipe_types":
                     sheet_name = "pipe types"
@@ -422,14 +465,14 @@ def copying_sheets(paths, standard_parameters, sheets):
                     parse_dates=["timestamp"]
                     if sheet_tbc in ["weather data", "time series"]
                     else [],)
-            if "4 - time series data" in pandas.ExcelFile(paths[0]).sheet_names:
+            if "4 - time series data" in us_input_sheets:
                 sheets["weather data"] = pandas.ExcelFile(paths[0]).parse(
                     "4 - time series data", parse_dates=["timestamp"]
                 )
                 sheets["time series"] = pandas.ExcelFile(paths[0]).parse(
                     "4 - time series data", parse_dates=["timestamp"]
                 )
-            if "3.1 - streets" in pandas.ExcelFile(paths[0]).sheet_names:
+            if "3.1 - streets" in us_input_sheets:
                 sheets["district heating"] = pandas.ExcelFile(paths[0]).parse(
                      "3.1 - streets"
                 )
@@ -445,9 +488,9 @@ def copying_sheets(paths, standard_parameters, sheets):
 
 def urban_district_upscaling_pre_processing(
     paths: list, clustering: bool, clustering_dh: bool
-):
+) -> bytes:
     """
-        The Urban District Upsclaing Pre Processing method is used to
+        The Urban District Upscaling Pre Processing method is used to
         systematically create a model definition for a few 10 to a few
         hundred buildings based on a US input sheet filled in by the
         user, which includes investment alternative selection and
@@ -458,15 +501,18 @@ def urban_district_upscaling_pre_processing(
         :param paths: path of the us input sheet file [0] \
                       path of the standard_parameter file [1] \
                       path to which the model definition should be \
-                      created [2]\
+                      created [2] \
                       path to plain sheet file (holding structure) [3]
         :type paths: list
-        :param clustering: boolean for decision rather the buildings are
-                           clustered spatially
+        :param clustering: boolean for decision rather the buildings \
+            are clustered spatially
         :type clustering: bool
-        :param clustering_dh: boolean for decision rather the district
+        :param clustering_dh: boolean for decision rather the district \
             heating connection will be clustered cluster_id wise
         :type clustering_dh: bool
+        
+        :returns: - **processed_data** (bytes) - Bytes object which \
+            represents the downloadable model definition instance
     """
 
     logging.info("Creating model definition sheet...")

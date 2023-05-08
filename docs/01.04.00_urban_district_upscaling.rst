@@ -1,5 +1,5 @@
 Urban District Upscaling
-==========================
+------------------------
 
 The Urban District Upscaling Tool (US-Tool) is suitable to efficiently model large neighborhoods. With the help of the tool, the upscaling sheet (us-sheet) and the standard parameter sheet (sp-sheet) are merged into the *model_definition.xlsx*. The *model_definition.xlsx* is the basis for the automatically created energy system shown in section `upscaling model`_ and must be created for each energy system model. In a model definition, each component is defined with respect to its technical and economic parameters and design (e.g. efficiency, GHG emissions, max. capacity). In addition to these standard parameters, users must define model- or neighborhood-specific data (e.g. year of construction of the buildings, heating network as an investment alternative) in the upscaling sheet. Starting with a neighborhood size of ten buildings, several thousand values must be collected. To reduce the effort required to create such a model definition, it was divided into two process steps. All technology-specific parameters are stored in the *standard_parameter.xlsx* and can be used across models. These technology parameters are already implemented in the SESMG and explained in detail in a documentation (https://doi.org/10.5281/zenodo.6974401). Optionally, the technology parameters can be adapted by the users to vary technical or economic parameters specific to the model or scenario (e.g. electricity import prices). 
 The individual input effort is thus limited to the neighborhood-specific data, which must be defined as upscaling parameters. Here, building-specific parameters are defined first (e.g. year of construction of a building). In addition, it is defined for each building which technologies are available as investment alternatives and are to be implemented in the energy system model (e.g. gas heating). Likewise, a definition is made of the central components to be considered at the neighborhood level (e.g. natural gas CHP). The input effort for the investment alternatives is limited to a binary decision (yes/no). Central heat supply technologies can only be considered as an investment alternative if a heat network is included in the energy system model. With the help of the SESMG-internal upscaling tool, all system components required for modeling the energy system are automatically created and defined. Thus, users do not need to define the associated nodes and edges of the energy system technologies as input data (see `Struture of Energy Systems <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html>`_) [1].
@@ -17,7 +17,7 @@ interaction between the individual sub-models. Secondly, users may make technica
 .. _`upscaling model`:
 
 Upscaling Model
-------------------
+^^^^^^^^^^^^^^^^
 
 By using the urban Upscaling Tool, automatically a model containing the components shown in the following figure is created. The model is divided into components of the main-system which are created only once, and components of sub-systems, which are created for every sub-system. A detailed description of the system is given here: https://doi.org/10.5281/zenodo.7615332
 
@@ -28,7 +28,7 @@ By using the urban Upscaling Tool, automatically a model containing the componen
 
 
 References
-------------------
+^^^^^^^^^^^
 [1] Budde et al., *Automatisierte Modellierung und Optimierung urbaner Energiesysteme (2023)*, Tagungsband RET.Con 2023
 
 [2] Budde, *Leitfaden zur Modellierung von Energiesystemen (2022)*, master thesis.

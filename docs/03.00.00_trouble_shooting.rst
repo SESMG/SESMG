@@ -36,6 +36,44 @@ Error I-003: py not found
 
 **Debugging:** Re-install your python-version and make sure to check the "Add pyton to PATH" option at the beginning of the installation
 
+Error I-004: no developer tools installed (macOS > 12.2)
+-------------------------------------------------
+**Error Message:** ::
+
+   Error: No developer tools installed
+   Install the Command Line Tools:
+      xcode-select --install
+
+**Possible Error Cause:** If you use macOS 12.2 or higher, you need to install the xcode developer tool. Also if you just updeted your macOS to the newer version.
+
+**Debugging:** Follow the instructions and run xcode-select --install in an additional terminal.
+
+Error I-005: subprocess-exited-with-error
+-------------------------------------------------
+**Error Message:** ::
+
+   Installation buid dependencies ... error
+   error: subprocess-exited-with-error
+   
+   pip subprocess to install build dependencies did not run successfully.
+
+**Possible Error Cause:** maybe the wrong python version was installed. There is a difference between the 32- or 64-bit version.
+
+**Debugging:** check if you have a 32- or 64-bit machine and if you installed the correct python version. De- and reinstall to correct.
+
+Error I-006: Could not find a local HDF5 installation (macOS M1/M2)
+-------------------------------------------------
+**Error Message:** ::
+
+   * USE_PKGCONFIG: True
+  .. ERROR:: Could not find a local HDF5 installation.
+     You may need to explicitly state where your local HDF5 headers and
+     library can be found by setting the ``HDF5_DIR`` environment
+     variable or by using the ``--hdf5`` command-line option.
+
+**Possible Error Cause:** The packages were installed to an unexpected path by homebrew, which is an Apple CPU M1 / M2 issue.
+
+**Debugging:** Type following lines separately in the terminal: ``(echo; echo 'export HDF5_DIR=/opt/homebrew/opt/hdf5') >> /Users/$(whoami)/.zprofile`` and ``(echo; echo 'export BLOSC_DIR=/opt/homebrew/opt/c-blosc') >> /Users/$(whoami)/.zprofile``.
 
 Modeling
 =================================================
@@ -288,7 +326,7 @@ Error M-023: nearest foot point
    IndexError: list index out of range
 
 **Possible Error Cause:** The producer could not be connected to the defined heat network. This is probably due to the fact that a right-angled connection to the producer is not possible to the defined pipes.
-**Debugging:** Make sure that the producers can be connected to the heat network with a right angle. It is possible that the producer is too far away from the network.
+**Debugging:** Make sure that the producers can be connected to the heat network with a right angle. It is possible that the producer is too far away from the network. Make sure that you deactivate the district heating connection in each bus, when you dont use a heat network.
 
 
 Error M-024: KeyError: 'lon'
@@ -321,10 +359,13 @@ Error M-026: Key Error (sequences) III
 
    ... in get_sequence return_list.append([component["sequences"][(i, "flow")]])
 
-**Possible Error Cause:** No power supply is provided. The error can occur if only one air source heat pump is considered for the heat supply and the outdoor air temperature is higher than the flow temperature of the heating system.
+**Possible Error Cause I:** No power supply is provided. The error can occur if only one air source heat pump is considered for the heat supply and the outdoor air temperature is higher than the flow temperature of the heating system.
 
-**Debugging:** Using a higher flow temperature or a lower outdoor air temperature, consider an alternative technology
+**Debugging I:** Using a higher flow temperature or a lower outdoor air temperature, consider an alternative technology
 
+**Possible Error Cause II:** There are storages with a missing initial capacity. 
+
+**Debugging II:** Make sure the initial capacity is equal or higher than the minimal capacity.
 
 Error M-027: Key Error (Index) II
 -------------------------------------------------
@@ -346,6 +387,33 @@ Error M-028: invalid literal for int()
 **Possible Error Cause:** Wrong parameters for the timeseries preparation have been selected.
 
 **Debugging:** Make sure, that you have defined the parameters for the timeseries preparation correctly. Try changing the values for 'Period' and 'Season' to other values than 'none'.
+
+
+Error M-029: KeyError (variable)
+-------------------------------------------------
+**Error Message:** ::
+
+   KeyError: '*variable*'
+   ...
+   raise KeyError(key) from err
+
+**Possible Error Cause:** There could be a a missing value in the model definition. Check the column with the name of the '*variable*'. The '*variable*'can have several values / names.
+
+**Debugging:** Make sure, that you have filled out the column and that the values are correct. Use the actual version of the model definition spreadsheed. 
+
+
+Error M-030: KeyError (Sector)
+-------------------------------------------------
+**Error Message:** ::
+
+   KeyError: '*Sector*'
+   ...
+   raise KeyError(key) from err
+
+**Possible Error Cause:** You did not label the sinks in the sector column correct.
+
+**Debugging:** Label the sinks according to their sector of use like '*electricity*' or '*heat*'.
+
 
 
 Contributing to the troubleshooting

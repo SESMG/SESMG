@@ -99,6 +99,8 @@ def clear_GUI_main_settings(json_file_path: str):
         "input_premodeling_timeseries_cluster_index_index": 0,
         "input_pareto_points": [],
         "input_cluster_dh": False,
+        "input_dh_folder_index": 0,
+        "input_activate_dh_precalc": False,
         "input_criterion_switch": False,
         "input_num_threads": 1,
         "input_solver": "cbc",
@@ -113,19 +115,22 @@ def clear_GUI_main_settings(json_file_path: str):
 
 def create_timeseries_parameter_list(GUI_main_dict: dict,
                                      input_value_list: list,
-                                     input_timseries_season: str) -> list:
+                                     input_timeseries_season: str) -> list:
     """
-        Creates list of input variables as input preparation for run_semsg \
+        Creates list of input variables as input preparation for run_semsg
         with appending input_timseries_season value.
 
         :param GUI_main_dict: global defined dict of GUI input variables
         :type GUI_main_dict: dict
-        :param input_values_list: list of input variables which will be \
-            writen in a list from the GUI_main_dict
-        :type input_values_list: list
+        :param input_value_list: list of input variables which will \
+            be written in a list from the GUI_main_dict
+        :type input_value_list: list
+        :param input_timeseries_season: input value of the season drop \
+            down menu in the GUI
+        :type input_timeseries_season: str
 
-        :return: - **parameter_list + input_value_season** (list) - list of
-            timeseries simplification parameters
+        :return: - **parameter_list + input_value_season** (list) - \
+            list of timeseries simplification parameters
     """
 
     # set parameter from the GUI main dict and store them in a list
@@ -134,8 +139,8 @@ def create_timeseries_parameter_list(GUI_main_dict: dict,
 
     # set input_timseries_season value
     input_value_season = \
-        [0 if GUI_main_dict[input_timseries_season] == "None"
-         else GUI_main_dict[input_timseries_season]]
+        [0 if GUI_main_dict[input_timeseries_season] == "None"
+         else GUI_main_dict[input_timeseries_season]]
 
     # append input_timseries_season value and return
     return parameter_list + input_value_season
@@ -145,7 +150,7 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
     """
         Function to run SESMG main based on the GUI input values dict.
 
-        :param GUI_main_dict: TODO ...
+        :param GUI_main_dict: global defined dict of GUI input variables
         :type GUI_main_dict: dict
         :param model_definition: file path of the model definition to \
             be optimized
@@ -163,12 +168,12 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
     timeseries_prep = create_timeseries_parameter_list(
         GUI_main_dict=GUI_main_dict,
         input_value_list=timeseries_prep_parameter_list,
-        input_timseries_season="input_timeseries_season")
+        input_timeseries_season="input_timeseries_season")
 
     if not GUI_main_dict["input_activate_premodeling"]:
 
         sesmg_main(
-            scenario_file=model_definition,
+            model_definition_file=model_definition,
             result_path=save_path,
             num_threads=GUI_main_dict["input_num_threads"],
             timeseries_prep=timeseries_prep,
@@ -176,28 +181,28 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
             xlsx_results=GUI_main_dict["input_xlsx_results"],
             console_results=GUI_main_dict["input_console_results"],
             solver=GUI_main_dict["input_solver"],
-            district_heating_path="",
+            district_heating_path=GUI_main_dict["input_dh_folder"],
             cluster_dh=GUI_main_dict["input_cluster_dh"])
 
     # If pre-modeling is activated a second run will be carried out
     else:
 
-        # prepare premodell timeseries parameter list
+        # prepare pre-model timeseries parameter list
         timeseries_prep_parameter_list = \
             ["input_premodeling_timeseries_algorithm",
              "input_premodeling_timeseries_cluster_index",
              "input_premodeling_timeseries_criterion",
              "input_premodeling_timeseries_period"]
 
-        # create premodell timeseries parameter list as an input variable
+        # create pre-model timeseries parameter list as an input variable
         # for run_sesmg
         premodel_timeseries_prep = create_timeseries_parameter_list(
             GUI_main_dict=GUI_main_dict,
             input_value_list=timeseries_prep_parameter_list,
-            input_timseries_season="input_premodeling_timeseries_season")
+            input_timeseries_season="input_premodeling_timeseries_season")
 
         sesmg_main_including_premodel(
-            scenario_file=model_definition,
+            model_definition_file=model_definition,
             result_path=save_path,
             num_threads=GUI_main_dict["input_num_threads"],
             timeseries_prep=timeseries_prep,
@@ -205,21 +210,20 @@ def run_SESMG(GUI_main_dict: dict, model_definition: str, save_path: str):
             xlsx_results=GUI_main_dict["input_xlsx_results"],
             console_results=GUI_main_dict["input_console_results"],
             solver=GUI_main_dict["input_solver"],
-            district_heating_path="",
+            district_heating_path=GUI_main_dict["input_dh_folder"],
             cluster_dh=GUI_main_dict["input_cluster_dh"],
             pre_model_timeseries_prep=premodel_timeseries_prep,
             investment_boundaries=GUI_main_dict["input_premodeling_invest_boundaries"],
             investment_boundary_factor=GUI_main_dict["input_premodeling_tightening_factor"],
-            pre_model_path=GUI_main_dict["premodeling_res_path"],
             graph=False)
 
 
 def read_markdown_document(document_path: str, folder_path: str,
                            main_page=True) -> list:
     """
-        Using this method, texts stored in the repository in the form \
-        of markdown files can be used as the content of a streamlit \
-        page. To do this, the markdown file and the images it contains \
+        Using this method, texts stored in the repository in the form
+        of markdown files can be used as the content of a streamlit
+        page. To do this, the markdown file and the images it contains
         are loaded and then displayed in streamlit format.
 
         :param document_path: path where the markdown file which will \
@@ -265,7 +269,6 @@ def read_markdown_document(document_path: str, folder_path: str,
                 # If an image is found, display the buffer list up to
                 # the last line
                 if image in line:
-# TODO @gregorbecker: können wir die st. Beffehle in die GUI verschieben?
                     st.markdown(''.join(readme_buffer[:-1]))
                     # Display the image from the Resources folder using
                     # the image name from the resource_files list
@@ -278,19 +281,19 @@ def read_markdown_document(document_path: str, folder_path: str,
 
 def create_simplification_index(input_list: list, input_output_dict: dict):
     """
-        Creates the streamlit index for timeseries simplification params \
-            as required to reload GUI elements with initial values
+        Creates the streamlit index for timeseries simplification params
+        as required to reload GUI elements with initial values.
 
        :param input_list: list with lists for each simplification with three
-           columns: name of the index, list in which the index is definied
-           reguarding to the input cariable name, input variable name
+           columns: name of the index, list in which the index is defined
+           regarding to the input cariable name, input variable name
        :type input_list: list
        :param input_output_dict: global defined dict to which the indexes will
            be written in
        :type input_output_dict: dict
     """
 
-    # iteratale trough the inner lists
+    # iterate trough the inner lists
     for var in input_list:
 
         input_output_dict[var[0]] = var[1][input_output_dict[var[2]]]
@@ -300,20 +303,44 @@ def create_cluster_simplification_index(input_value: str,
                                         input_output_dict: dict,
                                         input_value_index: str):
     """
-        Creates the streamlit index for timeseries simplification param \
-            clustering as required to reload GUI elements with initial values \
-            since clustering index needs to set differntly
+        Creates the streamlit index for timeseries simplification param
+        clustering as required to reload GUI elements with initial
+        values since clustering index needs to set differently
 
-       :param input_value: name of the input variable in the input_output_dict
-       :type input_value: str
-       :param output_dict: global defined dict to which the indexes will be
-           written in
-       :type output_dict: dict
-       :param input_list: name of the output variable in the input_output_dict
-       :type input_list: str
+        :param input_value: name of the input variable in the \
+            input_output_dict
+        :type input_value: str
+        :param input_output_dict: global defined dict to which the \
+            indexes will be written in
+        :type input_output_dict: dict
+        :param input_value_index: name of the output variable in the \
+            input_output_dict
+        :type input_value_index: str
     """
 
     if input_output_dict[input_value] == "None":
         input_output_dict[input_value_index] = 0
     else:
         input_output_dict[input_value_index] = input_output_dict[input_value]
+        
+        
+def load_result_folder_list():
+    
+    """
+        Load the folder names of the existing result folders.
+        
+        :return: - **existing_result_foldernames_list** (list) - list of \
+        exsting folder names.
+    """
+
+    # read sub folders in the result folder directory
+    existing_result_foldernames_list = [
+        os.path.basename(x) for x in glob.glob(f'{"results/*"}')]
+    # sort list
+    existing_result_foldernames_list.sort()
+    
+    return existing_result_foldernames_list
+
+
+
+

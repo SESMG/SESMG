@@ -10,9 +10,6 @@ Sourcecode Documentation
     can be visualized and evaluated.
 
     - `GUI GUI_st_global_functions <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.GUI_st.GUI_st_global_functions>`_
-    - `GUI 1_Main_Application <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.GUI_st.1_Main_Application>`_
-    - `GUI 2_Urban_District_Upscaling <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.GUI_st.pages.2_Urban_District_Upscaling>`_
-    - `GUI 3_Result_Processing <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/004.00.00_sourcecode_documentation.html#module-program_files.GUI_st.pages.3_Result_Processing>`_
 
 
 The software product "SESMG" can be divided into the following 4 process phases:
@@ -63,36 +60,34 @@ The software product "SESMG" can be divided into the following 4 process phases:
     - `Preprocessing Storage <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.components.Storage>`_
     - `Preprocessing Transformer <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.components.Transformer>`_
 
+
+**Processing**:
+
+    TODO ADD DESCRIPTION
+
+    - `Processing optimize_model <LINK>`_
+
+**Postprocessing**:
+
+    TODO ADD DESCRIPTION
+
+    - `Postprocessing building_specific_results <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.building_specific_results>`_
+    - `Postprocessing create_results <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.create_results>`_
+    - `Postprocessing create_results_collecting_data <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.create_results_collecting_data>`_
+    - `Postprocessing create_results_console_logging <LINK>`_
+    - `Postprocessing create_results_prepare_data <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.create_results_prepare_data>`_
+    - `Postprocessing plotting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.plotting>`_
+    - `Postprocessing plotting_capacities <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.plotting_capacities>`_
+    - `Postprocessing plotting_elec_amounts <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.plotting_elec_amounts>`_
+    - `Postprocessing plotting_heat_amounts <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.plotting_heat_amounts>`_
+
 Graphical User Interface (GUI)
 -------------------------------------------------------
 GUI/GUI_st_global_functions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.GUI_st.GUI_st_global_functions
    :members:
-   :undoc-members:
    :show-inheritance:
-
-GUI/1_Main_Application
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. .. automodule:: program_files.GUI_st.1_Main_Application
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-GUI/pages/2_Urban_District_Upscaling
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. .. automodule:: program_files.GUI_st.pages.2_Urban_District_Upscaling
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-GUI/pages/3_Result_Processing
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. .. automodule:: program_files.GUI_st.pages.3_Result_Processing
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 
 Urban District Upscaling Tool
 -------------------------------------------------------
@@ -100,70 +95,60 @@ US_Tool/pre_processing
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.pre_processing
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/clustering
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.clustering
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/components/Bus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Bus
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/components/Central_components
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Central_components
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/components/Insulation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Insulation
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/components/Link
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Link
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/components/Sink
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Sink
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/components/Source
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Source
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/components/Storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Storage
    :members:
-   :undoc-members:
    :show-inheritance:
 
 US_Tool/components/Transformer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.urban_district_upscaling.components.Transformer
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing
@@ -172,28 +157,24 @@ Preprocessing/create_energy_system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.create_energy_system
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/data_preparation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.data_preparation
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/data_preparation/averaging
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 .. automodule:: program_files.preprocessing.data_preparation_algorithms.averaging
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/data_preparation/downsampling
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 .. automodule:: program_files.preprocessing.data_preparation_algorithms.downsampling
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/data_preparation/heuristic_selection
@@ -214,28 +195,24 @@ Preprocessing/data_preparation/random_sampling
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 .. automodule:: program_files.preprocessing.data_preparation_algorithms.random_sampling
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/data_preparation/slicing
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''
 .. automodule:: program_files.preprocessing.data_preparation_algorithms.slicing
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/import_weather_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.import_weather_data
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/pareto_optimization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.pareto_optimization
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/pre_model_analysis
@@ -256,7 +233,6 @@ Preprocessing/components/Bus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.components.Bus
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/components/district_heating
@@ -284,33 +260,97 @@ Preprocessing/components/Link
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.components.Link
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/components/Sink
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.components.Sink
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/components/Source
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.components.Source
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/components/Storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.components.Storage
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/components/Transformer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.components.Transformer
+   :members:
+   :show-inheritance:
+
+Processing
+-------------------------------------------------------
+Processing/optimize_model
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.processing.optimize_model
+   :members:
+   :show-inheritance:
+
+Postprocessing
+-------------------------------------------------------
+Postprocessing/building_specific_results
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.postprocessing.building_specific_results
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Postprocessing/create_results
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.postprocessing.create_results
+   :members:
+   :show-inheritance:
+
+Postprocessing/create_results_collecting_data
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.postprocessing.create_results_collecting_data
+   :members:
+   :show-inheritance:
+
+Postprocessing/create_results_console_logging
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.postprocessing.create_results_console_logging
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Postprocessing/create_results_prepare_data
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.postprocessing.create_results_prepare_data
+   :members:
+   :show-inheritance:
+
+Postprocessing/plotting
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.postprocessing.plotting
+   :members:
+   :show-inheritance:
+
+Postprocessing/plotting_capacities
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.postprocessing.plotting_capacities
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Postprocessing/plotting_elec_amounts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.postprocessing.plotting_elec_amounts
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Postprocessing/plotting_heat_amounts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. automodule:: program_files.postprocessing.plotting_heat_amounts
    :members:
    :undoc-members:
    :show-inheritance:

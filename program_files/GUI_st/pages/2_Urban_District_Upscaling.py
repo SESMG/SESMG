@@ -27,7 +27,7 @@ def us_application():
 
     model_definition_df = ""
     with st.sidebar.form("Input Parameters"):
-    
+
         # input us sheet
         input_us_sheet_path = st.file_uploader(
             label="Import your upscaling sheet:",
@@ -80,7 +80,7 @@ def us_application():
 
 def standard_page():
     """
-    
+        Load the existing file of the us tool description and include grafics.
     """
     reduced_readme = read_markdown_document(
         document_path="docs/GUI_texts/us_tool.md",
@@ -89,6 +89,7 @@ def standard_page():
     # Display any remaining lines in the buffer list using the st.markdown() \
     # function
     st.markdown(''.join(reduced_readme), unsafe_allow_html=True)
+
 
 # second column
 def after_processing_page():

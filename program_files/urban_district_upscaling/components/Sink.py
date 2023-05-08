@@ -1,8 +1,13 @@
+"""
+    Christian Klemm - christian.klemm@fh-muenster.de
+    Gregor Becker - gregor.becker@fh-muenster.de
+    Janik Budde - janik.budde@fh-muenster.de
+"""
 import pandas
 
 
 def create_standard_parameter_sink(sink_type: str, label: str, sink_input: str,
-                                   annual_demand: int, sheets: dict,
+                                   annual_demand: float, sheets: dict,
                                    standard_parameters: pandas.ExcelFile
                                    ) -> dict:
     """
@@ -18,8 +23,10 @@ def create_standard_parameter_sink(sink_type: str, label: str, sink_input: str,
         :param sink_input: label of the bus which will be the input of \
             the sink to be created
         :type sink_input: str
-        :param annual_demand: #todo formula
-        :type annual_demand: int
+        :param annual_demand: Annual demand previously calculated by \
+            the method provided for the considered sink type, \
+            representing the energy demand of the sink.
+        :type annual_demand: float
         :param sheets: dictionary containing the pandas.Dataframes that\
                 will represent the model definition's Spreadsheets
             :type sheets: dict
@@ -108,7 +115,6 @@ def create_electricity_sink(building: pandas.Series, area: float, sheets: dict,
                 occupants = building["occupants per unit"] * building["units"]
                 # demand calculation
                 demand_el = demand_el_specific * occupants
-        # TODO was machen wir mit IND
         else:
             # specific demand per area
             demand_el_specific = sink_param.loc[1, building["building type"]]
@@ -179,7 +185,6 @@ def create_heat_sink(building: pandas.Series, area: float, sheets: dict,
                 else "> 12"
             # specific demand per area
             specific_heat_demand = standard_param.loc[yoc][units + " unit(s)"]
-        # TODO was machen wir mit IND
         else:
             # specific demand per area
             specific_heat_demand = standard_param.loc[yoc][building_type]
@@ -244,7 +249,11 @@ def create_sink_ev(building: pandas.Series, sheets: dict,
 def create_sinks(building: pandas.Series, sheets: dict,
                  standard_parameters: pandas.ExcelFile) -> dict:
     """
-        TODO DOCSTRINGTEXT
+        In this method, the sinks necessary to represent the demand of
+        a building are created one after the other. These are an
+        electricity sink, a heat sink and, if provided by the user
+        (distance of Electric vehicle > 0), an EV_sink. Finally they
+        are appended to the return structure "sheets".
         
         :param building: building specific data which were imported \
             from the US-Input sheet
@@ -347,7 +356,15 @@ def create_cluster_electricity_sinks(standard_parameters: pandas.ExcelFile,
                                      central_electricity_network: bool,
                                      sheets: dict) -> dict:
     """
-        TODO DOCSTRINGTEXT
+        In this method, the electricity purchase price for the
+        respective sink is calculated based on the electricity demand
+        of the unclustered sinks. For example, if residential buildings
+        account for 30% of the cluster electricity demand, 30% of the
+        central electricity purchase price is formed from the
+        residential tariff. In addition, the inputs of the cluster
+        sinks, if there is an electricity demand, are changed to the
+        cluster internal buses, so that the energy flows in the cluster
+        can be correctly determined again.
         
         :param standard_parameters: pandas imported ExcelFile \
                 containing the non-building specific technology data

@@ -1,7 +1,7 @@
 """
-    jtock - jan.tockloth@fh-muenster.de
+    Jan Tockloth - jan.tockloth@fh-muenster.de
     GregorBecker - gregor.becker@fh-muenster.de
-    janik257
+    Janik Budde - janik.budde@fh-muenster.de
 """
 import glob
 import os
@@ -12,7 +12,8 @@ import plotly.express as px
 from PIL import Image
 
 from program_files.GUI_st.GUI_st_global_functions import \
-    import_GUI_input_values_json, st_settings_global, read_markdown_document
+    import_GUI_input_values_json, st_settings_global, read_markdown_document, \
+    load_result_folder_list
 
 
 def result_processing_sidebar():
@@ -30,10 +31,10 @@ def result_processing_sidebar():
         st.header("Result Overview")
 
         # read sub folders in the result folder directory
-        existing_result_foldernames_list = [
-            os.path.basename(x) for x in glob.glob(f'{"results/*"}')]
-        existing_result_foldernames_list.sort()
-        # create select box with the folder names which are in the results folder
+        existing_result_foldernames_list = load_result_folder_list()
+        
+        # create select box with the folder names which are in the
+        # results folder
         existing_result_folder = st.selectbox(
             label="Choose the result folder",
             options=existing_result_foldernames_list,
@@ -103,9 +104,8 @@ def short_result_summary_time(result_path_summary):
     time1, time2, time3, time4 = st.columns(4)
     time1.metric(label="Start Date", value=str(df_summary.iloc[0, 0]))
     time2.metric(label="End Date", value=str(df_summary.iloc[0, 1]))
-    # TODO: Problem Darstellung Temporal Resolution
-    # time3.metric(label="Temporal Resolution", \
-    #    value=str(df_summary['Resolution']))
+    time3.metric(label="Temporal Resolution",
+                 value=str(df_summary['Resolution'][0]))
 
 
 def short_result_summary_system(result_path_summary):
@@ -120,28 +120,24 @@ def short_result_summary_system(result_path_summary):
     df_summary = pd.read_csv(result_path_summary)
     # Create list with headers
     summary_headers = list(df_summary)
-    # format thousands separator
-    # TODO: Tausendertrennung
-    # df_summary = df_summary.iloc[1,:].style.format(thousands=" ",precision=0)
-    # TODO: add delta functions based on the latest results
-    # Display and import simulated cost values from summary dataframe
+    # add the energy system costs
     cost1, cost2, cost3, cost4 = st.columns(4)
-    cost1.metric(label=summary_headers[3], value=round(
-        df_summary[summary_headers[3]], 1))
-    cost2.metric(label=summary_headers[4], value=round(
-        df_summary[summary_headers[4]], 1))
-    cost3.metric(label=summary_headers[5], value=round(
-        df_summary[summary_headers[5]], 1))
-    cost4.metric(label=summary_headers[6], value=round(
-        df_summary[summary_headers[6]], 1))
+    cost1.metric(label=summary_headers[3], value="{:,.2f}".format(float(round(
+        df_summary[summary_headers[3]], 1))))
+    cost2.metric(label=summary_headers[4], value="{:,.2f}".format(float(round(
+        df_summary[summary_headers[4]], 1))))
+    cost3.metric(label=summary_headers[5], value="{:,.2f}".format(float(round(
+        df_summary[summary_headers[5]], 1))))
+    cost4.metric(label=summary_headers[6], value="{:,.2f}".format(float(round(
+        df_summary[summary_headers[6]], 1))))
 
     # Display and import simulated energy values from summary dataframe
     # adding two blank rows
     ener1, ener2, ener3, ener4 = st.columns(4)
-    ener1.metric(label=summary_headers[7], value=round(
-        df_summary[summary_headers[7]], 1))
-    ener2.metric(label=summary_headers[8], value=round(
-        df_summary[summary_headers[8]], 1))
+    ener1.metric(label=summary_headers[7], value="{:,.2f}".format(float(round(
+        df_summary[summary_headers[7]], 1))))
+    ener2.metric(label=summary_headers[8], value="{:,.2f}".format(float(round(
+        df_summary[summary_headers[8]], 1))))
 
 
 def short_result_simplifications(result_GUI_settings_dict):
@@ -235,7 +231,6 @@ def short_result_table(result_path_components):
            height=min(logical_df_height, ag_max_height))
 
 
-
 def short_result_interactive_dia(result_path_results):
     """
         Function to create interactive results.
@@ -314,8 +309,8 @@ def show_energy_amounts(result_path_heat_amounts, result_path_elec_amounts):
     st.write("Info: The energy amount diagrams are only valid if the model \
              definition created with the Urban Upscaling Tool. \
              Otherwise there is no guarantee that there are no components \
-             missing in the diagrams.")
-
+             missing in the diagrams. Note that only components considered \
+             during the optimization are shown as option for vizualization.")
 
 def show_pareto(result_path_pareto):
     """
@@ -342,33 +337,33 @@ def show_pareto(result_path_pareto):
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
-def show_building_specific_results(result_path_building_specific):
-    """
-        Function to create heat amounts.
-
-        :param result_path_results: path to a result heat_amounts.csv file
-        :type result_path_results: str
-    """
-    # Header
-    with st.expander("Building specific results"):
-        df_building_specific_data = pd.read_csv(result_path_building_specific)
-
-        tab1, tab2 = st.tabs(["🗃 Data", "📈 Chart"])
-        with tab1:
-            # show the dataframe
-            st.write(df_building_specific_data)
-
-        with tab2:
-            # get the y values for the chart
-            column_headers = list(df_building_specific_data.columns.values)
-            # delete building column
-            column_headers.pop(0)
-            # building specific figure
-            # todo filter due to label in order to reduce the number
-            # of buildings
-            fig = px.bar(df_building_specific_data,
-                         x="Building", y=column_headers)
-            st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+#def show_building_specific_results(result_path_building_specific):
+#    """
+#        Function to create heat amounts.
+#
+#        :param result_path_results: path to a result heat_amounts.csv file
+#        :type result_path_results: str
+#    """
+#    # Header
+#    with st.expander("Building specific results"):
+#        df_building_specific_data = pd.read_csv(result_path_building_specific)
+#
+#        tab1, tab2 = st.tabs(["🗃 Data", "📈 Chart"])
+#        with tab1:
+#            # show the dataframe
+#            st.write(df_building_specific_data)
+#
+#        with tab2:
+#            # get the y values for the chart
+#            column_headers = list(df_building_specific_data.columns.values)
+#            # delete building column
+#            column_headers.pop(0)
+#            # building specific figure
+#            # todo filter due to label in order to reduce the number
+#            # of buildings
+#            fig = px.bar(df_building_specific_data,
+#                         x="Building", y=column_headers)
+#            st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
 def short_result_graph(result_path_graph):
@@ -398,18 +393,11 @@ if "state_result_path" not in st.session_state:
 # start sidebar functions
 result_processing_sidebar()
 
-
-def standard_page():
-    """
-
-    """
+# show introduction page if no result paths are not set
+if st.session_state["state_result_path"] == "not set":
     read_markdown_document(
         document_path="docs/GUI_texts/results.md",
         folder_path=f'{"docs/images/manual/Results/*"}')
-
-# show introduction page if no result paths are not set
-if st.session_state["state_result_path"] == "not set":
-    standard_page()
 
 elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         in glob.glob(st.session_state["state_result_path"] + "/*"):

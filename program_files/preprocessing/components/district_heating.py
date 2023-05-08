@@ -2,9 +2,7 @@ import pandas
 import dhnx
 from dhnx.plotting import StaticMap
 from dhnx.network import ThermalNetwork
-import dhnx.optimization.oemof_heatpipe as heatpipe
 import dhnx.optimization.optimization_models as optimization
-import oemof.solph as solph
 import logging
 from program_files.preprocessing.components.district_heating_calculations \
     import *
@@ -31,6 +29,7 @@ def load_thermal_network_data(thermal_net: ThermalNetwork, path: str
     for dataframe in ["consumers", "pipes", "producers", "forks"]:
         thermal_net.components[dataframe] = \
             pandas.read_csv(path + "/" + dataframe + ".csv")
+    print(thermal_net.components["consumers"])
     return thermal_net
 
 
@@ -465,7 +464,8 @@ def create_supply_line(streets: pandas.DataFrame,
     return thermal_net
 
 
-def adapt_dhnx_style(thermal_net: ThermalNetwork) -> ThermalNetwork:
+def adapt_dhnx_style(thermal_net: ThermalNetwork, cluster_dh: bool
+                     ) -> ThermalNetwork:
     """
         Brings the created pandas Dataframes to the dhnx style.
         
@@ -477,17 +477,20 @@ def adapt_dhnx_style(thermal_net: ThermalNetwork) -> ThermalNetwork:
         :return: - **thermal_net** (ThermalNetwork) - DHNx \
             ThermalNetwork instance after style adaption
     """
-    consumers = thermal_net.components["consumers"]
-    consumer_df = consumers.loc[consumers["id"].str.contains("consumers")]
-    for num, consumer in consumer_df.iterrows():
-        thermal_net.components["consumers"].replace(
-            to_replace=consumer["id"], value=consumer["id"][10:], inplace=True
-        )
-    pipes = thermal_net.components["pipes"]
-    for num, pipe in pipes.loc[pipes["id"] != type(int)].iterrows():
-        thermal_net.components["pipes"].replace(
-            to_replace=pipe["id"], value=pipe["id"][5:], inplace=True
-        )
+    if not cluster_dh:
+        consumers = thermal_net.components["consumers"]
+        consumer_df = consumers.loc[consumers["id"] != type(int)]
+        for num, consumer in consumer_df.iterrows():
+            thermal_net.components["consumers"].replace(
+                to_replace=consumer["id"],
+                value=consumer["id"][10:],
+                inplace=True
+            )
+        pipes = thermal_net.components["pipes"]
+        for num, pipe in pipes.loc[pipes["id"] != type(int)].iterrows():
+            thermal_net.components["pipes"].replace(
+                to_replace=pipe["id"], value=pipe["id"][5:], inplace=True
+            )
             
     # reset the index on the id column of each DataFrame
     for index in ["consumers", "pipes", "producers", "forks"]:
@@ -581,7 +584,8 @@ def create_components(nodes_data: dict, anergy_or_exergy: bool,
             + str(start_date[0:4])
         ),
         frequence=(str(frequency[0])).upper(),
-        label_5=label_5
+        label_5=label_5,
+        bidirectional_pipes=True
     )
     return oemof_opti_model
 
@@ -934,8 +938,11 @@ def create_connect_dhnx(nodes_data: dict, busd: dict,
                                          anergy_or_exergy=anergy_or_exergy,
                                          thermal_net=thermal_net)
     if clustering:
-        connect_clustered_dh_to_system(oemof_opti_model=oemof_opti_model,
-                                       busd=busd)
+        oemof_opti_model = connect_clustered_dh_to_system(
+            oemof_opti_model=oemof_opti_model,
+            busd=busd,
+            thermal_network=thermal_net,
+            nodes_data=nodes_data)
     else:
         # connect non dh and dh system using links to represent losses
         if anergy_or_exergy:
@@ -954,7 +961,8 @@ def create_connect_dhnx(nodes_data: dict, busd: dict,
     for i in range(len(oemof_opti_model.nodes)):
         outputs = oemof_opti_model.nodes[i].outputs.copy()
         for j in outputs.keys():
-            if "consumers" in str(j) and "heat" in str(j) and "demand" in str(j):
+            if "consumers" in str(j) and "heat" in str(j) \
+                    and "demand" in str(j):
                 oemof_opti_model.nodes[i].outputs.pop(j)
 
     oemof_opti_model = add_excess_shortage_to_dh(
@@ -1033,16 +1041,19 @@ def use_data_of_already_calculated_thermal_network_data(
             well as the district heating calculations will be stored
         :type result_path: str
     """
+    print(cluster_dh)
     # load the already calculated network data of a previous
     # optimization
     thermal_net = load_thermal_network_data(thermal_net=thermal_net,
                                             path=district_heating_path)
     # adapt the dataframe structures to the dhnx accepted form
-    thermal_net = adapt_dhnx_style(thermal_net=thermal_net)
+    thermal_net = adapt_dhnx_style(thermal_net=thermal_net,
+                                   cluster_dh=cluster_dh)
     # if the user has chosen the clustering of the thermal network
     # within the GUI it is triggered here
     if cluster_dh:
-        clustering_dh_network(nodes_data)
+        thermal_net = clustering_dh_network(nodes_data=nodes_data,
+                                            thermal_network=thermal_net)
     # save the calculated thermal network data within the optimization
     # result path
     save_thermal_network_data(thermal_net=thermal_net, path=result_path)
@@ -1082,6 +1093,7 @@ def district_heating(
             net (True)
         :type anergy_or_exergy: bool
     """
+    print("PFAD: " + district_heating_path)
     thermal_net = clear_thermal_net(dhnx.network.ThermalNetwork())
     # check rather saved calculation are distributed
     if district_heating_path == "":
@@ -1110,7 +1122,8 @@ def district_heating(
                 thermal_net=thermal_net)
             # if any consumers where connected to the thermal network
             if thermal_net.components["consumers"].values.any():
-                thermal_net = adapt_dhnx_style(thermal_net=thermal_net)
+                thermal_net = adapt_dhnx_style(thermal_net=thermal_net,
+                                               cluster_dh=cluster_dh)
                 # save the created dataframes to improve runtime of a
                 # second optimization run
                 save_thermal_network_data(thermal_net=thermal_net,
@@ -1118,6 +1131,7 @@ def district_heating(
                 # create a map of the created thermal network
                 create_dh_map(thermal_net=thermal_net, result_path=result_path)
     else:
+        print("PIEP ICH HATTE EINEN PFAD")
         thermal_net = use_data_of_already_calculated_thermal_network_data(
             thermal_net=thermal_net,
             district_heating_path=district_heating_path,

@@ -86,8 +86,6 @@ def import_model_definition(filepath: str, delete_units=True) -> dict:
 
 def define_energy_system(nodes_data: dict) -> EnergySystem:
     """
-        Creates an energy system.
-    
         Creates an energy system with the parameters defined in the
         given .xlsx-file. The file has to contain a sheet called
         "energysystem", which has to be structured as follows:
@@ -98,9 +96,10 @@ def define_energy_system(nodes_data: dict) -> EnergySystem:
         |YYYY-MM-DD hh:mm:ss|YYYY-MM-DD hh:mm:ss|h                  |
         +-------------------+-------------------+-------------------+
     
-        :param nodes_data: dictionary containing data from excel scenario
-                           file
+        :param nodes_data: dictionary containing data from excel model \
+            definition file
         :type nodes_data: dict
+        
         :return: **esys** (oemof.solph.Energysystem) - oemof energy \
             system
     """
@@ -111,6 +110,7 @@ def define_energy_system(nodes_data: dict) -> EnergySystem:
     # Importing energysystem parameters from the scenario
     row = next(nodes_data["energysystem"].iterrows())[1]
     temp_resolution = row["temporal resolution"]
+    timezone = row["timezone"]
     start_date = row["start date"]
     end_date = row["end date"]
     
@@ -128,8 +128,7 @@ def define_energy_system(nodes_data: dict) -> EnergySystem:
         nodes_data[sheet].index = \
             pandas.to_datetime(nodes_data[sheet].index.values, utc=True)
         nodes_data[sheet].index = \
-            pandas.to_datetime(nodes_data[sheet].index
-                               ).tz_convert("Europe/Berlin")
+            pandas.to_datetime(nodes_data[sheet].index).tz_convert(timezone)
     
     # returns logging info
     logging.info(

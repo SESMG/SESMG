@@ -3,8 +3,6 @@
 [![Generic badge](https://img.shields.io/badge/content-how-green.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
 
-[![codecov](https://codecov.io/gh/SESMG/SESMG/branch/master/graph/badge.svg?token=70AHZEB2IN)](https://codecov.io/gh/SESMG/SESMG)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/5ab50cca9d852028f3df/test_coverage)](https://codeclimate.com/github/SESMG/SESMG/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/5ab50cca9d852028f3df/maintainability)](https://codeclimate.com/github/SESMG/SESMG/maintainability)
 [![Documentation Status](https://readthedocs.org/projects/spreadsheet-energy-system-model-generator/badge/?version=latest)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/?badge=latest)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -29,6 +27,10 @@ Furthermore, the **SESMG** comes with important modeling methods, enabling holis
 ## Quick Start 
 [![Generic badge](https://img.shields.io/badge/content-how-green.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
+#### Please note: 
+A detailed description of the installation process for Windows, MacOS and Linux can be found in the [documentation (chapter installation)](
+https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html). The Quick Start installation guide is only recommended for advanced users or users with programming experience!
+
 ### Step 1) Download Python 3.7 or newer (Python 3.10 was not tested yet)
 
 - go to the Python download page
@@ -36,24 +38,13 @@ Furthermore, the **SESMG** comes with important modeling methods, enabling holis
 - download the operating system specific installer (e.g. “Windows x86-64 executable installer”)
 - execute the installer on your computer
 
-Linux only: 
-- run `$ sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 2`
-- test by running `$ python3 --version`
+### Step 2) Download the Spreadsheet Energy System Model Generator from `GitHub <https://github.com/SESMG/SESMG>`_ as .zip folder and extract the .zip folder into any directory on the computer. 
 
-### Step 2) Download the Spreadsheet Energy System Model Generator from GIT as .zip folder 
-
-### Step 3) Extract the .zip folder into any directory on the computer
-Watch out: we do not support spaces in the path yet. It will lead to an error if there is one.
-
-### Step 4) Install pip (Linux only)
+### Step 3) Install pip (Linux only)
 
 run `$ sudo apt-get install python3-pip`
 
-### Step 5) Install tkinter (Linux only)
-
-run `$ sudo apt-get install python3.7-tk`
-
-### Step 6) Download the CBC-solver (Windows and Linux only) 
+### Step 4) Download the CBC-solver (Windows and Linux only) 
 
 #### For Windows:
 
@@ -67,7 +58,7 @@ Download [here](http://ampl.com/dl/open/cbc/cbc-win64.zip)
 
 run `$ sudo apt-get install coinor-cbc`
 
-### Step 7) Install Graphviz (Windows and Linux only) 
+### Step 5) Install Graphviz (Windows and Linux only) 
 
 #### For Windows:
 Download [here](https://graphviz.gitlab.io/download/)
@@ -79,7 +70,11 @@ Download [here](https://graphviz.gitlab.io/download/)
 
 run `$ sudo apt-get install graphviz`
 
-### Step 8) Start the operating system specific installation file. 
+### Step 6) Install libpq-dev to avoid a psycopg2 error (Linux only)
+
+run `$ sudo apt-get install libpq-dev`
+
+### Step 7) Start the operating system specific installation file. 
 
 
 ## SESMG Features & Releases 

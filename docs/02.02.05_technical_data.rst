@@ -1,0 +1,29 @@
+Technical Data
+-------------------------------------
+
+Within the technical data section advanced model settings can be adjusted.
+
+heuristic selection patterns
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Within the 'hierarchical_selection_schemes.xlsx'-file custom patterns for `heuristic selection <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.03.00_model_simplification.html#heuristic-selection>`_ can be defined.
+
+The xlsx-file contains an individual sheet for each applicable heursitic selection pattern. Each sheet is named with an integer number, which corresponds to the index with which the pattern can be selected during modeling. New patterns can be added as desired. Each pattern contains a list of reference periods, which are selected during the heuristic selection. The following information is stored for each reference period:
+
+- **period**: indicates from what period the reference period will be selected. Possible values are: year, winter, spring, summer, fall, integer number between 1 and 12.
+
+- **criterion**: indicates which parameter the selection of the reference period is based on. Possible values are: temperature, dhi, el_demand_sum, heat_demand_sum 
+
+- **value**: indicates, whether the lowest, the highest or the most average value of the selected criterion within the selected period will be chosen. Possible values are: lowest, highest, average
+
+- **average/extreme**: indicates whether extreme values or average values of a reference period will be considered. For example, whether the period with the highest (value=highest) maximum (average/extreme=extreme) temperature (criterion=temperature) or the highest (value=highest) average (average/extreme=average) temperature (criterion=temperature) will be selected. Possible values are: extreme, average
+
+characteristic_parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^
+A database of absorption chillers has been created in the characteristic_parameters file. This can be extended by the user if required.
+
+.. warning::
+
+    This database was taken from the examples of `oemof thermal <https://github.com/oemof/oemof-thermal/blob/master/examples/absorption_heatpump_and_chiller/data/characteristic_parameters.csv>`_ it is therefore not occupied by the developing team of the SESMG. A description of the parameters can be taken from oemof.thermal and papers by Ziegler.
+
+

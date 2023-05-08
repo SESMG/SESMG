@@ -24,6 +24,15 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
 
         :param nodes_data: SESMG-nodes data, containing weather data,
                            energy system parameters and timeseries
+        :type nodes_data: dict
+        :param scheme: ID of heuristic selection scheme to be applied
+        :type scheme: str
+        :param period: specifies whether 'days' or 'weeks' are applied
+                       as heuristic selection reference periods
+        :type period: str
+        :param seasons: number of seasons for hierarchical selections,
+                        e.g. 12 for months or 4 for annual seasons
+        :type seasons: int
         :return: **nodes_data** (dict): modified SESMG-nodes data,
                                        containing weather data, energy
                                        system parameters and timeseries
@@ -36,7 +45,7 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
             (168 timesteps) of a weather data set may be extracted.
 
             :param data_set: Data set from which the slices are extracted
-            :type data_set:
+            :type data_set: pandas.DataFrame
             :param timesteps: length of the to extracted slices
             :type timesteps: int
             :return: **list** extracted slices of the given data set
@@ -52,8 +61,8 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
             returns the minimum value of a certain column of a given
             data_set
 
-            :param data_set:
-            :type data_set:
+            :param data_set: Data set from which the slices are extracted
+            :type data_set: pandas.DataFrame
             :param column_name: column under investigation
             :type column_name: str
             :return: **float** minimum value of a column
@@ -66,11 +75,15 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
             Either the week with the absolute minimum value, or the week
             with the average minimum value can be selected.
 
-            :param data_set: Dataset
+            :param data_set: Data set from which the slices are extracted
+            :type data_set:
             :param criterion: column, which is the criterion of the selection
+            :type criterion: str
             :param value: 'extreme' for absolute minimum value, 'average' for
                            average minimum value selection
-            :return: minimum_week: Dataset of the selected minimum week
+            :type value: str
+            :return: minimum_week: **pandas.Dataframe** Dataset of the
+                                   selected minimum week
         """
         
         absolute_minimum = 99999999
@@ -99,7 +112,7 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
             data_set
 
             :param data_set:
-            :type data_set:
+            :type data_set: pandas.DataFrame
             :param column_name: column under investigation
             :type column_name: str
             :return: **float** maximum value of a column
@@ -111,8 +124,8 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
             returns the average value of a certain column of a given
             data_set.
 
-            :param data_set:
-            :type data_set:
+            :param data_set: Data set from which the slices are extracted
+            :type data_set: pandas.DataFrame
             :param column_name: column under investigation
             :type column_name: str
             :return: **float** average of a column
@@ -126,15 +139,16 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
             Either the week with the absolute maximum value, or the week
             with the average maximum value can be selected.
 
-            :param data_set: Dataset
-            :type data_set:
+            :param data_set: Data set from which the slices are extracted
+            :type data_set: pandas.DataFrame
             :param criterion: column, which is the criterion of the
                               selection
             :type criterion: str
             :param value: 'extreme' for absolute maximum value,
                           'average' for average maximum value selection
             :type value: str
-            :return: minimum_week: Dataset of the selected maximum week
+            :return: minimum_week: **pandas.Dataframe** Dataset of the
+                                   selected maximum week
         """
         absolute_maximum = -99999999
         for i in range(len(data_set)):
@@ -160,12 +174,13 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
             Returns the week with the most average series of a certain
             column.
 
-            :param data_set: Dataset
-            :type data_set:
+            :param data_set: Data set from which the slices are extracted
+            :type data_set: pandas.DataFrame
             :param criterion: column, which is the criterion of the
                               selection
             :type criterion: str
-            :return: minimum_week: Dataset of the selected maximum week
+            :return: minimum_week: **pandas.Dataframe** Dataset of the
+                                   selected maximum week
         """
         # Creates a list with the average value of every week
         list_of_averages = []
@@ -189,7 +204,7 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
     
     def reorder_weather_data():
         """
-            reorder weather data set due to the meteorological beginning
+            Reorder weather data set due to the meteorological beginning
             of winter on the 01.12.
         """
         old_start_date = nodes_data['energysystem']['start date'][1]
@@ -226,10 +241,11 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
         """
              Splits the weather data_set in nodes_data into weekly od
              dayly weather data sets
+
              :param period: defines rather dayly or weekly weather data
-                            data set is created
+                            set is created
              :type period: str
-             :return: shortend weather data data set
+             :return: **pandas.Dataframe** shortend weather data data set
         """
         # Splits the given weather data_set in nodes_data into weekly
         # weather data sets
@@ -254,6 +270,7 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
 
             :param period_data_slices: weather data already shortend to
                                        dayly or weakly resolution
+            :type period_data_slices: pandas.DataFrame
             :param seasons: number of seasons
             :type seasons: int
             :return: list, containing list of weekly weather data slices
@@ -280,11 +297,17 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
             Selects and returns representative values of time series
             according to a given heuristic scheme.
 
-            :param heuristic_periods:
-            :param period_data_slices:
-            :param season_data:
-            :param seasons:
-            :return:
+            :param heuristic_periods: defined heuristic periods to be selected
+            :type heuristic_periods: list
+            :param period_data_slices: pandas.DataFrame
+            :param season_data: containing list of weekly weather data slices
+                                of every season.
+            :type season_data: list
+            :param seasons: number of seasons for hierarchical selections,
+                        e.g. 12 for months or 4 for annual seasons
+            :type seasons: int
+            :return prep_weather_data: **pandas.DataFrame** dataframe containing the sampled
+                                        weather data data frame
         """
         prep_weather_data = pandas.DataFrame()
         
@@ -357,8 +380,8 @@ def hierarchical_selection(nodes_data, scheme, period, seasons):
     # get scheme path for heuristic selection from technical data folder
     scheme_path = \
         os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                     'technical_data',
-                     'hierarchical_selection_schemes.xlsx')
+                     '..',
+                     'technical_data/hierarchical_selection_schemes.xlsx')
     
     reorder_weather_data()
     period_data_slices = create_period_weather_data(period)

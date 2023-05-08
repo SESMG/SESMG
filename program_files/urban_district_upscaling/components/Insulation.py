@@ -1,3 +1,8 @@
+"""
+    Christian Klemm - christian.klemm@fh-muenster.de
+    Gregor Becker - gregor.becker@fh-muenster.de
+    Janik Budde - janik.budde@fh-muenster.de
+"""
 import pandas
 
 
@@ -7,7 +12,7 @@ def create_building_insulation(building: dict, sheets: dict,
         In this method, the U-value potentials as well as the building
         year-dependent U-value of the insulation types are obtained from
         the standard parameters to create the insulation components in
-        the scenario.
+        the model definition.
     
         :param building: dictionary holding the building specific data
         :type building: dict

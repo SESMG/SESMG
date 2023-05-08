@@ -23,7 +23,10 @@ Using the timeseries preparation-options, the modeled time system can be reduced
   
 k-means / k-medoids
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-"The k-clustering algorithm divides a time series into a given number k of clusters so that the squared deviation of the cluster centers of gravity is minimal. The procedure is well described by Green et al. [2]. k-means-clustering as well as k-medoids-clustering are carried out using the python libraries ``scikit-learn'', respectively ``scikit-learn-extra''." [1] Different cluster criteria (1. temperature, 2. solar radiation, 3. electricity demand) as well as different periods (days and weeks) can be applied. To apply the criterion "electricity demand", a column "el_demand_sum" must be inserted in the scenario.xlsx file in the weather-data sheet, which defines the reference consumption. 
+"The k-clustering algorithm divides a time series into a given number k of clusters so that the squared deviation of the cluster centers of gravity is minimal. The procedure is well described by Green et al. [2]. k-means-clustering as well as k-medoids-clustering are carried out using the python libraries ``scikit-learn'', respectively ``scikit-learn-extra''." [1] Different cluster criteria (1. temperature, 2. solar radiation, 3. electricity demand) as well as different periods (days and weeks) can be applied. To apply the criterion "electricity demand", a column "el_demand_sum" must be inserted in the `model_definition.xlsx-file in the weather-data sheet <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#weather-data>`_, which defines the reference consumption. 
+
+
+
 
 
 averaging
@@ -61,7 +64,7 @@ Available selection schemes:
 Acronyms: hp=highest peak, lv=lowest valley, ha=highest average, la=lowest average
 
 
-Further schemes can be added here: https://github.com/SESMG/SESMG/blob/master/program_files/technical_data/hierarchical_selection_schemes.xlsx
+Further schemes can be added as described here: https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.05_technical_data.rst#heuristic-selection-patterns
 
 
 random sampling

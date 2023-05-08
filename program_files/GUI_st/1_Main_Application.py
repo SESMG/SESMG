@@ -18,7 +18,7 @@ from program_files.GUI_st.GUI_st_global_functions import \
     clear_GUI_main_settings, safe_GUI_input_values, \
     import_GUI_input_values_json, st_settings_global, run_SESMG, \
     read_markdown_document, create_simplification_index, \
-    create_cluster_simplification_index
+    create_cluster_simplification_index, load_result_folder_list
 from program_files.preprocessing.pareto_optimization import run_pareto
 
 # settings the initial streamlit page settings
@@ -81,7 +81,7 @@ def main_start_page():
     """
 
     reduced_readme = read_markdown_document(
-        "Readme.md", f'{"docs/images/readme/*"}')
+        "README.md", f'{"docs/images/readme/*"}')
 
     # Display any remaining lines in the readme using the st.markdown() \
     # function
@@ -93,7 +93,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
         Function building the sidebar of the main application including all \
             input options and starting the processes.
 
-        :return: - **scenario_input_sheet_path** \
+        :return: - **model_definition_input_sheet_path** \
             (st.runtime.uploaded_file_manager.UploadedFile) - model defintion \
             as a st.UploadedFile
     """
@@ -109,7 +109,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
             on_click=change_state_submitted_optimization,
             help=GUI_helper["main_fs_start_optimization"])
 
-        # Functions to upload the scenario sheet file.
+        # Functions to upload the model definition sheet file.
         # Header
         st.title("Upload Model Definition")
 
@@ -345,7 +345,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                 input_value_index="input_premodeling_timeseries_cluster_index_index")
 
             # Elements to set the pareto points.
-            with st.expander("Pareto Point Options"):
+            with st.expander("Multi-Objective Optimization"):
                 # Multiselect element
                 input_pareto_points = st.multiselect(
                     label="Pareto Points",
@@ -362,21 +362,48 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
             # Function to upload the distrct heating precalulation inside an \
             # expander.
             with st.expander("Advanced District Heating Precalculation"):
-                # TODO: check functionality of underlaying functions and
-                #  implement \
-                # in streamlit GUI
-                # Checkboxes modeling while using district heating clustering.
+                # Checkboxes modeling when using district heating clustering.
                 GUI_main_dict["input_cluster_dh"] = \
                     st.checkbox(
                         label="Clustering District Heating Network",
                         value=settings_cache_dict_reload[
                             "input_cluster_dh"],
-                        help=GUI_helper["main_cb_dh_clustering_active"])
-                # TODO: change to file uploader
-                # Fileuploader not able to print file path
-                # Upload DH Precalc File
-                district_heating_precalc_path = st.text_input(
-                    "Type in path to your District Heating File input file.")
+                        help=GUI_helper["main_cb_cluster_dh"])
+
+                # Checkboxes to activate dh precalc.
+                GUI_main_dict["input_activate_dh_precalc"] = st.checkbox(
+                        label="Activate District Heating Precalculations",
+                        value=settings_cache_dict_reload[
+                            "input_activate_dh_precalc"],
+                        help=GUI_helper["main_cb_activate_dh_precalc"])
+
+                # read sub folders in the result folder directory un wich \
+                # the preresults are stored
+                existing_result_foldernames_list = load_result_folder_list()
+                # create select box with the folder names which are in the \
+                # results folder
+                existing_result_folder = st.selectbox(
+                    label="Choose the result folder",
+                    options=existing_result_foldernames_list,
+                    help=GUI_helper["main_dd_result_folder"],
+                    index=settings_cache_dict_reload[
+                        "input_dh_folder_index"])
+
+                GUI_main_dict["input_dh_folder_index"] = \
+                    existing_result_foldernames_list.index(
+                    existing_result_folder)
+
+                # set the path to dh precalc if active or not
+                if GUI_main_dict["input_activate_dh_precalc"]:
+                    # create path to precalc folder
+                    GUI_main_dict["input_dh_folder"] = \
+                        os.path.join(os.path.dirname(os.path.dirname(
+                                        os.path.dirname(
+                                            os.path.abspath(__file__)))),
+                                     "results",
+                                     existing_result_folder)
+                else:
+                    GUI_main_dict["input_dh_folder"] = ""
 
             # create criterion switch
             GUI_main_dict["input_criterion_switch"] = \
@@ -510,6 +537,7 @@ def save_run_settings():
     # reset session state
     st.session_state["state_submitted_optimization"] = "not done"
 
+
 def change_state_submitted_optimization():
     """
         Setup session state for the optimization form-submit as an \
@@ -554,11 +582,11 @@ if st.session_state["state_submitted_optimization"] == "done":
         # create spinner info text
         st.info(GUI_helper["main_info_spinner"], icon="ℹ️")
 
-        # function to create the result pasths and store session state
-        create_result_paths()
-
         # Starting the model run
         if len(GUI_main_dict["input_pareto_points"]) == 0:
+
+            # function to create the result pasths and store session state
+            create_result_paths()
 
             with st.spinner("Modeling in Progress..."):
 
