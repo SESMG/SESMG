@@ -66,8 +66,8 @@ def safe_GUI_input_values(input_values_dict: dict,
 
 def clear_GUI_main_settings(json_file_path: str) -> None:
     """
-        Function to clear the GUI settings dict, reset it to the initial
-        values and safe in json path as variables.
+        Function to clear the GUI settings dict, reset it to the
+        initial values and safe in json path as variables.
 
         :param json_file_path: internal path where json should be saved
         :type json_file_path: str
@@ -118,8 +118,8 @@ def create_timeseries_parameter_list(GUI_main_dict: dict,
                                      input_value_list: list,
                                      input_timeseries_season: str) -> list:
     """
-        Creates list of input variables as input preparation for run_semsg
-        with appending input_timseries_season value.
+        Creates list of input variables as input preparation for
+        run_semsg with appending input_timseries_season value.
 
         :param GUI_main_dict: global defined dict of GUI input variables
         :type GUI_main_dict: dict
@@ -241,9 +241,9 @@ def read_markdown_document(document_path: str, folder_path: str,
             installation part
         :type main_page: bool
 
-        :return: - **readme_buffer** (list) - list of markdown text which is \
-        educed by the parts between ## Quick Start ## SESMG Features \
-            & Releases based on the readme.md
+        :return: - **readme_buffer** (list) - list of markdown text \
+            which is educed by the parts between ## Quick Start \
+            ## SESMG Features & Releases based on the readme.md
     """
     # Open the README.md file and read all lines
     with open(document_path, 'r', encoding="utf8") as file:
@@ -285,15 +285,16 @@ def read_markdown_document(document_path: str, folder_path: str,
 def create_simplification_index(input_list: list,
                                 input_output_dict: dict) -> None:
     """
-        Creates the streamlit index for timeseries simplification params
-        as required to reload GUI elements with initial values.
+        Creates the streamlit index for timeseries simplification
+        params as required to reload GUI elements with initial values.
 
-       :param input_list: list with lists for each simplification with three
-           columns: name of the index, list in which the index is defined
-           regarding to the input cariable name, input variable name
+       :param input_list: list with lists for each simplification with \
+           three columns: name of the index, list in which the index \
+           is defined regarding to the input cariable name, input \
+           variable name
        :type input_list: list
-       :param input_output_dict: global defined dict to which the indexes will
-           be written in
+       :param input_output_dict: global defined dict to which the \
+           indexes will be written in
        :type input_output_dict: dict
     """
 

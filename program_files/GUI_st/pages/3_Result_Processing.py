@@ -91,7 +91,7 @@ def result_processing_sidebar() -> None:
 
 def short_result_summary_time(result_path_summary) -> None:
     """
-        Function displaying the results time series informations.
+        Function displaying the results time series information.
 
         :param result_path_summary: path to a result summary.csv file
         :type result_path_summary: str

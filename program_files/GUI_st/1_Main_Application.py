@@ -90,12 +90,12 @@ def main_start_page() -> None:
 
 def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
     """
-        Function building the sidebar of the main application including all \
-            input options and starting the processes.
+        Function building the sidebar of the main application including
+        all input options and starting the processes.
 
         :return: - **model_definition_input_sheet_path** \
-            (st.runtime.uploaded_file_manager.UploadedFile) - model defintion \
-            as a st.UploadedFile
+            (st.runtime.uploaded_file_manager.UploadedFile) - model \
+            defintion as a st.UploadedFile
     """
     # Creating Frame as st.form_submit_button
     with st.sidebar.form("Input Parameters"):
@@ -314,11 +314,11 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                             "input_premodeling_timeseries_season_index"],
                         help=GUI_helper["main_dd_prem_timeser_season"])
 
-            # transform input values of Timeseries Simplification to an index
-            # which will be safed in the GUI cache to be able to reload
-            # setting. Needs to be an index for st.selectboxes.
-            # create list for transformation from premodel simplification input
-            # to index values
+            # transform input values of Timeseries Simplification to an
+            # index which will be safed in the GUI cache to be able to
+            # reload setting. Needs to be an index for st.selectboxes.
+            # create list for transformation from premodel
+            # simplification input to index values
             simpification_premodel_index_list = [
                 ["input_premodeling_timeseries_algorithm_index",
                  timeseries_algorithm_dict,
@@ -464,8 +464,8 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
 
 def main_error_definition() -> None:
     """
-        Raises an streamlit internal error if model run is startet without \
-        an uploaded model definition
+        Raises an streamlit internal error if model run is started
+        without an uploaded model definition
     """
     # raise an error advice
     st.error(body=GUI_helper["main_error_defintion"], icon="🚨")
@@ -526,8 +526,8 @@ def create_result_paths() -> None:
 
 def save_run_settings() -> None:
     """
-        Function to safe the GUI setting in the result folder and reset \
-            session state.
+        Function to safe the GUI setting in the result folder and reset
+        session state.
     """
     # save GUI settings in result folder
     safe_GUI_input_values(
@@ -541,16 +541,16 @@ def save_run_settings() -> None:
 
 def change_state_submitted_optimization() -> None:
     """
-        Setup session state for the optimization form-submit as an \
-            change event as on-click to switch the state.
+        Setup session state for the optimization form-submit as an
+        change event as on-click to switch the state.
     """
     st.session_state["state_submitted_optimization"] = "done"
 
 
 def change_state_submitted_clear_cache() -> None:
     """
-        Setup session state for the clear_cache form-submit as an \
-            change event as on-click to switch the state.
+        Setup session state for the clear_cache form-submit as an
+        change event as on-click to switch the state.
     """
     st.session_state["state_submitted_clear_cache"] = "done"
     st.session_state["state_submitted_optimization"] = "not done"

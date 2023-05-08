@@ -160,10 +160,10 @@ def dt_input_sidebar() -> dict:
 
 def execute_sesmg_demo(demo_file: str, demo_results: str, mode: str) -> None:
     """
-        Excecutes the optimization algorithm.
+        Executes the optimization algorithm.
 
-        :param demo_file: path to the model definition file which is creating \
-            the demo tool
+        :param demo_file: path to the model definition file which is \
+            creating the demo tool
         :type demo_file: str
         :param demo_results: path to the demo tool result folder
         :type demo_results: str
@@ -341,8 +341,8 @@ def demo_start_page() -> None:
 
 def change_state_submitted_demo_run() -> None:
     """
-        Setup session state for the demo run form-submit as an \
-            change event as on-click to switch the state.
+        Setup session state for the demo run form-submit as an change
+        event as on-click to switch the state.
     """
     st.session_state["state_submitted_demo_run"] = "done"
 
