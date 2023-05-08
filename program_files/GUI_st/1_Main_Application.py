@@ -383,12 +383,13 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                 # create select box with the folder names which are in the \
                 # results folder
                 existing_result_folder = st.selectbox(
-                    label="Choose the result folder",
+                    label="Choose a district heating precalculation folder",
                     options=existing_result_foldernames_list,
                     help=GUI_helper["main_dd_result_folder"],
                     index=settings_cache_dict_reload[
                         "input_dh_folder_index"])
 
+                # set variable as the list index to save in cache
                 GUI_main_dict["input_dh_folder_index"] = \
                     existing_result_foldernames_list.index(
                     existing_result_folder)
