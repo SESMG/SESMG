@@ -14,7 +14,12 @@ With the help of the demo tool the chosen energy supply scenario can be simulate
 Instruction
 =================================================
 
-.. figure:: ../docs/images/manual/DemoTool/demo_tool.png
+.. figure:: ../docs/images/manual/DemoTool/demo_tool_docu_picture_1.png
+   :width: 90 %
+   :alt: Demo Interface
+   :align: center
+   
+.. figure:: ../docs/images/manual/DemoTool/demo_tool_docu_picture_2.png
    :width: 90 %
    :alt: Demo Interface
    :align: center
@@ -23,15 +28,19 @@ Instruction
    
 1: Tab to select the demo tool.
 
-2: Information is given about the fictitional scenario specifying the kind of district, the energy demands and the status quo. Further information is given about the technologies you can use and its specific parameters.
+2: Information is given about the fictitional scenario specifying the kind of district.
 
-3: Overview of the system and the possible technologies one can use.
+3: Overview of the system, the possible technologies one can use, the energy demands and import/ export costs.
 
-4: Input of the system components to define a energy system to be simulated. 
+4: Overview of the technology parameters.
 
-5: Start of the simulation after designing the system components. 
+5: Design of the various district heating network alternatives.
 
-6: Annual monetary costs of the defined energy system as well as the relative differnce to the status quo.
+6: Input of the system components to define a energy system to be simulated. 
 
-7: Annual green house gas emissions of defined energy system as well as the relative differnce to the status quo.
+7: Start of the simulation after designing the system components. 
+
+8: Annual monetary costs of the defined energy system as well as the relative differnce to the status quo.
+
+9: Annual green house gas emissions of defined energy system as well as the relative differnce to the status quo.
 
