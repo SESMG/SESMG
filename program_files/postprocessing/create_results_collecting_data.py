@@ -215,9 +215,9 @@ def calc_periodical_costs(node, investment: float, comp_type: str,
 
 def calc_variable_costs(node, comp_dict: list, attr: str) -> float:
     """
-        method to calculate the component's variable costs for the first
-        optimization criterion (attr = variable costs) or the second
-        optimization criterion (attr = emission factor)
+        method to calculate the component's variable costs for the
+        first optimization criterion (attr = variable costs) or the
+        second optimization criterion (attr = emission factor)
         
         :param node: component under investigation
         :type node: different oemof solph components

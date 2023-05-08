@@ -186,7 +186,7 @@ def constraint_optimization_against_two_values(
 
 
 def competition_constraint(om: solph.Model, nodes_data: dict,
-                           energy_system: solph.EnergySystem):
+                           energy_system: solph.EnergySystem) -> solph.Model:
     """
         The outflow_competition method is used to optimise the sum of
         the outflows of two given components multiplied by two
@@ -322,7 +322,8 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
         :param energy_system: energy system consisting a number of \
             components
         :type energy_system: oemof.solph.Energysystem
-        :param num_threads: number of threads the solver is allowed to use
+        :param num_threads: number of threads the solver is allowed to \
+            use
         :type num_threads: int
         :param nodes_data: dictionary containing all components \
                            information out of the excel spreadsheet

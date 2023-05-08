@@ -16,7 +16,8 @@ from program_files.postprocessing.create_results_console_logging \
     import console_logging, logging_model_summary, logging_investments
 
 
-def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str):
+def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str
+         ) -> None:
     """
         Returns model results as xlsx-files.
         Saves the in- and outgoing flows of every bus of a given,
@@ -77,7 +78,7 @@ def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str):
 
 
 def charts(nodes_data: dict, optimization_model: solph.Model,
-           energy_system: solph.EnergySystem):
+           energy_system: solph.EnergySystem) -> None:
     """
         Plots model results in- and outgoing flows of every bus of a
         given, optimized energy system (based on matplotlib)
