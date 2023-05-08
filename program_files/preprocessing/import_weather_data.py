@@ -23,7 +23,7 @@ def set_esys_data(nodes_data: dict, location: Point, variables: str) -> dict:
             windpowerlib and pvlib download
         :type variables: str
         
-        :return: - **None** (dict) - dictionary containing the data \
+        :return: - **-** (dict) - dictionary containing the data \
             necessary for the OpenEnergyPlatform Database download
     """
     # since the last day is not included within the Download, the

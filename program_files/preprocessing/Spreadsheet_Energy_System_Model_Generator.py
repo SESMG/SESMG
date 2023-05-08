@@ -102,7 +102,7 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
     # in the model definition file
     busd = Bus.buses(nodes_data=nodes_data, nodes=nodes)
     
-    # PARALLEL CREATION OF ALL OBJECTS OF THE SCENARIO FILE
+    # PARALLEL CREATION OF ALL OBJECTS OF THE MODEL DEFINITION FILE
 
     # creates source objects as defined in the model definition file and
     # adds them to the list of components (nodes)
@@ -184,8 +184,8 @@ def sesmg_main_including_premodel(
          model definition is solved with the main time series
          preparation algorithms.
          
-        :param model_definition_file: The scenario_file must contain the
-                              components specified above.
+        :param model_definition_file: The model_definition_file must \
+            contain the components specified above.
         :type model_definition_file: str ['xlsx']
         :param result_path: path of the folder where the results
                             will be saved
@@ -254,12 +254,12 @@ def sesmg_main_including_premodel(
         district_heating_path=district_heating_path,
         cluster_dh=cluster_dh)
 
-    # create updated scenario for main-modeling run
+    # create updated model definition for main-modeling run
     logging.info('UPDATING DATA BASED ON PRE-MODEL RESULTS')
     update_model_according_pre_model_results(
         model_definition_path=model_definition_file,
         results_components_path=result_path + '/pre_model/components.csv',
-        updated_scenario_path=result_path + '/updated_scenario.xlsx',
+        updated_model_definition_path=result_path + '/updated_scenario.xlsx',
         investment_boundary_factor=investment_boundary_factor,
         investment_boundaries=investment_boundaries)
 

@@ -1,3 +1,6 @@
+"""
+    Christian Klemm - christian.klemm@fh-muenster.de
+"""
 import pandas
 import logging
 
@@ -238,6 +241,10 @@ def deactivate_respective_competition_constraints(
         :param list_of_deactivated_components: list holding the \
             deactivated components
         :type list_of_deactivated_components: list
+        
+        :return: - **competition_constraints_xlsx** (pandas.DataFrame) \
+                    - DataFrame holding the updated competition \
+                    constraints sheet
     """
     competition_constraints_xlsx = pandas.read_excel(
             model_definition_path, sheet_name='competition constraints')
@@ -299,8 +306,8 @@ def dh_technical_pre_selection(components_xlsx: pandas.DataFrame,
 def bus_technical_pre_selection(components_xlsx: pandas.DataFrame,
                                 result_components: pandas.DataFrame) -> None:
     """
-        deactivates the district heating connection for those busses for
-        which no connection has been carried out during optimization
+        deactivates the district heating connection for those busses
+        for which no connection has been carried out during optimization
 
         :param components_xlsx: DataFrame holding the currently \
             considered sheet of the model definition file
