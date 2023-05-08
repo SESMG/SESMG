@@ -108,28 +108,38 @@ def dt_input_sidebar():
         # the for-loop iterates through each item in 'cases' and sets  the value for each parameter in a separate input values dictionary.
         #If input_dh is equal to the name of the option in cases, then the values for the input parameters in input_values_dict are taken from the params dictionary. Otherwise, the values are set to zero.
 
-        cases = {
-            "No District Heating Network": {
-                "input_chp": 0,
-                "input_dh": 0
-            },
-            "urban": {
-                "input_chp_urban": 1,
-                "input_dh_urban": 1
-            },
-            "sub-urban": {
-                "input_chp_sub_urban": 1,
-                "input_dh_sub_urban": 1
-            },
-            "rural": {
-                "input_chp_rural": 1,
-                "input_dh_rural": 1
-            }
-        }
+        if input_dh == "No District Heating Network":
+            input_values_dict["input_chp_urban"] = 0
+            input_values_dict["input_dh_urban"] = 0
+            input_values_dict["input_chp_sub_urban"] = 0
+            input_values_dict["input_dh_sub_urban"] = 0
+            input_values_dict["input_chp_rural"] = 0
+            input_values_dict["input_dh_rural"] = 0
 
-        for option, params in cases.items():
-            for key, val in params.items():
-                input_values_dict[key] = val if input_dh == option else 0
+        if input_dh == "urban":
+            input_values_dict["input_chp_urban"] = 1
+            input_values_dict["input_dh_urban"] = 1
+            input_values_dict["input_chp_sub_urban"] = 0
+            input_values_dict["input_dh_sub_urban"] = 0
+            input_values_dict["input_chp_rural"] = 0
+            input_values_dict["input_dh_rural"] = 0
+
+        if input_dh == "sub-urban":
+            input_values_dict["input_chp_urban"] = 1
+            input_values_dict["input_dh_urban"] = 1
+            input_values_dict["input_chp_sub_urban"] = 1
+            input_values_dict["input_dh_sub_urban"] = 1
+            input_values_dict["input_chp_rural"] = 0
+            input_values_dict["input_dh_rural"] = 0
+
+        if input_dh == "rural":
+            input_values_dict["input_chp_urban"] = 1
+            input_values_dict["input_dh_urban"] = 1
+            input_values_dict["input_chp_sub_urban"] = 1
+            input_values_dict["input_dh_sub_urban"] = 1
+            input_values_dict["input_chp_rural"] = 1
+            input_values_dict["input_dh_rural"] = 1
+
 
         input_values_dict["input_criterion"] = st.select_slider(
             label="Optimization Criterion",
