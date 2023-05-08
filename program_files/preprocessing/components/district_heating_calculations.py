@@ -20,7 +20,7 @@ def convert_dh_street_sections_list(street_sec: pandas.DataFrame
         :param street_sec: Dataframe holding start and end points
                                 of the streets under investigation
         :type street_sec: pandas.DataFrame
-        :return: - **street_sec** (pandas.DataFrame) - holding \
+        :return: **street_sec** (pandas.DataFrame) - holding \
             converted points
     """
     # iterating threw the given street points and converting each active

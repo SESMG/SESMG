@@ -542,7 +542,8 @@ def create_components(nodes_data: dict, anergy_or_exergy: bool,
             energy system.
         :type thermal_net: ThermalNetwork
     
-        :return: - **oemof_opti_model** (dhnx.optimization) - model \
+        :return: - **oemof_opti_model** \
+            (optimization.OemofInvestOptimizationModel) - model \
             holding dh components
     """
     frequency = nodes_data["energysystem"]["temporal resolution"].values

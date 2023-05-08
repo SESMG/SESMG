@@ -2,20 +2,29 @@ from program_files.preprocessing.components import district_heating, \
     district_heating_calculations
 import oemof.solph as solph
 import dhnx.optimization.oemof_heatpipe as heatpipe
+import dhnx.optimization.optimization_models as optimization
 from dhnx.network import ThermalNetwork
 import pandas
 
 
-def connect_clustered_dh_to_system(oemof_opti_model, busd: dict,
-                                   thermal_network: ThermalNetwork,
-                                   nodes_data: dict):
+def connect_clustered_dh_to_system(
+        oemof_opti_model, busd: dict, thermal_network: ThermalNetwork,
+        nodes_data: dict) -> optimization.OemofInvestOptimizationModel:
     """
-        Method which creates links to connect the scenario based
-        created sinks to the thermal network components created before.
+        Method which creates links to connect the model definition
+        based created sinks to the thermal network components created
+        before.
+        
+        NOTE: 1. The calculation of the periodical cost of the
+                 clustered heat pipeline is based on the linearization
+                 of the heatpipe type due to the iterative approach see
+                 parameters sheet.
+              2. a distinction between exergy and anergy has not been
+                 implemented yet
     
         :param oemof_opti_model: Oemof model holing thermal network
         :type oemof_opti_model:
-        :param busd: dictionary containing scenario buses
+        :param busd: dictionary containing model definition buses
         :type busd: dict
         :param thermal_network: DHNx ThermalNetwork instance used to \
             create the components of the thermal network for the \
@@ -25,15 +34,9 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd: dict,
             definition's data
         :type nodes_data: dict
         
-    # TODO calculation of the periodic cost of the
-                        #  clustered line is based on the linearization of
-                        #  the line due to the iterative approach see
-                        #  parameters sheet
-                        
-    # TODO Verlust der Hausübergabe Station
-                #  15.8689kWh/(m*a) bei 1500 Vollaststunden/a
-                
-    # TODO implement exergy or anergy distinction
+        :return: - **oemof_opti_model** \
+            (optimization.OemofInvestOptimizationModel) - model \
+            holding dh components
     """
     oemof_opti_model = district_heating.remove_redundant_sinks(
         oemof_opti_model=oemof_opti_model)
@@ -42,16 +45,22 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd: dict,
             pipe_types=nodes_data["pipe types"])
     # create link to connect consumers heat bus to the dh-system
     for num, consumer in thermal_network.components["consumers"].iterrows():
+        # create the bus for the clustered heat network connection point
         bus = solph.Bus(label="clustered_consumers_{}".format(consumer["id"]))
         oemof_opti_model.nodes.append(bus)
         busd["clustered_consumers_{}".format(consumer["id"])] = bus
+        # get the clustered consumer link data from the model
+        # definition's pipe types sheet
         link = nodes_data["pipe types"].loc[
             nodes_data["pipe types"]["label_3"] == "clustered_consumer_link"]
+        # get the thermal network's pipe which connects the
+        # investigated consumer to the thermal network
+        # TODO liegt hier eine doppelte Kostenbetrachtung vor?
         pipes = thermal_network.components["pipes"]
         pipe = pipes.loc[pipes["to_node"] == "consumers-{}".format(
             consumer["id"])]
-        print(pipe["length"])
-        # link inputs of clustered house connection
+        
+        # transformer inputs of clustered house connection
         inputs = {
             oemof_opti_model.buses[heatpipe.Label(
                 "consumers",
@@ -76,6 +85,7 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd: dict,
                 )
         }
         
+        # create the transformer representing the clustered pipe
         oemof_opti_model.nodes.append(
             solph.Transformer(
                 label=(
@@ -95,8 +105,11 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd: dict,
         )
         
         counter = 1
+        # get the house station's data from the users model definition
         housestation = nodes_data["pipe types"].loc[
             nodes_data["pipe types"]["label_3"] == "dh_heatstation"]
+        # iterate threw all consumers and create the connection between
+        # the clustered network bus and the consumer sheat buses
         for consumer_input in consumer["input"]:
             oemof_opti_model.nodes.append(
                 solph.Transformer(
@@ -132,28 +145,24 @@ def connect_clustered_dh_to_system(oemof_opti_model, busd: dict,
     return oemof_opti_model
 
 
-def clustering_dh_network(nodes_data: dict, thermal_network: ThermalNetwork
-                          ) -> ThermalNetwork:
+def get_forks_street_section_wise(nodes_data: dict, forks: pandas.DataFrame
+                                  ) -> dict:
     """
-        TODO ...
+        Within this method all perpendicular foot points within one
+        street section are collected to create the clustered foot point
+        later on.
         
-        :param thermal_network: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_network: ThermalNetwork
         :param nodes_data: dictionary holding the users model \
             definition's data
         :type nodes_data: dict
+        :param forks: DataFrame holding the unclustered thermal \
+            networks' forks
+        :type forks: pandas.DataFrame
         
-        :return: - **thermal_network** (ThermalNetwork) - DHNx \
-            ThermalNetwork instance used to create the components of \
-            the thermal network for the energy system.
+        :return: - **forks_street** (dict) - dict holding the \
+            combination of the street label and a list of it's \
+            connected forks
     """
-    # create a local copy of the thermal network components dataframes
-    forks = thermal_network.components["forks"].copy()
-    pipes = thermal_network.components["pipes"].copy()
-    consumers = thermal_network.components["consumers"].copy()
-    
     # put all forks of a given street part to forks_street dict
     forks_street = {}
     active_streets = nodes_data["district heating"].loc[
@@ -170,7 +179,40 @@ def clustering_dh_network(nodes_data: dict, thermal_network: ThermalNetwork
         # update the dict holding the combination of the street label
         # and a list of it's connected forks
         forks_street.update({street["label"]: street_forks})
+
+    return forks_street
+
+
+def get_pipe_lengths_street_section_wise(forks_street: dict, 
+                                         thermal_network: ThermalNetwork,
+                                         pipes: pandas.DataFrame
+                                         ) -> (ThermalNetwork, dict):
+    """
+        Within this method all pipe lengths connected to an
+        investigated street section are collected. The not longer used
+        pipes are deleted afterwards.
+    
+        :param forks_street: dict holding the combination of the \
+            street label and a list of it's connected forks
+        :type forks_street: dict
+        :param thermal_network: DHNx ThermalNetwork instance used to \
+            create the components of the thermal network for the \
+            energy system.
+        :type thermal_network: ThermalNetwork
+        :param pipes: DataFrame holding the unclustered thermal \
+            networks' pipes
+        :type pipes: pandas.DataFrame
         
+        :return: - **thermal_network** (ThermalNetwork) - DHNx \
+                    ThermalNetwork instance used to create the \
+                    components of the thermal network for the energy \
+                    system. Within this method the not longer used \
+                    pipes were deleted.
+                - **streets_pipe_length** - dictionary holding the \
+                    combination of a street section's label and a list \
+                    of all pipes that were connected to the \
+                    investigated street section
+    """
     streets_pipe_length = {}
     # get the length of all pipes connecting street part to consumer of
     # a given street part and put them to streets_pipe_length
@@ -201,7 +243,41 @@ def clustering_dh_network(nodes_data: dict, thermal_network: ThermalNetwork
                     thermal_network.components["pipes"] = \
                         thermal_network.components["pipes"].drop(
                                 index=pipe["id"])
-                    
+    return thermal_network, streets_pipe_length
+
+
+def get_street_sections_consumers_information(streets_pipe_length: dict,
+                                              thermal_network: ThermalNetwork,
+                                              consumers: pandas.DataFrame
+                                              ) -> (ThermalNetwork, dict):
+    """
+        Within this method all consumer information of consumers
+        connected to an investigated street section are collected.
+        The not longer used consumers are deleted afterwards.
+    
+        :param streets_pipe_length: dictionary holding the combination \
+            of a street section's label and a list of all pipes that \
+            were connected to the investigated street section
+        :type streets_pipe_length: dict
+        :param thermal_network: DHNx ThermalNetwork instance used to \
+            create the components of the thermal network for the \
+            energy system.
+        :type thermal_network: ThermalNetwork
+        :param consumers: DataFrame holding the unclustered thermal \
+            networks' consumers
+        :type consumers: pandas.DataFrame
+        
+        :return: - **thermal_network** (ThermalNetwork) - DHNx \
+                    ThermalNetwork instance used to create the \
+                    components of the thermal network for the energy \
+                    system. Within this method the not longer used \
+                    consumers were deleted.
+                - **streets_consumer** - dictionary holding the \
+                    combination of a street section's label and a list \
+                    of consumer information of all consumers that were \
+                    connected to the investigated street section
+    
+    """
     # get consumer information of a given street part
     streets_consumer = {}
     for street in streets_pipe_length:
@@ -219,17 +295,35 @@ def clustering_dh_network(nodes_data: dict, thermal_network: ThermalNetwork
                     thermal_network.components[
                         "consumers"
                     ] = thermal_network.components["consumers"].drop(
-                        index=consumer["id"]
+                            index=consumer["id"]
                     )
         # collect the consumers information streetwise
         streets_consumer.update({street: [counter, lat, lon, inputs]})
         
-    counter = 0
+    return thermal_network, streets_consumer
+
+
+def clear_thermal_network_dataframes(thermal_network: ThermalNetwork
+                                     ) -> ThermalNetwork:
+    """
+        Remove the not longer used pipes and forks of the unclustered
+        thermal network to create the new ones afterwards.
+        
+        :param thermal_network: DHNx ThermalNetwork instance used to \
+            create the components of the thermal network for the \
+            energy system.
+        :type thermal_network: ThermalNetwork
+        
+        :return: - **thermal_network** (ThermalNetwork) - DHNx \
+            ThermalNetwork instance used to create the components of \
+            the thermal network for the energy system. Within this \
+            method the not longer used forks and pipes were deleted.
+    """
     # clear pipes Dataframe
     for num, pipe in thermal_network.components["pipes"].iterrows():
         thermal_network.components["pipes"] = \
             thermal_network.components["pipes"].drop(index=num)
-        
+    
     # clear forks Dataframe
     for num, fork in thermal_network.components["forks"].iterrows():
         thermal_network.components["forks"] = \
@@ -237,15 +331,63 @@ def clustering_dh_network(nodes_data: dict, thermal_network: ThermalNetwork
     thermal_network.components["forks"] = \
         thermal_network.components["forks"].reset_index(drop=True)
     
+    return thermal_network
+
+
+def clustering_dh_network(nodes_data: dict, thermal_network: ThermalNetwork
+                          ) -> ThermalNetwork:
+    """
+        Using this method, a spatial clustering of the thermal network
+        is carried out based on the road sections entered by the user.
+        
+        :param thermal_network: DHNx ThermalNetwork instance used to \
+            create the components of the thermal network for the \
+            energy system.
+        :type thermal_network: ThermalNetwork
+        :param nodes_data: dictionary holding the users model \
+            definition's data
+        :type nodes_data: dict
+        
+        :return: - **thermal_network** (ThermalNetwork) - DHNx \
+            ThermalNetwork instance used to create the components of \
+            the thermal network for the energy system.
+    """
+    # create a local copy of the thermal network components dataframes
+    forks = thermal_network.components["forks"].copy()
+    pipes = thermal_network.components["pipes"].copy()
+    consumers = thermal_network.components["consumers"].copy()
+    
+    forks_street = get_forks_street_section_wise(nodes_data=nodes_data,
+                                                 forks=forks)
+        
+    thermal_network, streets_pipe_length = \
+        get_pipe_lengths_street_section_wise(
+            forks_street=forks_street,
+            thermal_network=thermal_network,
+            pipes=pipes
+        )
+                    
+    thermal_network, streets_consumer = \
+        get_street_sections_consumers_information(
+            streets_pipe_length=streets_pipe_length,
+            thermal_network=thermal_network,
+            consumers=consumers
+        )
+        
+    thermal_network = clear_thermal_network_dataframes(
+        thermal_network=thermal_network)
+    
+    counter = 0
+    
     # calc the summed length of consumer pipes of a given street path
     for street in streets_pipe_length:
-        length = 0
-        for i in streets_pipe_length[street]:
-            length += i[3]
-        streets_pipe_length.update({street: length})
+        # length = 0
+        # for i in streets_pipe_length[street]:
+        #    length += i[3]
+        streets_pipe_length.update({street: sum(streets_pipe_length[street])})
     
     street_sections = district_heating.convert_dh_street_sections_list(
-        nodes_data["district heating"].copy()
+        street_sec=nodes_data["district heating"].copy()
     )
     
     # create the clustered consumer and its fork and pipe
@@ -312,7 +454,7 @@ def clustering_dh_network(nodes_data: dict, thermal_network: ThermalNetwork
         counter += 1
 
     street_sections = district_heating.convert_dh_street_sections_list(
-        nodes_data["district heating"].copy()
+        street_sec=nodes_data["district heating"].copy()
     )
     
     thermal_network = district_heating.create_intersection_forks(
