@@ -5,6 +5,19 @@
 import pandas
 
 
+def add_value_to_amounts_dict(label: str, value_am: float,
+                              amounts_dict: dict) -> dict:
+    """
+    
+    """
+    if label in amounts_dict.keys():
+        amounts_dict[label].append(value_am)
+    else:
+        amounts_dict.update({label: [value_am]})
+    
+    return amounts_dict
+
+
 def get_dataframe_from_nodes_data(nodes_data: dict) -> pandas.DataFrame:
     """
         Within this method the nodes_data DataFrames are combined to
@@ -102,11 +115,15 @@ def get_pv_st_dir(c_dict: dict, value: float, comp_type: str,
         if not dir_dict[dire][0] <= comp["Azimuth"] < dir_dict[dire][1]:
             pass
         else:
-            c_dict[comp_type + dire].append(value)
+            c_dict = add_value_to_amounts_dict(label=comp_type + dire,
+                                               value_am=value,
+                                               amounts_dict=c_dict)
             not_north = True
     # handling north since its between 237.5° and 22.5°
     if not not_north:
-        c_dict[comp_type + "_north"].append(value)
+        c_dict = add_value_to_amounts_dict(label=comp_type + "_north",
+                                           value_am=value,
+                                           amounts_dict=c_dict)
     return c_dict
 
 
@@ -130,14 +147,14 @@ def dict_to_dataframe(amounts_dict: dict, return_df: pandas.DataFrame
     # summing up the previously collected data of the energy system
     # components
     for label in amounts_dict:
-        if label != "run" and label != "reductionco2":
+        if label != "reductionco2":
+            print(label)
             amounts_dict[label] = sum(amounts_dict[label])
     # convert the dictionary into a pandas Series
     series = pandas.Series(data=amounts_dict)
     # append the created series to the pandas Dataframe
     return_df = pandas.concat([return_df, pandas.DataFrame([series])])
-    return_df.set_index("reductionco2", inplace=True, drop=False)
-    return_df = return_df.sort_values("run")
+    return_df = return_df.sort_values("reductionco2")
     return return_df
 
 
