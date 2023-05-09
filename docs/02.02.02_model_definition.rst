@@ -48,6 +48,7 @@ Competition Constraints
 The spreadsheet "Competition Constraints" allows you to match two components against a predefined limit.
 For example, an area competition. If you do not want to use this spreadsheet, it simply remains empty. To use this worksheet, the following values must be filled in:
 
+- **label**: Unique designation of the competition constraint.
 - **component 1**: First component that lays claim to the parameter which size set as the limit.
 - **factor 1**: Factor that defines how many units of the target unit component 1 needs to provide 1 kW of power.
 - **component 2**: Second component that lays claim to the parameter which size set as the limit.
@@ -55,9 +56,9 @@ For example, an area competition. If you do not want to use this spreadsheet, it
 - **limit**: Maximum size suitable for providing power (e.g. **roof area** for providing electricity and heat).
 
 .. csv-table:: Exemplary input for the competition constraints sheet
-   :header: component 1,factor 1,component 2,factor 2,limit
+   :header: label,component 1,factor 1,component 2,factor 2,limit
 
-	,unit/KW,,unit/kW,unit
+	ID_competition,unit/KW,,unit/kW,unit
 	ID_photovoltaic_electricity_source,5.26,ID_solar_thermal_source,1.79,168
 
 Buses
