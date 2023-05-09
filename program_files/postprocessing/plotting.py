@@ -8,7 +8,21 @@ import pandas
 def add_value_to_amounts_dict(label: str, value_am: float,
                               amounts_dict: dict) -> dict:
     """
-    
+        Adds the value_am to the given amounts dict by checking if
+        the chosen label is already part of the amounts dict (append)
+        or not (create new dict entry).
+        
+        :param label: dict key which will be updated or added
+        :type label: str
+        :param value_am: value which will be appended to the label's \
+            list in the amounts dict
+        :type value_am: dict
+        :param amounts_dict: dictionary holding the already collected \
+            energy amounts
+        :type amounts_dict: dict
+        
+        :return: - **amounts_dict** (dict) -  amounts dict after the \
+            new value was added
     """
     if label in amounts_dict.keys():
         amounts_dict[label].append(value_am)
