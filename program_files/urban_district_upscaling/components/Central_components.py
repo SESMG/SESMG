@@ -446,7 +446,7 @@ def create_central_heatpump(label: str, specification: str, create_bus: bool,
     from program_files import Bus, Transformer, Link
     # create central heatpump electricity bus
     bus_labels = sheets["buses"]["label"].to_list()
-    if create_bus and "central_heatpump_elec_bus" not in bus_labels:
+    if create_bus and "central_heatpump_electricity_bus" not in bus_labels:
         sheets = Bus.create_standard_parameter_bus(
             label="central_heatpump_electricity_bus",
             bus_type="central_heatpump_electricity_bus",
