@@ -144,7 +144,7 @@ def short_result_simplifications(result_GUI_settings_dict: dict) -> None:
     """
         Function to display model simplification settings in addition
         to the timeseries information.
-        
+
         :param result_GUI_settings_dict: dict including the last runs \
             GUI settings
         :type result_GUI_settings_dict: dict
@@ -197,7 +197,7 @@ def short_result_premodelling(result_GUI_settings_dict: dict) -> None:
 def short_result_table(result_path_components: str) -> None:
     """
         Function to create table of components.
-        
+
         :param result_path_components: path to a result components.csv \
             file
         :type result_path_components: str
@@ -279,7 +279,8 @@ def create_energy_amounts_diagram(result_path_amounts: str) -> None:
 
     # create plotly chart
     fig = px.area(amounts_df, x="reductionco2", y=list_headers).update_layout(
-        xaxis_title="Reduced GHG-emissions compared to the cost minimum (%)",
+        xaxis_title="Reduced GHG emissions in percentage of the \
+            maximum potential reduction (%)",
         yaxis_title="energy amounts (kWh)")
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
