@@ -29,6 +29,7 @@ Within this sheet, the time horizon and the temporal resolution of the model is 
 - **start date**: Start of the modelling time horizon. Format: "YYYY-MM-DD hh:mm:ss";
 - **end date**: End date of the modelling time horizon. Format: "YYYY-MM-DD hh:mm:ss"; and
 - **temporal resolution**: For the modelling considered temporal resolution. Possible inputs: "a" (years), "d" (days), "h" (hours) "min" (minutes), "s" (seconds), "ms" (milliseconds).
+- **timezone**: By specifying the timezone, energy systems with correct time series (e.g. relevant for the correct balancing of the PV yield) can be modeled anywhere in the world. For this purpose, the pandas timezone string (e.g. Europe/Berlin) is inserted into the column. Then the weather data, which are available in the weather data sheet in UTC form, are corrected to the considered location.
 - **periods**: Number of periods within the time horizon (one year with hourly resolution equals 8760 periods).
 - **constraint cost limit** in (CU): Value in order to set a limit for the whole energysystem, e.g. carbon dioxide emissions. Set this field to "None" in order to ignore the limit. If you want to set a limit, you have to set specific values for each components seen below.
 - **minimum final energy reduction** in (kWh): This value can be used to define how much final energy reduction must be achieved. Thus, the optimization algorithm is forced to save at least <your_value_here> kWh of final energy amount. Currently only insulation investments can be used to achieve reductions. The “constraint2” factor of the insulation measures is 1, since every kWh saved by insulation measures is fully included in the savings. This value is set in the algorithm and can currently not be changed by the user.
@@ -75,21 +76,22 @@ Within this sheet, the buses of the energy system are defined. The following par
 - **district heating conn.**: This column allows you to specify whether the bus should be connected to the heating network. If not, select 0. If yes, either the nearest point of the heating network can be used as a connection (in this case the column must be filled with "dh-system"), or one of the street points from the "District Heating" sheet is used (in this case the column must be filled according to the following pattern: street-label-1 for the first node or street-label-2 for the second).
 - **lat**: This column must be filled if dh-system was specified in the "district heating conn." column. In this case, this column must be filled with the latitude (WGS84).
 - **lon**: This column must be filled if dh-system was specified in the "district heating conn." column. In this case, this column must be filled with the longitude (WGS84).
+- **sector**: This column is used to assign the shortages of the buses to the energy amount diagrams in the result processing. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling and None for buses that cannot be assigned to any category.
 
 .. csv-table:: Exemplary input for the buses sheet
-   :header: label,comments,active,excess,shortage,excess costs,shortage costs,excess constraint costs,shortage constraint costs, district heating conn., lat, lon
+   :header: label,comments,active,excess,shortage,excess costs,shortage costs,excess constraint costs,shortage constraint costs, district heating conn., lat, lon, sector
 
-   ,,,,,(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh),,,
-   ID_electricity_bus,,1,0,1,0.000,0.300,0.00,474.00,0,0,0
-   ID_heat_bus,,1,1,0,0.000,0.000,0.00,0.00,0,0,0
-   ID_gas_bus,,1,0,1,0.000,0.070,0.00,0.00,0,0,0
-   ID_cooling_bus,chiller,1,1,0,0.000,0.000,0.00,0.00,0,0,0
-   ID_pv_bus,,1,1,0,-0.068,0.000,-56.00,0.00,0,0,0
-   ID_hp_electricity_bus,heat pumps,1,1,1,0.000,0.220,0.00,474.00,0,0,0
-   district_electricity_bus,delivering electr. to neighb. subsystems,0,0,0,0.000,0.000,0.00,0.00,0,0,0
-   district_heat_bus,delivering heat to neighb. subsystems,0,0,0,0.000,0.000,0.00,0.00,dh-system, 50.000000, 10.000000
-   district_chp_electricity_bus,,0,0,1,0.000,0.000,-375.00,0.00,0,0,0
-   district_gas_bus,,0,0,1,0.000,0.070,0.00,0.00,0,0,0
+   ,,,,,(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh),,,,
+   ID_electricity_bus,,1,0,1,0.000,0.300,0.00,474.00,0,0,0,electricity
+   ID_heat_bus,,1,1,0,0.000,0.000,0.00,0.00,0,0,0,heat
+   ID_gas_bus,,1,0,1,0.000,0.070,0.00,0.00,0,0,0,None
+   ID_cooling_bus,chiller,1,1,0,0.000,0.000,0.00,0.00,0,0,0,cooling
+   ID_pv_bus,,1,1,0,-0.068,0.000,-56.00,0.00,0,0,0,electricity
+   ID_hp_electricity_bus,heat pumps,1,1,1,0.000,0.220,0.00,474.00,0,0,0,electricity
+   district_electricity_bus,delivering electr. to neighb. subsystems,0,0,0,0.000,0.000,0.00,0.00,0,0,0,central_electricity
+   district_heat_bus,delivering heat to neighb. subsystems,0,0,0,0.000,0.000,0.00,0.00,dh-system, 50.000000, 10.000000,central_heat
+   district_chp_electricity_bus,,0,0,1,0.000,0.000,-375.00,0.00,0,0,0,central_electricity
+   district_gas_bus,,0,0,1,0.000,0.070,0.00,0.00,0,0,0,None
    
 .. figure:: ../docs/images/manual/ScenarioSpreadsheet/BSP_Graph_Bus.png
    :width: 100 %
@@ -131,16 +133,16 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **annual demand** in (kWh/a): Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "0" is used.
 - **occupants** [RICHARDSON]: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "0" for other load profiles.
 - **building class** [HEAT SLP ONLY]: BDEW building classes that coincide with the building locations are explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html#sinks>`_.
-
 - **wind class** [HEAT SLP ONLY]: wind classification for building location (0=not windy, 1=windy)
+- **sector**: This column is used to assign the sinks' energy amounts to the energy amount diagrams in the result processing. Possible entries: electricity, heat, cooling.
 
 .. csv-table:: Exemplary input for the sinks sheet
-   :header: label,comment,active,fixed,input,load profile,nominal value,annual demand,occupants,building class,wind class
+   :header: label,comment,active,fixed,input,load profile,nominal value,annual demand,occupants,building class,wind class,sector
 
-   ,,,,,,(kW),(kWh/a),(richardson),(heat slp),(heat slp)
-   ID_electricity_sink,H0 standard load profile sink,1,1,ID_electricity_bus,h0,0,5000.0,0,0,0
-   ID_heat_sink,EFH standard load profile sink,1,1,ID_heat_bus,efh,0,30000.0,0,3,0
-   ID_cooling_sink,fixed timeseries cooling demand,0,1,ID_cooling_bus,timeseries,1,0,0,0,0
+   ,,,,,,(kW),(kWh/a),(richardson),(heat slp),(heat slp),
+   ID_electricity_sink,H0 standard load profile sink,1,1,ID_electricity_bus,h0,0,5000.0,0,0,0,electricity
+   ID_heat_sink,EFH standard load profile sink,1,1,ID_heat_bus,efh,0,30000.0,0,3,0,heat
+   ID_cooling_sink,fixed timeseries cooling demand,0,1,ID_cooling_bus,timeseries,1,0,0,0,0,cooling
 
 .. figure:: ../docs/images/manual/ScenarioSpreadsheet/BSP_Graph_sink.png
    :width: 100 %
@@ -159,6 +161,8 @@ Within this sheet, the sources of the energy system are defined. Technology spec
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the source is connected to.
 - **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "other", "solar_thermal_flat_plate", "concentrated_solar_power". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the `Time series sheet`_.
+- **sector**: This column is used to differentiate between an electricity, heat and cooling timeseries source for the result processing's energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling.
+
 
 Costs
 """""""""""""""""""""""""""""""""""""
@@ -236,12 +240,12 @@ Commodity
 If you have chosen the technology "other", the solver has the opportunity to continuously adjust the power.
 
 .. csv-table:: Exemplary input for the sources sheet
-   :header: label,comment,active,fixed,technology,output,input,existing capacity,min. investment capacity,max. investment capapcity,non-convex investment,fix investment costs,variable costs,periodical costs,variable constraint costs,periodical constraint costs,Turbine Model,Hub Height,technology database,inverter database,Modul Model,Inverter Model,Albedo,Altitude,Azimuth,Surface Tilt,Latitude,Longitude,ETA 0,A1,A2,C1,C2,Temperature Inlet,Temperature Difference,Conversion Factor,Peripheral Losses,Electric Consumption,Cleanliness
+   :header: label,comment,active,fixed,technology,output,input,existing capacity,min. investment capacity,max. investment capapcity,non-convex investment,fix investment costs,variable costs,periodical costs,variable constraint costs,periodical constraint costs,Turbine Model,Hub Height,technology database,inverter database,Modul Model,Inverter Model,Albedo,Altitude,Azimuth,Surface Tilt,Latitude,Longitude,ETA 0,A1,A2,C1,C2,Temperature Inlet,Temperature Difference,Conversion Factor,Peripheral Losses,Electric Consumption,Cleanliness,sector
 
-   ,,,,,,solar heat,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/(kW a)),windpower,windpower,PV,PV,PV,PV,PV,(m)| PV,(°),(°),(°),(°),solar heat,solar heat,solar heat,solar heat,solar heat,(°C) | solar heat,(°C)|solar heat,(sqm/kW) | solar heat,solar heat,solar heat,solar heat
-   ID_photovoltaic_electricity_source,,1,1,photovoltaic,ID_pv_bus,None,0,0,20,0,0,0,90,56,0,0,0,SandiaMod,sandiainverter,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,0.18,60,180,35,52.13,7.36,0,0,0,0,0,0,0,0,0,0,0
-   ID_solar_thermal_source,,1,1,solar_thermal_flat_plate,ID_heat_bus,ID_electricity_bus,0,0,20,0,0,0,40,25,0,0,0,0,0,0,0,0,0,20,10,52.13,7.36,0.719,1.063,0.005,0,0,40,15,1.79,0.05,0.06,0
-   wind_turbine,,0,1,windpower,electricity_bus,None,0,0,30,0,0,0,100,9,0,E-126/4200,135,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+   ,,,,,,solar heat,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/(kW a)),windpower,windpower,PV,PV,PV,PV,PV,(m)| PV,(°),(°),(°),(°),solar heat,solar heat,solar heat,solar heat,solar heat,(°C) | solar heat,(°C)|solar heat,(sqm/kW) | solar heat,solar heat,solar heat,solar heat,
+   ID_photovoltaic_electricity_source,,1,1,photovoltaic,ID_pv_bus,None,0,0,20,0,0,0,90,56,0,0,0,SandiaMod,sandiainverter,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,0.18,60,180,35,52.13,7.36,0,0,0,0,0,0,0,0,0,0,0,electricity
+   ID_solar_thermal_source,,1,1,solar_thermal_flat_plate,ID_heat_bus,ID_electricity_bus,0,0,20,0,0,0,40,25,0,0,0,0,0,0,0,0,0,20,10,52.13,7.36,0.719,1.063,0.005,0,0,40,15,1.79,0.05,0.06,0,heat
+   wind_turbine,,0,1,windpower,electricity_bus,None,0,0,30,0,0,0,100,9,0,E-126/4200,135,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,electricity
 
 
 .. figure:: ../docs/images/manual/ScenarioSpreadsheet/BSP_Graph_source.png
@@ -269,6 +273,8 @@ The following parameters have to be entered:
 - **output**: Specifies bus to which the output of the transformer is forwarded to. For CHP Transformers it should be the electric output.
 - **output2**: Specifies the bus to which the output of the transformer is forwarded to, if there are several outputs. If there is no second output, the fill character "0" must be entered here.
 - **input2 / input**: Specifies the ratio of input2 to input (e. g. kWh/m³). Only required if "transformer type" is set to "GenericTwoInputTransformer". If there is no second input, the fill character "0" must be entered here.
+- **sector**: This column is used to differentiate the transformer types for the result processing's energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling, electric_heating.
+- **technology**: The technology column represents the category for collecting the energy amounts for the energy amount diagrams. Attention: If at sector central_... is used, a leading "central_" will be added to the selected technology in the balancing.
 
 Costs
 """""""""""""""""""""""""""""""""""""
@@ -333,16 +339,16 @@ The following parameters are only required, if "transformer type" is set to "Abs
 
   
 .. csv-table:: Exemplary input for the transformers sheet
-   :header: label,comment,active,transformer type,mode,input,input2,output,output2,input2 / input,efficiency,efficiency2,existing capacity,min. investment capacity,max. investment capacity,non-convex investment,fix investment costs,variable input costs,variable input costs 2,variable output costs,variable output costs 2,periodical costs,variable input constraint costs,variable input constraint costs 2,variable output constraint costs,variable output constraint costs 2,periodical constraint costs,heat source,temperature high,temperature low,quality grade,area,length of the geoth. probe,heat extraction,min. borehole area,temp. threshold icing,factor icing,name,electrical input conversion factor,recooling temperature difference,min. share of flue gas loss,max. share of flue gas loss,min. electric power,max. electric power,min. electric efficiency, max. electric efficiency,minimal thermal output power,elec. power loss index,back pressure
+   :header: label,comment,active,transformer type,mode,input,input2,output,output2,input2 / input,efficiency,efficiency2,existing capacity,min. investment capacity,max. investment capacity,non-convex investment,fix investment costs,variable input costs,variable input costs 2,variable output costs,variable output costs 2,periodical costs,variable input constraint costs,variable input constraint costs 2,variable output constraint costs,variable output constraint costs 2,periodical constraint costs,heat source,temperature high,temperature low,quality grade,area,length of the geoth. probe,heat extraction,min. borehole area,temp. threshold icing,factor icing,name,electrical input conversion factor,recooling temperature difference,min. share of flue gas loss,max. share of flue gas loss,min. electric power,max. electric power,min. electric efficiency, max. electric efficiency,minimal thermal output power,elec. power loss index,back pressure,sector,technology
 
-	,,,,,,,,,,,,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),,(°C),(°C),,(m²),(`m`),(kW/(m*a)),(m²),(°C),,,,(°C),,,(kW),(kW),,,(kW)
- 	ID_gasheating_transformer,,1,GenericTransformer,0,ID_gas_bus,0,ID_heat_bus,None,0,0.85,0,10,0,20,0,0,0,0,0,0,70,0,0,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_TwoInput_transformer,high pressure pump,0,GenericTwoInputTransformer,None,ID_water_intake_bus,ID_electricity_intake_bus,ID_water_output_bus,None,0.84,0.88,0,0,0,4000,0,0,0,0,0,0,6.600,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_GCHP_transformer,ground-coupled heat pump,1,CompressionHeatTransformer,heat_pump,ID_hp_electricity_bus,0,ID_heat_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,115.57,0,0,0,0,0,Ground,60,0,0.6,1000,100,0.05,100,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_ASCH_transformer,air source chiller,1,CompressionHeatTransformer,chiller,ID_hp_electricity_bus,0,ID_cooling_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,100,0,0,0,0,0,Air,0,-10,0.4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_AbsCH_transformer,absorption chiller,1,AbsorptionHeatTransformer,chiller,ID_hp_electricity_bus,0,ID_cooling_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,100,0,0,0,0,0,0,85,10,0,0,0,0,0,0,0,Kuehn,0.05,6,0,0,0,0,0,0,0,0,0
-	ID_ASHP_transformer,air source heat pump,1,CompressionHeatTransformer,heat_pump,ID_hp_electricity_bus,0,ID_heat_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,112.78,0,0,0,0,0,Air,60,0,0.4,0,0,0,0,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0
-	ID_chp_transformer,,0,GenericTransformer,0,district_gas_bus,0,district_chp_electricity_bus,district_heat_bus,0,0.35,0.55,0,0,20,0,0,0,0,0,0,50,130,0,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	,,,,,,,,,,,,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh),(CU/(kW a)),,(°C),(°C),,(m²),(`m`),(kW/(m*a)),(m²),(°C),,,,(°C),,,(kW),(kW),,,(kW),,
+ 	ID_gasheating_transformer,,1,GenericTransformer,0,ID_gas_bus,0,ID_heat_bus,None,0,0.85,0,10,0,20,0,0,0,0,0,0,70,0,0,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,heat,natural_gasheating
+	ID_TwoInput_transformer,high pressure pump,0,GenericTwoInputTransformer,None,ID_water_intake_bus,ID_electricity_intake_bus,ID_water_output_bus,None,0.84,0.88,0,0,0,4000,0,0,0,0,0,0,6.600,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,None,None
+	ID_GCHP_transformer,ground-coupled heat pump,1,CompressionHeatTransformer,heat_pump,ID_hp_electricity_bus,0,ID_heat_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,115.57,0,0,0,0,0,Ground,60,0,0.6,1000,100,0.05,100,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,heat,GCHP
+	ID_ASCH_transformer,air source chiller,1,CompressionHeatTransformer,chiller,ID_hp_electricity_bus,0,ID_cooling_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,100,0,0,0,0,0,Air,0,-10,0.4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,cooling,ASCH
+	ID_AbsCH_transformer,absorption chiller,1,AbsorptionHeatTransformer,chiller,ID_hp_electricity_bus,0,ID_cooling_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,100,0,0,0,0,0,0,85,10,0,0,0,0,0,0,0,Kuehn,0.05,6,0,0,0,0,0,0,0,0,0,cooling,AbsCH
+	ID_ASHP_transformer,air source heat pump,1,CompressionHeatTransformer,heat_pump,ID_hp_electricity_bus,0,ID_heat_bus,None,0,1,0,0,0,20,0,0,0,0,0,0,112.78,0,0,0,0,0,Air,60,0,0.4,0,0,0,0,3,0.8,0,0,0,0,0,0,0,0,0,0,0,0,heat,ASHP
+	ID_chp_transformer,,0,GenericTransformer,0,district_gas_bus,0,district_chp_electricity_bus,district_heat_bus,0,0.35,0.55,0,0,20,0,0,0,0,0,0,50,130,0,375,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,heat,natural_gas_CHP
 	
 .. figure:: ../docs/images/manual/ScenarioSpreadsheet/BSP_Graph_transformer.png
    :width: 100 %
@@ -368,6 +374,7 @@ Within this sheet, the storages of the energy system are defined. The following 
 - **initial capacity**: Specifies how far the storage is loaded at time 0 of the simulation. Value must be between 0 and 1. The initial capacity value must be equal or higher than the 'capacity min' value.
 - **capacity min**: Specifies the minimum amount of storage that must be loaded at any given time. Value must be between 0 and 1.
 - **capacity max**: Specifies the maximum amount of storage that can be loaded at any given time. Value must be between 0 and 1.
+- **sector**: This column is used to differentiate between an electricity, heat and cooling storages for the result processing's energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling.
 
 Costs
 """""""""""""""""""""""""""""""""""""
@@ -395,13 +402,13 @@ Stratified Storage
 - **U value** in (W/(sqm*K)) | (Stratified Storage): Thermal transmittance coefficient
 
 .. csv-table:: Exemplary input for the storages sheet
-   :header: label,comment,active,storage type,bus,input/capacity ratio,output/capacity ratio,efficiency inflow,efficiency outflow,initial capacity,capacity min,capacity max,existing capacity,min. investment capacity,max. investment capacity,non-convex investment,fix investment costs,variable input costs,variable output costs,periodical costs,variable input constraint costs,variable output constraint costs,periodical constraint costs,capacity loss,diameter,temperature high,temperature low,U value
+   :header: label,comment,active,storage type,bus,input/capacity ratio,output/capacity ratio,efficiency inflow,efficiency outflow,initial capacity,capacity min,capacity max,existing capacity,min. investment capacity,max. investment capacity,non-convex investment,fix investment costs,variable input costs,variable output costs,periodical costs,variable input constraint costs,variable output constraint costs,periodical constraint costs,capacity loss,diameter,temperature high,temperature low,U value,sector
 
-	,,,,,(invest),(invest),,,,,,(kWh),(kWh),(kWh),,(CU/a),(CU/kWh),(CU/kWh),(CU/(kWh a)),(CU/kWh),(CU/kWh),(CU/(kWh a)),Generic Storage,(`m`) | Stratified Storage,(°C) | Stratified Storage,Stratified Storage,(W/(m²*K)) | Stratified Storage
-	ID_battery_storage,,1,Generic,ID_electricity_bus,0.17,0.17,1,0.98,0,0.1,1,0,0,100,0,0,0,0,70,0,0,400,0,0,0,0,0
-	ID_thermal_storage,,1,Generic,ID_heat_bus,0.17,0.17,1,0.98,0,0.1,0.9,0,0,100,0,0,0,20,35,0,0,100,0,0,0,0,0
-	ID_stratified_thermal_storage,,0,Stratified,ID_heat_bus,0.2,0.2,1,0.98,0,0.05,0.95,0,0,100,0,0,0,20,35,0,0,100,0,0.8,60,40,0.04
-	district_battery_storage,,0,Generic,district_electricity_bus,0.17,0.17,1,0.98,0,0.1,1,0,0,1000,0,0,0,0,10,0,0,10,0,0,0,0,0
+	,,,,,(invest),(invest),,,,,,(kWh),(kWh),(kWh),,(CU/a),(CU/kWh),(CU/kWh),(CU/(kWh a)),(CU/kWh),(CU/kWh),(CU/(kWh a)),Generic Storage,(`m`) | Stratified Storage,(°C) | Stratified Storage,Stratified Storage,(W/(m²*K)) | Stratified Storage,
+	ID_battery_storage,,1,Generic,ID_electricity_bus,0.17,0.17,1,0.98,0,0.1,1,0,0,100,0,0,0,0,70,0,0,400,0,0,0,0,0,electricity
+	ID_thermal_storage,,1,Generic,ID_heat_bus,0.17,0.17,1,0.98,0,0.1,0.9,0,0,100,0,0,0,20,35,0,0,100,0,0,0,0,0,heat
+	ID_stratified_thermal_storage,,0,Stratified,ID_heat_bus,0.2,0.2,1,0.98,0,0.05,0.95,0,0,100,0,0,0,20,35,0,0,100,0,0.8,60,40,0.04,heat
+	district_battery_storage,,0,Generic,district_electricity_bus,0.17,0.17,1,0.98,0,0.1,1,0,0,1000,0,0,0,0,10,0,0,10,0,0,0,0,0,central_electricity
 	
 .. figure:: ../docs/images/manual/ScenarioSpreadsheet/BSP_Graph_Storage.png
    :width: 100 %
