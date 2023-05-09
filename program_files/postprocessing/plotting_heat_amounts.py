@@ -192,9 +192,11 @@ def generic_transformer_heat_amounts(components_df: pandas.DataFrame,
         transformer components (e.g. CHP outputs or electric heating
         components).
         
-        NOTE: It is always assumed that the components are driven
-        electrically, so that the first output is an electricity output
-        and the second is a heat output.
+        NOTE:
+        
+              It is always assumed that the components are driven
+              electrically, so that the first output is an electricity
+              output and the second is a heat output.
         
         :param components_df: DataFrame containing all components of \
             the studied energy system

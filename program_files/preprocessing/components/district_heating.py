@@ -209,7 +209,9 @@ def create_connection_points(consumers: pandas.DataFrame,
         Create the entries for the connection points and adds them to
         thermal network forks, consumers and pipes.
         
-        NOTE: bus label structure has to be <ID>_...
+        NOTE:
+        
+              bus label structure has to be <ID>_...
     
         :param consumers: holding nodes_data["buses"]
         :type consumers: pandas.Dataframe

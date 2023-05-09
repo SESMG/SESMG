@@ -247,9 +247,11 @@ def generic_transformer_electricity_amounts(components_df: pandas.DataFrame,
         transformer components (e.g. CHP outputs or electric heating
         components).
         
-        NOTE: It is always assumed that the components are driven
-        electrically, so that the first output is an electricity output
-        and the second is a heat output.
+        NOTE:
+        
+              It is always assumed that the components are driven
+              electrically, so that the first output is an electricity
+              output and the second is a heat output.
         
         :param components_df: DataFrame containing all components of \
             the studied energy system
@@ -454,7 +456,7 @@ def collect_electricity_amounts(
             pandas.DataFrame(components.csv)}
         :type dataframes: dict
         :param nodes_data: DataFrame containing all components defined \
-            within the input scenario file
+            within the input model definition file
         :type nodes_data: pandas.DataFrame
         :param result_path: str which defines the folder where the \
             elec_amount plot will be saved

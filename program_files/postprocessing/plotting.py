@@ -95,8 +95,10 @@ def get_pv_st_dir(c_dict: dict, value: float, comp_type: str,
         associated with the cardinal direction for the PV or ST system
         under consideration and returns it to the plotting.
         
-        NOTE: This method only works for azimuth between 0° and 360°.
-        Please make sure not to use -180° - 180°.
+        NOTE:
+            
+              This method only works for azimuth between 0° and 360°.
+              Please make sure not to use -180° - 180°.
         
         :param c_dict: component dictionary holding the PV or ST \
             cardinal specific values
