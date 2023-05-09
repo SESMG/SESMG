@@ -164,7 +164,6 @@ def dict_to_dataframe(amounts_dict: dict, return_df: pandas.DataFrame
     # components
     for label in amounts_dict:
         if label != "reductionco2":
-            print(label)
             amounts_dict[label] = sum(amounts_dict[label])
     # convert the dictionary into a pandas Series
     series = pandas.Series(data=amounts_dict)
