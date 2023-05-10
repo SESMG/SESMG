@@ -38,7 +38,7 @@ https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01
 - download the operating system specific installer (e.g. “Windows x86-64 executable installer”)
 - execute the installer on your computer
 
-### Step 2) Download the Spreadsheet Energy System Model Generator from `GitHub <https://github.com/SESMG/SESMG>`_ as .zip folder and extract the .zip folder into any directory on the computer. 
+### Step 2) Download the Spreadsheet Energy System Model Generator from [GitHub](http://ampl.com/dl/open/cbc/cbc-win64.zip](https://github.com/SESMG/SESMG) as .zip folder and extract the .zip folder into any directory on the computer. 
 
 ### Step 3) Install pip (Linux only)
 
