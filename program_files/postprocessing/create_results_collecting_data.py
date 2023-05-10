@@ -34,6 +34,8 @@ def check_for_link_storage(node, nodes_data: pandas.DataFrame) -> str:
         return_str = "link"
     if isinstance(node, GenericStorage):
         return_str = "storage"
+    if "pipe-clustered" in node.label:
+        return_str = "clustered_dh"
     return return_str
 
 
@@ -157,13 +159,19 @@ def get_investment(node, esys: solph.EnergySystem, results: dict,
     component_node = esys.groups[str(node.label)]
     # get the output bus which is depending on the component type since
     # the investment of storages is taken on storage content
-    if comp_type != "storage":
+    if comp_type != "storage" and comp_type != "clustered_dh":
         bus_node = esys.groups[str(list(node.outputs)[0].label)]
+    elif comp_type == "clustered_dh":
+        bus_node = esys.groups[str(list(node.inputs)[0].label)]
     else:
         bus_node = None
     # get the specified flows investment variable
-    if "invest" in results[component_node, bus_node]["scalars"]:
+    if not comp_type == "clustered_dh" \
+            and "invest" in results[component_node, bus_node]["scalars"]:
         return results[component_node, bus_node]["scalars"]["invest"]
+    elif comp_type == "clustered_dh" \
+            and "invest" in results[bus_node, component_node]["scalars"]:
+        return results[bus_node, component_node]["scalars"]["invest"]
     else:
         return 0
 
@@ -199,6 +207,8 @@ def calc_periodical_costs(node, investment: float, comp_type: str,
     # variable (node)
     if comp_type == "storage":
         invest_object = node.investment
+    elif comp_type == "clustered_dh":
+        invest_object = node.inputs[list(node.inputs.keys())[0]].investment
     else:
         invest_object = node.outputs[list(node.outputs.keys())[0]].investment
     # if an investment was made in the considered component (nd),

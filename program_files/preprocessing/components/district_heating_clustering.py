@@ -60,7 +60,6 @@ def connect_clustered_dh_to_system(
             nodes_data["pipe types"]["label_3"] == "clustered_consumer_link"]
         # get the thermal network's pipe which connects the
         # investigated consumer to the thermal network
-        # TODO liegt hier eine doppelte Kostenbetrachtung vor?
         pipes = thermal_network.components["pipes"]
         pipe = pipes.loc[pipes["to_node"] == "consumers-{}".format(
             consumer["id"])]
@@ -94,7 +93,7 @@ def connect_clustered_dh_to_system(
         oemof_opti_model.nodes.append(
             solph.Transformer(
                 label=(
-                    "pipe-clustered{}-".format(consumer["id"])
+                    "pipe-clustered-{}-".format(consumer["id"])
                     + str(pipe["length"][0])
                 ),
                 inputs=inputs,
@@ -304,7 +303,6 @@ def get_street_sections_consumers_information(streets_pipe_length: dict,
                     )
         # collect the consumers information streetwise
         streets_consumer.update({street: [counter, lat, lon, inputs]})
-        
     return thermal_network, streets_consumer
 
 
@@ -328,6 +326,8 @@ def clear_thermal_network_dataframes(thermal_network: ThermalNetwork
     for num, pipe in thermal_network.components["pipes"].iterrows():
         thermal_network.components["pipes"] = \
             thermal_network.components["pipes"].drop(index=num)
+    thermal_network.components["pipes"] = \
+        thermal_network.components["pipes"].reset_index(drop=True)
     
     # clear forks Dataframe
     for num, fork in thermal_network.components["forks"].iterrows():
@@ -386,77 +386,78 @@ def clustering_dh_network(nodes_data: dict, thermal_network: ThermalNetwork
     
     # calc the summed length of consumer pipes of a given street path
     for street in streets_pipe_length:
-        # length = 0
-        # for i in streets_pipe_length[street]:
-        #    length += i[3]
-        streets_pipe_length.update({street: sum(streets_pipe_length[street])})
-    
+        length = 0
+        for i in streets_pipe_length[street]:
+            length += i[3]
+        streets_pipe_length.update({street: length})
     street_sections = district_heating.convert_dh_street_sections_list(
         street_sec=nodes_data["district heating"].copy()
     )
     
     # create the clustered consumer and its fork and pipe
     for street in streets_consumer:
-        # add consumer to thermal network components (dummy
-        # because cut from system after creating dhnx components
-        new_consumer = pandas.DataFrame(
-            [pandas.Series(
-                data={
-                    "id": "consumers-{}".format(counter),
-                    "lat": float(streets_consumer[street][1]
-                                 / streets_consumer[street][0]),
-                    "lon": float(streets_consumer[street][2]
-                                 / streets_consumer[street][0]),
-                    "component_type": "Consumer",
-                    "P_heat_max": 1,
-                    "input": streets_consumer[street][3],
-                    "label": "",
-                    "street": street,
-                    "length": streets_pipe_length[street],
-                }
-            )]
-        )
-        thermal_network.components["consumers"] = pandas.concat(
-            [thermal_network.components["consumers"], new_consumer]
-        )
-        # calculate the foot point of the new clustered consumer
-        foot_point = district_heating_calculations.get_nearest_perp_foot_point(
-            {
-                "lat": float(streets_consumer[street][1]
-                             / streets_consumer[street][0]),
-                "lon": float(streets_consumer[street][2]
-                             / streets_consumer[street][0]),
-            },
-            street_sections,
-            counter,
-            "consumers",
-        )
-        # add the pipe to the clustered consumer to the list of pipes
-        new_pipe_part = pandas.DataFrame(
-            [pandas.Series(
-                data={
-                    "id": "pipe-{}".format(
-                        len(thermal_network.components["pipes"])
-                    ),
-                    "from_node": "forks-{}".format(foot_point[0][10:-5]),
-                    "to_node": "consumers-{}".format(counter),
-                    "length": foot_point[3],
-                    "component_type": "Pipe",
-                }
-            )]
-        )
-        thermal_network.components["pipes"] = pandas.concat(
-            [
-                thermal_network.components["pipes"],
-                new_pipe_part
-            ]
-        )
-        # create fork of the new calculated foot point
-        thermal_network = district_heating.create_fork(
-            point=foot_point,
-            label=foot_point[0][10:-5],
-            thermal_net=thermal_network)
-        counter += 1
+        if streets_consumer[street][0] > 0:
+            # add consumer to thermal network components (dummy
+            # because cut from system after creating dhnx components
+            new_consumer = pandas.DataFrame(
+                [pandas.Series(
+                    data={
+                        "id": "consumers-{}".format(counter),
+                        "lat": float(streets_consumer[street][1]
+                                     / streets_consumer[street][0]),
+                        "lon": float(streets_consumer[street][2]
+                                     / streets_consumer[street][0]),
+                        "component_type": "Consumer",
+                        "P_heat_max": 1,
+                        "input": streets_consumer[street][3],
+                        "label": "",
+                        "street": street,
+                        "length": streets_pipe_length[street],
+                    }
+                )]
+            )
+            thermal_network.components["consumers"] = pandas.concat(
+                [thermal_network.components["consumers"], new_consumer]
+            )
+            # calculate the foot point of the new clustered consumer
+            foot_point = \
+                district_heating_calculations.get_nearest_perp_foot_point(
+                    {
+                        "lat": float(streets_consumer[street][1]
+                                     / streets_consumer[street][0]),
+                        "lon": float(streets_consumer[street][2]
+                                     / streets_consumer[street][0]),
+                    },
+                    street_sections,
+                    counter,
+                    "consumers",
+                )
+            # add the pipe to the clustered consumer to the list of pipes
+            new_pipe_part = pandas.DataFrame(
+                [pandas.Series(
+                    data={
+                        "id": "pipe-{}".format(
+                            len(thermal_network.components["pipes"])
+                        ),
+                        "from_node": "forks-{}".format(foot_point[0][10:-5]),
+                        "to_node": "consumers-{}".format(counter),
+                        "length": foot_point[3],
+                        "component_type": "Pipe",
+                    }
+                )]
+            )
+            thermal_network.components["pipes"] = pandas.concat(
+                [
+                    thermal_network.components["pipes"],
+                    new_pipe_part
+                ]
+            )
+            # create fork of the new calculated foot point
+            thermal_network = district_heating.create_fork(
+                point=foot_point,
+                label=foot_point[0][10:-5],
+                thermal_net=thermal_network)
+            counter += 1
 
     street_sections = district_heating.convert_dh_street_sections_list(
         street_sec=nodes_data["district heating"].copy()
@@ -472,6 +473,7 @@ def clustering_dh_network(nodes_data: dict, thermal_network: ThermalNetwork
     thermal_network = district_heating.create_supply_line(
         streets=nodes_data["district heating"],
         thermal_net=thermal_network)
+    
     
     return district_heating.adapt_dhnx_style(thermal_net=thermal_network,
                                              cluster_dh=False)

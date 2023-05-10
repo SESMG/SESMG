@@ -1006,7 +1006,7 @@ def use_data_of_already_calculated_thermal_network_data(
                                             path=district_heating_path)
     # adapt the dataframe structures to the dhnx accepted form
     thermal_net = adapt_dhnx_style(thermal_net=thermal_net,
-                                   cluster_dh=cluster_dh)
+                                   cluster_dh=True)
     # if the user has chosen the clustering of the thermal network
     # within the GUI it is triggered here
     if cluster_dh:
@@ -1087,9 +1087,14 @@ def district_heating(
             # if any consumers where connected to the thermal network
             if thermal_net.components["consumers"].values.any():
                 thermal_net = adapt_dhnx_style(thermal_net=thermal_net,
-                                               cluster_dh=cluster_dh)
-                # save the created dataframes to improve runtime of a
-                # second optimization run
+                                               cluster_dh=False)
+                if cluster_dh:
+                    thermal_net = clustering_dh_network(
+                        nodes_data=nodes_data,
+                        thermal_network=thermal_net)
+                # save the calculated thermal network data within the
+                # optimization
+                # result path
                 save_thermal_network_data(thermal_net=thermal_net,
                                           path=result_path)
                 # create a map of the created thermal network
