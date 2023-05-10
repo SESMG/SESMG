@@ -17,7 +17,7 @@ authors:
   - name: Janik Budde
     orcid: 0000-0002-1617-5900
     affiliation: 1
-  - name: Jan Tockloth
+  - name: Jan N. Tockloth
     orcid: 0000-0003-2582-1043
     affiliation: 1
   - name: Peter Vennemann
