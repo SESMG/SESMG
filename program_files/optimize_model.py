@@ -22,13 +22,12 @@ def constraint_optimization_against_two_values(
     from oemof.solph.plumbing import sequence
 
     invest_flows = {}
-    
+
     ##########################
     # PERIODICAL CONSTRAINTS #
     ##########################
     # extract all investment flows where periodical constraints apply
-    for (i, o) in om.flows:
-
+    for i, o in om.flows:
         if hasattr(om.flows[i, o].investment, "periodical_constraint_costs"):
             invest_flows[(i, o)] = om.flows[i, o].investment
     limit_name = "invest_limit_" + "periodical_constraints"
@@ -45,14 +44,14 @@ def constraint_optimization_against_two_values(
             )
         ),
     )
-    
+
     ##########################
     # VARIABLE CONSTRAINTS   #
     ##########################
     flows = {}
 
     # extract all investment flows where variable constraints apply
-    for (i, o) in om.flows:
+    for i, o in om.flows:
         if hasattr(om.flows[i, o], "emission_factor"):
             flows[(i, o)] = om.flows[i, o]
     limit_name2 = "integral_limit_" + "variable_constraints"
@@ -71,7 +70,7 @@ def constraint_optimization_against_two_values(
             )
         ),
     )
-    
+
     ##########################
     # STORAGE CONSTRAINTS    #
     ##########################
@@ -106,9 +105,9 @@ def constraint_optimization_against_two_values(
             expr=(
                 (
                     getattr(om, limit_name)
-                    #+ getattr(om, limit_name1)
+                    # + getattr(om, limit_name1)
                     + getattr(om, limit_name2)
-                    #+ getattr(om, limit_name4)
+                    # + getattr(om, limit_name4)
                     + getattr(om, limit_name3)
                 )
                 <= limit
