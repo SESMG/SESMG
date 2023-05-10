@@ -168,9 +168,9 @@ Within this sheet, the sources of the energy system are defined. Technology spec
 - **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "other", "solar_thermal_flat_plate", "concentrated_solar_power". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the `Time series sheet`_.
 - **sector**: This column is used to differentiate between an electricity, heat and cooling timeseries source for the result processing's energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling.
 
-
 Costs
 """""""""""""""""""""""""""""""""""""
+
 - **existing capacity** in (kW): Existing capacity of the source before possible investments.
 - **min. investment capacity** in (kW): Minimum capacity to be installed in case of an investment.
 - **max. investment capacity** in (kW): Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
@@ -183,6 +183,7 @@ Costs
 
 Wind
 """""""""""""""""""""""""""""""""""""
+
 The following parameters need to be set for wind sources.
 
 The wind speed timeseries entered in the sheet "weather data" (measured at 10 m heigth) will get converted into wind speeds at specified hub height. With the specified turbine model an energy timeseries will then be calculated.
