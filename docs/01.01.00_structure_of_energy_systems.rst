@@ -65,7 +65,8 @@ source to the energy system, which supplies energy
 in the event of an energy deficit. In reality, such a 
 source could represent the purchase of energy at a fixed price.
 
-**Photovoltaic Systems**
+Photovoltaic Systems
+-------------------------------------------------
 
 The following figure sketches the fractions of radiation
 arriving at a PV-module as well as further relevant parameters. 
@@ -114,7 +115,8 @@ listed in the following table.
 | snow cover, old            | 0.45 - 0.70      |
 +----------------------------+------------------+
 
-**Wind Turbines**
+Wind Turbines
+-------------------------------------------------
 
 For the modeling of wind turbines, the weather data set must
 include wind speeds, as well as the roughness length z0 and the pressure. The wind speeds must be available for a
@@ -124,7 +126,8 @@ The system data of the wind turbine to be modelled are obtained
 from the `"oedb" <https://github.com/wind-python/windpowerlib/tree/dev/windpowerlib/oedb>`_ 
 database.
 
-**Solar thermal collectors**
+Solar thermal collectors
+-------------------------------------------------
 
 There are two collector types that can be modeled with this function.
 
@@ -232,7 +235,8 @@ which consumes energy in the event of energy surplus. In reality,
 this could be the sale of electricity or the give-away of heat to 
 the atmosphere.
 
-**Standard Load Profiles**
+Standard Load Profiles
+-------------------------------------------------
 
 Oemof's sub-library `demandlib <https://demandlib.readthedocs.io/en/latest/>`_ 
 can be used for the estimation of heat and electricity demands of different 
@@ -322,7 +326,8 @@ of heat standard load profiles. The following location classes may be considered
 | 5         | Brandenburg, Bavaria, Mecklenburg-Western Pomerania, Saxony-Anhalt, Thuringia |
 +-----------+-------------------------------------------------------------------------------+
 
-**Stochastic Load Profiles (Richardson Tool)**
+Stochastic Load Profiles (Richardson Tool)
+-------------------------------------------------
 
 The use of standard load profiles has the disadvantage that they only represent 
 the average of a larger number of households (> 200). Load peaks of individual 
@@ -349,7 +354,8 @@ These may have one or more different outputs, e.g. heat and electricity. For the
 the nominal performance of a generic transformer with several outputs,
 the respective output ratios, and an efficiency for each output need to be known.
 
-**Compression Heat Transformers**
+Compression Heat Transformers
+-------------------------------------------------
 
 For the modeling of compression heat pumps and chillers, different heat sources are considered so the
 weather data set must include different temperatures. The efficiency of 
@@ -370,7 +376,8 @@ and ambient air as a heat source.
 
 The compression heat transformers are implemented by using  `"oemof.thermal" <https://github.com/oemof/oemof-thermal>`_ .
 
-**Absorption Heat Transformers**
+Absorption Heat Transformers
+-------------------------------------------------
 
 At this point this function implies the modeling of an absorption chiller. An absorption chiller
 object contains a high temperature heat source, the necessary connection bus and a transformer
