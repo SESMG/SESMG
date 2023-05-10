@@ -207,7 +207,7 @@ def central_comp(central: pandas.DataFrame, true_bools: list, sheets: dict,
                     standard_parameters=standard_parameters
                 )
                 
-            if pv["technology"] == "st&pv":
+            if pv["technology"] == "pv&st":
                 st_column = "yes"
                 pv_column = "yes"
             elif pv["technology"] == "st":
