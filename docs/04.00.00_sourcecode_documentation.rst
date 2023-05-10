@@ -1,30 +1,33 @@
 Sourcecode Documentation
 *******************************************************
-**Graphical User Interface (GUI)**:
+The Spreadsheet Energy System Model Generator has a hierarchical structure and
+consists of a total of four work blocks, which in turn consist of various functions and subfunctions.
+The individual (sub-)functions are documented with docstrings according to
+the PEP 257 standard. Thus, the descriptions of functions, any information about
+input and output variables and further details can be easily accessed via the python
+help function.
 
-    With the help of the Streamlit driven graphical user interface it is possible
-    for the user to create a model definition using the Urban District Upscaling.
-    Furthermore, an already created model definition (can also be created manually)
-    can be passed to the SESMG with defined optimization parameters and thus a model
-    optimization can be performed. Finally, newly created or already existing results
-    can be visualized and evaluated.
+**Graphical User Interface (GUI)**. The GUI which is not part of the SESMGs four step
+represents the first part of the API Documentation. With the help of the Streamlit driven
+graphical user interface it is possible for the user to create a model definition using the
+Urban District Upscaling. Furthermore, an already created model definition (can also be
+created manually) can be passed to the SESMG with defined optimization parameters and thus
+a model optimization can be performed. Finally, newly created or already existing results
+can be visualized and evaluated.
 
     - `GUI GUI_st_global_functions <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.GUI_st.GUI_st_global_functions>`_
 
 
-The software product "SESMG" can be divided into the following 4 process phases:
 
-**Urban District Upscaling Tool**:
-
-    With the help of the Urban District Upscaling
-    Tool, a model definition can be automatically created based on a spreadsheet in
-    which building-specific data is entered (US-Input) and a spreadsheet containing
-    technology-specific default values (standard_parameter). This model definition
-    can then be passed on to the next process phase via the Graphical User
-    Interface (GUI). If required, the user can already use a simplification
-    measure (clustering) when creating the model definition. In this case,
-    different buildings are grouped together e. g. by their load profile via
-    the cluster ID (column in the US-Input sheet).
+**Urban District Upscaling**: With the help of the Urban District Upscaling
+Tool, a model definition can be automatically created based on a spreadsheet in
+which building-specific data as well as the possible investment decisions are entered
+(US-Input) and a spreadsheet containing technology-specific default values
+(standard_parameter). This model definition can then be passed on to the next
+work block via the Graphical User Interface (GUI). If required, the user can
+already use a simplification measure (clustering) when creating the model definition.
+In this case, different buildings are grouped together e.g. by their load profile via
+the cluster ID (column in the US-Input sheet).
 
     - `US-Tool Preprocessing <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.pre_processing>`_
     - `US-Tool Clustering <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.clustering>`_
@@ -38,11 +41,17 @@ The software product "SESMG" can be divided into the following 4 process phases:
     - `US-Tool Transformer <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Transformer>`_
 
 
-**Preprocessing**:
-
-    In the "Preprocessing" process step, the characteristic values entered by the
-    user in the spreadsheet are used to create the energy system model based on
-    graph theory. This is then transferred to the "Processing" process step.
+**Preprocessing**. First of all, the Python library Pandas is used to read
+the input xlsx-spreadsheet file. Subsequently, an oemof time index (time steps for a
+time horizon with a resolution defined in the input file) is created on the basis of the
+parameters imported. This block is the basis for creating the model. The model does
+not yet contain any system components, these must be added in the following blocks.
+Afterwards, the system components defined in the xlsx model definition file which
+was filled by the user or the Urban District Upscaling Tool (described above)
+are created according to the oemof specifications, and added to the model.
+At first, the buses are initialized, followed by the sources, sinks, transformers, storages
+links and thermal network components. Reducing the computational effort is possible
+by using the data preparation algorithms or the pre model analysis functions of the SESMG.
 
     - `Preprocessing create_energy_system <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.create_energy_system>`_
     - `Preprocessing data_preparation <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.data_preparation>`_
@@ -61,15 +70,19 @@ The software product "SESMG" can be divided into the following 4 process phases:
     - `Preprocessing Transformer <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.preprocessing.components.Transformer>`_
 
 
-**Processing**:
+**Processing**. In the processing section of the SESMG, the last precautions are taken
+on the energy system model before it is passed to the solver (both non-commercial solvers
+- CBC - and commercial solvers - GUROBI - are possible here). These precautions include
+the generation of possible conflicting objectives (for example area competitions) or also
+the generation of the emission equation for optimization against 2 optimization criteria.
 
-    TODO ADD DESCRIPTION
+    - `Processing optimize_model <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.processing.optimize_model>`_
 
-    - `Processing optimize_model <LINK>`_
-
-**Postprocessing**:
-
-    TODO ADD DESCRIPTION
+**Postprocessing**. In the last block, the energy system results as returned from the solver are
+analyzed and prepared for further processing. Therefore several files like xlsx files holding the
+buses balances or csv files holding the total investment decisions are created. For the graphical
+analysis of the energy system's results it's energy amounts as well as it pareto front points are
+collected and delivered to the Graphical User Interface (GUI).
 
     - `Postprocessing create_results <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.create_results>`_
     - `Postprocessing create_results_collecting_data <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.create_results_collecting_data>`_
@@ -78,6 +91,7 @@ The software product "SESMG" can be divided into the following 4 process phases:
     - `Postprocessing plotting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.plotting>`_
     - `Postprocessing plotting_elec_amounts <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.plotting_elec_amounts>`_
     - `Postprocessing plotting_heat_amounts <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.plotting_heat_amounts>`_
+
 
 Graphical User Interface (GUI)
 -------------------------------------------------------
