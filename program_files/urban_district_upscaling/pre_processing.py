@@ -415,7 +415,7 @@ def get_central_comp_active_status(central: pandas.DataFrame, technology: str
             active (True) or not (False)
     """
     entry = central.loc[central["technology"] == technology]
-    if entry["active"].values[0] not in ["No", "no", 0]:
+    if not entry.empty and entry["active"].values[0] not in ["No", "no", 0]:
         return True
     else:
         return False

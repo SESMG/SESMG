@@ -275,8 +275,7 @@ def central_comp(central: pandas.DataFrame, true_bools: list, sheets: dict,
                     )
 
     # central battery storage
-    if central.loc[(central["technology"] == "battery")][
-            "active"].values[0] == 1:
+    if get_central_comp_active_status(central=central, technology="battery"):
         sheets = Storage.create_storage(
             building_id="central",
             storage_type="battery",
@@ -285,10 +284,8 @@ def central_comp(central: pandas.DataFrame, true_bools: list, sheets: dict,
             standard_parameters=standard_parameters
         )
 
-    if (
-        central.loc[(central["technology"] == "timeseries_source")][
-            "active"].values[0] == 1
-    ):
+    if get_central_comp_active_status(central=central,
+                                      technology="timeseries_source"):
         # house electricity bus
         sheets = Bus.create_standard_parameter_bus(
             label=("screw_turbine_" + "_electricity_bus"),
