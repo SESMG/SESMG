@@ -105,7 +105,7 @@ https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
 [![Generic badge](https://img.shields.io/badge/content-who-yellow.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 [![Generic badge](https://img.shields.io/badge/content-references-orange.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
-[Use the Discussions Section](https://github.com/chrklemm/SESMG/discussions) and let's chat!
+[Use the Discussions Section](https://github.com/SESMG/SESMG/discussions) and let's chat!
 
 ## Credits 
 [![Generic badge](https://img.shields.io/badge/content-who-yellow.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
@@ -113,7 +113,7 @@ https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
 
 ### Contact and Code of Conduct 
 
-Code of Conduct can be found [here](/CODE_OF_CONDUCT.md).
+Code of Conduct can be found [here](https://github.com/SESMG/SESMG/blob/master/CODE_OF_CONDUCT.md).
 
 #### Contact information 
 Münster University of Applied Sciences
@@ -122,11 +122,11 @@ Christian Klemm - christian.klemm@fh-muenster.de
 
 ### Acknowledgments
 
-The Spreadsheet Energy System Model Generator was carried out within the research project [R2Q "Resource Planing for Urban Districts](https://www.fh-muenster.de/forschungskooperationen/r2q/index.php). The project was funded by the Federal Ministry of Education and Research (BMBF) funding program [RES:Z "Resource-Efficient Urban Districts](https://ressourceneffiziente-stadtquartiere.de). The funding measure is part of the flagship initiative "City of the Future" within the BMBF's framework programme "Research for Sustainable Development - FONA3". The contributors gratefully acknowledge the support of BMBF (grant number 033W102).
+The Spreadsheet Energy System Model Generator was carried out within the research project [R2Q "Resource Planing for Urban Districts"](https://www.fh-muenster.de/forschungskooperationen/r2q/index.php). The project was funded by the Federal Ministry of Education and Research (BMBF) funding program [RES:Z "Resource-Efficient Urban Districts"](https://ressourceneffiziente-stadtquartiere.de). The funding measure is part of the flagship initiative "City of the Future" within the BMBF's framework programme "Research for Sustainable Development - FONA3". The contributors gratefully acknowledge the support of BMBF (grant number 033W102).
 
 ### License
 
-This project is published under GNU GPL-3.0 license, click [here](https://github.com/chrklemm/SESMG/blob/master/LICENSE) for more details.
+This project is published under GNU GPL-3.0 license, click [here](https://github.com/SESMG/SESMG/blob/master/LICENSE) for more details.
 
 ## Contributing 
 [![Generic badge](https://img.shields.io/badge/content-contribution-blue.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
@@ -134,4 +134,4 @@ This project is published under GNU GPL-3.0 license, click [here](https://github
 
 Issues and Pull Requests are greatly appreciated. If you've never contributed to an open source project before I'm more than happy to walk you through how to create a pull request.
 
-Detailed description of the contribution procedure as well as the projects coding standards can be found [here](/docs/CONTRIBUTING.md).
+Detailed description of the contribution procedure as well as the projects coding standards can be found [here](https://github.com/SESMG/SESMG/blob/master/CONTRIBUTING.md).
