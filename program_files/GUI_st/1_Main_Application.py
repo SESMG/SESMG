@@ -453,11 +453,13 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                     value=settings_cache_dict_reload["input_xlsx_results"],
                     help=GUI_helper["main_cb_xlsx_results"])
 
-            GUI_main_dict["input_console_results"] = \
-                st.checkbox(
-                    label="Create console-log",
-                    value=settings_cache_dict_reload["input_console_results"],
-                    help=GUI_helper["main_cb_console_results"])
+            # GUI_main_dict["input_console_results"] = \
+            #     st.checkbox(
+            #         label="Create console-log",
+            #         value=settings_cache_dict_reload["input_console_results"],
+            #         help=GUI_helper["main_cb_console_results"])
+
+            GUI_main_dict["input_console_results"] = False
 
     return model_definition_input
 
