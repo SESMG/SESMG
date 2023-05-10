@@ -55,7 +55,6 @@ Manual
 	
 	
 ..	toctree::
-	:maxdepth: 3
 	:hidden:
 	:caption: Manual
 	
