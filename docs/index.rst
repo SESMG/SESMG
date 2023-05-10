@@ -32,7 +32,7 @@ Modeling Methods
 	
 	
 ..	toctree::
-	:maxdepth: 2
+	:maxdepth: 3
 	:hidden:
 	:caption: Modeling Methods
 	
@@ -55,7 +55,7 @@ Manual
 	
 	
 ..	toctree::
-	:maxdepth: 8
+	:maxdepth: 3
 	:hidden:
 	:caption: Manual
 	
