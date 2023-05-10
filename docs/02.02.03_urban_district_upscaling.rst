@@ -13,23 +13,23 @@ The Upscaling-Tool simplifies the creation of the model definition. For more inf
 
 
 1. Uploading the upscaling sheet
-""""""""""""""""""""""""""""""
+''''''''''''''''''''''''''''''''''
 Upload your *upscaling_sheet.xlsx* which contains all building-specific parameters.
 
 2. Uploading the standard parameter sheet
-""""""""""""""""""""""""""""""
+''''''''''''''''''''''''''''''''''
 Upload your *standard_parameter.xlsx* which contains all technological parameters.
 
 3. Naming the model definition
-""""""""""""""""""""""""""""""
+''''''''''''''''''''''''''''''''''
 You can choose any name for your model definition.
 
 4. Starting the Upscaling-Tool
-""""""""""""""""""""""""""""""
+''''''''''''''''''''''''''''''''''
 The model definition is created automatically and can be viewed on the right side.
 
 5. Downloading the xlsx-file
-""""""""""""""""""""""""""""""
+''''''''''''''''''''''''''''''''''
 If you agree with the model definition, it can be downloaded. The model definition serves as a basis for the optimization process and can be used on the Main Application.
 
 .. _`upscaling sheet`:
@@ -38,7 +38,7 @@ Upscaling Sheet
 This part of the documentation is taken from Budde's master's thesis [1] and guides how the upscaling sheet can be adapted.
 
 Category 1
-"""""""""""""""""""""""""""""""""""""
+''''''''''''''''''''''''''''''''''
 
 .. csv-table:: Input for the upscaling sheet. Category 1: Building-specific data.
    :header:  label,comment,active,year of construction,distance of electric vehicles,electricity demand,heat demand,building type,units,occupants per unit,gross building area,latitude,longitude,year of construction wall,area outer wall,year of construction windows,area windows,year of construction roof,rooftype,area roof,cluster ID,flow temperature
@@ -73,7 +73,7 @@ Category 1
  
 
 Category 2
-"""""""""""""""""""""""""""""""""""""
+''''''''''''''''''''''''''''''''''
 
 
 .. csv-table:: Input for the upscaling sheet. Category 2: Building investment data.
@@ -99,7 +99,7 @@ Category 2
 
 
 Category 3
-"""""""""""""""""""""""""""""""""""""
+''''''''''''''''''''''''''''''''''
 
 
 .. csv-table:: Input for the upscaling sheet. Category 3: Central investment data.
@@ -163,7 +163,7 @@ Category 3
 
 
 Category 4
-"""""""""""""""""""""""""""""""""""""
+''''''''''''''''''''''''''''''''''
 
 
 .. csv-table:: Input for the upscaling sheet. Category 4: Time series.
