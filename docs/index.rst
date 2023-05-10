@@ -55,7 +55,8 @@ Manual
 	
 	
 ..	toctree::
-	:maxdepth: 4
+	:maxdepth: 3
+	:hidden:
 	:caption: Manual
 	
 	02.01.00_installation
