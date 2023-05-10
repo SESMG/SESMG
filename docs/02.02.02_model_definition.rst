@@ -290,8 +290,13 @@ The following parameters have to be entered:
 - **sector**: This column is used to differentiate the transformer types for the result processing's energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling, electric_heating.
 - **technology**: The technology column represents the category for collecting the energy amounts for the energy amount diagrams. Attention: If at sector central_... is used, a leading "central_" will be added to the selected technology in the balancing.
 
+Generic Transformer
+"""""""""""""""""""""""""""""""""""""
+- **efficiency**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
+- **efficiency2**: Specifies the efficiency of the second output, if there is one. Values between 0 and 1 are entered. If there is no second output, the fill character "0" must be entered here.
+
 Costs
-'''''''''''''''''''''''''''''''''''''
+"""""""""""""""""""""""""""""""""""""
 
 - **variable input costs** in (CU/kWh): Variable costs incurred per kWh of input energy supplied.
 - **variable input costs 2** in (CU/kWh): Variable costs incurred per kWh of input2 energy supplied.
@@ -308,23 +313,6 @@ Costs
 - **periodical constraint costs** in (CU/(kW a)): Constraint costs incurred per kW for investments within the time horizon. If not considering constraints fill character "0" is used.
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#investment>`_.
 - **Fix Investment Costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs)
-
-Generic Transformer
-"""""""""""""""""""""""""""""""""""""
-- **efficiency**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
-- **efficiency2**: Specifies the efficiency of the second output, if there is one. Values between 0 and 1 are entered. If there is no second output, the fill character "0" must be entered here.
-
-GenericCHP
-"""""""""""""""""""""""""""""""""""""
-- **min. share of flue gas loss**: Percentage flue gas losses of the operating point with maximum heat extraction.
-- **max. share of flue gas loss**:  Percentage flue gas losses of the operating point with minimum heat extraction.
-- **min. electric power** in (kW): Minimum electrical power supply without heat extraction (district heating).
-- **max. electric power** in (kW): Maximum electrical power supply without heat extraction (district heating).
-- **min. electric efficiency**: Specifies the minimum electric efficiency without heat extraction (district heating). Values between 0 and 1 are allowed entries.
-- **max. electric efficiency**: Specifies the minimum electric efficiency without heat extraction (district heating). Values between 0 and 1 are allowed entries.
-- **minimal thermal output power** in (kW): Heat output taken from the exhaust gas via a condenser even in purely electric operation.
-- **electric power loss index**: Reduction of the electrical power by "electric power loss index * extracted thermal power".
-- **back pressure**: Defines rather the end pressure of "Turbine CHP" is higher than ambient pressure (input value has to be "1") or not (input value has to be "0"). For "Motoric CHP" it has to be "0".
 
 Compression Heat Transformer
 """""""""""""""""""""""""""""""""""""
@@ -352,6 +340,17 @@ The following parameters are only required, if "transformer type" is set to "Abs
 - **recooling temperature difference** in (°C): Defines the temperature difference between temperature source for recooling and recooling cycle.
 - **heat capacity of source**: Defines the heat capacity of the connected heat source e.g. extracted waste heat.
 
+GenericCHP
+"""""""""""""""""""""""""""""""""""""
+- **min. share of flue gas loss**: Percentage flue gas losses of the operating point with maximum heat extraction.
+- **max. share of flue gas loss**:  Percentage flue gas losses of the operating point with minimum heat extraction.
+- **min. electric power** in (kW): Minimum electrical power supply without heat extraction (district heating).
+- **max. electric power** in (kW): Maximum electrical power supply without heat extraction (district heating).
+- **min. electric efficiency**: Specifies the minimum electric efficiency without heat extraction (district heating). Values between 0 and 1 are allowed entries.
+- **max. electric efficiency**: Specifies the minimum electric efficiency without heat extraction (district heating). Values between 0 and 1 are allowed entries.
+- **minimal thermal output power** in (kW): Heat output taken from the exhaust gas via a condenser even in purely electric operation.
+- **electric power loss index**: Reduction of the electrical power by "electric power loss index * extracted thermal power".
+- **back pressure**: Defines rather the end pressure of "Turbine CHP" is higher than ambient pressure (input value has to be "1") or not (input value has to be "0"). For "Motoric CHP" it has to be "0".
   
 .. csv-table:: Exemplary input for the transformers sheet
    :header: label,comment,active,transformer type,mode,input,input2,output,output2,input2 / input,efficiency,efficiency2,existing capacity,min. investment capacity,max. investment capacity,non-convex investment,fix investment costs,variable input costs,variable input costs 2,variable output costs,variable output costs 2,periodical costs,variable input constraint costs,variable input constraint costs 2,variable output constraint costs,variable output constraint costs 2,periodical constraint costs,heat source,temperature high,temperature low,quality grade,area,length of the geoth. probe,heat extraction,min. borehole area,temp. threshold icing,factor icing,name,electrical input conversion factor,recooling temperature difference,min. share of flue gas loss,max. share of flue gas loss,min. electric power,max. electric power,min. electric efficiency, max. electric efficiency,minimal thermal output power,elec. power loss index,back pressure,sector,technology
@@ -449,13 +448,16 @@ to be entered:
 Costs
 """""""""""""""""""""""""""""""""""""
 - **variable output costs** in (CU/kWh): Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
-- **variable constraint costs** in (CU/kWh): Costs incurred per kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **variable output constraint costs** in (CU/kWh): Costs incurred per kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **existing capacity** in (kW): Already installed capacity of the link.
 - **min. investment capacity** in (kW): Minimum, in addition to existing capacity, installable capacity.
 - **max. investment capacity** in (kW): Maximum capacity to be installed.
 - **periodical costs** in (CU/(kW a)): Costs incurred per kW for investments within the time horizon. Periodical costs only apply for newly invested capacities but not for existing capacities.
+- **periodical constraint costs** in (CU/(kW a)): Costs incurred per kW for investments within the time horizon. Periodical constraint costs only apply for newly invested capacities but not for existing capacities.
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#investment>`_.
-- **Fix Investment Costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs)
+- **Fix Investment Costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs).
+- **Fix Investment Constraint Costs** in (CU/a): Fixed constraint costs of non-convex investments (in addition to the periodic costs)
+
 
 .. csv-table:: Exemplary input for the link sheet
    :header: label,comment,active,(un)directed,bus1,bus2,efficiency,existing capacity,min. investment capacity,max. investment capacity,non-convex investment,fix investment costs,variable output costs,periodical costs,variable constraint costs,periodical constraint costs
@@ -531,15 +533,16 @@ photovoltaic systems with the feedinlib, weather data must be stored here. The w
 data time system should be in conformity with the model’s time system, defined in the sheet "timesystem".
 
 - **timestamp**: Points in time to which the stored weather data are related. 
-- **dhi**: diffuse horizontal irradiance in W/m\ :sup:`2`
-- **dirhi**: direct horizontal irradiance in W/m\ :sup:`2`
-- **pressure**: air pressure in Pa
-- **temperature**: air temperature in °C
-- **windspeed**: wind speed, measured at 10 m height, in unit m/s
-- **z0**: roughness length of the environment in units m
-- **ground_temp**: constant ground temperature at 100 m depth
-- **water_temp**: varying water temperature of a river depending on the air temperature
-- **groundwater_temp**: constant temperatur of the ground water at 6 - 10 m depth in North Rhine-Westphalia
+- **dhi**: Diffuse horizontal irradiance in W/m\ :sup:`2`.
+- **dni**: Direct normal irradiance in W/m\ :sup:`2`.
+- **ghi**: Global horizontal irradiance in W/m\ :sup:`2`.
+- **pressure**: Air pressure in Pa.
+- **temperature**: Air temperature in °C.
+- **windspeed**: Wind speed, measured at 10 m height, in unit m/s.
+- **z0**: Roughness length of the environment in units m.
+- **ground_temp**: Constant ground temperature at 100 m depth.
+- **water_temp**: Varying water temperature of a river depending on the air temperature.
+- **groundwater_temp**: Constant temperatur of the ground water at 6 - 10 m depth in North Rhine-Westphalia.
 
 .. csv-table:: Exemplary input for weather data
    :header: timestamp,dhi,dirhi,pressure,temperature,windspeed,z0,ground_temp,water_temp,groundwater_temp
