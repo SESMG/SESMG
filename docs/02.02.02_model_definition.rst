@@ -49,6 +49,7 @@ The spreadsheet "Competition Constraints" allows you to match two components aga
 For example, an area competition. If you do not want to use this spreadsheet, it simply remains empty. To use this worksheet, the following values must be filled in:
 
 - **label**: Unique designation of the competition constraint.
+- **comment**: Space for an individual comment.
 - **component 1**: First component that lays claim to the parameter which size set as the limit.
 - **factor 1**: Factor that defines how many units of the target unit component 1 needs to provide 1 kW of power.
 - **component 2**: Second component that lays claim to the parameter which size set as the limit.
@@ -56,10 +57,10 @@ For example, an area competition. If you do not want to use this spreadsheet, it
 - **limit**: Maximum size suitable for providing power (e.g. **roof area** for providing electricity and heat).
 
 .. csv-table:: Exemplary input for the competition constraints sheet
-   :header: label,component 1,factor 1,component 2,factor 2,limit
+   :header: label,comment,component 1,factor 1,component 2,factor 2,limit
 
-	ID_competition,unit/KW,,unit/kW,unit
-	ID_photovoltaic_electricity_source,5.26,ID_solar_thermal_source,1.79,168
+	,,,unit/KW,,unit/kW,unit
+	ID_competition,,ID_photovoltaic_electricity_source,5.26,ID_solar_thermal_source,1.79,168
 
 Buses
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -107,7 +108,8 @@ District Heating
 
 Within this sheet, the road network structure of the energy system is defined. The following parameters need to be entered:
 
-- **street section name**: Unique designation of the street section.
+- **label**: Unique designation of the street section, e.g. the street section name.
+- **comment**: Space for an individual comment.
 - **active**: Specifies whether the street section shall be included to the model. 0 = inactive, 1 = active.
 - **lat. 1st intersection**: Latitude (WGS84) of the first point of the given street part.
 - **lon. 1st intersection**: Longitude (WGS84) of the first point of the given street part.
@@ -115,10 +117,10 @@ Within this sheet, the road network structure of the energy system is defined. T
 - **lon. 2nd intersection**: Longitude (WGS84) of the second point of the given street part.
 
 .. csv-table:: Exemplary input for the district heating sheet
-   :header: label,active,lat. 1st intersection,lon. 1st intersection,lat. 2nd intersection,lon. 2nd intersection
+   :header: label,comment,active,lat. 1st intersection,lon. 1st intersection,lat. 2nd intersection,lon. 2nd intersection
 
-   ,,,,,
-   street1, 1, 50.000000, 10.000000, 55.000000, 11.000000
+   ,,,,,,
+   street1,, 1, 50.000000, 10.000000, 55.000000, 11.000000
 
 Sinks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -135,7 +137,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
 - **annual demand** in (kWh/a): Annual energy demand of the sink. Required when using the Richardson Tool or standard load profiles. When using time series, the fill character "0" is used.
 - **occupants** [RICHARDSON]: Number of occupants living in the respective building. Only required when using the Richardson tool, use fill character "0" for other load profiles.
 - **building class** [HEAT SLP ONLY]: BDEW building classes that coincide with the building locations are explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html#sinks>`_.
-- **wind class** [HEAT SLP ONLY]: wind classification for building location (0=not windy, 1=windy)
+- **wind class** [HEAT SLP ONLY]: Wind classification for building location (0=not windy, 1=windy).
 - **sector**: This column is used to assign the sinks' energy amounts to the energy amount diagrams in the result processing. Possible entries: electricity, heat, cooling.
 
 .. csv-table:: Exemplary input for the sinks sheet
@@ -161,18 +163,19 @@ Within this sheet, the sources of the energy system are defined. Technology spec
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
-- **output**: Specifies which bus the source is connected to.
+- **output**: Specifies which bus the output of the source is connected to.
+- **inout**: Specifies which bus the input of the source is connected to (only needed for solar heat).
 - **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "other", "solar_thermal_flat_plate", "concentrated_solar_power". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the `Time series sheet`_.
 - **sector**: This column is used to differentiate between an electricity, heat and cooling timeseries source for the result processing's energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling.
 
 
 Costs
 """""""""""""""""""""""""""""""""""""
-- **variable costs** in (CU/kWh): Defines the variable costs incurred for a kWh of energy drawn from the source.
-- **variable constraint costs** in (CU/kWh): Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **existing capacity** in (kW): Existing capacity of the source before possible investments.
 - **min. investment capacity** in (kW): Minimum capacity to be installed in case of an investment.
 - **max. investment capacity** in (kW): Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
+- **variable costs** in (CU/kWh): Defines the variable costs incurred for a kWh of energy drawn from the source.
+- **variable constraint costs** in (CU/kWh): Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **periodical costs** in (CU/(kW a)): Costs incurred per kW for investments within the time horizon. Periodical costs only apply for newly invested capacities but not for existing capacities.
 - **periodical constraint costs** in (CU/(kW a)): Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html>`_.
@@ -180,6 +183,8 @@ Costs
 
 Wind
 """""""""""""""""""""""""""""""""""""
+The following parameters need to be set for wind sources.
+
 The wind speed timeseries entered in the sheet "weather data" (measured at 10 m heigth) will get converted into wind speeds at specified hub height. With the specified turbine model an energy timeseries will then be calculated.
 
 - **Turbine Model**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_. Write the value of the column "turbine_type" of the .csv in your spreadsheet.
@@ -187,6 +192,8 @@ The wind speed timeseries entered in the sheet "weather data" (measured at 10 m 
 
 PV
 """""""""""""""""""""""""""""""""""""
+The following parameters need to be set for PV sources.
+
 - **Modul Model**: Module name, according to the database used (see `here <https://github.com/pvlib/pvlib-python/blob/main/pvlib/data/sam-library-sandia-modules-2015-6-30.csv>`_). Possible Modul Models are presented `here <https://github.com/SESMG/SESMG/tree/master/docs/csv>`_.
 - **Inverter Model**: Inverter name, according to the database used. Possible Inverter Models are presented `here <https://github.com/SESMG/SESMG/tree/master/docs/csv>`_.
 - **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Use fill character "0" for other technologies.
@@ -198,6 +205,8 @@ PV
 
 Concentrated Solar Power
 """""""""""""""""""""""""""""""""""""
+The following parameters need to be set for concentrated solar power sources.
+
 - **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Use fill character "0" for other technologies.
 - **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). Use fill character "0" for other technologies.
 - **ETA 0**: Optical efficiency of the collector. Use fill character "0" for other technologies.
@@ -222,6 +231,8 @@ Concentrated Solar Power
 
 Solar Thermal Flatplate
 """""""""""""""""""""""""""""""""""""
+The following parameters need to be set for solar thermal flatplate sources.
+
 - **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Use fill character "0" for other technologies.
 - **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). Use fill character "0" for other technologies.
 - **ETA 0**: Optical efficiency of the collector. Use fill character "0" for other technologies.
@@ -235,11 +246,11 @@ Solar Thermal Flatplate
 
 Timeseries
 """""""""""""""""""""""""""""""""""""
-If you have chosen the technology "timeseries", you have to include a timeseries in the  `Time series sheet`_ or use default one.
+If you have chosen the technology "timeseries" (in the technology coloum), you have to include a timeseries in the  `Time series sheet`_ or use default one.
 
 Commodity
 """""""""""""""""""""""""""""""""""""
-If you have chosen the technology "other", the solver has the opportunity to continuously adjust the power.
+If you have chosen the technology "other" (in the technology coloum), the solver has the opportunity to continuously adjust the power.
 
 .. csv-table:: Exemplary input for the sources sheet
    :header: label,comment,active,fixed,technology,output,input,existing capacity,min. investment capacity,max. investment capapcity,non-convex investment,fix investment costs,variable costs,periodical costs,variable constraint costs,periodical constraint costs,Turbine Model,Hub Height,technology database,inverter database,Modul Model,Inverter Model,Albedo,Altitude,Azimuth,Surface Tilt,Latitude,Longitude,ETA 0,A1,A2,C1,C2,Temperature Inlet,Temperature Difference,Conversion Factor,Peripheral Losses,Electric Consumption,Cleanliness,sector
@@ -280,6 +291,7 @@ The following parameters have to be entered:
 
 Costs
 """""""""""""""""""""""""""""""""""""
+
 - **variable input costs** in (CU/kWh): Variable costs incurred per kWh of input energy supplied.
 - **variable input costs 2** in (CU/kWh): Variable costs incurred per kWh of input2 energy supplied.
 - **variable output costs** in (CU/kWh): Variable costs incurred per kWh of output energy supplied.
