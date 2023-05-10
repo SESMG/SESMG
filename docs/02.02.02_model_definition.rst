@@ -291,7 +291,7 @@ The following parameters have to be entered:
 - **technology**: The technology column represents the category for collecting the energy amounts for the energy amount diagrams. Attention: If at sector central_... is used, a leading "central_" will be added to the selected technology in the balancing.
 
 Costs
-"""""""""""""""""""""""""""""""""""""
+'''''''''''''''''''''''''''''''''''''
 
 - **variable input costs** in (CU/kWh): Variable costs incurred per kWh of input energy supplied.
 - **variable input costs 2** in (CU/kWh): Variable costs incurred per kWh of input2 energy supplied.
