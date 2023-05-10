@@ -31,7 +31,7 @@ the cluster ID (column in the US-Input sheet).
 
     - `US-Tool Preprocessing <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.pre_processing>`_
     - `US-Tool Clustering <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.clustering>`_
-    - `US-Tool Bus <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/004.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Bus>`_
+    - `US-Tool Bus <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Bus>`_
     - `US-Tool Central_Components <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Central_components>`_
     - `US-Tool Insulation <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Insulation>`_
     - `US-Tool Link <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.urban_district_upscaling.components.Link>`_
@@ -86,7 +86,6 @@ collected and delivered to the Graphical User Interface (GUI).
 
     - `Postprocessing create_results <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.create_results>`_
     - `Postprocessing create_results_collecting_data <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.create_results_collecting_data>`_
-    - `Postprocessing create_results_console_logging <LINK>`_
     - `Postprocessing create_results_prepare_data <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.create_results_prepare_data>`_
     - `Postprocessing plotting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.plotting>`_
     - `Postprocessing plotting_elec_amounts <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/04.00.00_sourcecode_documentation.html#module-program_files.postprocessing.plotting_elec_amounts>`_
@@ -253,14 +252,12 @@ Preprocessing/components/district_heating_calculations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.components.district_heating_calculations
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/components/district_heating_clustering
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.preprocessing.components.district_heating_clustering
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Preprocessing/components/Link
@@ -316,13 +313,6 @@ Postprocessing/create_results_collecting_data
    :members:
    :show-inheritance:
 
-Postprocessing/create_results_console_logging
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automodule:: program_files.postprocessing.create_results_console_logging
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Postprocessing/create_results_prepare_data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.postprocessing.create_results_prepare_data
@@ -340,12 +330,10 @@ Postprocessing/plotting_elec_amounts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.postprocessing.plotting_elec_amounts
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Postprocessing/plotting_heat_amounts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: program_files.postprocessing.plotting_heat_amounts
    :members:
-   :undoc-members:
    :show-inheritance:

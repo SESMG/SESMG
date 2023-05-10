@@ -12,8 +12,6 @@ from program_files.postprocessing.create_results_collecting_data \
     import collect_data
 from program_files.postprocessing.create_results_prepare_data \
     import prepare_data
-from program_files.postprocessing.create_results_console_logging \
-    import console_logging, logging_model_summary, logging_investments
 
 
 def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str
@@ -100,7 +98,7 @@ def charts(nodes_data: dict, optimization_model: solph.Model,
             logging.info('\t ' + 56 * '*')
             logging.info("   " + "RESULTS: " + bus["label"])
 
-            bus = solph.views.node(results, b["label"])
+            bus = solph.views.node(results, bus["label"])
             logging.info("\t" + bus["sequences"].sum())
             fig, ax = plt.subplots(figsize=(10, 5))
             bus["sequences"].plot(ax=ax)
@@ -155,8 +153,6 @@ class Results:
             4. adding the component to the list of components (loc)
                which is part of the plotly dash and is the content
                of components.csv
-            5. logging the component specific text with its parameters
-               in the console
 
         :param nodes_data: dictionary containing data from excel \
             model definition file
@@ -223,18 +219,6 @@ class Results:
         # SUMMARY
         meta_results = solph.processing.meta_results(optimization_model)
         meta_results_objective = meta_results["objective"]
-        if console_log:
-            #console_logging(comp_dict=comp_dict)
-            logging_model_summary(
-                meta_results_objective=meta_results_objective,
-                total_constraint_costs=total_constraint_costs,
-                total_variable_costs=total_variable_costs,
-                total_periodical_costs=total_periodical_costs,
-                total_demand=total_demand,
-                total_usage=total_usage
-            )
-            
-            logging_investments(investments_to_be_made=investments_to_be_made)
 
         # Importing time system parameters from the model definition
         ts = next(nodes_data["energysystem"].iterrows())[1]
