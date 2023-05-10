@@ -31,7 +31,7 @@ Within this sheet, the time horizon and the temporal resolution of the model is 
 - **temporal resolution**: For the modelling considered temporal resolution. Possible inputs: "a" (years), "d" (days), "h" (hours) "min" (minutes), "s" (seconds), "ms" (milliseconds).
 - **timezone**: By specifying the timezone, energy systems with correct time series (e.g. relevant for the correct balancing of the PV yield) can be modeled anywhere in the world. For this purpose, the pandas timezone string (e.g. Europe/Berlin) is inserted into the column. Then the weather data, which are available in the weather data sheet in UTC form, are corrected to the considered location.
 - **periods**: Number of periods within the time horizon (one year with hourly resolution equals 8760 periods).
-- **cost limi** in (CU): Value in order to set a limit for the whole energysystem, e.g. monetary costs. Set this field to "None" in order to ignore the limit. If you want to set a limit, you have to set specific values for each components seen below.
+- **cost limit** in (CU): Value in order to set a limit for the whole energysystem, e.g. monetary costs. Set this field to "None" in order to ignore the limit. If you want to set a limit, you have to set specific values for each components seen below.
 - **constraint cost limit** in (CU): Value in order to set a limit for the whole energysystem, e.g. carbon dioxide emissions. Set this field to "None" in order to ignore the limit. If you want to set a limit, you have to set specific values for each components seen below.
 - **minimum final energy reduction** in (kWh): This value can be used to define how much final energy reduction must be achieved. Thus, the optimization algorithm is forced to save at least <your_value_here> kWh of final energy amount. Currently only insulation investments can be used to achieve reductions. The “constraint2” factor of the insulation measures is 1, since every kWh saved by insulation measures is fully included in the savings. This value is set in the algorithm and can currently not be changed by the user.
 - **weather data lat**: Latitude (WGS84) of the area under investigation. This value is used to import weather data from `Open Energy Platform <https://openenergy-platform.org>`_ using feedinlib's OpenFred.
@@ -247,11 +247,11 @@ The following parameters need to be set for solar thermal flatplate sources.
 
 Timeseries
 """""""""""""""""""""""""""""""""""""
-If you have chosen the technology "timeseries" (in the technology coloum), you have to include a timeseries in the  `Time series sheet`_ or use default one.
+If you have chosen the technology "timeseries" (in the technology column), you have to include a timeseries in the  `Time series sheet`_ or use default one.
 
 Commodity
 """""""""""""""""""""""""""""""""""""
-If you have chosen the technology "other" (in the technology coloum), the solver has the opportunity to continuously adjust the power.
+If you have chosen the technology "other" (in the technology column), the solver has the opportunity to continuously adjust the power.
 
 .. csv-table:: Exemplary input for the sources sheet
    :header: label,comment,active,fixed,technology,output,input,existing capacity,min. investment capacity,max. investment capapcity,non-convex investment,fix investment costs,variable costs,periodical costs,variable constraint costs,periodical constraint costs,Turbine Model,Hub Height,technology database,inverter database,Modul Model,Inverter Model,Albedo,Altitude,Azimuth,Surface Tilt,Latitude,Longitude,ETA 0,A1,A2,C1,C2,Temperature Inlet,Temperature Difference,Conversion Factor,Peripheral Losses,Electric Consumption,Cleanliness,sector
