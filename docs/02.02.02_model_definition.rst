@@ -296,7 +296,7 @@ Generic Transformer
 - **efficiency2**: Specifies the efficiency of the second output, if there is one. Values between 0 and 1 are entered. If there is no second output, the fill character "0" must be entered here.
 
 Costs
-"""""""""""""""""""""""""""""""""""""
+''''''''''''''''''''''''''
 
 - **variable input costs** in (CU/kWh): Variable costs incurred per kWh of input energy supplied.
 - **variable input costs 2** in (CU/kWh): Variable costs incurred per kWh of input2 energy supplied.
@@ -315,7 +315,7 @@ Costs
 - **Fix Investment Costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs)
 
 Compression Heat Transformer
-"""""""""""""""""""""""""""""""""""""
+''''''''''''''''''''''''''
 The following parameters are only required, if "transformer type" is set to "CompressionHeatTransformer":
 
 - **heat source**: Specifies the heat source. Possible heat sources are "GroundWater", "Ground", "Air" and "Water" possible.
@@ -341,7 +341,7 @@ The following parameters are only required, if "transformer type" is set to "Abs
 - **heat capacity of source**: Defines the heat capacity of the connected heat source e.g. extracted waste heat.
 
 GenericCHP
-"""""""""""""""""""""""""""""""""""""
+''''''''''''''''''''''''''
 - **min. share of flue gas loss**: Percentage flue gas losses of the operating point with maximum heat extraction.
 - **max. share of flue gas loss**:  Percentage flue gas losses of the operating point with minimum heat extraction.
 - **min. electric power** in (kW): Minimum electrical power supply without heat extraction (district heating).
@@ -391,7 +391,7 @@ Within this sheet, the storages of the energy system are defined. The following 
 - **sector**: This column is used to differentiate between an electricity, heat and cooling storages for the result processing's energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling.
 
 Costs
-"""""""""""""""""""""""""""""""""""""
+''''''''''''''''''''''''''
 - **existing capacity** in (kW): Previously installed capacity of the storage.
 - **min. investment capacity** in (kW): Minimum storage capacity to be installed.
 - **max. investment capacity** in (kW): Maximum in addition to existing capacity, installable storage capacity.
@@ -405,11 +405,11 @@ Costs
 - **periodical constraint costs** in (CU/a): Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 
 Generic Storage
-"""""""""""""""""""""""""""""""""""""
+''''''''''''''''''''''''''
 - **capacity loss** (Generic only): Indicates the percentage storage loss per time unit. Only required, if the "storage type" is set to "Generic".
 
 Stratified Storage
-"""""""""""""""""""""""""""""""""""""
+''''''''''''''''''''''''''
 - **diameter** in (m) | (Stratified Storage): Defines the diameter of a stratified thermal storage, which is necessary for the calculation of thermal losses.
 - **temperature high** in (°C) | (Stratified Storage): Outlet temperature of the stratified thermal storage.
 - **temperature low** in (°C) | (Stratified Storage): Inlet temperature of the stratified thermal storage.
@@ -446,7 +446,7 @@ to be entered:
 - **efficiency**: Specifies the efficiency of the link. Values between 0 and 1 are allowed entries.
 
 Costs
-"""""""""""""""""""""""""""""""""""""
+''''''''''''''''''''''''''
 - **variable output costs** in (CU/kWh): Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
 - **variable output constraint costs** in (CU/kWh): Costs incurred per kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **existing capacity** in (kW): Already installed capacity of the link.
