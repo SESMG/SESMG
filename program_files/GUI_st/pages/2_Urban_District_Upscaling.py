@@ -17,18 +17,17 @@ from program_files.GUI_st.GUI_st_global_functions \
 # settings the initial streamlit page settings
 st_settings_global()
 
+# Import GUI help comments from the comment json and safe as an dict
+GUI_helper = import_GUI_input_values_json(
+    os.path.dirname(os.path.dirname(__file__))
+    + "/GUI_st_help_comments.json")
+
 
 def us_application() -> None:
     """
         Definition of the sidebar elements for the urban district
         upscaling page and starting a udu tool run.
     """
-
-    # Import GUI help comments from the comment json and safe as an dict
-    GUI_helper = import_GUI_input_values_json(
-        os.path.dirname(os.path.dirname(__file__))
-        + "/GUI_st_help_comments.json")
-
     model_definition_df = ""
 
     # create form-submit element for multiple inputs
@@ -75,14 +74,23 @@ def us_application() -> None:
                         clustering=False,
                         clustering_dh=False)
 
-    # create download button
-    st.sidebar.download_button(label="Download your model definition",
-                               data=model_definition_df,
-                               file_name=result_file_name + ".xlsx",
-                               help=GUI_helper["udu_b_download_model_def"])
-
     # define urban district upscaling model definition as session state
     st.session_state["state_model_definition"] = model_definition_df
+    # define result path as session state
+    st.session_state["result_file_name"] = result_file_name
+
+
+def us_application_downloader() -> None:
+    """
+        Creating download button for the created model definition.
+    """
+
+    # create download button
+    st.sidebar.download_button(label="Download your model definition",
+                               data=st.session_state["state_model_definition"],
+                               file_name=st.session_state["result_file_name"]
+                               + ".xlsx",
+                               help=GUI_helper["udu_b_download_model_def"])
 
 
 def standard_page() -> None:
@@ -132,3 +140,4 @@ if st.session_state["state_model_definition"] == "":
 # running preprocessing page if tool ran
 else:
     udu_preprocessing_page()
+    us_application_downloader()
