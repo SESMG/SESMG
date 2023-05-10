@@ -291,7 +291,7 @@ The following parameters have to be entered:
 - **technology**: The technology column represents the category for collecting the energy amounts for the energy amount diagrams. Attention: If at sector central_... is used, a leading "central_" will be added to the selected technology in the balancing.
 
 Generic Transformer
-"""""""""""""""""""""""""""""""""""""
+'''''''''''''''''''''''''''
 - **efficiency**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
 - **efficiency2**: Specifies the efficiency of the second output, if there is one. Values between 0 and 1 are entered. If there is no second output, the fill character "0" must be entered here.
 
@@ -330,7 +330,7 @@ The following parameters are only required, if "transformer type" is set to "Com
 - **factor icing**: Factor to which the COP is reduced caused by icing (e.g. 0.8 if you have a reduction of 20%). (see `oemof.thermal <https://oemof-thermal.readthedocs.io/en/latest/>`_). Only required if "mode" is set to "heat_pump".
 
 Absorption Heat Transformer
-"""""""""""""""""""""""""""""""""""""
+'''''''''''''''''''''''''''
 The following parameters are only required, if "transformer type" is set to "AbsorptionHeatTransformer":
 
 - **name**: Defines the way of calculating the efficiency of the absorption heat transformer. Possible inputs are: "Rotartica", "Safarik", "Broad_01", "Broad_02", and "Kuehn". "Broad_02" refers to a double-effect absorption chiller model, whereas the other keys refer to single-effect absorption chiller models.
