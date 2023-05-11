@@ -54,7 +54,7 @@ into one segment" [1]. Values of different numbers of days and weeks can be appl
 
 slicing A/B
 -----------
-"In slicing every $n$-th period is selected, e.g. every second day, and subsequently recombined
+"In slicing every *n*-th period is selected, e.g. every second day, and subsequently recombined
 to a reduced time series." [1] Slicing A: every n-th period is **selected and considered**
 within the modeling. Slicing B: every n-th period is **deleted and removed** from the modeling.
 
@@ -64,7 +64,7 @@ downsampling A/B
 be changed from a 1-hourly to a 3-hourly temporal resolution." [1] "On the one hand it allows
 the *consideration* of every *n*-th hour [downsampling A]. Thereby the number of modeled time
 steps must be at least halved (*n*=2). To allow a smaller time series reduction, the possibility
-to *remove* every $n$-th hour was also implemented [downsampling B]" [1].
+to *remove* every *n*-th hour was also implemented [downsampling B]" [1].
 
 heuristic selection
 -------------------
