@@ -18,6 +18,7 @@ echo ---------------------------------------------
 brew install cbc
 brew install geos
 brew install graphviz
+brew install postgresql
 
 bin/pip3 install -r requirements.txt
 
