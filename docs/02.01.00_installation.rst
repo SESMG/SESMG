@@ -149,7 +149,7 @@ Execute the installer on your computer.
    :width: 50 %
    :align: center
    
-   .. note:: 
+.. note:: 
 
 	You have to confirm the file run in your mac's security settings to be able to run it. Confirm with 'Open Anyway'.
 
