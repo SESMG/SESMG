@@ -353,7 +353,7 @@ The following parameters are only required, if "transformer type" is set to "Abs
 
 GenericCHP
 ^^^^^^^^^^
-..warning::
+.. warning::
 
     Currently the GenericCHP component can only be used for the purpose of simulation.
     The solver is not able to dimension the components capacity. Since there is no
