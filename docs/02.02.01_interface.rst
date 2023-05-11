@@ -45,11 +45,11 @@ The following algorithms are applicable and must be specified with the following
 	random sampling,a given number of random periods are selected and used as representatives,number of periods to be selected.,--,length of periods to be selected randomly (days or weeks,--
 
 
-Premodeling Settings
+Pre-Modeling Settings
 ''''''''''''''''''''''''''
-* **Activate Pre-Modeling**: Must be checked, if you want to activate premodelling for your model run.
-* **Investment Boundaries Tightening**: Must be checked, if an Investment Tightening Factor is set.
-* **Investment Tightening Faktor**: *Description coming soon*
+* **Activate Pre-Modeling**: If activated, the modeling process is divided into a pre-model and a main-model run.
+* **Investment Boundaries Tightening**: Must be checked, if the investment boundaries in the main-model shall be tightened based on the pre-model results.
+* **Investment Tightening Faktor**: All investment limits of the main-model are limited to the investment decisions made in the pre-model run multiplied by this factor. If a originally defined investment boundary is lower than this value, the limit will not be changed.
 * **Time Series Simplification**: Timeseries simplification for the *pre-model* have to be set (see above for detailed description).
 
 
