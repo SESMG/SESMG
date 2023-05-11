@@ -19,7 +19,7 @@ By using the criterion-switch function the primary optimization criterion and se
 
 
 Pareto-Optimization
-=================================
+===================
 
 By using the Pareto-optimization, the epsilon-constraint-optimization method is applied to vary the weighting the of the applied optimization criteria are varied. The tertiary optimization criterion is not affected automatically, but can, however, be manually adapted by the user.
 

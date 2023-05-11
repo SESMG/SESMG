@@ -1,4 +1,4 @@
 Contact
-*************************************************
+*******
 
 You may use the  `discussion section <https://github.com/SESMG/SESMG/discussions>`_,   `write an issue <https://github.com/SESMG/SESMG/issues>`_, or directly contact one of the contributors.

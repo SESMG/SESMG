@@ -1,5 +1,5 @@
 Structure of Energy Systems
-*************************************************
+***************************
 
 Energy systems in the sense of the Spreadsheet Energy System Model Generator are designed according to the
 specifications of the `oemof <https://oemof.org>`_ library. Accordingly, 
@@ -33,7 +33,7 @@ of energy supplied. If there is no balance,
 oemof is not able to solve the energy system.
 
 Buses
-=================================================
+=====
 
 The modelling framework oemof does not allow direct connections 
 between components. Instead, they must always 
@@ -45,7 +45,7 @@ each other. They do not consider any conversion processes
 or losses.
 
 Sources
-=================================================
+=======
 
 Sources represent the provision of energy. This can either 
 be the exploitation of an energy source (e.g. 
@@ -66,7 +66,7 @@ in the event of an energy deficit. In reality, such a
 source could represent the purchase of energy at a fixed price.
 
 Photovoltaic Systems
--------------------------------------------------
+--------------------
 
 The following figure sketches the fractions of radiation
 arriving at a PV-module as well as further relevant parameters. 
@@ -116,7 +116,7 @@ listed in the following table.
 +----------------------------+------------------+
 
 Wind Turbines
--------------------------------------------------
+-------------
 
 For the modeling of wind turbines, the weather data set must
 include wind speeds, as well as the roughness length z0 and the pressure. The wind speeds must be available for a
@@ -127,7 +127,7 @@ from the `"oedb" <https://github.com/wind-python/windpowerlib/tree/dev/windpower
 database.
 
 Solar thermal collectors
--------------------------------------------------
+------------------------
 
 There are two collector types that can be modeled with this function.
 
@@ -217,7 +217,7 @@ Example for calculation of conversion factor.
     can help to identify possible peaks very well.
 
 Sinks
-=================================================
+=====
 
 Sinks represent either energy demands within the energy system or 
 energy exports to adjacent systems. Like sources, sinks can either
@@ -236,7 +236,7 @@ this could be the sale of electricity or the give-away of heat to
 the atmosphere.
 
 Standard Load Profiles
--------------------------------------------------
+----------------------
 
 Oemof's sub-library `demandlib <https://demandlib.readthedocs.io/en/latest/>`_ 
 can be used for the estimation of heat and electricity demands of different 
@@ -327,7 +327,7 @@ of heat standard load profiles. The following location classes may be considered
 +-----------+-------------------------------------------------------------------------------+
 
 Stochastic Load Profiles (Richardson Tool)
--------------------------------------------------
+------------------------------------------
 
 The use of standard load profiles has the disadvantage that they only represent 
 the average of a larger number of households (> 200). Load peaks of individual 
@@ -341,7 +341,7 @@ are continued using the individual values before averaging – as in the above
 calculation of costs – different values are obtained than when calculating with SLPs.
 
 Transformers
-=================================================
+============
 Transformers are components with one ore more input flows, which are 
 transformed to one or more output flows. Transformers may be power 
 plants, energy transforming processes 
@@ -355,7 +355,7 @@ the nominal performance of a generic transformer with several outputs,
 the respective output ratios, and an efficiency for each output need to be known.
 
 Compression Heat Transformers
--------------------------------------------------
+-----------------------------
 
 For the modeling of compression heat pumps and chillers, different heat sources are considered so the
 weather data set must include different temperatures. The efficiency of 
@@ -377,7 +377,7 @@ and ambient air as a heat source.
 The compression heat transformers are implemented by using  `"oemof.thermal" <https://github.com/oemof/oemof-thermal>`_ .
 
 Absorption Heat Transformers
--------------------------------------------------
+----------------------------
 
 At this point this function implies the modeling of an absorption chiller. An absorption chiller
 object contains a high temperature heat source, the necessary connection bus and a transformer
@@ -419,9 +419,8 @@ considered by the model.
 The absorption heat transformers are implemented by using  `"oemof.thermal" <https://github.com/oemof/oemof-thermal>`_ .
 
 
-
 Links
-=================================================
+=====
 Links can be used to connect two buses or to display transport losses of
 networks. Links are not represented by a separate oemof class, they are
 rather represented by transformers. In order to map a loss-free
@@ -439,14 +438,14 @@ distribution networks or similar.
    Representation of directed and undirected links with oemof transformers
 
 Storages
-=================================================
+========
 Storages are connected to a bus and can store energy from this bus and return it to a later point in time.
 
 Stratified thermal storages use the thermal transmittance of the wall of the stratified thermal storage
 (including thermal insulation) for calculating the losses. Specific values can be found in data sheets.
 
 District Heating
-=================================================
+================
 Different from the previously mentioned points, District Heating is not a component,
 but a piped heat supply option, elaborated on the basis of the oemof package DHNx.
 Within the district heating approach, a heat producer is connected to the consumers' heat sink
@@ -461,11 +460,11 @@ house station.
    Representation of the district heating network as described above.
 
 Insulation
-=================================================
+==========
 Thermal insulation represents a possibility to reduce the heat demand of a respective building. For this purpose, an investment decision is used to calculate a U-value and temperature difference dependent saving, which is substracted from the sinks.
 
 Investment
-=================================================
+==========
 The investment costs help to compare the costs of building new components to the costs of further using existing
 components instead. The annual savings from building new capacities should compensate the investment costs.
 The investment method can be applied to any new component to be built. In addition to the usual component parameters,
@@ -474,7 +473,7 @@ costs. The periodic costs refer to the defined time horizon. If the time horizon
 correspond to the annualized capital costs of an investment.
 
 Non-Convex-Investments
----------------------------
+----------------------
 While a linear programming approach is used for normal investment decisions, a mixed
 integer variable is defined for non-convex investment decisions. The model can thus decide, for example, whether
 a component should be implemented FULL or NOT. Mixed-integer variables increase the computational effort

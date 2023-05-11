@@ -1,5 +1,5 @@
 Demo Tool
-*************************************************
+*********
 
 With the help of the demo tool a descriptive introduction to energy system modeling can be given. 
 The demo tool has been implemented for training purposes and is not intended for the actual analysis of a real energy system.
@@ -12,7 +12,7 @@ With the help of the demo tool the chosen energy supply scenario can be simulate
 (monetary costs and CO2 emissions) and then compared graphically with the stored optimized scenarios.
 
 Instruction
-=================================================
+===========
 
 .. figure:: ../docs/images/manual/DemoTool/demo_tool_docu_picture_1.png
    :width: 90 %

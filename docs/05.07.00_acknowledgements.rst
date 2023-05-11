@@ -1,5 +1,5 @@
 Acknowledgements
-*************************************************
+****************
 
 The Spreadsheet Energy System Model Generator was carried out within the 
 research project `R2Q "Resource Planing for Urban Districts" <https://www.fh-muenster.de/forschungskooperationen/r2q/index.php>`_. 

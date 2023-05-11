@@ -1,10 +1,10 @@
 Technical Data
--------------------------------------
+==============
 
 Within the technical data section advanced model settings can be adjusted.
 
 heuristic selection patterns
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------
 
 Within the 'hierarchical_selection_schemes.xlsx'-file custom patterns for `heuristic selection <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.03.00_model_simplification.html#heuristic-selection>`_ can be defined.
 
@@ -19,7 +19,7 @@ The xlsx-file contains an individual sheet for each applicable heursitic selecti
 - **average/extreme**: indicates whether extreme values or average values of a reference period will be considered. For example, whether the period with the highest (value=highest) maximum (average/extreme=extreme) temperature (criterion=temperature) or the highest (value=highest) average (average/extreme=average) temperature (criterion=temperature) will be selected. Possible values are: extreme, average
 
 characteristic_parameters
-^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 A database of absorption chillers has been created in the characteristic_parameters file. This can be extended by the user if required.
 
 .. warning::

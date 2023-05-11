@@ -1,9 +1,9 @@
 Installation
-*************************************************
+************
 
 
 Windows
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=======
 
 1. Install Python (3.7, 3.8 or 3.9)
 Windows users can finde the versions here: `Python download page for windows <https://www.python.org/downloads/windows/>`_
@@ -98,7 +98,7 @@ The gurobi solver may be used as **alternative** to the cbc-solver. Be aware, th
 
 
 MacOS
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=====
 
 .. note:: 
 
@@ -180,7 +180,7 @@ Enter your python version.
 	When running the SESMG for the first time using the Run_SESMG_for_macos.command file you may need to conform again, as described above, in the security settings.
 
 Linux 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=====
 
 1. Install Python (version 3.7, 3.8 or 3.9)
 

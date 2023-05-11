@@ -1,13 +1,13 @@
 Troubleshooting
-*************************************************
+***************
 During execution of the model generator, error messages and associated error messages may occur. 
 
 
 Installation
-=================================================
+============
 
 Error I-001: numpy.generic objects
--------------------------------------------------
+----------------------------------
 **Error Message:** ::
 
    Cannot interpret attribute 'dtype' of 'numpy.generic' objects' as a data type
@@ -17,7 +17,7 @@ Error I-001: numpy.generic objects
 **Debugging:** upgrade module in the installation.cmd (pip install demandlib --upgrade)
 
 Error I-002: port 443
--------------------------------------------------
+---------------------
 **Error Message:** ::
 
    HTTPSConnectionPool(host='pypi.python.org' port=443), due to a timeout
@@ -27,7 +27,7 @@ Error I-002: port 443
 **Debugging:** Reinstall the package manually in the virtual environment as follows: 1. open a terminal 2. navigate to your SESMG folder 3. navigate to the scripts-subfolder: ``cd Scripts`` 4. start the virtual environment: ``start /b activate.bat`` 5. install the missing package as follows: ```pip install --default-timeout=100 'PACKAGE-NAME``` (see also `here <https://stackoverflow.com/questions/43298872/how-to-solve-readtimeouterror-httpsconnectionpoolhost-pypi-python-org-port>`_)
 
 Error I-003: py not found
--------------------------------------------------
+-------------------------
 **Error Message:** ::
 
    py not found
@@ -37,7 +37,7 @@ Error I-003: py not found
 **Debugging:** Re-install your python-version and make sure to check the "Add pyton to PATH" option at the beginning of the installation
 
 Error I-004: no developer tools installed (macOS > 12.2)
--------------------------------------------------
+--------------------------------------------------------
 **Error Message:** ::
 
    Error: No developer tools installed
@@ -49,7 +49,7 @@ Error I-004: no developer tools installed (macOS > 12.2)
 **Debugging:** Follow the instructions and run xcode-select --install in an additional terminal.
 
 Error I-005: subprocess-exited-with-error
--------------------------------------------------
+-----------------------------------------
 **Error Message:** ::
 
    Installation buid dependencies ... error
@@ -62,7 +62,7 @@ Error I-005: subprocess-exited-with-error
 **Debugging:** check if you have a 32- or 64-bit machine and if you installed the correct python version. De- and reinstall to correct.
 
 Error I-006: Could not find a local HDF5 installation (macOS M1/M2)
--------------------------------------------------
+-------------------------------------------------------------------
 **Error Message:** ::
 
    * USE_PKGCONFIG: True
@@ -76,10 +76,10 @@ Error I-006: Could not find a local HDF5 installation (macOS M1/M2)
 **Debugging:** Type following lines separately in the terminal: ``(echo; echo 'export HDF5_DIR=/opt/homebrew/opt/hdf5') >> /Users/$(whoami)/.zprofile`` and ``(echo; echo 'export BLOSC_DIR=/opt/homebrew/opt/c-blosc') >> /Users/$(whoami)/.zprofile``.
 
 Modeling
-=================================================
+========
 
 General debugging
--------------------------------------------------
+-----------------
 
 Pay attention to the correct spelling:
 
@@ -95,7 +95,7 @@ Make sure that the displayed system can stay in balance.
 
 
 Error M-001: KeyError sequences (sources)
--------------------------------------------------
+-----------------------------------------
 **Error Message:** ::
 
    flowsum = source['sequences'].sum() KeyError: 'sequences'
@@ -105,7 +105,7 @@ Error M-001: KeyError sequences (sources)
 **Debugging:** For all components  make sure that 1) each column is filled correctly  and 2) the first component of a sheet is entered in the row directly below the header row  and that there are no blank rows between the individual components of a sheet
 
 Error M-002: solver did not exit normally I
--------------------------------------------------
+-------------------------------------------
 **Error Message:** ::
 
    ApplicationError: Solver (cbc) did not exit normally
@@ -116,7 +116,7 @@ Error M-002: solver did not exit normally I
 
 
 Error M-003: KeyError sequences (results)
--------------------------------------------------
+-----------------------------------------
 **Error Message:** ::
 
    df = node_results['sequences'] KeyError: 'sequences'
@@ -126,7 +126,7 @@ Error M-003: KeyError sequences (results)
 **Debugging:** Make sure  there are no circuits within the model.
 
 Error M-004: Memory Error
--------------------------------------------------
+-------------------------
 **Error Message:** ::
 
    Memory Error
@@ -136,7 +136,7 @@ Error M-004: Memory Error
 **Debugging:** Take the following measures gradually until the error no longer occurs: (1) Restart the used Python interpreter (2) Close unnecessary programs on the computer (3) Make sure that python 64 bit version is used (Python 32 bit can manage only 2 GB of memory). (4) Start the program on a computer with a higher memory.
 
 Error M-005:  time module
--------------------------------------------------
+-------------------------
 **Error Message:** ::
 
    AttributeError: module 'time' has no attribute 'clock'
@@ -146,7 +146,7 @@ Error M-005:  time module
 **Debugging:** Use Pyhton 3.7.6
 
 Error M-006: shapes
--------------------------------------------------
+-------------------
 **Error Message:** ::
 
    ValueError: operands could not be broadcast together with shapes (8784 ) (8760 )
@@ -157,7 +157,7 @@ Error M-006: shapes
 
 
 Error M-007: solver did not exit normally II
--------------------------------------------------
+--------------------------------------------
 **Error Message:** ::
 
    ValueError: pyutilib.common._exceptions.ApplicationError: Solver (cbc) did not exit normally
@@ -167,7 +167,7 @@ Error M-007: solver did not exit normally II
 **Debugging:** Make sure that all necessary cells of the spreadsheet have been filled in.
 
 Error M-008: KeyError component
--------------------------------------------------
+-------------------------------
 **Error Message:** ::
 
    KeyError: '__any component name__'
@@ -178,7 +178,7 @@ Error M-008: KeyError component
 **Debugging:** Check that all bus references are correct. Also check for typos.
 
 Error M-009: Type Error
--------------------------------------------------
+-----------------------
 **Error Message:** ::
 
    TypeError: ufunc 'true_divide' not supported for the input types  and the inputs could not be safely coerced to any supported types according to the casting rule ''safe''
@@ -188,7 +188,7 @@ Error M-009: Type Error
 **Debugging:** Make sure to use the ""annual demand"" column for SLP and Richardson sinks and the ""nominal value"" column for time series sinks.
 
 Error M-010: Variable Type Attribute
--------------------------------------------------
+------------------------------------
 **Error Message:** ::
 
    AttributeError: 'str' object has no attribute 'is_variable_type'
@@ -198,7 +198,7 @@ Error M-010: Variable Type Attribute
 **Debugging:** Make sure that all excess/sortage prices consist of real numbers. Also check for typos.
 
 Error M-011: Investment Flow
--------------------------------------------------
+----------------------------
 **Error Message:** ::
 
    Implicitly replacing the Component attribute equate_InvestmentFlow.invest[districtheat_undirected_link districtheat_bus]_InvestmentFlow.invest[ districtheat_undirected_link heat_bus] (type=<class 'pyomo.core.base.constraint.SimpleConstraint'>) on block Model with a new Component (type=<class 'pyomo.core.base.constraint.AbstractSimpleConstraint'>). This is usually indicative of a modelling error. To avoid this warning  use block.del_component() and block.add_component().
@@ -208,7 +208,7 @@ Error M-011: Investment Flow
 **Debugging:** No action needed, the modeling process is not effected.
 
 Error M-012: Key Error (Index)
--------------------------------------------------
+------------------------------
 **Error Message** (example): ::
 
    KeyError: 'Index \'(''<oemof.solph.network.source.Source: \'ID_phtovoltaic_electricity_source\'>' ''<oemof.solph.network.bus.Bus: \'ID_pv_bus\'>'' 0)\' is not valid for indexed component \'flow\''
@@ -218,7 +218,7 @@ Error M-012: Key Error (Index)
 **Debugging:** Check if all busses are named correctly.
 
 Error M-013: Key error (source)
--------------------------------------------------
+-------------------------------
 **Error Message** (example): ::
 
    KeyError: 'ID_photovoltaik_electricity_source'
@@ -228,7 +228,7 @@ Error M-013: Key error (source)
 **Debugging:** Make sure that if you have disabled pv sources - you do the same for the competition constraint.
 
 Error M-014: User Warning Condition Infeasible
--------------------------------------------------
+----------------------------------------------
 **Error Message:** ::
 
    UserWarning: Optimization ended with status warning and termination condition infeasible
@@ -238,7 +238,7 @@ Error M-014: User Warning Condition Infeasible
 **Debugging:** make sure that the sources are able to insert enough energy to the system
 
 Error M-015: Flow NaN-Values
--------------------------------------------------
+----------------------------
 **Error Message:** ::
 
    Flow: ID_electricity_to_ID_hp_electricity_bus-ID_electricity_bus. This could be caused by NaN-values in your input data.
@@ -248,7 +248,7 @@ Error M-015: Flow NaN-Values
 **Debugging:** Make sure you have not used any special characters (e.g., use m3 instead of m³)
 
 Error M-016: Dyn Function H0
--------------------------------------------------
+----------------------------
 **Error Message:** ::
 
    FutureWarning: Current default for 'dyn_function_h0' is 'False'. This is about to change to 'True'. Set 'False' explicitly to retain the current behaviour.
@@ -258,7 +258,7 @@ Error M-016: Dyn Function H0
 **Debugging:** make sure you are using feedinlib==0.0.12
 
 Error M-017: Create Flow Data Frames
--------------------------------------------------
+------------------------------------
 **Error Message:** ::
 
    in create_flow_dataframes for index; value in component['sequences'].sum().items(): KeyError: 'sequences',
@@ -268,7 +268,7 @@ Error M-017: Create Flow Data Frames
 **Debugging:** check and correct the transformer types entered to the sheet
 
 Error M-018: Assertion Error
--------------------------------------------------
+----------------------------
 **Error Message:** ::
 
    ... AssertionError: Time discretization of irradiance is different from timestep 3600seconds. You need to change the resolution; first!
@@ -278,7 +278,7 @@ Error M-018: Assertion Error
 **Debugging:** Add a full year weather data set to the weather data sheet.
 
 Error M-019: Duplicates
--------------------------------------------------
+-----------------------
 **Error Message:** ::
 
    Possible duplicate uids/labels?
@@ -288,7 +288,7 @@ Error M-019: Duplicates
 **Debugging:** rename at least one of the components
 
 Error M-020: Value Error Length Mismatch
--------------------------------------------------
+----------------------------------------
 **Error Message:** ::
 
    ValueError: Length mismatch: Expected axis has 1 elements; new values have 8760 elements Flow: ID_pv_to_ID_electricity_link-ID_pv_bus. This could be caused by NaN-values in your input data.
@@ -308,7 +308,7 @@ Error M-021: Solver Returned Non-Zero Return Code
 **Debugging:** reinstall the pyomo-package: 1. open a terminal 2. navigate to your SESMG folder 3. navigate to the scripts-subfolder: "cd Scripts" 4. start the virtual environment: ``start /b activate.bat`` 5. reinstall pyomo: ``pip install pyomo==5.7.1``
 
 Error M-022: Key Error (sequences) II
--------------------------------------------------
+-------------------------------------
 **Error Message:** ::
 
    df = node_results['sequences'] KeyError: 'sequences'
@@ -319,7 +319,7 @@ Error M-022: Key Error (sequences) II
 
 
 Error M-023: nearest foot point
--------------------------------------------------
+-------------------------------
 **Error Message:** 
 
    ... get nearest_perp_foot_point foot_point.extend(foot_points[0])
@@ -330,7 +330,7 @@ Error M-023: nearest foot point
 
 
 Error M-024: KeyError: 'lon'
--------------------------------------------------
+----------------------------
 **Error Message:** :
 
    ... in get_loc
@@ -343,7 +343,7 @@ Error M-024: KeyError: 'lon'
 
 
 Error M-025: "left_on" OR "left_index"
--------------------------------------------------
+--------------------------------------
 **Error Message:** :
 
    ... pandas.errors.MergeError: Can only pass argument "left_on" OR "left_index" not both.
@@ -354,7 +354,7 @@ Error M-025: "left_on" OR "left_index"
 
 
 Error M-026: Key Error (sequences) III
--------------------------------------------------
+--------------------------------------
 **Error Message:** :
 
    ... in get_sequence return_list.append([component["sequences"][(i, "flow")]])
@@ -368,7 +368,7 @@ Error M-026: Key Error (sequences) III
 **Debugging II:** Make sure the initial capacity is equal or higher than the minimal capacity.
 
 Error M-027: Key Error (Index) II
--------------------------------------------------
+---------------------------------
 **Error Message**:
 
    KeyError: 'Index \'("<oemof.solph.network.source.Source: \'insulation-..._roof\'>", "<oemof.solph.network.bus.Bus: \'..._heat_bus\'>", 0)\' is not valid for indexed component \'flow\''
@@ -379,7 +379,7 @@ Error M-027: Key Error (Index) II
 
 
 Error M-028: invalid literal for int()
--------------------------------------------------
+--------------------------------------
 **Error Message:** ::
 
    ValueError: invalid literal for int() with base10: 'none'
@@ -390,7 +390,7 @@ Error M-028: invalid literal for int()
 
 
 Error M-029: KeyError (variable)
--------------------------------------------------
+--------------------------------
 **Error Message:** ::
 
    KeyError: '*variable*'
@@ -403,7 +403,7 @@ Error M-029: KeyError (variable)
 
 
 Error M-030: KeyError (Sector)
--------------------------------------------------
+------------------------------
 **Error Message:** ::
 
    KeyError: '*Sector*'
@@ -416,7 +416,7 @@ Error M-030: KeyError (Sector)
 
 
 Error M-031: Existing capacity for non-convex investment decision
--------------------------------------------------
+-----------------------------------------------------------------
 **Error Message:** ::
 
    AttributeError: Values for 'offset' and 'existing' are given in investement attributes. 
@@ -428,7 +428,7 @@ Error M-031: Existing capacity for non-convex investment decision
 
 
 Contributing to the troubleshooting
-=================================================
+===================================
 
 Were you able to solve a bug that was not listed here yet? Help other users and report it by following these simple steps:
 
@@ -441,7 +441,7 @@ Were you able to solve a bug that was not listed here yet? Help other users and 
 5. Copy the following text block to the end of the respective section and modify the text to describe your error:
 
 Error M-XXX: Error-Name
--------------------------------------------------
+-----------------------
 **Error Message:** ::
 
    error message line 1

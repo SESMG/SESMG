@@ -1,7 +1,7 @@
 .. _`model definition`:
 
 Model Definition
--------------------------------
+================
 
 For the modeling and optimization of an energy system, parameters for all system components must be given in the model 
 generator using the enclosed .xlsx file (editable with Excel, LibreOffice, …). The .xlsx file is divided into nine 
@@ -22,9 +22,10 @@ in the following subchapters. The input file for this example is stored in the p
 Cost units are any scalable quantity used to optimize the energy system, such as euros or grams of carbon dioxide emissions.
 
 Energysystem
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------
 
-Within this sheet, the time horizon and the temporal resolution of the model is defined. The following parameters have to be entered:
+Within this sheet, the time horizon and the temporal resolution of the model is
+defined. The following parameters have to be entered:
 
 - **start date**: Start of the modelling time horizon. Format: "YYYY-MM-DD hh:mm:ss";
 - **end date**: End date of the modelling time horizon. Format: "YYYY-MM-DD hh:mm:ss"; and
@@ -44,9 +45,11 @@ Within this sheet, the time horizon and the temporal resolution of the model is 
    2012-01-01 00:00:00,2012-12-30 23:00:00,Europe/Berlin,h,8760,None,None,None,None,None
    
 Competition Constraints
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The spreadsheet "Competition Constraints" allows you to match two components against a predefined limit.
-For example, an area competition. If you do not want to use this spreadsheet, it simply remains empty. To use this worksheet, the following values must be filled in:
+-----------------------
+The spreadsheet "Competition Constraints" allows you to match two components against
+a predefined limit.
+For example, an area competition. If you do not want to use this spreadsheet,
+it simply remains empty. To use this worksheet, the following values must be filled in:
 
 - **label**: Unique designation of the competition constraint.
 - **comment**: Space for an individual comment.
@@ -63,7 +66,7 @@ For example, an area competition. If you do not want to use this spreadsheet, it
 	ID_competition,,ID_photovoltaic_electricity_source,5.26,ID_solar_thermal_source,1.79,168
 
 Buses
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----
 
 Within this sheet, the buses of the energy system are defined. The following parameters need to be entered:
 
@@ -104,9 +107,10 @@ Within this sheet, the buses of the energy system are defined. The following par
    Graph of the energy system, which is created by entering the example components. The non-active components are not included in the graph above.
 
 District Heating
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------
 
-Within this sheet, the road network structure of the energy system is defined. The following parameters need to be entered:
+Within this sheet, the road network structure of the energy system is defined.
+The following parameters need to be entered:
 
 - **label**: Unique designation of the street section, e.g. the street section name.
 - **comment**: Space for an individual comment.
@@ -123,9 +127,10 @@ Within this sheet, the road network structure of the energy system is defined. T
    street1,, 1, 50.000000, 10.000000, 55.000000, 11.000000
 
 Sinks
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----
 
-Within this sheet, the sinks of the energy system are defined. The following parameters need to be entered:
+Within this sheet, the sinks of the energy system are defined.
+The following parameters need to be entered:
 
 - **label**: Unique designation of the sink. The following format is recommended: "ID_energy sector_sink".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
@@ -156,7 +161,7 @@ Within this sheet, the sinks of the energy system are defined. The following par
    Graph of the energy system, which is created by entering the example components. The non-active components are not included in the graph above.
 
 Sources
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------
 Within this sheet, the sources of the energy system are defined. Technology specific data (see 2nd line), must be filled in only if the respective technology is selected otherwise use 0. The following parameters have to be entered:
 
 - **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
@@ -169,7 +174,7 @@ Within this sheet, the sources of the energy system are defined. Technology spec
 - **sector**: This column is used to differentiate between an electricity, heat and cooling timeseries source for the result processing's energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling.
 
 Costs
-''''''''''''''''''''''''''
+^^^^^
 
 - **existing capacity** in (kW): Existing capacity of the source before possible investments.
 - **min. investment capacity** in (kW): Minimum capacity to be installed in case of an investment.
@@ -183,20 +188,22 @@ Costs
 - **Fix Investment Constraint Costs** in (CU/a): Fixed constraint costs of non-convex investments (in addition to the periodic costs)
 
 Wind
-''''''''''''''''''''''''''
+^^^^
 
 The following parameters need to be set for wind sources.
 
-The wind speed timeseries entered in the sheet "weather data" (measured at 10 m heigth) will get converted into wind speeds at specified hub height. With the specified turbine model an energy timeseries will then be calculated.
+The wind speed timeseries entered in the sheet "weather data" (measured at 10 m height)
+will get converted into wind speeds at specified hub height. With the specified turbine
+model an energy timeseries will then be calculated.
 
-- **Turbine Model**: Reference wind turbine model. Possible turbine types are listed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_. Write the value of the column "turbine_type" of the .csv in your spreadsheet.
-- **Hub Height**: Hub height of the wind turbine. Which hub heights are possible for the selected reference turbine can be viewed `here <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
+- **Turbine Model**: Reference wind turbine model. Possible turbine types are listed in the `windpowerlib's database <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_. Write the value of the column "turbine_type" of the .csv in your spreadsheet.
+- **Hub Height**: Hub height of the wind turbine. Which hub heights are possible for the selected reference turbine can be viewed in the windpowerlib's database too.
 
 PV
-''''''''''''''''''''''''''
+^^
 The following parameters need to be set for PV sources.
 
-- **Modul Model**: Module name, according to the database used (see `here <https://github.com/pvlib/pvlib-python/blob/main/pvlib/data/sam-library-sandia-modules-2015-6-30.csv>`_). Possible Modul Models are presented `here <https://github.com/SESMG/SESMG/tree/master/docs/csv>`_.
+- **Modul Model**: Module name, according to the database used (see `PVLIB database <https://github.com/pvlib/pvlib-python/blob/main/pvlib/data/sam-library-sandia-modules-2015-6-30.csv>`_). Possible Modul Models are presented `here <https://github.com/SESMG/SESMG/tree/master/docs/csv>`_.
 - **Inverter Model**: Inverter name, according to the database used. Possible Inverter Models are presented `here <https://github.com/SESMG/SESMG/tree/master/docs/csv>`_.
 - **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Use fill character "0" for other technologies.
 - **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). Use fill character "0" for other technologies.
@@ -206,7 +213,7 @@ The following parameters need to be set for PV sources.
 - **Longitude**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
 
 Concentrated Solar Power
-''''''''''''''''''''''''''
+^^^^^^^^^^^^^^^^^^^^^^^^
 The following parameters need to be set for concentrated solar power sources.
 
 - **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Use fill character "0" for other technologies.
@@ -232,7 +239,7 @@ The following parameters need to be set for concentrated solar power sources.
 
 
 Solar Thermal Flatplate
-''''''''''''''''''''''''''
+^^^^^^^^^^^^^^^^^^^^^^^
 The following parameters need to be set for solar thermal flatplate sources.
 
 - **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Use fill character "0" for other technologies.
@@ -247,12 +254,15 @@ The following parameters need to be set for solar thermal flatplate sources.
 - **Conversion Factor** in m²/kW: The factor is explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#sources>`_.
 
 Timeseries
-''''''''''''''''''''''''''
+^^^^^^^^^^
 If you have chosen the technology "timeseries" (in the technology column), you have to include a timeseries in the  `Time series sheet`_ or use default one.
 
 Commodity
-''''''''''''''''''''''''''
-If you have chosen the technology "other" (in the technology column), the solver has the opportunity to continuously adjust the power.
+^^^^^^^^^
+If you have chosen the technology "other" (in the technology column), a commodity
+source with maximum investable capacity but completely variable time series becomes
+part of the energy system. The solver can thus design a completely linear source
+and use it to cover the demand when required.
 
 .. csv-table:: Exemplary input for the sources sheet
    :header: label,comment,active,fixed,technology,output,input,existing capacity,min. investment capacity,max. investment capapcity,non-convex investment,fix investment costs,variable costs,periodical costs,variable constraint costs,periodical constraint costs,Turbine Model,Hub Height,technology database,inverter database,Modul Model,Inverter Model,Albedo,Altitude,Azimuth,Surface Tilt,Latitude,Longitude,ETA 0,A1,A2,C1,C2,Temperature Inlet,Temperature Difference,Conversion Factor,Peripheral Losses,Electric Consumption,Cleanliness,sector
@@ -271,7 +281,7 @@ If you have chosen the technology "other" (in the technology column), the solver
    Graph of the energy system, which is created by entering the example components of sources sheet. The non-active components are not included in the graph above.
    
 Transformers
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------
 
 Within this sheet, the transformers of the energy system are defined. 
 
@@ -291,14 +301,8 @@ The following parameters have to be entered:
 - **sector**: This column is used to differentiate the transformer types for the result processing's energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling, electric_heating.
 - **technology**: The technology column represents the category for collecting the energy amounts for the energy amount diagrams. Attention: If at sector central_... is used, a leading "central_" will be added to the selected technology in the balancing.
 
-Generic Transformer
-'''''''''''''''''''''''''''
-- **efficiency**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
-- **efficiency2**: Specifies the efficiency of the second output, if there is one. Values between 0 and 1 are entered. If there is no second output, the fill character "0" must be entered here.
-
 Costs
-''''''''''''''''''''''''''
-
+^^^^^
 - **variable input costs** in (CU/kWh): Variable costs incurred per kWh of input energy supplied.
 - **variable input costs 2** in (CU/kWh): Variable costs incurred per kWh of input2 energy supplied.
 - **variable output costs** in (CU/kWh): Variable costs incurred per kWh of output energy supplied.
@@ -316,8 +320,13 @@ Costs
 - **Fix Investment Costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs).
 - **Fix Investment Constraint Costs** in (CU/a): Fixed constraint costs of non-convex investments (in addition to the periodic costs).
 
+Generic Transformer
+^^^^^^^^^^^^^^^^^^^
+- **efficiency**: Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
+- **efficiency2**: Specifies the efficiency of the second output, if there is one. Values between 0 and 1 are entered. If there is no second output, the fill character "0" must be entered here.
+
 Compression Heat Transformer
-''''''''''''''''''''''''''
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The following parameters are only required, if "transformer type" is set to "CompressionHeatTransformer":
 
 - **heat source**: Specifies the heat source. Possible heat sources are "GroundWater", "Ground", "Air" and "Water" possible.
@@ -332,7 +341,7 @@ The following parameters are only required, if "transformer type" is set to "Com
 - **factor icing**: Factor to which the COP is reduced caused by icing (e.g. 0.8 if you have a reduction of 20%). (see `oemof.thermal <https://oemof-thermal.readthedocs.io/en/latest/>`_). Only required if "mode" is set to "heat_pump".
 
 Absorption Heat Transformer
-'''''''''''''''''''''''''''
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The following parameters are only required, if "transformer type" is set to "AbsorptionHeatTransformer":
 
 - **name**: Defines the way of calculating the efficiency of the absorption heat transformer. Possible inputs are: "Rotartica", "Safarik", "Broad_01", "Broad_02", and "Kuehn". "Broad_02" refers to a double-effect absorption chiller model, whereas the other keys refer to single-effect absorption chiller models.
@@ -343,7 +352,13 @@ The following parameters are only required, if "transformer type" is set to "Abs
 - **heat capacity of source**: Defines the heat capacity of the connected heat source e.g. extracted waste heat.
 
 GenericCHP
-''''''''''''''''''''''''''
+^^^^^^^^^^
+..warning::
+
+    Currently the GenericCHP component can only be used for the purpose of simulation.
+    The solver is not able to dimension the components capacity. Since there is no
+    investment decision no periodical costs apply.
+
 - **min. share of flue gas loss**: Percentage flue gas losses of the operating point with maximum heat extraction.
 - **max. share of flue gas loss**:  Percentage flue gas losses of the operating point with minimum heat extraction.
 - **min. electric power** in (kW): Minimum electrical power supply without heat extraction (district heating).
@@ -374,9 +389,9 @@ GenericCHP
    Graph of the energy system, which is created by entering the example components. The non-active components are not included in the graph above.
 
 Storages
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Within this sheet, the storages of the energy system are defined. The following parameters have to be entered:
+--------
+Within this sheet, the storages of the energy system are defined.
+The following parameters have to be entered:
 
 - **label**: Unique designation of the storage. The following format is recommended: "ID_energy sector_storage".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
@@ -393,7 +408,7 @@ Within this sheet, the storages of the energy system are defined. The following 
 - **sector**: This column is used to differentiate between an electricity, heat and cooling storages for the result processing's energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling.
 
 Costs
-''''''''''''''''''''''''''
+^^^^^
 - **existing capacity** in (kW): Previously installed capacity of the storage.
 - **min. investment capacity** in (kW): Minimum storage capacity to be installed.
 - **max. investment capacity** in (kW): Maximum in addition to existing capacity, installable storage capacity.
@@ -408,11 +423,11 @@ Costs
 - **periodical constraint costs** in (CU/a): Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 
 Generic Storage
-''''''''''''''''''''''''''
+^^^^^^^^^^^^^^^
 - **capacity loss** (Generic only): Indicates the percentage storage loss per time unit. Only required, if the "storage type" is set to "Generic".
 
 Stratified Storage
-''''''''''''''''''''''''''
+^^^^^^^^^^^^^^^^^^
 - **diameter** in (m) | (Stratified Storage): Defines the diameter of a stratified thermal storage, which is necessary for the calculation of thermal losses.
 - **temperature high** in (°C) | (Stratified Storage): Outlet temperature of the stratified thermal storage.
 - **temperature low** in (°C) | (Stratified Storage): Inlet temperature of the stratified thermal storage.
@@ -435,7 +450,7 @@ Stratified Storage
    Graph of the energy system, which is created after entering the example components. The non-active components are not included in the graph above.
    
 Links
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----
 
 Within this sheet, the links of the energy system are defined. The following parameters have 
 to be entered:
@@ -449,7 +464,7 @@ to be entered:
 - **efficiency**: Specifies the efficiency of the link. Values between 0 and 1 are allowed entries.
 
 Costs
-''''''''''''''''''''''''''
+^^^^^
 - **variable output costs** in (CU/kWh): Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
 - **variable output constraint costs** in (CU/kWh): Costs incurred per kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **existing capacity** in (kW): Already installed capacity of the link.
@@ -482,7 +497,7 @@ Costs
    Graph of the energy system, which is created by entering the example components. The non-active components are not included in the graph above.
 
 Insulation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------
 
 Within this sheet, the energy system insulation options are defined. The following parameters have
 to be entered:
@@ -502,7 +517,7 @@ to be entered:
 .. _`Time series sheet`:
 
 Time Series
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------
 
 Within this sheet, time series of components of which no automatically created time series exist, are stored. More 
 specifically, these are sinks to which the property "load profile" have been assigned as "timeseries" and sources 
@@ -529,7 +544,7 @@ with the "technology" property "timeseries". The following parameters have to be
 
 
 Weather Data
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------
 
 If electrical load profiles are simulated with the Richardson tool, heating load profiles with the demandlib or
 photovoltaic systems with the feedinlib, weather data must be stored here. The weather
@@ -561,64 +576,4 @@ data time system should be in conformity with the model’s time system, defined
    2012-01-01 08:00:00,0.00,0.00,98405.70,11.68,8.7,0.15,13.7,15.46,13.06
    2012-01-01 09:00:00,0.56,0.56,98405.70,11.87,8.6,0.15,13.7,15.57,13.06
    2012-01-01 10:00:00,13.06,13.06,98405.70,11.65,8.0,0.15,13.7,15.44,13.06
-
-
-.. Technical Data
-.. --------------
-
-.. Using the program_files/technical_data
-.. ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. For the modelling of technologies like solar thermal or district heating
-.. some technical parameters (e.g. the peak power of a specific solar thermal
-.. panel or of a specific fluid pipe) have to be provided. For fulfilling this
-.. requirement the program_files/technical_data folder holding some csv
-.. files which will be described in more detail in the upcoming sections.
-
-.. District heating
-.. ''''''''''''''''''
-.. The program_files/technical_data folder is holding a subdirectory holding
-.. the technical data of the created district heating network. Which consists of a file named
-.. 'component_parameters.csv' and another one named 'pipes.csv'
-
-.. **pipes.csv**
-
-.. The pipes sheet defines a 'database' which is pipe specific parameters like:
-
-.. +-----------------------+--------------+---------------------------------------------+
-.. | required parameter    | DHNx label   | description                                 |
-.. +=======================+==============+=============================================+
-.. | id                    | label_3      | unique id of the considered heatpipe        |
-.. +-----------------------+--------------+---------------------------------------------+
-.. | nonconvex (boolean)   | nonconvex    | indicating whether nothing (no pipe laying) |
-.. |                       |              | or fixed-investment-costs (pipe laying) is  |
-.. |                       |              | invested                                    |
-.. +-----------------------+--------------+---------------------------------------------+
-.. | min. capacity (kW)    | cap min      | minimum investable heat capacity            |
-.. +-----------------------+--------------+---------------------------------------------+
-.. | max. capacity (kW)    | cap max      | maximum investable heat capacity            |
-.. +-----------------------+--------------+---------------------------------------------+
-.. | heat loss factor      | l_factor     | relative loss factor related to the         |
-.. | (`kW`:sub:`loss`      |              | installed capacity                          |
-.. | / m *                 |              |                                             |
-.. | `kW`:sub:`installed`) |              |                                             |
-.. +-----------------------+--------------+---------------------------------------------+
-.. | heat loss factor fix  | l_factor_fix | fixed loss, which is incurred directly      |
-.. | (`kW`:sub:`loss` / m) |              | after the non-convex investment decision    |
-.. +-----------------------+--------------+---------------------------------------------+
-.. | periodical costs      | capex_pipes  | investment costs per kW transportable       |
-.. | (CU / kW * m * a)     |              | installed heat                              |
-.. +-----------------------+--------------+---------------------------------------------+
-.. | fix investment costs  | fix_costs    | investment costs per meter of pipe and its  |
-.. | (CU / m)              |              | laying                                      |
-.. +-----------------------+--------------+---------------------------------------------+
-.. | periodical constraint | n.n.         | CU for second optimization criterion per kW |
-.. | costs (CU / kW * m)   |              | transportable installed heat capacity       |
-.. +-----------------------+--------------+---------------------------------------------+
-.. | fix constraint costs  | n.n.         | CU for second optimization criterion per    |
-.. | (CU / m)              |              | meter of pipe and its laying                |
-.. +-----------------------+--------------+---------------------------------------------+
-
-.. Reference: Becker, Gregor; Klemm, Christian & Vennemann, Peter (2022) "**Open Source District Heating Modeling Tools—A Comparative Study**", *Energies*, 15(21), 8277, `https://doi.org/10.3390/en15218277>`_.
-
-
 

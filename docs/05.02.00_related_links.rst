@@ -1,5 +1,5 @@
 Related links
-*************************************************
+*************
 
 `Spreadsheet Energy System Model Generator (SESMG) on GitHub <https://github.com/SESMG/SESMG>`_
 
