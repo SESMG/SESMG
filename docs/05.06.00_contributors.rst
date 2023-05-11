@@ -1,14 +1,18 @@
 Contributors
 ************
 
-- Christian Klemm, christian.klemm@fh-muenster.de
+in alphabetic order:
 
-- Janik Budde, janik.budde@fh-muenster.de
+- Becker, Gregor: gregor.becker@fh-muenster.de
 
-- Gregor Becker, gregor.becker@fh-muenster.de
+- Blankenstein, Benjamin: bb917322@fh-muenster.de
 
-- Jan N. Tockloth, jan.tockloth@fh-muenster.de
+- Budde, Janik: janik.budde@fh-muenster.de
 
-- Yannick Wittor, yw090223@fh-muenster.de
+- Klemm, Christian: christian.klemm@fh-muenster.de
 
-- Peter Vennemann, vennemann@fh-muenster.de
+- Tockloth, Jan N.: jan.tockloth@fh-muenster.de
+
+- Wittor, Yannick: yw090223@fh-muenster.de
+
+
