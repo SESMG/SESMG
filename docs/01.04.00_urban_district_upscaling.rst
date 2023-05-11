@@ -54,8 +54,8 @@ decisions decrease.
    :width: 50 %
    :alt: Process of the SESMG including the Upscaling Tool [2].
    :align: center
-   
-        Process of the SESMG including the Upscaling Tool [2].
+
+   Process of the SESMG including the Upscaling Tool [2].
 
 
 .. _`upscaling model`:
@@ -74,7 +74,8 @@ here: https://doi.org/10.5281/zenodo.7615332
    :alt: Upscaling_Model
    :align: center
 
-        Upscaling_Model energy system graph.
+   Upscaling_Model energy system graph.
+
 
 References
 ==========
