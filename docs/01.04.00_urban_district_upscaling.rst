@@ -78,8 +78,8 @@ here: https://doi.org/10.5281/zenodo.7615332
 
 References
 ==========
-[1] Budde et al., *Automatisierte Modellierung und Optimierung urbaner Energiesysteme (2023)*, Tagungsband RET.Con 2023
+[1] Budde, Janik; Klemm, Christian; Tockloth, Jan N.; Becker, Gregor & Vennemann, Peter (2023): "**Automatisierte Modellierung und Optimierung urbaner Energiesysteme**", *6. Regenerative Energietechnik Konferenz in Nordhausen 09. - 10. Februar 2023*, `available here (Page 150-159) <https://www.hs-nordhausen.de/fileadmin/Dateien/Forschung/2021/Tagungsband_RETCon_2023_Web.pdf>`_.
 
-[2] Budde, *Leitfaden zur Modellierung von Energiesystemen (2022)*, master thesis.
+[2] Budde, Janik (2022): "**Leitfaden zur Modellierung von Energiesystemen**" (Master Thesis), Münster University of Applied Sciences.
 
     
