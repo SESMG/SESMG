@@ -10,9 +10,11 @@ authors:
   - name: Christian Klemm
     corresponding: true # (This is how to denote the corresponding author)
     orcid: 0000-0003-0801-4178
+    equal-contrib: true
     affiliation: "1, 2"
   - name: Gregor Becker
     orcid: 0000-0001-8803-6873
+    equal-contrib: true
     affiliation: 1
   - name: Janik Budde
     orcid: 0000-0002-1617-5900
