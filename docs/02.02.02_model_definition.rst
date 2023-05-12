@@ -221,8 +221,8 @@ The following parameters need to be set for concentrated solar power sources.
 - **ETA 0**: Optical efficiency of the collector. Use fill character "0" for other technologies.
 - **A1**: Collector specific linear heat loss coefficient. Use fill character "0" for other technologies.
 - **A2**: Collector specific quadratic heat loss coefficient. Use fill character "0" for other technologies.
-- **C1**: Collector specific thermal loss parameter. Only required for Concentrated Solar Power source, use fill character "0" for other technologies.
-- **C2**: Collector specific thermal loss parameter. Only required for Concentrated Solar Power source, use fill character "0" for other technologies.
+- **C1**: Collector specific thermal loss parameter. Only required for concentrated solar power source, use fill character "0" for other technologies.
+- **C2**: Collector specific thermal loss parameter. Only required for concentrated solar power source, use fill character "0" for other technologies.
 - **Temperature Inlet** in (°C): Inlet temperature of the solar heat collector module. Use fill character "0" for other technologies.
 - **Temperature Difference** in (°C): Temperature Difference between in- and outlet temperature of the solar heat collector module. Use fill character "0" for other technologies.
 - **Cleanliness**: Cleanliness of a parabolic through collector. Only required for Concentrated Solar Power source, use fill character "0" for other technologies.
