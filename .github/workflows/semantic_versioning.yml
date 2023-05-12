@@ -4,12 +4,16 @@ on:
   push:
     branches:
       - master
+      
+permissions: 
+  contents: read
 
 jobs:
   release:
     runs-on: ubuntu-latest
     concurrency: release
-
+    permissions: 
+      contents: write
     steps:
       - uses: actions/checkout@v2
         with:
