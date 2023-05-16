@@ -77,7 +77,12 @@ The gurobi solver may be used as **alternative** to the cbc-solver. Be aware, th
 .. figure:: images/manual/Installation/sesmg_installation_ms_8.png
    :width: 50 %
    :align: center
-   
+
+Enter your python version.
+.. note:: 
+
+	Please type in your python version in the major.minor format, which means to give 3.X if you have the version 3.X.YY. E.g. 3.9 if you have the python version 3.9.13. 
+
 .. figure:: images/manual/Installation/sesmg_installation_ms_9.png
    :width: 50 %
    :align: center
@@ -159,6 +164,9 @@ Execute the installer on your computer.
    
 
 Enter your python version.
+.. note:: 
+
+	Please type in your python version in the major.minor format, which means to give 3.X if you have the version 3.X.YY. E.g. 3.9 if you have the python version 3.9.13. 
    
 .. figure:: images/manual/Installation/sesmg_installation_mac_2.png
    :width: 50 %
@@ -222,6 +230,11 @@ The gurobi solver may be used as **alternative** to the cbc solver. Be aware, th
 7. Execute the "Linux_installtion.sh" file. By first navigating to the path of the SESMG directory and then running the following:
 
 ``$ sudo sh Linux_installation.sh``
+
+Enter your python version.
+.. note:: 
+
+	Please type in your python version in the major.minor format, which means to give 3.X if you have the version 3.X.YY. E.g. 3.9 if you have the python version 3.9.13. 
 
 8. The Spreadsheet Energy System Model Generator has been installed. Open a browser and open up: ``localhost:8501``.
 
