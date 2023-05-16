@@ -79,6 +79,7 @@ The gurobi solver may be used as **alternative** to the cbc-solver. Be aware, th
    :align: center
 
 Enter your python version.
+
 .. note:: 
 
 	Please type in your python version in the major.minor format, which means to give 3.X if you have the version 3.X.YY. E.g. 3.9 if you have the python version 3.9.13. 
@@ -164,6 +165,7 @@ Execute the installer on your computer.
    
 
 Enter your python version.
+
 .. note:: 
 
 	Please type in your python version in the major.minor format, which means to give 3.X if you have the version 3.X.YY. E.g. 3.9 if you have the python version 3.9.13. 
@@ -232,6 +234,7 @@ The gurobi solver may be used as **alternative** to the cbc solver. Be aware, th
 ``$ sudo sh Linux_installation.sh``
 
 Enter your python version.
+
 .. note:: 
 
 	Please type in your python version in the major.minor format, which means to give 3.X if you have the version 3.X.YY. E.g. 3.9 if you have the python version 3.9.13. 
