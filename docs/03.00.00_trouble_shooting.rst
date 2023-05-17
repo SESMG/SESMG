@@ -75,6 +75,16 @@ Error I-006: Could not find a local HDF5 installation (macOS M1/M2)
 
 **Debugging:** Type following lines separately in the terminal: ``(echo; echo 'export HDF5_DIR=/opt/homebrew/opt/hdf5') >> /Users/$(whoami)/.zprofile`` and ``(echo; echo 'export BLOSC_DIR=/opt/homebrew/opt/c-blosc') >> /Users/$(whoami)/.zprofile``.
 
+Error I-007: No module named streamlit
+-------------------------------------------------------------------
+**Error Message:** ::
+
+   No module named streamlit
+
+**Possible Error Cause:** This issue can occur at the first model run after installation, even if there was no error message. Maybe you typed in the wrong python version at the installation.  
+
+**Debugging:** You need to delete the folder and restart the installation with a 'freshly' unpacked .zip file (downloadable on Github). Make shure to type your installed python version in the major.minor format, which means to give 3.X if you have the version 3.X.YY.
+
 Modeling
 ========
 
