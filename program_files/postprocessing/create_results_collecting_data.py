@@ -4,7 +4,7 @@
 """
 import oemof.solph as solph
 from oemof.network.network import Bus, Sink, Source
-from oemof.solph.custom import Link
+from oemof.solph.components.experimental import Link
 from oemof.solph.components import GenericStorage
 from dhnx.optimization.oemof_heatpipe import HeatPipeline
 import pandas
@@ -81,6 +81,7 @@ def get_sequence(flow, component: dict, node, output_flow: bool,
             # search the created tuple in the components sequences
             if label != ():
                 return_list.append([component["sequences"][(label, "flow")]])
+                return_list[-1][0] = return_list[-1][0].dropna()
             # create an empty sequence (timesteps * 0) if the considered
             # tuple is empty
             else:
@@ -279,12 +280,13 @@ def get_comp_type(node) -> str:
     type_dict = {
         "<class 'dhnx.optimization_oemof_heatpipe.HeatPipeline'>": "dh",
         "<class 'dhnx.optimization.oemof_heatpipe.HeatPipeline'>": "dh",
-        "<class 'oemof.solph.network.sink.Sink'>": "sink",
-        "<class 'oemof.solph.network.source.Source'>": "source",
-        "<class 'oemof.solph.components.generic_storage.GenericStorage'>":
+        "<class 'oemof.solph.components._sink.Sink'>": "sink",
+        "<class 'oemof.solph.components._source.Source'>": "source",
+        "<class 'oemof.solph.components._generic_storage.GenericStorage'>":
             "storage",
-        "<class 'oemof.solph.custom.link.Link'>": "link",
-        "<class 'oemof.solph.network.transformer.Transformer'>": "transformer",
+        "<class 'oemof.solph.components.experimental._link.Link'>": "link",
+        "<class 'oemof.solph.components._transformer.Transformer'>":
+            "transformer",
     }
     return type_dict.get(str(type(node)))
 

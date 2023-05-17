@@ -3,7 +3,9 @@
     Gregor Becker - gregor.becker@fh-muenster.de
 """
 import logging
-from oemof.solph import Investment, Flow, Source, Sink
+from oemof.solph import Investment
+from oemof.solph.components import Source, Sink
+from oemof.solph.flows import Flow
 from datetime import datetime
 import pandas
 from demandlib import bdew
@@ -214,15 +216,16 @@ class Sinks:
                             self.busd[sink["input"]]: Flow(
                                 investment=Investment(
                                     ep_costs=ep_costs,
-                                    periodical_constraint_costs=
-                                    ep_constr_costs,
-                                    constraint2=1,
+                                    custom_attributes={
+                                        "periodical_constraint_costs":
+                                        ep_constr_costs,
+                                        "constraint2": 1,
+                                        "fix_constraint_costs": 0},
                                     minimum=0,
                                     maximum=maximum,
-                                    fix_constraint_costs=0,
                                     existing=existing
                                 ),
-                                emission_factor=0,
+                                custom_attributes={"emission_factor": 0},
                                 fix=(args["fix"] / args["fix"].max()),
                             )}))
 

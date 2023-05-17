@@ -657,22 +657,24 @@ def connect_dh_to_system(
         label = heatpipe.Label("consumers", "heat", "bus",
                                "consumers-{}".format(consumer["id"]), "exergy")
         
-        inputs = {oemof_opti_model.buses[label]: solph.Flow(emission_factor=0)}
+        inputs = {oemof_opti_model.buses[label]: solph.Flow(
+            custom_attributes={"emission_factor": 0})}
         
         heatstation = pipe_types.loc[pipe_types["label_3"] == "dh_heatstation"]
         outputs = {
             busd[consumer["input"]]: solph.Flow(
                 investment=solph.Investment(
                     ep_costs=float(heatstation["capex_pipes"]),
-                    periodical_constraint_costs=float(
-                        heatstation["periodical_constraint_costs"]),
                     minimum=0,
                     maximum=999 * len(consumer["input"]),
                     existing=0,
                     nonconvex=False,
-                    fix_constraint_costs=0,
+                    custom_attributes={
+                        "fix_constraint_costs": 0,
+                        "periodical_constraint_costs":
+                        float(heatstation["periodical_constraint_costs"])},
                 ),
-                emission_factor=0,
+                custom_attributes={"emission_factor": 0},
             )}
         
         conversion_factors = {
@@ -680,7 +682,7 @@ def connect_dh_to_system(
         }
         
         oemof_opti_model.nodes.append(
-            solph.Transformer(
+            solph.components.Transformer(
                 label=("dh_heat_house_station_"
                        + consumer["label"].split("_")[0]),
                 inputs=inputs,
@@ -695,7 +697,7 @@ def connect_dh_to_system(
 def create_link_between_dh_heat_bus_and_excess_shortage_bus(
         busd: dict, bus: pandas.Series,
         oemof_opti_model: optimization.OemofInvestOptimizationModel,
-        fork_label: heatpipe.Label) -> solph.custom.Link:
+        fork_label: heatpipe.Label) -> solph.components.experimental.Link:
     """
         Create the link between the bus which enables the heat
         shortage for the district heating network and the fork of the
@@ -711,21 +713,26 @@ def create_link_between_dh_heat_bus_and_excess_shortage_bus(
             connected to the shortage bus
         :type fork_label: heatpipe.Label
         
-        :return: - **-** (solph.custom.Link) - Link component which \
-            connects the shortage bus and the heat network's fork
+        :return: - **-** (solph.components.experimental.Link) - Link \
+            component which connects the shortage bus and the heat \
+            network's fork
     """
     # return the oemof solph link which connects the excess/shortage
     # bus with the thermal network fork
     fork_id = fork_label.tag4.split("-")[-1]
-    return solph.custom.Link(
+    return solph.components.experimental.Link(
         label=("link-dhnx-" + bus["label"] + "-f{}".format(fork_id)),
         inputs={
-            oemof_opti_model.buses[fork_label]: solph.Flow(),
-            busd[bus["label"]]: solph.Flow(),
+            oemof_opti_model.buses[fork_label]: solph.Flow(
+                custom_attributes={"emission_factor": 0}),
+            busd[bus["label"]]: solph.Flow(
+                custom_attributes={"emission_factor": 0}),
         },
         outputs={
-            busd[bus["label"]]: solph.Flow(),
-            oemof_opti_model.buses[fork_label]: solph.Flow(),
+            busd[bus["label"]]: solph.Flow(
+                custom_attributes={"emission_factor": 0}),
+            oemof_opti_model.buses[fork_label]: solph.Flow(
+                custom_attributes={"emission_factor": 0}),
         },
         conversion_factors={
             (oemof_opti_model.buses[fork_label], busd[bus["label"]]): 1,
@@ -847,11 +854,12 @@ def create_producer_connection(
             label_5
         )
         oemof_opti_model.nodes.append(
-            solph.Transformer(
+            solph.components.Transformer(
                 label=(str(producer["bus"]) + "_dh_source_link_" + label_5),
-                inputs={busd[producer["bus"]]: solph.Flow(emission_factor=0)},
+                inputs={busd[producer["bus"]]: solph.Flow(
+                        custom_attributes={"emission_factor": 0})},
                 outputs={oemof_opti_model.buses[label]: solph.Flow(
-                    emission_factor=0)
+                    custom_attributes={"emission_factor": 0})
                 },
                 conversion_factors={
                     (oemof_opti_model.buses[label], busd[producer["bus"]]): 1

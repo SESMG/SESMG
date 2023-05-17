@@ -4,7 +4,9 @@
 """
 
 import logging
-from oemof.solph import Bus, Flow, Sink, Source
+from oemof.solph.components import Sink, Source
+from oemof.solph.buses import Bus
+from oemof.solph.flows import Flow
 
 
 def buses(nodes_data: dict, nodes: list) -> dict:
@@ -57,7 +59,8 @@ def buses(nodes_data: dict, nodes: list) -> dict:
             inputs = {
                 busd[bus["label"]]: Flow(
                     variable_costs=bus["excess costs"],
-                    emission_factor=bus["excess constraint costs"],
+                    custom_attributes={"emission_factor":
+                                       bus["excess constraint costs"]},
                 )
             }
             nodes.append(Sink(label=bus["label"] + "_excess", inputs=inputs))
@@ -70,7 +73,8 @@ def buses(nodes_data: dict, nodes: list) -> dict:
             outputs = {
                 busd[bus["label"]]: Flow(
                     variable_costs=bus["shortage costs"],
-                    emission_factor=bus["shortage constraint costs"],
+                    custom_attributes={"emission_factor":
+                                       bus["shortage constraint costs"]},
                 )
             }
             nodes.append(Source(label=bus["label"] + "_shortage",

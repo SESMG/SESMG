@@ -245,7 +245,7 @@ def calc_heat_pipe_attributes(
     # iterate threw all thermal network components
     for a in oemof_opti_model.nodes:
         # check rather the component is not a bus
-        if str(type(a)) != "<class 'oemof.solph.network.bus.Bus'>":
+        if str(type(a)) != "<class 'oemof.solph.buses._bus.Bus'>":
             # get the component's pipe type data frame row
             pipe_row = pipe_types.loc[pipe_types["label_3"] == a.label.tag3]
             # if the pipe type is a linear one

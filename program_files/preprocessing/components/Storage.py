@@ -109,15 +109,17 @@ class Storages:
                 inputs={
                     self.busd[storage["bus"]]: Flow(
                         variable_costs=storage["variable input costs"],
-                        emission_factor=storage[
-                            "variable input constraint costs"],
+                        custom_attributes={
+                            "emission_factor":
+                            storage["variable input constraint costs"]},
                     )
                 },
                 outputs={
                     self.busd[storage["bus"]]: Flow(
                         variable_costs=storage["variable output costs"],
-                        emission_factor=storage[
-                            "variable output constraint costs"],
+                        custom_attributes={
+                            "emission_factor":
+                            storage["variable output constraint costs"]},
                     )
                 },
                 min_storage_level=storage_levels[0],
@@ -133,16 +135,17 @@ class Storages:
                     "output/capacity ratio"],
                 investment=Investment(
                     ep_costs=storage["periodical costs"],
-                    periodical_constraint_costs=storage[
-                        "periodical constraint costs"],
                     existing=storage["existing capacity"],
                     minimum=storage["min. investment capacity"],
                     maximum=storage["max. investment capacity"],
                     nonconvex=True if storage["non-convex investment"] == 1
                     else False,
                     offset=storage["fix investment costs"],
-                    fix_constraint_costs=storage[
-                        "fix investment constraint costs"],
+                    custom_attributes={
+                        "periodical_constraint_costs":
+                        storage["periodical constraint costs"],
+                        "fix_constraint_costs":
+                        storage["fix investment constraint costs"]},
                 ),
             )
         )
