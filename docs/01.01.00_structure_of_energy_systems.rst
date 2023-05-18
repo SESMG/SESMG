@@ -247,27 +247,27 @@ of the Electricity Industry (VDEW) can be used:
 +--------+---------------------------------------------------+
 | Profil | Consumer Group                                    |
 +========+===================================================+
-|   H0   | households                                        |
+|   h0   | households                                        |
 +--------+---------------------------------------------------+
-|   G0   | commercial general                                |
+|   g0   | commercial general                                |
 +--------+---------------------------------------------------+
-|   G1   | commercial on weeks 8-18 h                        |
+|   g1   | commercial on weeks 8-18 h                        |
 +--------+---------------------------------------------------+
-|   G2   | commercial with strong consumption in the evening |
+|   g2   | commercial with strong consumption in the evening |
 +--------+---------------------------------------------------+
-|   G3   | commercial continuous                             |
+|   g3   | commercial continuous                             |
 +--------+---------------------------------------------------+
-|   G4   | shop/hairdresser                                  |
+|   g4   | shop/hairdresser                                  |
 +--------+---------------------------------------------------+
-|   G5   | bakery                                            |
+|   g5   | bakery                                            |
 +--------+---------------------------------------------------+
-|   G6   | weekend operation                                 |
+|   g6   | weekend operation                                 |
 +--------+---------------------------------------------------+
-|   L0   | agriculture general                               |
+|   l0   | agriculture general                               |
 +--------+---------------------------------------------------+
-|   L1   | agriculture with dairy industry/animal breeding   |
+|   l1   | agriculture with dairy industry/animal breeding   |
 +--------+---------------------------------------------------+
-|   L2   | other agriculture                                 |
+|   l2   | other agriculture                                 |
 +--------+---------------------------------------------------+
 
 The following heat standard load profiles of the Association of Energy and Water Management (BDEW) can be used:
@@ -275,33 +275,33 @@ The following heat standard load profiles of the Association of Energy and Water
 +---------+----------------------------------------------------------------+
 | Profile | House Type                                                     |
 +=========+================================================================+
-| EFH     | single family house                                            |
+| efh     | single family house                                            |
 +---------+----------------------------------------------------------------+
-| MFH     | multi family house                                             |
+| mfh     | multi family house                                             |
 +---------+----------------------------------------------------------------+
-| GMK     | metal and automotive                                           |
+| gmk     | metal and automotive                                           |
 +---------+----------------------------------------------------------------+
-| GHA     | retail and wholesale                                           |
+| gha     | retail and wholesale                                           |
 +---------+----------------------------------------------------------------+
-| GKO     | Local authorities, credit institutions and insurance companies |
+| gko     | Local authorities, credit institutions and insurance companies |
 +---------+----------------------------------------------------------------+
-| GBD     | other operational services                                     |
+| gbd     | other operational services                                     |
 +---------+----------------------------------------------------------------+
-| GGA     | restaurants                                                    |
+| gga     | restaurants                                                    |
 +---------+----------------------------------------------------------------+
-| GBH     | accommodation                                                  |
+| gbh     | accommodation                                                  |
 +---------+----------------------------------------------------------------+
-| GWA     | laundries, dry cleaning                                        |
+| gwa     | laundries, dry cleaning                                        |
 +---------+----------------------------------------------------------------+
-| GGB     | horticulture                                                   |
+| ggb     | horticulture                                                   |
 +---------+----------------------------------------------------------------+
-| GBA     | bakery                                                         |
+| gba     | bakery                                                         |
 +---------+----------------------------------------------------------------+
-| GPD     | paper and printing                                             |
+| gpd     | paper and printing                                             |
 +---------+----------------------------------------------------------------+
-| GMF     | household-like business enterprises                            |
+| gmf     | household-like business enterprises                            |
 +---------+----------------------------------------------------------------+
-| GHD     | Total load profile Business/Commerce/Services                  |
+| ghd     | Total load profile Business/Commerce/Services                  |
 +---------+----------------------------------------------------------------+
 
 In addition, the location of the building and whether the building is located 
