@@ -5,8 +5,7 @@
 import pandas
 
 
-def add_value_to_amounts_dict(label: str, value_am: float,
-                              amounts_dict: dict) -> dict:
+def add_value_to_amounts_dict(label: str, value_am: float, amounts_dict: dict) -> dict:
     """
         Adds the value_am to the given amounts dict by checking if
         the chosen label is already part of the amounts dict (append)
@@ -28,7 +27,7 @@ def add_value_to_amounts_dict(label: str, value_am: float,
         amounts_dict[label].append(value_am)
     else:
         amounts_dict.update({label: [value_am]})
-    
+
     return amounts_dict
 
 
@@ -56,15 +55,14 @@ def get_dataframe_from_nodes_data(nodes_data: dict) -> pandas.DataFrame:
             "weather data",
             "district heating",
             "competition constraints",
-            "pipe types"
+            "pipe types",
         ]:
             nodes_data[key].set_index("label", inplace=True, drop=False)
             if counter == 0:
                 df_1 = nodes_data[key].copy()
                 counter += 1
             elif counter != 0 and df_1 is not None:
-                df_1 = pandas.concat([df_1, nodes_data[key]],
-                                     ignore_index=True)
+                df_1 = pandas.concat([df_1, nodes_data[key]], ignore_index=True)
     return df_1[df_1["active"] == 1]
 
 
@@ -88,8 +86,9 @@ def get_value(label: str, column: str, dataframe: pandas.DataFrame) -> float:
     return float(value[0]) if value.size > 0 else 0
 
 
-def get_pv_st_dir(c_dict: dict, value: float, comp_type: str,
-                  comp: pandas.Series) -> dict:
+def get_pv_st_dir(
+    c_dict: dict, value: float, comp_type: str, comp: pandas.Series
+) -> dict:
     """
         This method creates an entry in the dictionary c_dict
         associated with the cardinal direction for the PV or ST system
@@ -131,20 +130,21 @@ def get_pv_st_dir(c_dict: dict, value: float, comp_type: str,
         if not dir_dict[dire][0] <= comp["Azimuth"] < dir_dict[dire][1]:
             pass
         else:
-            c_dict = add_value_to_amounts_dict(label=comp_type + dire,
-                                               value_am=value,
-                                               amounts_dict=c_dict)
+            c_dict = add_value_to_amounts_dict(
+                label=comp_type + dire, value_am=value, amounts_dict=c_dict
+            )
             not_north = True
     # handling north since its between 237.5° and 22.5°
     if not not_north:
-        c_dict = add_value_to_amounts_dict(label=comp_type + "_north",
-                                           value_am=value,
-                                           amounts_dict=c_dict)
+        c_dict = add_value_to_amounts_dict(
+            label=comp_type + "_north", value_am=value, amounts_dict=c_dict
+        )
     return c_dict
 
 
-def dict_to_dataframe(amounts_dict: dict, return_df: pandas.DataFrame
-                      ) -> pandas.DataFrame:
+def dict_to_dataframe(
+    amounts_dict: dict, return_df: pandas.DataFrame
+) -> pandas.DataFrame:
     """
         Method to convert the dictionary with the collected data of a
         Pareto point to a row of return_df.
@@ -173,8 +173,7 @@ def dict_to_dataframe(amounts_dict: dict, return_df: pandas.DataFrame
     return return_df
 
 
-def create_sink_differentiation_dict(model_definition: pandas.DataFrame
-                                     ) -> dict:
+def create_sink_differentiation_dict(model_definition: pandas.DataFrame) -> dict:
     """
         use the model_definitions sink sheet to create a dictionary
         holding the sink's type as well as it's label
@@ -188,7 +187,7 @@ def create_sink_differentiation_dict(model_definition: pandas.DataFrame
             sector column has been done
     """
     sink_types = {}
-    
+
     for num, sink in model_definition.iterrows():
         if sink["sector"] == "electricity":
             sink_types.update({sink["label"]: [True, False, False]})
@@ -196,7 +195,7 @@ def create_sink_differentiation_dict(model_definition: pandas.DataFrame
             sink_types.update({sink["label"]: [False, True, False]})
         else:
             sink_types.update({sink["label"]: [False, False, True]})
-    
+
     return sink_types
 
 
@@ -213,26 +212,24 @@ def collect_pareto_data(result_dfs: dict, result_path: str) -> None:
     """
     # dict containing pareto points data
     costs = {"monetary": [], "emissions": []}
-    
+
     for dataframe in result_dfs:
         if dataframe != "1":
             costs["monetary"].append(
-                    sum(result_dfs[dataframe]["variable costs/CU"])
-                    + sum(result_dfs[dataframe]["periodical costs/CU"])
+                sum(result_dfs[dataframe]["variable costs/CU"])
+                + sum(result_dfs[dataframe]["periodical costs/CU"])
             )
-            costs["emissions"].append(
-                    sum(result_dfs[dataframe]["constraints/CU"]))
+            costs["emissions"].append(sum(result_dfs[dataframe]["constraints/CU"]))
         else:
             costs["emissions"].append(
-                    sum(result_dfs[dataframe]["variable costs/CU"]) + sum(
-                            result_dfs[dataframe]["periodical costs/CU"])
+                sum(result_dfs[dataframe]["variable costs/CU"])
+                + sum(result_dfs[dataframe]["periodical costs/CU"])
             )
-            costs["monetary"].append(
-                    sum(result_dfs[dataframe]["constraints/CU"]))
-    
+            costs["monetary"].append(sum(result_dfs[dataframe]["constraints/CU"]))
+
     # create pandas Dataframe from results' components.csv points
     df1 = pandas.DataFrame(
-            {"costs": costs["monetary"], "emissions": costs["emissions"]},
-            columns=["costs", "emissions"],
+        {"costs": costs["monetary"], "emissions": costs["emissions"]},
+        columns=["costs", "emissions"],
     )
     df1.to_csv(result_path + "/pareto.csv")

@@ -6,10 +6,14 @@
 import pandas
 
 
-def create_standard_parameter_sink(sink_type: str, label: str, sink_input: str,
-                                   annual_demand: float, sheets: dict,
-                                   standard_parameters: pandas.ExcelFile
-                                   ) -> dict:
+def create_standard_parameter_sink(
+    sink_type: str,
+    label: str,
+    sink_input: str,
+    annual_demand: float,
+    sheets: dict,
+    standard_parameters: pandas.ExcelFile,
+) -> dict:
     """
         Creates a sink with standard_parameters, based on the standard
         parameters given in the "standard_parameters" dataset and adds
@@ -48,13 +52,17 @@ def create_standard_parameter_sink(sink_type: str, label: str, sink_input: str,
         },
         standard_parameter_info=[sink_type, "2_sinks", "sink_type"],
         sheets=sheets,
-        standard_parameters=standard_parameters
+        standard_parameters=standard_parameters,
     )
 
 
-def create_electricity_sink(building: pandas.Series, area: float, sheets: dict,
-                            sinks_standard_param: pandas.DataFrame,
-                            standard_parameters: pandas.ExcelFile) -> dict:
+def create_electricity_sink(
+    building: pandas.Series,
+    area: float,
+    sheets: dict,
+    sinks_standard_param: pandas.DataFrame,
+    standard_parameters: pandas.ExcelFile,
+) -> dict:
     """
         In this method, the electricity demand is calculated either on
         the basis of energy certificates (area-specific demand values)
@@ -118,27 +126,30 @@ def create_electricity_sink(building: pandas.Series, area: float, sheets: dict,
         else:
             # specific demand per area
             demand_el_specific = sink_param.loc[1, building["building type"]]
-            NFA_GFA = \
-                sinks_standard_param.loc[
-                    building["building type"] + "_electricity_sink"][
-                    "net_floor_area / area"]
+            NFA_GFA = sinks_standard_param.loc[
+                building["building type"] + "_electricity_sink"
+            ]["net_floor_area / area"]
             demand_el = demand_el_specific * area * NFA_GFA
     else:
         demand_el = building["electricity demand"] * area
-    
+
     return create_standard_parameter_sink(
         sink_type=building["building type"] + "_electricity_sink",
         label=str(building["label"]) + "_electricity_demand",
         sink_input=str(building["label"]) + "_electricity_bus",
         annual_demand=demand_el,
         sheets=sheets,
-        standard_parameters=standard_parameters
+        standard_parameters=standard_parameters,
     )
 
 
-def create_heat_sink(building: pandas.Series, area: float, sheets: dict,
-                     sinks_standard_param: pandas.DataFrame,
-                     standard_parameters: pandas.ExcelFile) -> dict:
+def create_heat_sink(
+    building: pandas.Series,
+    area: float,
+    sheets: dict,
+    sinks_standard_param: pandas.DataFrame,
+    standard_parameters: pandas.ExcelFile,
+) -> dict:
     """
         In this method, the heat demand is calculated either on
         the basis of energy certificates (area-specific demand values)
@@ -166,48 +177,47 @@ def create_heat_sink(building: pandas.Series, area: float, sheets: dict,
     """
     standard_param = standard_parameters.parse("2_1_heat")
     standard_param.set_index("year of construction", inplace=True)
-    
+
     # year of construction: buildings older than 1918 are clustered in
     # <1918
     yoc = int(building["year of construction"])
-    yoc = (yoc if yoc > 1918 else "<1918")
-    
+    yoc = yoc if yoc > 1918 else "<1918"
+
     # define a variable for building type
     building_type = building["building type"]
-    
+
     # If an area-specific electricity requirement is given, e.g. from an
     # energy certificate, use the else clause.
     if not building["heat demand"]:
         # if the investigated building is a residential building
         if building_type in ["SFB", "MFB"]:
             # units: buildings bigger than 12 units are clustered in > 12
-            units = str(int(building["units"])) if building["units"] < 12 \
-                else "> 12"
+            units = str(int(building["units"])) if building["units"] < 12 else "> 12"
             # specific demand per area
             specific_heat_demand = standard_param.loc[yoc][units + " unit(s)"]
         else:
             # specific demand per area
             specific_heat_demand = standard_param.loc[yoc][building_type]
-        NFA_GFA = \
-            sinks_standard_param.loc[
-                building["building type"] + "_heat_sink"][
-                "net_floor_area / area"]
+        NFA_GFA = sinks_standard_param.loc[building["building type"] + "_heat_sink"][
+            "net_floor_area / area"
+        ]
         demand_heat = specific_heat_demand * area * NFA_GFA
     else:
         demand_heat = building["heat demand"] * area
-    
+
     return create_standard_parameter_sink(
         sink_type=building_type + "_heat_sink",
         label=str(building["label"]) + "_heat_demand",
         sink_input=str(building["label"]) + "_heat_bus",
         annual_demand=demand_heat,
         sheets=sheets,
-        standard_parameters=standard_parameters
+        standard_parameters=standard_parameters,
     )
 
 
-def create_sink_ev(building: pandas.Series, sheets: dict,
-                   standard_parameters: pandas.ExcelFile) -> dict:
+def create_sink_ev(
+    building: pandas.Series, sheets: dict, standard_parameters: pandas.ExcelFile
+) -> dict:
     """
         For the modeling of electric vehicles, within this method the
         sink for electric vehicles is created.
@@ -227,27 +237,29 @@ def create_sink_ev(building: pandas.Series, sheets: dict,
             definition's Spreadsheets which was modified in this method
     """
     from program_files import create_standard_parameter_comp
-    
+
     # multiply the electric vehicle time series with the driven
     # kilometers
-    sheets["time series"].loc[:, building['label'] + "_electric_vehicle.fix"] \
-        = sheets["time series"].loc[:, "electric_vehicle.fix"] \
+    sheets["time series"].loc[:, building["label"] + "_electric_vehicle.fix"] = (
+        sheets["time series"].loc[:, "electric_vehicle.fix"]
         * building["distance of electric vehicles"]
-    
+    )
+
     return create_standard_parameter_comp(
         specific_param={
             "label": building["label"] + "_electric_vehicle",
             "input": str(building["label"]) + "_electricity_bus",
             "nominal value": building["distance of electric vehicles"],
         },
-        standard_parameter_info=[
-            "EV_electricity_sink", "2_sinks", "sink_type"],
+        standard_parameter_info=["EV_electricity_sink", "2_sinks", "sink_type"],
         sheets=sheets,
-        standard_parameters=standard_parameters)
+        standard_parameters=standard_parameters,
+    )
 
 
-def create_sinks(building: pandas.Series, sheets: dict,
-                 standard_parameters: pandas.ExcelFile) -> dict:
+def create_sinks(
+    building: pandas.Series, sheets: dict, standard_parameters: pandas.ExcelFile
+) -> dict:
     """
         In this method, the sinks necessary to represent the demand of
         a building are created one after the other. These are an
@@ -274,14 +286,15 @@ def create_sinks(building: pandas.Series, sheets: dict,
         # get sinks standard parameters
         sinks_standard_param = standard_parameters.parse("2_sinks")
         sinks_standard_param.set_index("sink_type", inplace=True)
-        
+
         # create electricity sink
         sheets = create_electricity_sink(
             building=building,
             area=area,
             sheets=sheets,
             sinks_standard_param=sinks_standard_param,
-            standard_parameters=standard_parameters)
+            standard_parameters=standard_parameters,
+        )
 
         # heat demand
         sheets = create_heat_sink(
@@ -289,18 +302,19 @@ def create_sinks(building: pandas.Series, sheets: dict,
             area=area,
             sheets=sheets,
             sinks_standard_param=sinks_standard_param,
-            standard_parameters=standard_parameters)
-        
+            standard_parameters=standard_parameters,
+        )
+
         if building["distance of electric vehicles"] > 0:
             sheets = create_sink_ev(
                 building=building,
                 sheets=sheets,
-                standard_parameters=standard_parameters)
+                standard_parameters=standard_parameters,
+            )
     return sheets
 
 
-def sink_clustering(building: list, sink: pandas.Series,
-                    sink_parameters: list) -> list:
+def sink_clustering(building: list, sink: pandas.Series, sink_parameters: list) -> list:
     """
         In this method, the current sinks of the respective cluster are
         stored in dict and the current sinks are deleted. Furthermore,
@@ -351,10 +365,13 @@ def sink_clustering(building: list, sink: pandas.Series,
     return sink_parameters
 
 
-def create_cluster_electricity_sinks(standard_parameters: pandas.ExcelFile,
-                                     sink_parameters: list, cluster: str,
-                                     central_electricity_network: bool,
-                                     sheets: dict) -> dict:
+def create_cluster_electricity_sinks(
+    standard_parameters: pandas.ExcelFile,
+    sink_parameters: list,
+    cluster: str,
+    central_electricity_network: bool,
+    sheets: dict,
+) -> dict:
     """
         In this method, the electricity purchase price for the
         respective sink is calculated based on the electricity demand
@@ -384,7 +401,7 @@ def create_cluster_electricity_sinks(standard_parameters: pandas.ExcelFile,
             pandas.Dataframes that will represent the model \
             definition's Spreadsheets which was modified in this method
     """
-    from program_files import (Link, Bus)
+    from program_files import Link, Bus
 
     bus_parameters = standard_parameters.parse("1_buses", index_col="bus_type")
     total_annual_demand = sum(sink_parameters[0:3])
@@ -397,7 +414,8 @@ def create_cluster_electricity_sinks(standard_parameters: pandas.ExcelFile,
                 label=str(cluster) + "_electricity_bus",
                 bus_type="building_res_electricity_bus",
                 sheets=sheets,
-                standard_parameters=standard_parameters)
+                standard_parameters=standard_parameters,
+            )
             sheets["buses"].set_index("label", inplace=True, drop=False)
             cost_type = "shortage costs"
             label = "_electricity_bus"
@@ -416,9 +434,8 @@ def create_cluster_electricity_sinks(standard_parameters: pandas.ExcelFile,
         # bus
         if central_electricity_network:
             sheets = Link.create_central_electricity_bus_connection(
-                cluster=cluster,
-                sheets=sheets,
-                standard_parameters=standard_parameters)
+                cluster=cluster, sheets=sheets, standard_parameters=standard_parameters
+            )
 
     # create clustered electricity sinks
     if sink_parameters[0] > 0:

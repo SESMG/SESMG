@@ -14,8 +14,7 @@ transf_WGS84_GK = Transformer.from_crs("EPSG:4326", "EPSG:31466")
 transf_GK_WGS84 = Transformer.from_crs("EPSG:31466", "EPSG:4326")
 
 
-def convert_dh_street_sections_list(street_sec: pandas.DataFrame
-                                    ) -> pandas.DataFrame:
+def convert_dh_street_sections_list(street_sec: pandas.DataFrame) -> pandas.DataFrame:
     """
         Convert street sections Dataframe to Gaussian Kruger (GK)
         to reduce redundancy.
@@ -44,9 +43,9 @@ def convert_dh_street_sections_list(street_sec: pandas.DataFrame
     return street_sec
 
 
-def calc_perpendicular_distance_line_point(p1: numpy.array, p2: numpy.array,
-                                           p3: numpy.array, converted=False
-                                           ) -> list:
+def calc_perpendicular_distance_line_point(
+    p1: numpy.array, p2: numpy.array, p3: numpy.array, converted=False
+) -> list:
     """
         Determination of the perpendicular foot point as well as the
         distance between point and straight line.
@@ -118,8 +117,9 @@ def calc_perpendicular_distance_line_point(p1: numpy.array, p2: numpy.array,
         return []
 
 
-def get_nearest_perp_foot_point(building: dict, streets: pandas.DataFrame,
-                                index: int, building_type: str) -> list:
+def get_nearest_perp_foot_point(
+    building: dict, streets: pandas.DataFrame, index: int, building_type: str
+) -> list:
     """
         Uses the calc_perpendicular_distance_line_point method and
         finds the shortest distance to a road from its results.
@@ -192,9 +192,7 @@ def calc_street_lengths(connection_points: list) -> list:
         lat = (current_point[1] + next_point[1]) / 2
         # Calculation of the x distance according to:
         # (lon1 - lon2) * 111.3km * cos(lat)
-        dx = (111.3
-              * (current_point[2] - next_point[2])
-              * numpy.cos(numpy.deg2rad(lat)))
+        dx = 111.3 * (current_point[2] - next_point[2]) * numpy.cos(numpy.deg2rad(lat))
         # Calculation of the y distance according to: (lat1 - lat2) * 111.3km
         dy = 111.3 * (current_point[1] - next_point[1])
         # Calculation of the actual distance and conversion to meters
@@ -207,18 +205,20 @@ def calc_street_lengths(connection_points: list) -> list:
         # 3. (lat1, lon1)
         # 4. (lat2, lon2)
         ordered_road_section_points.append(
-            ["{} - {}".format(current_point[0], next_point[0]),
-             distance,
-             (current_point[1], current_point[2]),
-             (next_point[1], next_point[2])]
+            [
+                "{} - {}".format(current_point[0], next_point[0]),
+                distance,
+                (current_point[1], current_point[2]),
+                (next_point[1], next_point[2]),
+            ]
         )
 
     return ordered_road_section_points
 
 
 def calc_heat_pipe_attributes(
-        oemof_opti_model: optimization.OemofInvestOptimizationModel,
-        pipe_types: pandas.DataFrame
+    oemof_opti_model: optimization.OemofInvestOptimizationModel,
+    pipe_types: pandas.DataFrame,
 ) -> optimization.OemofInvestOptimizationModel:
     """
         In this method, the DHNx components, which were created for a
@@ -268,26 +268,26 @@ def calc_heat_pipe_attributes(
                 # investment costs by the specific fix investment costs
                 # per meter
                 length = fix_costs / float(pipe_row["fix_costs"])
-                
+
             # set the periodical constraint costs which are
             # calculated by the multiplication of length and
             # specific periodical emissions per meter
             setattr(
                 a.outputs[list(a.outputs.keys())[0]].investment,
                 "periodical_constraint_costs",
-                length * float(pipe_row["periodical_constraint_costs"])
+                length * float(pipe_row["periodical_constraint_costs"]),
             )
             # set the fix investment constraint costs which are
             # calculated by the multiplication of length and
             # specific fix investment emissions per meter
             setattr(
-                    a.outputs[list(a.outputs.keys())[0]].investment,
-                    "fix_constraint_costs",
-                    length * float(pipe_row["fix_constraint_costs"]),
+                a.outputs[list(a.outputs.keys())[0]].investment,
+                "fix_constraint_costs",
+                length * float(pipe_row["fix_constraint_costs"]),
             )
             # since no variable emissions apply it is set to 0 for each
             # direction
             setattr(a.inputs[list(a.inputs.keys())[0]], "emission_factor", 0)
             setattr(a.outputs[list(a.outputs.keys())[0]], "emission_factor", 0)
-    
+
     return oemof_opti_model

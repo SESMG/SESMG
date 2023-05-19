@@ -45,38 +45,37 @@ class Sinks:
     """
 
     slps = {
-        "heat_slps":
-            ["efh",   # single family building
-             "mfh"],  # multi family building
-        "heat_slps_commercial":
-            ["gmf",   # household-like business enterprises
-             "gpd",   # paper and printing
-             "ghd",   # Total load profile Business/Commerce/Services
-             "gwa",   # laundries, dry cleaning
-             "ggb",   # horticulture
-             "gko",   # Local authorities and credit institutions
-             "gbd",   # other operational services
-             "gba",   # bakery
-             "gmk",   # metal and automotive
-             "gbh",   # accommodation
-             "gga",   # restaurants
-             "gha"],  # retail and wholesale
-        "electricity_slps":
-            ["h0",   # households
-             "g0",   # commercial general
-             "g1",   # commercial on weeks 8-18 h
-             "g2",   # commercial with strong consumption (evening)
-             "g3",   # commercial continuous
-             "g4",   # shop/hairdresser
-             "g5",   # bakery
-             "g6",   # weekend operation
-             "l0",   # agriculture general
-             "l1",   # agriculture with dairy industry/animal breeding
-             "l2"]   # other agriculture
+        "heat_slps": ["efh", "mfh"],  # single family building  # multi family building
+        "heat_slps_commercial": [
+            "gmf",  # household-like business enterprises
+            "gpd",  # paper and printing
+            "ghd",  # Total load profile Business/Commerce/Services
+            "gwa",  # laundries, dry cleaning
+            "ggb",  # horticulture
+            "gko",  # Local authorities and credit institutions
+            "gbd",  # other operational services
+            "gba",  # bakery
+            "gmk",  # metal and automotive
+            "gbh",  # accommodation
+            "gga",  # restaurants
+            "gha",
+        ],  # retail and wholesale
+        "electricity_slps": [
+            "h0",  # households
+            "g0",  # commercial general
+            "g1",  # commercial on weeks 8-18 h
+            "g2",  # commercial with strong consumption (evening)
+            "g3",  # commercial continuous
+            "g4",  # shop/hairdresser
+            "g5",  # bakery
+            "g6",  # weekend operation
+            "l0",  # agriculture general
+            "l1",  # agriculture with dairy industry/animal breeding
+            "l2",
+        ],  # other agriculture
     }
 
-    def calc_insulation_parameter(self,
-                                  ins: pandas.Series) -> (float, float, list):
+    def calc_insulation_parameter(self, ins: pandas.Series) -> (float, float, list):
         """
             Calculation of insulation measures for the considered sink
             
@@ -116,8 +115,9 @@ class Sinks:
         # Extract the days that have an outdoor temperature below the
         # heating limit temperature.
         heating_degree_steps = self.weather_data[
-            self.weather_data["temperature"] <= ins["heat limit temperature"]]
-        
+            self.weather_data["temperature"] <= ins["heat limit temperature"]
+        ]
+
         # calculate insulation capacity per time step
         for time_step in heating_degree_steps["temperature"]:
             # calculate the difference between the outdoor and indoor
@@ -140,8 +140,9 @@ class Sinks:
         else:
             return 0, 0, [0]
 
-    def create_sink(self, sink: pandas.Series, nominal_value=None,
-                    load_profile=None, args=None) -> None:
+    def create_sink(
+        self, sink: pandas.Series, nominal_value=None, load_profile=None, args=None
+    ) -> None:
         """
             Creates an oemof sink with fixed or unfixed timeseries.
 
@@ -176,21 +177,21 @@ class Sinks:
             elif sink["fixed"] == 0:
                 # sets attributes for an unfixed richardson sink
                 args.update({"max": load_profile})
-                
+
         # creates an oemof Sink and appends it to the class intern list
         # of created sinks
         self.nodes_sinks.append(
-            Sink(label=sink["label"],
-                 inputs={self.busd[sink["input"]]: Flow(**args)})
+            Sink(label=sink["label"], inputs={self.busd[sink["input"]]: Flow(**args)})
         )
-        
+
         # create insulation sources to the energy system components
         insulations = self.insulation[self.insulation["active"] == 1]
         for num, ins in insulations.iterrows():
             # if insulation sink == sink under investigation (above)
             if ins["sink"] == sink["label"]:
-                ep_costs, ep_constr_costs, temp = \
-                    self.calc_insulation_parameter(ins=ins)
+                ep_costs, ep_constr_costs, temp = self.calc_insulation_parameter(
+                    ins=ins
+                )
                 if "existing" in self.insulation and ins["existing"]:
                     # add capacity specific costs to self.insulation
                     self.insulation.loc[num, "ep_costs_kW"] = 0
@@ -202,11 +203,10 @@ class Sinks:
                     # add capacity specific costs to self.insulation
                     self.insulation.loc[num, "ep_costs_kW"] = ep_costs
                     # add capacity specific emissions to self.insulation
-                    self.insulation.loc[num, "ep_constr_costs_kW"] = \
-                        ep_constr_costs
+                    self.insulation.loc[num, "ep_constr_costs_kW"] = ep_constr_costs
                     maximum = max(temp)
                     existing = 0
-                    
+
                 self.nodes_sinks.append(
                     Source(
                         label="{}-insulation".format(ins["label"]),
@@ -214,17 +214,19 @@ class Sinks:
                             self.busd[sink["input"]]: Flow(
                                 investment=Investment(
                                     ep_costs=ep_costs,
-                                    periodical_constraint_costs=
-                                    ep_constr_costs,
+                                    periodical_constraint_costs=ep_constr_costs,
                                     constraint2=1,
                                     minimum=0,
                                     maximum=maximum,
                                     fix_constraint_costs=0,
-                                    existing=existing
+                                    existing=existing,
                                 ),
                                 emission_factor=0,
                                 fix=(args["fix"] / args["fix"].max()),
-                            )}))
+                            )
+                        },
+                    )
+                )
 
     def unfixed_sink(self, sink: pandas.Series) -> None:
         """
@@ -283,7 +285,7 @@ class Sinks:
         elif sink["fixed"] == 1:
             # sets the attributes for a fixed time_series sink
             args.update({"fix": self.timeseries[sink["label"] + ".fix"]})
-            
+
         # starts the create_sink method with the parameters set before
         self.create_sink(sink, args=args)
 
@@ -313,7 +315,7 @@ class Sinks:
 
             :type sink: pandas.Series
         """
-        
+
         # Importing timesystem parameters from the model definition
         temp_resolution = self.energysystem["temporal resolution"]
 
@@ -329,13 +331,13 @@ class Sinks:
                     year=start_date.year,
                     month=start_date.month,
                     day=start_date.day,
-                    hour=start_date.hour
+                    hour=start_date.hour,
                 ),
                 periods=self.energysystem["periods"],
                 freq=temp_resolution,
             )
         )
-        
+
         heat_slps = self.slps["heat_slps_commercial"] + self.slps["heat_slps"]
         # creates time series for heat sinks
         if sink["load profile"] in heat_slps:
@@ -352,12 +354,12 @@ class Sinks:
                 # adds the building class which is only necessary for
                 # the non commercial slps
                 args.update({"building_class": sink["building class"]})
-                
+
             # create the demandlib's data set
             demand[sink["load profile"]] = bdew.HeatBuilding(
                 demand.index, **args
             ).get_bdew_profile()
-            
+
         # create time series for electricity sinks
         elif sink["load profile"] in self.slps["electricity_slps"]:
             # Imports standard load profiles
@@ -365,14 +367,14 @@ class Sinks:
             demand = e_slp.get_profile({sink["load profile"]: 1})
             # creates time series based on standard load profiles
             demand = demand.resample(temp_resolution).mean()
-            
+
         # starts the create_sink method with the parameters set before
         self.create_sink(
             sink,
             nominal_value=sink["annual demand"],
             load_profile=demand[sink["load profile"]],
         )
-        
+
         # returns logging info
         logging.info("\t Sink created: " + sink["label"])
 
@@ -456,7 +458,7 @@ class Sinks:
 
     def __init__(self, nodes_data: dict, busd: dict, nodes: list) -> None:
         """
-            Inits the sink class.
+        Inits the sink class.
         """
         # Delete possible residues of a previous run from the class
         # internal list nodes_sinks
@@ -473,11 +475,10 @@ class Sinks:
             "slp": self.slp_sink,
             "richardson": self.richardson_sink,
         }
-        
+
         sinks = nodes_data["sinks"].loc[nodes_data["sinks"]["active"] == 1]
         # Create sink objects
         for num, sink in sinks.iterrows():
-            
             # switch the load profile to slp if load profile in slps
             if sink["load profile"] in self.slps.values():
                 load_profile = "slp"

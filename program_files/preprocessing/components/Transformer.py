@@ -77,13 +77,14 @@ class Transformers:
         :param nodes: list of components created before (can be empty)
         :type nodes: list
     """
-    
+
     # intern variables
     nodes_transformer = []
     busd = None
-    
-    def get_primary_output_data(self, transformer: pandas.Series,
-                                max_invest=None) -> dict:
+
+    def get_primary_output_data(
+        self, transformer: pandas.Series, max_invest=None
+    ) -> dict:
         """
             Within this method the output flow data of the currently
             considered transformer is parameterized and returned to the
@@ -124,31 +125,33 @@ class Transformers:
         # create the transformers investment object which is set as
         # investment flow afterwards
         invest = Investment(
-                ep_costs=transformer["periodical costs"],
-                minimum=transformer["min. investment capacity"],
-                maximum=transformer["max. investment capacity"],
-                periodical_constraint_costs=transformer[
-                    "periodical constraint costs"],
-                existing=transformer["existing capacity"],
-                nonconvex=True if transformer["non-convex investment"] == 1
-                else False,
-                offset=transformer["fix investment costs"],
-                fix_constraint_costs=transformer[
-                    "fix investment constraint costs"])
+            ep_costs=transformer["periodical costs"],
+            minimum=transformer["min. investment capacity"],
+            maximum=transformer["max. investment capacity"],
+            periodical_constraint_costs=transformer["periodical constraint costs"],
+            existing=transformer["existing capacity"],
+            nonconvex=True if transformer["non-convex investment"] == 1 else False,
+            offset=transformer["fix investment costs"],
+            fix_constraint_costs=transformer["fix investment constraint costs"],
+        )
         # return the parameterized flow to the main creation process
         return {
             "outputs": {
                 self.busd[transformer["output"]]: Flow(
-                        variable_costs=transformer["variable output costs"],
-                        emission_factor=transformer[
-                            "variable output constraint costs"],
-                        investment=invest,
+                    variable_costs=transformer["variable output costs"],
+                    emission_factor=transformer["variable output constraint costs"],
+                    investment=invest,
                 )
             }
         }
-    
-    def create_transformer(self, transformer: pandas.Series, inputs: dict,
-                           conversion_factors: dict, outputs: dict) -> None:
+
+    def create_transformer(
+        self,
+        transformer: pandas.Series,
+        inputs: dict,
+        conversion_factors: dict,
+        outputs: dict,
+    ) -> None:
         """
             Within this method the parameterized transformer (inputs,
             outputs and conversion factors already created) is added to
@@ -173,15 +176,13 @@ class Transformers:
             :type conversion_factors: dict
         """
         self.nodes_transformer.append(
-                Transformer(label=transformer["label"],
-                            **inputs,
-                            **outputs,
-                            **conversion_factors)
+            Transformer(
+                label=transformer["label"], **inputs, **outputs, **conversion_factors
+            )
         )
         logging.info("\t Transformer created: " + transformer["label"])
-    
-    def generic_transformer(self, transformer: pandas.Series,
-                            two_input=False) -> None:
+
+    def generic_transformer(self, transformer: pandas.Series, two_input=False) -> None:
         """
             Creates a generic transformer with the parameters given in
             'nodes_data' and adds it to the list of components 'nodes'.
@@ -228,68 +229,81 @@ class Transformers:
         }
         # Defines Capacity values for the second transformer output
         if transformer["output2"] not in ["None", "none", 0]:
-            efficiency_ratio = float(transformer["efficiency2"]) \
-                               / float(transformer["efficiency"])
+            efficiency_ratio = float(transformer["efficiency2"]) / float(
+                transformer["efficiency"]
+            )
             # calculate the existing capacity for the second output
             # based on the efficiency ratio
-            existing_capacity2 = efficiency_ratio \
-                * float(transformer["existing capacity"])
+            existing_capacity2 = efficiency_ratio * float(
+                transformer["existing capacity"]
+            )
             # calculate the minimum capacity for the second output
             # based on the efficiency ratio
-            minimum_capacity2 = efficiency_ratio \
-                * float(transformer["min. investment capacity"])
-            maximum_capacity2 = efficiency_ratio \
-                * float(transformer["max. investment capacity"])
+            minimum_capacity2 = efficiency_ratio * float(
+                transformer["min. investment capacity"]
+            )
+            maximum_capacity2 = efficiency_ratio * float(
+                transformer["max. investment capacity"]
+            )
             # Creates transformer object and adds it to the list of
             # components
             outputs["outputs"].update(
-                {self.busd[transformer["output2"]]: Flow(
-                    variable_costs=transformer["variable output costs 2"],
-                    emission_factor=transformer[
-                        "variable output constraint costs 2"],
-                    investment=Investment(
+                {
+                    self.busd[transformer["output2"]]: Flow(
+                        variable_costs=transformer["variable output costs 2"],
+                        emission_factor=transformer[
+                            "variable output constraint costs 2"
+                        ],
+                        investment=Investment(
                             existing=existing_capacity2,
                             minimum=minimum_capacity2,
                             maximum=maximum_capacity2,
                             periodical_constraint_costs=0,
-                            fix_constraint_costs=0),
-                    )}
+                            fix_constraint_costs=0,
+                        ),
+                    )
+                }
             )
-            conversion_factors.update({
-                self.busd[transformer["output2"]]: transformer["efficiency2"]})
-        
+            conversion_factors.update(
+                {self.busd[transformer["output2"]]: transformer["efficiency2"]}
+            )
+
         conversion_factors = {"conversion_factors": conversion_factors}
-        inputs = {"inputs": {
-            self.busd[transformer["input"]]: Flow(
+        inputs = {
+            "inputs": {
+                self.busd[transformer["input"]]: Flow(
                     variable_costs=transformer["variable input costs"],
-                    emission_factor=transformer[
-                        "variable input constraint costs"])
-        }}
+                    emission_factor=transformer["variable input constraint costs"],
+                )
+            }
+        }
         # within this part of the method a second input for the
         # considered transformer is created. it's conversion factor
         # is calculated based on the input2 / input ratio given within
         # the spreadsheet
         if two_input:
             inputs["inputs"].update(
-                    {
-                        self.busd[transformer["input2"]]: Flow(
-                                variable_costs=transformer[
-                                    "variable input costs 2"],
-                                emission_factor=transformer[
-                                    "variable input constraint costs 2"],
-                        )
-                    }
+                {
+                    self.busd[transformer["input2"]]: Flow(
+                        variable_costs=transformer["variable input costs 2"],
+                        emission_factor=transformer[
+                            "variable input constraint costs 2"
+                        ],
+                    )
+                }
             )
             conversion_factors["conversion_factors"].update(
-                    {self.busd[transformer["input2"]]: transformer[
-                        "input2 / input"]})
+                {self.busd[transformer["input2"]]: transformer["input2 / input"]}
+            )
         # start the transformer creation after the parametrization has
         # been finished
-        self.create_transformer(transformer=transformer,
-                                inputs=inputs,
-                                outputs=outputs,
-                                conversion_factors=conversion_factors)
-    
+        self.create_transformer(
+            transformer=transformer,
+            inputs=inputs,
+            outputs=outputs,
+            conversion_factors=conversion_factors,
+        )
+
     def create_abs_comp_bus(self, transformer: pandas.Series) -> str:
         """
             create absorption chiller and compression heat transformer's
@@ -313,19 +327,18 @@ class Transformers:
         elif transformer["mode"] == "chiller":
             temp = "_high_temp"
         else:
-            raise ValueError("Mode of "
-                             + transformer["label"] + "contains a typo")
+            raise ValueError("Mode of " + transformer["label"] + "contains a typo")
         bus = Bus(label=transformer["label"] + temp + "_bus")
-        
+
         # adds the bus object to the list of components "nodes"
         self.nodes_transformer.append(bus)
         self.busd[transformer["label"] + temp + "_bus"] = bus
-        
+
         # returns logging info
         logging.info("\t Bus created: " + transformer["label"] + temp + "_bus")
-        
+
         return temp
-    
+
     def compression_heat_transformer(self, transformer: pandas.Series) -> None:
         """
             Creates a Compression Heat Pump or Compression Chiller by
@@ -370,14 +383,13 @@ class Transformers:
     
             :raise SystemError: chosen heat source not defined
         """
-        
+
         # import oemof.thermal in order to calculate the cop
-        import \
-            oemof.thermal.compression_heatpumps_and_chillers as cmpr_hp_chiller
-        
+        import oemof.thermal.compression_heatpumps_and_chillers as cmpr_hp_chiller
+
         # create transformer intern bus and determine operational mode
         temp = self.create_abs_comp_bus(transformer=transformer)
-        
+
         # dictionary containing the
         # 1. heat source specific labels,
         # 2. capacity calculation,
@@ -387,10 +399,15 @@ class Transformers:
                 transformer["label"] + temp + "_ground_source",
                 # A * (l_{probe} * q / A_{min})
                 transformer["area"]
-                * (transformer["length of the geoth. probe"]
-                   * transformer["heat extraction"]
-                   / (transformer["min. borehole area"]
-                      if transformer["min. borehole area"] != 0 else 1)),
+                * (
+                    transformer["length of the geoth. probe"]
+                    * transformer["heat extraction"]
+                    / (
+                        transformer["min. borehole area"]
+                        if transformer["min. borehole area"] != 0
+                        else 1
+                    )
+                ),
                 self.weather_data["ground_temp"],
             ],
             "GroundWater": [
@@ -414,10 +431,10 @@ class Transformers:
         transformer_label, heatsource_cap, temp_low = list(
             switch_dict.get(
                 transformer["heat source"],
-                transformer["label"] + " Error in heat source attribute"
+                transformer["label"] + " Error in heat source attribute",
             )
         )
-        
+
         # Creates heat source for transformer. The heat source costs are
         # considered by the transformer.
         self.nodes_transformer.append(
@@ -426,20 +443,21 @@ class Transformers:
                 outputs={
                     self.busd[transformer["label"] + temp + "_bus"]: Flow(
                         investment=Investment(
-                                maximum=heatsource_cap,
-                                periodical_constraint_costs=0,
-                                fix_constraint_costs=0,
+                            maximum=heatsource_cap,
+                            periodical_constraint_costs=0,
+                            fix_constraint_costs=0,
                         ),
                         emission_factor=0,
                     )
                 },
             )
         )
-        
+
         # Returns logging info
-        logging.info("\t Heat Source created: " + transformer["label"]
-                     + temp + "_source")
-        
+        logging.info(
+            "\t Heat Source created: " + transformer["label"] + temp + "_source"
+        )
+
         temp_high = temp_low.copy()
         if transformer["heat source"] == "Air":
             temp_low_value = transformer["temperature low"]
@@ -447,7 +465,7 @@ class Transformers:
             for index, value in enumerate(temp_high):
                 if value == temp_low_value:
                     temp_high[index] = temp_low_value + 0.1
-        
+
         # setting mode specific temperatures
         if transformer["mode"] == "heat_pump":
             temp_threshold_icing = transformer["temp. threshold icing"]
@@ -459,9 +477,8 @@ class Transformers:
             factor_icing = None
             temp_low = [transformer["temperature low"]]
         else:
-            raise ValueError("Mode of " + transformer["label"]
-                             + "contains a typo")
-        
+            raise ValueError("Mode of " + transformer["label"] + "contains a typo")
+
         # calculation of COPs with set parameters
         cops_hp = cmpr_hp_chiller.calc_cops(
             temp_high=temp_high,
@@ -472,51 +489,56 @@ class Transformers:
             mode=transformer["mode"],
         )
         # logging the transformer's COP
-        logging.info("\t " + transformer["label"]
-                     + ", Average Coefficient of Performance (COP): "
-                       "{:2.2f}".format(numpy.mean(cops_hp)))
-        
+        logging.info(
+            "\t "
+            + transformer["label"]
+            + ", Average Coefficient of Performance (COP): "
+            "{:2.2f}".format(numpy.mean(cops_hp))
+        )
+
         # transformer inputs parameter
         inputs = {
             "inputs": {
                 self.busd[transformer["input"]]: Flow(
                     variable_costs=transformer["variable input costs"],
-                    emission_factor=transformer[
-                        "variable input constraint costs"],
+                    emission_factor=transformer["variable input constraint costs"],
                 ),
                 self.busd[transformer["label"] + temp + "_bus"]: Flow(
-                    emission_factor=0),
+                    emission_factor=0
+                ),
             }
         }
-        if transformer["heat source"] == "Ground" \
-                and transformer["mode"] == "heat_pump":
+        if (
+            transformer["heat source"] == "Ground"
+            and transformer["mode"] == "heat_pump"
+        ):
             cop_new = [(i / (i - 1)) for i in cops_hp]
             max_invest = heatsource_cap * max(cop_new)
         else:
             max_invest = None
         # parametrize the transformer's first output flow
-        outputs = self.get_primary_output_data(transformer=transformer,
-                                               max_invest=max_invest)
+        outputs = self.get_primary_output_data(
+            transformer=transformer, max_invest=max_invest
+        )
         # transformer conversion factor parameter
         conversion_factors = {
             "conversion_factors": {
                 self.busd[transformer["label"] + temp + "_bus"]: [
-                    ((cop - 1) / cop) / transformer["efficiency"]
-                    for cop in cops_hp
+                    ((cop - 1) / cop) / transformer["efficiency"] for cop in cops_hp
                 ],
                 self.busd[transformer["input"]]: [1 / cop for cop in cops_hp],
             }
         }
-        
+
         # start the transformer creation after the parametrization has
         # been finished
         self.create_transformer(
             transformer=transformer,
             inputs=inputs,
             outputs=outputs,
-            conversion_factors=conversion_factors
+            conversion_factors=conversion_factors,
         )
-    
+
     def genericchp_transformer(self, transformer: pandas.Series) -> None:
         """
             Creates a generic chp transformer with the parameters given
@@ -559,28 +581,22 @@ class Transformers:
         # (number of periods is required for creating generic chp transformers)
         # Importing timesystem parameters from the scenario
         periods = int(self.energysystem["periods"])
-        
+
         # CHP input
         chp_input = Flow(
-            H_L_FG_share_max=periods
-            * [transformer["max. share of flue gas loss"]],
-            H_L_FG_share_min=periods
-            * [transformer["min. share of flue gas loss"]],
+            H_L_FG_share_max=periods * [transformer["max. share of flue gas loss"]],
+            H_L_FG_share_min=periods * [transformer["min. share of flue gas loss"]],
             variable_costs=transformer["variable input costs"],
-            emission_factor=transformer["variable input constraint costs"]
+            emission_factor=transformer["variable input constraint costs"],
         )
         # electrical output
         electrical_output = Flow(
-            P_max_woDH=periods
-            * [transformer["max. electric power"]],
-            P_min_woDH=periods
-            * [transformer["min. electric power"]],
-            Eta_el_max_woDH=periods
-            * [transformer["max. electric efficiency"]],
-            Eta_el_min_woDH=periods
-            * [transformer["min. electric efficiency"]],
+            P_max_woDH=periods * [transformer["max. electric power"]],
+            P_min_woDH=periods * [transformer["min. electric power"]],
+            Eta_el_max_woDH=periods * [transformer["max. electric efficiency"]],
+            Eta_el_min_woDH=periods * [transformer["min. electric efficiency"]],
             variable_costs=transformer["variable output costs"],
-            emission_factor=transformer["variable output constraint costs"]
+            emission_factor=transformer["variable output constraint costs"],
         )
         # heat output
         heat_output = Flow(
@@ -595,18 +611,16 @@ class Transformers:
             GenericCHP(
                 label=transformer["label"],
                 fuel_input={self.busd[transformer["input"]]: chp_input},
-                electrical_output={
-                    self.busd[transformer["output"]]: electrical_output
-                },
+                electrical_output={self.busd[transformer["output"]]: electrical_output},
                 heat_output={self.busd[transformer["output2"]]: heat_output},
                 Beta=periods * [transformer["elec. power loss index"]],
-                back_pressure=True if transformer["back pressure"] == 1
-                else False
-            ))
-        
+                back_pressure=True if transformer["back pressure"] == 1 else False,
+            )
+        )
+
         # returns logging info
         logging.info("\t Transformer created: " + transformer["label"])
-    
+
     def absorption_heat_transformer(self, transformer: pandas.Series) -> None:
         """
             Creates an absorption heat transformer object with the
@@ -643,30 +657,28 @@ class Transformers:
             :type transformer: pandas.Series
         """
         # import oemof.thermal in order to calculate COP
-        import \
-            oemof.thermal.absorption_heatpumps_and_chillers as abs_hp_chiller
+        import oemof.thermal.absorption_heatpumps_and_chillers as abs_hp_chiller
         import numpy as np
-        
+
         # create transformer intern bus and determine operational mode
         temp = self.create_abs_comp_bus(transformer=transformer)
-        
+
         # Calculates cooling temperature in absorber/evaporator depending on
         # ambient air temperature of recooling system
         data_np = np.array(self.weather_data["temperature"])
         t_cool = data_np + transformer["recooling temperature difference"]
         t_cool = list(map(int, t_cool))
-        
+
         # Import characteristic equation parameters
         param = pandas.read_csv(
-                os.path.join(os.path.dirname(
-                    os.path.dirname(os.path.dirname(__file__))))
-                + "/technical_data/characteristic_parameters.csv"
+            os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+            + "/technical_data/characteristic_parameters.csv"
         )
-        
+
         # data set of the absorption transformer chosen by the user's
         # spreadsheet input
         data_set = param[(param["name"] == transformer["name"])]
-        
+
         # Calculation of characteristic temperature difference
         ddt = abs_hp_chiller.calc_characteristic_temp(
             t_hot=[transformer["temperature high"]],
@@ -674,9 +686,9 @@ class Transformers:
             t_chill=[transformer["temperature low"]],
             coef_a=data_set["a"].values[0],
             coef_e=data_set["e"].values[0],
-            method="kuehn_and_ziegler"
+            method="kuehn_and_ziegler",
         )
-        
+
         # Calculation of cooling capacity
         q_dots_evap = abs_hp_chiller.calc_heat_flux(
             ddts=ddt,
@@ -684,7 +696,7 @@ class Transformers:
             coef_r=data_set["r_E"].values[0],
             method="kuehn_and_ziegler",
         )
-        
+
         # Calculation of driving heat
         q_dots_gen = abs_hp_chiller.calc_heat_flux(
             ddts=ddt,
@@ -692,15 +704,15 @@ class Transformers:
             coef_r=data_set["r_G"].values[0],
             method="kuehn_and_ziegler",
         )
-        
+
         # Calculation of COPs
-        cops_abs = [Qevap / Qgen for Qgen, Qevap in
-                    zip(q_dots_gen, q_dots_evap)]
-        
-        logging.info("\t " + transformer["label"]
-                     + ", Average Coefficient of Performance "
-                       "(COP): {:2.2f}".format(numpy.mean(cops_abs)))
-        
+        cops_abs = [Qevap / Qgen for Qgen, Qevap in zip(q_dots_gen, q_dots_evap)]
+
+        logging.info(
+            "\t " + transformer["label"] + ", Average Coefficient of Performance "
+            "(COP): {:2.2f}".format(numpy.mean(cops_abs))
+        )
+
         # creates a source object as temperature high heat source and sets
         # heat capacity for this source
         source_label = transformer["label"] + temp + "_source"
@@ -719,21 +731,21 @@ class Transformers:
                 },
             )
         )
-        
+
         # Returns logging info
         logging.info("\t Heat Source created:" + source_label)
-        
+
         # Set in- and outputs with conversion factors and creates transformer
         # object and adds it to  the list of components
         inputs = {
             "inputs": {
                 self.busd[transformer["input"]]: Flow(
                     variable_costs=transformer["variable input costs"],
-                    emission_factor=transformer[
-                        "variable input constraint costs"],
+                    emission_factor=transformer["variable input constraint costs"],
                 ),
                 self.busd[transformer["label"] + temp + "_bus"]: Flow(
-                    emission_factor=0),
+                    emission_factor=0
+                ),
             }
         }
         # parametrize the transformer's first output flow
@@ -742,7 +754,8 @@ class Transformers:
             "conversion_factors": {
                 self.busd[transformer["output"]]: [cop for cop in cops_abs],
                 self.busd[transformer["input"]]: transformer[
-                    "electrical input conversion factor"],
+                    "electrical input conversion factor"
+                ],
             }
         }
 
@@ -752,12 +765,12 @@ class Transformers:
             transformer=transformer,
             inputs=inputs,
             outputs=outputs,
-            conversion_factors=conversion_factors
+            conversion_factors=conversion_factors,
         )
-    
+
     def __init__(self, nodes_data, nodes, busd):
         """
-            Inits the Transformer class.
+        Inits the Transformer class.
         """
         # renames variables
         self.busd = busd
@@ -770,9 +783,10 @@ class Transformers:
             "GenericCHP": self.genericchp_transformer,
             "AbsorptionHeatTransformer": self.absorption_heat_transformer,
         }
-        
+
         active_transformers = nodes_data["transformers"].loc[
-            nodes_data["transformers"]["active"] == 1]
+            nodes_data["transformers"]["active"] == 1
+        ]
         # creates a transformer object for every transformer item within nd
         for num, transformer in active_transformers.iterrows():
             if transformer["transformer type"] != "GenericTwoInputTransformer":
@@ -787,7 +801,7 @@ class Transformers:
             # handled separately
             else:
                 self.generic_transformer(transformer, True)
-        
+
         # appends created transformers to the list of nodes
         for i in range(len(self.nodes_transformer)):
             nodes.append(self.nodes_transformer[i])

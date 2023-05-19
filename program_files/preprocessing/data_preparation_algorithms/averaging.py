@@ -2,13 +2,15 @@
     Christian Klemm - christian.klemm@fh-muenster.de
 """
 import numpy
-from program_files.preprocessing.data_preparation \
-    import calculate_cluster_means, variable_costs_date_adaption, \
-    timeseries_adaption
+from program_files.preprocessing.data_preparation import (
+    calculate_cluster_means,
+    variable_costs_date_adaption,
+    timeseries_adaption,
+)
 
 
 def mean_adapt_timeseries_weatherdata(
-        clusters: int, cluster_labels: list, period: str, nodes_data: dict
+    clusters: int, cluster_labels: list, period: str, nodes_data: dict
 ) -> None:
     """
         Using this method, the mean values of the clusters are formed
@@ -27,31 +29,35 @@ def mean_adapt_timeseries_weatherdata(
     """
     weather_data = nodes_data["weather data"]
     # Apply the Clusters to the entire weather_dataset
-    prep_weather_data = calculate_cluster_means(data_set=weather_data,
-                                                cluster_number=clusters,
-                                                cluster_labels=cluster_labels,
-                                                period=period)
+    prep_weather_data = calculate_cluster_means(
+        data_set=weather_data,
+        cluster_number=clusters,
+        cluster_labels=cluster_labels,
+        period=period,
+    )
 
     # Rename columns of the new weather_dataset
-    prep_weather_data['timestamp'] = \
-        weather_data['timestamp'][:len(prep_weather_data)]
+    prep_weather_data["timestamp"] = weather_data["timestamp"][: len(prep_weather_data)]
 
     # Replaces the weather data set in nodes_data by the new one
-    nodes_data['weather data'] = prep_weather_data
+    nodes_data["weather data"] = prep_weather_data
 
     # Adapts Other Parameters (despite weather data) of the energy system
-    variable_costs_date_adaption(nodes_data=nodes_data,
-                                 clusters=clusters,
-                                 period=period)
+    variable_costs_date_adaption(
+        nodes_data=nodes_data, clusters=clusters, period=period
+    )
 
-    timeseries_adaption(nodes_data=nodes_data,
-                        clusters=clusters,
-                        cluster_labels=cluster_labels,
-                        period=period)
+    timeseries_adaption(
+        nodes_data=nodes_data,
+        clusters=clusters,
+        cluster_labels=cluster_labels,
+        period=period,
+    )
 
 
-def timeseries_averaging(cluster_period: str, days_per_cluster: int,
-                         nodes_data: dict, period: str) -> None:
+def timeseries_averaging(
+    cluster_period: str, days_per_cluster: int, nodes_data: dict, period: str
+) -> None:
     """
         Averages the values of the time series, how many values are
         averaged is defined by the variable clusters.
@@ -72,8 +78,8 @@ def timeseries_averaging(cluster_period: str, days_per_cluster: int,
             is not supported
     """
     # create a local copy of the weather data sheet
-    weather_data = nodes_data['weather data']
-    
+    weather_data = nodes_data["weather data"]
+
     # calculate the number of clusters based on the timeseries length of
     # the chosen period type divided by one cluster length
     cluster_dict = {"hours": 8760, "days": 365, "weeks": 52}
@@ -81,7 +87,7 @@ def timeseries_averaging(cluster_period: str, days_per_cluster: int,
         clusters = cluster_dict.get(cluster_period) // int(days_per_cluster)
     except TypeError:
         raise ValueError("Non supported period")
-    
+
     # calculate the number of periods by dividing the weather data
     # length by the hourly time horizon of one hour/day/week
     period_dict = {"hours": 1, "days": 24, "weeks": 168}
@@ -96,15 +102,17 @@ def timeseries_averaging(cluster_period: str, days_per_cluster: int,
         # append cluster length times cluster number on cluster labels
         for cluster_length in range(periods // clusters):
             cluster_labels.append(cluster_number)
-    
+
     # If there is a remainder when dividing period by clusters, the last
     # cluster number is added to the list of cluster labels again.
     if periods % clusters >= 0:
         for k in range(periods % clusters):
             cluster_labels.append(clusters - 1)
     cluster_labels = numpy.array(cluster_labels)
-    
-    mean_adapt_timeseries_weatherdata(clusters=clusters,
-                                      cluster_labels=cluster_labels,
-                                      period=period,
-                                      nodes_data=nodes_data)
+
+    mean_adapt_timeseries_weatherdata(
+        clusters=clusters,
+        cluster_labels=cluster_labels,
+        period=period,
+        nodes_data=nodes_data,
+    )

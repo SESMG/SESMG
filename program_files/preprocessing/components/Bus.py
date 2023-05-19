@@ -39,8 +39,7 @@ def buses(nodes_data: dict, nodes: list) -> dict:
 
     # Creates components, which are defined within the "buses"-sheet of
     # the original excel-file
-    for num, bus in nodes_data["buses"][
-            nodes_data["buses"]["active"] == 1].iterrows():
+    for num, bus in nodes_data["buses"][nodes_data["buses"]["active"] == 1].iterrows():
         # creates an oemof-bus object
         bus_node = Bus(label=bus["label"])
         # adds the bus object to the list of components "nodes"
@@ -73,7 +72,6 @@ def buses(nodes_data: dict, nodes: list) -> dict:
                     emission_factor=bus["shortage constraint costs"],
                 )
             }
-            nodes.append(Source(label=bus["label"] + "_shortage",
-                                outputs=outputs))
+            nodes.append(Source(label=bus["label"] + "_shortage", outputs=outputs))
     # Returns the list of buses as result of the function
     return busd

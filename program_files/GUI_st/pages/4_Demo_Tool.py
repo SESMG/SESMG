@@ -10,14 +10,19 @@ import glob
 import openpyxl
 import streamlit as st
 import pandas as pd
-from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
-    import sesmg_main
-from program_files.GUI_st.GUI_st_global_functions import \
-    st_settings_global, read_markdown_document, import_GUI_input_values_json
+from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator import (
+    sesmg_main,
+)
+from program_files.GUI_st.GUI_st_global_functions import (
+    st_settings_global,
+    read_markdown_document,
+    import_GUI_input_values_json,
+)
 
 # Import GUI help comments from the comment json and safe as a dict
 GUI_helper = import_GUI_input_values_json(
-    os.path.dirname(os.path.dirname(__file__)) + "/GUI_st_help_comments.json")
+    os.path.dirname(os.path.dirname(__file__)) + "/GUI_st_help_comments.json"
+)
 
 # creating global model run mode dict
 mode_dict = {
@@ -29,8 +34,9 @@ mode_dict = {
 input_values_dict = {}
 
 # define main path to SESMG main folder
-mainpath_mf = os.path.dirname(os.path.dirname(
-    os.path.dirname(os.path.dirname(__file__))))
+mainpath_mf = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+)
 # define main path to SESMG program files folder
 mainpath_pf = os.path.join(mainpath_mf, "program_files")
 # define main path to SESMG results/demo folder
@@ -50,38 +56,28 @@ def dt_input_sidebar() -> dict:
     """
 
     with st.sidebar.form("Simulation input"):
-
         # input value for model run name
-        st.text_input(label="Name",
-                      value="")
+        st.text_input(label="Name", value="")
 
         # input value for photovoltaics
         input_values_dict["input_pv"] = st.number_input(
-            label="Photovoltaic in kW",
-            min_value=0,
-            max_value=10000,
-            step=1)
+            label="Photovoltaic in kW", min_value=0, max_value=10000, step=1
+        )
 
         # input value for solar thermal
         input_values_dict["input_st"] = st.number_input(
-            label="Solar Thermal in kW",
-            min_value=0,
-            max_value=27700,
-            step=1)
+            label="Solar Thermal in kW", min_value=0, max_value=27700, step=1
+        )
 
         # input value for air source heat pump
         input_values_dict["input_ashp"] = st.number_input(
-            label="Air source heat pump in kW",
-            min_value=0,
-            max_value=5000,
-            step=1)
+            label="Air source heat pump in kW", min_value=0, max_value=5000, step=1
+        )
 
         # input value for ground coupled heat pump
         input_values_dict["input_gchp"] = st.number_input(
-            label="Ground coupled heat pump in kW",
-            min_value=0,
-            max_value=5000,
-            step=1)
+            label="Ground coupled heat pump in kW", min_value=0, max_value=5000, step=1
+        )
 
         # input value for central thermal storage
         input_values_dict["input_battery"] = st.number_input(
@@ -89,7 +85,8 @@ def dt_input_sidebar() -> dict:
             min_value=0,
             max_value=10000,
             step=1,
-            help=GUI_helper["demo_ni_kw_kwh"])
+            help=GUI_helper["demo_ni_kw_kwh"],
+        )
 
         # input value for decentral thermal storage
         input_values_dict["input_dcts"] = st.number_input(
@@ -97,14 +94,15 @@ def dt_input_sidebar() -> dict:
             min_value=0,
             max_value=10000,
             step=1,
-            help=GUI_helper["demo_ni_kw_kwh"])
+            help=GUI_helper["demo_ni_kw_kwh"],
+        )
 
         # selectbox for the scize of the District Heating Network
         input_dh = st.selectbox(
             label="District Heating Network",
-            options=["No District Heating Network", "urban", "sub-urban",
-                     "rural"],
-            help=GUI_helper["demo_sb_heat_network_chp"])
+            options=["No District Heating Network", "urban", "sub-urban", "rural"],
+            help=GUI_helper["demo_sb_heat_network_chp"],
+        )
 
         # If input_dh is equal to the name of the options, then the \
         # values for the input parameters in input_values_dict are taken from \
@@ -145,12 +143,13 @@ def dt_input_sidebar() -> dict:
 
         # create slider to choose the optimization criterion
         input_values_dict["input_criterion"] = st.select_slider(
-            label="Optimization Criterion",
-            options=("monetary", "emissions"))
+            label="Optimization Criterion", options=("monetary", "emissions")
+        )
 
         # button to run the demotool
-        st.form_submit_button(label="Start Simulation",
-                              on_click=change_state_submitted_demo_run)
+        st.form_submit_button(
+            label="Start Simulation", on_click=change_state_submitted_demo_run
+        )
 
         if st.form_submit_button:
             return input_values_dict
@@ -189,7 +188,7 @@ def execute_sesmg_demo(demo_file: str, demo_results: str, mode: str) -> None:
         console_results=False,
         solver="cbc",
         cluster_dh=False,
-        district_heating_path=""
+        district_heating_path="",
     )
 
     # reset st.session_state["state_submitted_demo_run"] to stop rerun when
@@ -199,13 +198,14 @@ def execute_sesmg_demo(demo_file: str, demo_results: str, mode: str) -> None:
 
 def create_demo_model_definition() -> None:
     """
-        Modifies the demo model definition.
+    Modifies the demo model definition.
     """
 
     xfile = openpyxl.load_workbook(
         mainpath_pf
         + "/demo_tool/v0.4.0_demo_model_definition/demo_model_definition.xlsx",
-        data_only=True)
+        data_only=True,
+    )
 
     # PHOTOVOLTAICS
     sheet = xfile["sources"]
@@ -246,8 +246,7 @@ def create_demo_model_definition() -> None:
     sheet["C6"] = input_values_dict["input_chp_rural"]
 
     # check if /demo exists in results direcotry
-    if mainpath_rdf \
-            not in glob.glob(os.path.join(mainpath_mf, "results", "*")):
+    if mainpath_rdf not in glob.glob(os.path.join(mainpath_mf, "results", "*")):
         # create /results/demo directory
         os.mkdir(path=os.path.join(mainpath_rdf))
 
@@ -258,15 +257,16 @@ def create_demo_model_definition() -> None:
     execute_sesmg_demo(
         demo_file=mainpath_rdf + r"/model_definition.xlsx",
         demo_results=mainpath_rdf,
-        mode=input_values_dict["input_criterion"])
+        mode=input_values_dict["input_criterion"],
+    )
 
 
 def show_demo_run_results(mode: str) -> None:
     """
-        Loading and displaying demo run results.
+    Loading and displaying demo run results.
 
-        :param mode: optimization criterion which is chosen in the GUI
-        :type mode: str
+    :param mode: optimization criterion which is chosen in the GUI
+    :type mode: str
     """
 
     # load summary.csv from results/demo /emissions or /monetary folder
@@ -284,14 +284,15 @@ def show_demo_run_results(mode: str) -> None:
     # emissions in t/a
     stat_quo_emissions = 17221.43690357
     # relative values as str
-    rel_result_costs = \
-        str(round((annual_costs-stat_quo_costs) / stat_quo_costs * 100, 2)) \
+    rel_result_costs = (
+        str(round((annual_costs - stat_quo_costs) / stat_quo_costs * 100, 2)) + " %"
+    )
+    rel_result_emissions = (
+        str(
+            round((annual_emissions - stat_quo_emissions) / stat_quo_emissions * 100, 2)
+        )
         + " %"
-    rel_result_emissions = \
-        str(round(
-            (annual_emissions-stat_quo_emissions) /
-            stat_quo_emissions * 100, 2)) \
-        + " %"
+    )
 
     # Display and import simulated cost values from summary dataframe
     st.subheader("Your solution:")
@@ -301,26 +302,29 @@ def show_demo_run_results(mode: str) -> None:
         label="Annual Costs in Mil. €",
         value=round(annual_costs, 2),
         delta=rel_result_costs,
-        delta_color="inverse")
+        delta_color="inverse",
+    )
     cost2.metric(
         label="Annual Costs in t",
         value=round(annual_emissions, 2),
         delta=rel_result_emissions,
-        delta_color="inverse")
+        delta_color="inverse",
+    )
 
 
 def demo_start_page() -> None:
     """
-        Start page text, images and tables for the demo tool.
+    Start page text, images and tables for the demo tool.
     """
 
     # import markdown text from GUI files
     imported_markdown = read_markdown_document(
         document_path="docs/GUI_texts/demo_tool_text.md",
-        folder_path=f'{"docs/images/manual/DemoTool/*"}')
+        folder_path=f'{"docs/images/manual/DemoTool/*"}',
+    )
 
     # show markdown text
-    st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
+    st.markdown("".join(imported_markdown), unsafe_allow_html=True)
 
     # upload demo tool graph image
     img = "docs/images/manual/DemoTool/demo_system_graph.png"
@@ -329,10 +333,11 @@ def demo_start_page() -> None:
     # import markdown tables from GUI files
     imported_markdown = read_markdown_document(
         document_path="docs/GUI_texts/demo_tool_tables.md",
-        folder_path=f'{"docs/images/manual/DemoTool/*"}')
+        folder_path=f'{"docs/images/manual/DemoTool/*"}',
+    )
 
     # show markdown text
-    st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
+    st.markdown("".join(imported_markdown), unsafe_allow_html=True)
 
     # upload dh image
     img = "docs/images/manual/DemoTool/district_heating_network.png"
@@ -341,8 +346,8 @@ def demo_start_page() -> None:
 
 def change_state_submitted_demo_run() -> None:
     """
-        Setup session state for the demo run form-submit as an change
-        event as on-click to switch the state.
+    Setup session state for the demo run form-submit as an change
+    event as on-click to switch the state.
     """
     st.session_state["state_submitted_demo_run"] = "done"
 

@@ -21,9 +21,12 @@ copt = [
 ]
 
 
-def add_component_to_loc(label: str, comp_dict: list,
-                         df_list_of_components: pandas.DataFrame,
-                         maxinvest="---") -> pandas.DataFrame:
+def add_component_to_loc(
+    label: str,
+    comp_dict: list,
+    df_list_of_components: pandas.DataFrame,
+    maxinvest="---",
+) -> pandas.DataFrame:
     """
         adds the given component with it's parameters to list of
         components (loc)
@@ -76,8 +79,9 @@ def add_component_to_loc(label: str, comp_dict: list,
     return df_list_of_components
 
 
-def append_flows(label: str, comp_dict: list,
-                 df_result_table: pandas.DataFrame) -> pandas.DataFrame:
+def append_flows(
+    label: str, comp_dict: list, df_result_table: pandas.DataFrame
+) -> pandas.DataFrame:
     """
         In this method, the time series of inflows and outflows as well
         as the capacities of the component (comp_dict) are appended to
@@ -116,21 +120,22 @@ def append_flows(label: str, comp_dict: list,
     # append the components flows to the dict of columns for later
     # plotting within the GUI
     for flow in flow_type_dict:
-        if str(type(comp_dict[flow])) not in ["<class 'float'>",
-                                              "<class 'int'>"]:
+        if str(type(comp_dict[flow])) not in ["<class 'float'>", "<class 'int'>"]:
             if sum(comp_dict[flow]) != 0:
                 dict_of_columns[label + flow_type_dict[flow]] = comp_dict[flow]
     # add the new added columns to the df results table which will be
     # the results.csv in the model definition's result folder
-    df_result_table = pandas.concat([df_result_table,
-                                     pandas.DataFrame(dict_of_columns)],
-                                    axis=1)
+    df_result_table = pandas.concat(
+        [df_result_table, pandas.DataFrame(dict_of_columns)], axis=1
+    )
     return df_result_table
 
 
-def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
-                df_list_of_components: pandas.DataFrame
-                ) -> (pandas.DataFrame, float, float, float, pandas.DataFrame):
+def prepare_loc(
+    comp_dict: dict,
+    df_result_table: pandas.DataFrame,
+    df_list_of_components: pandas.DataFrame,
+) -> (pandas.DataFrame, float, float, float, pandas.DataFrame):
     """
         In this method, on the one hand, the components as well as
         their flows are added to the list of components (loc) and to
@@ -175,7 +180,8 @@ def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
         df_result_table = append_flows(
             label=str(label),
             comp_dict=comp_dict[label],
-            df_result_table=df_result_table)
+            df_result_table=df_result_table,
+        )
         df_list_of_components = add_component_to_loc(
             label=label,
             comp_dict=comp_dict[label],
@@ -195,9 +201,9 @@ def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
     )
 
 
-def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict
-                 ) -> (pandas.DataFrame, float, float, float, pandas.DataFrame,
-                       float):
+def prepare_data(
+    comp_dict: dict, total_demand: float, nodes_data: dict
+) -> (pandas.DataFrame, float, float, float, pandas.DataFrame, float):
     """
         This method is the main method of data preparation for
         subsequent export and/or display in the GUI of the energy
@@ -245,8 +251,9 @@ def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict
             comp_dict.pop(label)
         # handling the investment structure of solar thermal collector
         # component
-        elif "collector" in label \
-                and label[:-10] in list(nodes_data["sources"]["label"]):
+        elif "collector" in label and label[:-10] in list(
+            nodes_data["sources"]["label"]
+        ):
             for i in range(0, 3):
                 comp_dict[label[:-10]][i] = comp_dict[label][i]
             comp_dict[label[:-10]][8] = comp_dict[label][8]
@@ -260,9 +267,11 @@ def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict
         total_variable_costs,
         total_constraint_costs,
         df_result_table,
-    ) = prepare_loc(comp_dict=comp_dict,
-                    df_result_table=df_result_table,
-                    df_list_of_components=df_list_of_components)
+    ) = prepare_loc(
+        comp_dict=comp_dict,
+        df_result_table=df_result_table,
+        df_list_of_components=df_list_of_components,
+    )
     return (
         df_list_of_components,
         total_periodical_costs,
