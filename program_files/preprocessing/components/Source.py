@@ -70,13 +70,8 @@ class Sources:
         :type nodes: list
     """
 
-    def create_source(
-        self,
-        source: pandas.Series,
-        timeseries_args: dict,
-        output=None,
-        variable_costs_list=None,
-    ) -> None:
+    def create_source(self, source: pandas.Series, timeseries_args: dict,
+                      output=None, variable_costs_list=None) -> None:
         """
             Creates an oemof source with fixed or unfixed timeseries
     
@@ -112,16 +107,10 @@ class Sources:
         # set non convex bool
         non_convex = True if source["non-convex investment"] == 1 else False
         # set the variable costs / constraint costs
-        variable_costs = (
-            source["variable costs"]
-            if not variable_costs_list
-            else variable_costs_list[0]
-        )
-        variable_constraint_costs = (
-            source["variable constraint costs"]
-            if not variable_costs_list
-            else variable_costs_list[1]
-        )
+        variable_costs = source["variable costs"] \
+            if not variable_costs_list else variable_costs_list[0]
+        variable_constraint_costs = source["variable constraint costs"] \
+            if not variable_costs_list else variable_costs_list[1]
         # Creates a oemof source and appends it to the nodes_sources
         # (variable of the create_sources-class) list
         self.nodes_sources.append(
@@ -132,16 +121,14 @@ class Sources:
                         investment=Investment(
                             ep_costs=source["periodical costs"],
                             periodical_constraint_costs=source[
-                                "periodical constraint costs"
-                            ],
+                                "periodical constraint costs"],
                             minimum=source["min. investment capacity"],
                             maximum=source["max. investment capacity"],
                             existing=source["existing capacity"],
                             nonconvex=non_convex,
                             offset=source["fix investment costs"],
                             fix_constraint_costs=source[
-                                "fix investment constraint costs"
-                            ],
+                                "fix investment constraint costs"],
                         ),
                         **timeseries_args,
                         variable_costs=variable_costs,
@@ -165,11 +152,9 @@ class Sources:
         """
         # starts the create_source method with the parameters
         # min = 0 and max = 1
-        self.create_source(
-            source=source,
-            timeseries_args={"max": 1},
-            output=self.busd[source["output"]],
-        )
+        self.create_source(source=source,
+                           timeseries_args={"max": 1},
+                           output=self.busd[source["output"]])
 
         # Returns logging info
         logging.info("\t Commodity Source created: " + source["label"])
@@ -216,20 +201,16 @@ class Sources:
             raise SystemError(source["label"] + " Error in fixed attribute")
 
         # starts the create_source method with the parameters set before
-        self.create_source(
-            source=source, timeseries_args=args, output=self.busd[source["output"]]
-        )
+        self.create_source(source=source,
+                           timeseries_args=args,
+                           output=self.busd[source["output"]])
 
         # Returns logging info
         logging.info("\t Timeseries Source created: " + source["label"])
 
-    def create_feedin_source(
-        self,
-        feedin: pandas.Series,
-        source: pandas.Series,
-        output=None,
-        variable_costs=None,
-    ) -> None:
+    def create_feedin_source(self, feedin: pandas.Series,
+                             source: pandas.Series, output=None,
+                             variable_costs=None) -> None:
         """
             In this method, the parameterization of the output flow \
             for sources has been outsourced, since it is not source \
@@ -263,16 +244,14 @@ class Sources:
             args = {"max": feedin}
         else:
             raise SystemError(source["label"] + " Error in fixed attribute")
-
+        
         output = self.busd[source["output"]] if output is None else output
-
+        
         # starts the create_source method with the parameters set before
-        self.create_source(
-            source=source,
-            timeseries_args=args,
-            output=output,
-            variable_costs_list=variable_costs,
-        )
+        self.create_source(source=source,
+                           timeseries_args=args,
+                           output=output,
+                           variable_costs_list=variable_costs)
         # returns logging info
         logging.info("\t Source created: " + source["label"])
 
@@ -366,16 +345,17 @@ class Sources:
         # create windturbine
         wind_turbine = WindPowerPlant(**turbine_data)
 
-        weather_df = self.weather_data[["windspeed", "temperature", "z0", "pressure"]]
+        weather_df = self.weather_data[["windspeed", "temperature",
+                                        "z0", "pressure"]]
         # second row is height of data acquisition in m
         weather_df.columns = [
             ["wind_speed", "temperature", "roughness_length", "pressure"],
-            [10, 2, 0, 0],
-        ]
-
+            [10, 2, 0, 0]]
+        
         # calculate scaled feed-in
-        feedin = wind_turbine.feedin(weather=weather_df, scaling="nominal_power")
-
+        feedin = wind_turbine.feedin(weather=weather_df,
+                                     scaling="nominal_power")
+        
         self.create_feedin_source(feedin, source)
 
     def solar_heat_source(self, source: pandas.Series) -> None:
@@ -419,7 +399,7 @@ class Sources:
         from oemof.thermal.solar_thermal_collector import flat_plate_precalc
         from oemof.thermal.concentrating_solar_power import csp_precalc
         import numpy
-
+        
         # get the source label
         label = source["label"]
 
@@ -483,7 +463,7 @@ class Sources:
                 temp_collector_outlet=source["Temperature Inlet"]
                 + source["Temperature Difference"],
                 temp_amb=weather_data["temperature"],
-                E_dir_hor=dirhi,
+                E_dir_hor=dirhi
             )
             # set variables collectors_heat and irradiance and conversion
             # from W/sqm to kW/sqm
@@ -491,10 +471,11 @@ class Sources:
         else:
             raise ValueError("Technology chosen not accepted!")
         collectors_heat = precalc_res.eta_c
-
-        self.create_feedin_source(
-            feedin=collectors_heat, source=source, output=col_bus, variable_costs=[0, 0]
-        )
+        
+        self.create_feedin_source(feedin=collectors_heat,
+                                  source=source,
+                                  output=col_bus,
+                                  variable_costs=[0, 0])
 
         self.nodes_sources.append(
             Transformer(
@@ -503,17 +484,15 @@ class Sources:
                     self.busd[label + "_bus"]: Flow(emission_factor=0),
                     self.busd[source["input"]]: Flow(emission_factor=0),
                 },
-                outputs={
-                    self.busd[source["output"]]: Flow(
-                        variable_costs=source["variable costs"],
-                        emission_factor=source["variable constraint costs"],
-                    )
-                },
+                outputs={self.busd[source["output"]]: Flow(
+                    variable_costs=source["variable costs"],
+                    emission_factor=source["variable constraint costs"])},
                 conversion_factors={
                     self.busd[label + "_bus"]: 1,
                     self.busd[source["input"]]: source["Electric Consumption"]
                     * (1 - source["Peripheral Losses"]),
-                    self.busd[source["output"]]: 1 - source["Peripheral Losses"],
+                    self.busd[source["output"]]:
+                        1 - source["Peripheral Losses"],
                 },
             )
         )
@@ -523,14 +502,15 @@ class Sources:
             "\t Source created: "
             + source["label"]
             + ", Max Heat power output per year and m²: "
-            "{:2.2f}".format(numpy.sum(collectors_heat / source["Conversion Factor"]))
+            "{:2.2f}".format(numpy.sum(collectors_heat
+                                       / source["Conversion Factor"]))
             + " kWh/(m²a), Irradiance on collector per year and m²: "
             "{:2.2f}".format(numpy.sum(irradiance)) + " kWh/(m²a)"
         )
 
     def __init__(self, nodes_data: dict, nodes: list, busd: dict) -> None:
         """
-        Inits the source class
+            Inits the source class
         """
         # Delete possible residues of a previous run from the class
         # internal list nodes_sources
@@ -549,11 +529,13 @@ class Sources:
             "concentrated_solar_power": self.solar_heat_source,
         }
         # dataframe of active sources
-        sources = nodes_data["sources"].loc[nodes_data["sources"]["active"] == 1]
-
+        sources = nodes_data["sources"].loc[
+            nodes_data["sources"]["active"] == 1]
+        
         # Create Source from "Sources" Table
         for num, source in sources.iterrows():
-            switch_dict.get(source["technology"], "Invalid technology !")(source)
+            switch_dict.get(source["technology"],
+                            "Invalid technology !")(source)
 
         # appends created sources and other objects to the list of nodes
         for i in range(len(self.nodes_sources)):

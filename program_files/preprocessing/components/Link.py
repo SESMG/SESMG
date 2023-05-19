@@ -70,10 +70,8 @@ class Links:
             fix_investment_costs = link["fix investment costs"] / 2
             fix_constr_costs = link["fix investment constraint costs"] / 2
         else:
-            raise SystemError(
-                "Parameter (un)directed not filled correctly "
-                "for the component " + link["label"]
-            )
+            raise SystemError("Parameter (un)directed not filled correctly "
+                              "for the component " + link["label"])
 
         return Flow(
             variable_costs=link["variable output costs"],
@@ -84,7 +82,8 @@ class Links:
                 minimum=link["min. investment capacity"],
                 maximum=link["max. investment capacity"],
                 existing=link["existing capacity"],
-                nonconvex=True if link["non-convex investment"] == 1 else False,
+                nonconvex=True if link["non-convex investment"] == 1
+                else False,
                 offset=fix_investment_costs,
                 fix_constraint_costs=fix_constr_costs,
             ),
@@ -92,7 +91,7 @@ class Links:
 
     def __init__(self, nodes_data: dict, nodes: list, busd: dict) -> None:
         """
-        Inits the Links class.
+            Inits the Links class.
         """
         # renames variables
         self.busd = busd

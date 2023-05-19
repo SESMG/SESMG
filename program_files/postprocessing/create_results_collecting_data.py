@@ -39,9 +39,8 @@ def check_for_link_storage(node, nodes_data: pandas.DataFrame) -> str:
     return return_str
 
 
-def get_sequence(
-    flow, component: dict, node, output_flow: bool, esys: solph.EnergySystem
-) -> list:
+def get_sequence(flow, component: dict, node, output_flow: bool,
+                 esys: solph.EnergySystem) -> list:
     """
         method to get the in- and outflow's sequences from the oemof
         produced structures
@@ -70,7 +69,8 @@ def get_sequence(
         # create the index tuple(s) for the flow sequence to be found in
         # the list of flows
         attr1 = (str(flow[0].label), str(node.label))
-        attr2 = (str(flow[1].label), str(node.label)) if len(flow) == 2 else ()
+        attr2 = (str(flow[1].label), str(node.label)) \
+            if len(flow) == 2 else ()
         # if the considered flows are output flows revert the tuple
         # structure
         if output_flow:
@@ -129,12 +129,12 @@ def get_flows(node, results: dict, esys: solph.EnergySystem) -> list:
         )
     # return the flow series
     # [input flow 1, input flow 2, output flow 1, output flow 2]
-    return [result_list[0][0], result_list[1][0], result_list[2][0], result_list[3][0]]
+    return [result_list[0][0], result_list[1][0],
+            result_list[2][0], result_list[3][0]]
 
 
-def get_investment(
-    node, esys: solph.EnergySystem, results: dict, comp_type: str
-) -> float:
+def get_investment(node, esys: solph.EnergySystem, results: dict,
+                   comp_type: str) -> float:
     """
         method used to obtain the component's investment, this is
         calculated differently for storages compared to the other
@@ -166,23 +166,18 @@ def get_investment(
     else:
         bus_node = None
     # get the specified flows investment variable
-    if (
-        not comp_type == "clustered_dh"
-        and "invest" in results[component_node, bus_node]["scalars"]
-    ):
+    if not comp_type == "clustered_dh" \
+            and "invest" in results[component_node, bus_node]["scalars"]:
         return results[component_node, bus_node]["scalars"]["invest"]
-    elif (
-        comp_type == "clustered_dh"
-        and "invest" in results[bus_node, component_node]["scalars"]
-    ):
+    elif comp_type == "clustered_dh" \
+            and "invest" in results[bus_node, component_node]["scalars"]:
         return results[bus_node, component_node]["scalars"]["invest"]
     else:
         return 0
 
 
-def calc_periodical_costs(
-    node, investment: float, comp_type: str, cost_type: str
-) -> float:
+def calc_periodical_costs(node, investment: float, comp_type: str,
+                          cost_type: str) -> float:
     """
         method to calculate the component's periodical costs for the
         first optimization criterion (cost_type = costs) or the second
@@ -286,14 +281,16 @@ def get_comp_type(node) -> str:
         "<class 'dhnx.optimization.oemof_heatpipe.HeatPipeline'>": "dh",
         "<class 'oemof.solph.network.sink.Sink'>": "sink",
         "<class 'oemof.solph.network.source.Source'>": "source",
-        "<class 'oemof.solph.components.generic_storage.GenericStorage'>": "storage",
+        "<class 'oemof.solph.components.generic_storage.GenericStorage'>":
+            "storage",
         "<class 'oemof.solph.custom.link.Link'>": "link",
         "<class 'oemof.solph.network.transformer.Transformer'>": "transformer",
     }
     return type_dict.get(str(type(node)))
 
 
-def get_capacities(comp_type: str, comp_dict: list, results: dict, label: str) -> list:
+def get_capacities(comp_type: str, comp_dict: list, results: dict,
+                   label: str) -> list:
     """
         method to get the components capacity which is component type
         specific
@@ -317,7 +314,8 @@ def get_capacities(comp_type: str, comp_dict: list, results: dict, label: str) -
     # maximum of the first output if there ist one or the maximum of the
     # first input
     if comp_type != "storage":
-        comp_dict += [max(comp_dict[0] if sum(comp_dict[2]) == 0 else comp_dict[2])]
+        comp_dict += [max(comp_dict[0] if sum(comp_dict[2]) == 0
+                          else comp_dict[2])]
     # if the component type is storage the storage content which is part
     # of the oemof results object is used to determine the capacity
     else:
@@ -397,9 +395,8 @@ def change_heatpipelines_label(comp_label: str, result_path: str) -> str:
     return loc_label
 
 
-def collect_data(
-    nodes_data: dict, results: dict, esys: solph.EnergySystem, result_path: str
-) -> (dict, float, float):
+def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
+                 result_path: str) -> (dict, float, float):
     """
         main method of the algorithm used to collect the data which is
         necessary to create the results presentation
@@ -440,14 +437,12 @@ def collect_data(
             if isinstance(node, HeatPipeline):
                 # make heat pipeline labels easier to read in the list of
                 # components (loc)
-                loc_label = change_heatpipelines_label(
-                    comp_label=node.label, result_path=result_path
-                )
+                loc_label = change_heatpipelines_label(comp_label=node.label,
+                                                       result_path=result_path)
             else:
                 loc_label = comp_label
-            comp_type = check_for_link_storage(
-                node=node, nodes_data=nodes_data["links"]
-            )
+            comp_type = check_for_link_storage(node=node,
+                                               nodes_data=nodes_data["links"])
             # get component flows from each component except buses
             comp_dict.update({loc_label: []})
             # get component flows attributes
@@ -456,10 +451,8 @@ def collect_data(
             comp_dict[loc_label] += flows
             # get the nodes capacity
             comp_dict[loc_label] = get_capacities(
-                comp_type=comp_type,
-                comp_dict=comp_dict[loc_label],
-                results=results,
-                label=comp_label,
+                comp_type=comp_type, comp_dict=comp_dict[loc_label],
+                results=results, label=comp_label
             )
             # investment and periodical costs
             if not (
@@ -467,15 +460,12 @@ def collect_data(
             ) and not isinstance(node, Sink):
                 # get investment
                 investment = get_investment(
-                    node=node, esys=esys, results=results, comp_type=comp_type
-                )
+                    node=node, esys=esys, results=results, comp_type=comp_type)
                 comp_dict[loc_label].append(investment)
                 # get periodical costs
                 periodical_costs = calc_periodical_costs(
-                    node=node,
-                    investment=investment,
-                    comp_type=comp_type,
-                    cost_type="costs",
+                    node=node, investment=investment, comp_type=comp_type,
+                    cost_type="costs"
                 )
                 comp_dict[loc_label].append(periodical_costs)
                 max_invest = get_max_invest(comp_type=comp_type, node=node)
@@ -492,23 +482,23 @@ def collect_data(
                 # calculate the variable costs of the first optimization
                 # criterion
                 variable_costs = calc_variable_costs(
-                    node=node, comp_dict=comp_dict[loc_label], attr="variable_costs"
+                    node=node, comp_dict=comp_dict[loc_label],
+                    attr="variable_costs"
                 )
                 comp_dict[loc_label].append(variable_costs)
                 # calculate the variable costs of the second optimization
                 # criterion
                 constraint_costs = calc_variable_costs(
-                    node=node, comp_dict=comp_dict[loc_label], attr="emission_factor"
+                    node=node, comp_dict=comp_dict[loc_label],
+                    attr="emission_factor"
                 )
                 # if there is an investment in the node under investigation
                 # calculate the periodical costs of the second optimization
                 # criterion
                 if investment:
                     constraint_costs += calc_periodical_costs(
-                        node=node,
-                        investment=investment,
-                        comp_type=comp_type,
-                        cost_type="emissions",
+                        node=node, investment=investment, comp_type=comp_type,
+                        cost_type="emissions"
                     )
                 # append the costs of the second optimization criterion to the
                 # dict to be returned
@@ -520,5 +510,5 @@ def collect_data(
                 total_usage += sum(flows[2])
             # get the component's type for the loc
             comp_dict[loc_label].append(get_comp_type(node=node))
-
+            
     return comp_dict, total_demand, total_usage

@@ -8,11 +8,14 @@ import pandas as pd
 from oemof import solph
 from matplotlib import pyplot as plt
 import os
-from program_files.postprocessing.create_results_collecting_data import collect_data
-from program_files.postprocessing.create_results_prepare_data import prepare_data
+from program_files.postprocessing.create_results_collecting_data \
+    import collect_data
+from program_files.postprocessing.create_results_prepare_data \
+    import prepare_data
 
 
-def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str) -> None:
+def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str
+         ) -> None:
     """
         Returns model results as xlsx-files.
         Saves the in- and outgoing flows of every bus of a given,
@@ -33,7 +36,8 @@ def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str) -> No
     # timesystem
     for i, b in nodes_data["buses"].iterrows():
         if b["active"]:
-            file_path = os.path.join(filepath, "results_" + b["label"] + ".xlsx")
+            file_path = os.path.join(filepath, "results_"
+                                     + b["label"] + ".xlsx")
             node_results = solph.views.node(results, b["label"])
             df = node_results["sequences"]
             df.head(2)
@@ -71,9 +75,8 @@ def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str) -> No
         logging.info("\t Results saved as xlsx for " + str(label))
 
 
-def charts(
-    nodes_data: dict, optimization_model: solph.Model, energy_system: solph.EnergySystem
-) -> None:
+def charts(nodes_data: dict, optimization_model: solph.Model,
+           energy_system: solph.EnergySystem) -> None:
     """
         Plots model results in- and outgoing flows of every bus of a
         given, optimized energy system (based on matplotlib)
@@ -92,7 +95,7 @@ def charts(
 
     for num, bus in nodes_data["buses"].iterrows():
         if bus["active"]:
-            logging.info("\t " + 56 * "*")
+            logging.info('\t ' + 56 * '*')
             logging.info("   " + "RESULTS: " + bus["label"])
 
             bus = solph.views.node(results, bus["label"])
@@ -100,7 +103,10 @@ def charts(
             fig, ax = plt.subplots(figsize=(10, 5))
             bus["sequences"].plot(ax=ax)
             ax.legend(
-                loc="upper center", prop={"size": 8}, bbox_to_anchor=(0.5, 1.4), ncol=2
+                loc="upper center",
+                prop={"size": 8},
+                bbox_to_anchor=(0.5, 1.4),
+                ncol=2
             )
             fig.subplots_adjust(top=0.7)
             plt.show()
@@ -181,7 +187,7 @@ class Results:
         cluster_dh: bool,
     ):
         """
-        Inits the Results class.
+            Inits the Results class.
         """
 
         # remove all old entries from method intern variables
@@ -196,7 +202,7 @@ class Results:
             nodes_data=nodes_data,
             results=self.results,
             esys=self.esys,
-            result_path=result_path,
+            result_path=result_path
         )
 
         (
@@ -206,10 +212,10 @@ class Results:
             total_constraint_costs,
             df_result_table,
             total_demand,
-        ) = prepare_data(
-            comp_dict=comp_dict, total_demand=total_demand, nodes_data=nodes_data
-        )
-
+        ) = prepare_data(comp_dict=comp_dict,
+                         total_demand=total_demand,
+                         nodes_data=nodes_data)
+        
         # SUMMARY
         meta_results = solph.processing.meta_results(optimization_model)
         meta_results_objective = meta_results["objective"]
