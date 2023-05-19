@@ -84,7 +84,7 @@ def import_model_definition(filepath: str, delete_units=True) -> dict:
     return nodes_data
 
 
-def define_energy_system(nodes_data: dict) -> EnergySystem:
+def define_energy_system(nodes_data: dict) -> (EnergySystem, dict):
     """
         Creates an energy system with the parameters defined in the
         given .xlsx-file. The file has to contain a sheet called
@@ -100,8 +100,12 @@ def define_energy_system(nodes_data: dict) -> EnergySystem:
             definition file
         :type nodes_data: dict
         
-        :return: **esys** (oemof.solph.Energysystem) - oemof energy \
-            system
+        :return: - **esys** (oemof.solph.Energysystem) - oemof energy \
+                    system
+                 - **nodes_data** (dict) - dictionary containing data \
+                    from excel model definition file after the \
+                    timestamps of timeseries and weather data sheet \
+                    have been changed
     """
     # fix pyomo error while using the streamlit gui
     import pyutilib.subprocess.GlobalData
@@ -141,4 +145,4 @@ def define_energy_system(nodes_data: dict) -> EnergySystem:
     )
     
     # returns oemof energy system as result of this function
-    return esys
+    return esys, nodes_data

@@ -93,7 +93,8 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
         model_definition_file = result_path + "/modified_model_definition.xlsx"
 
     # created an energysystem as defined in the model definition file
-    esys = create_energy_system.define_energy_system(nodes_data=nodes_data)
+    esys, nodes_data = create_energy_system.define_energy_system(
+        nodes_data=nodes_data)
 
     # creates a list where the created components will be stored
     nodes = []
