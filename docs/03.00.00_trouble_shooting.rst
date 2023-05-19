@@ -85,6 +85,18 @@ Error I-007: No module named streamlit
 
 **Debugging:** You need to delete the folder and restart the installation with a 'freshly' unpacked .zip file (downloadable on Github). Make shure to type your installed python version in the major.minor format, which means to give 3.X if you have the version 3.X.YY.
 
+Error I-008: No module named streamlit
+-------------------------------------------------------------------
+**Error Message:** ::
+
+   \user\..\.streamlit is already excisting
+   ...
+   Error: No matching distribution found for streamlit>=1.17.0
+
+**Possible Error Cause:** The SESMG, or especially the subpackage stramlit, is not compatible with the python version 3.9.7.   
+
+**Debugging:** Check if you have this version. If so, you need to install another version or update the version. 
+
 Modeling
 ========
 
