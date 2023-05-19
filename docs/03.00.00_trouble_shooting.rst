@@ -223,9 +223,13 @@ Error M-012: Key Error (Index)
 
    KeyError: 'Index \'(''<oemof.solph.network.source.Source: \'ID_phtovoltaic_electricity_source\'>' ''<oemof.solph.network.bus.Bus: \'ID_pv_bus\'>'' 0)\' is not valid for indexed component \'flow\''
 
-**Possible Error Cause:** You probably named the busses incorrectly.
+**Possible Error Cause I:** You probably named the busses incorrectly.
 
-**Debugging:** Check if all busses are named correctly.
+**Debugging I:** Check if all busses are named correctly.
+
+**Possible Error Cause II:** If you added a wind turbine, it is possible that the windpowerlib has not all information about the chosen turbine model.
+
+**Debugging II:** Deactivate the wind turbine to validate the error. Choose another turbine model (which has model and power curve data), to solve the issue.
 
 Error M-013: Key error (source)
 -------------------------------
@@ -330,7 +334,7 @@ Error M-022: Key Error (sequences) II
 
 Error M-023: nearest foot point
 -------------------------------
-**Error Message:** 
+**Error Message:** ::
 
    ... get nearest_perp_foot_point foot_point.extend(foot_points[0])
    IndexError: list index out of range
@@ -341,7 +345,7 @@ Error M-023: nearest foot point
 
 Error M-024: KeyError: 'lon'
 ----------------------------
-**Error Message:** :
+**Error Message:** ::
 
    ... in get_loc
    raise KeyError(key) from err
@@ -354,7 +358,7 @@ Error M-024: KeyError: 'lon'
 
 Error M-025: "left_on" OR "left_index"
 --------------------------------------
-**Error Message:** :
+**Error Message:** ::
 
    ... pandas.errors.MergeError: Can only pass argument "left_on" OR "left_index" not both.
 
@@ -365,7 +369,7 @@ Error M-025: "left_on" OR "left_index"
 
 Error M-026: Key Error (sequences) III
 --------------------------------------
-**Error Message:** :
+**Error Message:** ::
 
    ... in get_sequence return_list.append([component["sequences"][(i, "flow")]])
 
@@ -379,7 +383,7 @@ Error M-026: Key Error (sequences) III
 
 Error M-027: Key Error (Index) II
 ---------------------------------
-**Error Message**:
+**Error Message:** ::
 
    KeyError: 'Index \'("<oemof.solph.network.source.Source: \'insulation-..._roof\'>", "<oemof.solph.network.bus.Bus: \'..._heat_bus\'>", 0)\' is not valid for indexed component \'flow\''
 
