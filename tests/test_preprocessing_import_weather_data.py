@@ -1,4 +1,5 @@
 import pandas
+import os
 from shapely.geometry import Point
 from program_files.preprocessing import import_weather_data
 
@@ -36,9 +37,11 @@ def test_import_open_fred_weather_data():
         data stored in the model definition. The reference location
         here is Düsseldorf Airport.
     """
-    test_nodes_data = pandas.read_excel("../model_definition_example.xlsx",
-                                        "weather data",
-                                        parse_dates=["timestamp"])
+    test_nodes_data = pandas.read_excel(
+        os.path.dirname(os.path.dirname(__file__))
+        + "/model_definition_example.xlsx",
+        "weather data",
+        parse_dates=["timestamp"])
     test_nodes_data = test_nodes_data.drop(columns=["timestamp",
                                                     "ground_temp",
                                                     "water_temp",
