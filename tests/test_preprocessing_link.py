@@ -51,7 +51,7 @@ def test_directed_convex_link_entry():
     link = Link(
         label="test_link",
         inputs={input_bus: Flow(variable_costs=0,
-                                emission_factor=0),
+                                custom_attributes={"emission_factor": 0}),
                 # necessary for component creation but deleted
                 # afterwards
                 output_bus: Flow()},
@@ -59,18 +59,19 @@ def test_directed_convex_link_entry():
             # necessary for component creation but deleted
             # afterwards
             input_bus: Flow(),
-            output_bus: Flow(variable_costs=10,
-                             emission_factor=20,
-                             investment=Investment(
-                                 ep_costs=30,
-                                 periodical_constraint_costs=40,
-                                 minimum=0,
-                                 maximum=50,
-                                 existing=0,
-                                 nonconvex=False,
-                                 offset=0,
-                                 fix_constraint_costs=0,
-                             ))},
+            output_bus: Flow(
+                variable_costs=10,
+                custom_attributes={"emission_factor": 20},
+                investment=Investment(
+                    ep_costs=30,
+                    minimum=0,
+                    maximum=50,
+                    existing=0,
+                    nonconvex=False,
+                    offset=0,
+                    custom_attributes={"periodical_constraint_costs": 40,
+                                       "fix_constraint_costs": 0}
+                 ))},
         conversion_factors={(input_bus, output_bus): 1,
                             (output_bus, input_bus): 1})
 

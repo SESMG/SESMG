@@ -20,12 +20,16 @@ def test_bus_entry():
     test_energy_system.add(bus)
     # add excess sink to test energy system
     test_energy_system.add(Sink(label="test_bus_excess",
-                                inputs={bus: Flow(variable_costs=-0.35,
-                                                  emission_factor=-27)}))
+                                inputs={bus: Flow(
+                                    variable_costs=-0.35,
+                                    custom_attributes={"emission_factor": -27})
+                                }))
     # add shortage source to test energy system
-    test_energy_system.add(Source(label="test_bus_shortage",
-                                  outputs={bus: Flow(variable_costs=0.5,
-                                                     emission_factor=300)}))
+    test_energy_system.add(Source(
+        label="test_bus_shortage",
+        outputs={bus: Flow(
+            variable_costs=0.5,
+            custom_attributes={"emission_factor": 300})}))
 
     return test_energy_system.nodes
 
