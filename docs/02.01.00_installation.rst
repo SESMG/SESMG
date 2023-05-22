@@ -5,7 +5,7 @@ Installation
 Windows
 =======
 
-1. Install Python (3.7, 3.8 or 3.9)
+1. Install Python (3.8 or 3.9)
 Windows users can finde the versions here: `Python download page for windows <https://www.python.org/downloads/windows/>`_
 
 .. note:: 
@@ -110,7 +110,7 @@ MacOS
 
 	We recommend installing the SESMG as an admin or user with admin rights.
 
-1. Install Python (version 3.7, 3.8 or 3.9) 
+1. Install Python (version 3.8 or 3.9)
 
 Go to the `Python download page for macOS <https://www.python.org/downloads/macos/>`_ and download an installer.
 
@@ -192,7 +192,7 @@ Enter your python version.
 Linux 
 =====
 
-1. Install Python (version 3.7, 3.8 or 3.9)
+1. Install Python (version 3.8 or 3.9)
 
 - go to `<https://phoenixnap.com/kb/how-to-install-python-3-ubuntu/>`_
 
