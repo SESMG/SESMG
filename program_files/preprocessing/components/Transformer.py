@@ -3,8 +3,10 @@
     Janik Budde - Janik.Budde@fh-muenster.de
     Yannick Wittor - yw090223@fh-muenster.de
 """
-from oemof.solph import Flow, Investment, Transformer, Source, Bus
-from oemof.solph.components import GenericCHP
+from oemof.solph import Investment
+from oemof.solph.flows import Flow
+from oemof.solph.components import Transformer, Source, GenericCHP
+from oemof.solph.buses import Bus
 import logging
 import numpy
 import pandas
@@ -127,22 +129,24 @@ class Transformers:
                 ep_costs=transformer["periodical costs"],
                 minimum=transformer["min. investment capacity"],
                 maximum=transformer["max. investment capacity"],
-                periodical_constraint_costs=transformer[
-                    "periodical constraint costs"],
+                custom_attributes={
+                    "periodical_constraint_costs":
+                    transformer["periodical constraint costs"],
+                    "fix_constraint_costs":
+                    transformer["fix investment constraint costs"]},
                 existing=transformer["existing capacity"],
                 nonconvex=True if transformer["non-convex investment"] == 1
                 else False,
-                offset=transformer["fix investment costs"],
-                fix_constraint_costs=transformer[
-                    "fix investment constraint costs"])
+                offset=transformer["fix investment costs"])
         # return the parameterized flow to the main creation process
         return {
             "outputs": {
                 self.busd[transformer["output"]]: Flow(
-                        variable_costs=transformer["variable output costs"],
-                        emission_factor=transformer[
-                            "variable output constraint costs"],
-                        investment=invest,
+                    variable_costs=transformer["variable output costs"],
+                    custom_attributes={
+                        "emission_factor":
+                        transformer["variable output constraint costs"]},
+                    investment=invest,
                 )
             }
         }
@@ -245,14 +249,15 @@ class Transformers:
             outputs["outputs"].update(
                 {self.busd[transformer["output2"]]: Flow(
                     variable_costs=transformer["variable output costs 2"],
-                    emission_factor=transformer[
-                        "variable output constraint costs 2"],
+                    custom_attributes={
+                        "emission_factor":
+                        transformer["variable output constraint costs 2"]},
                     investment=Investment(
-                            existing=existing_capacity2,
-                            minimum=minimum_capacity2,
-                            maximum=maximum_capacity2,
-                            periodical_constraint_costs=0,
-                            fix_constraint_costs=0),
+                        existing=existing_capacity2,
+                        minimum=minimum_capacity2,
+                        maximum=maximum_capacity2,
+                        custom_attributes={"periodical_constraint_costs": 0,
+                                           "fix_constraint_costs": 0}),
                     )}
             )
             conversion_factors.update({
@@ -262,8 +267,9 @@ class Transformers:
         inputs = {"inputs": {
             self.busd[transformer["input"]]: Flow(
                     variable_costs=transformer["variable input costs"],
-                    emission_factor=transformer[
-                        "variable input constraint costs"])
+                    custom_attributes={
+                        "emission_factor":
+                        transformer["variable input constraint costs"]})
         }}
         # within this part of the method a second input for the
         # considered transformer is created. it's conversion factor
@@ -271,14 +277,15 @@ class Transformers:
         # the spreadsheet
         if two_input:
             inputs["inputs"].update(
-                    {
-                        self.busd[transformer["input2"]]: Flow(
-                                variable_costs=transformer[
-                                    "variable input costs 2"],
-                                emission_factor=transformer[
-                                    "variable input constraint costs 2"],
-                        )
-                    }
+                {
+                    self.busd[transformer["input2"]]: Flow(
+                        variable_costs=transformer[
+                            "variable input costs 2"],
+                        custom_attributes={
+                            "emission_factor":
+                            transformer["variable input constraint costs 2"]},
+                    )
+                }
             )
             conversion_factors["conversion_factors"].update(
                     {self.busd[transformer["input2"]]: transformer[
@@ -299,7 +306,7 @@ class Transformers:
                 for the creation of an oemof transformer. At least the \
                 following key-value-pairs have to be included:
                 
-                    - labe
+                    - label
                     - mode
                     
             :type transformer: pandas.Series
@@ -426,11 +433,12 @@ class Transformers:
                 outputs={
                     self.busd[transformer["label"] + temp + "_bus"]: Flow(
                         investment=Investment(
-                                maximum=heatsource_cap,
-                                periodical_constraint_costs=0,
-                                fix_constraint_costs=0,
+                            maximum=heatsource_cap,
+                            custom_attributes={
+                                "periodical_constraint_costs": 0,
+                                "fix_constraint_costs": 0},
                         ),
-                        emission_factor=0,
+                        custom_attributes={"emission_factor": 0},
                     )
                 },
             )
@@ -481,11 +489,12 @@ class Transformers:
             "inputs": {
                 self.busd[transformer["input"]]: Flow(
                     variable_costs=transformer["variable input costs"],
-                    emission_factor=transformer[
-                        "variable input constraint costs"],
+                    custom_attributes={
+                        "emission_factor":
+                        transformer["variable input constraint costs"]},
                 ),
                 self.busd[transformer["label"] + temp + "_bus"]: Flow(
-                    emission_factor=0),
+                    custom_attributes={"emission_factor": 0},),
             }
         }
         if transformer["heat source"] == "Ground" \
@@ -562,32 +571,38 @@ class Transformers:
         
         # CHP input
         chp_input = Flow(
-            H_L_FG_share_max=periods
-            * [transformer["max. share of flue gas loss"]],
-            H_L_FG_share_min=periods
-            * [transformer["min. share of flue gas loss"]],
+            custom_attributes={
+                "H_L_FG_share_max":
+                periods * [transformer["max. share of flue gas loss"]],
+                "H_L_FG_share_min":
+                periods * [transformer["min. share of flue gas loss"]],
+                "emission_factor":
+                transformer["variable input constraint costs"]},
             variable_costs=transformer["variable input costs"],
-            emission_factor=transformer["variable input constraint costs"]
         )
         # electrical output
         electrical_output = Flow(
-            P_max_woDH=periods
-            * [transformer["max. electric power"]],
-            P_min_woDH=periods
-            * [transformer["min. electric power"]],
-            Eta_el_max_woDH=periods
-            * [transformer["max. electric efficiency"]],
-            Eta_el_min_woDH=periods
-            * [transformer["min. electric efficiency"]],
+            custom_attributes={
+                "P_max_woDH":
+                periods * [transformer["max. electric power"]],
+                "P_min_woDH":
+                periods * [transformer["min. electric power"]],
+                "Eta_el_max_woDH":
+                periods * [transformer["max. electric efficiency"]],
+                "Eta_el_min_woDH":
+                periods * [transformer["min. electric efficiency"]],
+                "emission_factor":
+                transformer["variable output constraint costs"]},
             variable_costs=transformer["variable output costs"],
-            emission_factor=transformer["variable output constraint costs"]
         )
         # heat output
         heat_output = Flow(
-            Q_CW_min=periods * [transformer["minimal thermal output power"]],
+            custom_attributes={
+                "Q_CW_min":
+                periods * [transformer["minimal thermal output power"]],
+                "emission_factor":
+                periods * [transformer["variable output constraint costs 2"]]},
             variable_costs=periods * [transformer["variable output costs 2"]],
-            emission_factor=periods
-            * [transformer["variable output constraint costs 2"]],
         )
         # creates genericCHP transformer object and adds it to the
         # list of components
@@ -599,7 +614,7 @@ class Transformers:
                     self.busd[transformer["output"]]: electrical_output
                 },
                 heat_output={self.busd[transformer["output2"]]: heat_output},
-                Beta=periods * [transformer["elec. power loss index"]],
+                beta=periods * [transformer["elec. power loss index"]],
                 back_pressure=True if transformer["back pressure"] == 1
                 else False
             ))
@@ -711,10 +726,11 @@ class Transformers:
                     self.busd[transformer["label"] + temp + "_bus"]: Flow(
                         investment=Investment(
                             maximum=transformer["heat capacity of source"],
-                            fix_constraint_costs=0,
-                            periodical_constraint_costs=0,
+                            custom_attributes={
+                                "fix_constraint_costs": 0,
+                                "periodical_constraint_costs": 0},
                         ),
-                        emission_factor=0,
+                        custom_attributes={"emission_factor": 0},
                     )
                 },
             )
@@ -729,11 +745,12 @@ class Transformers:
             "inputs": {
                 self.busd[transformer["input"]]: Flow(
                     variable_costs=transformer["variable input costs"],
-                    emission_factor=transformer[
-                        "variable input constraint costs"],
+                    custom_attributes={
+                        "emission_factor":
+                        transformer["variable input constraint costs"]},
                 ),
                 self.busd[transformer["label"] + temp + "_bus"]: Flow(
-                    emission_factor=0),
+                    custom_attributes={"emission_factor": 0},),
             }
         }
         # parametrize the transformer's first output flow

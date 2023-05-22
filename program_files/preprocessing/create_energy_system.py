@@ -120,7 +120,7 @@ def define_energy_system(nodes_data: dict) -> EnergySystem:
                                        freq=temp_resolution)
     
     # initialisation of the energy system
-    esys = EnergySystem(timeindex=datetime_index)
+    esys = EnergySystem(timeindex=datetime_index, infer_last_interval=True)
     # setting the index column for time series and weather data
     for sheet in ["timeseries", "weather data"]:
         # defines a time series

@@ -2,7 +2,7 @@
     Christian Klemm - christian.klemm@fh-muenster.de
 """
 from oemof.solph import Investment, Flow
-from oemof.solph.custom import Link
+from oemof.solph.components.experimental import Link
 import logging
 import pandas
 
@@ -75,17 +75,19 @@ class Links:
 
         return Flow(
             variable_costs=link["variable output costs"],
-            emission_factor=link["variable output constraint costs"],
+            custom_attributes={"emission_factor":
+                               link["variable output constraint costs"]},
             investment=Investment(
                 ep_costs=ep_costs,
-                periodical_constraint_costs=ep_constr_costs,
                 minimum=link["min. investment capacity"],
                 maximum=link["max. investment capacity"],
                 existing=link["existing capacity"],
                 nonconvex=True if link["non-convex investment"] == 1
                 else False,
                 offset=fix_investment_costs,
-                fix_constraint_costs=fix_constr_costs,
+                custom_attributes={
+                    "periodical_constraint_costs": ep_constr_costs,
+                    "fix_constraint_costs": fix_constr_costs}
             ),
         )
 
@@ -101,8 +103,10 @@ class Links:
             link_node = Link(
                 label=link["label"],
                 inputs={
-                    self.busd[link["bus1"]]: Flow(emission_factor=0),
-                    self.busd[link["bus2"]]: Flow(emission_factor=0),
+                    self.busd[link["bus1"]]: Flow(
+                        custom_attributes={"emission_factor": 0}),
+                    self.busd[link["bus2"]]: Flow(
+                        custom_attributes={"emission_factor": 0}),
                 },
                 outputs={
                     self.busd[link["bus2"]]: self.get_flow(link),

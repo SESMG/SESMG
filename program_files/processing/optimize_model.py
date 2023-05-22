@@ -29,7 +29,7 @@ def constraint_optimization_against_two_values(
             within the added constraints
     """
     import pyomo.environ as po
-    from oemof.solph.plumbing import sequence
+    from oemof.solph import sequence
     
     periodical_flows = {}
     nonconvex_flows = {}
@@ -65,7 +65,7 @@ def constraint_optimization_against_two_values(
         "invest_limit_periodical_constraints",
         po.Expression(
             expr=sum(
-                om.InvestmentFlow.invest[inflow, outflow]
+                om.InvestmentFlowBlock.invest[inflow, outflow]
                 * getattr(periodical_flows[inflow, outflow],
                           "periodical_constraint_costs")
                 for (inflow, outflow) in periodical_flows
@@ -87,7 +87,7 @@ def constraint_optimization_against_two_values(
             expr=sum(
                 (getattr(nonconvex_flows[inflow, outflow],
                          "fix_constraint_costs")
-                 * om.InvestmentFlow.invest_status[inflow, outflow])
+                 * om.InvestmentFlowBlock.invest_status[inflow, outflow])
                 for (inflow, outflow) in nonconvex_flows)
         ),
     )
@@ -238,7 +238,7 @@ def competition_constraint(om: solph.Model, nodes_data: dict,
 
             def competition_rule(om):
                 competition_flow = sum(
-                    om.InvestmentFlow.invest[inflow, outflow]
+                    om.InvestmentFlowBlock.invest[inflow, outflow]
                     * om.flows[inflow, outflow].competition_factor
                     for (inflow, outflow) in flows
                 )
@@ -249,13 +249,26 @@ def competition_constraint(om: solph.Model, nodes_data: dict,
                 )
                 return limit >= competition_flow
 
+            #setattr(
+            #    om,
+            #    row["component 1"] + "_" + row["component 2"]
+            #    + "competition_constraint",
+            #    po.Constraint(om.TIMESTEPS, expr=competition_rule),
+            #)
+
             setattr(
                 om,
                 row["component 1"] + "_" + row["component 2"]
                 + "competition_constraint",
-                po.Constraint(om.TIMESTEPS, expr=competition_rule),
+                po.Constraint(om.TIMESTEPS, noruleinit=True),
             )
-
+            setattr(
+                om,
+                row["component 1"] + "_" + row["component 2"]
+                + "competition_constraint" + "_build",
+                po.BuildAction(rule=competition_rule),
+            )
+            
     return om
 
 
@@ -278,7 +291,7 @@ def constraint_optimization_of_criterion_adherence_to_a_minval(
             within the newly added constraints
     """
     import pyomo.environ as po
-    from oemof.solph.plumbing import sequence
+    from oemof.solph import sequence
 
     flows = {}
     # Search for all flows that contain the parameter constraint2,
@@ -375,7 +388,7 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
         for comp, outflow in om.flows.keys():
             # searching for the output-flows of the link labeled
             # z['label']
-            if isinstance(comp, solph.custom.Link) \
+            if isinstance(comp, solph.components.experimental.Link) \
                     and str(comp) == row["label"]:
                 # check if the link is undirected and ensure that the
                 # solver has to invest the same amount on both
@@ -384,8 +397,10 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
                     comp = energy_system.groups[row["label"]]
                     solph.constraints.equate_variables(
                         model=om,
-                        var1=om.InvestmentFlow.invest[comp, busd[row["bus1"]]],
-                        var2=om.InvestmentFlow.invest[comp, busd[row["bus2"]]],
+                        var1=om.InvestmentFlowBlock.invest[
+                            comp, busd[row["bus1"]]],
+                        var2=om.InvestmentFlowBlock.invest[
+                            comp, busd[row["bus2"]]],
                     )
     logging.info("\t " + 56 * "*")
     logging.info("\t " + "Starting Optimization with " + solver + "-Solver")

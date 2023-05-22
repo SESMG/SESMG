@@ -4,7 +4,10 @@
     Yannick Wittor - yw090223@fh-muenster.de
 """
 from feedinlib import powerplants, WindPowerPlant
-from oemof.solph import Source, Flow, Investment, Bus, Transformer
+from oemof.solph.components import Source, Transformer
+from oemof.solph.buses import Bus
+from oemof.solph.flows import Flow
+from oemof.solph import Investment
 import logging
 import pandas
 
@@ -120,19 +123,23 @@ class Sources:
                     output: Flow(
                         investment=Investment(
                             ep_costs=source["periodical costs"],
-                            periodical_constraint_costs=source[
-                                "periodical constraint costs"],
                             minimum=source["min. investment capacity"],
                             maximum=source["max. investment capacity"],
                             existing=source["existing capacity"],
                             nonconvex=non_convex,
                             offset=source["fix investment costs"],
-                            fix_constraint_costs=source[
-                                "fix investment constraint costs"],
+                            custom_attributes={
+                                "periodical_constraint_costs":
+                                source["periodical constraint costs"],
+                                "fix_constraint_costs":
+                                source["fix investment constraint costs"],
+                            }
                         ),
                         **timeseries_args,
                         variable_costs=variable_costs,
-                        emission_factor=variable_constraint_costs
+                        custom_attributes={"emission_factor":
+                                           variable_constraint_costs}
+                        
                     )
                 },
             )
@@ -481,12 +488,15 @@ class Sources:
             Transformer(
                 label=label + "_collector",
                 inputs={
-                    self.busd[label + "_bus"]: Flow(emission_factor=0),
-                    self.busd[source["input"]]: Flow(emission_factor=0),
+                    self.busd[label + "_bus"]: Flow(
+                        custom_attributes={"emission_factor": 0}),
+                    self.busd[source["input"]]: Flow(
+                        custom_attributes={"emission_factor": 0}),
                 },
                 outputs={self.busd[source["output"]]: Flow(
                     variable_costs=source["variable costs"],
-                    emission_factor=source["variable constraint costs"])},
+                    custom_attributes={"emission_factor":
+                                       source["variable constraint costs"]})},
                 conversion_factors={
                     self.busd[label + "_bus"]: 1,
                     self.busd[source["input"]]: source["Electric Consumption"]
