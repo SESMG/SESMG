@@ -94,8 +94,10 @@ def test_undirected_non_convex_link_entry():
         i.e. euros per kilowatt hour, and the expected emissions as
         grams of CO2 equivalent per kilowatt hour.
     """
-    from oemof.solph import EnergySystem, Bus, Flow, Investment
-    from oemof.solph.custom import Link
+    from oemof.solph.buses import Bus
+    from oemof.solph import EnergySystem, Investment
+    from oemof.solph.flows import Flow
+    from oemof.solph.components.experimental import Link
     test_energy_system = EnergySystem()
     # add bus to test energy system
     input_bus = Bus(label="test_input_bus")
@@ -104,37 +106,40 @@ def test_undirected_non_convex_link_entry():
     test_energy_system.add(output_bus)
     # add excess sink to test energy system
     link = Link(
-            label="test_link2",
-            inputs={input_bus: Flow(variable_costs=0,
-                                    emission_factor=0),
-                    output_bus: Flow(variable_costs=0,
-                                     emission_factor=0)},
-            outputs={input_bus: Flow(variable_costs=10,
-                                     emission_factor=20,
-                                     investment=Investment(
-                                         ep_costs=30 / 2,
-                                         periodical_constraint_costs=40 / 2,
-                                         minimum=0,
-                                         maximum=50,
-                                         existing=0,
-                                         nonconvex=True,
-                                         offset=60 / 2,
-                                         fix_constraint_costs=70 / 2,
-                                     )),
-                     output_bus: Flow(variable_costs=10,
-                                      emission_factor=20,
-                                      investment=Investment(
-                                          ep_costs=30 / 2,
-                                          periodical_constraint_costs=40 / 2,
-                                          minimum=0,
-                                          maximum=50,
-                                          existing=0,
-                                          nonconvex=True,
-                                          offset=60 / 2,
-                                          fix_constraint_costs=70 / 2,
-                                      ))},
-            conversion_factors={(input_bus, output_bus): 1,
-                                (output_bus, input_bus): 1})
+        label="test_link2",
+        inputs={input_bus: Flow(variable_costs=0,
+                                custom_attributes={"emission_factor": 0}),
+                output_bus: Flow(variable_costs=0,
+                                 custom_attributes={"emission_factor": 0})},
+        outputs={
+            input_bus: Flow(
+                variable_costs=10,
+                custom_attributes={"emission_factor": 20},
+                investment=Investment(
+                    ep_costs=30 / 2,
+                    minimum=0,
+                    maximum=50,
+                    existing=0,
+                    nonconvex=True,
+                    offset=60 / 2,
+                    custom_attributes={"periodical_constraint_costs": 40 / 2,
+                                       "fix_constraint_costs": 70 / 2}
+                )),
+            output_bus: Flow(
+                variable_costs=10,
+                custom_attributes={"emission_factor": 20},
+                investment=Investment(
+                    ep_costs=30 / 2,
+                    minimum=0,
+                    maximum=50,
+                    existing=0,
+                    nonconvex=True,
+                    offset=60 / 2,
+                    custom_attributes={"periodical_constraint_costs": 40 / 2,
+                                       "fix_constraint_costs": 70 / 2},
+                ))},
+        conversion_factors={(input_bus, output_bus): 1,
+                            (output_bus, input_bus): 1})
 
     test_energy_system.add(link)
     return test_energy_system.nodes
