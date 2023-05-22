@@ -9,8 +9,8 @@ import os
 @pytest.fixture
 def test_GUI_main_dict():
     """
-        Redefining the GUI_main_dict which is inputvariable for all global \
-        GUI functions
+        Redefining the GUI_main_dict which is inputvariable for all
+        global GUI functions
     """
 
     return {"input_timeseries_algorithm": "slicing A",
@@ -48,10 +48,11 @@ def test_GUI_main_dict():
 
 def test_create_timeseries_parameter_list(test_GUI_main_dict):
     """
-        Testing if the function creates the in the parameter list in the \
-        order as required for the run_sesmg function which is [algorithm, \
-        cluster_index, cluster_criterion, cluster_period, cluster_season].\
-        If valid it is also valid for the premodel_parameter_list.
+        Testing if the function creates the in the parameter list in
+        the order as required for the run_sesmg function which is
+        [algorithm, cluster_index, cluster_criterion, cluster_period,
+        cluster_season]. If valid it is also valid for the
+        premodel_parameter_list.
     """
 
     from program_files.GUI_st.GUI_st_global_functions \
@@ -76,8 +77,8 @@ def test_create_timeseries_parameter_list(test_GUI_main_dict):
 
 def test_import_GUI_input_values_json(test_GUI_main_dict):
     """
-        Testing the json upload and the definition of the dict is working as \
-        required
+        Testing the json upload and the definition of the dict is
+        working as required.
     """
     from program_files.GUI_st.GUI_st_global_functions \
         import import_GUI_input_values_json
@@ -94,8 +95,8 @@ def test_import_GUI_input_values_json(test_GUI_main_dict):
 
 def test_create_simplification_index(test_GUI_main_dict):
     """
-        Testing if the function is creating the indexes in the GUI_main_dict \
-        as required and is uding the correct values.
+        Testing if the function is creating the indexes in the
+        GUI_main_dict as required and is uding the correct values.
     """
     from program_files.GUI_st.GUI_st_global_functions \
         import create_simplification_index
@@ -164,8 +165,8 @@ def test_create_simplification_index(test_GUI_main_dict):
 
 def test_create_cluster_simplification_index_value(test_GUI_main_dict):
     """
-        Testing if the function is changing the globally defined GUI_main_dict\
-        as required if the input value a an int.
+        Testing if the function is changing the globally defined
+        GUI_main_dict as required if the input value a an int.
     """
     from program_files.GUI_st.GUI_st_global_functions \
         import create_cluster_simplification_index
@@ -185,8 +186,8 @@ def test_create_cluster_simplification_index_value(test_GUI_main_dict):
     
 def test_create_cluster_simplification_index_none(test_GUI_main_dict):
     """
-        Testing if the function is changing the globally defined GUI_main_dict\
-        as required if the input value a an "None".
+        Testing if the function is changing the globally defined
+        GUI_main_dict as required if the input value a an "None".
     """
     from program_files.GUI_st.GUI_st_global_functions \
         import create_cluster_simplification_index
@@ -208,11 +209,13 @@ def test_create_cluster_simplification_index_none(test_GUI_main_dict):
 
 def test_positive_read_markdown_document():
     """
-        Testing if function is loading the README.md as required and if it is \
-        only dropping the required part
+        Testing if function is loading the README.md as required and if
+        it is only dropping the required part
     """
     from program_files.GUI_st.GUI_st_global_functions \
         import read_markdown_document
+    
+    test_target_1, test_target_2 = False, False
 
     # creating the reduced README file as a str in a list
     reduced_readme = read_markdown_document(
@@ -232,16 +235,16 @@ def test_positive_read_markdown_document():
         if item.find("Code of Conduct") != -1:
             test_target_2 = True
 
-    assert test_target_1 and test_target_2 == True
+    assert test_target_1 and test_target_2
 
 
 @pytest.mark.xfail
 def test_negative_read_markdown_document():
     """
-        Testing if the function is still removing the installation part of \
-        the README.md correctly to show the rest in the GUI. Test is supposed \
-        to fail if it contains a str which is used to describe the \
-        installation process.
+        Testing if the function is still removing the installation part
+        of the README.md correctly to show the rest in the GUI. Test is
+        supposed to fail if it contains a str which is used to describe
+        the installation process.
     """
     from program_files.GUI_st.GUI_st_global_functions \
         import read_markdown_document
@@ -258,4 +261,4 @@ def test_negative_read_markdown_document():
         if item.find("install coinor-cbc") != -1:
             test_target = True
 
-    assert test_target == True
+    assert test_target
