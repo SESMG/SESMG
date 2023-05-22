@@ -10,7 +10,10 @@ def test_bus_entry():
         i.e. euros per kilowatt hour, and the expected emissions as
         grams of CO2 equivalent per kilowatt hour.
     """
-    from oemof.solph import EnergySystem, Bus, Sink, Flow, Source
+    from oemof.solph.buses import Bus
+    from oemof.solph.components import Sink, Source
+    from oemof.solph import EnergySystem
+    from oemof.solph.flows import Flow
     test_energy_system = EnergySystem()
     # add bus to test energy system
     bus = Bus(label="test_bus")

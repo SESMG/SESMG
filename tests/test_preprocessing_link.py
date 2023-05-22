@@ -37,8 +37,10 @@ def test_directed_convex_link_entry():
         i.e. euros per kilowatt hour, and the expected emissions as
         grams of CO2 equivalent per kilowatt hour.
     """
-    from oemof.solph import EnergySystem, Bus, Flow, Investment
-    from oemof.solph.custom import Link
+    from oemof.solph.buses import Bus
+    from oemof.solph import EnergySystem, Investment
+    from oemof.solph.flows import Flow
+    from oemof.solph.components.experimental import Link
     test_energy_system = EnergySystem()
     # add bus to test energy system
     input_bus = Bus(label="test_input_bus")
