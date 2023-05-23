@@ -21,6 +21,7 @@ def test_decentral_gasheating_entry():
                     "output": ["test_heat_bus"],
                     "output2": ["None"],
                     "area": [float(0)],
+                    "length of the geoth. probe": [0.0],
                     "temperature high": ["60"]}),
                 right=transformers,
                 on="transformer_type").drop(columns=["transformer_type"])}
@@ -39,6 +40,7 @@ def test_decentral_ashp_entry():
                     "output": ["test_heat_bus"],
                     "output2": ["None"],
                     "area": [float(0)],
+                    "length of the geoth. probe": [0.0],
                     "temperature high": ["60"]}),
                 right=transformers,
                 on="transformer_type").drop(columns=["transformer_type"])}
@@ -128,6 +130,7 @@ def test_create_gchp_entry():
                          "output": ["st_parcel_heat_bus"],
                          "output2": ["None"],
                          "area": [float(100)],
+                         "length of the geoth. probe": [100.0],
                          "temperature high": ["60"],
                          "transformer_type": ["building_gchp_transformer"]}),
                 right=transformers,
@@ -149,9 +152,11 @@ def test_create_gchp(test_create_gchp_entry):
                                        "active": [1],
                                        "gchp": ["yes"],
                                        "parcel ID": ["test_parcel"]})
-    parcels = pandas.DataFrame.from_dict({"ID parcel": ["test_parcel"],
-                                          "gchp area (m²)": "100"})
-    gchps_test = {"st_parcel": "100"}
+    parcels = pandas.DataFrame.from_dict({
+        "ID parcel": ["test_parcel"],
+        "gchp area (m²)": ["100"],
+        "length of the geoth. probe (m)": ["100"]})
+    gchps_test = {"st_parcel": ["100", "100"]}
     
     gchps, sheets = Transformer.create_gchp(
         tool=tool,

@@ -137,6 +137,7 @@ def test_central_heatpump_entry():
                 "output": ["test_output_bus"],
                 "output2": ["None"],
                 "area": [100.0],
+                "length of the geoth. probe": [100.0],
                 "temperature high": ["60"]}),
             right=transformers,
             on="transformer_type").drop(columns=["transformer_type"]),
@@ -158,6 +159,7 @@ def test_create_central_heatpump(test_central_heatpump_entry):
                 "transformers": pandas.DataFrame()},
         area="100",
         standard_parameters=standard_parameters,
+        len_geoth_probe="100",
         flow_temp="60"
     )
     
