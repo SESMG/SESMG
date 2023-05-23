@@ -9,7 +9,7 @@ import pandas
 def create_central_heat_component(
         label: str, comp_type: str, bus: str, exchange_buses: dict,
         sheets: dict, area: str, standard_parameters: pandas.ExcelFile,
-        flow_temp: str) -> dict:
+        flow_temp: str, len_geoth_probe: str) -> dict:
     """
         In this method, all heat supply systems are calculated for a
         heat input into the district heat network.
@@ -35,6 +35,9 @@ def create_central_heat_component(
         :param flow_temp: flow temperature of the central heating \
             system (district heating)
         :type flow_temp: str
+        :param len_geoth_probe: length of the vertical heat exchanger \
+            relevant for GCHPs
+        :type len_geoth_probe: str
         
         :return: - **sheets** (dict) - dictionary containing the \
             pandas.Dataframes that will represent the model \
@@ -93,7 +96,8 @@ def create_central_heat_component(
             sheets=sheets,
             area=area,
             standard_parameters=standard_parameters,
-            flow_temp=flow_temp
+            flow_temp=flow_temp,
+            len_geoth_probe=len_geoth_probe
         )
         # increase indicator to prevent duplex bus creation
         central_heatpump_indicator += 1
@@ -270,6 +274,9 @@ def central_comp(central: pandas.DataFrame, true_bools: list, sheets: dict,
                         area=comp["area"]
                         if comp["technology"] == "gchp_transformer"
                         else "0",
+                        len_geoth_probe=comp["length of the geoth. probe"]
+                        if comp["technology"] == "gchp_transformer"
+                        else "0",
                         standard_parameters=standard_parameters,
                         flow_temp=bus["flow temperature"]
                     )
@@ -403,7 +410,7 @@ def create_central_heatpump(label: str, specification: str, create_bus: bool,
                             central_electricity_bus: bool, output: str,
                             sheets: dict, area: str,
                             standard_parameters: pandas.ExcelFile,
-                            flow_temp: str) -> dict:
+                            flow_temp: str, len_geoth_probe: str) -> dict:
     """
          In this method, a central heatpump unit is created, for this
          purpose the necessary data set is obtained
@@ -435,6 +442,9 @@ def create_central_heatpump(label: str, specification: str, create_bus: bool,
         :type area: str
         :param flow_temp: flow temperature of the heatpump
         :type flow_temp: str
+        :param len_geoth_probe: length of the vertical heat exchanger \
+            relevant for GCHPs
+        :type len_geoth_probe: str
         
         :return: - **sheets** (dict) - dictionary containing the \
             pandas.Dataframes that will represent the model \
@@ -471,7 +481,8 @@ def create_central_heatpump(label: str, specification: str, create_bus: bool,
         sheets=sheets,
         area=area,
         standard_parameters=standard_parameters,
-        flow_temp=flow_temp
+        flow_temp=flow_temp,
+        len_geoth_probe=len_geoth_probe
     )
 
 
