@@ -25,8 +25,8 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
                        standard_parameters: pandas.ExcelFile,
                        flow_temp: str, building_type=None,
                        area="0", label="None", specific="None",
-                       output="None", min_invest="0", len_geoth_probe="0"
-                       ) -> dict:
+                       output="None", min_invest="0", len_geoth_probe="0",
+                       heat_extraction="0") -> dict:
     """
         Sets the specific parameters for a transformer component,
         creates them and appends them to the return data structure
@@ -70,6 +70,9 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
         :param len_geoth_probe: length of the vertical heat exchanger \
             relevant for GCHPs
         :type len_geoth_probe: str
+        :param heat_extraction: heat extraction for the heat exchanger \
+            referring to the location
+        :type heat_extraction: str
         
         :return: - **sheets** (dict) - dictionary containing the \
             pandas.Dataframes that will represent the model \
@@ -148,7 +151,8 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
             "area": float(area),
             "temperature high": flow_temp,
             "min. investment capacity": float(min_invest),
-            "length of the geoth. probe": float(len_geoth_probe)
+            "length of the geoth. probe": float(len_geoth_probe),
+            "heat extraction": float(heat_extraction)
         },
         standard_parameter_info=[transformer_type, "4_transformers",
                                  "transformer_type"],
@@ -271,7 +275,8 @@ def create_gchp(tool: pandas.DataFrame, parcels: pandas.DataFrame,
         if not build_parcel.empty:
             gchps.update({parcel["ID parcel"][-9:]: [
                 parcel["gchp area (m²)"],
-                parcel["length of the geoth. probe (m)"]]})
+                parcel["length of the geoth. probe (m)"],
+                parcel["heat extraction"]]})
     # create gchp relevant components
     for gchp in gchps:
         # TODO What supply temperature do we use here, do we have to
@@ -283,7 +288,8 @@ def create_gchp(tool: pandas.DataFrame, parcels: pandas.DataFrame,
                 sheets=sheets,
                 standard_parameters=standard_parameters,
                 flow_temp="60",
-                len_geoth_probe=gchps[gchp][1]
+                len_geoth_probe=gchps[gchp][1],
+                heat_extraction=gchps[gchp][2]
         )
         sheets = Bus.create_standard_parameter_bus(
                 label=gchp + "_hp_elec_bus",

@@ -22,6 +22,7 @@ def test_decentral_gasheating_entry():
                     "output2": ["None"],
                     "area": [float(0)],
                     "length of the geoth. probe": [0.0],
+                    "heat extraction": [0.0],
                     "temperature high": ["60"]}),
                 right=transformers,
                 on="transformer_type").drop(columns=["transformer_type"])}
@@ -41,6 +42,7 @@ def test_decentral_ashp_entry():
                     "output2": ["None"],
                     "area": [float(0)],
                     "length of the geoth. probe": [0.0],
+                    "heat extraction": [0.0],
                     "temperature high": ["60"]}),
                 right=transformers,
                 on="transformer_type").drop(columns=["transformer_type"])}
@@ -131,6 +133,7 @@ def test_create_gchp_entry():
                          "output2": ["None"],
                          "area": [float(100)],
                          "length of the geoth. probe": [100.0],
+                         "heat extraction": [0.0328],
                          "temperature high": ["60"],
                          "transformer_type": ["building_gchp_transformer"]}),
                 right=transformers,
@@ -152,11 +155,14 @@ def test_create_gchp(test_create_gchp_entry):
                                        "active": [1],
                                        "gchp": ["yes"],
                                        "parcel ID": ["test_parcel"]})
+    
     parcels = pandas.DataFrame.from_dict({
         "ID parcel": ["test_parcel"],
         "gchp area (m²)": ["100"],
-        "length of the geoth. probe (m)": ["100"]})
-    gchps_test = {"st_parcel": ["100", "100"]}
+        "length of the geoth. probe (m)": ["100"],
+        "heat extraction": ["0.0328"]})
+    
+    gchps_test = {"st_parcel": ["100", "100", "0.0328"]}
     
     gchps, sheets = Transformer.create_gchp(
         tool=tool,
@@ -164,6 +170,7 @@ def test_create_gchp(test_create_gchp_entry):
         sheets={"buses": pandas.DataFrame(),
                 "transformers": pandas.DataFrame()},
         standard_parameters=standard_parameters)
+    
     assert gchps == gchps_test
     for key in sheets.keys():
         pandas.testing.assert_frame_equal(
