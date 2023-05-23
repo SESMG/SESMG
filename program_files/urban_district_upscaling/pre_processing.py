@@ -172,12 +172,15 @@ def create_heat_pump_buses_links(building: pandas.Series, gchps: dict,
     
     # if a heatpump is investable for the considered building
     if gchp_bool or building["ashp"] not in ["No", "no", 0]:
+        shortage_cost = building["heatpump electricity cost"] \
+            if building["heatpump electricity cost"] != "standard" else None
         # building hp electricity bus
         sheets = Bus.create_standard_parameter_bus(
                 label=str(building["label"]) + "_hp_elec_bus",
                 bus_type="building_hp_electricity_bus",
                 sheets=sheets,
-                standard_parameters=standard_parameters
+                standard_parameters=standard_parameters,
+                shortage_cost=shortage_cost
         )
         # electricity link from building electricity bus to hp
         # electricity bus

@@ -44,12 +44,12 @@ Category 1
 ^^^^^^^^^^
 
 .. csv-table:: Input for the upscaling sheet. Category 1: Building-specific data.
-   :header:  label,comment,active,year of construction,distance of electric vehicles,electricity demand,heat demand,building type,units,occupants per unit,gross building area,latitude,longitude,year of construction wall,area outer wall,year of construction windows,area windows,year of construction roof,rooftype,area roof,cluster ID,flow temperature
+   :header:  label,comment,active,year of construction,distance of electric vehicles,electricity demand,heat demand,building type,units,occupants per unit,gross building area,latitude,longitude,year of construction wall,area outer wall,year of construction windows,area windows,year of construction roof,rooftype,area roof,cluster ID,flow temperature,electricity cost,heatpump electricity cost
 
    x,,,,km/a,kWh / (sqm * a),kWh / (sqm * a),,,,sqm,° WGS 84,° WGS 84,,sqm,,sqm,,,sqm,,°C
-   001_building,,1,1800,0,400,400,COM_Food,1,1,100,52.000000,7.000000,1800,50,0,0,1967,flat roof,25,0,60
-   002_building,,1,1800,0,0,0,MFB,1,1,50,52.000000,7.000000,1979,100,1999,20,1993,flat roof,50,0,60
-   003_building,,1,1800,10000,30,20,SFB,1,1,120,52.000000,7.000000,1994,250,2001,125,1992,step roof,125,0,40
+   001_building,,1,1800,0,400,400,COM_Food,1,1,100,52.000000,7.000000,1800,50,0,0,1967,flat roof,25,0,60,standard,standard
+   002_building,,1,1800,0,0,0,MFB,1,1,50,52.000000,7.000000,1979,100,1999,20,1993,flat roof,50,0,60,standard,standard
+   003_building,,1,1800,10000,30,20,SFB,1,1,120,52.000000,7.000000,1994,250,2001,125,1992,step roof,125,0,40,standard,standard
    
 - **label**: The building name can be chosen by the user and is the identification number (ID) of a building. The ID must be unique for each building, because all the following columns are assigned to it.
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
@@ -73,7 +73,8 @@ Category 1
 - **area roof	(m²)**: The roof areas are relevant for the calculation of insulation measures.
 - **cluster ID**: The cluster ID is used to spatially assign a building to a specific area. The area can be, for example, a settlement or neighborhood. The cluster ID is crucial for spatial clustering.
 - **flow temperature	(°C)**: The flow temperature may differ depending on the heating system. The flow temperature should not fall below the heat source temperature of a heat pump. If the outdoor temperature is 35 °C and the flow temperature is 30 °C, the air heat pump is switched off and an alternative technology is used for heat supply.
- 
+- **electricity cost (€/kWh)**: If the user wants to use a electricity purchase price that differs from the standard parameter (e.g. due to a green electricity tariff), this can be entered here. If not the user has to enter "standard".
+- **heatpump electricity cost (€/kWh): If the user wants to use a heatpump electricity purchase price that differs from the standard parameter (e.g. due to a different heatpump tariff), this can be entered here. If not the user has to enter "standard".
 
 Category 2
 ^^^^^^^^^^
@@ -106,27 +107,27 @@ Category 3
 
 
 .. csv-table:: Input for the upscaling sheet. Category 3: Central investment data.
-   :header:  label,comment,active,technology,latitude,longitude,area,dh_connection,azimuth,surface tilt,flow temperature, length of the geoth. probe
+   :header:  label,comment,active,technology,latitude,longitude,area,dh_connection,azimuth,surface tilt,flow temperature, length of the geoth. probe, heat extraction
 
-   ,,,,° WGS 84,° WGS 84,sqm,,°,°,°C,m
-   electricity_exchange,,1,electricity_exchange,,,,,,,, 
-   battery_storage,,1,battery,,,,,,,, 
-   ng_chp,,0,naturalgas_chp,,,,heat_input,,,, 
-   bg_chp,,0,biogas_chp,,,,heat_input,,,, 
-   pe_chp,,0,pellet_chp,,,,heat_input,,,, 
-   wc_chp,,1,woodchips_chp,,,,heat_input,,,, 
-   swhp,,0,swhp_transformer,,,,heat_input,,,, 
-   ashp,,0,ashp_transformer,,,,heat_input,,,, 
-   gchp,free area needed,1,gchp_transformer,,,2500,heat_input,,,,100
-   ng_heating,,0,naturalgas_heating_plant,,,,heat_input,,,, 
-   bg_heating,,0,biogas_heating_plant,,,,heat_input,,,, 
-   pe_heating,,0,pellet_heating_plant,,,,heat_input,,,, 
-   wc_heating,,1,woodchips_heating_plant,,,,heat_input,,,, 
-   thermal_storage,,1,thermal_storage,,,,heat_input,,,, 
-   p2g,,0,power_to_gas,,,,heat_input,,,, 
-   heat_input,heat center,1,heat_input_bus,52,7,,,,,40,
-   central_pv_st,free area needed,1,pv&st,52,7,15000,heat_input,180,22.5,, 
-   screw_turbine,,1,timeseries_source,,,,,,,, 
+   ,,,,° WGS 84,° WGS 84,sqm,,°,°,°C,m,(kW / (m*a))
+   electricity_exchange,,1,electricity_exchange,,,,,,,,, 
+   battery_storage,,1,battery,,,,,,,,, 
+   ng_chp,,0,naturalgas_chp,,,,heat_input,,,,, 
+   bg_chp,,0,biogas_chp,,,,heat_input,,,,, 
+   pe_chp,,0,pellet_chp,,,,heat_input,,,,, 
+   wc_chp,,1,woodchips_chp,,,,heat_input,,,,, 
+   swhp,,0,swhp_transformer,,,,heat_input,,,,, 
+   ashp,,0,ashp_transformer,,,,heat_input,,,,, 
+   gchp,free area needed,1,gchp_transformer,,,2500,heat_input,,,,100,0.0328
+   ng_heating,,0,naturalgas_heating_plant,,,,heat_input,,,,, 
+   bg_heating,,0,biogas_heating_plant,,,,heat_input,,,,, 
+   pe_heating,,0,pellet_heating_plant,,,,heat_input,,,,, 
+   wc_heating,,1,woodchips_heating_plant,,,,heat_input,,,,, 
+   thermal_storage,,1,thermal_storage,,,,heat_input,,,,, 
+   p2g,,0,power_to_gas,,,,heat_input,,,,, 
+   heat_input,heat center,1,heat_input_bus,52,7,,,,,40,,
+   central_pv_st,free area needed,1,pv&st,52,7,15000,heat_input,180,22.5,,, 
+   screw_turbine,,1,timeseries_source,,,,,,,,, 
 
 
 - **label**: The technology name can be chosen arbitrarily by the user and represents the ID of a central technology. The ID must be unique for each technology, because all following columns are assigned to it.
@@ -140,6 +141,7 @@ Category 3
 - **surface tilt	(°)**: For ground-mounted solar systems, the surface tilt must be specified.
 - **flow temperature	(°C)**: For each heat network center, it is necessary to specify the flow temperature at which the technologies feed into the heat network.
 - **length of the geoth. probe	(m)**: For GCHP systems it is necessary to specify the length of the vertical heat exchanger.
+- **heat extraction (kW / (m*a))**: For GCHP systems it is necessary to specify the heat extraction for the heat exchanger.
 
 .. csv-table:: All possible central technologies.
    :header:  key word,meaning
