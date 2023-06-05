@@ -130,7 +130,8 @@ def test_create_heat_pump_buses_links(test_hp_buses_entry):
                 "parcel ID": "test_parcel",
                 "ashp": "no",
                 "gchp": "yes",
-                "heatpump electricity cost": "standard"}
+                "heatpump electricity cost": "standard",
+                "heatpump electricity emission": "standard"}
     
     sheets = {"buses": pandas.DataFrame(),
               "links": pandas.DataFrame()}
@@ -218,7 +219,8 @@ def test_create_building_buses(test_building_buses_entry):
         "st 1": "yes",
         "pv 1": "yes",
         "roof area 1": 10,
-        "electricity cost": "standard"
+        "electricity cost": "standard",
+        "electricity emission": "standard"
     }
     building.update({})
     

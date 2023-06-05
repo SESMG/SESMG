@@ -497,7 +497,8 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
                     "azimuth {}".format(azimuth[:-4]): int(azimuth[-3:]),
                     "roof area {}".format(azimuth[:-4]):
                         source_param[pv_st + "_{}".format(azimuth[:-4])][1]
-                        / type_param.get(pv_st)[0]["Capacity per Area (kW/m2)"]
+                        / type_param.get(pv_st)[0]["Capacity per Area (kW/m2)"],
+                    "solar thermal share": "standard"
                 }
 
                 if not bus_created and pv_st == "pv":

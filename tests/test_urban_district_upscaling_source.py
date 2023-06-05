@@ -120,7 +120,8 @@ def test_create_source(test_decentral_pv_source_entry):
         "surface tilt 1": 10,
         "latitude": 10,
         "longitude": 10,
-        "roof area 1": 100
+        "roof area 1": 100,
+        "solar thermal share": "standard"
     }
     # start the method to be tested
     sheets = Source.create_source(
@@ -177,7 +178,8 @@ def test_create_sources(test_competition_constraint_entry,
         "flow temperature": 60,
         "st 1": "yes",
         "pv 1": "yes",
-        "building type": "SFB"
+        "building type": "SFB",
+        "solar thermal share": "standard"
     }
     # start the method to be tested
     sheets = Source.create_sources(
