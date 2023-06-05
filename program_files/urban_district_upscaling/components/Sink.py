@@ -168,7 +168,6 @@ def create_heat_sink(building: pandas.Series, area: float, sheets: dict,
     from .Bus import create_standard_parameter_bus
     standard_param = standard_parameters.parse("2_1_heat")
     standard_param.set_index("year of construction", inplace=True)
-    print(building)
     # year of construction: buildings older than 1918 are clustered in
     # <1918
     yoc = int(building["year of construction"])

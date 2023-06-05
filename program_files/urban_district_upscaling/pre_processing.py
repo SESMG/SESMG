@@ -494,7 +494,7 @@ def copying_sheets(paths: list, standard_parameters: pandas.ExcelFile,
 
 
 def urban_district_upscaling_pre_processing(
-    paths: list, clustering: bool, clustering_dh: bool
+    paths: list, open_fred_list: list, clustering: bool, clustering_dh: bool
 ) -> bytes:
     """
         The Urban District Upscaling Pre Processing method is used to
@@ -511,6 +511,9 @@ def urban_district_upscaling_pre_processing(
                       created [2] \
                       path to plain sheet file (holding structure) [3]
         :type paths: list
+        :param open_fred_list: boolean whether to download open fred \
+            data [0], longitude of the area under investigation [1], \
+            latitude of the area under investigation [2]
         :param clustering: boolean for decision rather the buildings \
             are clustered spatially
         :type clustering: bool
@@ -521,7 +524,8 @@ def urban_district_upscaling_pre_processing(
         :returns: - **processed_data** (bytes) - Bytes object which \
             represents the downloadable model definition instance
     """
-
+    from program_files.preprocessing.import_weather_data \
+        import import_open_fred_weather_data
     logging.info("Creating model definition sheet...")
     # loading typical model definition structure from plain sheet
     sheets, central, parcel, tool, worksheets, standard_parameters = \
@@ -530,6 +534,18 @@ def urban_district_upscaling_pre_processing(
     sheets = copying_sheets(paths=paths,
                             standard_parameters=standard_parameters,
                             sheets=sheets)
+    
+    if open_fred_list[0]:
+        weather_data = import_open_fred_weather_data(
+            nodes_data={"weather data": pandas.DataFrame(),
+                        "energysystem": standard_parameters.parse("energysystem")},
+            lon=open_fred_list[1],
+            lat=open_fred_list[2]
+        )
+    print(weather_data)
+    for column in weather_data["weather data"].columns:
+        sheets["weather data"][column] = weather_data["weather data"][column]
+    print(sheets["weather data"])
     
     # set variable for central heating / electricity if activated to
     # decide rather a house can be connected to the central heat

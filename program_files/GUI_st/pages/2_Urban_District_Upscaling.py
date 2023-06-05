@@ -114,11 +114,18 @@ def create_model_definition(input_us_sheet, input_standard_parameter) -> bytes:
             os.path.dirname(__file__),
             r"../../urban_district_upscaling/plain_scenario.xlsx")
     ]
+    
+    open_fred_list = [
+        GUI_udu_dict["input_open_fred"],
+        GUI_udu_dict["input_cords_lon"],
+        GUI_udu_dict["input_cords_lat"]
+    ]
 
     # running the main function
     model_definition_df = \
         urban_district_upscaling_pre_processing(
             paths=us_path_list,
+            open_fred_list=open_fred_list,
             clustering=False,
             clustering_dh=False)
 
