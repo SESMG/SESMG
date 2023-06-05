@@ -83,7 +83,8 @@ def test_building_transformer(test_decentral_gasheating_entry,
         "electric heating": "no",
         "oil heating": "no",
         "wood stove": "no",
-        "flow temperature": "60"
+        "flow temperature": "60",
+        "wood stove share": "standard"
     }
     # start the method to be tested
     sheets = Transformer.building_transformer(
