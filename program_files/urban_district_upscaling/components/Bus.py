@@ -8,7 +8,8 @@ import pandas
 
 def create_standard_parameter_bus(label: str, bus_type: str, sheets: dict,
                                   standard_parameters: pandas.ExcelFile,
-                                  coords=None, shortage_cost=None) -> dict:
+                                  coords=None, shortage_cost=None,
+                                  shortage_emission=None) -> dict:
     """
         Creates a bus with standard_parameters, based on the standard
         parameters given in the "standard_parameters" dataset and adds
@@ -25,14 +26,20 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets: dict,
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
-        :param coords: latitude / longitude / dh column of the given bus\
-            used to connect a producer bus to district heating network
+        :param coords: latitude / longitude / dh column of the given \
+            bus used to connect a producer bus to district heating \
+            network
         :type coords: list
         :param shortage_cost: If the user wants to map a shortage \
-            price that differs from the standard parameter, this value
-            != None. This will overwrite the value from the standard
+            price that differs from the standard parameter, this value \
+            != None. This will overwrite the value from the standard \
             parameters.
         :type shortage_cost: float
+        :param shortage_emission: If the user wants to map a shortage \
+            emission that differs from the standard parameter, this \
+            value != None. This will overwrite the value from the \
+            standard parameters.
+        :type shortage_emission: float
         
         :return: - **sheets** (dict) - dictionary containing the \
             pandas.Dataframes that will represent the model \
@@ -64,6 +71,8 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets: dict,
     # standard parameter
     if shortage_cost is not None:
         bus_dict.update({"shortage costs": shortage_cost})
+    if shortage_emission is not None:
+        bus_dict.update({"shortage constraint costs": shortage_emission})
     # appends the new created component to buses sheet
     return append_component(sheets, "buses", bus_dict)
 
@@ -134,6 +143,8 @@ def create_building_electricity_bus_link(
     # get the users shortage costs input
     shortage_cost = building["electricity cost"] \
         if building["electricity cost"] != "standard" else None
+    shortage_emission = building["electricity emission"] \
+        if building["electricity emission"] != "standard" else None
     # create the building electricity bus if the building has a pv
     # system or gets an electricity demand later on
     if pv_bus or building["building type"] not in ["0", 0]:
@@ -143,7 +154,8 @@ def create_building_electricity_bus_link(
             bus_type=bus,
             sheets=sheets,
             standard_parameters=standard_parameters,
-            shortage_cost=shortage_cost
+            shortage_cost=shortage_cost,
+            shortage_emission=shortage_emission
         )
         # create link from central electricity bus to building
         # electricity bus if the central electricity exchange is enabled
