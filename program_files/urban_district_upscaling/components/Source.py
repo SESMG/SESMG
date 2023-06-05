@@ -71,6 +71,9 @@ def create_source(source_type: str, roof_num: str, building: pandas.Series,
             str(source_param[1]) + "_electricity_bus"]
     }
     
+    if building["solar thermal share"] != "standard":
+        switch_dict["solar_thermal_collector"][1] = "_st_heat_bus"
+    
     # read the source specific standard parameters
     standard_param = standard_parameters.parse("3_sources")
     if not central:

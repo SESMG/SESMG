@@ -239,7 +239,8 @@ def central_comp(central: pandas.DataFrame, true_bools: list, sheets: dict,
                     "flow temperature": float(
                         central.loc[(central["label"] == pv["dh_connection"])
                                     & (central["active"] == 1)][
-                            "flow temperature"])
+                            "flow temperature"]),
+                    "solar thermal share": "standard"
                 },
                 clustering=False,
                 sheets=sheets,

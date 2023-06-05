@@ -164,9 +164,11 @@ def create_heat_sink(building: pandas.Series, area: float, sheets: dict,
             pandas.Dataframes that will represent the model \
             definition's Spreadsheets which was modified in this method
     """
+    from .Link import create_link
+    from .Bus import create_standard_parameter_bus
     standard_param = standard_parameters.parse("2_1_heat")
     standard_param.set_index("year of construction", inplace=True)
-    
+    print(building)
     # year of construction: buildings older than 1918 are clustered in
     # <1918
     yoc = int(building["year of construction"])
@@ -195,16 +197,83 @@ def create_heat_sink(building: pandas.Series, area: float, sheets: dict,
         demand_heat = specific_heat_demand * area * NFA_GFA
     else:
         demand_heat = building["heat demand"] * area
+        
+    demand_heat_new = demand_heat
     
-    return create_standard_parameter_sink(
+    if building["wood stove share"] != "standard":
+        demand_heat_new = demand_heat \
+                          - (float(building["wood stove share"]) * demand_heat)
+        
+    elif building["solar thermal share"] != "standard":
+        demand_heat_new = \
+            demand_heat \
+            - (float(building["solar thermal share"]) * demand_heat)
+    elif building["solar thermal share"] != "standard" \
+            and building["wood stove share"] != "standard":
+        demand_heat_new = \
+            demand_heat \
+            - (float(building["solar thermal share"]) * demand_heat) \
+            - (float(building["wood stove share"]) * demand_heat)
+        
+    sheets = create_standard_parameter_sink(
         sink_type=building_type + "_heat_sink",
         label=str(building["label"]) + "_heat_demand",
         sink_input=str(building["label"]) + "_heat_bus",
-        annual_demand=demand_heat,
+        annual_demand=demand_heat_new,
         sheets=sheets,
         standard_parameters=standard_parameters
     )
-
+    
+    if building["wood stove share"] != "standard":
+        sheets = create_standard_parameter_sink(
+            sink_type=building_type + "_heat_sink",
+            label=str(building["label"]) + "_wood_stove_heat_demand",
+            sink_input=str(building["label"]) + "_wood_stove_heat_bus",
+            annual_demand=float(building["wood stove share"]) * demand_heat,
+            sheets=sheets,
+            standard_parameters=standard_parameters
+        )
+        sheets = create_link(
+            label=str(building["label"]) + "_wood_stove_heat_link",
+            sheets=sheets,
+            link_type="heat_share_link",
+            standard_parameters=standard_parameters,
+            bus_1=str(building["label"]) + "_heat_bus",
+            bus_2=str(building["label"]) + "_wood_stove_heat_bus"
+        )
+        sheets = create_standard_parameter_bus(
+            label=str(building["label"]) + "_wood_stove_heat_bus",
+            sheets=sheets,
+            standard_parameters=standard_parameters,
+            bus_type="building_heat_bus"
+        )
+    
+    if building["solar thermal share"] != "standard":
+        sheets = create_standard_parameter_sink(
+            sink_type=building_type + "_heat_sink",
+            label=str(building["label"]) + "_st_heat_demand",
+            sink_input=str(building["label"]) + "_st_heat_bus",
+            annual_demand=float(building["solar thermal share"]) * demand_heat,
+            sheets=sheets,
+            standard_parameters=standard_parameters
+        )
+        sheets = create_link(
+            label=str(building["label"]) + "_st_heat_link",
+            sheets=sheets,
+            link_type="heat_share_link",
+            standard_parameters=standard_parameters,
+            bus_1=str(building["label"]) + "_heat_bus",
+            bus_2=str(building["label"]) + "_st_heat_bus"
+        )
+        sheets = create_standard_parameter_bus(
+            label=str(building["label"]) + "_st_heat_bus",
+            sheets=sheets,
+            standard_parameters=standard_parameters,
+            bus_type="building_heat_bus"
+        )
+        
+    return sheets
+    
 
 def create_sink_ev(building: pandas.Series, sheets: dict,
                    standard_parameters: pandas.ExcelFile) -> dict:

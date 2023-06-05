@@ -203,6 +203,8 @@ def building_transformer(building: dict, p2g_link: bool, sheets: dict,
         "wood stove":
             [building["building type"], "building_woodstove_transformer"]
     }
+    if building["wood stove share"] != "standard":
+        technology_dict["building_woodstove_transformer"][2] = "wood_stove_heat"
     
     for transformer in build_transformer_dict:
         # creates air source heat-pumps
