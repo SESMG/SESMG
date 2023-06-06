@@ -505,6 +505,7 @@ to be entered:
 - **label**: Unique designation of the insulation. The following format is recommended: "ID_sink_label_insulation_type"
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the insulation shall be included to the model. 0 = inactive, 1 = active.
+- **existing**: Existing represents a boolean decision (0=no, 1=yes). If a 1 is filled in here, the insulation measure is completely implemented without incurring any costs.
 - **sink**: Sink influenced by the insulation.
 - **temperature indoor** in (°C): Definition of the living space temperature.
 - **heat limit temperature** in (°C): Temperature from which the heating is switched on.
