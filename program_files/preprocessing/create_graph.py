@@ -75,17 +75,16 @@ class ESGraphRenderer:
                 self.add_comp("Storage", "rectangle", True, self.c)
 
         switch_dict = {
-            "<class 'oemof.solph.network.sink.Sink'>": ["invtrapezium", False],
-            "<class 'oemof.solph.network.source.Source'>": ["trapezium", False],
-            "<class 'oemof.solph.network.transformer.Transformer'>": [
-                "rectangle",
-                False,
-            ],
-            "<class 'oemof.solph.components.generic_storage.GenericStorage'>": [
-                "rectangle",
-                True,
-            ],
-            "<class 'oemof.solph.custom.link.Link'>": ["rectangle", False],
+            "<class 'oemof.solph.components._sink.Sink'>": ["invtrapezium",
+                                                            False],
+            "<class 'oemof.solph.components._source.Source'>": ["trapezium",
+                                                                False],
+            "<class 'oemof.solph.components._transformer.Transformer'>": [
+                "rectangle", False],
+            "<class 'oemof.solph.components._generic_storage.GenericStorage'>": [
+                "rectangle", True],
+            "<class 'oemof.solph.components.experimental._link.Link'>": [
+                "rectangle", False],
         }
         # draw a node for each of the energy_system's component.
         # the shape depends on the component's type.

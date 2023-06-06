@@ -25,7 +25,8 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
                        standard_parameters: pandas.ExcelFile,
                        flow_temp: str, building_type=None,
                        area="0", label="None", specific="None",
-                       output="None", min_invest="0") -> dict:
+                       output="None", min_invest="0", len_geoth_probe="0",
+                       heat_extraction="0") -> dict:
     """
         Sets the specific parameters for a transformer component,
         creates them and appends them to the return data structure
@@ -66,6 +67,12 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
             existing transformer it's capacity is the min investment \
             value of the transformer to be created
         :type min_invest: str
+        :param len_geoth_probe: length of the vertical heat exchanger \
+            relevant for GCHPs
+        :type len_geoth_probe: str
+        :param heat_extraction: heat extraction for the heat exchanger \
+            referring to the location
+        :type heat_extraction: str
         
         :return: - **sheets** (dict) - dictionary containing the \
             pandas.Dataframes that will represent the model \
@@ -143,7 +150,9 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
             "output2": technology_dict.get(transformer_type)[3],
             "area": float(area),
             "temperature high": flow_temp,
-            "min. investment capacity": float(min_invest)
+            "min. investment capacity": float(min_invest),
+            "length of the geoth. probe": float(len_geoth_probe),
+            "heat extraction": float(heat_extraction)
         },
         standard_parameter_info=[transformer_type, "4_transformers",
                                  "transformer_type"],
@@ -194,6 +203,8 @@ def building_transformer(building: dict, p2g_link: bool, sheets: dict,
         "wood stove":
             [building["building type"], "building_woodstove_transformer"]
     }
+    if building["wood stove share"] != "standard":
+        technology_dict["building_woodstove_transformer"][2] = "wood_stove_heat"
     
     for transformer in build_transformer_dict:
         # creates air source heat-pumps
@@ -264,18 +275,23 @@ def create_gchp(tool: pandas.DataFrame, parcels: pandas.DataFrame,
             & (tool["parcel ID"] == parcel["ID parcel"])
             ]
         if not build_parcel.empty:
-            gchps.update({parcel["ID parcel"][-9:]: parcel["gchp area (m²)"]})
+            gchps.update({parcel["ID parcel"][-9:]: [
+                parcel["gchp area (m²)"],
+                parcel["length of the geoth. probe (m)"],
+                parcel["heat extraction"]]})
     # create gchp relevant components
     for gchp in gchps:
         # TODO What supply temperature do we use here, do we have to
         #  average that of the buildings?
         sheets = create_transformer(
                 building_id=gchp,
-                area=gchps[gchp],
+                area=gchps[gchp][0],
                 transformer_type="building_gchp_transformer",
                 sheets=sheets,
                 standard_parameters=standard_parameters,
-                flow_temp="60"
+                flow_temp="60",
+                len_geoth_probe=gchps[gchp][1],
+                heat_extraction=gchps[gchp][2]
         )
         sheets = Bus.create_standard_parameter_bus(
                 label=gchp + "_hp_elec_bus",

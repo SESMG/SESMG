@@ -17,6 +17,9 @@ from program_files.GUI_st.GUI_st_global_functions \
 # settings the initial streamlit page settings
 st_settings_global()
 
+# opening the input value dict, which will be saved as a json
+GUI_udu_dict = {}
+
 # Import GUI help comments from the comment json and safe as an dict
 GUI_helper = import_GUI_input_values_json(
     os.path.dirname(os.path.dirname(__file__))
@@ -27,68 +30,123 @@ def us_application() -> None:
     """
         Definition of the sidebar elements for the urban district
         upscaling page and starting a udu tool run.
+
+        :returns: - **input_us_sheet** \
+                    (streamlit.runtime.uploaded_file_manager.UploadedFile) - \
+                    Streamlit varibale including the uploaded upscaling_sheet \
+                    (was a xlsx before)
+                - **input_standard_parameter** \
+                    (streamlit.runtime.uploaded_file_manager.UploadedFile) - \
+                    Streamlit varibale including the uploaded \
+                    standard_parameter_sheet (was a xlsx before)
     """
-    model_definition_df = ""
 
     # create form-submit element for multiple inputs
     with st.sidebar.form("Input Parameters"):
 
+        if "state_submitted_us_run" not in st.session_state:
+            st.session_state["state_submitted_us_run"] = False
+
         # input us sheet
-        input_us_sheet_path = st.file_uploader(
+        input_us_sheet = st.file_uploader(
             label="Import your upscaling sheet:",
             help=GUI_helper["udu_fu_us_sheet"])
 
         # input standard parameter sheet
-        input_standard_parameter_path = st.file_uploader(
+        input_standard_parameter = st.file_uploader(
             label="Import your standard parameter sheet:",
             help=GUI_helper["udu_fu_sp_sheet"])
 
         # text input to define the file name
-        result_file_name = \
+        GUI_udu_dict["result_file_name"] = \
             st.text_input(label="Type in your model definition file name.",
                           help=GUI_helper["udu_ti_model_def_name"])
 
+#TODO: add GUI help comments
+        # expander for weather data settings
+        with st.expander(label="Open Fred Weather Data"):
+
+            # input if open fres weather data should be added
+            GUI_udu_dict["input_open_fred"] = st.checkbox(
+                label="Download Open Fred Weather Data",
+                help=GUI_helper["udu_cb_weather_data"])
+
+            # coordinate input for weather data download
+            # longitude coordinates
+            GUI_udu_dict["input_cords_lon"] = st.text_input(
+                label="Longitude Coordinates",
+                help=GUI_helper["udu_ti_coords_lon"])
+            # latitude coordinates
+            GUI_udu_dict["input_cords_lat"] = st.text_input(
+                label="Latitude Coordinates",
+                help=GUI_helper["udu_ti_coords_lat"])
+
         # Submit button to start optimization.
-        submitted_us_run = st.form_submit_button(
+        st.session_state["state_submitted_us_run"] = st.form_submit_button(
                 label="Start US Tool",
                 help=GUI_helper["udu_fs_start_US_tool"])
 
-        # Run program main function if start button is clicked
-        if submitted_us_run:
-            if input_us_sheet_path != "" \
-                    and input_standard_parameter_path != "" \
-                    and result_file_name != "":
-                # strings replace due to variables defined above
-                us_path_list = [
-                    input_us_sheet_path,
-                    input_standard_parameter_path,
-                    result_file_name,
-                    os.path.join(
-                        os.path.dirname(__file__),
-                        r"../../urban_district_upscaling/plain_scenario.xlsx")
-                ]
-
-                model_definition_df = \
-                    urban_district_upscaling_pre_processing(
-                        paths=us_path_list,
-                        clustering=False,
-                        clustering_dh=False)
-
-    # define urban district upscaling model definition as session state
-    st.session_state["state_model_definition"] = model_definition_df
-    # define result path as session state
-    st.session_state["result_file_name"] = result_file_name
+    return input_us_sheet, input_standard_parameter
 
 
-def us_application_downloader() -> None:
+def create_model_definition(input_us_sheet, input_standard_parameter) -> bytes:
+    """
+    Creates the model definition, after the process was started in the GUI.
+
+    :param input_us_sheet: uploaded upscaling sheet
+    :type input_us_sheet: streamlit.runtime.uploaded_file_manager.UploadedFile
+    :param input_standard_parameter: uploaded standard parameter sheet
+    :type input_standard_parameter: 
+        streamlit.runtime.uploaded_file_manager.UploadedFile
+
+    :return: - **model_definition_df** (bytes) - Bytes object which \
+        represents the downloadable model definition .
+
+    """
+
+    # prepare the us_path_list as an input for the 
+    # urban_district_upscaling_pre_processing function
+    us_path_list = [
+        input_us_sheet,
+        input_standard_parameter,
+        GUI_udu_dict["result_file_name"],
+        os.path.join(
+            os.path.dirname(__file__),
+            r"../../urban_district_upscaling/plain_scenario.xlsx")
+    ]
+    
+    open_fred_list = [
+        GUI_udu_dict["input_open_fred"],
+        GUI_udu_dict["input_cords_lon"],
+        GUI_udu_dict["input_cords_lat"]
+    ]
+
+    # running the main function
+    model_definition_df = \
+        urban_district_upscaling_pre_processing(
+            paths=us_path_list,
+            open_fred_list=open_fred_list,
+            clustering=False,
+            clustering_dh=False)
+
+    # returning the created model_definition
+    return model_definition_df
+
+
+def us_application_downloader(model_definition) -> None:
     """
         Creating download button for the created model definition.
+
+        :param model_definition: model_definition which was created before
+            based on the user input (uploaded files us_sheet and
+            standard_parameter_sheet)
+        :type model_definition: bytes
     """
 
     # create download button
     st.sidebar.download_button(label="Download your model definition",
-                               data=st.session_state["state_model_definition"],
-                               file_name=st.session_state["result_file_name"]
+                               data=model_definition,
+                               file_name=GUI_udu_dict["result_file_name"]
                                + ".xlsx",
                                help=GUI_helper["udu_b_download_model_def"])
 
@@ -110,17 +168,22 @@ def standard_page() -> None:
 
 
 # second column
-def udu_preprocessing_page() -> None:
+def udu_preprocessing_page(model_definition) -> None:
     """
         Definition of the page elements after the urban district
         upscaling tool ran.
+
+        :param model_definition: model_definition which was created before
+            based on the user input (uploaded files us_sheet and
+            standard_parameter_sheet)
+        :type model_definition: bytes
     """
 
     # define header
     st.header("Model defintion")
 
     # create model defnition table
-    xls = pd.ExcelFile(st.session_state["state_model_definition"])
+    xls = pd.ExcelFile(model_definition)
     tabs = xls.sheet_names
     # without info column
     tabs.pop(0)
@@ -133,11 +196,26 @@ def udu_preprocessing_page() -> None:
 
 
 # running sidebar elements
-us_application()
+us_sheet, sp_sheet = us_application()
 # running the start / main page if tool did not run yet
-if st.session_state["state_model_definition"] == "":
+if st.session_state["state_submitted_us_run"] is not True:
     standard_page()
-# running preprocessing page if tool ran
+
+# raise warning if an necessary input is missing
+elif us_sheet == "" \
+    or sp_sheet == "" \
+        or GUI_udu_dict["result_file_name"] == "":
+
+    st.warning("One of the necessary input fields is missing.\
+               Make sure to upload both files and insert a file name.")
+
+# run udu tool and create model definition
 else:
-    udu_preprocessing_page()
-    us_application_downloader()
+    # run tool
+    model_definition = \
+        create_model_definition(input_us_sheet=us_sheet,
+                                input_standard_parameter=sp_sheet)
+
+    # running preprocessing page if tool ran
+    udu_preprocessing_page(model_definition=model_definition)
+    us_application_downloader(model_definition=model_definition)

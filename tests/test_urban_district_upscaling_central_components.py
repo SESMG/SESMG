@@ -70,6 +70,8 @@ def test_create_power_to_gas_entry():
                             "None",
                             "central_test_heat_bus"],
                 "area": [float(0)] * 3,
+                "length of the geoth. probe": [0.0] * 3,
+                "heat extraction": [0.0] * 3,
                 "temperature high": ["0"]* 3}),
             right=transformers,
             on="transformer_type").drop(columns=["transformer_type"]),
@@ -137,6 +139,8 @@ def test_central_heatpump_entry():
                 "output": ["test_output_bus"],
                 "output2": ["None"],
                 "area": [100.0],
+                "length of the geoth. probe": [100.0],
+                "heat extraction": [0.0328],
                 "temperature high": ["60"]}),
             right=transformers,
             on="transformer_type").drop(columns=["transformer_type"]),
@@ -158,7 +162,9 @@ def test_create_central_heatpump(test_central_heatpump_entry):
                 "transformers": pandas.DataFrame()},
         area="100",
         standard_parameters=standard_parameters,
-        flow_temp="60"
+        len_geoth_probe="100",
+        flow_temp="60",
+        heat_extraction="0.0328"
     )
     
     for key in sheets.keys():
@@ -189,6 +195,8 @@ def test_central_heating_plant_entry():
                  "output": ["test_output_bus"],
                  "output2": ["None"],
                  "area": [float(0)],
+                 "length of the geoth. probe": [0.0],
+                 "heat extraction": [0.0],
                  "temperature high": "0"}),
             right=transformers,
             on="transformer_type").drop(columns=["transformer_type"]),
@@ -247,6 +255,8 @@ def test_central_CHP_entry():
                      "output": ["central_test_elec_bus"],
                      "output2": ["test_output_bus"],
                      "area": [float(0)],
+                     "length of the geoth. probe": [0.0],
+                     "heat extraction": [0.0],
                      "temperature high": "0"}),
                 right=transformers,
                 on="transformer_type").drop(columns=["transformer_type"]),
