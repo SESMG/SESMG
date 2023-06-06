@@ -535,17 +535,19 @@ def urban_district_upscaling_pre_processing(
                             standard_parameters=standard_parameters,
                             sheets=sheets)
     
+    # download the weather data from open energy platform if enabled
     if open_fred_list[0]:
         weather_data = import_open_fred_weather_data(
-            nodes_data={"weather data": pandas.DataFrame(),
-                        "energysystem": standard_parameters.parse("energysystem")},
+            nodes_data={
+                "weather data": pandas.DataFrame(),
+                "energysystem": standard_parameters.parse("energysystem")},
             lon=open_fred_list[1],
             lat=open_fred_list[2]
         )
-    print(weather_data)
-    for column in weather_data["weather data"].columns:
-        sheets["weather data"][column] = weather_data["weather data"][column]
-    print(sheets["weather data"])
+        
+        for column in weather_data["weather data"].columns:
+            sheets["weather data"][column] = \
+                weather_data["weather data"][column]
     
     # set variable for central heating / electricity if activated to
     # decide rather a house can be connected to the central heat
