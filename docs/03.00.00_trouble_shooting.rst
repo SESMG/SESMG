@@ -453,6 +453,23 @@ Error M-031: Existing capacity for non-convex investment decision
 **Debugging:** Make sure no existing-capacities are given for components including non-convex decissions. If an existing capacity is required an additional component can be used for considering this capacity. 
 
 
+Warning W-001: Existing capacity for non-convex investment decision
+-----------------------------------------------------------------
+**Warning Message:** ::
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8502
+  Network URL: http://xxx.xxxx.x.xxx:8502
+          
+  Need to install osmnx to download from osm.
+  INFO:root:Cartopy is not installed. Background maps will not be drawn.
+
+**Possible Error Cause:** No error occurs. 
+
+**Debugging:** You do not need to add any packages. The process will work perfectly without those packages, which where required by a submodule but not used by the SESMG. 
+
+
 Contributing to the troubleshooting
 ===================================
 
