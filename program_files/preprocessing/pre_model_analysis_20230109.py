@@ -54,7 +54,7 @@ def technical_pre_selection(components_xlsx, result_components):
     for i,scenario_component in components_xlsx.iterrows():
         if scenario_component['label'] in result_components.index.values:
             if float(result_components.loc[scenario_component['label']]['max. invest./kW']) > 0:
-                if str(result_components.loc[scenario_component['label']]['investment/kW']) == '0.0':
+                if str(result_components.loc[scenario_component['label']]['investment/kW']) in ['0.0', '-0.0']:
                     components_xlsx.at[i, 'active'] = 0
                     list_of_deactivated_components.append(str(scenario_component['label']))
 
@@ -115,15 +115,15 @@ def dh_technical_pre_selection(components_xlsx, result_components):
     for i, dh_section in result_components.iterrows():
         if dh_section['investment/kW']:
             if 'dh_heat_house_station' not in dh_section['ID']:
-                if str(dh_section['investment/kW']) not in ['0.0','0','0.00','---']:
+                if str(dh_section['investment/kW']) not in ['0.0','0','0.00','---','-0.0', '-0.00']:
                     section_name = dh_section['ID'].split('_Diameter')
                     dh_investment_list.append(section_name[0])
     print("WARNING: IF THE ORIGINAL SECTION NAME CONTAINED THE STRING '_Diameter_' THIS ANALYSIS IS NOT VALID!")
 
     # deactivate those street section for which no investment has been carried out
-    for i, dh_section in components_xlsx.iterrows():
-        if str(dh_section['label']) not in dh_investment_list:
-            components_xlsx.at[i, 'active'] = 0
+    #for i, dh_section in components_xlsx.iterrows():
+    #    if str(dh_section['label']) not in dh_investment_list:
+    #        components_xlsx.at[i, 'active'] = 0
 
 def bus_technical_pre_selection(components_xlsx, result_components):
     bus_xlsx = components_xlsx
@@ -153,8 +153,8 @@ def bus_technical_pre_selection(components_xlsx, result_components):
         if str(dh_bus['district heating conn.']) not in ['0.0','0','0.00','---']:
             print(dh_bus['label'])
             if str(dh_bus['label']) not in dh_investment_list and str(dh_bus['label'])[0:9] not in dh_investment_list and dh_bus['label'].split('_')[0] not in dh_investment_list:# and dh_bus['district heating conn.']:
-                # if dh_bus['district heating conn.'] == "dh-system":
-                #    bus_xlsx.at[i, 'active'] = 0
+                if dh_bus['district heating conn.'] == "dh-system":
+                    bus_xlsx.at[i, 'active'] = 0
                 print(dh_bus['label'])
                 bus_xlsx.at[i, 'district heating conn.'] = 0
                 
@@ -209,7 +209,7 @@ def update_model_according_pre_model_results(scenario_path, results_components_p
 
      # list of lists of component types. the first value of the sub-lists represent the name of the component type in the
      # scenario sheet, the second values the component name in the result sheets
-    component_types = [#['district heating', 'dh'],
+    component_types = [['district heating', 'dh'],
                        ['buses', 'transformer'],
                        ['transformers', 'transformer'],
                        ['sources', 'source'],

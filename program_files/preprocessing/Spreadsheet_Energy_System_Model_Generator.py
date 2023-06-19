@@ -1,252 +1,243 @@
 # -*- coding: utf-8 -*-
 """
-    Spreadsheet-Energy-System-Model-Generator.
-    
-    creates an energy system from a given spreadsheet data file, solves
-    it for the purpose of least cost optimization, and returns the
-    optimal model definition results.
-    
-    --------------------------------------------------------------------
-    
-    Christian Klemm - christian.klemm@fh-muenster.de
-    Gregor Becker - gregor.becker@fh-muenster.de
+Spreadsheet-Energy-System-Model-Generator.
+
+creates an energy system from a given spreadsheet data file, solves it
+for the purpose of least cost optimization, and returns the optimal
+scenario results.
+
+The scenario.xlsx-file must contain the following elements:
+
++-------------+--------------------------------------------------------+
+|sheet        | columns                                                |
++=============+========================================================+
+|energysystem | start_date, end_date, holidays, temporal resolution,   |
+|             | timezone                                               |
++-------------+--------------------------------------------------------+
+|buses        | label, active, excess, shortage,                       |
+|             | shortage costs /(CU/kWh), excess costs /(CU/kWh)       |
++-------------+--------------------------------------------------------+
+|sinks        | label, active, input, input2, load profile,            |
+|             | nominal value /(kW), annual demand /(kWh/a),           |
+|             | occupants [RICHARDSON], building class [HEAT SLP ONLY],|
+|             | wind class [HEAT SLP ONLY], fixed                      |
++-------------+--------------------------------------------------------+
+|sources      | label, active, output, technology,                     |
+|             | variable costs /(CU/kWh), existing capacity /(kW),     |
+|             | min. investment capacity /(kW),                        |
+|             | max. investment capacity /(kW),                        |
+|             | periodical costs /(CU/(kW a)),                         |
+|             | technology database (PV ONLY),                         |
+|             | inverter database (PV ONLY), Modul Model (PV ONLY),    |
+|             | Inverter Model (PV ONLY), reference value /(kW),       |
+|             | Azimuth (PV ONLY), Surface Tilt (PV ONLY),             |
+|             | Albedo (PV ONLY), Altitude (PV ONLY),                  |
+|             | Latitude (PV ONLY), Longitude (PV ONLY)                |
++-------------+--------------------------------------------------------+
+|transformers | label, active, transformer type, input, output,        |
+|             | output2, efficiency, efficiency2,                      |
+|             | variable input costs /(CU/kWh),                        |
+|             | variable output costs /(CU/kWh),                       |
+|             | existing capacity /(kW),                               |
+|             | max. investment capacity /(kW),                        |
+|             | min. investment capacity /(kW),                        |
+|             | periodical costs /(CU/(kW a))                          |
++-------------+--------------------------------------------------------+
+|storages     | label, active, bus, existing capacity /(kW),           |
+|             | min. investment capacity /(kW),                        |
+|             | max. investment capacity /(kW),                        |
+|             | periodical costs /(CU/(kW a)), capacity inflow,        |
+|             | capacity outflow, capacity loss, efficiency inflow,    |
+|             | efficiency outflow, initial capacity, capacity min,    |
+|             | capacity max, variable input costs,                    |
+|             | variable output costs                                  |
++-------------+--------------------------------------------------------+
+|powerlines   | label, active, bus_1, bus_2, (un)directed, efficiency, |
+|             | existing capacity /(kW),                               |
+|             | min. investment capacity /(kW),                        |
+|             | max. investment capacity /(kW),                        |
+|             | variable costs /(CU/kWh), periodical costs /(CU/(kW a))|
++-------------+--------------------------------------------------------+
+|time_series  | timestamp,                                             |
+|             | timeseries for components with fixed input or output   |
++-------------+--------------------------------------------------------+
+|weather_data | dates(untitled), dhi, dirhi, pressure, temp_air,       |
+|             | windspeed, z0                                          |
++-------------+--------------------------------------------------------+
+
+
+Docs:
+ - https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
+ 
+GIT:
+ - https://github.com/chrklemm/SESMG
+ 
+-------------------------------------------------------------------------------
+
+
+Christian Klemm - christian.klemm@fh-muenster.de
 """
 import logging
 from oemof.tools import logger
 import os
+import pandas as pd
 from threading import *
+import sys
 from program_files.preprocessing import (create_energy_system,
-                                         data_preparation,
-                                         pareto_optimization)
+                                         data_preparation)
 from program_files.preprocessing.components import (
     district_heating, Bus, Source, Sink, Transformer, Storage, Link)
 from program_files.preprocessing.create_graph import ESGraphRenderer
 from program_files.postprocessing import create_results
 from program_files.processing import optimize_model
-from program_files.preprocessing.pre_model_analysis import \
-    update_model_according_pre_model_results
+from program_files.preprocessing.pre_model_analysis import update_model_according_pre_model_results
 
 
-def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
-               criterion_switch: bool, xlsx_results: bool,
+def sesmg_main(scenario_file: str, result_path: str, num_threads: int,
+               graph: bool, criterion_switch: bool, xlsx_results: bool,
                console_results: bool, timeseries_prep: list, solver: str,
-               cluster_dh, graph=False, district_heating_path=None) -> None:
+               cluster_dh, district_heating_path=None):
     """
         Main function of the Spreadsheet System Model Generator
 
-        :param model_definition_file: The model definition file must \
-            contain the components specified above.
-        :type model_definition_file: str ['xlsx']
-        :param result_path: path of the folder where the results will \
-            be saved
-        :type result_path: str ['folder']
-        :param num_threads: number of threads that the method may use
-        :type num_threads: int
-        :param criterion_switch: boolean which decides rather the \
-            first and second optimization criterion will be switched \
-            (True) or not (False)
-        :type criterion_switch: bool
-        :param xlsx_results: boolean which decides rather a flow \
-            Spreadsheet will be created for each bus of the energy \
-            system after the optimization (True) or not (False)
-        :type xlsx_results: bool
-        :param console_results: boolean which decides rather the \
-            energy system's results will be printed in the console \
-            (True) or not (False)
-        :type console_results: bool
-        :param timeseries_prep: list containing the attributes \
-            necessary for timeseries simplifications
-        :type timeseries_prep: list
-        :param solver: str holding the user chosen solver
-        :type solver: str
-        :param cluster_dh: boolean which decides rather the district \
-            heating components are clustered street wise (True) or not \
-            (False)
-        :type cluster_dh: bool
-        :param graph: defines if the graph should be created
-        :type graph: bool
-        :param district_heating_path: path to the folder where already \
-            calculated district heating data is stored
-        :type district_heating_path: str['folder']
-    """
-    # sets number of threads for numpy
-    os.environ['NUMEXPR_NUM_THREADS'] = str(num_threads)
-    # defines a logging file
-    logger.define_logging(logpath=result_path)
-    # imports data from the excel file and returns it as a dictionary
-    nodes_data = create_energy_system.import_model_definition(
-        filepath=model_definition_file)
-
-    # if the user has chosen two switch the optimization criteria the
-    # nodes data dict is adapted
-    if criterion_switch:
-        pareto_optimization.change_optimization_criterion(
-                nodes_data=nodes_data)
-
-    # Timeseries Preprocessing
-    data_preparation.timeseries_preparation(
-        timeseries_prep_param=timeseries_prep,
-        nodes_data=nodes_data,
-        result_path=result_path)
-
-    if timeseries_prep[0] != 'none':
-        model_definition_file = result_path + "/modified_model_definition.xlsx"
-
-    # created an energysystem as defined in the model definition file
-    esys = create_energy_system.define_energy_system(nodes_data=nodes_data)
-
-    # creates a list where the created components will be stored
-    nodes = []
-
-    # creates bus objects, excess sinks, and shortage sources as defined
-    # in the model definition file
-    busd = Bus.buses(nodes_data=nodes_data, nodes=nodes)
-    
-    # PARALLEL CREATION OF ALL OBJECTS OF THE MODEL DEFINITION FILE
-
-    # creates source objects as defined in the model definition file and
-    # adds them to the list of components (nodes)
-    thread1 = Thread(target=Source.Sources, args=(nodes_data, nodes, busd))
-    thread1.start()
-    # created sink objects as defined in the model definition file and
-    # adds them to the list of components (nodes)
-    thread2 = Thread(target=Sink.Sinks, args=(nodes_data, busd, nodes))
-    thread2.start()
-    # creates transformer objects as defined in the model definition
-    # file and adds them to the list of components (nodes)
-    thread3 = Thread(target=Transformer.Transformers,
-                     args=(nodes_data, nodes, busd))
-    thread3.start()
-    # creates storage objects as defined in the model definition file
-    # and adds them to the list of components (nodes)
-    thread4 = Thread(target=Storage.Storages, args=(nodes_data, nodes, busd))
-    thread4.start()
-    # creates link objects as defined in the model definition file and
-    # adds them to the list of components (nodes)
-    thread5 = Thread(target=Link.Links, args=(nodes_data, nodes, busd))
-    thread5.start()
-
-    # wait until the threads have done their tasks
-    thread1.join()
-    thread2.join()
-    thread3.join()
-    thread4.join()
-    thread5.join()
-    
-    if len(nodes_data["buses"][~nodes_data["buses"][
-        "district heating conn."].isin(["0", 0])]) > 0:
-        # creates the thermal network components as defined in the model
-        # definition file and adds them to the list of components (nodes)
-        nodes = district_heating.district_heating(
-            nodes_data=nodes_data, nodes=nodes, busd=busd,
-            district_heating_path=district_heating_path,
-            result_path=result_path, cluster_dh=cluster_dh,
-            anergy_or_exergy=False)
-    
-    # adds the created components to the energy system created in the
-    # beginning of this method
-    esys.add(*nodes)
-    
-    # creates the energy system graph
-    ESGraphRenderer(energy_system=esys, filepath=result_path, view=graph,
-                    legend=True)
-    
-    # optimizes the energysystem and returns the optimized energy system
-    om = optimize_model.least_cost_model(
-        energy_system=esys, num_threads=num_threads, nodes_data=nodes_data,
-        busd=busd, solver=solver
-    )
-
-    # shows and saves results iof the optimized model / postprocessing
-    if xlsx_results:
-        create_results.xlsx(nodes_data=nodes_data, optimization_model=om,
-                            filepath=result_path)
-        
-    # creates the data used for the results presentation in the GUI
-    create_results.Results(
-        nodes_data=nodes_data, optimization_model=om, energy_system=esys,
-        result_path=result_path, console_log=console_results,
-        cluster_dh=cluster_dh)
-
-    logging.info('\t ' + 56 * '-')
-    logging.info('\t Modelling and optimization successfully completed!')
-
-
-def sesmg_main_including_premodel(
-        model_definition_file: str, result_path: str, num_threads: int,
-        graph: bool, criterion_switch: bool, xlsx_results: bool,
-        console_results: bool, timeseries_prep: list, solver: str,
-        cluster_dh, pre_model_timeseries_prep: list,
-        investment_boundaries: bool, investment_boundary_factor: int,
-        district_heating_path=None) -> None:
-    """
-         This method solves the specified model definition file is
-         solved twice. First with the pre-model time series preparatory
-         attributes selected by the user. And then (after the
-         pre-modeling algorithm has been performed and the model
-         definition has been reduced to the invested components) the
-         model definition is solved with the main time series
-         preparation algorithms.
-         
-        :param model_definition_file: The model_definition_file must \
-            contain the components specified above.
-        :type model_definition_file: str ['xlsx']
+        :param scenario_file: The scenario_file must contain the
+                              components specified above.
+        :type scenario_file: str ['xlsx']
         :param result_path: path of the folder where the results
                             will be saved
         :type result_path: str ['folder']
         :param num_threads: number of threads that the method may use
         :type num_threads: int
-        :param criterion_switch: boolean which decides rather the \
-            first and second optimization criterion will be switched \
-            (True) or not (False)
-        :type criterion_switch: bool
-        :param xlsx_results: boolean which decides rather a flow \
-            Spreadsheet will be created for each bus of the energy \
-            system after the optimization (True) or not (False)
-        :type xlsx_results: bool
-        :param console_results: boolean which decides rather the \
-            energy system's results will be printed in the console \
-            (True) or not (False)
-        :type console_results: bool
-        :param timeseries_prep: list containing the attributes \
-            necessary for timeseries simplifications
-        :type timeseries_prep: list
-        :param pre_model_timeseries_prep: list containing the \
-            attributes necessary for timeseries simplifications of the \
-            first optimization run which is used to reduced the model \
-            definition's amount of components.
-        :type pre_model_timeseries_prep: list
-        :param investment_boundaries: Indicates whether "tightening of \
-            technical boundaries", i.e. limiting of investment limits \
-            based on the pre-model, is executed.
-        :type investment_boundaries: bool
-        :param investment_boundary_factor: Factor by which investment \
-            decisions of the pre-model are multiplied to limit the \
-            investment limits in the main model.
-        :type investment_boundary_factor: int
-        :param solver: str holding the user chosen solver
-        :type solver: str
-        :param cluster_dh: boolean which decides rather the district \
-            heating components are clustered street wise (True) or not \
-            (False)
-        :type cluster_dh: bool
         :param graph: defines if the graph should be created
         :type graph: bool
-        :param district_heating_path: path to the folder where already \
-            calculated district heating data is stored
-        :type district_heating_path: str['folder']
+        :param results: defines if the results should be created
+        :type results: bool
+        :param plotly: defines if the plotly dash should be started
+        :type plotly: bool
+
+        Christian Klemm - christian.klemm@fh-muenster.de
     """
+    # SETS NUMBER OF THREADS FOR NUMPY
+    os.environ['NUMEXPR_NUM_THREADS'] = str(num_threads)
+    # DEFINES A LOGGING FILE
+    logger.define_logging(logpath=result_path)
+    # IMPORTS DATA FROM THE EXCEL FILE AND RETURNS IT AS DICTIONARY
+    nodes_data = create_energy_system.import_scenario(filepath=scenario_file)
+
+    # CRITERION SWITCH
+    if criterion_switch:
+        data_preparation.change_optimization_criterion(nodes_data)
+
+    if sys.platform.startswith("win"):
+        scheme_path = \
+            os.path.join(os.path.dirname(__file__)
+                         + r'\technical_data\hierarchical_selection'
+                           r'_schemes.xlsx')
+    else:
+        scheme_path = \
+            os.path.join(os.path.dirname(os.path.dirname(__file__))
+                         + r'/technical_data/hierarchical_selection'
+                           r'_schemes.xlsx')
+    # Timeseries Preprocessing
+    data_preparation.timeseries_preparation(timeseries_prep_param=timeseries_prep,
+                                            nodes_data=nodes_data,
+                                            scheme_path=scheme_path,
+                                            result_path=result_path)
+
+    if timeseries_prep[0] != 'none':
+        scenario_file = result_path + "/modified_scenario.xlsx"
+
+    # CREATES AN ENERGYSYSTEM AS DEFINED IN THE SCENARIO FILE
+    esys = create_energy_system.define_energy_system(nodes_data=nodes_data)
+
+    weather_data = nodes_data['weather data']
+    time_series = nodes_data['timeseries']
+
+    # CREATES AN LIST OF COMPONENTS
+    nodes = []
+
+    # CREATES BUS OBJECTS, EXCESS SINKS, AND SHORTAGE SOURCES AS DEFINED IN THE
+    # SCENARIO FILE AND ADDS THEM TO THE lIST OF COMPONENTS
+    busd = Bus.buses(nd=nodes_data, nodes=nodes)
+    # PARALLEL CREATION OF ALL OBJECTS OF THE SCENARIO FILE
+
+    # CREATES SOURCE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
+    # THE lIST OF COMPONENTS
+    t1 = Thread(target=Source.Sources, args=(nodes_data, nodes, busd))
+    t1.start()
+    # CREATES SINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
+    # THE lIST OF COMPONENTS
+    t2 = Thread(target=Sink.Sinks, args=(nodes_data, busd, nodes))
+    t2.start()
+    # CREATES TRANSFORMER OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM
+    # TO THE lIST OF COMPONENTS
+    t3 = Thread(target=Transformer.Transformers,
+                args=(nodes_data, nodes, busd))
+    t3.start()
+    # CREATES STORAGE OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
+    # THE lIST OF COMPONENTS
+    t4 = Thread(target=Storage.Storages, args=(nodes_data, nodes, busd))
+    t4.start()
+    # CREATES LINK OBJECTS AS DEFINED IN THE SCENARIO FILE AND ADDS THEM TO
+    # THE lIST OF COMPONENTS
+    t5 = Thread(target=Link.Links, args=(nodes_data, nodes, busd))
+    t5.start()
+
+    # WAIT UNTIL THE THREADS HAVE DONE THEIR JOBS
+    t1.join()
+    t2.join()
+    t3.join()
+    t4.join()
+    t5.join()
+    
+    nodes = district_heating.district_heating(nodes_data, nodes, busd,
+                                              district_heating_path,
+                                              result_path, cluster_dh, False)
+    # ADDS THE COMPONENTS TO THE ENERGYSYSTEM
+    esys.add(*nodes)
+    ESGraphRenderer(energy_system=esys, filepath=result_path, view=graph,
+                    legend=True)
+
+    # OPTIMIZES THE ENERGYSYSTEM AND RETURNS THE OPTIMIZED ENERGY SYSTEM
+    om = optimize_model.least_cost_model(esys, num_threads, nodes_data, busd,
+                                         solver)
+
+    # SHOWS AND SAVES RESULTS OF THE OPTIMIZED MODEL / POST-PROCESSING
+    if xlsx_results:
+        create_results.xlsx(nodes_data=nodes_data, optimization_model=om,
+                            filepath=result_path)
+    # CREATES PLOTLY RESULTS AND LOGS RESULTS OF CBC SOLVER
+    create_results.Results(nodes_data, om, esys, result_path,
+                           console_log=console_results, cluster_dh=cluster_dh)
+
+    logging.info('\t ' + 56 * '-')
+    logging.info('\t Modelling and optimization successfully completed!')
+
+
+def sesmg_main_including_premodel(scenario_file: str, result_path: str, num_threads: int,
+               graph: bool, criterion_switch: bool, xlsx_results: bool,
+               console_results: bool, timeseries_prep: list, solver: str,
+               cluster_dh, pre_model_timeseries_prep: list, investment_boundaries: bool,
+               investment_boundary_factor: int, pre_model_path: str, district_heating_path=None):
     # Create Sub-Folders in the results-repository
     os.mkdir(result_path + str('/pre_model'))
     # Start Pre-Modeling Run
-    logging.info('STARTING PRE-MODEL')
-    logging.info('Pre-modeling results will be stored in: '
-                 + result_path + str('/pre_model'))
+    print('STARTING PRE-MODEL')
 
-    # starting the optimization of the model definition with timeseries
-    # preparation parameters used for model simplification
+    print(scenario_file)
+    print(result_path + str('/pre_model'))
+    print(num_threads)
+    print(pre_model_timeseries_prep)
+    print(graph)
+    print(criterion_switch)
+    print(xlsx_results)
+    print(console_results)
+    print(solver)
+    print(district_heating_path)
+    print(cluster_dh)
+
     sesmg_main(
-        model_definition_file=model_definition_file,
+        scenario_file=scenario_file,
         result_path=result_path + str('/pre_model'),
         num_threads=num_threads,
         timeseries_prep=pre_model_timeseries_prep,
@@ -258,20 +249,32 @@ def sesmg_main_including_premodel(
         district_heating_path=district_heating_path,
         cluster_dh=cluster_dh)
 
-    # create updated model definition for main-modeling run
-    logging.info('UPDATING DATA BASED ON PRE-MODEL RESULTS')
+    # create updated scenario for main-modeling run
+    print('UPDATING DATA BASED ON PRE-MODEL RESULTS')
     update_model_according_pre_model_results(
-        model_definition_path=model_definition_file,
+        scenario_path=scenario_file,
         results_components_path=result_path + '/pre_model/components.csv',
-        updated_model_definition_path=result_path + '/updated_scenario.xlsx',
+        updated_scenario_path=result_path + '/updated_scenario.xlsx',
         investment_boundary_factor=investment_boundary_factor,
         investment_boundaries=investment_boundaries)
 
     # start main-modeling run
-    logging.info('STARTING MAIN-MODEL')
+    print('STARTING MAIN-MODEL')
+
+    print(result_path + '/updated_scenario.xlsx')
+    print(result_path)
+    print(num_threads)
+    print(timeseries_prep)
+    print(graph)
+    print(criterion_switch)
+    print(xlsx_results)
+    print(console_results)
+    print(solver)
+    print(district_heating_path)
+    print(cluster_dh)
 
     sesmg_main(
-        model_definition_file=result_path + '/updated_scenario.xlsx',
+        scenario_file=result_path + '/updated_scenario.xlsx',
         result_path=result_path,
         num_threads=num_threads,
         timeseries_prep=timeseries_prep,
@@ -282,3 +285,4 @@ def sesmg_main_including_premodel(
         solver=solver,
         district_heating_path=district_heating_path,
         cluster_dh=cluster_dh)
+

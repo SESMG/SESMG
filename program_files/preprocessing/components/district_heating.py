@@ -1,124 +1,62 @@
-"""
-    Gregor Becker - gregor.becker@fh-muenster.de
-"""
-import pandas
+import pandas as pd
 import dhnx
-from dhnx.plotting import StaticMap
-from dhnx.network import ThermalNetwork
+import dhnx.plotting
+import dhnx.network
+import dhnx.optimization.oemof_heatpipe as heatpipe
 import dhnx.optimization.optimization_models as optimization
+import oemof.solph as solph
+import os
 import logging
-from program_files.preprocessing.components.district_heating_calculations \
-    import *
-from program_files.preprocessing.components.district_heating_clustering \
-    import *
+from program_files.preprocessing.components.district_heating_calculations import *
+from program_files.preprocessing.components.district_heating_clustering import *
+
+# create an empty thermal network
+thermal_net = dhnx.network.ThermalNetwork()
 
 
-def load_thermal_network_data(thermal_net: ThermalNetwork, path: str
-                              ) -> ThermalNetwork:
-    """
-        Method to load already calculated thermal network data.
-        
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-        :param path: path where the ThermalNetwork data is stored.
-        :type path: str
-        
-        :return: - **thermal_net** (ThermalNetwork) - DHNX \
-            ThermalNetwork instance to which the already existing data \
-            was attached.
-    """
-    for dataframe in ["consumers", "pipes", "producers", "forks"]:
-        thermal_net.components[dataframe] = \
-            pandas.read_csv(path + "/" + dataframe + ".csv")
-    return thermal_net
-
-
-def save_thermal_network_data(thermal_net: ThermalNetwork, path: str) -> None:
-    """
-        Method to save the calculated thermal network data.
-
-        :param thermal_net: DHNx ThermalNetwork instance which will be \
-            stored within the optimization result folder
-        :type thermal_net: ThermalNetwork
-        :param path: path where the ThermalNetwork data will be stored.
-        :type path: str
-    """
-    for dataframe in ["consumers", "pipes", "producers", "forks"]:
-        thermal_net.components[dataframe].to_csv(
-                path + "/" + dataframe + ".csv")
-
-    
 def concat_on_thermal_net_components(comp_type: str, new_dict: dict,
-                                     thermal_net: dhnx.network.ThermalNetwork
-                                     ) -> dhnx.network.ThermalNetwork:
+                                     thermal_net) -> None:
     """
-        Outsourced the concatenation of a new row (component) to the \
-        thermal network component dataframes (consumers, producers, \
-        forks etc.) which is part of several algorithm steps.
-        
-        :param comp_type: defines on which thermal net components \
-            DataFrame the new dict will be appended
-        :type comp_type: str
-        :param new_dict: holds the information of the new component to \
-            be appended on an existing DataFrame
-        :type new_dict: dict
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: dhnx.network.ThermalNetwork
-        
-        :return: - **thermal_net** (dhnx.network.ThermalNetwork) - \
-            updated instance of the DHNx ThermalNetwork
+    outsourced the concatenation which is part of several algorithm
+    steps
+    
+    :param comp_type: defines on which thermal net components DataFrame\
+        the new dict will be appended
+    :type comp_type: str
+    :param new_dict: holds the information of the new component to be \
+        appended on an existing DataFrame
+    :type new_dict: dict
+    :param thermal_net: TODO
+    :type thermal_net: dhnx.network.ThermalNetwork
     """
     # create consumers forks pandas Dataframe for thermal network
-    thermal_net.components[comp_type] = pandas.concat(
+    thermal_net.components[comp_type] = pd.concat(
         [thermal_net.components[comp_type],
-         pandas.DataFrame([pandas.Series(data=new_dict)])]
+         pd.DataFrame([pd.Series(data=new_dict)])]
     )
-    return thermal_net
     
     
-def clear_thermal_net(thermal_net: dhnx.network.ThermalNetwork
-                      ) -> dhnx.network.ThermalNetwork:
+def clear_thermal_net():
     """
-        Method to clear the pandas dataframes of thermal network
-        that might consist of old information.
-        
-        :param thermal_net: DHNx ThermalNetwork instance possibly \
-            holding information of an older optimization run
-        :type thermal_net: dhnx.network.ThermalNetwork
-        
-        :return: **thermal_net** (dhnx.network.ThermalNetwork) - \
-            cleared instance of the DHNx ThermalNetwork
+    Method used to clear the pandas dataframes of thermal network
+    that might consist of old information.
     """
-    for dataframe in ["forks", "consumers", "pipes", "producers"]:
-        thermal_net.components[dataframe] = pandas.DataFrame()
-    return thermal_net
+    for i in ["forks", "consumers", "pipes", "producers"]:
+        thermal_net.components[i] = pd.DataFrame()
 
 
-def create_fork(point: list, label: int, thermal_net: ThermalNetwork, bus=None
-                ) -> ThermalNetwork:
+def create_fork(point: list, label: int, thermal_net, bus=None):
     """
-        Outsourced from creation algorithm to reduce redundancy.
-    
-        :param point: list containing information of the point to be \
-            appended
-        :type point: list
-        :param label: id of the fork to be created
-        :type label: int
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-        :param bus: bus is used for producers forks identification
-        :type bus: str
-        
-        :return: - **-** (ThermalNetwork) - DHNx ThermalNetwork \
-            instance on which the new fork was appended.
+    Outsourced from creation algorithm to reduce redundancy.
+
+    :param point: list containing information of the point to be
+                  appended
+    :type point: list
+    :param label: id of the fork to be created
+    :type label: int
+    :param bus: bus is used for producers forks identification
+    :type bus: str
     """
-    # create the fork specific dict based on the parameter data
     fork_dict = {
         "id": label,
         "lat": point[1],
@@ -127,63 +65,51 @@ def create_fork(point: list, label: int, thermal_net: ThermalNetwork, bus=None
         "street": point[5],
         "t": point[4],
     }
-    # if the bus variable is set append it on the fork dict
     if bus:
         fork_dict.update({"bus": bus})
-    # append the fork on the thermal net instance and return it
-    return concat_on_thermal_net_components(comp_type="forks",
-                                            new_dict=fork_dict,
-                                            thermal_net=thermal_net)
+    concat_on_thermal_net_components("forks", fork_dict, thermal_net)
 
 
-def append_pipe(nodes: list, length: float, street: str,
-                thermal_net) -> ThermalNetwork:
+def append_pipe(from_node: str, to_node: str, length: float, street: str,
+                thermal_net):
     """
-        Method which is used to append the heatpipeline specified by
-        the method's parameter to the list of pipes
-        (thermal_net.components["pipes"]).
-        
-        :param nodes: definition of the first and second edge of the \
-            heatpipeline to be appended to the list of pipes
-        :type nodes: list
-        :param length: definition of the length of the heatpipeline to \
-            be appended to the list of pipes
-        :type length: float
-        :param street: definition of the street in which the \
-            heatpipeline will be laid
-        :type street: str
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-        
-        :return: - **-** (ThermalNetwork) - DHNx ThermalNetwork \
-            instance used to create the components of the thermal \
-            network for the energy system. Within this method a new \
-            pipe was added.
+    method which is used to append the heatpipeline specified by the
+    methods parameter to the list of pipes
+    (thermal_net.components["pipes"])
+    
+    :param from_node: definition of the first edge of the \
+        heatpipeline to be appended to the list of pipes
+    :type from_node: str
+    :param to_node: definition of the second edge of the \
+        heatpipeline to be appended to the list of pipes
+    :type from_node: str
+    :param length: definition of the length of the heatpipeline to \
+        be appended to the list of pipes
+    :type length: float
+    :param street: defintion of the street in which the \
+        heatpipeline will be layed
+    :type street: str
+    :param thermal_net: TODO
+    :type thermal_net: dhnx.network.ThermalNetwork
     """
     pipe_dict = {
         "id": "pipe-{}".format(len(thermal_net.components["pipes"]) + 1),
-        "from_node": nodes[0],
-        "to_node": nodes[1],
+        "from_node": from_node,
+        "to_node": to_node,
         "length": length,
         "component_type": "Pipe",
         "street": street,
     }
-    return concat_on_thermal_net_components("pipes", pipe_dict, thermal_net)
+    concat_on_thermal_net_components("pipes", pipe_dict, thermal_net)
 
 
-def remove_redundant_sinks(
-        oemof_opti_model: optimization.OemofInvestOptimizationModel
-) -> optimization.OemofInvestOptimizationModel:
+def remove_redundant_sinks(oemof_opti_model: optimization.OemofInvestOptimizationModel):
     """
         Within the dhnx algorithm empty sinks are created,
         which are removed in this method.
 
-        :param oemof_opti_model: parameter holding the district \
-            heating optimization model
+        :param oemof_opti_model: dh model
         :type oemof_opti_model: optimization.OemofInvestOptimizationModel
-        
         :return: **oemof_opti_model** \
             (optimization.OemofInvestOptimizationModel) - dh model \
             without unused sinks
@@ -202,98 +128,63 @@ def remove_redundant_sinks(
     return oemof_opti_model
 
 
-def create_connection_points(consumers: pandas.DataFrame,
-                             road_sections: pandas.DataFrame,
-                             thermal_net: ThermalNetwork) -> ThermalNetwork:
+def create_connection_points(consumers, road_sections):
     """
-        Create the entries for the connection points and adds them to
-        thermal network forks, consumers and pipes.
-        
-        NOTE:
-        
-              bus label structure has to be <ID>_...
-    
-        :param consumers: holding nodes_data["buses"]
-        :type consumers: pandas.Dataframe
-        :param road_sections: holding nodes_data["district heating"]
-        :type road_sections: pandas.Dataframe
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-        
-        :return: - **thermal_net** (ThermalNetwork) - DHNx \
-            ThermalNetwork instance after attaching of the network's \
-            consumers
+    Create the entries for the connection points and adds them to
+    thermal network forks, consumers and pipes.
+
+    :param consumers: holding nodes_data["sinks"]
+    :type consumers: pandas.Dataframe
+    :param road_sections: holding nodes_data["district heating"]
+    :type road_sections: pandas.Dataframe
     """
     consumer_counter = 0
-    # locate the DataFrame entries necessary for consumer connections
-    dh_consumers = consumers[(consumers["active"] == 1)
-                             & (consumers["district heating conn."] == 1)]
-    # iterate threw all active and connectable buses
-    for num, consumer in dh_consumers.iterrows():
-        # get the first part of the bus label which represents the
-        # building label
-        label = consumer["label"].split("_")[0]
-        foot_point = get_nearest_perp_foot_point(
-            building=consumer,
-            streets=road_sections,
-            index=consumer_counter,
-            building_type="consumers"
-        )
-        # add consumer to thermal network components (dummy
-        # because cut from system after creating dhnx components
-        thermal_net = concat_on_thermal_net_components(
-            comp_type="consumers",
-            new_dict={
-                "id": "consumers-{}".format(consumer_counter),
-                "lat": float(consumer["lat"]),
-                "lon": float(consumer["lon"]),
-                "component_type": "Consumer",
-                "P_heat_max": 1,
-                "input": consumer["label"],
-                "label": consumer["label"],
-                "street": foot_point[5],
-            },
-            thermal_net=thermal_net
-        )
-        # add fork of perpendicular foot point to the dataframe
-        # of forks
-        thermal_net = create_fork(
-            point=foot_point,
-            label=foot_point[0][10:-5],
-            thermal_net=thermal_net)
-        # add pipe between the perpendicular foot point and the
-        # building to the dataframe of pipes
-        thermal_net = append_pipe(
-            nodes=["forks-{}".format(foot_point[0][10:-5]),
-                   foot_point[0][:-5]],
-            length=foot_point[3],
-            street=label,
-            thermal_net=thermal_net
-        )
-        consumer_counter += 1
-        logging.info("\t Connected {} to district heating "
-                     "network".format(label))
-    return thermal_net
+    for num, consumer in consumers[consumers["active"] == 1].iterrows():
+        if consumer["district heating conn."] == 1:
+            # TODO label of sinks has to be id_...
+            label = consumer["label"].split("_")[0] + "1"
+            foot_point = get_nearest_perp_foot_point(
+                consumer, road_sections, consumer_counter, "consumers"
+            )
+            # add consumer to thermal network components (dummy
+            # because cut from system after creating dhnx components
+            concat_on_thermal_net_components(
+                "consumers",
+                {
+                    "id": "consumers-{}".format(consumer_counter),
+                    "lat": float(consumer["lat"]),
+                    "lon": float(consumer["lon"]),
+                    "component_type": "Consumer",
+                    "P_heat_max": 1,
+                    "input": consumer["label"],
+                    "label": consumer["label"],
+                    "street": foot_point[5],
+                },
+                thermal_net
+            )
+            # add fork of perpendicular foot point to the dataframe
+            # of forks
+            create_fork(foot_point, foot_point[0][10:-5], thermal_net)
+            # add pipe between the perpendicular foot point and the
+            # building to the dataframe of pipes
+            append_pipe(
+                "forks-{}".format(foot_point[0][10:-5]),
+                foot_point[0][:-5],
+                foot_point[3],
+                label,
+                thermal_net
+            )
+            consumer_counter += 1
+            logging.info("\t Connected {} to district heating network".format(label))
 
 
-def create_intersection_forks(street_sec: pandas.DataFrame,
-                              thermal_net: ThermalNetwork) -> ThermalNetwork:
+def create_intersection_forks(street_sec: pd.DataFrame) -> None:
     """
-        Creates the forks of the model definition given street points.
-    
-        :param street_sec: pandas Dataframe containing the street \
-            sections beginning and ending points
-        :type street_sec: pandas.Dataframe
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-        
-        :return: - **thermal_net** (ThermalNetwork) - DHNx \
-            ThermalNetwork instance after attaching of the network's \
-            intersection forks
+    Creates the forks of the scenario given street points.
+
+    :param street_sec: pandas Dataframe containing the street
+                          sections beginning and ending points
+    :type street_sec: pandas.Dataframe
     """
     road_section_points = {}
     fork_num = len(thermal_net.components["forks"])
@@ -316,106 +207,74 @@ def create_intersection_forks(street_sec: pandas.DataFrame,
             
     # append all points on forks dataframe
     for point in road_section_points:
-        thermal_net = concat_on_thermal_net_components(
-            comp_type="forks",
-            new_dict={
+        concat_on_thermal_net_components(
+            "forks",
+            {
                 "id": point[6:],
                 "lat": road_section_points[point][0],
                 "lon": road_section_points[point][1],
                 "component_type": "Fork",
             },
-            thermal_net=thermal_net
+            thermal_net
         )
-    
-    return thermal_net
 
 
-def create_producer_connection_point(
-        buses: pandas.DataFrame, road_sections: pandas.DataFrame,
-        thermal_net: ThermalNetwork) -> ThermalNetwork:
+def create_producer_connection_point(nodes_data: pd.DataFrame, road_sections):
     """
-        Create the entries for the producers connection points and adds
-        them to thermal network forks, producers and pipes
-    
-        :param buses: pandas DataFrame containing the model definition \
-            buses data
-        :type buses: pandas.DataFrame ['buses']
-        :param road_sections: Dataframe containing the street sections \
-            start and end points
-        :type road_sections: pandas.Dataframe
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-        
-        :return: - **thermal_net** (ThermalNetwork) - DHNx \
-            ThermalNetwork instance after attaching of the network's \
-            producer connection points
+    create the entries for the producers  connection points and adds
+    them to thermal network forks, producers and pipes
+
+    :param nodes_data:
+    :type nodes_data: pandas.Dataframe
+    :param road_sections: Dataframe containing the street sections
+                          start and end points
+    :type road_sections: pandas.Dataframe
     """
     number = 0
-    dh_producers = buses[(buses["district heating conn."] == "dh-system")
-                         & (buses["active"] == 1)]
-    for num, bus in dh_producers.iterrows():
-        # create a producer buses and its connections point and pipe
-        # due to the given lat and lon from buses sheet
-        thermal_net = concat_on_thermal_net_components(
-            comp_type="producers",
-            new_dict={
-                "id": number,
-                "lat": bus["lat"],
-                "lon": bus["lon"],
-                "component_type": "Producer",
-                "active": 1,
-            },
-            thermal_net=thermal_net
-        )
-        # calculate the perpendicular foot point
-        foot_point = get_nearest_perp_foot_point(
-            building=bus,
-            streets=road_sections,
-            index=number,
-            building_type="producers"
-        )
-        # add the calculated point to the forks Dataframe
-        thermal_net = create_fork(
-            point=foot_point,
-            label=len(thermal_net.components["forks"]) + 1,
-            thermal_net=thermal_net,
-            bus=bus["label"]
-        )
-        # add the pipe to connect fork and producer node
-        thermal_net = append_pipe(
-            nodes=["producers-{}".format(number),
-                   "forks-{}".format(len(thermal_net.components["forks"]))],
-            length=foot_point[3],
-            street=bus["label"],
-            thermal_net=thermal_net
-        )
-        number += 1
-        logging.info(
-            "\t Connected {} to district heating network".format(bus["label"])
-        )
-    return thermal_net
+    for i, bus in nodes_data["buses"].iterrows():
+        if bus["district heating conn."] == "dh-system" and bus["active"] == 1:
+            # create a producer buses and its connections point and pipe
+            # due to the given lat and lon from buses sheet
+            concat_on_thermal_net_components(
+                "producers",
+                {
+                    "id": number,
+                    "lat": bus["lat"],
+                    "lon": bus["lon"],
+                    "component_type": "Producer",
+                    "active": 1,
+                },
+                thermal_net
+            )
+            foot_point = get_nearest_perp_foot_point(
+                bus, road_sections, number, "producers"
+            )
+            create_fork(
+                foot_point, len(thermal_net.components["forks"]) + 1,
+                thermal_net, bus["label"]
+            )
+            append_pipe(
+                "producers-{}".format(number),
+                "forks-{}".format(len(thermal_net.components["forks"])),
+                foot_point[3],
+                bus["label"],
+                thermal_net
+            )
+            number += 1
+            logging.info(
+                "\t Connected {} to district heating network".format(bus["label"])
+            )
 
 
-def create_supply_line(streets: pandas.DataFrame,
-                       thermal_net: ThermalNetwork) -> ThermalNetwork:
+def create_supply_line(streets):
     """
-        Acquisition of all points of a route (road sections), order
-        itself in ascending order and creation of the lines to link the
-        forks.
-    
-        :param streets: district heating Dataframe including the \
-            model definition sheet
-        :type streets: pandas.Dataframe
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-        
-        :return: - **thermal_net** (ThermalNetwork) - DHNx \
-            ThermalNetwork instance after attaching of the network's \
-            supply lines
+    Acquisition of all points of a route (road sections), order
+    itself in ascending order and creation of the lines to link the
+    forks.
+
+    :param streets: district heating Dataframe including the
+        scenario sheet
+    :type streets: pandas.Dataframe
     """
     pipes = {}
     for num, street in streets[streets["active"] == 1].iterrows():
@@ -425,8 +284,7 @@ def create_supply_line(streets: pandas.DataFrame,
                 point["lat"] == street["lat. 1st intersection"]
                 and point["lon"] == street["lon. 1st intersection"]
             ):
-                # check if begin of road section is begin or end of
-                # another
+                # check if begin of road section is begin or end of another
                 road_section.append(
                     [
                         point["id"],
@@ -441,8 +299,7 @@ def create_supply_line(streets: pandas.DataFrame,
                 point["lat"] == street["lat. 2nd intersection"]
                 and point["lon"] == street["lon. 2nd intersection"]
             ):
-                # check if begin of road section is begin or end of
-                # another
+                # check if begin of road section is begin or end of another
                 road_section.append(
                     [
                         point["id"],
@@ -466,8 +323,7 @@ def create_supply_line(streets: pandas.DataFrame,
                         ]
                     )
 
-        # Order Connection points on the currently considered road
-        # section
+        # Order Connection points on the currently considered road section
         pipes.update({street["label"]: calc_street_lengths(road_section)})
 
     for street in pipes:
@@ -481,75 +337,45 @@ def create_supply_line(streets: pandas.DataFrame,
                 ends[1] = "forks-{}".format(ends[1][10:-5])
             else:
                 ends[1] = "forks-{}".format(ends[1])
-            thermal_net = append_pipe(
-                nodes=[ends[0], ends[1]],
-                length=pipe[1],
-                street=street,
-                thermal_net=thermal_net)
-    
-    return thermal_net
+            append_pipe(ends[0], ends[1], pipe[1], street, thermal_net)
 
 
-def adapt_dhnx_style(thermal_net: ThermalNetwork, cluster_dh: bool
-                     ) -> ThermalNetwork:
+def adapt_dhnx_style():
     """
-        Brings the created pandas Dataframes to the dhnx style.
-        
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-        :param cluster_dh: boolean used to distinguish between a \
-            clustered heat network or an un-clustered heat network run
-        :type cluster_dh: bool
-        
-        :return: - **thermal_net** (ThermalNetwork) - DHNx \
-            ThermalNetwork instance after style adaption
+    Brings the created pandas Dataframes to the dhnx style.
     """
-    if not cluster_dh:
-        consumers = thermal_net.components["consumers"]
-        consumer_df = consumers.loc[consumers["id"] != type(int)]
-        for num, consumer in consumer_df.iterrows():
+    for i, p in thermal_net.components["consumers"].iterrows():
+        if "consumers" in str(p["id"]):
             thermal_net.components["consumers"].replace(
-                to_replace=consumer["id"],
-                value=consumer["id"][10:],
-                inplace=True
+                to_replace=p["id"], value=p["id"][10:], inplace=True
             )
-        pipes = thermal_net.components["pipes"]
-        for num, pipe in pipes.loc[pipes["id"] != type(int)].iterrows():
+    for i, p in thermal_net.components["pipes"].iterrows():
+        if type(p["id"]) != int:
             thermal_net.components["pipes"].replace(
-                to_replace=pipe["id"], value=pipe["id"][5:], inplace=True
+                to_replace=p["id"], value=p["id"][5:], inplace=True
             )
-            
-    # reset the index on the id column of each DataFrame
-    for index in ["consumers", "pipes", "producers", "forks"]:
-        thermal_net.components[index].index = \
-            thermal_net.components[index]["id"]
-    # return the adapted thermal network
-    return thermal_net
+    thermal_net.components["consumers"].index = thermal_net.components["consumers"][
+        "id"
+    ]
+    thermal_net.components["forks"].index = thermal_net.components["forks"]["id"]
+    thermal_net.components["pipes"].index = thermal_net.components["pipes"]["id"]
+    thermal_net.components["producers"].index = thermal_net.components["producers"][
+        "id"
+    ]
 
 
-def create_components(nodes_data: dict, anergy_or_exergy: bool,
-                      thermal_net: ThermalNetwork
-                      ) -> optimization.OemofInvestOptimizationModel:
+def create_components(nodes_data, anergy_or_exergy):
     """
-        Runs dhnx methods for creating thermal network oemof components.
-    
-        :param nodes_data: dictionary holing model definition sheet \
-            information
-        :type nodes_data: dict
-        :param anergy_or_exergy: bool which defines rather the \
-            considered network is an exergy net (False) or an anergy \
-            net (True)
-        :type anergy_or_exergy: bool
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-    
-        :return: - **oemof_opti_model** \
-            (optimization.OemofInvestOptimizationModel) - model \
-            holding dh components
+    Runs dhnx methods for creating thermal network oemof components.
+
+    :param nodes_data: Dataframe holing scenario sheet information
+    :type nodes_data: pd.Dataframe
+    :param anergy_or_exergy: bool which defines rather the considered \
+        network is an exergy net (False) or an anergy net (True)
+    :type anergy_or_exergy: bool
+
+    :return: **oemof_opti_model** (dhnx.optimization) - model \
+        holding dh components
     """
     frequency = nodes_data["energysystem"]["temporal resolution"].values
     start_date = str(nodes_data["energysystem"]["start date"].values[0])
@@ -562,25 +388,22 @@ def create_components(nodes_data: dict, anergy_or_exergy: bool,
                "periodical constraint costs": "periodical_constraint_costs",
                "fix investment constraint costs": "fix_constraint_costs"}
     nodes_data["pipe types"] = nodes_data["pipe types"].rename(columns=name_dc)
-    
-    pipe_types = nodes_data["pipe types"]
-    label_5 = "anergy" if anergy_or_exergy else "exergy"
-    
+      
     # set standard investment options that do not require user modification
     invest_opt = {
         "consumers": {
-            "bus": pandas.DataFrame(
+            "bus": pd.DataFrame(
                 {"label_2": "heat",
                  "active": 1,
                  "excess": 0,
                  "shortage": 0}, index=[0]
             ),
-            "demand": pandas.DataFrame(
+            "demand": pd.DataFrame(
                 {"label_2": "heat", "active": 1, "nominal_value": 1}, index=[0]
             ),
         },
         "producers": {
-            "bus": pandas.DataFrame(
+            "bus": pd.DataFrame(
                 {
                     "Unnamed: 0": 1,
                     "label_2": "heat",
@@ -590,15 +413,11 @@ def create_components(nodes_data: dict, anergy_or_exergy: bool,
                 },
                 index=[0],
             ),
-            "source": pandas.DataFrame(
-                {"label_2": "heat", "active": 0}, index=[0]),
+            "source": pd.DataFrame({"label_2": "heat", "active": 0}, index=[0]),
         },
         "network": {
-            "pipes": pipe_types.loc[(pipe_types["anergy_or_exergy"] == label_5)
-                                    & (pipe_types["distribution_pipe"] == 1)],
-            "pipes_houses": pipe_types.loc[
-                (pipe_types["anergy_or_exergy"] == label_5)
-                & (pipe_types["building_pipe"] == 1)],
+            "pipes": nodes_data["pipe types"].loc[(nodes_data["pipe types"]["anergy_or_exergy"] == ("anergy" if anergy_or_exergy else "exergy")) & (nodes_data["pipe types"]["distribution_pipe"] == 1)],
+            "pipes_houses": nodes_data["pipe types"].loc[(nodes_data["pipe types"]["anergy_or_exergy"] == ("anergy" if anergy_or_exergy else "exergy")) & (nodes_data["pipe types"]["building_pipe"] == 1)],
         },
     }
     # start dhnx algorithm to create dh components
@@ -613,43 +432,95 @@ def create_components(nodes_data: dict, anergy_or_exergy: bool,
             + "/"
             + str(start_date[0:4])
         ),
+        bidirectional_pipes=True,
         frequence=(str(frequency[0])).upper(),
-        label_5=label_5,
-        bidirectional_pipes=True
+        label_5="anergy" if anergy_or_exergy else "exergy"
     )
     return oemof_opti_model
 
 
-def connect_dh_to_system(
-        oemof_opti_model: optimization.OemofInvestOptimizationModel,
-        busd: dict, pipe_types: pandas.DataFrame, thermal_net: ThermalNetwork
-) -> optimization.OemofInvestOptimizationModel:
+def calc_heat_pipe_attributes(oemof_opti_model, anergy_or_exergy, nodes_data):
+    for a in oemof_opti_model.nodes:
+        if str(type(a)) == "<class 'oemof.solph.network.bus.Bus'>":
+            pass
+        else:
+            label = a.label.tag3	
+            if int(nodes_data["pipe types"].loc[
+                       nodes_data["pipe types"]["label_3"] == label][
+                       "nonconvex"]) == 0:
+                ep_costs = getattr(
+                    a.outputs[list(a.outputs.keys())[0]].investment, "ep_costs"
+                )
+                length = ep_costs / float(
+                    nodes_data["pipe types"].loc[
+                        nodes_data["pipe types"]["label_3"] == label][
+                        "capex_pipes"]
+                )
+                setattr(
+                        a.outputs[list(a.outputs.keys())[0]].investment,
+                        "periodical_constraint_costs",
+                        length
+                        * float(
+                            nodes_data["pipe types"].loc[
+                                nodes_data["pipe types"]["label_3"] == label][
+                                "periodical_constraint_costs"
+                            ]
+                    ),
+                )
+            else:
+                fix_costs = getattr(
+                    a.outputs[list(a.outputs.keys())[0]].investment, "offset"
+                )
+                length = fix_costs / float(
+                    nodes_data["pipe types"].loc[
+                        nodes_data["pipe types"]["label_3"] == label][
+                        "fix_costs"]
+                )
+                
+            setattr(
+                    a.outputs[list(a.outputs.keys())[0]].investment,
+                    "periodical_constraint_costs",
+                    length
+                    * float(
+                            nodes_data["pipe types"].loc[
+                                nodes_data["pipe types"]["label_3"] == label][
+                                "periodical_constraint_costs"
+                            ]
+                    ),
+            )
+            setattr(
+                    a.outputs[list(a.outputs.keys())[0]].investment,
+                    "fix_constraint_costs",
+                    length
+                    * float(
+                            nodes_data["pipe types"].loc[
+                                nodes_data["pipe types"]["label_3"] == label][
+                                "fix_constraint_costs"
+                            ]
+                    ),
+            )
+            
+            setattr(a.inputs[list(a.inputs.keys())[0]], "emission_factor", 0)
+            setattr(a.outputs[list(a.outputs.keys())[0]], "emission_factor", 0)
+            
+    return oemof_opti_model
+
+
+def connect_dh_to_system(oemof_opti_model, busd, nodes_data):
     """
-        Method which creates links to connect the model definition
-        based created sinks to the thermal network components created
-        before.
+        Method which creates links to connect the scenario based
+        created sinks to the thermal network components created before.
 
         :param oemof_opti_model: Oemof model holing thermal network
-        :type oemof_opti_model: optimization.OemofInvestOptimizationModel
-        :param busd: dictionary containing model definitions' buses
+        :type oemof_opti_model:
+        :param busd: dictionary containing scenario buses
         :type busd: dict
-        :param pipe_types: DataFrame holing the model definition's \
-            pipe types sheet information
-        :type pipe_types: pandas.DataFrame
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-        
-        :return: - **oemof_opti_model** \
-            (optimization.OemofInvestOptimizationModel) - oemof dh \
+        :return: - **oemof_opti_model** (dhnx.optimization) - oemof dh \
             model within connection to the main model
     """
-    oemof_opti_model = remove_redundant_sinks(
-        oemof_opti_model=oemof_opti_model)
-    oemof_opti_model = calc_heat_pipe_attributes(
-        oemof_opti_model=oemof_opti_model,
-        pipe_types=pipe_types)
+    oemof_opti_model = remove_redundant_sinks(oemof_opti_model)
+    oemof_opti_model = calc_heat_pipe_attributes(oemof_opti_model, False,
+                                                 nodes_data)
     
     # create link to connect consumers heat bus to the dh-system
     for num, consumer in thermal_net.components["consumers"].iterrows():
@@ -659,13 +530,14 @@ def connect_dh_to_system(
         
         inputs = {oemof_opti_model.buses[label]: solph.Flow(emission_factor=0)}
         
-        heatstation = pipe_types.loc[pipe_types["label_3"] == "dh_heatstation"]
         outputs = {
             busd[consumer["input"]]: solph.Flow(
                 investment=solph.Investment(
-                    ep_costs=float(heatstation["capex_pipes"]),
+                    ep_costs=float(
+                        nodes_data["pipe types"].loc[nodes_data["pipe types"]["label_3"] == "dh_heatstation"]["capex_pipes"]),
                     periodical_constraint_costs=float(
-                        heatstation["periodical_constraint_costs"]),
+                        nodes_data["pipe types"].loc[nodes_data["pipe types"]["label_3"] == "dh_heatstation"][
+                            "periodical_constraint_costs"]),
                     minimum=0,
                     maximum=999 * len(consumer["input"]),
                     existing=0,
@@ -676,7 +548,8 @@ def connect_dh_to_system(
             )}
         
         conversion_factors = {
-            (label, busd[consumer["input"]]): float(heatstation["efficiency"])
+            (label, busd[consumer["input"]]): float(
+                nodes_data["pipe types"].loc[nodes_data["pipe types"]["label_3"] =="dh_heatstation"]["efficiency"])
         }
         
         oemof_opti_model.nodes.append(
@@ -692,433 +565,364 @@ def connect_dh_to_system(
     return oemof_opti_model
 
 
-def create_link_between_dh_heat_bus_and_excess_shortage_bus(
-        busd: dict, bus: pandas.Series,
-        oemof_opti_model: optimization.OemofInvestOptimizationModel,
-        fork_label: heatpipe.Label) -> solph.custom.Link:
+def connect_anergy_to_system(oemof_opti_model, busd, nodes_data):
     """
-        Create the link between the bus which enables the heat
-        shortage for the district heating network and the fork of the
-        district heating network.
-        
-        :param busd: dictionary holding the energy systems' buses
-        :type busd: dict
-        :param bus: Series holding the shortage bus information
-        :type bus: pandas.Series
+        Method which creates links to connect the scenario based
+        created sinks to the thermal network components created before.
+
         :param oemof_opti_model: Oemof model holing thermal network
-        :type oemof_opti_model: optimization.OemofInvestOptimizationModel
-        :param fork_label: heatpipe label of the fork which will be \
-            connected to the shortage bus
-        :type fork_label: heatpipe.Label
-        
-        :return: - **-** (solph.custom.Link) - Link component which \
-            connects the shortage bus and the heat network's fork
-    """
-    # return the oemof solph link which connects the excess/shortage
-    # bus with the thermal network fork
-    fork_id = fork_label.tag4.split("-")[-1]
-    return solph.custom.Link(
-        label=("link-dhnx-" + bus["label"] + "-f{}".format(fork_id)),
-        inputs={
-            oemof_opti_model.buses[fork_label]: solph.Flow(),
-            busd[bus["label"]]: solph.Flow(),
-        },
-        outputs={
-            busd[bus["label"]]: solph.Flow(),
-            oemof_opti_model.buses[fork_label]: solph.Flow(),
-        },
-        conversion_factors={
-            (oemof_opti_model.buses[fork_label], busd[bus["label"]]): 1,
-            (busd[bus["label"]], oemof_opti_model.buses[fork_label]): 1
-        },
-    )
-
-
-def add_excess_shortage_to_dh(
-        oemof_opti_model: optimization.OemofInvestOptimizationModel,
-        nodes_data: dict, busd: dict, thermal_net: ThermalNetwork,
-        anergy_or_exergy: bool) -> optimization.OemofInvestOptimizationModel:
-    """
-        With the help of this method, it is possible to map an external
-        heat supply (e.g. from a neighboring heat network) or the
-        export to a neighboring heat network.
-
-        :param oemof_opti_model: dh network components
-        :type oemof_opti_model: optimization.OemofInvestOptimizationModel
-        :param nodes_data: Dataframe containing all components data
-        :type nodes_data: pandas.Dataframe
-        :param busd: dict containing all buses of the energysystem \
-            under investigation
+        :type oemof_opti_model:
+        :param busd: dictionary containing scenario buses
         :type busd: dict
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-        :param anergy_or_exergy: bool which defines rather the \
-            considered network is an exergy net (False) or an anergy \
-            net (True)
-        :type anergy_or_exergy: bool
-        
-        :return: - **oemof_opti_model** \
-            (optimization.OemofInvestOptimizationModel) - dh network \
-            components + excess and shortage bus
+        :return: - **oemof_opti_model** (dhnx.optimization) - oemof dh \
+            model within connection to the main model
     """
-    buses_df = nodes_data["buses"].loc[nodes_data["buses"]["active"] == 1]
-    # iterate threw all active buses
-    for index, bus in buses_df.iterrows():
-        # check for a district heating conn. deviating from 0, 1, and
-        # dh-system since the name pattern for excess and/or shortage
-        # is <dh-heating-section>-<1/2> second part is for first or
-        # second intersection
-        if bus["district heating conn."] not in [0, 1, "dh-system"]:
-            conn_point = bus["district heating conn."].split("-")
-            district_heating_df = nodes_data["district heating"]
-            street = district_heating_df.loc[
-                (district_heating_df["label"] == conn_point[0])
-                & (district_heating_df["active"] == 1)]
-            if conn_point[1] == "1":
-                lat = float(street["lat. 1st intersection"])
-                lon = float(street["lon. 1st intersection"])
-            elif conn_point[1] == "2":
-                lat = float(street["lat. 2nd intersection"])
-                lon = float(street["lon. 2nd intersection"])
-            else:
-                raise ValueError("invalid district heating conn.")
-            
-            forks = thermal_net.components["forks"]
-            fork_node = forks.loc[(forks["lat"] == lat)
-                                  & (forks["lon"] == lon)]
-            
-            for key, fork in fork_node.iterrows():
-                # create dhnx strutured fork label
-                label_5 = "anergy" if anergy_or_exergy else "exergy"
-                fork_label = heatpipe.Label(
-                    "infrastructure",
-                    "heat",
-                    "bus",
-                    str("forks-{}".format(fork["id"])),
-                    label_5)
-                # run link creation between the fork and the
-                # excess/shortage bus
-                oemof_opti_model.nodes.append(
-                    create_link_between_dh_heat_bus_and_excess_shortage_bus(
-                        busd=busd,
-                        bus=bus,
-                        oemof_opti_model=oemof_opti_model,
-                        fork_label=fork_label)
+    import oemof.thermal.compression_heatpumps_and_chillers as cmpr_hp_chiller
+
+    oemof_opti_model = remove_redundant_sinks(oemof_opti_model)
+    oemof_opti_model = calc_heat_pipe_attributes(oemof_opti_model, True,
+                                                 nodes_data)
+
+    # create link to connect consumers heat bus to the dh-system
+    for num, consumer in thermal_net.components["consumers"].iterrows():
+        # TODO Temperaturen? from pre scenario
+        # calculation of COPs with set parameters
+        cops_hp = cmpr_hp_chiller.calc_cops(
+                temp_high=168 * [60],
+                temp_low=168 * [20],
+                quality_grade=0.6,
+                temp_threshold_icing=2,
+                factor_icing=1,
+                mode="heat_pump",
+        )
+        
+        label = heatpipe.Label("consumers", "heat", "bus",
+                               "consumers-{}".format(consumer["id"]), "anergy")
+        # TODO elec bus
+        inputs = {busd["ID_electricity_bus"]: solph.Flow(emission_factor=0),
+                  oemof_opti_model.buses[label]: solph.Flow(emission_factor=0)}
+    
+        outputs = {
+            busd[consumer["input"]]: solph.Flow(
+                    investment=solph.Investment(
+                            ep_costs=float(
+                                nodes_data["pipe types"].loc["anergy_heat_pump"][
+                                        "costs"]),
+                            periodical_constraint_costs=float(
+                                nodes_data["pipe types"].loc["anergy_heat_pump"][
+                                        "constraint costs"]),
+                            minimum=0,
+                            maximum=999 * len(consumer["input"]),
+                            existing=0,
+                            nonconvex=False,
+                            fix_constraint_costs=0,
+                    ),
+                    emission_factor=0,
+            )}
+    
+        conversion_factors = {
+            oemof_opti_model.buses[label]: [
+                ((cop - 1) / cop) / 1 for cop in cops_hp],
+            busd["ID_electricity_bus"]: [1 / cop for cop in cops_hp]
+        }
+    
+        oemof_opti_model.nodes.append(
+                solph.Transformer(
+                        label=("anergy_heat_pump_"
+                               + consumer["label"].split("_")[0]),
+                        inputs=inputs,
+                        outputs=outputs,
+                        conversion_factors=conversion_factors
                 )
+        )
 
     return oemof_opti_model
 
 
-def create_producer_connection(
-        oemof_opti_model: optimization.OemofInvestOptimizationModel,
-        busd: dict, anergy_or_exergy: bool, thermal_net: ThermalNetwork
-) -> optimization.OemofInvestOptimizationModel:
+def add_excess_shortage_to_dh(
+    oemof_opti_model: optimization.OemofInvestOptimizationModel, nodes_data, busd
+):
+    """
+        With the help of this method, it is possible to map an external
+        heat supply (e.g. from a neighboring heat network) or the export
+        to a neighboring heat network.
+
+        :param oemof_opti_model: dh network components
+        :type oemof_opti_model: optimization.OemofInvestOptimizationModel
+        :param nodes_data: Dataframe containing all components data
+        :type nodes_data: pandas. Dataframe
+        :param busd: dict containing all buses of the energysystem under
+         investigation
+        :type busd: dict
+        :return: - **oemof_opti_model** \
+            (optimization.OemofInvestOptimizationModel) - dh network \
+            components + excess and shortage bus
+    """
+    busses = []
+    for i, bus in nodes_data["buses"].iterrows():
+        if (
+            bus["district heating conn."] != 0
+            and bus["active"] == 1
+            and bus["district heating conn."] != "dh-system"
+        ):
+            busses.append(bus)
+    for bus in busses:
+        if bus["district heating conn."] not in [0, 1]:
+            conn_point = bus["district heating conn."].split("-")
+            lat = None
+            lon = None
+            for i, street in nodes_data["district heating"].iterrows():
+                if street["active"]:
+                    if street["label"] == conn_point[0]:
+                        if conn_point[1] == "1":
+                            lat = street["lat. 1st intersection"]
+                            lon = street["lon. 1st intersection"]
+                        elif conn_point[1] == "2":
+                            lat = street["lat. 2nd intersection"]
+                            lon = street["lon. 2nd intersection"]
+                        else:
+                            raise ValueError("invalid district heating conn.")
+            if lat is None or lon is None:
+                raise ValueError
+            for key, fork in thermal_net.components["forks"].iterrows():
+                if fork["lat"] == lat and fork["lon"] == lon:
+                    oemof_opti_model.nodes.append(
+                        solph.custom.Link(
+                            label=(
+                                "link-dhnx-" + bus["label"] + "-f{}".format(fork["id"])
+                            ),
+                            inputs={
+                                oemof_opti_model.buses[
+                                    heatpipe.Label(
+                                        "infrastructure",
+                                        "heat",
+                                        "bus",
+                                        str("forks-{}".format(fork["id"])),
+                                    )
+                                ]: solph.Flow(),
+                                busd[bus["label"]]: solph.Flow(),
+                            },
+                            outputs={
+                                busd[bus["label"]]: solph.Flow(),
+                                oemof_opti_model.buses[
+                                    heatpipe.Label(
+                                        "infrastructure",
+                                        "heat",
+                                        "bus",
+                                        str("forks-{}".format(fork["id"])),
+                                    )
+                                ]: solph.Flow(),
+                            },
+                            conversion_factors={
+                                (
+                                    oemof_opti_model.buses[
+                                        heatpipe.Label(
+                                            "infrastructure",
+                                            "heat",
+                                            "bus",
+                                            str("forks-{}".format(fork["id"])),
+                                        )
+                                    ],
+                                    busd[bus["label"]],
+                                ): 1,
+                                (
+                                    busd[bus["label"]],
+                                    oemof_opti_model.buses[
+                                        heatpipe.Label(
+                                            "infrastructure",
+                                            "heat",
+                                            "bus",
+                                            str("forks-{}".format(fork["id"])),
+                                        )
+                                    ],
+                                ): 1,
+                            },
+                        )
+                    )
+
+    return oemof_opti_model
+
+
+def create_producer_connection(oemof_opti_model, busd, test):
     """
         This method creates a link that connects the heat producer to
         the heat network.
 
         :param oemof_opti_model: dh model created before
-        :type oemof_opti_model: optimization.OemofInvestOptimizationModel
+        :type oemof_opti_model:
         :param busd: dictionary containing the energysystem busses
         :type busd: dict
-        :param anergy_or_exergy: bool which defines rather the \
-            considered network is an exergy net (False) or an anergy \
-            net (True)
-        :type anergy_or_exergy: bool
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-        
         :return: - **oemof_opti_model** (dhnx.optimization) - dhnx model \
             within the new Transformers
     """
     counter = 0
-    forks = thermal_net.components["forks"]
-    for key, producer in forks.loc[forks["bus"].notna()].iterrows():
-        label_5 = "anergy" if anergy_or_exergy else "exergy"
-        label = heatpipe.Label(
-            "producers",
-            "heat",
-            "bus",
-            str("producers-{}".format(str(counter))),
-            label_5
-        )
-        oemof_opti_model.nodes.append(
-            solph.Transformer(
-                label=(str(producer["bus"]) + "_dh_source_link_" + label_5),
-                inputs={busd[producer["bus"]]: solph.Flow(emission_factor=0)},
-                outputs={oemof_opti_model.buses[label]: solph.Flow(
-                    emission_factor=0)
-                },
-                conversion_factors={
-                    (oemof_opti_model.buses[label], busd[producer["bus"]]): 1
-                },
+    for key, producer in thermal_net.components["forks"].iterrows():
+        if str(producer["bus"]) != "nan":
+            label = heatpipe.Label(
+                "producers", "heat", "bus", str("producers-{}".format(str(counter))), "anergy" if test else "exergy"
             )
-        )
-        counter += 1
+            oemof_opti_model.nodes.append(
+                solph.Transformer(
+                    label=(str(producer["bus"]) + "_dh_source_link_" + ("anergy" if test else "exergy")),
+                    inputs={busd[producer["bus"]]: solph.Flow(emission_factor=0)},
+                    outputs={
+                        oemof_opti_model.buses[label]: solph.Flow(emission_factor=0)
+                    },
+                    conversion_factors={
+                        (oemof_opti_model.buses[label], busd[producer["bus"]]): 1
+                    },
+                )
+            )
+            counter += 1
 
     return oemof_opti_model
 
 
-def create_connect_dhnx(nodes_data: dict, busd: dict,
-                        thermal_net: ThermalNetwork, clustering=False,
-                        anergy_or_exergy=False) -> list:
+def create_connect_dhnx(nodes_data, busd, clustering=False,
+                        anergy_or_exergy=False):
     """
-        At this point, the preparations of the heating network to use
-        the dhnx package are completed. For this purpose, it is checked
-        whether the given data result in a coherent network, which can
-        be optimized in the following.
-    
-        :param nodes_data: Dataframe containing all components data
-        :type nodes_data: pandas.Dataframe
-        :param busd: dictionary containing model definitions' buses
-        :type busd: dict
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-        :param clustering: used to define rather the spatial \
-            clustering algorithm is used or not
-        :type clustering: bool
-        :param anergy_or_exergy: bool which defines rather the \
-            considered network is an exergy net (False) or an anergy \
-            net (True)
-        :type anergy_or_exergy: bool
-        
-        :return: - **oemof_opti_model.nodes** (list) - energy system \
-            nodes of the created thermal network
+    At this point, the preparations of the heating network to use
+    the dhnx package are completed. For this purpose, it is checked
+    whether the given data result in a coherent network, which can
+    be optimized in the following.
+
+    :param nodes_data: Dataframe containing all components data
+    :type nodes_data: pandas.Dataframe
+    :param busd: dictionary containing scenario buses
+    :type busd: dict
+    :param clustering: used to define rather the spatial clustering
+        algorithm is used or not
     """
     thermal_net.is_consistent()
     thermal_net.set_timeindex()
     # create components of district heating system
-    oemof_opti_model = create_components(nodes_data=nodes_data,
-                                         anergy_or_exergy=anergy_or_exergy,
-                                         thermal_net=thermal_net)
+    oemof_opti_model = create_components(nodes_data, anergy_or_exergy)
     if clustering:
-        oemof_opti_model = connect_clustered_dh_to_system(
-            oemof_opti_model=oemof_opti_model,
-            busd=busd,
-            thermal_network=thermal_net,
-            nodes_data=nodes_data)
+        connect_clustered_dh_to_system(oemof_opti_model, busd)
     else:
-        oemof_opti_model = connect_dh_to_system(
-            oemof_opti_model=oemof_opti_model,
-            busd=busd,
-            pipe_types=nodes_data["pipe types"],
-            thermal_net=thermal_net)
+        # connect non dh and dh system using links to represent losses
+        if anergy_or_exergy:
+            connect_anergy_to_system(oemof_opti_model, busd, nodes_data)
+        else:
+            connect_dh_to_system(oemof_opti_model, busd, nodes_data)
     # remove dhnx flows that are not used due to deletion of sinks
     for i in range(len(oemof_opti_model.nodes)):
         outputs = oemof_opti_model.nodes[i].outputs.copy()
         for j in outputs.keys():
-            if "consumers" in str(j) and "heat" in str(j) \
-                    and "demand" in str(j):
+            if "consumers" in str(j) and "heat" in str(j) and "demand" in str(j):
                 oemof_opti_model.nodes[i].outputs.pop(j)
 
-    oemof_opti_model = add_excess_shortage_to_dh(
-        oemof_opti_model=oemof_opti_model,
-        nodes_data=nodes_data,
-        busd=busd,
-        thermal_net=thermal_net,
-        anergy_or_exergy=anergy_or_exergy)
-    
-    oemof_opti_model = create_producer_connection(
-        oemof_opti_model=oemof_opti_model,
-        busd=busd,
-        anergy_or_exergy=anergy_or_exergy,
-        thermal_net=thermal_net)
-    
+    oemof_opti_model = \
+        add_excess_shortage_to_dh(oemof_opti_model, nodes_data, busd)
+    oemof_opti_model = \
+        create_producer_connection(oemof_opti_model, busd, anergy_or_exergy)
     return oemof_opti_model.nodes
 
 
-def create_dh_map(thermal_net: ThermalNetwork, result_path: str) -> None:
-    """
-        Within this method the calculated thermal network is plotted as
-        a matplotlib pyplot which can be used for verification of the
-        perpendicular foot print search as well as the imported data.
-        
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-        :param result_path: path where the resulting map will be stored
-        :type result_path: str
-    """
+def create_dh_map(result_path):
     import matplotlib.pyplot as plt
-    static_map = StaticMap(thermal_net).draw(background_map=False)
+    static_map = dhnx.plotting.StaticMap(thermal_net)
+    static_map.draw(background_map=False)
     plt.title("Given network")
     components = {
         "forks": [thermal_net.components.forks, "tab:grey"],
-        "consumers": [thermal_net.components.consumers, "tab:green"],
-        "producers": [thermal_net.components.producers, "tab:red"]
+        "consumers": [thermal_net.components.consumers,
+                      "tab:green"],
+        "producers": [thermal_net.components.producers,
+                      "tab:red"]
     }
-    for index in components:
+    for i in components:
         plt.scatter(
-            components[index][0]["lon"],
-            components[index][0]["lat"],
-            color=components[index][1],
-            label=index,
-            zorder=2.5,
-            s=50)
+                components[i][0]["lon"],
+                components[i][0]["lat"],
+                color=components[i][1],
+                label=i,
+                zorder=2.5,
+                s=50)
+    plt.text(-2, 32, "P0", fontsize=14)
+    plt.text(82, 0, "P1", fontsize=14)
     plt.legend()
     plt.savefig(result_path + "/district_heating.jpeg")
     
-    
-def use_data_of_already_calculated_thermal_network_data(
-        thermal_net: ThermalNetwork, district_heating_path: str,
-        cluster_dh: bool, nodes_data: dict, result_path: str
-) -> ThermalNetwork:
-    """
-        By this method it is possible to optimize a thermal network
-        without calculating the perpendicular foot points and the
-        heat networks's components if the user has specified a folder
-        in the GUI where already calculated thermal network data are
-        stored. Nevertheless, a subsequent clustering of the thermal
-        network is possible even if the calculation has already been
-        performed.
-        
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-        :param district_heating_path: string of the path where the \
-            already calculated thermal network data is stored
-        :type district_heating_path: str
-        :param cluster_dh: boolean which decides rather the thermal \
-            network will be clustered or not
-        :type cluster_dh: bool
-        :param nodes_data: dictionary containing the model \
-            definitions' data
-        :type nodes_data: dict
-        :param result_path: path where the optimization results as \
-            well as the district heating calculations will be stored
-        :type result_path: str
-        
-        :return: - **thermal_net** (ThermalNetwork) - Thermal network \
-            holding the networks' components which were loaded from \
-            the users input path in the GUI
-    """
-    # load the already calculated network data of a previous
-    # optimization
-    thermal_net = load_thermal_network_data(thermal_net=thermal_net,
-                                            path=district_heating_path)
-    # adapt the dataframe structures to the dhnx accepted form
-    thermal_net = adapt_dhnx_style(thermal_net=thermal_net,
-                                   cluster_dh=True)
-    # if the user has chosen the clustering of the thermal network
-    # within the GUI it is triggered here
-    if cluster_dh:
-        thermal_net = clustering_dh_network(nodes_data=nodes_data,
-                                            thermal_network=thermal_net)
-    # save the calculated thermal network data within the optimization
-    # result path
-    save_thermal_network_data(thermal_net=thermal_net, path=result_path)
-    return thermal_net
-
 
 def district_heating(
-    nodes_data: dict, nodes: list, busd: dict, district_heating_path: str,
-    result_path: str, cluster_dh: bool, anergy_or_exergy: bool
-) -> list:
+    nodes_data, nodes, busd, district_heating_path, result_path, cluster_dh,
+    anergy_or_exergy
+):
     """
-        The district_heating method represents the main method of heat
-        network creation, it is called by the main algorithm to perform
-        the preparation to use the dhnx components and finally add them
-        to the already existing energy system. It is up to the users to
-        choose whether they want to use spatial clustering or not.
-    
-        :param nodes_data: dictionary containing the model \
-            definitions' data
-        :type nodes_data: dict
-        :param nodes: list which contains the already created components
-        :type nodes: list
-        :param busd: dictionary containing the model definitions' buses
-        :type busd: dict
-        :param district_heating_path: Path to a folder in which the \
-            calculated heat network information was stored after a \
-            one-time connection point search. Entering this parameter \
-            in the GUI shortens the calculation time, because the \
-            above mentioned search can then be skipped.
-        :type district_heating_path: str
-        :param result_path: path where the result will be saved
-        :type result_path: str
-        :param cluster_dh: boolean which defines rather the heat \
-            network is clustered spatially or not
-        :type cluster_dh: bool
-        :param anergy_or_exergy: bool which defines rather the \
-            considered network is an exergy net (False) or an anergy \
-            net (True)
-        :type anergy_or_exergy: bool
-        
-        :return: - **nodes** (list) - list containing the energy \
-            systems' nodes after the thermal network components were \
-            added
+    The district_heating method represents the main method of heat
+    network creation, it is called by the main algorithm to perform
+    the preparation to use the dhnx components and finally add them
+    to the already existing energy system. It is up to the users to
+    choose whether they want to use spatial clustering or not.
+
+    :param nodes_data: Dataframe containing the scenario data
+    :type nodes_data: pandas.Dataframe
+    :param nodes: list which contains the already created components
+    :type nodes: list
+    :param busd: dictionary containing the scenario buses
+    :type busd: dict
+    :param district_heating_path: Path to a folder in which the
+        calculated heat network information was stored after a
+        one-time connection point search. Entering this parameter in
+        the GUI shortens the calculation time, because the above
+        mentioned search can then be skipped.
+    :type district_heating_path: str
+    :param result_path: path where the result will be saved
+    :type result_path: str
+    :param cluster_dh: boolean which defines rather the heat network
+        is clustered spatially or not
+    :type cluster_dh: bool
+    :param anergy_or_exergy: bool which defines rather the considered \
+        network is an exergy net (False) or an anergy net (True)
+    :type anergy_or_exergy: bool
     """
-    thermal_net = clear_thermal_net(dhnx.network.ThermalNetwork())
+    clear_thermal_net()
+    dh = False
     # check rather saved calculation are distributed
     if district_heating_path == "":
-        # check if the model definition includes district heating
+        # check if the scenario includes district heating
         if len(nodes_data["district heating"]) != 0:
             street_sections = convert_dh_street_sections_list(
                 nodes_data["district heating"].copy()
             )
-            # create pipes and connection point for building-streets
-            # connection
-            thermal_net = create_connection_points(
-                consumers=nodes_data["buses"],
-                road_sections=street_sections,
-                thermal_net=thermal_net)
+            # create pipes and connection point for building-streets connection
+            create_connection_points(nodes_data["buses"], street_sections)
             # appends the intersections to the thermal network forks
-            thermal_net = create_intersection_forks(
-                street_sec=nodes_data["district heating"],
-                thermal_net=thermal_net)
-            # create pipes and connection point for producer-streets
-            # connection
-            thermal_net = create_producer_connection_point(
-                buses=nodes_data["buses"],
-                road_sections=street_sections,
-                thermal_net=thermal_net)
+            create_intersection_forks(nodes_data["district heating"])
+            # create pipes and connection point for producer-streets connection
+            create_producer_connection_point(nodes_data, street_sections)
             # create supply line laid on the road
-            thermal_net = create_supply_line(
-                streets=nodes_data["district heating"],
-                thermal_net=thermal_net)
+            create_supply_line(nodes_data["district heating"])
             # if any consumers where connected to the thermal network
             if thermal_net.components["consumers"].values.any():
-                thermal_net = adapt_dhnx_style(thermal_net=thermal_net,
-                                               cluster_dh=False)
-                if cluster_dh:
-                    thermal_net = clustering_dh_network(
-                        nodes_data=nodes_data,
-                        thermal_network=thermal_net)
-                # save the calculated thermal network data within the
-                # optimization
-                # result path
-                save_thermal_network_data(thermal_net=thermal_net,
-                                          path=result_path)
-                # create a map of the created thermal network
-                create_dh_map(thermal_net=thermal_net, result_path=result_path)
+                adapt_dhnx_style()
+                # save the created dataframes to improve runtime of a
+                # second optimization run
+                for i in ["consumers", "pipes", "producers", "forks"]:
+                    thermal_net.components[i].to_csv(result_path
+                                                     + "/" + i + ".csv")
+
+                create_dh_map(result_path)
+                dh = True
     else:
-        thermal_net = use_data_of_already_calculated_thermal_network_data(
-            thermal_net=thermal_net,
-            district_heating_path=district_heating_path,
-            cluster_dh=cluster_dh,
-            nodes_data=nodes_data,
-            result_path=result_path)
-    if len(thermal_net.components["pipes"]) > 0:
+        for i in ["consumers", "pipes", "producers", "forks"]:
+            thermal_net.components[i] = pd.read_csv(
+                district_heating_path + "/" + i + ".csv"
+            )
+        adapt_dhnx_style()
+        dh = True
+        if cluster_dh:
+            clustering_dh_network(nodes_data)
+        for i in ["consumers", "pipes", "producers", "forks"]:
+            thermal_net.components[i].to_csv(result_path + "/" + i + ".csv")
+    if dh:
         if cluster_dh == 1:
-            new_nodes = create_connect_dhnx(nodes_data=nodes_data,
-                                            busd=busd,
-                                            clustering=True,
-                                            anergy_or_exergy=anergy_or_exergy,
-                                            thermal_net=thermal_net)
+            new_nodes = create_connect_dhnx(nodes_data, busd, True,
+                                            anergy_or_exergy)
         else:
-            new_nodes = create_connect_dhnx(nodes_data=nodes_data,
-                                            busd=busd,
-                                            clustering=False,
-                                            anergy_or_exergy=anergy_or_exergy,
-                                            thermal_net=thermal_net)
-        for node in new_nodes:
-            nodes.append(node)
+            new_nodes = create_connect_dhnx(nodes_data, busd, False,
+                                            anergy_or_exergy)
+        for i in new_nodes:
+            nodes.append(i)
     return nodes

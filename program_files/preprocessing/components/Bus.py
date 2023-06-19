@@ -1,79 +1,83 @@
+# -*- coding: utf-8 -*-
 """
-    Christian Klemm - christian.klemm@fh-muenster.de
-    GregorBecker - gregor.becker@fh-muenster.de
+    Creates oemof energy system components.
+
+    Functions for the creation of oemof energy system objects from a
+    given set of object parameters.
+
+    Contributors:
+
+        - Christian Klemm - christian.klemm@fh-muenster.de
+        - Gregor Becker - gb611137@fh-muenster.de
 """
 
-import logging
 from oemof.solph import Bus, Flow, Sink, Source
+import logging
 
 
-def buses(nodes_data: dict, nodes: list) -> dict:
+def buses(nd: dict, nodes: list) -> dict:
     """
-        Creates bus objects with the parameters given in 'nodes_data'
-        and adds them to the list of components 'nodes'.
+    Creates bus objects.
+    Creates bus objects with the parameters given in 'nodes_data' and
+    adds them to the list of components 'nodes'.
 
-        :param nodes_data: dictionary containing parameters of the \
-            buses to be created. The following parameters have to be \
-            provided:
-            
-                    - label
-                    - active
-                    - excess
-                    - shortage
-                    - shortage costs
-                    - excess costs
-                    - district heating conn.
-                    - lat
-                    - lon
-                
-        :type nodes_data: dict
-        :param nodes: list of components created before (can be empty)
-        :type nodes: list
+    :param nd: dictionary containing parameters of the buses
+                       to be created.
+                       The following parameters have to be provided:
 
-        :return: - **busd** (dict) - dictionary containing all buses \
-            created
+                            - label,
+                            - active,
+                            - excess,
+                            - shortage,
+                            - shortage costs,
+                            - excess costs
+    :type nd: dict
+    :param nodes: list of components created before (can be empty)
+    :type nodes: list
 
+    :return busd: dictionary containing all buses created
+    :rtype: dict
+
+    Christian Klemm - christian.klemm@fh-muenster.de
     """
     # creates a list of buses
     busd = {}
 
     # Creates components, which are defined within the "buses"-sheet of
     # the original excel-file
-    for num, bus in nodes_data["buses"][
-            nodes_data["buses"]["active"] == 1].iterrows():
+    for i, b in nd["buses"][nd["buses"]["active"] == 1].iterrows():
         # creates an oemof-bus object
-        bus_node = Bus(label=bus["label"])
+        bus = Bus(label=b["label"])
         # adds the bus object to the list of components "nodes"
-        nodes.append(bus_node)
-        busd[bus["label"]] = bus_node
+        nodes.append(bus)
+        busd[b["label"]] = bus
         # returns logging info
-        logging.info("\t Bus created: " + bus["label"])
+        logging.info("\t Bus created: " + b["label"])
 
         # Create an sink for every bus, which is marked with
         # "excess"
-        if bus["excess"]:
+        if b["excess"]:
             # creates the oemof-sink object and
             # directly adds it to the list of components "nodes"
             inputs = {
-                busd[bus["label"]]: Flow(
-                    variable_costs=bus["excess costs"],
-                    emission_factor=bus["excess constraint costs"],
+                busd[b["label"]]: Flow(
+                    variable_costs=b["excess costs"],
+                    emission_factor=b["excess constraint costs"],
                 )
             }
-            nodes.append(Sink(label=bus["label"] + "_excess", inputs=inputs))
+            nodes.append(Sink(label=b["label"] + "_excess", inputs=inputs))
 
         # Create a source for every bus, which is marked with
         # "shortage"
-        if bus["shortage"]:
+        if b["shortage"]:
             # creates the oemof-source object and
             # directly adds it to the list of components "nodes"
             outputs = {
-                busd[bus["label"]]: Flow(
-                    variable_costs=bus["shortage costs"],
-                    emission_factor=bus["shortage constraint costs"],
+                busd[b["label"]]: Flow(
+                    variable_costs=b["shortage costs"],
+                    emission_factor=b["shortage constraint costs"],
                 )
             }
-            nodes.append(Source(label=bus["label"] + "_shortage",
-                                outputs=outputs))
+            nodes.append(Source(label=b["label"] + "_shortage", outputs=outputs))
     # Returns the list of buses as result of the function
     return busd

@@ -1,131 +1,66 @@
-"""
-    Christian Klemm - christian.klemm@fh-muenster.de
-    Gregor Becker - gregor.becker@fh-muenster.de
-"""
 import logging
 from oemof.solph import Investment, Flow, Source, Sink
 from datetime import datetime
-import pandas
+import pandas as pd
 from demandlib import bdew
 
 
 class Sinks:
     """
-        Within this class the 'nodes_data' given sinks are created.
-        Therefore there is a differentiation between four types
-        of sink objects to be created:
-    
-            - unfixed: a sink with flexible time series
-            - timeseries: a sink with predefined time series
-            - SLP: a VDEW standard load profile component
-            - richardson: a component with stochastically generated \
-                time series
-    
-        :param nodes_data: dictionary containing parameters of sinks \
-            to be created. The following data have to be provided:
-                
-                - label
-                - sector
-                - active
-                - fixed
-                - input
-                - load profile
-                - nominal value
-                - annual demand
-                - occupants (only needed for the Richardson sinks)
-                - building class
-                - wind class
-                
-        :type nodes_data: dict
-        :param busd: dictionary containing the buses of the energy \
-            system
-        :type busd: dict
-        :param nodes: list of components created before (can be empty)
-        :type nodes: list
+    Creates sink objects.
+
+    There are four options for labeling source objects to be
+    created:
+
+        - unfixed: a source with flexible time series
+        - timeseries: a source with predefined time series
+        - SLP: a VDEW standard load profile component
+        - richardson: a component with stochastically generated timeseries
+
+    :param nd: dictionary containing parameters of sinks to
+                       be created.The following data have to be
+                       provided:
+
+                            - 'label'
+                            - 'active'
+                            - 'fixed'
+                            - 'input'
+                            - 'load profile'
+                            - 'nominal value'
+                            - 'annual demand'
+                            - 'occupants [Richardson]'
+                            - 'building class'
+                            - 'wind class'
+    :type nd: dict
+    :param busd: dictionary containing the buses of the energy system
+    :type busd: dict
+    :param nodes: list of components created before(can be empty)
+    :type nodes: list
+
+    Contributors:
+
+        - Christian Klemm - christian.klemm@fh-muenster.de
+        - Gregor Becker - gregor.becker@fh-muenster.de
     """
 
-    slps = {
-        "heat_slps":
-            ["efh",   # single family building
-             "mfh"],  # multi family building
-        "heat_slps_commercial":
-            ["gmf",   # household-like business enterprises
-             "gpd",   # paper and printing
-             "ghd",   # Total load profile Business/Commerce/Services
-             "gwa",   # laundries, dry cleaning
-             "ggb",   # horticulture
-             "gko",   # Local authorities and credit institutions
-             "gbd",   # other operational services
-             "gba",   # bakery
-             "gmk",   # metal and automotive
-             "gbh",   # accommodation
-             "gga",   # restaurants
-             "gha"],  # retail and wholesale
-        "electricity_slps":
-            ["h0",   # households
-             "g0",   # commercial general
-             "g1",   # commercial on weeks 8-18 h
-             "g2",   # commercial with strong consumption (evening)
-             "g3",   # commercial continuous
-             "g4",   # shop/hairdresser
-             "g5",   # bakery
-             "g6",   # weekend operation
-             "l0",   # agriculture general
-             "l1",   # agriculture with dairy industry/animal breeding
-             "l2"]   # other agriculture
-    }
+    # intern variables
+    busd = None
+    nodes_sinks = []
 
-    def calc_insulation_parameter(self,
-                                  ins: pandas.Series) -> (float, float, list):
+    def calc_insulation_parameter(self, ins: pd.Series):
         """
-            Calculation of insulation measures for the considered sink
-            
-            Temperature difference is calculated according to:
-            
-            .. math::
-            
-                \Delta T = T_{\mathrm{indoor}} - T_{\mathrm{outdoor}}
+        calculation of insulation measures for the considered sink
 
-            is only calculated for the time steps in which the \
-            temperature falls below the heating limit temperature.
-    
-            U-value difference is calculated according to:
-            
-            .. math::
-            
-                \Delta U = U_{\mathrm{old}} - U_{\mathrm{new}}
-            
-            Calculation of the capacity that can be saved according to:
-            
-            .. math::
-            
-                P = (\Delta U \cdot \Delta T \cdot A) / (1000\mathrm{(W / kW)})
-    
-            :params: - **ins** (pandas.Series) - considered insulation \
-                row
-            
-            :returns: - **ep_costs** (float) - periodical costs of the \
-                            considered insulation
-                      - **ep_constr_costs** (float) - periodical \
-                            constraint costs of the considered \
-                            insulation
-                      - **temp** (list) - list containing the capacity \
-                            to be saved for each time step
+        :param ins: considered insulation row
+        :type ins: pd.Series
         """
         temp = []
-        # Extract the days that have an outdoor temperature below the
-        # heating limit temperature.
-        heating_degree_steps = self.weather_data[
-            self.weather_data["temperature"] <= ins["heat limit temperature"]]
-        
         # calculate insulation capacity per time step
-        for time_step in heating_degree_steps["temperature"]:
-            # calculate the difference between the outdoor and indoor
-            # temperature
+        for time_step in self.weather_data[
+            self.weather_data["temperature"] <= ins["heat limit temperature"]
+        ]["temperature"]:
             temp_diff = ins["temperature indoor"] - float(time_step)
-            # calculate the u-value potential
             u_value_diff = ins["U-value old"] - ins["U-value new"]
-            # Calculation of the capacity that can be saved.
             temp.append(temp_diff * u_value_diff * ins["area"] / 1000)
 
         # check if there is an insulation potential
@@ -140,181 +75,198 @@ class Sinks:
         else:
             return 0, 0, [0]
 
-    def create_sink(self, sink: pandas.Series, nominal_value=None,
-                    load_profile=None, args=None) -> None:
+    def create_sink(
+        self, de: pd.Series, nominal_value=None, load_profile=None, args=None
+    ):
         """
-            Creates an oemof sink with fixed or unfixed timeseries.
+        Creates an oemof sink with fixed or unfixed timeseries.
 
-            :param sink: dictionary containing all information for the \
-                creation of an oemof sink. At least the following \
-                key-value-pairs have to be included:
-                
-                     - label
-                     - input
-    
-            :type sink: pandas.Series
-            :param nominal_value: Float containing the nominal demand \
-                of the sink to be created. Only used if the args \
-                parameter remains empty.
-            :type nominal_value: float
-            :param load_profile: load Profile contains the time series \
-                of the sink to be created, this is used for the fixed \
-                (fix) or the maximum (unfix) time series depending on \
-                the sink type. Only used if the args parameter remains \
-                empty.
-            :param args: dictionary rather containing the \
-                'fix-attribute' or the 'min-' and 'max-attribute' of a \
-                sink
-            :type args: dict
+        :param de: dictionary containing all information for the
+                   creation of an oemof sink. At least the
+                   following key-value-pairs have to be included:
+
+                        - 'label'
+                        - 'input'
+
+        :type de: dict
+        :param timeseries_args: dictionary rather containing the
+                                'fix-attribute' or the 'min-' and
+                                'max-attribute' of a sink
+        :type timeseries_args: dict
+
+        Christian Klemm - christian.klemm@fh-muenster.de
         """
 
         if args is None:
             args = {"nominal_value": nominal_value}
-            if sink["fixed"] == 1:
+            if de["fixed"] == 1:
                 # sets attributes for a fixed richardson sink
                 args.update({"fix": load_profile})
-            elif sink["fixed"] == 0:
+            elif de["fixed"] == 0:
                 # sets attributes for an unfixed richardson sink
                 args.update({"max": load_profile})
-                
-        # creates an oemof Sink and appends it to the class intern list
+        # creates an omeof Sink and appends it to the class intern list
         # of created sinks
         self.nodes_sinks.append(
-            Sink(label=sink["label"],
-                 inputs={self.busd[sink["input"]]: Flow(**args)})
+            Sink(label=de["label"], inputs={self.busd[de["input"]]: Flow(**args)})
         )
-        
         # create insulation sources to the energy system components
-        insulations = self.insulation[self.insulation["active"] == 1]
-        for num, ins in insulations.iterrows():
+        for i, ins in self.insulation[self.insulation["active"] == 1].iterrows():
             # if insulation sink == sink under investigation (above)
-            if ins["sink"] == sink["label"]:
-                ep_costs, ep_constr_costs, temp = \
-                    self.calc_insulation_parameter(ins=ins)
-                if "existing" in self.insulation and ins["existing"]:
-                    # add capacity specific costs to self.insulation
-                    self.insulation.loc[num, "ep_costs_kW"] = 0
-                    # add capacity specific emissions to self.insulation
-                    self.insulation.loc[num, "ep_constr_costs_kW"] = 0
-                    maximum = 0
-                    existing = max(temp)
-                else:
-                    # add capacity specific costs to self.insulation
-                    self.insulation.loc[num, "ep_costs_kW"] = ep_costs
-                    # add capacity specific emissions to self.insulation
-                    self.insulation.loc[num, "ep_constr_costs_kW"] = \
-                        ep_constr_costs
-                    maximum = max(temp)
-                    existing = 0
-                    
+            if ins["sink"] == de["label"]:
+                ep_costs, ep_constr_costs, temp = self.calc_insulation_parameter(ins)
+                # add capacity specific costs to self.insulation
+                self.insulation.loc[i, "ep_costs_kW"] = ep_costs
+                # add capacity specific emissions to self.insulation
+                self.insulation.loc[i, "ep_constr_costs_kW"] = ep_constr_costs
                 self.nodes_sinks.append(
                     Source(
-                        label="{}-insulation".format(ins["label"]),
+                        label="insulation-{}".format(ins["label"]),
                         outputs={
-                            self.busd[sink["input"]]: Flow(
+                            self.busd[de["input"]]: Flow(
                                 investment=Investment(
                                     ep_costs=ep_costs,
-                                    periodical_constraint_costs=
-                                    ep_constr_costs,
+                                    periodical_constraint_costs=ep_constr_costs,
                                     constraint2=1,
                                     minimum=0,
-                                    maximum=maximum,
+                                    maximum=max(temp),
                                     fix_constraint_costs=0,
-                                    existing=existing
                                 ),
                                 emission_factor=0,
                                 fix=(args["fix"] / args["fix"].max()),
-                            )}))
+                            )
+                        },
+                    )
+                )
 
-    def unfixed_sink(self, sink: pandas.Series) -> None:
+        # self.nodes_sinks.append(
+        #    solph.custom.SinkDSM(label=de['label'],
+        #                         inputs={
+        #                             self.busd[de['input']]:
+        #                                 solph.Flow()
+        #                         },
+        #                         demand=timeseries_args["nominal_value"]
+        #                                * timeseries_args["fix"],
+        #                         approach="DLR",
+        #                         capacity_down=1,
+        #                        capacity_up=1,
+        #                        delay_time=3,
+        #                        flex_share_up=0.3,
+        #                         flex_share_down=0.3,
+        #                         shift_time=2,
+        #                         shed_eligibility=False,
+        #                         investment=solph.Investment(ep_costs=3)))
+
+    def unfixed_sink(self, de: pd.Series):
         """
-            Creates a sink object with an unfixed energy input and the
-            use of the create_sink method.
-    
-            :param sink: dictionary containing all information for the \
-                creation of an oemof sink. For this function the \
-                following key-value-pairs have to be included:
-                    
-                    - label
-                    - nominal value
+        Creates a sink object with an unfixed energy input and the
+        use of the create_sink method.
 
-            :type sink: pandas.Series
+        :param de: dictionary containing all information for the
+                   creation of an oemof sink. For this function the
+                   following key-value-pairs have to be included:
+
+                        - 'label'
+                        - 'nominal value'
+        :type de: dict
+
+        Christian Klemm - christian.klemm@fh-muenster.de
         """
         # starts the create_sink method with the parameters set before
-        self.create_sink(sink, args={"nominal_value": sink["nominal value"]})
+        self.create_sink(de, args={"nominal_value": de["nominal value"]})
         # returns logging info
-        logging.info("\t Sink created: " + sink["label"])
+        logging.info("\t Sink created: " + de["label"])
 
-    def timeseries_sink(self, sink: pandas.Series) -> None:
+    def timeseries_sink(self, de: pd.Series):
         """
-            Creates a sink object with a fixed input. The input must be
-            given as a time series in the model definition file.
-            In this context the method uses the create_sink method.
-            
-            When creating a time series sink, a distinction is made
-            between unfixed and fixed operation in the case of unfixed
-            operation, the design range must be limited by a lower and
-            upper limiting time series (.min and .max) in the case of a
-            fixed time series sink, only one load profile (.fix) is
-            required.
-    
-            :param sink: dictionary containing all information for the \
-                creation of an oemof sink. At least the following \
-                key-value-pairs have to be included:
-    
-                    - label
-                    - nominal value
-                    - fixed
+        Creates a sink object with a fixed input. The input must be
+        given as a time series in the scenario file.
+        In this context the method uses the create_sink method.
 
-            :type sink: pandas.Series
+        :param de: dictionary containing all information for the
+                   creation of an oemof sink. At least the
+                   following key-value-pairs have to be included:
+
+                        - 'label'
+                        - 'nominal value'
+        :type de: dict
+
+        Christian Klemm - christian.klemm@fh-muenster.de
         """
+        # imports the time_series sheet of the scenario file
+
         # sets the nominal value
-        args = {"nominal_value": sink["nominal value"]}
-        # handling unfixed time series sinks
-        if sink["fixed"] == 0:
+        args = {"nominal_value": de["nominal value"]}
+        if de["fixed"] == 0:
             # sets the attributes for an unfixed time_series sink
             args.update(
                 {
-                    "min": self.timeseries[sink["label"] + ".min"].tolist(),
-                    "max": self.timeseries[sink["label"] + ".max"].tolist(),
+                    "min": self.timeseries[de["label"] + ".min"].tolist(),
+                    "max": self.timeseries[de["label"] + ".max"].tolist(),
                 }
             )
-        # handling fixed time series sinks
-        elif sink["fixed"] == 1:
+        elif de["fixed"] == 1:
             # sets the attributes for a fixed time_series sink
-            args.update({"fix": self.timeseries[sink["label"] + ".fix"]})
-            
+            args.update({"fix": self.timeseries[de["label"] + ".fix"]})
         # starts the create_sink method with the parameters set before
-        self.create_sink(sink, args=args)
+        self.create_sink(de, args=args)
 
         # returns logging info
-        logging.info("\t Sink created: " + sink["label"])
+        logging.info("\t Sink created: " + de["label"])
 
-    def slp_sink(self, sink: pandas.Series) -> None:
+    def slp_sink(self, de: pd.Series):
         """
-            Creates a sink with a residential or commercial
-            SLP time series.
-    
-            Creates a sink with inputs according to VDEW standard
-            load profiles, using oemof's demandlib.
-            Used for the modelling of residential or commercial
-            electricity demand.
-            In this context the method uses the create_sink method.
-    
-            :param sink: dictionary containing all information for the \
-                creation of an oemof sink. At least the following \
-                key-value-pairs have to be included:
-    
-                    - label
-                    - load profile
-                    - annual demand
-                    - building class
-                    - wind class
+        Creates a sink with a residential or commercial
+        SLP time series.
 
-            :type sink: pandas.Series
+        Creates a sink with inputs according to VDEW standard
+        load profiles, using oemofs demandlib.
+        Used for the modelling of residential or commercial
+        electricity demand.
+        In this context the method uses the create_sink method.
+
+        :param de: dictionary containing all information for the
+                   creation of an oemof sink. At least the
+                   following key-value-pairs have to be included:
+
+                        - 'label'
+                        - 'load profile'
+                        - 'annual demand'
+                        - 'building class'
+                        - 'wind class'
+        :type de: dict
+
+        Christian Klemm - christian.klemm@fh-muenster.de
         """
-        
-        # Importing timesystem parameters from the model definition
+        heat_slps = ["efh", "mfh"]
+        heat_slps_commercial = [
+            "gmf",
+            "gpd",
+            "ghd",
+            "gwa",
+            "ggb",
+            "gko",
+            "gbd",
+            "gba",
+            "gmk",
+            "gbh",
+            "gga",
+            "gha",
+        ]
+        electricity_slps = [
+            "h0",
+            "g0",
+            "g1",
+            "g2",
+            "g3",
+            "g4",
+            "g5",
+            "g6",
+            "l0",
+            "l1",
+            "l2",
+        ]
+        # Importing timesystem parameters from the scenario
         temp_resolution = self.energysystem["temporal resolution"]
 
         # Converting start date into datetime format
@@ -323,107 +275,101 @@ class Sinks:
         )
 
         # Create DataFrame
-        demand = pandas.DataFrame(
-            index=pandas.date_range(
+        demand = pd.DataFrame(
+            index=pd.date_range(
                 datetime(
-                    year=start_date.year,
-                    month=start_date.month,
-                    day=start_date.day,
-                    hour=start_date.hour
+                    start_date.year, start_date.month, start_date.day, start_date.hour
                 ),
                 periods=self.energysystem["periods"],
                 freq=temp_resolution,
             )
         )
-        
-        heat_slps = self.slps["heat_slps_commercial"] + self.slps["heat_slps"]
-        # creates time series for heat sinks
-        if sink["load profile"] in heat_slps:
+
+        # creates time series
+        if de["load profile"] in heat_slps_commercial + heat_slps:
             # sets the parameters of the heat slps
             args = {
                 "temperature": self.weather_data["temperature"],
-                "shlp_type": sink["load profile"],
-                "wind_class": sink["wind class"],
+                "shlp_type": de["load profile"],
+                "wind_class": de["wind class"],
                 "annual_heat_demand": 1,
-                "name": sink["load profile"],
+                "name": de["load profile"],
             }
-            # handling non commercial buildings
-            if sink["load profile"] in self.slps["heat_slps"]:
+            if de["load profile"] in heat_slps:
                 # adds the building class which is only necessary for
                 # the non commercial slps
-                args.update({"building_class": sink["building class"]})
-                
-            # create the demandlib's data set
-            demand[sink["load profile"]] = bdew.HeatBuilding(
+                args.update({"building_class": de["building class"]})
+            demand[de["load profile"]] = bdew.HeatBuilding(
                 demand.index, **args
             ).get_bdew_profile()
-            
-        # create time series for electricity sinks
-        elif sink["load profile"] in self.slps["electricity_slps"]:
+        elif de["load profile"] in electricity_slps:
             # Imports standard load profiles
-            e_slp = bdew.ElecSlp(year=start_date.year)
-            demand = e_slp.get_profile({sink["load profile"]: 1})
+            e_slp = bdew.ElecSlp(start_date.year)
+            demand = e_slp.get_profile({de["load profile"]: 1})
             # creates time series based on standard load profiles
             demand = demand.resample(temp_resolution).mean()
-            
         # starts the create_sink method with the parameters set before
         self.create_sink(
-            sink,
-            nominal_value=sink["annual demand"],
-            load_profile=demand[sink["load profile"]],
+            de,
+            nominal_value=de["annual demand"],
+            load_profile=demand[de["load profile"]],
         )
-        
         # returns logging info
-        logging.info("\t Sink created: " + sink["label"])
+        logging.info("\t Sink created: " + de["label"])
 
-    def richardson_sink(self, sink: pandas.Series) -> None:
+    def richardson_sink(self, de: pd.Series):
         """
-            Creates a sink with stochastically generated input, using
-            richardson.py. Used for the modelling of residential
-            electricity demands. In this context the method uses the
-            create_sink method.
-    
-            :param sink: dictionary containing all information for the \
-                creation of an oemof sink. At least the following \
-                key-value-pairs have to be included:
-    
-                    - label
-                    - fixed
-                    - annual demand
-                    - occupants
+        Creates a sink with stochastically timeseries.
 
-            :type sink: pandas.Series
-            
-            :raise ValueError: Invalid temporal resolution chosen
+        Creates a sink with stochastically generated input, using
+        richardson.py. Used for the modelling of residential
+        electricity demands. In this context the method uses the
+        create_sink method.
+
+        :param de: dictionary containing all information for
+                   the creation of an oemof sink. At least the
+                   following key-value-pairs have to be included:
+
+                        - 'label'
+                        - 'fixed'
+                        - 'annual demand'
+                        - 'occupants'
+        :type de: dict
+        :raise ValueError: Invalid temporal resolution chosen
+
+        Christian Klemm - christian.klemm@fh-muenster.de
         """
 
         import richardsonpy.classes.occupancy as occ
         import richardsonpy.classes.electric_load as eload
 
         # Import Weather Data
-        # Since dirhi is not longer part of the SESMGs weather data it
-        # is calculated based on
-        # https://power.larc.nasa.gov/docs/methodology/energy-fluxes/
-        # correction/
-        # by subtracting dhi from ghi
-        ghi = self.weather_data["ghi"].values.flatten()
+        dirhi = self.weather_data["dirhi"].values.flatten()
         dhi = self.weather_data["dhi"].values.flatten()
-        dirhi = ghi - dhi
 
         # Conversion of irradiation from W/m^2 to kW/m^2
-        dhi /= 1000
-        dirhi /= 1000
+        dhi = dhi / 1000
+        dirhi = dirhi / 1000
 
         # sets the occupancy rates
+        nb_occ = de["occupants"]
+
         # Workaround, because richardson.py only allows a maximum
         # of 5 occupants
-        nb_occ = sink["occupants"] if sink["occupants"] < 5 else 5
+        if nb_occ > 5:
+            nb_occ = 5
 
         # sets the temporal resolution of the richardson.py time series,
         # depending on the temporal resolution of the entire model (as
         # defined in the input spreadsheet)
-        temp_res = {"H": 3600, "h": 3600, "min": 60, "s": 1}
-        time_step = temp_res.get(self.energysystem["temporal resolution"])
+        if self.energysystem["temporal resolution"] in ["H", "h"]:
+            time_step = 3600  # in seconds
+        elif self.energysystem["temporal resolution"] == "min":
+            time_step = 60  # in seconds
+        elif self.energysystem["temporal resolution"] == "s":
+            time_step = 1  # in seconds
+        else:
+            raise ValueError("Invalid Temporal Resolution")
 
         #  Generate occupancy object
         #  (necessary as input for electric load gen)
@@ -445,48 +391,74 @@ class Sinks:
         # Disables the stochastic simulation of the total yearly demand
         # by scaling the generated time series using the total energy
         # demand of the sink generated in the spreadsheet
-        demand_ratio = sink["annual demand"] / richardson_demand
+        demand_ratio = de["annual demand"] / richardson_demand
 
         # starts the create_sink method with the parameters set before
         self.create_sink(
-            sink, load_profile=load_profile, nominal_value=0.001 * demand_ratio
+            de, load_profile=load_profile, nominal_value=0.001 * demand_ratio
         )
         # returns logging info
-        logging.info("\t Sink created: " + sink["label"])
+        logging.info("\t Sink created: " + de["label"])
 
-    def __init__(self, nodes_data: dict, busd: dict, nodes: list) -> None:
+    def __init__(self, nd: dict, busd: dict, nodes: list):
+        """Inits the sink class.
+        ---
+        Other variables:
+
+            nodes_sinks: obj:'list'
+                -- class intern list of sinks that are already created
+
         """
-            Inits the sink class.
-        """
+
         # Delete possible residues of a previous run from the class
         # internal list nodes_sinks
         self.nodes_sinks = []
         # Initialise a class intern copy of the bus dictionary
         self.busd = busd.copy()
-        self.insulation = nodes_data["insulation"].copy()
-        self.weather_data = nodes_data["weather data"].copy()
-        self.timeseries = nodes_data["timeseries"].copy()
-        self.energysystem = next(nodes_data["energysystem"].iterrows())[1]
+        self.insulation = nd["insulation"].copy()
+        self.weather_data = nd["weather data"].copy()
+        self.timeseries = nd["timeseries"].copy()
+        self.energysystem = next(nd["energysystem"].iterrows())[1]
         switch_dict = {
             "x": self.unfixed_sink,
             "timeseries": self.timeseries_sink,
             "slp": self.slp_sink,
             "richardson": self.richardson_sink,
         }
-        
-        sinks = nodes_data["sinks"].loc[nodes_data["sinks"]["active"] == 1]
         # Create sink objects
-        for num, sink in sinks.iterrows():
-            
-            # switch the load profile to slp if load profile in slps
-            if sink["load profile"] in self.slps.values():
-                load_profile = "slp"
-            else:
-                load_profile = sink["load profile"]
-            # get the sink types creation method from the switch dict
-            switch_dict.get(load_profile, "Invalid load profile")(sink)
+        for i, de in nd["sinks"].loc[nd["sinks"]["active"] == 1].iterrows():
+            slps = [
+                "efh",
+                "mfh",
+                "gmf",
+                "gpd",
+                "ghd",
+                "gwa",
+                "ggb",
+                "gko",
+                "gbd",
+                "gba",
+                "gmk",
+                "gbh",
+                "gga",
+                "gha",
+                "h0",
+                "g0",
+                "g1",
+                "g2",
+                "g3",
+                "g4",
+                "g5",
+                "g6",
+                "l0",
+                "l1",
+                "l2",
+            ]
+
+            load_profile = "slp" if de["load profile"] in slps else de["load profile"]
+            switch_dict.get(load_profile, "Invalid load profile")(de)
 
         # appends created sinks on the list of nodes
-        for index in range(len(self.nodes_sinks)):
-            nodes.append(self.nodes_sinks[index])
-        nodes_data["insulation"] = self.insulation.copy()
+        for i in range(len(self.nodes_sinks)):
+            nodes.append(self.nodes_sinks[i])
+        nd["insulation"] = self.insulation.copy()

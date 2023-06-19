@@ -1,1 +1,1 @@
-__package__ = "preprocessing"
+from .components import *
