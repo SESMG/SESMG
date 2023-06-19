@@ -4,18 +4,17 @@ import os
 
 if __name__ == "__main__":
     if sys.platform.startswith("darwin"):
-        # command to allow streamlit run
-        subprocess.call("streamlit run {}".format(
-            os.path.dirname(__file__) +
-            "/program_files/GUI_st/1_Main_Application.py"), shell=True)
-
+        import program_files.GUI_files.GUI as GUI
+        
+        gui = GUI.GUI()
+        
+        
     elif sys.platform.startswith("linux"):
-        # command to allow streamlit run
-        subprocess.call("streamlit run {}".format(
-            os.path.dirname(__file__) +
-            "/program_files/GUI_st/1_Main_Application.py"), shell=True)
+        import program_files.GUI_files.GUI as GUI
+
+        gui = GUI.GUI()
     else:
-        # command to allow streamlit run
-        subprocess.call("streamlit run {}".format(
-            os.path.dirname(__file__) +
-            "/program_files/GUI_st/1_Main_Application.py"), shell=True)
+        import program_files.GUI_files.GUI as GUI
+
+        gui = GUI.GUI()
+        # subprocess.call("streamlit run {}".format(os.path.dirname(__file__) + "/program_files/GUI_st/1_Main_Application.py"), shell=True)

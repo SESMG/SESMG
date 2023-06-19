@@ -6,4 +6,4 @@
 cd "%~dp0"/Scripts
 start /b activate.bat
 cd ..
-Scripts\python.exe -m streamlit run "program_files/GUI_st/1_Main_Application.py"
+Scripts\python.exe start_script.py

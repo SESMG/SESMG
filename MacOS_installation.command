@@ -18,7 +18,6 @@ echo ---------------------------------------------
 brew install cbc
 brew install geos
 brew install graphviz
-brew install postgresql
 
 bin/pip3 install -r requirements.txt
 
@@ -33,5 +32,5 @@ echo Installation completed
 echo Starting SESMG
 echo ----------------------
 
-bin/python$PYVERSION -m streamlit run "program_files/GUI_st/1_Main_Application.py"
+bin/python$PYVERSION start_script.py
 osascript -e 'tell application "Terminal" to quit'

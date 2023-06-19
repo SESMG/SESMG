@@ -11,9 +11,6 @@ py -%PYVERSION% -m venv "%~dp0 "
 cd Scripts/
 start /b activate.bat
 
-mkdir %userprofile%\.streamlit
-move ..\.streamlit\credentials.toml %userprofile%\.streamlit\credentials.toml
-
 pip install pipwin
 pipwin install gdal
 pipwin install fiona
@@ -36,5 +33,4 @@ move "%~dp0 "/Run_SESMG_for_Linux.sh "%~dp0 "/files_deviant_operating_system\Run
 @echo Starting SESMG
 @echo ######################
 cd ..
-Scripts\python.exe -m streamlit run "program_files/GUI_st/1_Main_Application.py"
-
+Scripts\python.exe start_script.py
