@@ -1,0 +1,24 @@
+scenario_path,/home/dieenergiemodels/global_model_definitions/Sensitivitätsanalyse_CK_20220712/grid_co2_impact/grid_co2_impact_25_percent/grid_co2_impact_25_percent.xlsx
+save_path_directory,results
+save_path,/home/dieenergiemodels/Schreibtisch/sciebo/SESMG_20221111/results/2023-03-30--14-41-55/hydrogen_price_500_percent_0.5_2023-03-30--21-38-16
+num_threads,2
+timeseries_algorithm,slicing A
+timeseries_cluster,4
+timeseries_criterion,None
+timeseries_period,days
+timeseries_season,12
+graph_state,0
+criterion_state,0
+solver_select,gurobi
+xlsx_select_state,1
+console_select_state,0
+plotly_select_state,0
+dh_path,
+cluster_dh,0
+limits_pareto,0.5
+pre_scenario_path,/home/dieenergiemodels/global_model_definitions/Sensitivitätsanalyse_CK_20220712/reference/us_sheet_20221215.xlsx
+standard_parameter_path,/home/dieenergiemodels/global_model_definitions/Sensitivitätsanalyse_CK_20220712/grid_co2_impact/grid_co2_impact_25_percent/standard_parameters_20221129.xlsx
+scenario_name,/home/dieenergiemodels/global_model_definitions/Sensitivitätsanalyse_CK_20220712/grid_co2_impact/grid_co2_impact_25_percent/grid_co2_impact_25_percent.xlsx
+clustering,False
+clustering_dh,False
+components_path,
