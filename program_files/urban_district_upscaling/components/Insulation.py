@@ -1,49 +1,28 @@
-"""
-    Christian Klemm - christian.klemm@fh-muenster.de
-    Gregor Becker - gregor.becker@fh-muenster.de
-    Janik Budde - janik.budde@fh-muenster.de
-"""
-import pandas
-
-
-def create_building_insulation(building: dict, sheets: dict,
-                               standard_parameters: pandas.ExcelFile) -> dict:
+def create_building_insulation(building, sheets, standard_parameters):
     """
-        In this method, the U-value potentials as well as the building
-        year-dependent U-value of the insulation types are obtained from
-        the standard parameters to create the insulation components in
-        the model definition.
-    
-        :param building: dictionary holding the building specific data
-        :type building: dict
-        :param sheets: dictionary containing the pandas.Dataframes that\
-            will represent the model definition's Spreadsheets
-        :type sheets: dict
-        :param standard_parameters: pandas imported ExcelFile \
-            containing the non-building specific technology data
-        :type standard_parameters: pandas.ExcelFile
-        
-        :return: - **sheets** (dict) - dictionary containing the \
-            pandas.Dataframes that will represent the model \
-            definition's Spreadsheets which was modified in this method
+    In this method, the U-value potentials as well as the building
+    year-dependent U-value of the insulation types are obtained from
+    the standard parameters to create the insulation components in
+    the scenario.
+
+    :param building:
+    :type building:
+    :param sheets:
+    :type sheets:
+    :param standard_parameters:
+    :type standard_parameters:
     """
     from program_files import append_component
 
-    yoc_roof = building["year of construction roof"]
-    yoc_wall = building["year of construction wall"]
-    yoc_window = building["year of construction windows"]
+    yoc = building["year of construction"]
     roof = building["rooftype"]
-    yoc_component = [yoc_roof, yoc_wall, yoc_window]
-    yoc_component_new = [yoc_component[i] if yoc_component[i] > 1918
-                         else "<1918" for i in range(len(yoc_component))]
-    building_component = ["roof", "outer wall", "window"]
 
     standard_param = standard_parameters.parse("7_insulation")
     standard_param.set_index("year of construction", inplace=True)
-
+    if int(yoc) <= 1918:  # TODO
+        yoc = "<1918"
     u_values = {}
-
-    for yoc, comp in zip(yoc_component_new, building_component):
+    for comp in ["roof", "outer wall", "window"]:
         u_values.update(
             {
                 comp: [
@@ -61,8 +40,8 @@ def create_building_insulation(building: dict, sheets: dict,
                 standard_param.loc["periodical constraint costs flat"]["roof"],
             ]
     param_dict = {
+        "comment": "automatically_created",
         "active": 1,
-        "existing": 0,
         "sink": str(building["label"]) + "_heat_demand",
         "temperature indoor": 20,
         "heat limit temperature": 15,
