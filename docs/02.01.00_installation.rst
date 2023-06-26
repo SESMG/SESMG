@@ -94,7 +94,7 @@ Enter your python version.
 
 .. note:: 
 
-	There appears a warning after the installation process about the packages osmx and cartopy. The installation was successful, the SESMG will run normally and you can ignore this warning. Also see `warning-001 troubeshooting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/03.00.00_trouble_shooting.html#warning-w-001-need-to-install-cartopy/>`_.
+	There appears a warning after the installation process about the packages osmx and cartopy. The installation was successful, the SESMG will run normally and you can ignore this warning. Also see `warning-001 troubeshooting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/03.00.00_trouble_shooting.html#warning-w-001-need-to-install-cartopy>`_.
 
 
 6. Have fun with the SESMG.
@@ -187,7 +187,7 @@ Enter your python version.
 
 .. note:: 
 
-	There appears a warning after the installation process about the packages osmx and cartopy. The installation was successful, the SESMG will run normally and you can ignore this warning. Also see `warning-001 troubeshooting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/03.00.00_trouble_shooting.html#warning-w-001-need-to-install-cartopy/>`_.
+	There appears a warning after the installation process about the packages osmx and cartopy. The installation was successful, the SESMG will run normally and you can ignore this warning. Also see `warning-001 troubeshooting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/03.00.00_trouble_shooting.html#warning-w-001-need-to-install-cartopy>`_.
 
 .. note::
 
@@ -259,7 +259,7 @@ Enter your python version.
 
 .. note:: 
 
-	There appears a warning after the installation process about the packages osmx and cartopy. The installation was successful, the SESMG will run normally and you can ignore this warning. Also see `warning-001 troubeshooting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/03.00.00_trouble_shooting.html#warning-w-001-need-to-install-cartopy/>`_.
+	There appears a warning after the installation process about the packages osmx and cartopy. The installation was successful, the SESMG will run normally and you can ignore this warning. Also see `warning-001 troubeshooting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/03.00.00_trouble_shooting.html#warning-w-001-need-to-install-cartopy>`_.
 
 8. The Spreadsheet Energy System Model Generator has been installed. Open a browser and open up: ``localhost:8501``.
 
