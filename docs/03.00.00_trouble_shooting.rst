@@ -453,7 +453,7 @@ Error M-031: Existing capacity for non-convex investment decision
 **Debugging:** Make sure no existing-capacities are given for components including non-convex decissions. If an existing capacity is required an additional component can be used for considering this capacity. 
 
 
-Warning W-001: Existing capacity for non-convex investment decision
+Warning W-001: Need to install ... / INFO:root:Cartopy ...
 -----------------------------------------------------------------
 **Warning Message:** ::
 
@@ -467,7 +467,7 @@ Warning W-001: Existing capacity for non-convex investment decision
 
 **Possible Error Cause:** No error occurs. 
 
-**Debugging:** You do not need to add any packages. The process will work perfectly without those packages, which where required by a submodule but not used by the SESMG. 
+**Debugging:** You do not need to add any packages. The process will work perfectly without those packages, which where required by a submodule but not used by the SESMG. We skip the installation of those packages, to keep the installation as small as possible. 
 
 
 Contributing to the troubleshooting
