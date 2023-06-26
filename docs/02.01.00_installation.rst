@@ -92,6 +92,10 @@ Enter your python version.
    :width: 50 %
    :align: center
 
+.. note:: 
+
+	There appears a warning after the installation process about the packages osmx and cartopy. The installation was successful, the SESMG will run normally and you can ignore this warning. Also see `warning-001 troubeshooting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/03.00.00_trouble_shooting.html#warning-w-001-need-to-install-cartopy/>`_.
+
 
 6. Have fun with the SESMG.
 
@@ -181,7 +185,10 @@ Enter your python version.
    :width: 50 %
    :align: center
 
-   
+.. note:: 
+
+	There appears a warning after the installation process about the packages osmx and cartopy. The installation was successful, the SESMG will run normally and you can ignore this warning. Also see `warning-001 troubeshooting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/03.00.00_trouble_shooting.html#warning-w-001-need-to-install-cartopy/>`_.
+
 .. note::
 
 	During this step, the cbc solver was automatically installed. The gurobi solver may be used as **alternative** to the cbc solver. Be aware, that the gurobi-solver is not open-source and a license is required. However, the gurobi may be faster for certain types of optimization problems, especially for those containing binary decisions. The installation procedure of the gurobi solver is described in detail here: https://www.gurobi.com/documentation/quickstart.html
@@ -249,6 +256,10 @@ Enter your python version.
 .. note:: 
 
 	Please type in your python version in the major.minor format, which means to give 3.X if you have the version 3.X.YY. E.g. 3.9 if you have the python version 3.9.13. 
+
+.. note:: 
+
+	There appears a warning after the installation process about the packages osmx and cartopy. The installation was successful, the SESMG will run normally and you can ignore this warning. Also see `warning-001 troubeshooting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/03.00.00_trouble_shooting.html#warning-w-001-need-to-install-cartopy/>`_.
 
 8. The Spreadsheet Energy System Model Generator has been installed. Open a browser and open up: ``localhost:8501``.
 
