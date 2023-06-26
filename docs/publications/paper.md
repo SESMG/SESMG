@@ -51,7 +51,7 @@ The Spreadsheet Energy System Model Generator (SESMG) is based on the Open Energ
 
 The SESMG enables the optimization of multi-sectoral and spatial synergies of entire urban energy systems with an adaptable number of buildings. Due to the multi-criteria result output in the form of a Pareto front, transformation processes between status quo, financial cost minimized and ghg emission minimized target scenarios can be identified.
 
-Effort has been made to provide a user friendly interface and an efficienct work-flow, that
+Effort has been made to provide a user friendly interface and an efficient work-flow, that
 
 * can be applied **without any programming knowledge**,
 
