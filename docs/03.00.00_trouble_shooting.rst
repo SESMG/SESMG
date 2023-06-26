@@ -453,7 +453,7 @@ Error M-031: Existing capacity for non-convex investment decision
 **Debugging:** Make sure no existing-capacities are given for components including non-convex decissions. If an existing capacity is required an additional component can be used for considering this capacity. 
 
 
-Warning W-001: Need to install ... / INFO:root:Cartopy ...
+Warning W-001: Need to install ... / Cartopy ...
 -----------------------------------------------------------------
 **Warning Message:** ::
 
