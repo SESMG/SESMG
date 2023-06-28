@@ -271,12 +271,14 @@ Enter your python version.
 Advanced 
 ========
 
-1. Create a virtual environment of your choice.
+1. Download the SESMG by using ``git clone https://github.com/SESMG/SESMG.git`` OR by downloading it manually from https://github.com/SESMG/SESMG
 
-2. Install the following packages within the virual environment: coincbc, graphviz, geos (MacOS only), postgresql (MacOS only), fiona (Windows only), gdal (Windows, only).
+2. Create a virtual environment of your choice for the SESMG folder
 
-3. Download the SESMG by using ``git clone https://github.com/SESMG/SESMG.git`` OR by downloading manually from https://github.com/SESMG/SESMG
+3. Install the following packages within the virual environment: coincbc, graphviz, geos (MacOS only), postgresql (MacOS only), fiona (Windows only), gdal (Windows, only)
 
-4. Start the SESMG by executing start_script.py.
+4. Use ``pip install -r requirements.txt`` to install the required sub-packages in the virtual environment
+
+5. Start the SESMG by executing start_script.py
 
 
