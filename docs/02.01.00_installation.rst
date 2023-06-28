@@ -1,6 +1,11 @@
 Installation
 ************
 
+If you have programming experience and if you want to set up your own virtual environment, you may use the `advanced installation <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html#advanced>`_. This allows, for example, the use of Anaconda.
+
+
+
+
 
 Windows
 =======
@@ -262,5 +267,16 @@ Enter your python version.
 	There appears a warning after the installation process about the packages osmx and cartopy. The installation was successful, the SESMG will run normally and you can ignore this warning. Also see `warning-001 troubeshooting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/03.00.00_trouble_shooting.html#warning-w-001-need-to-install-cartopy>`_.
 
 8. The Spreadsheet Energy System Model Generator has been installed. Open a browser and open up: ``localhost:8501``.
+
+Advanced 
+========
+
+1. Create a virtual environment of your choice.
+
+2. Install the following packages within the virual environment: coincbc, graphviz, geos (MacOS only), postgresql (MacOS only), fiona (Windows only), gdal (Windows, only).
+
+3. Download the SESMG by using ``git clone https://github.com/SESMG/SESMG.git`` OR by downloading manually from https://github.com/SESMG/SESMG
+
+4. Start the SESMG by executing start_script.py.
 
 
