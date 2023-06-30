@@ -410,6 +410,11 @@ class Transformers:
                 float("+inf"),
                 self.weather_data["temperature"],
             ],
+            "Air-to-Air": [
+                transformer["label"] + temp + "_air_source",
+                float("+inf"),
+                self.weather_data["temperature"],
+            ],
             "Water": [
                 transformer["label"] + temp + "_water_source",
                 float("+inf"),
@@ -469,16 +474,19 @@ class Transformers:
         else:
             raise ValueError("Mode of " + transformer["label"]
                              + "contains a typo")
-        
-        # calculation of COPs with set parameters
-        cops_hp = cmpr_hp_chiller.calc_cops(
-            temp_high=temp_high,
-            temp_low=temp_low,
-            quality_grade=transformer["quality grade"],
-            temp_threshold_icing=temp_threshold_icing,
-            factor_icing=factor_icing,
-            mode=transformer["mode"],
-        )
+        if not transformer["heat source"] == "Air-to-Air":
+            # calculation of COPs with set parameters
+            cops_hp = cmpr_hp_chiller.calc_cops(
+                temp_high=temp_high,
+                temp_low=temp_low,
+                quality_grade=transformer["quality grade"],
+                temp_threshold_icing=temp_threshold_icing,
+                factor_icing=factor_icing,
+                mode=transformer["mode"],
+            )
+        else:
+            cops_hp = [2.85633 + 0.072432 * i + 0.000546578 * i * i
+                       for i in self.weather_data["temperature"]]
         # logging the transformer's COP
         logging.info("\t " + transformer["label"]
                      + ", Average Coefficient of Performance (COP): "

@@ -10,6 +10,8 @@ technology_dict = {
         ["gchp", "hp_elec", "heat", "None"],
     "building_ashp_transformer":
         ["ashp", "hp_elec", "heat", "None"],
+    "building_aahp_transformer":
+        ["aahp", "hp_elec", "heat", "None"],
     "building_gasheating_transformer":
         ["gasheating", "gas", "heat", "None"],
     "building_oilheating_transformer":
@@ -17,7 +19,9 @@ technology_dict = {
     "building_electricheating_transformer":
         ["electricheating", "electricity", "heat", "None"],
     "building_woodstove_transformer":
-        ["wood_stove", "wood", "heat", "None"]
+        ["wood_stove", "wood", "heat", "None"],
+    "building_pelletheating_transformer":
+        ["pelletheating", "pellet", "heat", "None"],
 }
 
 
@@ -114,23 +118,25 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
             bus = "building_com_gas_bus"
             oil_bus = "building_com_oil_bus"
             
-        if transformer_type == "building_gasheating_transformer":
+        switch_dict = {
+            "building_gasheating_transformer": ["_gas_bus", bus],
+            "building_oilheating_transformer": ["_oil_bus", oil_bus],
+            "building_woodstove_transformer": ["_wood_bus",
+                                               "building_wood_bus"],
+            "building_pelletheating_transformer": ["_pellet_bus",
+                                                   "building_pellet_bus"]
+        }
+        try:
+            transformer_type_list = switch_dict.get(transformer_type)
             sheets = Bus.create_standard_parameter_bus(
-                label=str(building_id) + "_gas_bus", bus_type=bus,
-                sheets=sheets, standard_parameters=standard_parameters
+                label=str(building_id) + transformer_type_list[0],
+                bus_type=transformer_type_list[1],
+                sheets=sheets,
+                standard_parameters=standard_parameters
             )
-        if transformer_type == "building_oilheating_transformer":
-            sheets = Bus.create_standard_parameter_bus(
-                label=str(building_id) + "_oil_bus", bus_type=oil_bus,
-                sheets=sheets, standard_parameters=standard_parameters
-            )
-        if transformer_type == "building_woodstove_transformer":
-            sheets = Bus.create_standard_parameter_bus(
-                label=str(building_id) + "_wood_bus",
-                bus_type="building_wood_bus",
-                sheets=sheets, standard_parameters=standard_parameters
-            )
-
+        except ValueError:
+            pass
+            
     if not technology_dict.get(transformer_type)[2] == output:
         output1 = str(building_id) + "_" \
                   + technology_dict.get(transformer_type)[2] + "_bus"
@@ -194,6 +200,8 @@ def building_transformer(building: dict, p2g_link: bool, sheets: dict,
     build_transformer_dict = {
         "ashp":
             [None, "building_ashp_transformer"],
+        "aahp":
+            [None, "building_aahp_transformer"],
         "gas heating":
             [building["building type"], "building_gasheating_transformer"],
         "electric heating":
@@ -201,8 +209,11 @@ def building_transformer(building: dict, p2g_link: bool, sheets: dict,
         "oil heating":
             [building["building type"], "building_oilheating_transformer"],
         "wood stove":
-            [building["building type"], "building_woodstove_transformer"]
+            [building["building type"], "building_woodstove_transformer"],
+        "pellet heating":
+            [building["building type"], "building_pelletheating_transformer"],
     }
+    
     if building["wood stove share"] != "standard":
         technology_dict["building_woodstove_transformer"][2] = "wood_stove_heat"
     
