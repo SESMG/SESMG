@@ -10,6 +10,8 @@ technology_dict = {
         ["gchp", "hp_elec", "heat", "None"],
     "building_ashp_transformer":
         ["ashp", "hp_elec", "heat", "None"],
+    "building_aahp_transformer":
+        ["aahp", "hp_elec", "heat", "None"],
     "building_gasheating_transformer":
         ["gasheating", "gas", "heat", "None"],
     "building_oilheating_transformer":
@@ -198,6 +200,8 @@ def building_transformer(building: dict, p2g_link: bool, sheets: dict,
     build_transformer_dict = {
         "ashp":
             [None, "building_ashp_transformer"],
+        "aahp":
+            [None, "building_aahp_transformer"],
         "gas heating":
             [building["building type"], "building_gasheating_transformer"],
         "electric heating":

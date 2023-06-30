@@ -83,6 +83,7 @@ def test_building_transformer(test_decentral_gasheating_entry,
         "electric heating": "no",
         "oil heating": "no",
         "wood stove": "no",
+        "aahp": "no",
         "pellet heating": "no",
         "flow temperature": "60",
         "wood stove share": "standard"
