@@ -2,7 +2,6 @@
 [![Generic badge](https://img.shields.io/badge/content-what/why-darkgreen.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 [![Generic badge](https://img.shields.io/badge/content-how-green.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
-.
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/5ab50cca9d852028f3df/maintainability)](https://codeclimate.com/github/SESMG/SESMG/maintainability)
 [![Documentation Status](https://readthedocs.org/projects/spreadsheet-energy-system-model-generator/badge/?version=latest)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/?badge=latest)
