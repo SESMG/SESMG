@@ -52,7 +52,7 @@ Combining functions of underlying Open Energy Modeling Framework (oemof) [@oemof
 
 The SESMG enables the optimization of multi-sectoral and spatial synergies of entire urban energy systems with an adaptable number of buildings. Due to the multi-criteria result output in the form of a Pareto front, transformation processes between status quo, financial cost minimized and ghg emission minimized target scenarios can be identified.
 
-Compared to other tools for the modeling and optimization of urban energy systems, as they have been listed by Klemm and Vennemann [@Klemm.Review], the SESMG provides several advantages regarding user-friednliness due to
+The target group of the SESMG are planners of (urban) energy systems and researchers in the field of energy engineering. As it is required for the application of the SESMG and the interpretation of the results, users are required to have a certain basic knowledge of energy systems and energy engineering. Compared to other tools for the modeling and optimization of urban energy systems, as they have been listed by Klemm and Vennemann [@Klemm.Review], the SESMG provides several advantages regarding user-friednliness due to
 
 * beeing available under an **open-source license**, 
 
