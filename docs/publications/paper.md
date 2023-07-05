@@ -60,7 +60,7 @@ The target group of the SESMG are planners of (urban) energy systems and researc
 
 * **automatically conceptualizes** individual urban energy systems of any size,
 
-* **automatic processes and visualizes results** of complex relationships in form of system graphs, Pareto fronts, energy amount diagrams, and more, as well as
+* **automatic processes and visualized results** of complex relationships in form of system graphs, Pareto fronts, energy amount diagrams, and more, as well as
 
 * a broad set of **standard (but still customizable) technical and economic modeling parameters** including description and references.
 
