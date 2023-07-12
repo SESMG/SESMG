@@ -1,0 +1,13 @@
+Examples
+==============
+For the SESMG, a number of examples can be found in this `this directory <https://github.com/SESMG/SESMG-Examples>`_. Please make sure that the version indexed with the file/folder name matches your version of the SESMG. In the following, some examples are explained in more detail.
+
+Example 1
+---------
+
+Example 2
+---------
+
+Example 3
+---------
+
