@@ -56,7 +56,7 @@ The target group of the SESMG are (urban) energy system planners and researchers
 
 * being available under an **open-source license**, 
 
-* applicability **without any programming knowledge**,
+* applicability **without any programming knowledge** through a **browser based graphical user interface**,
 
 * **automatically conceptualizing** individual urban energy systems of any size,
 
