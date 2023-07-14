@@ -12,6 +12,7 @@ with open("requirements.txt") as f:
 
 OPTIONS = {
     'argv_emulation': True,
+    'includes': ["program_files"]
 }
 
 setuptools.setup(
@@ -27,7 +28,6 @@ setuptools.setup(
     app=["start_script.py"],
     options={'py2app': OPTIONS},
     setup_requires=["py2app"],
-    data_files=["program_files"],
     classifiers=[
         # complete classifier list:
         # http://pypi.python.org/pypi?%3Aaction=list_classifiers
