@@ -26,7 +26,7 @@ setuptools.setup(
     #packages=setuptools.find_packages(),
     #requires=install_requires,
     app=["start_script.py"],
-    data_files=["program_files/*:program_files/*"],
+    data_files=[('program_files', glob.glob('program_files/*.*'))],
     options={'py2app': OPTIONS},
     setup_requires=["py2app"],
     classifiers=[
