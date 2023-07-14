@@ -12,8 +12,7 @@ with open("requirements.txt") as f:
 
 OPTIONS = {
     'argv_emulation': True,
-    'includes': ["program_files"],
-    "packages": ["streamlit"]
+    'includes': ["program_files"]
 }
 
 setuptools.setup(
