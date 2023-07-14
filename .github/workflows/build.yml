@@ -1,0 +1,55 @@
+name: Build
+on: [push, pull_request]
+
+jobs:
+  macos:
+    name: Build for macOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        run: |
+          curl https://www.python.org/ftp/python/3.9.13/python-3.9.13-macosx10.9.pkg --output pythonInstaller.pkg
+          sudo installer -pkg pythonInstaller.pkg -target /
+      - name: Check Python install
+        run: |
+          which python3
+          python3 --version
+          which pip3
+          pip3 --version
+      - name: Install Python dependencies
+        run: |
+          pip3 install -U setuptools wheel pip
+          pip3 install twisted[tls] appnope requests certifi
+          pip3 install -r requirements.txt
+      - name: Install py2app
+        run: |
+          pip3 install py2app
+          python3 setup.py build
+          python3 setup.py install
+      - name: Check Python dependencies
+        run: |
+          echo $DYLD_LIBRARY_PATH
+          echo $DYLD_FRAMEWORK_PATH
+          # python3 -c 'from distutils.sysconfig import get_config_var; print(get_config_var("LDLIBRARY"))'
+      - name: Build
+        run: |
+          python3 start_script.py py2app
+      - name: Prepare for deployment
+        run: |
+          ls -al
+          export VER="0.5.0"
+          echo "VER=$VER" >> $GITHUB_ENV
+        #  mkdir dist_actions
+        # ci/macos-deploy.sh
+        #  ls -al dist_actions
+      - name: Deploy
+        uses: actions/upload-artifact@v2
+        with:
+          name: SESMG_${{ env.VER }}.dmg
+          path: |
+            SESMG_${{ env.VER }}.dmg
+
+ 
