@@ -50,6 +50,6 @@ jobs:
         with:
           name: SESMG_${{ env.VER }}.dmg
           path: |
-            SESMG_${{ env.VER }}.dmg
+            program_files/SESMG_${{ env.VER }}.dmg
 
  
