@@ -27,7 +27,7 @@ setuptools.setup(
     #requires=install_requires,
     app=["start_script.py"],
     options={'py2app': OPTIONS},
-    setup_requires=["py2app"],
+    setup_requires=["py2app", "streamlit"],
     classifiers=[
         # complete classifier list:
         # http://pypi.python.org/pypi?%3Aaction=list_classifiers
