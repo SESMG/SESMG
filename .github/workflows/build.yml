@@ -43,7 +43,7 @@ jobs:
           export VER="0.5.0"
           echo "VER=$VER" >> $GITHUB_ENV
           mkdir dist_actions
-          .github/workflows/ci/macos-deploy.sh
+          ci/macos-deploy.sh
         #  ls -al dist_actions
       - name: Deploy
         uses: actions/upload-artifact@v2
