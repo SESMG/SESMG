@@ -10,6 +10,9 @@ with open("README.md", encoding="utf-8") as f:
 with open("requirements.txt") as f:
     install_requires = f.read().splitlines()
 
+OPTIONS = {
+    'argv_emulation': True,
+}
 
 setuptools.setup(
     name="SESMG",
@@ -20,7 +23,11 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
-    install_requires=install_requires,
+    #requires=install_requires,
+    app=["start_script.py"],
+    options={'py2app': OPTIONS},
+    setup_requires=["py2app"],
+    data_files=["program_files"],
     classifiers=[
         # complete classifier list:
         # http://pypi.python.org/pypi?%3Aaction=list_classifiers
