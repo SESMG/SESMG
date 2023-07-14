@@ -36,7 +36,7 @@ jobs:
           # python3 -c 'from distutils.sysconfig import get_config_var; print(get_config_var("LDLIBRARY"))'
       - name: Build
         run: |
-          python3 start_script.py py2app
+          python3 setup.py py2app
       - name: Prepare for deployment
         run: |
           ls -al
