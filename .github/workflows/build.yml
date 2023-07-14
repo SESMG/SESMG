@@ -44,6 +44,8 @@ jobs:
           echo "VER=$VER" >> $GITHUB_ENV
           mkdir dist_actions
           pip3 install dmgbuild
+          cd dist 
+          ls
           python3 -m dmgbuild -s start_script.py "SESMG" dist_actions/SESMG_${VER}.dmg
         #  ci/macos-deploy.sh
         #  ls -al dist_actions
