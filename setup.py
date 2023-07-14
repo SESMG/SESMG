@@ -2,6 +2,7 @@
 # -*- encoding: utf-8 -*-
 import setuptools
 import re
+import glob
 
 __version__ = "0.5.0"
 with open("README.md", encoding="utf-8") as f:
