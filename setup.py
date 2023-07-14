@@ -12,7 +12,7 @@ with open("requirements.txt") as f:
 
 OPTIONS = {
     'argv_emulation': True,
-    'includes': ["program_files"]
+    'includes': ["streamlit"]
 }
 
 setuptools.setup(
@@ -23,12 +23,12 @@ setuptools.setup(
     author_email="christian.klemm@fh-muenster.de",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    packages=setuptools.find_packages(),
+    #packages=setuptools.find_packages(),
     #requires=install_requires,
     app=["start_script.py"],
+    data_files=["program_files/*:program_files/*"]
     options={'py2app': OPTIONS},
-    setup_requires=install_requires,
-    install_requires=install_requires,
+    setup_requires=["py2app"],
     classifiers=[
         # complete classifier list:
         # http://pypi.python.org/pypi?%3Aaction=list_classifiers
