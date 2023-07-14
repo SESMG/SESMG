@@ -1,40 +1,18 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-import setuptools
-import re
-import glob
+from setuptools import setup
 
-__version__ = "0.5.0"
-with open("README.md", encoding="utf-8") as f:
-    long_description = f.read()
+APP=["start_script.py"]
 
-with open("requirements.txt") as f:
-    install_requires = f.read().splitlines()
+DATA_FILES = []
 
 OPTIONS = {
     'argv_emulation': True
 }
 
-setuptools.setup(
-    name="SESMG",
-    version=__version__,
-    license="GPL-3.0-only",
-    author="Christian Klemm",
-    author_email="christian.klemm@fh-muenster.de",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    #packages=setuptools.find_packages(),
-    #requires=install_requires,
-    app=["start_script.py"],
-    data_files=[('program_files', "program_files"),
-                ("lib", "lib")],
-    options={'py2app': OPTIONS},
-    setup_requires=["py2app"],
-    classifiers=[
-        # complete classifier list:
-        # http://pypi.python.org/pypi?%3Aaction=list_classifiers
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.9",
-    ],
-    extras_require={"dev": ["pytest", "sphinx", "sphinx_rtd_theme"]},
+setup(
+    app=APP,
+    data_files=DATA_FILES,
+    options={"py2app": OPTIONS},
+    setup_requires=["py2app"]
 )
