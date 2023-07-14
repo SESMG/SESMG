@@ -30,7 +30,7 @@ Combining functions of the underlying Open Energy Modeling Framework (oemof) [9]
 
 The SESMG enables the optimization of multi-sectoral and spatial synergies of entire urban energy systems with an adaptable number of buildings. Due to the multi-criteria results in the form of a Pareto front, transformation processes between status quo, financial cost minimized and ghg emission minimized target scenarios can be identified.
 
-The target group of the SESMG are (urban) energy system planners and researchers in the field of energy engineering. As it is required for the application of the SESMG and the interpretation of the results, users must have a certain basic knowledge of energy systems and energy engineering. Compared to other tools for the modeling and optimization of urban energy systems, as they have been listed by Klemm and Vennemann [@Klemm.Review], the SESMG provides several advantages regarding user-friendliness due to
+The target group of the SESMG are (urban) energy system planners and researchers in the field of energy engineering. As it is required for the application of the SESMG and the interpretation of the results, users must have a certain basic knowledge of energy systems and energy engineering. Compared to other tools for the modeling and optimization of urban energy systems the SESMG provides several advantages regarding user-friendliness due to
 
 * being available under an **open-source license**, 
 
@@ -181,7 +181,8 @@ References
 
 [10] Mancarella, P., Andersson, G., Pecas-Lopes, J. A., & Bell, K. R. W. (2016). Modelling of integrated multi-energy systems: Drivers, requirements, and opportunities. 2016 Power Systems Computation Conference (PSCC), 1–22. https://doi.org/10.1109/PSCC.2016. 7541031
 	
-[11] 107 Mavrotas, G. (2009). Effective implementation of the 𝜖-constraint method in Multi-Objective Mathematical Programming problems. Applied Mathematics and Computation, 213(2), 455–465. https://doi.org/10.1016/j.amc.2009.03.037
+[11] Mavrotas, G. (2009). Effective implementation of the 𝜖-constraint method in Multi-Objective Mathematical Programming problems. Applied Mathematics and Computation, 213(2), 455–465. https://doi.org/10.1016/j.amc.2009.03.037
+
 	
 .. [#FN1] This section was taken in slightly modified form from the following SESMG publication: Klemm, C., Becker, G., Budde, J., Tockloth, J. & Vennemann, P. The Spreadsheet Energy System Model Generator (SESMG): A tool for the optimization of urban energy systems. The Journal of Open Source Software (under review)(2023).
 
