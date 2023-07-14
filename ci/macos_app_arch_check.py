@@ -35,7 +35,7 @@ def analyze(bundle_path: str) -> None:
         raise RuntimeError("The analyzed bundle is NOT universal2!")
 
 def main():
-    analyze("Syncplay.app")
+    analyze("SESMG.app")
 
 if __name__ == "__main__":
     main()
