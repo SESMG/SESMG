@@ -2,7 +2,7 @@
 
 set -ex
 
-python3 ci/macos_app_cleaner.py
+#python3 ci/macos_app_cleaner.py
 python3 ci/macos_app_arch_check.py
 
 mkdir dist/SESMG.app/Contents/Resources/English.lproj
