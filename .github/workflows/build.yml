@@ -27,21 +27,22 @@ jobs:
           pyinstaller SESMG.spec
       - name: Prepare for deployment
         run: |
-          ls -al
           export VER="0.5.0"
           echo "VER=$VER" >> $GITHUB_ENV
-          cd dist
-          ls
-          cd ..
-          mkdir dist_actions
-          . ci/macos-deploy.sh
-          ls -al dist_actions
+          brew install create-dmg
+          mkdir -p dist/dmg
+          cp -r "dist/SESMG.app" dist/dmg
+          create-dmg \
+          --volname "SESMG" \
+          --hide-extension "SESMG.app" \
+          "dist/SESMG_${{ env.VER }}.dmg" \
+          "dist/dmg/"
           
       - name: Deploy
         uses: actions/upload-artifact@v2
         with:
           name: SESMG_${{ env.VER }}.dmg
           path: |
-            dist_actions/SESMG_${{ env.VER }}.dmg
+            dist/SESMG_${{ env.VER }}.dmg
 
  
