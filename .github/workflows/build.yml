@@ -26,11 +26,6 @@ jobs:
           pip3 install -r requirements.txt  
       - name: Build
         run: |
-          cd lib/python3.9/site-packages 
-          ls
-          cd ..
-          cd ..
-          cd ..
           pyinstaller start_script.spec
       - name: Prepare for deployment
         run: |
