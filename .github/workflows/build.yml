@@ -19,6 +19,8 @@ jobs:
           python3 --version
           which pip3
           pip3 --version
+          python3 -m venv .
+          . bin/activate
       - name: Install Python dependencies
         run: |
           pip3 install -U setuptools wheel pip pyinstaller
