@@ -26,6 +26,7 @@ jobs:
           pip3 install -r requirements.txt
       - name: Build
         run: |
+          ls
           pyinstaller start_script.spec
       - name: Prepare for deployment
         run: |
