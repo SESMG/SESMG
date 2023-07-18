@@ -60,7 +60,7 @@ Optimization task:
 	- To find out how to start a optimazation, click `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#main-application>`
 
 .. attention:: 
--  The electricity for a heat pump is purchased at a different price than the normal energy purchase. Therefore, two different buses are used.
+- The electricity for a heat pump is purchased at a different price than the normal energy purchase. Therefore, two different buses are used.
 - Simulation (Example 1a): Min. and max. investment capacity identical
 - Optimization (Example 1b): Interval between min. and max. investment capacity
 
@@ -108,7 +108,7 @@ Known data:
 +-------------------------------+---------------+
 | Data                          | Value         |
 +===============================+===============+
-| Electricity Demand            | 760,500 kWh   |
+| Electricity Demand            | 760 500 kWh   |
 +-------------------------------+---------------+
 | Price of Electricity Purchase | 0.15 €/kWh    |
 +-------------------------------+---------------+
@@ -182,7 +182,7 @@ A turbine from the manufacturer Vestas with a rotor diameter of 112 m and a hub 
 
 Optimization task: 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
--  Optimise the industrial company with new parameters
+- Optimise the industrial company with new parameters
 - Search for a suitable model in the database and enter it in the same way in the table. The required data can be found in the subpackage "`windpowerlib <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_".
 
 .. note::
