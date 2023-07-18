@@ -4,7 +4,7 @@ For the SESMG, a number of examples can be found in `this directory <https://git
 
 Example 1: Simulation and optimization of a single family house
 ---------
-The template for this exercise is this Excel sheet. You can find the completed Excel sheet with the solutions here.
+The template of the excel sheet for this exercise you can find `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v0.5.x-Examples/Task_1_template_model_definition.xlsx>`_. You can find the completed excel sheet with solutions `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v0.5.x-Examples/Task_1_solution_model_definition.xlsx>`_.
 
 Example 1a: Simulation of a single family house
 ~~~~~~~~~~
@@ -21,13 +21,16 @@ Known data:
 +---------------------+---------------+
 | PV System           | 5 kWp         |
 +---------------------+---------------+
+
 Simplification:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 - The PV system should be regarded as a new investment, as only a small portion of the depreciated to a small extent
 - Using the time series simplification Slicing A with 4 days (for hole example 1)
-.. image:: C:/Users/BenjaminBlankenstein/OneDrive/Dokumente/Praxisphase/Screenshots/time_series_simplifications.png
-   :width: 300px
-   :align: left
+   
+.. figure:: ../docs/images/manual/Examples/time_series_simplification.png
+   :width: 20 %
+   :alt: GUI
+   :align: center   
 
 Simulation task: 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -71,11 +74,11 @@ Pareto-optimization task:
 
 Example 2: Simulation and optimization of an industrial company
 ---------
-The template for this exercise is this Excel sheet. You can find the completed Excel sheet with the solutions here.
+The template of the excel sheet for this exercise you can find `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v0.5.x-Examples/Task_2_template_model_definition.xlsx>`_. You can find the completed excel sheet with solutions `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v0.5.x-Examples/Task_2_solution_model_definition.xlsx>`_.
 
 Example 2a: Simulation of an industrial company
 ~~~~~~~~~~
-Schmiede GmbH manufactures various metal goods. It operates a property with several production production halls. The systems have a high electricity demand. This follows the standard load profile "Gewerbe
+Schmiede GmbH manufactures various metal goods. It operates a property with several production halls. The systems have a high electricity demand. This follows the standard load profile "Gewerbe
 durchlaufend"(Commercial continuous) of the German Association of Energy and Water Industries (BDEW). The heat demand is negligible.
 
 Known data:
@@ -156,8 +159,7 @@ A turbine from the manufacturer Vestas with a rotor diameter of 112 m and a hub 
 Optimization task: 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 -  Optimise the industrial company with new parameters
-- Search for a suitable model in the database and enter it in the same way in the table. The required data can be found in the subpackage "windpowerlib" at:
-https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv
+- Search for a suitable model in the database and enter it in the same way in the table. The required data can be found in the subpackage "`windpowerlib <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_".
 
 .. note::
 	- The surplus electricity can be sold at a tariff of 0.057 €/kWh
@@ -174,8 +176,12 @@ Optimization task:
 - Create the vehicle fleet as another consumer (sink)
 
 .. note::
-	- You can find the normalized time series here. Insert it into the worksheet "timeseries". The column must have the same name as your sink with the addition .fix
+	- You can find the normalised time series `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v0.5.x-Examples/Task_2_vehicle_fleet_normalised_load_response.xlsx>`_. Insert it into the worksheet "timeseries". The column must have the same name as your sink with the addition .fix
 	- Since this is a normalized time series, the "nominal value" of the sink must be determined on the basis of the maximum possible charging capacity of the vehicle fleet
+
+Example 3: Regular Example of the documentation
+---------
+This example is the basis of the documentation. You can find the excel sheet `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v0.5.x-Examples/v0.5.0_model_definition_example.xlsx>`_.
 
 
 
