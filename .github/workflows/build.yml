@@ -63,6 +63,7 @@ jobs:
           which pip3
           pip3 --version
           python3 -m venv .
+          ls
           start /b Scripts\activate.bat
           pip3 install -U setuptools wheel pip pyinstaller
           pip3 install twisted[tls] appnope requests certifi
