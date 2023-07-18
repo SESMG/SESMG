@@ -128,7 +128,7 @@ exe = EXE(
 )
 app = BUNDLE(
     exe,
-    name='Test.app',
+    name='SESMG.app',
     icon=None,
     bundle_identifier=None,
 )
