@@ -71,6 +71,7 @@ jobs:
           pip3 install twisted[tls] appnope requests certifi
           pip3 install -r requirements.txt  
           python3 - m pyinstaller SESMG_windows.spec
+          ls
           cd dist
           ls
  
