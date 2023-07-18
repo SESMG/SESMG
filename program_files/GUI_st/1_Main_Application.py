@@ -9,30 +9,22 @@ from datetime import datetime
 from streamlit.components.v1 import html
 import streamlit as st
 
-
-# Setting new system path to be able to refer to parent directories
-parent = os.path.abspath('.')
-sys.path.insert(1, parent)
-
-from program_files.GUI_st.GUI_st_global_functions import \
-    clear_GUI_main_settings, safe_GUI_input_values, \
-    import_GUI_input_values_json, st_settings_global, run_SESMG, \
-    read_markdown_document, create_simplification_index, \
-    create_cluster_simplification_index, load_result_folder_list
+import program_files.GUI_st.GUI_st_global_functions as GUI_functions
 from program_files.preprocessing.pareto_optimization import run_pareto
 
+    
 # settings the initial streamlit page settings
-st_settings_global()
+GUI_functions.st_settings_global()
 
 # opening the input value dict, which will be saved as a json
 GUI_main_dict = {}
 
 # Import the saved GUI settings from the last session
-settings_cache_dict_reload = import_GUI_input_values_json(
+settings_cache_dict_reload = GUI_functions.import_GUI_input_values_json(
     os.path.dirname(__file__) + "/GUI_st_cache.json")
 
 # Import GUI help comments from the comment json and safe as a dict
-GUI_helper = import_GUI_input_values_json(
+GUI_helper = GUI_functions.import_GUI_input_values_json(
     os.path.dirname(__file__) + "/GUI_st_help_comments.json")
 
 
@@ -80,7 +72,7 @@ def main_start_page() -> None:
         Definition of the start page for the GUI with introducing texts.
     """
 
-    reduced_readme = read_markdown_document(
+    reduced_readme = GUI_functions.read_markdown_document(
         "README.md", f'{"docs/images/readme/*"}')
 
     # Display any remaining lines in the readme using the st.markdown() \
@@ -232,11 +224,12 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                  "input_timeseries_season"]]
 
             # transform to index values and safe in the GUI_main_dict
-            create_simplification_index(input_list=simpification_index_list,
-                                        input_output_dict=GUI_main_dict)
+            GUI_functions.create_simplification_index(
+                input_list=simpification_index_list,
+                input_output_dict=GUI_main_dict)
 
             # transform input_timeseries_cluster_index seperately
-            create_cluster_simplification_index(
+            GUI_functions.create_cluster_simplification_index(
                 input_value="input_timeseries_cluster_index",
                 input_output_dict=GUI_main_dict,
                 input_value_index="input_timeseries_cluster_index_index")
@@ -334,12 +327,12 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                  "input_premodeling_timeseries_season"]]
 
             # transform to index values and safe in the GUI_main_dict
-            create_simplification_index(
+            GUI_functions.create_simplification_index(
                 input_list=simpification_premodel_index_list,
                 input_output_dict=GUI_main_dict)
 
             # transform input_timeseries_cluster_index seperately
-            create_cluster_simplification_index(
+            GUI_functions.create_cluster_simplification_index(
                 input_value="input_premodeling_timeseries_cluster_index",
                 input_output_dict=GUI_main_dict,
                 input_value_index="input_premodeling_timeseries_cluster_index_index")
@@ -379,7 +372,8 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
 
                 # read sub folders in the result folder directory un wich \
                 # the preresults are stored
-                existing_result_foldernames_list = load_result_folder_list()
+                existing_result_foldernames_list = \
+                    GUI_functions.load_result_folder_list()
                 # create select box with the folder names which are in the \
                 # results folder
                 existing_result_folder = st.selectbox(
@@ -496,8 +490,8 @@ def main_clear_cache_sidebar() -> None:
     # Clear all GUI settings if clear latest result paths clicked
     if st.session_state["state_submitted_clear_cache"] == "done":
         # create and safe dict, set paths empty
-        clear_GUI_main_settings(json_file_path=os.path.dirname(__file__)
-                                + "/GUI_st_cache.json")
+        GUI_functions.clear_GUI_main_settings(
+            json_file_path=os.path.dirname(__file__) + "/GUI_st_cache.json")
         # reset session state for clear cache
         st.session_state["state_submitted_clear_cache"] = "not done"
         # rerun whole script to update GUI settings
@@ -532,7 +526,7 @@ def save_run_settings() -> None:
         session state.
     """
     # save GUI settings in result folder
-    safe_GUI_input_values(
+    GUI_functions.safe_GUI_input_values(
         input_values_dict=GUI_main_dict,
         json_file_path=st.session_state["state_result_path"]
         + "/GUI_st_run_settings.json")
@@ -578,9 +572,9 @@ if st.session_state["state_submitted_optimization"] == "done":
     elif model_definition_input_file != "":
 
         # safe the GUI_main_dice as a chache for the next session
-        safe_GUI_input_values(input_values_dict=GUI_main_dict,
-                              json_file_path=os.path.dirname(__file__)
-                              + "/GUI_st_cache.json")
+        GUI_functions.safe_GUI_input_values(
+            input_values_dict=GUI_main_dict,
+            json_file_path=os.path.dirname(__file__) + "/GUI_st_cache.json")
 
         # create spinner info text
         st.info(GUI_helper["main_info_spinner"], icon="ℹ️")
@@ -594,9 +588,10 @@ if st.session_state["state_submitted_optimization"] == "done":
             with st.spinner("Modeling in Progress..."):
 
                 # start model run
-                run_SESMG(GUI_main_dict=GUI_main_dict,
-                          model_definition=model_definition_input_file,
-                          save_path=GUI_main_dict["res_path"])
+                GUI_functions.run_SESMG(
+                    GUI_main_dict=GUI_main_dict,
+                    model_definition=model_definition_input_file,
+                    save_path=GUI_main_dict["res_path"])
 
                 # save GUI settings in result folder and reset session state
                 save_run_settings()
