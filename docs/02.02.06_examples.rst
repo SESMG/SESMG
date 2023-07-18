@@ -83,10 +83,12 @@ Pareto-optimization task:
    :alt: GUI
    :align: center 
 
-Pareto curve: 
+Pareto diagram: 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. figure:: ../docs/images/manual/Examples/pareto_curve.png
-   :width: 20 %
+This diagram is an example. Your Pareto curve should look similar.
+
+.. figure:: ../docs/images/manual/Examples/pareto_diagram.png
+   :width: 160 %
    :alt: GUI
    :align: center 
 
