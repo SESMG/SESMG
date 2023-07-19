@@ -29,6 +29,9 @@ jobs:
             Scripts/pip3 install pyinstaller
             Scripts/pip3 install twisted[tls] appnope requests certifi
             Scripts/pip3 install -r requirements.txt  
+            cd Lib 
+            ls 
+            cd ..
             Scripts/pyinstaller SESMG_windows.spec
             ls
             cd dist
