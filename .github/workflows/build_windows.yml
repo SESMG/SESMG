@@ -12,7 +12,7 @@ jobs:
         - name: Setup Python
           uses: actions/setup-python@v2
           with:
-            python-version: '3.9'
+            python-version: '3.9.13'
             architecture: x86
             
         - name: Install HDF5
@@ -28,7 +28,7 @@ jobs:
             ctest . -C Release
             cpack -C Release CPackConfig.cmake
             ls
-         #   start HDF5-1.14.1.2-win64.exe
+            start HDF5-1.14.1.2-win64.exe
 
         - name: Check Python install
           run: |
