@@ -44,8 +44,7 @@ jobs:
             ls
             cd ..
             Scripts/pip3 install --upgrade setuptools
-            Scripts/pip3 install tables==3.8 --no-binary all
-            Scripts/pip3 install -U wheel pyinstaller subprocess
+            Scripts/pip3 install pyinstaller
             Scripts/pip3 install twisted[tls] appnope requests certifi
             Scripts/pip3 install -r requirements.txt  
             Scripts/python3 -m pyinstaller SESMG_windows.spec
