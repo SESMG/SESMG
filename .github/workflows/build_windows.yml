@@ -15,6 +15,9 @@ jobs:
             python-version: '3.9.13'
             architecture: x86
             
+        - name: Add msbuild to PATH
+          uses: microsoft/setup-msbuild@v1.1
+            
        # - name: Install HDF5
        #   run: |
        #     curl -L -O https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_1-2.zip
