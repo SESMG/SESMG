@@ -24,8 +24,6 @@ jobs:
           pip3 install -U setuptools wheel pip pyinstaller
           pip3 install twisted[tls] appnope requests certifi
           pip3 install -r requirements.txt  
-          cd Lib
-          ls
           pyinstaller SESMG.spec
       - name: Prepare for deployment
         run: |
