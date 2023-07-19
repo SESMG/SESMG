@@ -15,20 +15,20 @@ jobs:
             python-version: '3.9.13'
             architecture: x86
             
-        - name: Install HDF5
-          run: |
-            curl -L -O https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_1-2.zip
-            tar -xf hdf5-1_14_1-2.zip
-            REN "D:/a/SESMG/SESMG/hdf5-hdf5-1_14_1-2" "D:/a/SESMG/SESMG/hdf5"
-            cd hdf5
-            mkdir build
-            cd build
-            cmake -G "Visual Studio 17 2022" -DBUILD_TESTING:BOOL=ON -DHDF5_BUILD_TOOLS:BOOL=ON ..
-            cmake --build . --config Release
-            ctest . -C Release
-            cpack -C Release CPackConfig.cmake
-            ls
-            start HDF5-1.14.1.2-win64.exe
+       # - name: Install HDF5
+       #   run: |
+       #     curl -L -O https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_1-2.zip
+       #     tar -xf hdf5-1_14_1-2.zip
+       #     REN "D:/a/SESMG/SESMG/hdf5-hdf5-1_14_1-2" "D:/a/SESMG/SESMG/hdf5"
+       #     cd hdf5
+       #     mkdir build
+       #     cd build
+       #     cmake -G "Visual Studio 17 2022" -DBUILD_TESTING:BOOL=ON -DHDF5_BUILD_TOOLS:BOOL=ON ..
+       #     cmake --build . --config Release
+       #     ctest . -C Release
+       #     cpack -C Release CPackConfig.cmake
+       #     ls
+       #     start HDF5-1.14.1.2-win64.exe
 
         - name: Check Python install
           run: |
