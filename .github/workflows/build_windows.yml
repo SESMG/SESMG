@@ -19,23 +19,21 @@ jobs:
 
         - name: Check Python install
           run: |
-            which python3
-            python3 --version
-            which pip3
-            pip3 --version
             python3 -m venv .
             Scripts/activate.bat
             Scripts/pip3 install --upgrade setuptools
             Scripts/pip3 install pyinstaller
             Scripts/pip3 install twisted[tls] appnope requests certifi
             Scripts/pip3 install -r requirements.txt  
-            cd Lib 
-            ls 
-            cd ..
             Scripts/pyinstaller SESMG_windows.spec
-            ls
-            cd dist
-            ls
+            
+        - name: Deploy
+          uses: actions/upload-artifact@v2
+          with:
+            name: SESMG.exe
+            path: |
+              dist/SESMG.exe
+
 
 
  
