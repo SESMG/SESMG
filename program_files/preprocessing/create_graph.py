@@ -11,6 +11,7 @@ import logging
 import os
 import graphviz
 import sys
+from pathlib import Path
 from oemof.network.network import Bus, Sink, Source, Transformer
 from oemof.solph.components import GenericStorage
 from dhnx.optimization.oemof_heatpipe import HeatPipeline
