@@ -63,7 +63,7 @@ class ESGraphRenderer:
         os.environ["PATH"] += os.pathsep + "C:\\Program Files (x86)\\Graphviz2.38\\bin"
         if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
             bundle_dir = Path(sys._MEIPASS)
-            os.environ["PATH"].append(str(bundle_dir) + "/graphviz")
+            sys.path.insert(1, str(bundle_dir) + "/graphviz")
 
         print(os.environ["PATH"])
 
