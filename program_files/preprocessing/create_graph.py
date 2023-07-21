@@ -10,6 +10,7 @@ SPDX-License-Identifier: MIT
 import logging
 import os
 import graphviz
+import sys
 from oemof.network.network import Bus, Sink, Source, Transformer
 from oemof.solph.components import GenericStorage
 from dhnx.optimization.oemof_heatpipe import HeatPipeline
