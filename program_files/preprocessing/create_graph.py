@@ -59,7 +59,9 @@ class ESGraphRenderer:
         """
         self.busses = []
         os.environ["PATH"] += os.pathsep + "C:\\Program Files (x86)\\Graphviz2.38\\bin"
-        os.environ["PATH"] += os.pathsep + "/graphviz"
+        os.environ["PATH"] += os.pathsep + "graphviz"
+
+        print(os.environ["PATH"])
 
         self.dot = graphviz.Digraph(format="png")
 
