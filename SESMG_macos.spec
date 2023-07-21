@@ -32,7 +32,6 @@ a = Analysis(
               ('/usr/local/Cellar/graphviz/*/lib/graphviz/libgvplugin_gd.6.dylib', 'graphviz'),
               ('/usr/local/Cellar/graphviz/*/lib/graphviz/libgvplugin_neato_layout.6.dylib', 'graphviz'),
               ('/usr/local/Cellar/graphviz/*/lib/graphviz/libgvplugin_quartz.6.dylib', 'graphviz'),
-              ('/usr/local/Cellar/graphviz/*/lib/graphviz/libgvplugin_visio.6.dylib', 'graphviz'),
               ('/usr/local/Cellar/graphviz/*/lib/graphviz/libgvplugin_webp.6.dylib', 'graphviz'),],
     datas=datas,
     hiddenimports=["program_files",
