@@ -24,7 +24,7 @@ jobs:
             pip3 install twisted[tls] appnope requests certifi
             pip3 install -r requirements.txt  
             pyinstaller SESMG_linux.spec
-            gem install fpm --user-install
+            sudo apt-get install ruby-dev build-essential && sudo gem i fpm -f
             mkdir -p package/opt
             mkdir -p package/usr/share/applications
             mkdir -p package/usr/share/icons/hicolor/scalable/apps
