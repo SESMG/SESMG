@@ -24,13 +24,16 @@ jobs:
             pip3 install twisted[tls] appnope requests certifi
             pip3 install -r requirements.txt  
             pyinstaller SESMG_linux.spec
+            cd dist 
+            ls 
+            cd ..
             
         - name: Deploy
           uses: actions/upload-artifact@v2
           with:
             name: SESMG.sh
             path: |
-              dist/SESMG.sh
+              dist/SESMG
 
 
 
