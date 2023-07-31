@@ -20,7 +20,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['program_files/start_script.py'],
+    ['../../program_files/start_script.py'],
     pathex=[],
     binaries=[],
     datas=datas,

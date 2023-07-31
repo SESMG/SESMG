@@ -15,7 +15,6 @@ jobs:
           sudo installer -pkg pythonInstaller.pkg -target /
       - name: Check Python install
         run: |
-          brew install graphviz
           python3 -m venv .
           . bin/activate
           pip3 install -U setuptools wheel pip pyinstaller

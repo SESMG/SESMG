@@ -9,7 +9,6 @@ datas = [('lib/Python3.9/site-packages/streamlit', 'streamlit'),
          ('lib/python3.9/site-packages/pvlib/data', 'pvlib/data'),
          ('lib/python3.9/site-packages/pyomo', 'pyomo'),
          ('lib/python3.9/site-packages/st_aggrid/frontend/build', 'st_aggrid/frontend/build'),
-         ('/usr/local/Cellar/graphviz/*/lib/graphviz/config6', 'graphviz'),
          ('results', 'results'),
          ('docs', 'docs'),
          ('README.md', '.'),
@@ -21,7 +20,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['program_files/start_script.py'],
+    ['../../program_files/start_script.py'],
     pathex=[],
     binaries=[('/usr/local/bin/dot', '.'),
               ('/usr/local/bin/nop', '.'),
