@@ -16,6 +16,9 @@ pip install pipwin
 pipwin install gdal
 pipwin install fiona
 
+mkdir %userprofile%\.streamlit
+move ..\..\.streamlit\credentials.toml %userprofile%\.streamlit\credentials.toml
+
 @echo #############################################
 @echo download and install required python packages
 @echo #############################################
