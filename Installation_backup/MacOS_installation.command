@@ -9,8 +9,8 @@ cd ..
 echo "Enter your Python Version here:"
 read PYVERSION
 
-python$PYVERSION -m venv .
-source bin/activate
+python$PYVERSION -m venv venv
+source venv/bin/activate
 
 echo ---------------------------------------------
 echo download and install required python packages
@@ -21,12 +21,12 @@ brew install geos
 brew install graphviz
 brew install postgresql
 
-../bin/pip3 install -r requirements.txt
+venv/bin/pip3 install -r requirements.txt
 
 echo ----------------------
 echo Installation completed
 echo Starting SESMG
 echo ----------------------
 
-../bin/python$PYVERSION -m streamlit run "program_files/GUI_st/1_Main_Application.py"
+venv/bin/python$PYVERSION -m streamlit run "program_files/GUI_st/1_Main_Application.py"
 osascript -e 'tell application "Terminal" to quit'
