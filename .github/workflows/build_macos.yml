@@ -38,5 +38,13 @@ jobs:
           name: SESMG.dmg
           path: |
             dist/SESMG.dmg
+            
+      - name: Push Project B
+        run: |
+           cd dist
+           git add SESMG.dmg
+           git config user.name deploy-action
+           git commit -am "Deployment of MacOS executable."
+           git push
 
  
