@@ -12,9 +12,6 @@ py -%PYVERSION% -m venv venv
 cd venv/Scripts/
 start /b activate.bat
 
-mkdir %userprofile%\.streamlit
-move ..\.streamlit\credentials.toml %userprofile%\.streamlit\credentials.toml
-
 pip install pipwin
 pipwin install gdal
 pipwin install fiona
@@ -23,7 +20,7 @@ pipwin install fiona
 @echo download and install required python packages
 @echo #############################################
 
-pip install -r ../requirements.txt
+pip install -r ../../requirements.txt
 
 @echo ######################
 @echo Installation completed
