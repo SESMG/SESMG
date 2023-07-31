@@ -25,7 +25,7 @@ jobs:
             Scripts/pip3 install pyinstaller
             Scripts/pip3 install twisted[tls] appnope requests certifi
             Scripts/pip3 install -r requirements.txt  
-            Scripts/pyinstaller SESMG_windows.spec
+            Scripts/pyinstaller .github/deploy/SESMG_windows.spec
             
         - name: Deploy
           uses: actions/upload-artifact@v2

@@ -25,13 +25,13 @@ jobs:
             pip3 install pyinstaller
             pip3 install twisted[tls] appnope requests certifi
             pip3 install -r requirements.txt  
-            pyinstaller SESMG_linux.spec
+            pyinstaller .github/deploy/SESMG_linux.spec
             sudo apt-get install ruby-dev build-essential && sudo gem i fpm -f
             mkdir -p package/opt
             mkdir -p package/usr/share/applications
             mkdir -p package/usr/share/icons/hicolor/scalable/apps
             cp -r dist/SESMG package/opt/SESMG
-            cp SESMG.desktop package/usr/share/applications
+            cp .github/deploy/SESMG.desktop package/usr/share/applications
             find package/opt/SESMG -type f -exec chmod 644 -- {} +
             find package/opt/SESMG -type d -exec chmod 755 -- {} +
             find package/usr/share -type f -exec chmod 644 -- {} +
