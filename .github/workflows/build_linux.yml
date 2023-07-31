@@ -24,7 +24,6 @@ jobs:
             pip3 install twisted[tls] appnope requests certifi
             pip3 install -r requirements.txt  
             pyinstaller SESMG_linux.spec
-            sudo apt install ruby
             gem install fpm --user-install
             mkdir -p package/opt
             mkdir -p package/usr/share/applications
