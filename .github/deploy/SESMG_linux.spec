@@ -1,17 +1,17 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import copy_metadata
 
-datas = [('lib/python3.9/site-packages/streamlit', 'streamlit'),
-         ('program_files', 'program_files'),
-         ('lib/python3.9/site-packages/dhnx/components.csv', 'dhnx'),
-         ('lib/python3.9/site-packages/dhnx/component_attrs', 'dhnx/component_attrs'),
-         ('lib/python3.9/site-packages/demandlib/bdew/bdew_data', 'demandlib/bdew/bdew_data'),
-         ('lib/python3.9/site-packages/pvlib/data', 'pvlib/data'),
-         ('lib/python3.9/site-packages/pyomo', 'pyomo'),
-         ('lib/python3.9/site-packages/st_aggrid/frontend/build', 'st_aggrid/frontend/build'),
-         ('results', 'results'),
-         ('docs', 'docs'),
-         ('README.md', '.'),
+datas = [('../../lib/python3.9/site-packages/streamlit', 'streamlit'),
+         ('../../program_files', 'program_files'),
+         ('../../lib/python3.9/site-packages/dhnx/components.csv', 'dhnx'),
+         ('../../lib/python3.9/site-packages/dhnx/component_attrs', 'dhnx/component_attrs'),
+         ('../../lib/python3.9/site-packages/demandlib/bdew/bdew_data', 'demandlib/bdew/bdew_data'),
+         ('../../lib/python3.9/site-packages/pvlib/data', 'pvlib/data'),
+         ('../../lib/python3.9/site-packages/pyomo', 'pyomo'),
+         ('../../lib/python3.9/site-packages/st_aggrid/frontend/build', 'st_aggrid/frontend/build'),
+         ('../../results', 'results'),
+         ('../../docs', 'docs'),
+         ('../../README.md', '.'),
          ]
 datas += copy_metadata('streamlit')
 
