@@ -1,4 +1,4 @@
-name: Build_Executables
+name: Build Executables
 on: 
   push:
     branches: test
