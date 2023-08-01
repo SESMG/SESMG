@@ -1,5 +1,7 @@
-name: Build Executables
-on: [push, pull_request]
+name: Build_Executables
+on: 
+  push:
+    branches: test
 
 jobs:
   macos:
