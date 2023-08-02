@@ -33,11 +33,11 @@ jobs:
       - name: get current version 
         run : |
           current_version=$(python3 setup.py --version)
-          echo "current_version=v$current_version" >> $GITHUB_ENV
+          echo "current_version=v$current_version" >> $GITHUB_ENV      
+
 
   macos:
     name: Build for macOS
-    if: env.current_release != env.current_version
     runs-on: macos-latest
     needs: release
     steps:
@@ -46,6 +46,9 @@ jobs:
           
       - name: Setup Python
         run: |
+          echo ${{ env.current_version }}
+          echo ${{ env.current_release }}
+          echo ${{ env.current_version != env.current_release }}
           curl https://www.python.org/ftp/python/3.9.13/python-3.9.13-macosx10.9.pkg --output pythonInstaller.pkg
           sudo installer -pkg pythonInstaller.pkg -target /
       - name: Create Executable
