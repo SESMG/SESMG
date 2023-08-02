@@ -21,9 +21,10 @@ jobs:
           fetch-depth: 0
           
       - name: get current version 
+        id: before_release_version
         run: |
           current_release=$(python3 setup.py --version)
-          echo "current_release=v$current_release" >> $GITHUB_ENV
+          echo "current_release=v$current_release" >> $GITHUB_OUTPUT
 
       - name: Python Semantic Release
         uses: relekang/python-semantic-release@master
@@ -31,9 +32,10 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: get current version 
+        id: after_release_version 
         run : |
           current_version=$(python3 setup.py --version)
-          echo "current_version=v$current_version" >> $GITHUB_ENV      
+          echo "current_version=v$current_version" >> $GITHUB_OUTPUT      
 
 
   macos:
@@ -46,9 +48,9 @@ jobs:
           
       - name: Setup Python
         run: |
-          echo ${{ env.current_version }}
-          echo ${{ env.current_release }}
-          echo ${{ env.current_version != env.current_release }}
+          echo ${{ steps.before_release_version.outputs.current_release }}
+          echo ${{ steps.after_release_version.outputs.current_version }}
+          echo ${{ steps.before_release_version.outputs.current_release != steps.after_release_version.outputs.current_version }}
           curl https://www.python.org/ftp/python/3.9.13/python-3.9.13-macosx10.9.pkg --output pythonInstaller.pkg
           sudo installer -pkg pythonInstaller.pkg -target /
       - name: Create Executable
