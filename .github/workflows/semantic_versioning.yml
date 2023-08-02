@@ -54,7 +54,7 @@ jobs:
         run: |
           echo $CURRENT_RELEASE
           echo $CURRENT_VERSION
-          echo ${{ CURRENT_RELEASE != CURRENT_VERSION }}
+          echo $CURRENT_RELEASE != $CURRENT_VERSION
           curl https://www.python.org/ftp/python/3.9.13/python-3.9.13-macosx10.9.pkg --output pythonInstaller.pkg
           sudo installer -pkg pythonInstaller.pkg -target /
       - name: Create Executable
