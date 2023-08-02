@@ -47,6 +47,9 @@ jobs:
          if ${{ env.CURRENT_RELEASE == env.CURRENT_VERSION }}; then
             echo "bool = ${{ env.CURRENT_RELEASE != env.CURRENT_VERSION }}" >> $GITHUB_OUTPUT
          fi
+         if ${{ env.CURRENT_RELEASE != env.CURRENT_VERSION }}; then
+            echo "bool = ${{ env.CURRENT_RELEASE != env.CURRENT_VERSION }}" >> $GITHUB_OUTPUT
+         fi
 
   macos:
     name: Build for macOS
