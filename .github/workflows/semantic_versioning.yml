@@ -47,9 +47,9 @@ jobs:
         id: new_release
         run:  |
          if ${{ env.CURRENT_RELEASE == env.CURRENT_VERSION }} == 'true' ; then
-            echo "bool = 'false'" >> $GITHUB_OUTPUT
+            echo "bool='false'" >> "$GITHUB_OUTPUT"
          else
-            echo "bool = 'true'" >> $GITHUB_OUTPUT
+            echo "bool='true'" >> "$GITHUB_OUTPUT"
          fi
 
   macos:
