@@ -39,7 +39,7 @@ jobs:
         id: after_release_version 
         run : |
           current_version=$(python3 setup.py --version)
-          echo "CURRENT_VERSION=v$current_version" >> $GITHUB_ENV
+          echo "CURRENT_VERSION=v0.0.0" >> $GITHUB_ENV
           
       - name: check rather a new verion was released       
         id: new_release
