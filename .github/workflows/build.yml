@@ -1,65 +1,14 @@
-name: Semantic Release
-
-on:
-  push:
-    branches:
-      - master
-      
-permissions: 
-  contents: read
+name: Build Executables
+on: push
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
-    concurrency: release
-    permissions: 
-      contents: write
-    outputs:
-      bool: ${{ steps.new_release.outputs.bool }}
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          
-      - name: get current version 
-        id: before_release_version
-        run: |
-          current_release=$(python3 setup.py --version)
-          echo "CURRENT_RELEASE=v$current_release" >> $GITHUB_ENV
-
-      - name: Python Semantic Release
-        uses: relekang/python-semantic-release@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          
-      - name: get current version 
-        id: after_release_version 
-        run : |
-          current_version=$(python3 setup.py --version)
-          echo "CURRENT_VERSION=v$current_version" >> $GITHUB_ENV
-          
-      - name: check rather a new verion was released       
-        id: new_release
-        run:  |
-         if ${{ env.CURRENT_RELEASE == env.CURRENT_VERSION }} == 'true' ; then
-            echo "bool='false'" >> "$GITHUB_OUTPUT"
-         else
-            echo "bool='true'" >> "$GITHUB_OUTPUT"
-         fi
-
   macos:
     name: Build for macOS
     runs-on: macos-latest
-    needs: release
-    if: ${{ needs.release.outputs.bool == 'true' }} 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-          
+
       - name: Setup Python
         run: |
           curl https://www.python.org/ftp/python/3.9.13/python-3.9.13-macosx10.9.pkg --output pythonInstaller.pkg
@@ -91,7 +40,7 @@ jobs:
   linux:
     name: Build on linux
     runs-on: ubuntu-20.04
-    needs: [release, macos]
+    needs: macos
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -135,7 +84,7 @@ jobs:
   windows:
       name: Build on windows
       runs-on: windows-latest
-      needs: [release, macos, linux]
+      needs: [macos, linux]
       steps:
         - name: Checkout
           uses: actions/checkout@v2
@@ -164,12 +113,11 @@ jobs:
             name: SESMG.exe
             path: |
               dist/SESMG.exe
-
             
   deploy:
-    name: Push builds 
+    name: Push builds
     runs-on: ubuntu-20.04
-    needs: [release, linux, macos, windows]
+    needs: [linux, macos, windows]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -197,7 +145,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./SESMG.dmg
           asset_name: SESMG.dmg
-          tag: ${{ env.VERSION }}
+          tag: SESMG_beta
           overwrite: true
       - name: Upload LINUX binaries to release
         uses: svenstaro/upload-release-action@v2
@@ -205,7 +153,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./SESMG.deb
           asset_name: SESMG.deb
-          tag: ${{ env.VERSION }}
+          tag: SESMG_beta
           overwrite: true
       - name: Upload WINDOWS binaries to release
         uses: svenstaro/upload-release-action@v2
@@ -213,8 +161,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./SESMG.exe
           asset_name: SESMG.exe
-          tag: ${{ env.VERSION }}
+          tag: SESMG_beta
           overwrite: true
 
  
-

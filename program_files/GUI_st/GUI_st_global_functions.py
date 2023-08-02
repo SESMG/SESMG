@@ -7,10 +7,21 @@ import json
 import glob
 import os
 import streamlit as st
+import sys
+from pathlib import Path
 
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main, sesmg_main_including_premodel
 
+
+def get_bundle_dir():
+    
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        bundle_dir = Path(sys._MEIPASS)
+    else:
+        bundle_dir = Path(__file__).parent.parent.parent
+
+    return bundle_dir
 
 def st_settings_global() -> None:
     """
@@ -246,7 +257,8 @@ def read_markdown_document(document_path: str, folder_path: str,
             ## SESMG Features & Releases based on the readme.md
     """
     # Open the README.md file and read all lines
-    with open(document_path, 'r', encoding="utf8") as file:
+    with open(str(get_bundle_dir()) + "/" + document_path, 'r',
+              encoding="utf8") as file:
         readme_line = file.readlines()
         # Create an empty buffer list to temporarily store the lines of \
         # the README.md file
@@ -254,7 +266,8 @@ def read_markdown_document(document_path: str, folder_path: str,
         # Use the glob library to search for all files in the Resources \
         # directory and extract the file names
         resource_files = [os.path.basename(x) for x
-                          in glob.glob(folder_path)]
+                          in glob.glob(str(get_bundle_dir())
+                                       + "/" + folder_path)]
 
     non_print = False
     # Iterate over each line of the README.md file
@@ -275,7 +288,8 @@ def read_markdown_document(document_path: str, folder_path: str,
                     st.markdown(''.join(readme_buffer[:-1]))
                     # Display the image from the Resources folder using
                     # the image name from the resource_files list
-                    st.image(folder_path[:-1] + f'/{image}')
+                    st.image(str(get_bundle_dir())
+                             + "/" +folder_path[:-1] + f'{image}')
                     # Clear the buffer list
                     readme_buffer.clear()
 
@@ -336,10 +350,11 @@ def load_result_folder_list() -> list:
         :return: - **existing_result_foldernames_list** (list) - list \
             of exsting folder names.
     """
-
+        
     # read sub folders in the result folder directory
     existing_result_foldernames_list = [
-        os.path.basename(x) for x in glob.glob(f'{"results/*"}')]
+        os.path.basename(x) for x in glob.glob(str(get_bundle_dir())
+                                               + f'{"/results/*"}')]
     # sort list
     existing_result_foldernames_list.sort()
 

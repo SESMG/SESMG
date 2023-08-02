@@ -10,6 +10,8 @@ SPDX-License-Identifier: MIT
 import logging
 import os
 import graphviz
+import sys
+from pathlib import Path
 from oemof.network.network import Bus, Sink, Source, Transformer
 from oemof.solph.components import GenericStorage
 from dhnx.optimization.oemof_heatpipe import HeatPipeline
@@ -59,6 +61,11 @@ class ESGraphRenderer:
         """
         self.busses = []
         os.environ["PATH"] += os.pathsep + "C:\\Program Files (x86)\\Graphviz2.38\\bin"
+        if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+            bundle_dir = Path(sys._MEIPASS)
+            sys.path.insert(1, str(bundle_dir) + "/graphviz")
+
+        print(os.environ["PATH"])
 
         self.dot = graphviz.Digraph(format="png")
 
