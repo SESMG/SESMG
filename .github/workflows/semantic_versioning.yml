@@ -54,13 +54,13 @@ jobs:
     name: Build for macOS
     runs-on: macos-latest
     needs: release
-    if: ${{ needs.release.new_release.outputs.bool  == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
           
       - name: Setup Python
         run: |
+          echo needs.release.new_release.outputs.bool
           curl https://www.python.org/ftp/python/3.9.13/python-3.9.13-macosx10.9.pkg --output pythonInstaller.pkg
           sudo installer -pkg pythonInstaller.pkg -target /
       - name: Create Executable
