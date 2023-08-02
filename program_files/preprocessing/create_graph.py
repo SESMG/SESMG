@@ -61,11 +61,8 @@ class ESGraphRenderer:
         """
         self.busses = []
         os.environ["PATH"] += os.pathsep + "C:\\Program Files (x86)\\Graphviz2.38\\bin"
-        if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-            bundle_dir = Path(sys._MEIPASS)
-            sys.path.insert(1, str(bundle_dir) + "/graphviz")
-
-        print(os.environ["PATH"])
+        os.environ["PATH"] += os.pathsep + "/usr/local/bin/dot"
+        os.environ["PATH"] += os.pathsep + "/opt/anaconda3/bin/dot"
 
         self.dot = graphviz.Digraph(format="png")
 

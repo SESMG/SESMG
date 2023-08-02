@@ -13,7 +13,8 @@ import pandas as pd
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main
 from program_files.GUI_st.GUI_st_global_functions import \
-    st_settings_global, read_markdown_document, import_GUI_input_values_json
+    st_settings_global, read_markdown_document, import_GUI_input_values_json, \
+    get_bundle_dir
 
 # Import GUI help comments from the comment json and safe as a dict
 GUI_helper = import_GUI_input_values_json(
@@ -313,6 +314,7 @@ def demo_start_page() -> None:
     """
         Start page text, images and tables for the demo tool.
     """
+    
 
     # import markdown text from GUI files
     imported_markdown = read_markdown_document(
@@ -323,7 +325,8 @@ def demo_start_page() -> None:
     st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
 
     # upload demo tool graph image
-    img = "docs/images/manual/DemoTool/demo_system_graph.png"
+    img = str(get_bundle_dir()) \
+          + "/docs/images/manual/DemoTool/demo_system_graph.png"
     st.image(img, caption="", width=500)
 
     # import markdown tables from GUI files
