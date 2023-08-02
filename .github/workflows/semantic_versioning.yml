@@ -29,26 +29,26 @@ jobs:
         uses: relekang/python-semantic-release@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: get current version 
+        run : |
+          current_version=$(python3 setup.py --version)
+          echo "current_version=v$current_version" >> $GITHUB_ENV
 
   macos:
     name: Build for macOS
+    if: ${{ env.current_release != env.current_version }}
     runs-on: macos-latest
     needs: release
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: get current version 
-        run : |
-          current_version=$(python3 setup.py --version)
-          echo "current_version=v$current_version" >> $GITHUB_ENV
           
       - name: Setup Python
-        if: ${{ env.current_release != env.current_version }}
         run: |
           curl https://www.python.org/ftp/python/3.9.13/python-3.9.13-macosx10.9.pkg --output pythonInstaller.pkg
           sudo installer -pkg pythonInstaller.pkg -target /
       - name: Create Executable
-        if: ${{ env.current_release != env.current_version }}
         run: |
           python3 -m venv .
           . bin/activate
@@ -57,7 +57,6 @@ jobs:
           pip3 install -r requirements.txt  
           pyinstaller .github/deploy/SESMG_macos.spec
       - name: Prepare for deployment
-        if: ${{ env.current_release != env.current_version }}
         run: |
           brew install create-dmg
           mkdir -p dist/dmg
@@ -68,7 +67,6 @@ jobs:
           "dist/SESMG.dmg" \
           "dist/dmg/"
       - name: Upload Artifact
-        if: ${{ env.current_release != env.current_version }}
         uses: actions/upload-artifact@v3
         with:
           name: SESMG.dmg
@@ -76,21 +74,19 @@ jobs:
           
   linux:
     name: Build on linux
+    if: ${{ env.current_release != env.current_version }}
     runs-on: ubuntu-20.04
     needs: [release, macos]
     steps:
       - name: Checkout
-        if: ${{ env.current_release != env.current_version }}
         uses: actions/checkout@v2
 
       - name: Setup Python
-        if: ${{ env.current_release != env.current_version }}
         uses: actions/setup-python@v4
         with:
           python-version: '3.9.13'
 
       - name: Create Executable
-        if: ${{ env.current_release != env.current_version }}
         run: |
           pip3 install virtualenv
           python3 -m virtualenv .
@@ -103,7 +99,6 @@ jobs:
           pip3 install -r requirements.txt  
           pyinstaller .github/deploy/SESMG_linux.spec
       - name: Prepare for deployment
-        if: ${{ env.current_release != env.current_version }}
         run: |
           sudo apt-get install ruby-dev build-essential && sudo gem i fpm -f
           mkdir -p package/opt
@@ -117,7 +112,6 @@ jobs:
           chmod +x package/opt/SESMG/SESMG
           fpm -C package -s dir -t deb -n "SESMG" -v 0.1.0 -p dist/SESMG.deb
       - name: Upload Artifact
-        if: ${{ env.current_release != env.current_version }}
         uses: actions/upload-artifact@v3
         with:
           name: SESMG.deb
@@ -125,25 +119,22 @@ jobs:
   
   windows:
       name: Build on windows
+      if: ${{ env.current_release != env.current_version }}
       runs-on: windows-latest
       needs: [release, macos, linux]
       steps:
         - name: Checkout
-          if: ${{ env.current_release != env.current_version }}
           uses: actions/checkout@v2
 
         - name: Setup Python
-          if: ${{ env.current_release != env.current_version }}
           uses: actions/setup-python@v4
           with:
             python-version: '3.9.13'
             
         - name: Add msbuild to PATH
-          if: ${{ env.current_release != env.current_version }}
           uses: microsoft/setup-msbuild@v1.1
 
         - name: Create Executable
-          if: ${{ env.current_release != env.current_version }}
           run: |
             python3 -m venv .
             Scripts/activate.bat
@@ -154,7 +145,6 @@ jobs:
             Scripts/pyinstaller .github/deploy/SESMG_windows.spec
             
         - name: Upload Artifact
-          if: ${{ env.current_release != env.current_version }}
           uses: actions/upload-artifact@v2
           with:
             name: SESMG.exe
@@ -163,37 +153,32 @@ jobs:
 
             
   deploy:
-    name: Push builds
+    name: Push builds 
+    if: ${{ env.current_release != env.current_version }}
     runs-on: ubuntu-20.04
     needs: [release, linux, macos, windows]
     steps:
       - name: Checkout
-        if: ${{ env.current_release != env.current_version }}
         uses: actions/checkout@v2
       - name: Download MAC artifact
-        if: ${{ env.current_release != env.current_version }}
         uses: actions/download-artifact@v3
         with:
           name: SESMG.dmg
       - name: Download LINUX artifact
-        if: ${{ env.current_release != env.current_version }}
         uses: actions/download-artifact@v3
         with:
           name: SESMG.deb
       - name: Download WINDOWS artifact
-        if: ${{ env.current_release != env.current_version }}
         uses: actions/download-artifact@v3
         with:
           name: SESMG.exe
       
       - name: GET VERSION 
-        if: ${{ env.current_release != env.current_version }}
         run: |
           VERSION=$(python setup.py --version)
           echo "VERSION=v$VERSION" >> $GITHUB_ENV
 
       - name: Upload MAC binaries to release
-        if: ${{ env.current_release != env.current_version }}
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -202,7 +187,6 @@ jobs:
           tag: ${{ env.VERSION }}
           overwrite: true
       - name: Upload LINUX binaries to release
-        if: ${{ env.current_release != env.current_version }}
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -211,7 +195,6 @@ jobs:
           tag: ${{ env.VERSION }}
           overwrite: true
       - name: Upload WINDOWS binaries to release
-        if: ${{ env.current_release != env.current_version }}
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
