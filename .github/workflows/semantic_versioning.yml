@@ -44,7 +44,7 @@ jobs:
       - name: check rather a new verion was released       
         id: new_release
         run:  |
-         if ${{ env.CURRENT_RELEASE == env.CURRENT_VERSION }} ; then
+         if ${{ env.CURRENT_RELEASE == env.CURRENT_VERSION }} == 'true' ; then
             echo "bool = 'false'" >> $GITHUB_OUTPUT
          else
             echo "bool = 'true'" >> $GITHUB_OUTPUT
