@@ -148,7 +148,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./SESMG.dmg
           asset_name: SESMG.dmg
-          tag: ${{ env.VERSION }}
+          tag: executables_beta
           overwrite: true
       - name: Upload LINUX binaries to release
         uses: svenstaro/upload-release-action@v2
@@ -156,7 +156,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./SESMG.deb
           asset_name: SESMG.deb
-          tag: ${{ env.VERSION }}
+          tag: executables_beta
           overwrite: true
       - name: Upload WINDOWS binaries to release
         uses: svenstaro/upload-release-action@v2
@@ -164,7 +164,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./SESMG.exe
           asset_name: SESMG.exe
-          tag: ${{ env.VERSION }}
+          tag: executables_beta
           overwrite: true
 
  
