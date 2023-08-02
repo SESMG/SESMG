@@ -37,7 +37,7 @@ jobs:
 
   macos:
     name: Build for macOS
-    if: ${{ env.current_release != env.current_version }}
+    if: env.current_release != env.current_version
     runs-on: macos-latest
     needs: release
     steps:
