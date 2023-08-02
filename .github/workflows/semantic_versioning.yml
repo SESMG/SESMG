@@ -7,8 +7,8 @@ on:
       - test
       
 env:
-  CURRENT_VERSION: "0.0.0"
-  CURRENT_RELEASE: "0.0.0"
+  CURRENT_VERSION: "v0.0.0"
+  CURRENT_RELEASE: "v0.0.0"
       
 permissions: 
   contents: read
@@ -28,7 +28,7 @@ jobs:
         id: before_release_version
         run: |
           current_release=$(python3 setup.py --version)
-          echo "CURRENT_RELEASE::v$current_release" >> $GITHUB_ENV
+          echo "CURRENT_RELEASE=v$current_release" >> $GITHUB_ENV
 
       - name: Python Semantic Release
         uses: relekang/python-semantic-release@master
@@ -39,8 +39,7 @@ jobs:
         id: after_release_version 
         run : |
           current_version=$(python3 setup.py --version)
-          echo "::set-env name=CURRENT_VERSION::v$current_version"
-
+          echo "CURRENT_VERSION=v$current_version" >> $GITHUB_ENV
 
   macos:
     name: Build for macOS
