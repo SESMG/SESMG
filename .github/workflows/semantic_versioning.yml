@@ -42,13 +42,15 @@ jobs:
           echo "CURRENT_VERSION=v$current_version" >> $GITHUB_ENV
           
       - name: check rather a new verion was released       
+        id: new_release
         run:  |
          if ${{ env.CURRENT_RELEASE == env.CURRENT_VERSION }}; then
-            exit 0
+            echo "bool = ${{ env.CURRENT_RELEASE != env.CURRENT_VERSION }}" >> $GITHUB_OUTPUT
          fi
 
   macos:
     name: Build for macOS
+    if: ${{ needs.release.new_release.outputs.bool == 'true' }}
     runs-on: macos-latest
     needs: release
     steps:
