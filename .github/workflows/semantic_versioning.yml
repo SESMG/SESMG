@@ -52,7 +52,7 @@ jobs:
 
   macos:
     name: Build for macOS
-    if: ${{ needs.release.new_release.outputs.bool == 'true' }}
+    if: ${{ needs.release.new_release.outputs.bool }} == 'true'
     runs-on: macos-latest
     needs: release
     steps:
