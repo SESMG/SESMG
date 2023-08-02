@@ -77,7 +77,6 @@ jobs:
           
   linux:
     name: Build on linux
-    if: env.current_release != env.current_version
     runs-on: ubuntu-20.04
     needs: [release, macos]
     steps:
@@ -122,7 +121,6 @@ jobs:
   
   windows:
       name: Build on windows
-      if: env.current_release != env.current_version
       runs-on: windows-latest
       needs: [release, macos, linux]
       steps:
@@ -157,7 +155,6 @@ jobs:
             
   deploy:
     name: Push builds 
-    if: env.current_release != env.current_version
     runs-on: ubuntu-20.04
     needs: [release, linux, macos, windows]
     steps:
