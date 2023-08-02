@@ -1,7 +1,5 @@
 name: Build Executables
-on: 
-  push:
-    branches: test
+on: push
 
 jobs:
   macos:
