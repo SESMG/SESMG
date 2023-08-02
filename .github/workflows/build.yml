@@ -136,6 +136,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: SESMG.exe
+      
+      - name: GET VERSION 
+        run: |
+          VERSION=$(python setup.py --version)
+          echo "VERSION=v$VERSION" >> $GITHUB_ENV
 
       - name: Upload MAC binaries to release
         uses: svenstaro/upload-release-action@v2
@@ -143,7 +148,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./SESMG.dmg
           asset_name: SESMG.dmg
-          tag: v0.0.1
+          tag: ${{ env.VERSION }}
           overwrite: true
       - name: Upload LINUX binaries to release
         uses: svenstaro/upload-release-action@v2
@@ -151,7 +156,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./SESMG.deb
           asset_name: SESMG.deb
-          tag: v0.0.1
+          tag: ${{ env.VERSION }}
           overwrite: true
       - name: Upload WINDOWS binaries to release
         uses: svenstaro/upload-release-action@v2
@@ -159,7 +164,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./SESMG.exe
           asset_name: SESMG.exe
-          tag: v0.0.1
+          tag: ${{ env.VERSION }}
           overwrite: true
 
  
