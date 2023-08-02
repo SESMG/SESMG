@@ -22,7 +22,7 @@ jobs:
           
       - name: get current version 
         run: |
-          current_release=$(python setup.py --version)
+          current_release=$(python3 setup.py --version)
           echo "current_release=v$current_release" >> $GITHUB_ENV
 
       - name: Python Semantic Release
@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@v2
       - name: get current version 
         run : |
-          current_version=$(python setup.py --version)
+          current_version=$(python3 setup.py --version)
           echo "current_version=v$current_version" >> $GITHUB_ENV
           
       - name: Setup Python
