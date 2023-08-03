@@ -339,7 +339,7 @@ def demo_start_page() -> None:
 
     # upload dh image
     img = str(get_bundle_dir()) \
-          + "docs/images/manual/DemoTool/district_heating_network.png"
+          + "/docs/images/manual/DemoTool/district_heating_network.png"
     st.image(img, caption="", width=500)
 
 
