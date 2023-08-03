@@ -10,40 +10,30 @@ from streamlit.components.v1 import html
 import streamlit as st
 
 
-try:
-    # Setting new system path to be able to refer to parent directories
-    parent = os.path.abspath('.')
-    sys.path.insert(1, parent)
-    
-    from program_files.GUI_st.GUI_st_global_functions import \
-        clear_GUI_main_settings, safe_GUI_input_values, \
-        import_GUI_input_values_json, st_settings_global, run_SESMG, \
-        read_markdown_document, create_simplification_index, \
-        create_cluster_simplification_index, load_result_folder_list
-    from program_files.preprocessing.pareto_optimization import run_pareto
-    
-    # settings the initial streamlit page settings
-    st_settings_global()
-    
-    # opening the input value dict, which will be saved as a json
-    GUI_main_dict = {}
-    
-    # Import the saved GUI settings from the last session
-    settings_cache_dict_reload = import_GUI_input_values_json(
-        os.path.dirname(__file__) + "/GUI_st_cache.json")
-    
-    # Import GUI help comments from the comment json and safe as a dict
-    GUI_helper = import_GUI_input_values_json(
-        os.path.dirname(__file__) + "/GUI_st_help_comments.json")
-    
-except Exception as e:
-    # Show an error message with additional information
-    st.error("An error occurred.")
-    st.exception(e)  # This will display the exception along with the traceback
-    # You can also add more information to the error message
-    st.write("Additional information about the error.")
+# Setting new system path to be able to refer to parent directories
+parent = os.path.abspath('.')
+sys.path.insert(1, parent)
 
+from program_files.GUI_st.GUI_st_global_functions import \
+    clear_GUI_main_settings, safe_GUI_input_values, \
+    import_GUI_input_values_json, st_settings_global, run_SESMG, \
+    read_markdown_document, create_simplification_index, \
+    create_cluster_simplification_index, load_result_folder_list
+from program_files.preprocessing.pareto_optimization import run_pareto
 
+# settings the initial streamlit page settings
+st_settings_global()
+
+# opening the input value dict, which will be saved as a json
+GUI_main_dict = {}
+
+# Import the saved GUI settings from the last session
+settings_cache_dict_reload = import_GUI_input_values_json(
+    os.path.dirname(__file__) + "/GUI_st_cache.json")
+
+# Import GUI help comments from the comment json and safe as a dict
+GUI_helper = import_GUI_input_values_json(
+    os.path.dirname(__file__) + "/GUI_st_help_comments.json")
 
 
 def nav_page(page_name, timeout_secs=3) -> None:
