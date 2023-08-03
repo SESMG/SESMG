@@ -359,3 +359,21 @@ def load_result_folder_list() -> list:
     existing_result_foldernames_list.sort()
 
     return existing_result_foldernames_list
+
+
+def check_for_dependencies():
+    """
+        Checks rather Graphviz, CBC or gurobi are installed.
+    """
+    
+    from pathlib import Path
+    # graphviz paths
+    dot_paths = ["C:\\Program Files (x86)\\Graphviz2.38\\bin",
+                 "/usr/local/bin",
+                 "/opt/anaconda3/bin"]
+    dot_bool = False
+    for path in dot_paths:
+        if Path(path).is_dir():
+            dot_bool = True
+    if not dot_bool:
+        raise ImportError("Graphviz is not installed on your device.")
