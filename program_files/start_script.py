@@ -1,3 +1,4 @@
+from program_files.GUI_st import GUI_st_global_functions
 import sys
 from streamlit.web import cli as stcli
 
