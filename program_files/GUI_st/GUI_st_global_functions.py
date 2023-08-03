@@ -369,11 +369,27 @@ def check_for_dependencies():
     from pathlib import Path
     # graphviz paths
     dot_paths = ["C:\\Program Files (x86)\\Graphviz2.38\\bin",
-                 "/usr/local/bin",
-                 "/opt/anaconda3/bin"]
+                 "/usr/local/bin/dot",
+                 "/opt/anaconda3/bin/dot"]
     dot_bool = False
     for path in dot_paths:
         if Path(path).is_dir():
             dot_bool = True
+            if "dot" in path:
+                path = path[:-4]
+            os.environ["PATH"] += os.pathsep + path
     if not dot_bool:
         raise ImportError("Graphviz is not installed on your device.")
+    
+    # cbc solver paths
+    cbc_paths = ["/usr/local/bin/cbc",
+                 "/opt/homebrew/bin/cbc"]
+    cbc_bool = False
+    for path in cbc_paths:
+        if Path(path).is_dir():
+            cbc_bool = True
+            if "cbc" in path:
+                path = path[:-4]
+            os.environ["PATH"] += os.pathsep + path
+    if not cbc_bool:
+        raise ImportError("CBC Solver is not installed on your device.")

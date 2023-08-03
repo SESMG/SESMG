@@ -58,9 +58,6 @@ class ESGraphRenderer:
             :type legend: bool
         """
         self.busses = []
-        os.environ["PATH"] += os.pathsep + "C:\\Program Files (x86)\\Graphviz2.38\\bin"
-        os.environ["PATH"] += os.pathsep + "/usr/local/bin"
-        os.environ["PATH"] += os.pathsep + "/opt/anaconda3/bin"
 
         self.dot = graphviz.Digraph(format="png")
 
