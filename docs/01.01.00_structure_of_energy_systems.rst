@@ -321,7 +321,7 @@ of heat standard load profiles. The following location classes may be considered
 +-----------+-------------------------------------------------------------------------------+
 | 3         | Berlin , Hessen, Lower Saxony, North Rhine-Westphalia                         |
 +-----------+-------------------------------------------------------------------------------+
-| 4         | Baden-Württemberg, Rhineland-Paatinate, Schleswig-Holstein, Saxony            |
+| 4         | Baden-Württemberg, Rhineland-Palatinate, Schleswig-Holstein, Saxony            |
 +-----------+-------------------------------------------------------------------------------+
 | 5         | Brandenburg, Bavaria, Mecklenburg-Western Pomerania, Saxony-Anhalt, Thuringia |
 +-----------+-------------------------------------------------------------------------------+
