@@ -344,3 +344,17 @@ def load_result_folder_list() -> list:
     existing_result_foldernames_list.sort()
 
     return existing_result_foldernames_list
+
+
+
+def show_error_with_link() -> None:
+    """
+        Show an error message with additional information and defining a
+        function that adds the link to the troubleshooting website to the
+        error message.
+    """
+    error_message = r"Check out Troubleshooting, maybe you can find an answer there: "
+    link = r"https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/03.00.00_trouble_shooting.html"
+    link_text = "Troubleshooting Guide"
+    error_message_with_link = f"{error_message}[{link_text}]({link})"
+    st.markdown(error_message_with_link)

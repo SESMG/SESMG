@@ -18,8 +18,10 @@ from program_files.GUI_st.GUI_st_global_functions import \
     clear_GUI_main_settings, safe_GUI_input_values, \
     import_GUI_input_values_json, st_settings_global, run_SESMG, \
     read_markdown_document, create_simplification_index, \
-    create_cluster_simplification_index, load_result_folder_list
+    create_cluster_simplification_index, load_result_folder_list, \
+    show_error_with_link
 from program_files.preprocessing.pareto_optimization import run_pareto
+
 
 # settings the initial streamlit page settings
 st_settings_global()
@@ -34,6 +36,8 @@ settings_cache_dict_reload = import_GUI_input_values_json(
 # Import GUI help comments from the comment json and safe as a dict
 GUI_helper = import_GUI_input_values_json(
     os.path.dirname(__file__) + "/GUI_st_help_comments.json")
+
+
 
 
 def nav_page(page_name, timeout_secs=3) -> None:
@@ -558,71 +562,79 @@ def change_state_submitted_clear_cache() -> None:
     st.session_state["state_submitted_optimization"] = "not done"
 
 
-# staring sidebar elements as standing elements
-model_definition_input_file = main_input_sidebar()
-main_clear_cache_sidebar()
+try:
+    # staring sidebar elements as standing elements
+    model_definition_input_file = main_input_sidebar()
+    main_clear_cache_sidebar()
 
-# load the start page if modell run is not submitted
-if st.session_state["state_submitted_optimization"] == "not done":
-    main_start_page()
+    # load the start page if modell run is not submitted
+    if st.session_state["state_submitted_optimization"] == "not done":
+        main_start_page()
 
-# starting process is modell run is  submitted
-if st.session_state["state_submitted_optimization"] == "done":
+    # starting process is modell run is  submitted
+    if st.session_state["state_submitted_optimization"] == "done":
 
-    # raise error if run is started without uploading a model definition
-    if not model_definition_input_file:
+        # raise error if run is started without uploading a model definition
+        if not model_definition_input_file:
 
-        # load error messsage
-        main_error_definition()
+            # load error messsage
+            main_error_definition()
 
-    elif model_definition_input_file != "":
+        elif model_definition_input_file != "":
 
-        # safe the GUI_main_dice as a chache for the next session
-        safe_GUI_input_values(input_values_dict=GUI_main_dict,
-                              json_file_path=os.path.dirname(__file__)
-                              + "/GUI_st_cache.json")
+            # safe the GUI_main_dice as a chache for the next session
+            safe_GUI_input_values(input_values_dict=GUI_main_dict,
+                                  json_file_path=os.path.dirname(__file__)
+                                                 + "/GUI_st_cache.json")
 
-        # create spinner info text
-        st.info(GUI_helper["main_info_spinner"], icon="ℹ️")
+            # create spinner info text
+            st.info(GUI_helper["main_info_spinner"], icon="ℹ️")
 
-        # Starting the model run
-        if len(GUI_main_dict["input_pareto_points"]) == 0:
+            # Starting the model run
+            if len(GUI_main_dict["input_pareto_points"]) == 0:
 
-            # function to create the result pasths and store session state
-            create_result_paths()
+                # function to create the result pasths and store session state
+                create_result_paths()
 
-            with st.spinner("Modeling in Progress..."):
+                with st.spinner("Modeling in Progress..."):
 
-                # start model run
-                run_SESMG(GUI_main_dict=GUI_main_dict,
-                          model_definition=model_definition_input_file,
-                          save_path=GUI_main_dict["res_path"])
+                    # start model run
+                    run_SESMG(GUI_main_dict=GUI_main_dict,
+                              model_definition=model_definition_input_file,
+                              save_path=GUI_main_dict["res_path"])
 
-                # save GUI settings in result folder and reset session state
-                save_run_settings()
+                    # save GUI settings in result folder and reset session state
+                    save_run_settings()
 
-            # switch page after the model run completed
-            nav_page(page_name="Result_Processing", timeout_secs=3)
+                # switch page after the model run completed
+                nav_page(page_name="Result_Processing", timeout_secs=3)
 
-        # Starting a pareto modeul rum
-        elif len(GUI_main_dict["input_pareto_points"]) != 0:
+            # Starting a pareto modeul rum
+            elif len(GUI_main_dict["input_pareto_points"]) != 0:
 
-            with st.spinner("Modeling in Progress..."):
+                with st.spinner("Modeling in Progress..."):
 
-                # run_pareto retuns res path
-                GUI_main_dict["res_path"] = \
-                    run_pareto(
-                        limits=[i / 100 for i in
-                                GUI_main_dict["input_pareto_points"]],
-                        model_definition=model_definition_input_file,
-                        GUI_main_dict=GUI_main_dict)
+                    # run_pareto retuns res path
+                    GUI_main_dict["res_path"] = \
+                        run_pareto(
+                            limits=[i / 100 for i in
+                                    GUI_main_dict["input_pareto_points"]],
+                            model_definition=model_definition_input_file,
+                            GUI_main_dict=GUI_main_dict)
 
-                # safe path as session state for the result processing page
-                st.session_state["state_result_path"] = \
-                    GUI_main_dict["res_path"]
+                    # safe path as session state for the result processing page
+                    st.session_state["state_result_path"] = \
+                        GUI_main_dict["res_path"]
 
-                # save GUI settings in result folder and reset session state
-                save_run_settings()
+                    # save GUI settings in result folder and reset session state
+                    save_run_settings()
 
-            # switch page after the model run completed
-            nav_page(page_name="Result_Processing", timeout_secs=3)
+                # switch page after the model run completed
+                nav_page(page_name="Result_Processing", timeout_secs=3)
+
+# Show an error message with additional information and defining a function that adds the link to the error message
+except Exception as e:
+    show_error_with_link()
+    # display the exception along with the traceback
+    st.exception(e)
+
