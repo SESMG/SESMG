@@ -10,8 +10,6 @@ SPDX-License-Identifier: MIT
 import logging
 import os
 import graphviz
-import sys
-from pathlib import Path
 from oemof.network.network import Bus, Sink, Source, Transformer
 from oemof.solph.components import GenericStorage
 from dhnx.optimization.oemof_heatpipe import HeatPipeline
@@ -61,8 +59,8 @@ class ESGraphRenderer:
         """
         self.busses = []
         os.environ["PATH"] += os.pathsep + "C:\\Program Files (x86)\\Graphviz2.38\\bin"
-        os.environ["PATH"] += os.pathsep + "/usr/local/bin/dot"
-        os.environ["PATH"] += os.pathsep + "/opt/anaconda3/bin/dot"
+        os.environ["PATH"] += os.pathsep + "/usr/local/bin"
+        os.environ["PATH"] += os.pathsep + "/opt/anaconda3/bin"
 
         self.dot = graphviz.Digraph(format="png")
 

@@ -338,7 +338,8 @@ def demo_start_page() -> None:
     st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
 
     # upload dh image
-    img = "docs/images/manual/DemoTool/district_heating_network.png"
+    img = str(get_bundle_dir()) \
+          + "docs/images/manual/DemoTool/district_heating_network.png"
     st.image(img, caption="", width=500)
 
 
