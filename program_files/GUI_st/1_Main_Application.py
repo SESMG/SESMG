@@ -9,10 +9,13 @@ from datetime import datetime
 from streamlit.components.v1 import html
 import streamlit as st
 
+# Setting new system path to be able to refer to parent directories
+parent = os.path.abspath('..')
+sys.path.insert(1, parent)
+
 import program_files.GUI_st.GUI_st_global_functions as GUI_functions
 from program_files.preprocessing.pareto_optimization import run_pareto
 
-    
 # settings the initial streamlit page settings
 GUI_functions.st_settings_global()
 

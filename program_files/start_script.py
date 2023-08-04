@@ -1,9 +1,15 @@
-from program_files.GUI_st import GUI_st_global_functions
 import sys
+import os
+      
+# setting new system path to be able to refer to parent directories
+parent = os.path.abspath('..')
+sys.path.insert(1, parent)
+
+from program_files.GUI_st import GUI_st_global_functions
 from pathlib import Path
 import atexit
 import subprocess as sp
-import os
+
 
 from PySide2 import QtCore, QtWebEngineWidgets, QtWidgets
 
@@ -23,9 +29,18 @@ if __name__ == '__main__':
         bundle_dir = Path(sys._MEIPASS)
     else:
         bundle_dir = Path(__file__).parent.parent
-    cmd = "streamlit run {} --server.headless=True".format(str(bundle_dir) + "/program_files/GUI_st/1_Main_Application.py")
+    
+    #cmd = "streamlit run {} --server.headless=True".format(str(bundle_dir) + "/program_files/GUI_st/1_Main_Application.py")
 
-    p = sp.Popen(cmd.split(), stdout=sp.DEVNULL)
+    cmd = ["streamlit",
+           "run",
+           str(bundle_dir)
+           + "/program_files/GUI_st/1_Main_Application.py",
+             "--server.headless=True",
+             "--global.developmentMode=False"
+    ]
+    
+    p = sp.Popen(cmd, stdout=sp.DEVNULL)
     atexit.register(kill_server, p)
                 
     hostname = 'localhost'
