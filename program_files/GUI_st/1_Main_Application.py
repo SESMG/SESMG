@@ -377,29 +377,41 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                 # the preresults are stored
                 existing_result_foldernames_list = \
                     GUI_functions.load_result_folder_list()
-                # create select box with the folder names which are in the \
-                # results folder
-                existing_result_folder = st.selectbox(
-                    label="Choose a district heating precalculation folder",
-                    options=existing_result_foldernames_list,
-                    help=GUI_helper["main_dd_result_folder"],
-                    index=settings_cache_dict_reload[
-                        "input_dh_folder_index"])
 
-                # set variable as the list index to save in cache
-                GUI_main_dict["input_dh_folder_index"] = \
-                    existing_result_foldernames_list.index(
-                    existing_result_folder)
+                # Check if result folder(s) exist to be displayes in the list
+                if len(existing_result_foldernames_list) > 0:
+                    # create select box with the folder names which are in \
+                    # the results folder
+                    existing_result_folder = st.selectbox(
+                        label="Choose a district heating precalculation folder",
+                        options=existing_result_foldernames_list,
+                        help=GUI_helper["main_dd_result_folder"],
+                        index=settings_cache_dict_reload[
+                            "input_dh_folder_index"])
+
+                    # set variable as the list index to save in cache
+                    GUI_main_dict["input_dh_folder_index"] = \
+                        existing_result_foldernames_list.index(
+                        existing_result_folder)
+
+                else:
+                    # create select box with the folder names which are in \
+                    # the results folder without index. The index has to be \
+                    # excluded when the list is empty.
+                    existing_result_folder = st.selectbox(
+                        label="Choose a district heating precalculation folder",
+                        options=existing_result_foldernames_list,
+                        help=GUI_helper["main_dd_result_folder"])
+                    # set variable to zero to save in cache
+                    GUI_main_dict["input_dh_folder_index"] = 0
 
                 # set the path to dh precalc if active or not
                 if GUI_main_dict["input_activate_dh_precalc"]:
                     # create path to precalc folder
-                    GUI_main_dict["input_dh_folder"] = \
-                        os.path.join(os.path.dirname(os.path.dirname(
-                                        os.path.dirname(
-                                            os.path.abspath(__file__)))),
-                                     "results",
-                                     existing_result_folder)
+                    GUI_main_dict["input_dh_folder"] = os.path.expanduser(
+                        os.path.join('~', 'documents', 'sesmg', 'results',
+                                     'demo', existing_result_folder))
+
                 else:
                     GUI_main_dict["input_dh_folder"] = ""
 
@@ -506,21 +518,30 @@ def create_result_paths() -> None:
         Create result paths and result folder. Set session.states
 
     """
-    # Setting the path where to safe the modeling results
-    res_folder_path = os.path.join(os.path.dirname(
-        os.path.dirname(os.path.dirname(__file__))), 'results')
-    GUI_main_dict["res_path"] = res_folder_path \
-        + '/' \
-        + model_definition_input_file.name.split("/")[-1][:-5] \
-        + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
-    os.mkdir(GUI_main_dict["res_path"])
-    GUI_main_dict["premodeling_res_path"] = \
-        GUI_main_dict["res_path"] + "/pre_model_results"
 
-    # safe path as session state for the result processing page
-    st.session_state["state_result_path"] = GUI_main_dict["res_path"]
-    st.session_state["state_premodeling_res_path"] = \
-        GUI_main_dict["premodeling_res_path"]
+    # Define the path to the results folder within SESMG directory
+    res_folder_path = os.path.expanduser(
+        os.path.join('~', 'documents', 'sesmg', 'results'))
+
+    # Check if the results folder path exists
+    if os.path.exists(res_folder_path) is False:
+        # If not, create the result directory using a separate function
+        GUI_functions.create_result_directory()
+    else:
+        # If the results folder path exists, create subdirectories for the
+        # current run
+        GUI_main_dict["res_path"] = res_folder_path \
+            + '/' \
+            + model_definition_input_file.name.split("/")[-1][:-5] \
+            + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
+        os.mkdir(GUI_main_dict["res_path"])
+        GUI_main_dict["premodeling_res_path"] = \
+            GUI_main_dict["res_path"] + "/pre_model_results"
+
+        # Save paths as session states for the result processing page
+        st.session_state["state_result_path"] = GUI_main_dict["res_path"]
+        st.session_state["state_premodeling_res_path"] = \
+            GUI_main_dict["premodeling_res_path"]
 
 
 def save_run_settings() -> None:

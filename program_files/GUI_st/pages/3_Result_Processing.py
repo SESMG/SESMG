@@ -46,12 +46,9 @@ def result_processing_sidebar() -> None:
 
         if run_existing_results:
             # set session state with full folder path to the result folder
-            st.session_state["state_result_path"] = \
-                os.path.join(os.path.dirname(os.path.dirname(
-                                os.path.dirname(os.path.dirname(
-                                    os.path.abspath(__file__))))),
-                             "results",
-                             existing_result_folder)
+            # choosing the standard result directory
+            st.session_state["state_result_path"] = os.path.expanduser(
+                os.path.join('~', 'documents', 'sesmg', 'results'))
 
         if st.session_state["state_result_path"] != "not set" and \
                 os.path.join(st.session_state["state_result_path"],

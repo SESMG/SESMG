@@ -14,7 +14,7 @@ from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main
 from program_files.GUI_st.GUI_st_global_functions import \
     st_settings_global, read_markdown_document, import_GUI_input_values_json, \
-    get_bundle_dir
+    get_bundle_dir, create_result_directory
 
 # Import GUI help comments from the comment json and safe as a dict
 GUI_helper = import_GUI_input_values_json(
@@ -34,8 +34,9 @@ mainpath_mf = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.dirname(__file__))))
 # define main path to SESMG program files folder
 mainpath_pf = os.path.join(mainpath_mf, "program_files")
-# define main path to SESMG results/demo folder
-mainpath_rdf = os.path.join(mainpath_mf, "results", "demo")
+# Define the path to the results folder within SESMG directory
+mainpath_rdf = os.path.expanduser(
+    os.path.join('~', 'documents', 'sesmg', 'results', 'demo'))
 
 # setting initial session state for mdoel run
 if "state_submitted_demo_run" not in st.session_state:
@@ -246,12 +247,6 @@ def create_demo_model_definition() -> None:
     sheet["C5"] = input_values_dict["input_chp_sub_urban"]
     sheet["C6"] = input_values_dict["input_chp_rural"]
 
-    # check if /demo exists in results direcotry
-    if mainpath_rdf \
-            not in glob.glob(os.path.join(mainpath_mf, "results", "*")):
-        # create /results/demo directory
-        os.mkdir(path=os.path.join(mainpath_rdf))
-
     # safe motified xlsx file in the results/demo folder
     xfile.save(os.path.join(mainpath_rdf, "model_definition.xlsx"))
 
@@ -314,7 +309,6 @@ def demo_start_page() -> None:
     """
         Start page text, images and tables for the demo tool.
     """
-    
 
     # import markdown text from GUI files
     imported_markdown = read_markdown_document(
@@ -365,6 +359,12 @@ demo_start_page()
 
 # show results after submit button was clicked
 if st.session_state["state_submitted_demo_run"] == "done":
+    # Check if the results folder path exists
+    if os.path.exists(mainpath_rdf) is False:
+        # If not, create the result directory using a separate function
+        create_result_directory()
+        # Create the demo folder directory
+        os.makedirs(mainpath_rdf)
     # create demo model definition and start model run
     create_demo_model_definition()
     # show generated results

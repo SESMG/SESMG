@@ -15,13 +15,14 @@ from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
 
 
 def get_bundle_dir():
-    
+
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
         bundle_dir = Path(sys._MEIPASS)
     else:
         bundle_dir = Path(__file__).parent.parent.parent
 
     return bundle_dir
+
 
 def st_settings_global() -> None:
     """
@@ -289,7 +290,7 @@ def read_markdown_document(document_path: str, folder_path: str,
                     # Display the image from the Resources folder using
                     # the image name from the resource_files list
                     st.image(str(get_bundle_dir())
-                             + "/" +folder_path[:-1] + f'{image}')
+                             + "/" + folder_path[:-1] + f'{image}')
                     # Clear the buffer list
                     readme_buffer.clear()
 
@@ -350,11 +351,14 @@ def load_result_folder_list() -> list:
         :return: - **existing_result_foldernames_list** (list) - list \
             of exsting folder names.
     """
-        
+
+    # Define the path to the results folder within SESMG directory
+    res_folder_path = os.path.expanduser(
+        os.path.join('~', 'documents', 'sesmg', 'results', '*'))
+
     # read sub folders in the result folder directory
     existing_result_foldernames_list = [
-        os.path.basename(x) for x in glob.glob(str(get_bundle_dir())
-                                               + f'{"/results/*"}')]
+        os.path.basename(x) for x in glob.glob(res_folder_path)]
     # sort list
     existing_result_foldernames_list.sort()
 
@@ -365,7 +369,7 @@ def check_for_dependencies():
     """
         Checks rather Graphviz, CBC or gurobi are installed.
     """
-    
+
     from pathlib import Path
     import glob
     # graphviz paths
@@ -382,7 +386,7 @@ def check_for_dependencies():
                     os.environ["PATH"] += os.pathsep + path
     if not dot_bool:
         raise ImportError("Graphviz is not installed on your device.")
-    
+
     # cbc solver paths
     cbc_paths = ["/usr/local/bin",
                  "/opt/homebrew/bin"]
@@ -397,3 +401,37 @@ def check_for_dependencies():
                         os.environ["PATH"] += os.pathsep + path
     if not cbc_bool:
         raise ImportError("CBC Solver is not installed on your device.")
+
+
+def create_result_directory() -> None:
+    """
+    Creates a result directory and a SESMG folder in the documents
+    directory of the user to be able to store json files and the results.
+    """
+
+    # Define the path to the user's documents directory
+    directory_doc = os.path.expanduser(os.path.join('~', 'documents'))
+
+    # Check if the user/documents directory exists
+    if os.path.exists(directory_doc) is False:
+        # Raise an exception if user/documents directory does not exist
+        raise Exception("The user/documents directory cannot be found.")
+
+    # Define the path for the sesmg directory inside the user/documents
+    # directory
+    directory_sesmg = os.path.join(directory_doc, 'SESMG')
+
+    # Check if the SESMG directory exists inside the user/documents directory
+    if os.path.exists(directory_sesmg) is False:
+        # Create the SESMG directory if it doesn't exist
+        os.makedirs(directory_sesmg)
+
+    # Define the path for the results directory inside the
+    # user/documents/sesmg directory
+    directory_results = os.path.join(directory_sesmg, 'results')
+
+    # Check if the results directory exists inside the user/documents/sesmg
+    # directory
+    if os.path.exists(directory_results) is False:
+        # Create the results directory if it doesn't exist
+        os.makedirs(directory_results)
