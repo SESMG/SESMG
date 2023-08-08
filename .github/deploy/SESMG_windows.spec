@@ -9,7 +9,6 @@ datas = [('../../lib/site-packages/streamlit', 'streamlit'),
          ('../../lib/site-packages/pvlib/data', 'pvlib/data'),
          ('../../lib/site-packages/pyomo', 'pyomo'),
          ('../../lib/site-packages/st_aggrid/frontend/build', 'st_aggrid/frontend/build'),
-         ('../../results', 'results'),
          ('../../docs', 'docs'),
          ('../../README.md', '.'),
          ]
