@@ -25,6 +25,7 @@ a = Analysis(
     binaries=[],
     datas=datas,
     hiddenimports=["program_files",
+                   "PySide6",
                    "numbers",
                    "pyomo",
                    "pyomo.environ",
