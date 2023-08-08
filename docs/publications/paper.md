@@ -36,7 +36,7 @@ bibliography: paper.bib
 ---
 # Summary
 
-The Spreadsheet Energy System Model Generator (SESMG) is a tool for modeling and optimizing energy systems with a focus on urban systems. The SESMG is easyily accessible as it comes with a browser-based graphical user interface, spreadsheets to provide data entry, and detailed documentation on how to use it. Programming skills are not required for the installation or application of the tool. The SESMG includes advanced modeling features such as the application of the multi-energy system (MES) approach, multi-objective optimization, model-based methods for reducing computational requirements, and automated conceptualization and result processing of urban energy systems with high spatial resolution. Due to its accessibility and the applied modeling methods, urban energy systems can be modeled and optimized with comparatively low effort.
+The Spreadsheet Energy System Model Generator (SESMG) is a tool for modeling and optimizing energy systems with a focus on urban systems. The SESMG is easily accessible as it comes with a browser-based graphical user interface, spreadsheets to provide data entry, and detailed documentation on how to use it. Programming skills are not required for the installation or application of the tool. The SESMG includes advanced modeling features such as the application of the multi-energy system (MES) approach, multi-objective optimization, model-based methods for reducing computational requirements, and automated conceptualization and result processing of urban energy systems with high spatial resolution. Due to its accessibility and the applied modeling methods, urban energy systems can be modeled and optimized with comparatively low effort.
 
 # Statement of need
 
