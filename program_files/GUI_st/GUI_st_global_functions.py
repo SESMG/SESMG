@@ -403,35 +403,49 @@ def check_for_dependencies():
         raise ImportError("CBC Solver is not installed on your device.")
 
 
+def set_result_path() -> str:
+    """
+    Set the path for storing results based on settings.
+
+    This function determines and returns the path for storing results
+    based on the settings specified in 'GUI_st_settings.json' file.
+    The 'result_folder_directory' value in the JSON defines the relative path
+    within the user's documents directory.
+
+    Returns:
+        str: The path for storing results.
+    """
+    # defineing path to GUI_st_settings.json
+    settings_json_path = os.path.dirname(__file__) \
+        + "/GUI_st_settings.json"
+    # import json
+    gui_settings_json = \
+        import_GUI_input_values_json(settings_json_path)
+    # get list with directories which is defining the result folder
+    result_directory_list = gui_settings_json['result_folder_directory']
+    # Define the path to the results folder within SESMG directory
+    res_folder_path = os.path.expanduser(
+        os.path.join('~', *result_directory_list))
+
+    return res_folder_path
+
+
 def create_result_directory() -> None:
     """
-    Creates a result directory and a SESMG folder in the documents
-    directory of the user to be able to store json files and the results.
+    Create a result directory and a SESMG folder in the user's documents
+    directory for storing JSON files and results.
+
+    This function creates a directory structure to store JSON files and
+    results. It imports settings from 'GUI_st_settings.json' to determine the
+    path structure. The 'result_folder_directory' value in the JSON defines
+    the relative path. The directory structure is constructed based on the
+    user's documents directory.
     """
 
-    # Define the path to the user's documents directory
-    directory_doc = os.path.expanduser(os.path.join('~', 'documents'))
+    # Define the path to the result directory
+    result_directory_path = set_result_path()
 
-    # Check if the user/documents directory exists
-    if os.path.exists(directory_doc) is False:
-        # Raise an exception if user/documents directory does not exist
-        raise Exception("The user/documents directory cannot be found.")
-
-    # Define the path for the sesmg directory inside the user/documents
-    # directory
-    directory_sesmg = os.path.join(directory_doc, 'SESMG')
-
-    # Check if the SESMG directory exists inside the user/documents directory
-    if os.path.exists(directory_sesmg) is False:
-        # Create the SESMG directory if it doesn't exist
-        os.makedirs(directory_sesmg)
-
-    # Define the path for the results directory inside the
-    # user/documents/sesmg directory
-    directory_results = os.path.join(directory_sesmg, 'results')
-
-    # Check if the results directory exists inside the user/documents/sesmg
-    # directory
-    if os.path.exists(directory_results) is False:
+    # Check if the results directory exists inside and create it if necessary
+    if os.path.exists(result_directory_path) is False:
         # Create the results directory if it doesn't exist
-        os.makedirs(directory_results)
+        os.makedirs(result_directory_path)

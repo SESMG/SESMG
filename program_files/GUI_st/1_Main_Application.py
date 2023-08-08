@@ -408,9 +408,9 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                 # set the path to dh precalc if active or not
                 if GUI_main_dict["input_activate_dh_precalc"]:
                     # create path to precalc folder
-                    GUI_main_dict["input_dh_folder"] = os.path.expanduser(
-                        os.path.join('~', 'documents', 'sesmg', 'results',
-                                     'demo', existing_result_folder))
+                    GUI_main_dict["input_dh_folder"] = \
+                        os.path.join(GUI_functions.set_result_path(),
+                                     existing_result_folder)
 
                 else:
                     GUI_main_dict["input_dh_folder"] = ""
@@ -516,12 +516,9 @@ def main_clear_cache_sidebar() -> None:
 def create_result_paths() -> None:
     """
         Create result paths and result folder. Set session.states
-
     """
-
-    # Define the path to the results folder within SESMG directory
-    res_folder_path = os.path.expanduser(
-        os.path.join('~', 'documents', 'sesmg', 'results'))
+    # set the result path based on the gui_st_settings.json
+    res_folder_path = GUI_functions.set_result_path()
 
     # Check if the results folder path exists
     if os.path.exists(res_folder_path) is False:

@@ -14,7 +14,7 @@ from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main
 from program_files.GUI_st.GUI_st_global_functions import \
     st_settings_global, read_markdown_document, import_GUI_input_values_json, \
-    get_bundle_dir, create_result_directory
+    get_bundle_dir, create_result_directory, set_result_path
 
 # Import GUI help comments from the comment json and safe as a dict
 GUI_helper = import_GUI_input_values_json(
@@ -34,9 +34,8 @@ mainpath_mf = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.dirname(__file__))))
 # define main path to SESMG program files folder
 mainpath_pf = os.path.join(mainpath_mf, "program_files")
-# Define the path to the results folder within SESMG directory
-mainpath_rdf = os.path.expanduser(
-    os.path.join('~', 'documents', 'sesmg', 'results', 'demo'))
+# define the path to the result folder based on the GUI_settings.json
+mainpath_rdf = os.path.join(set_result_path(), 'demo')
 
 # setting initial session state for mdoel run
 if "state_submitted_demo_run" not in st.session_state:

@@ -13,7 +13,7 @@ from PIL import Image
 
 from program_files.GUI_st.GUI_st_global_functions import \
     import_GUI_input_values_json, st_settings_global, read_markdown_document, \
-    load_result_folder_list
+    load_result_folder_list, set_result_path
 
 
 def result_processing_sidebar() -> None:
@@ -47,8 +47,11 @@ def result_processing_sidebar() -> None:
         if run_existing_results:
             # set session state with full folder path to the result folder
             # choosing the standard result directory
-            st.session_state["state_result_path"] = os.path.expanduser(
-                os.path.join('~', 'documents', 'sesmg', 'results'))
+            # Define the path to the results folder within based on the 
+            # given directory in GUI_st_settings.json
+            st.session_state["state_result_path"] = \
+                os.path.join(set_result_path(),
+                             existing_result_folder)
 
         if st.session_state["state_result_path"] != "not set" and \
                 os.path.join(st.session_state["state_result_path"],
