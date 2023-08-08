@@ -26,3 +26,4 @@ or for displaying results.
 .. include:: 02.02.03_urban_district_upscaling.rst
 .. include:: 02.02.04_results.rst
 .. include:: 02.02.05_technical_data.rst
+.. include:: 02.02.06_examples.rst

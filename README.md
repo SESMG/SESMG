@@ -34,7 +34,7 @@ https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01
 [![Generic badge](https://img.shields.io/badge/content-what/why-darkgreen.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
 ### Examples
-Examples are stored in a separate GIT-Repository: https://github.com/chrklemm/SESMG_Examples
+Examples are stored in a separate GIT-Repository: https://github.com/SESMG/SESMG-Examples
 
 ### Project status
 ✓ Draft (alpha, beta) State <br />
