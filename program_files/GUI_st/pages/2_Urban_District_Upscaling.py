@@ -158,7 +158,8 @@ def us_application_create_download_button() -> None:
     # define function to reset
     st.session_state['state_download'] = \
         st.sidebar.button(label="Save your model definition",
-                          on_click=us_application_start_download())
+                          on_click=us_application_start_download(),
+                          help=GUI_helper["res_b_load_results"])
 
 
 def standard_page() -> None:
