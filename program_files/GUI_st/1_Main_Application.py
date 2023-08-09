@@ -12,6 +12,8 @@ import streamlit as st
 # Setting new system path to be able to refer to parent directories
 parent = os.path.abspath('..')
 sys.path.insert(1, parent)
+sys.path.append(str(os.path.dirname(os.path.dirname(os.path.dirname(
+    os.path.abspath(__file__))))))
 
 import program_files.GUI_st.GUI_st_global_functions as GUI_functions
 from program_files.preprocessing.pareto_optimization import run_pareto

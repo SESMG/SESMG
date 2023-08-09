@@ -10,10 +10,8 @@ import matplotlib.pyplot as plt
 import streamlit
 import atexit
 import matplotlib
-from program_files.GUI_st import GUI_st_global_functions
 from streamlit.web import cli as stcli
 from pathlib import Path
-from PySide6 import QtCore, QtWebEngineWidgets, QtWidgets
 
 
 # Set environment variables for frozen macOS applications using Qt WebEngine
@@ -23,6 +21,11 @@ if getattr(sys, 'frozen', False) and sys.platform == 'darwin':
     # Set the path for Qt WebEngine locales
     os.environ["QTWEBENGINE_LOCALES_PATH"] = \
         str(Path(sys._MEIPASS)) + "/qtwebengine_locales"
+    sys.path.append(str(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__)))))
+
+from PySide6 import QtCore, QtWebEngineWidgets, QtWidgets
+from program_files.GUI_st import GUI_st_global_functions
 
 
 def kill_server(p):
