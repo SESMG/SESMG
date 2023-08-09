@@ -26,11 +26,9 @@ jobs:
           brew install create-dmg
           mkdir -p dist/dmg
           cp -r "dist/SESMG.app" dist/dmg
-	  create-dmg \
-  	  --volname "SESMG" \
-  	  --volicon "SESMG.icns" \
-  	  --icon "SESMG.app" 200 190 \
-  	  --hide-extension "SESMG.app" \
+          create-dmg \
+          --volname "SESMG" \
+          --hide-extension "SESMG.app" \
           "dist/SESMG.dmg" \
           "dist/dmg/"
       - name: Upload Artifact
