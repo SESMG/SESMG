@@ -16,7 +16,7 @@ from program_files.GUI_st.GUI_st_global_functions import \
     st_settings_global, read_markdown_document, import_GUI_input_values_json, \
     get_bundle_dir, create_result_directory, set_result_path
 
-# Import GUI help comments from the comment json and safe as a dict
+# Import GUI help comments from the comment json and save as a dict
 GUI_helper = import_GUI_input_values_json(
     os.path.dirname(os.path.dirname(__file__)) + "/GUI_st_help_comments.json")
 
@@ -246,7 +246,7 @@ def create_demo_model_definition() -> None:
     sheet["C5"] = input_values_dict["input_chp_sub_urban"]
     sheet["C6"] = input_values_dict["input_chp_rural"]
 
-    # safe motified xlsx file in the results/demo folder
+    # save motified xlsx file in the results/demo folder
     xfile.save(os.path.join(mainpath_rdf, "model_definition.xlsx"))
 
     # run sesmg DEMO version

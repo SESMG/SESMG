@@ -21,7 +21,7 @@ def result_processing_sidebar() -> None:
         Function to create the sidebar.
     """
 
-    # Import GUI help comments from the comment json and safe as an dict
+    # Import GUI help comments from the comment json and save as an dict
     GUI_helper = import_GUI_input_values_json(
         os.path.dirname(os.path.dirname(__file__))
         + "/GUI_st_help_comments.json")
@@ -63,7 +63,7 @@ def result_processing_sidebar() -> None:
             # read out sub folders of pareto list
             existing_result_foldernames_list = next(
                 os.walk(st.session_state["state_result_path"]))[1]
-            # split folder names and safe pareto point positions in a list
+            # split folder names and save pareto point positions in a list
             pareto_points_list = [directory.split(
                 "_")[-2] for directory in existing_result_foldernames_list]
 
