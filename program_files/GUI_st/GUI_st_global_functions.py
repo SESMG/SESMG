@@ -60,10 +60,10 @@ def import_GUI_input_values_json(json_file_path: str) -> dict:
     return GUI_settings_cache_dict_reload
 
 
-def safe_GUI_input_values(input_values_dict: dict,
+def save_GUI_input_values(input_values_dict: dict,
                           json_file_path: str) -> None:
     """
-        Function to safe a dict as json.
+        Function to save a dict as json.
 
         :param input_values_dict: name of the dict of input values \
             for specific GUI page
@@ -79,7 +79,7 @@ def safe_GUI_input_values(input_values_dict: dict,
 def clear_GUI_main_settings(json_file_path: str) -> None:
     """
         Function to clear the GUI settings dict, reset it to the
-        initial values and safe in json path as variables.
+        initial values and save in json path as variables.
 
         :param json_file_path: internal path where json should be saved
         :type json_file_path: str

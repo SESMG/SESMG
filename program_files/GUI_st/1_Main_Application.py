@@ -26,7 +26,7 @@ GUI_main_dict = {}
 settings_cache_dict_reload = GUI_functions.import_GUI_input_values_json(
     os.path.dirname(__file__) + "/GUI_st_cache.json")
 
-# Import GUI help comments from the comment json and safe as a dict
+# Import GUI help comments from the comment json and save as a dict
 GUI_helper = GUI_functions.import_GUI_input_values_json(
     os.path.dirname(__file__) + "/GUI_st_help_comments.json")
 
@@ -208,7 +208,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                         help=GUI_helper["main_dd_timeser_season"])
 
             # transform input values of Timeseries Simplification to an index
-            # which will be safed in the GUI cache to be able to reload
+            # which will be saved in the GUI cache to be able to reload
             # setting. Needs to be an index for st.selectboxes.
             # create list for transformation from simplification input to
             # index values
@@ -226,7 +226,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                  input_timeseries_season_dict,
                  "input_timeseries_season"]]
 
-            # transform to index values and safe in the GUI_main_dict
+            # transform to index values and save in the GUI_main_dict
             GUI_functions.create_simplification_index(
                 input_list=simpification_index_list,
                 input_output_dict=GUI_main_dict)
@@ -311,7 +311,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                         help=GUI_helper["main_dd_prem_timeser_season"])
 
             # transform input values of Timeseries Simplification to an
-            # index which will be safed in the GUI cache to be able to
+            # index which will be saved in the GUI cache to be able to
             # reload setting. Needs to be an index for st.selectboxes.
             # create list for transformation from premodel
             # simplification input to index values
@@ -329,7 +329,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                  input_timeseries_season_dict,
                  "input_premodeling_timeseries_season"]]
 
-            # transform to index values and safe in the GUI_main_dict
+            # transform to index values and save in the GUI_main_dict
             GUI_functions.create_simplification_index(
                 input_list=simpification_premodel_index_list,
                 input_output_dict=GUI_main_dict)
@@ -504,7 +504,7 @@ def main_clear_cache_sidebar() -> None:
 
     # Clear all GUI settings if clear latest result paths clicked
     if st.session_state["state_submitted_clear_cache"] == "done":
-        # create and safe dict, set paths empty
+        # create and save dict, set paths empty
         GUI_functions.clear_GUI_main_settings(
             json_file_path=os.path.dirname(__file__) + "/GUI_st_cache.json")
         # reset session state for clear cache
@@ -543,11 +543,11 @@ def create_result_paths() -> None:
 
 def save_run_settings() -> None:
     """
-        Function to safe the GUI setting in the result folder and reset
+        Function to save the GUI setting in the result folder and reset
         session state.
     """
     # save GUI settings in result folder
-    GUI_functions.safe_GUI_input_values(
+    GUI_functions.save_GUI_input_values(
         input_values_dict=GUI_main_dict,
         json_file_path=st.session_state["state_result_path"]
         + "/GUI_st_run_settings.json")
@@ -596,8 +596,8 @@ if st.session_state["state_submitted_optimization"] == "done":
 
     elif model_definition_input_file != "":
 
-        # safe the GUI_main_dice as a chache for the next session
-        GUI_functions.safe_GUI_input_values(
+        # save the GUI_main_dice as a chache for the next session
+        GUI_functions.save_GUI_input_values(
             input_values_dict=GUI_main_dict,
             json_file_path=os.path.dirname(__file__) + "/GUI_st_cache.json")
 
@@ -637,7 +637,7 @@ if st.session_state["state_submitted_optimization"] == "done":
                         model_definition=model_definition_input_file,
                         GUI_main_dict=GUI_main_dict)
 
-                # safe path as session state for the result processing page
+                # save path as session state for the result processing page
                 st.session_state["state_result_path"] = \
                     GUI_main_dict["res_path"]
 
