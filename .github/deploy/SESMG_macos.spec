@@ -35,7 +35,6 @@ datas = [('../../lib/Python3.9/site-packages/streamlit', 'streamlit'),
 	 ('../../lib/python3.9/site-packages/xlsxwriter', 'xlsxwriter'),
 	 ('../../lib/python3.9/site-packages/graphviz', 'graphviz'),
 	 ('../../lib/python3.9/site-packages/*.py', '.'),
-         ('../../results', 'results'),
          ('../../docs', 'docs'),
          ('../../README.md', '.'),
          ]
