@@ -12,15 +12,20 @@ from program_files.urban_district_upscaling.pre_processing \
     import urban_district_upscaling_pre_processing
 from program_files.GUI_st.GUI_st_global_functions \
     import st_settings_global, import_GUI_input_values_json, \
-    read_markdown_document
+    read_markdown_document, create_result_directory, set_result_path
+from datetime import datetime
 
 # settings the initial streamlit page settings
 st_settings_global()
 
-# Import GUI help comments from the comment json and safe as an dict
+# Import GUI help comments from the comment json and save as an dict
 GUI_helper = import_GUI_input_values_json(
     os.path.dirname(os.path.dirname(__file__))
     + "/GUI_st_help_comments.json")
+
+
+# initialize session_state
+st.session_state["state_model_definition_sheets"] = ""
 
 
 def us_application() -> None:
@@ -28,8 +33,6 @@ def us_application() -> None:
         Definition of the sidebar elements for the urban district
         upscaling page and starting a udu tool run.
     """
-    model_definition_df = ""
-
     # create form-submit element for multiple inputs
     with st.sidebar.form("Input Parameters"):
 
@@ -68,29 +71,94 @@ def us_application() -> None:
                         r"../../urban_district_upscaling/plain_scenario.xlsx")
                 ]
 
-                model_definition_df = \
-                    urban_district_upscaling_pre_processing(
-                        paths=us_path_list,
-                        clustering=False,
-                        clustering_dh=False)
+            # get the model definition sheet as a dict and model definition
+            # worksheets as a list as return of the main urban district
+            # upscaling function
+            model_definition_sheets, model_definition_worksheets = \
+                urban_district_upscaling_pre_processing(
+                    paths=us_path_list,
+                    clustering=False,
+                    clustering_dh=False)
 
-    # define urban district upscaling model definition as session state
-    st.session_state["state_model_definition"] = model_definition_df
-    # define result path as session state
-    st.session_state["result_file_name"] = result_file_name
+            # define urban district upscaling model definition as session state
+            st.session_state["state_model_definition_sheets"] = \
+                model_definition_sheets
+            # define urban district upscaling model definition as session state
+
+            st.session_state["state_model_definition_worksheets"] = \
+                model_definition_worksheets
+            # define result path as session state
+            st.session_state["result_file_name"] = result_file_name
+            # define session state for the downloadbutton as false
+            st.session_state['state_download'] = False
 
 
-def us_application_downloader() -> None:
+def us_application_create_folder() -> None:
     """
         Creating download button for the created model definition.
     """
 
-    # create download button
-    st.sidebar.download_button(label="Download your model definition",
-                               data=st.session_state["state_model_definition"],
-                               file_name=st.session_state["result_file_name"]
-                               + ".xlsx",
-                               help=GUI_helper["udu_b_download_model_def"])
+    # set the result path based on the gui_st_settings.json
+    res_folder_path = os.path.join(set_result_path(),
+                                   'Upscaling_Tool')
+
+    # Check if the results folder path exists
+    if os.path.exists(res_folder_path) is False:
+        # If not, create the result directory using a separate function
+        create_result_directory()
+        # Add upscaling folder if necessary
+        os.makedirs(res_folder_path)
+
+
+def us_application_start_download() -> None:
+    """
+    Function to reset the st.session_state['state_download'] with an
+    on_click event in a streamlit button.
+    """
+    # set state on True
+    st.session_state['state_download'] = True
+
+    # set the result path based on the gui_st_settings.json
+    res_folder_path = os.path.join(set_result_path(),
+                                   'Upscaling_Tool')
+
+    # Check if the results folder path exists
+    if os.path.exists(res_folder_path) is False:
+        # If not, create the result directory using a separate function
+        create_result_directory()
+        # Add upscaling folder if necessary
+        os.makedirs(res_folder_path)
+
+    # defining the the path including file name
+    st.session_state['state_file_path'] = res_folder_path \
+        + '/' \
+        + st.session_state["result_file_name"] \
+        + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S') \
+        + '.xlsx'
+
+    # open the new excel file and add all the created components
+    j = 0
+    writer = pd.ExcelWriter(path=st.session_state['state_file_path'],
+                            engine="xlsxwriter")
+    # save the excel file 
+    for i in st.session_state["state_model_definition_sheets"]:
+        st.session_state["state_model_definition_sheets"][i].to_excel(
+            excel_writer=writer,
+            sheet_name=st.session_state["state_model_definition_worksheets"][j],
+            index=False)
+        j = j + 1
+    writer.close()
+
+
+def us_application_create_download_button() -> None:
+    """
+    Creating the download button and change session state as on_click
+    to start the downloading process
+    """
+    # define function to reset
+    st.session_state['state_download'] = \
+        st.sidebar.button(label="Save your model definition",
+                          on_click=us_application_start_download())
 
 
 def standard_page() -> None:
@@ -109,7 +177,6 @@ def standard_page() -> None:
     st.markdown(''.join(reduced_readme), unsafe_allow_html=True)
 
 
-# second column
 def udu_preprocessing_page() -> None:
     """
         Definition of the page elements after the urban district
@@ -120,14 +187,14 @@ def udu_preprocessing_page() -> None:
     st.header("Model defintion")
 
     # create model defnition table
-    xls = pd.ExcelFile(st.session_state["state_model_definition"])
-    tabs = xls.sheet_names
+    tabs = st.session_state["state_model_definition_worksheets"].copy()
     # without info column
     tabs.pop(0)
     tab_bar = st.tabs(tabs)
     for i in range(len(tabs)):
         with tab_bar[i]:
-            df_input = xls.parse(tabs[i])
+            df_input = \
+                st.session_state["state_model_definition_sheets"][tabs[i]]
             df_input = df_input.astype(str)
             st.dataframe(df_input)
 
@@ -135,9 +202,10 @@ def udu_preprocessing_page() -> None:
 # running sidebar elements
 us_application()
 # running the start / main page if tool did not run yet
-if st.session_state["state_model_definition"] == "":
+if st.session_state["state_model_definition_sheets"] == "":
     standard_page()
 # running preprocessing page if tool ran
 else:
     udu_preprocessing_page()
-    us_application_downloader()
+    us_application_create_download_button()
+    us_application_create_folder()
