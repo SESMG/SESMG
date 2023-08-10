@@ -23,7 +23,10 @@ if getattr(sys, 'frozen', False) and sys.platform == 'darwin':
         str(Path(sys._MEIPASS)) + "/qtwebengine_locales"
     sys.path.append(str(os.path.dirname(os.path.dirname(
         os.path.abspath(__file__)))))
-
+elif getattr(sys, 'frozen', False) and sys.platform == 'win32':
+    sys.path.append(str(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__)))))
+    
 from PySide6 import QtCore, QtWebEngineWidgets, QtWidgets
 from program_files.GUI_st import GUI_st_global_functions
 
@@ -63,14 +66,26 @@ if __name__ == '__main__':
     else:
         bundle_dir = Path(__file__).parent.parent
 
-    # Define the command to run the Streamlit application
-    cmd = [
-        "streamlit",
-        "run",
-        str(bundle_dir) + "/program_files/GUI_st/1_Main_Application.py",
-        "--server.headless=True",
-        "--global.developmentMode=False"
-    ]
+    if sys.platform == "darwin":
+        # Define the command to run the Streamlit application
+        cmd = [
+            "streamlit",
+            "run",
+            str(bundle_dir) + "/program_files/GUI_st/1_Main_Application.py",
+            "--server.headless=True",
+            "--global.developmentMode=False"
+        ]
+    elif sys.platform == "win32":
+        # Define the command to run the Streamlit application
+        cmd = [
+            "python",
+            "-m",
+            "streamlit",
+            "run",
+            str(bundle_dir) + "\\program_files\\GUI_st\\1_Main_Application.py",
+            "--server.headless=True",
+            "--global.developmentMode=False"
+        ]
 
     # Start the Streamlit subprocess and register termination function
     p = sp.Popen(cmd, stdout=sp.DEVNULL)
