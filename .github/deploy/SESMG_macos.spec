@@ -36,6 +36,8 @@ datas = [('../../lib/Python3.9/site-packages/streamlit', 'streamlit'),
 	 ('../../lib/python3.9/site-packages/graphviz', 'graphviz'),
   	 ('../../lib/python3.9/site-packages/sklearn', 'sklearn'),
     	 ('../../lib/python3.9/site-packages/sklearn_extra', 'sklearn_extra'),
+	 ('../../lib/python3.9/site-packages/demandlib', 'demandlib'),
+	 ('../../lib/python3.9/site-packages/psutil', 'psutil'),
 	 ('../../lib/python3.9/site-packages/*.py', '.'),
          ('../../docs', 'docs'),
          ('../../README.md', '.'),
@@ -155,6 +157,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+
 )
 app = BUNDLE(
     exe,
