@@ -6,16 +6,24 @@
 import json
 import glob
 import os
-import streamlit as st
 import sys
 from pathlib import Path
+import streamlit as st
 
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main, sesmg_main_including_premodel
 
 
 def get_bundle_dir():
+    """
+       Get the path to the bundle directory.
 
+       This function determines and returns the path to the bundle directory
+       where the program is located. It considers both the frozen state and
+       the non-frozen state of the program.
+
+       :returns: - **bundle_dir** (str) - The path to the bundle directory.
+    """
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
         bundle_dir = Path(sys._MEIPASS)
     else:
@@ -52,18 +60,33 @@ def import_GUI_input_values_json(json_file_path: str) -> dict:
             exported dict from json file including a (sub)dict for \
             every GUI page
     """
-    # Import json file including several (sub)dicts for every GUI page
-    # Each (sub)dict includes input values as a cache from the last session
-    with open(json_file_path, "r", encoding="utf-8") as infile:
-        GUI_settings_cache_dict_reload = json.load(infile)
+
+    # load the blank GUI_st_cache.json if the user specific directory
+    # does not exist
+    if os.path.exists(json_file_path) is False:
+
+        # define path to blank json cache file
+        blank_json_file_path = \
+            os.path.dirname(__file__) + "/GUI_st_cache.json"
+        # Import json file including several (sub)dicts for every GUI page
+        # Each (sub)dict includes the default GUI settings
+        with open(blank_json_file_path, "r", encoding="utf-8") as infile:
+            GUI_settings_cache_dict_reload = json.load(infile)
+
+    # else load the user sprecific GUI settings
+    else:
+        # Import json file including several (sub)dicts for every GUI page
+        # Each (sub)dict includes input values as a cache from the last session
+        with open(json_file_path, "r", encoding="utf-8") as infile:
+            GUI_settings_cache_dict_reload = json.load(infile)
 
     return GUI_settings_cache_dict_reload
 
 
-def save_GUI_input_values(input_values_dict: dict,
-                          json_file_path: str) -> None:
+def save_GUI_cache_dict(input_values_dict: dict,
+                        json_file_path: str) -> None:
     """
-        Function to save a dict as json.
+        Function to save a the cache dict as json.
 
         :param input_values_dict: name of the dict of input values \
             for specific GUI page
@@ -72,6 +95,28 @@ def save_GUI_input_values(input_values_dict: dict,
             input values
         :type json_file_path: str
     """
+
+    # check if internal /.app directory exists
+    if os.path.exists(json_file_path) is False:
+
+        # create directory
+        os.makedirs(set_internal_directory_path())
+
+    # dump the json file to the given directory
+    save_json_file(input_values_dict=input_values_dict,
+                   json_file_path=json_file_path)
+
+
+def save_json_file(input_values_dict: dict, json_file_path: str) -> None:
+    """
+        Function to save a dict as json.
+
+        :param input_values_dict: name of the dict
+        :type input_values_dict: dict
+        :param json_file_path: file path to the underlying json
+        :type json_file_path: str
+    """
+    # dump cache.json file to internal .app directory
     with open(json_file_path, 'w', encoding="utf-8") as outfile:
         json.dump(input_values_dict, outfile, indent=4)
 
@@ -84,46 +129,20 @@ def clear_GUI_main_settings(json_file_path: str) -> None:
         :param json_file_path: internal path where json should be saved
         :type json_file_path: str
     """
-    # creating the dict of GUI input values to be safed as json
+    # creating the dict of GUI input values to be saved as json
 
-    GUI_main_dict_cleared = {
-        "input_timeseries_algorithm": "None",
-        "input_timeseries_cluster_index": 0,
-        "input_timeseries_criterion": "None",
-        "input_timeseries_period": "None",
-        "input_timeseries_season": "None",
-        "input_timeseries_algorithm_index": 0,
-        "input_timeseries_criterion_index": 0,
-        "input_timeseries_period_index": 0,
-        "input_timeseries_season_index": 0,
-        "input_timeseries_cluster_index_index": 0,
-        "input_activate_premodeling": False,
-        "input_premodeling_invest_boundaries": False,
-        "input_premodeling_tightening_factor": 1,
-        "input_premodeling_timeseries_algorithm": "None",
-        "input_premodeling_timeseries_cluster_index": "None",
-        "input_premodeling_timeseries_criterion": "None",
-        "input_premodeling_timeseries_period": "None",
-        "input_premodeling_timeseries_season": "None",
-        "input_premodeling_timeseries_algorithm_index": 0,
-        "input_premodeling_timeseries_criterion_index": 0,
-        "input_premodeling_timeseries_period_index": 0,
-        "input_premodeling_timeseries_season_index": 0,
-        "input_premodeling_timeseries_cluster_index_index": 0,
-        "input_pareto_points": [],
-        "input_cluster_dh": False,
-        "input_dh_folder_index": 0,
-        "input_activate_dh_precalc": False,
-        "input_criterion_switch": False,
-        "input_num_threads": 1,
-        "input_solver": "cbc",
-        "input_solver_index": 0,
-        "input_xlsx_results": False,
-        "input_console_results": False}
+    if os.path.exists(json_file_path) is True:
 
-    # safe cleared dict
-    safe_GUI_input_values(input_values_dict=GUI_main_dict_cleared,
-                          json_file_path=json_file_path)
+        # define path to blank file
+        blank_json_file_path = \
+            os.path.dirname(__file__) + "/GUI_st_cache.json"
+        # load the default cache file
+        with open(blank_json_file_path, "r", encoding="utf-8") as infile:
+            GUI_settings_cache_dict_blank_default = json.load(infile)
+
+        # save cleared dict
+        save_json_file(input_values_dict=GUI_settings_cache_dict_blank_default,
+                       json_file_path=json_file_path)
 
 
 def create_timeseries_parameter_list(GUI_main_dict: dict,
@@ -370,8 +389,6 @@ def check_for_dependencies():
         Checks rather Graphviz, CBC or gurobi are installed.
     """
 
-    from pathlib import Path
-    import glob
     # graphviz paths
     dot_paths = ["C:\\Program Files (x86)\\Graphviz2.38\\bin",
                  "/usr/local/bin",
@@ -403,18 +420,19 @@ def check_for_dependencies():
         raise ImportError("CBC Solver is not installed on your device.")
 
 
-def set_result_path() -> str:
+def set_parenting_sesmg_path() -> str:
     """
-    Set the path for storing results based on settings.
+    Set the path for storing SESMG files and the results based on settings.
 
-    This function determines and returns the path for storing results
+    This function determines and returns the path for storing files and results
     based on the settings specified in 'GUI_st_settings.json' file.
     The 'result_folder_directory' value in the JSON defines the relative path
     within the user's documents directory.
 
-    Returns:
-        str: The path for storing results.
+    :returns: - **res_parenting_folder_path** (str) - Main path to the SESMG
+                    directory
     """
+
     # defineing path to GUI_st_settings.json
     settings_json_path = os.path.dirname(__file__) \
         + "/GUI_st_settings.json"
@@ -424,10 +442,55 @@ def set_result_path() -> str:
     # get list with directories which is defining the result folder
     result_directory_list = gui_settings_json['result_folder_directory']
     # Define the path to the results folder within SESMG directory
-    res_folder_path = os.path.expanduser(
+    # add result folder to be able to use the parent directory
+    res_parenting_folder_path = os.path.expanduser(
         os.path.join('~', *result_directory_list))
 
+    return res_parenting_folder_path
+
+
+def set_result_path() -> str:
+    """
+    Set the path for storing results based on the SESMG main (/ parenting)
+    diretory.
+
+    This function determines and returns the path for storing results
+    based on the settings specified in 'GUI_st_settings.json' file.
+    The 'result_folder_directory' value in the JSON defines the relative path
+    within the user's documents directory.
+
+    :returns: - **res_folder_path** (str) - path to the result directory
+    """
+
+    # get folder path
+    res_parenting_folder_path = set_parenting_sesmg_path()
+    # create the result folder based on the SESMG main directory
+    res_folder_path = os.path.join(res_parenting_folder_path, 'results')
+
     return res_folder_path
+
+
+def set_internal_directory_path() -> str:
+    """
+    Set the path for storing internal files based on the SESMG main
+    (/ parenting) diretory.
+
+    This function determines and returns the path for storing internal files
+    based on the settings specified in 'GUI_st_settings.json' file.
+    The 'result_folder_directory' value in the JSON defines the relative path
+    within the user's documents directory.
+
+    :returns: - **res_internal_directory_path** (str) - Path to the internal
+                    .app folder in the SESMG directory
+    """
+
+    # get folder path
+    res_parenting_folder_path = set_parenting_sesmg_path()
+    # create the result folder based on the SESMG main directory
+    res_internal_directory_path = \
+        os.path.join(res_parenting_folder_path, '.app')
+
+    return res_internal_directory_path
 
 
 def create_result_directory() -> None:

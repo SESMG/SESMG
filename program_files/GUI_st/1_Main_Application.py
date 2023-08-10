@@ -24,9 +24,14 @@ GUI_functions.st_settings_global()
 # opening the input value dict, which will be saved as a json
 GUI_main_dict = {}
 
+# define path to json
+internal_directory_path = GUI_functions.set_internal_directory_path()
+path_to_cache_json = os.path.join(internal_directory_path,
+                                  'GUI_st_cache.json')
 # Import the saved GUI settings from the last session
-settings_cache_dict_reload = GUI_functions.import_GUI_input_values_json(
-    os.path.dirname(__file__) + "/GUI_st_cache.json")
+settings_cache_dict_reload = \
+    GUI_functions.import_GUI_input_values_json(
+        json_file_path=path_to_cache_json)
 
 # Import GUI help comments from the comment json and save as a dict
 GUI_helper = GUI_functions.import_GUI_input_values_json(
@@ -508,7 +513,7 @@ def main_clear_cache_sidebar() -> None:
     if st.session_state["state_submitted_clear_cache"] == "done":
         # create and save dict, set paths empty
         GUI_functions.clear_GUI_main_settings(
-            json_file_path=os.path.dirname(__file__) + "/GUI_st_cache.json")
+            json_file_path=path_to_cache_json)
         # reset session state for clear cache
         st.session_state["state_submitted_clear_cache"] = "not done"
         # rerun whole script to update GUI settings
@@ -526,21 +531,21 @@ def create_result_paths() -> None:
     if os.path.exists(res_folder_path) is False:
         # If not, create the result directory using a separate function
         GUI_functions.create_result_directory()
-    else:
-        # If the results folder path exists, create subdirectories for the
-        # current run
-        GUI_main_dict["res_path"] = res_folder_path \
-            + '/' \
-            + model_definition_input_file.name.split("/")[-1][:-5] \
-            + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
-        os.mkdir(GUI_main_dict["res_path"])
-        GUI_main_dict["premodeling_res_path"] = \
-            GUI_main_dict["res_path"] + "/pre_model_results"
 
-        # Save paths as session states for the result processing page
-        st.session_state["state_result_path"] = GUI_main_dict["res_path"]
-        st.session_state["state_premodeling_res_path"] = \
-            GUI_main_dict["premodeling_res_path"]
+    # If the results folder path exists, create subdirectories for the
+    # current run
+    GUI_main_dict["res_path"] = res_folder_path \
+        + '/' \
+        + model_definition_input_file.name.split("/")[-1][:-5] \
+        + datetime.now().strftime('_%Y-%m-%d--%H-%M-%S')
+    os.mkdir(GUI_main_dict["res_path"])
+    GUI_main_dict["premodeling_res_path"] = \
+        GUI_main_dict["res_path"] + "/pre_model_results"
+
+    # Save paths as session states for the result processing page
+    st.session_state["state_result_path"] = GUI_main_dict["res_path"]
+    st.session_state["state_premodeling_res_path"] = \
+        GUI_main_dict["premodeling_res_path"]
 
 
 def save_run_settings() -> None:
@@ -549,7 +554,7 @@ def save_run_settings() -> None:
         session state.
     """
     # save GUI settings in result folder
-    GUI_functions.save_GUI_input_values(
+    GUI_functions.save_json_file(
         input_values_dict=GUI_main_dict,
         json_file_path=st.session_state["state_result_path"]
         + "/GUI_st_run_settings.json")
@@ -598,10 +603,10 @@ if st.session_state["state_submitted_optimization"] == "done":
 
     elif model_definition_input_file != "":
 
-        # save the GUI_main_dice as a chache for the next session
-        GUI_functions.save_GUI_input_values(
+        # save the GUI_main_dict as a chache for the next session
+        GUI_functions.save_GUI_cache_dict(
             input_values_dict=GUI_main_dict,
-            json_file_path=os.path.dirname(__file__) + "/GUI_st_cache.json")
+            json_file_path=path_to_cache_json)
 
         # create spinner info text
         st.info(GUI_helper["main_info_spinner"], icon="ℹ️")
