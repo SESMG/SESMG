@@ -7,13 +7,14 @@
 import os
 import streamlit as st
 import pandas as pd
+from datetime import datetime
 
 from program_files.urban_district_upscaling.pre_processing \
     import urban_district_upscaling_pre_processing
 from program_files.GUI_st.GUI_st_global_functions \
     import st_settings_global, import_GUI_input_values_json, \
     read_markdown_document, create_result_directory, set_result_path
-from datetime import datetime
+
 
 # settings the initial streamlit page settings
 st_settings_global()
@@ -24,8 +25,13 @@ GUI_helper = import_GUI_input_values_json(
     + "/GUI_st_help_comments.json")
 
 
-# initialize session_state
-st.session_state["state_model_definition_sheets"] = ""
+# initialize session_states
+if "state_model_definition_sheets" not in st.session_state:
+    st.session_state["state_model_definition_sheets"] = ""
+if "result_file_name" not in st.session_state:
+    st.session_state["result_file_name"] = ""
+if "state_download" not in st.session_state:
+    st.session_state['state_download'] = False
 
 
 def us_application() -> None:
@@ -89,8 +95,6 @@ def us_application() -> None:
                 model_definition_worksheets
             # define result path as session state
             st.session_state["result_file_name"] = result_file_name
-            # define session state for the downloadbutton as false
-            st.session_state['state_download'] = False
 
 
 def us_application_create_folder() -> None:
@@ -112,11 +116,13 @@ def us_application_create_folder() -> None:
 
 def us_application_start_download() -> None:
     """
-    Function to reset the st.session_state['state_download'] with an
-    on_click event in a streamlit button.
+    Initiates the process to start downloading an Excel file.
+
+    This function prepares and creates an Excel file containing data from
+    specified components and data sheets. It sets up the necessary paths,
+    creates directories if needed, constructs the Excel file path, and saves
+    the data to the file.
     """
-    # set state on True
-    st.session_state['state_download'] = True
 
     # set the result path based on the gui_st_settings.json
     res_folder_path = os.path.join(set_result_path(),
@@ -140,13 +146,14 @@ def us_application_start_download() -> None:
     j = 0
     writer = pd.ExcelWriter(path=st.session_state['state_file_path'],
                             engine="xlsxwriter")
-    # save the excel file 
+    # save the excel file
     for i in st.session_state["state_model_definition_sheets"]:
         st.session_state["state_model_definition_sheets"][i].to_excel(
             excel_writer=writer,
             sheet_name=st.session_state["state_model_definition_worksheets"][j],
             index=False)
         j = j + 1
+
     writer.close()
 
 
@@ -155,10 +162,10 @@ def us_application_create_download_button() -> None:
     Creating the download button and change session state as on_click
     to start the downloading process
     """
-    # define function to reset
+    
+    # Update session_state when button is clicked
     st.session_state['state_download'] = \
         st.sidebar.button(label="Save your model definition",
-                          on_click=us_application_start_download(),
                           help=GUI_helper["res_b_load_results"])
 
 
@@ -202,11 +209,27 @@ def udu_preprocessing_page() -> None:
 
 # running sidebar elements
 us_application()
+us_application_create_download_button()
+
 # running the start / main page if tool did not run yet
-if st.session_state["state_model_definition_sheets"] == "":
+if st.session_state["state_model_definition_sheets"] == "" and \
+        st.session_state['state_download'] is False:
+    # run start page
     standard_page()
+
 # running preprocessing page if tool ran
-else:
+elif st.session_state["state_model_definition_sheets"] != "" and \
+        st.session_state['state_download'] is False:
+    # show result page after finished run
     udu_preprocessing_page()
-    us_application_create_download_button()
-    us_application_create_folder()
+
+# safe the model definition
+elif st.session_state['state_download'] is True:
+    # download the file after button was clicked
+    us_application_start_download()
+    # reset session states
+    st.session_state["state_model_definition_sheets"] = ""
+    st.session_state["result_file_name"] = ""
+    st.session_state['state_download'] = False
+    # 
+    st.experimental_rerun()
