@@ -166,7 +166,7 @@ def us_application_create_download_button() -> None:
     # Update session_state when button is clicked
     st.session_state['state_download'] = \
         st.sidebar.button(label="Save your model definition",
-                          help=GUI_helper["res_b_load_results"])
+                          help=GUI_helper["udu_b_save_file"])
 
 
 def standard_page() -> None:
