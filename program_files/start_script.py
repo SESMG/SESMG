@@ -6,11 +6,12 @@ parent = os.path.abspath('..')
 sys.path.insert(1, parent)
 
 import subprocess as sp
+from multiprocessing import Process
 import matplotlib.pyplot as plt
 import streamlit
 import atexit
 import matplotlib
-from streamlit.web import cli as stcli
+import streamlit.web.bootstrap
 from pathlib import Path
 
 
@@ -23,11 +24,9 @@ if getattr(sys, 'frozen', False) and sys.platform == 'darwin':
         str(Path(sys._MEIPASS)) + "/qtwebengine_locales"
     sys.path.append(str(os.path.dirname(os.path.dirname(
         os.path.abspath(__file__)))))
-elif getattr(sys, 'frozen', False) and sys.platform == 'win32':
-    sys.path.append(str(os.path.dirname(os.path.dirname(
-        os.path.abspath(__file__)))))
-    
-from PySide6 import QtCore, QtWebEngineWidgets, QtWidgets
+    os.chdir(os.path.dirname(__file__))
+
+from PySide2 import QtCore, QtWebEngineWidgets, QtWidgets
 from program_files.GUI_st import GUI_st_global_functions
 
 
@@ -53,55 +52,69 @@ def kill_server(p):
 
 
 if __name__ == '__main__':
+    #os.chdir(os.path.dirname(__file__))
     # Set environment variable to enable Qt WebEngine debugging
-    os.environ["QT_LOGGING_TO_CONSOLE"] = "1"
+    #os.environ["QT_LOGGING_TO_CONSOLE"] = "1"
 
     # Configure Matplotlib to use Qt backend for rendering
-    matplotlib.use("QtAgg")
-    plt.rcParams['figure.hooks'].append('mplcvd:setup')
+    #matplotlib.use("QtAgg")
+    #plt.rcParams['figure.hooks'].append('mplcvd:setup')
 
     # Determine the bundle directory based on frozen or non-frozen state
-    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-        bundle_dir = Path(sys._MEIPASS)
-    else:
-        bundle_dir = Path(__file__).parent.parent
+    #if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    #    bundle_dir = Path(sys._MEIPASS)
+    #else:
+    #    bundle_dir = Path(__file__).parent.parent
 
-    if sys.platform == "darwin":
-        # Define the command to run the Streamlit application
-        cmd = [
-            "streamlit",
-            "run",
-            str(bundle_dir) + "/program_files/GUI_st/1_Main_Application.py",
-            "--server.headless=True",
-            "--global.developmentMode=False"
-        ]
-    elif sys.platform == "win32":
-        # Define the command to run the Streamlit application
-        cmd = [
-            "python",
-            "-m",
-            "streamlit",
-            "run",
-            str(bundle_dir) + "\\program_files\\GUI_st\\1_Main_Application.py",
-            "--server.headless=True",
-            "--global.developmentMode=False"
-        ]
+    # Define the command to run the Streamlit application
+    #cmd = [
+    #    "streamlit",
+    #    "run",
+    #    str(bundle_dir) + "/program_files/GUI_st/1_Main_Application.py",
+    #    "--server.headless=True",
+    #    "--global.developmentMode=False"
+    #]
 
     # Start the Streamlit subprocess and register termination function
-    p = sp.Popen(cmd, stdout=sp.DEVNULL)
-    atexit.register(kill_server, p)
+    #p = sp.Popen(cmd, stdout=sp.DEVNULL)
+    #atexit.register(kill_server, p)
 
     # Set the hostname and port for the Qt WebEngineView
+    #hostname = 'localhost'
+    #port = 8501
+
+    # Initialize a Qt application and WebEngineView
+    #app = QtWidgets.QApplication()
+    #view = QtWebEngineWidgets.QWebEngineView()
+
+    # Load and show the Streamlit app in the WebEngineView
+    #view.load(QtCore.QUrl(f'http://{hostname}:{port}'))
+    #view.show()
+
+    # Start the Qt application event loop
+    #app.exec()
+
+    
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        cmd = "python3.9 -m streamlit run {} --server.headless=True".format(
+            "./program_files/GUI_st/1_Main_Application.py")
+    else:
+        cmd = "streamlit run {} --server.headless=True".format(
+                "./GUI_st/1_Main_Application.py")
+        
+    p = sp.Popen(cmd.split(), stdout=sp.DEVNULL)
+    atexit.register(kill_server, p)
+
     hostname = 'localhost'
     port = 8501
-
+    
+    
     # Initialize a Qt application and WebEngineView
     app = QtWidgets.QApplication()
     view = QtWebEngineWidgets.QWebEngineView()
 
     # Load and show the Streamlit app in the WebEngineView
-    view.load(QtCore.QUrl(f'http://{hostname}:{port}'))
+    view.load(QtCore.QUrl(f'http://localhost:8501'))
     view.show()
 
-    # Start the Qt application event loop
-    app.exec()
+    app.exec_()
