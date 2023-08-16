@@ -16,11 +16,11 @@ authors:
     orcid: 0000-0001-8803-6873
     equal-contrib: true
     affiliation: 1
-  - name: Janik Budde
-    orcid: 0000-0002-1617-5900
-    affiliation: 1
   - name: Jan N. Tockloth
     orcid: 0000-0003-2582-1043
+    affiliation: 1
+  - name: Janik Budde
+    orcid: 0000-0002-1617-5900
     affiliation: 1
   - name: Peter Vennemann
     orcid: 0000-0002-0767-5014
