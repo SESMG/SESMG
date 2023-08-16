@@ -18,15 +18,22 @@ from pathlib import Path
 # Set environment variables for frozen macOS applications using Qt WebEngine
 if getattr(sys, 'frozen', False) and sys.platform == 'darwin':
     # Set the path for Qt WebEngine resources
-    os.environ["QTWEBENGINE_RESOURCES_PATH"] = str(Path(sys._MEIPASS))
+    #os.environ["QTWEBENGINE_RESOURCES_PATH"] = str(Path(sys._MEIPASS))
     # Set the path for Qt WebEngine locales
-    os.environ["QTWEBENGINE_LOCALES_PATH"] = \
-        str(Path(sys._MEIPASS)) + "/qtwebengine_locales"
+    #os.environ["QTWEBENGINE_LOCALES_PATH"] = \
+    #    str(Path(sys._MEIPASS)) + "/qtwebengine_locales"
     sys.path.append(str(os.path.dirname(os.path.dirname(
         os.path.abspath(__file__)))))
-    os.chdir(os.path.dirname(__file__))
-
+os.chdir(os.path.dirname(__file__))
 from PySide2 import QtCore, QtWebEngineWidgets, QtWidgets
+
+if getattr(sys, 'frozen', False) and sys.platform == 'darwin':
+    os.environ["QTWEBENGINEPROCESS_PATH"] = os.path.normpath(os.path.join(
+        sys._MEIPASS, 'PySide2', 'QT', 'lib',
+        'QtWebEngineCore.framework', 'Helpers', 'QtWebEngineProcess.app',
+        'Contents', 'MacOS', 'QtWebEngineProcess'
+        ))
+
 from program_files.GUI_st import GUI_st_global_functions
 
 
@@ -93,11 +100,15 @@ if __name__ == '__main__':
 
     # Start the Qt application event loop
     #app.exec()
+    os.chdir(os.path.dirname(__file__))
 
     
-    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS') and sys.platform == "darwin":
         cmd = "python3.9 -m streamlit run {} --server.headless=True".format(
             "./program_files/GUI_st/1_Main_Application.py")
+    elif getattr(sys, 'frozen', False) and sys.platform == "win32":
+        cmd = "python -m streamlit run {} --server.headless=True --server.enableXsrfProtection=false".format(
+            ".\\program_files\\GUI_st\\1_Main_Application.py")
     else:
         cmd = "streamlit run {} --server.headless=True".format(
                 "./GUI_st/1_Main_Application.py")
