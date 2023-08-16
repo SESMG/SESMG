@@ -369,14 +369,20 @@ st_settings_global()
 if "state_result_path" not in st.session_state:
     st.session_state["state_result_path"] = "not set"
 
+#st.write(read_markdown_document(
+#    document_path="docs/GUI_texts/results.md",
+#    folder_path=f'{"docs/images/manual/Results/*"}'))
+
 # start sidebar functions
 result_processing_sidebar()
 
 # show introduction page if no result paths are not set
 if st.session_state["state_result_path"] == "not set":
-    read_markdown_document(
+    doc = read_markdown_document(
         document_path="docs/GUI_texts/results.md",
         folder_path=f'{"docs/images/manual/Results/*"}')
+    
+    st.markdown(''.join(doc), unsafe_allow_html=True)
 
 # check if components.csv is in the result folder. Loading result page \
 # elements for a non-pareto run if so.
