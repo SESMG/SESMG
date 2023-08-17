@@ -44,3 +44,6 @@ datas += collect_data_files('charset_normalizer', include_py_files=True)
 datas += collect_data_files('certifi', include_py_files=True)
 datas += collect_data_files('colorama', include_py_files=True)
 datas += collect_data_files('altair', include_py_files=True)
+datas += collect_data_files('kiwisolver', include_py_files=True)
+datas += collect_data_files('decouple', include_py_files=True)
+
