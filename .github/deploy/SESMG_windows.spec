@@ -18,9 +18,7 @@ block_cipher = None
 
 a = Analysis(
     ['..\\..\\program_files\\start_script.py'],
-    pathex=["C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python39\\libs",
-	    "C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python39\\Lib\\site-packages",
-	    "C:\\Users\\User\\Desktop\\Gregor\\SESMG-deployment\\Lib\\site-packages"],
+    pathex=["..\\..\\Lib\\site-packages"],
     binaries=[],
     datas=datas,
     hiddenimports=[],
