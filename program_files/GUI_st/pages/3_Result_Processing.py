@@ -47,7 +47,7 @@ def result_processing_sidebar() -> None:
         if run_existing_results:
             # set session state with full folder path to the result folder
             # choosing the standard result directory
-            # Define the path to the results folder within based on the 
+            # Define the path to the results folder within based on the
             # given directory in GUI_st_settings.json
             st.session_state["state_result_path"] = \
                 os.path.join(set_result_path(),

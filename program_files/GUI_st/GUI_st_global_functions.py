@@ -384,9 +384,12 @@ def load_result_folder_list() -> list:
     return existing_result_foldernames_list
 
 
-def check_for_dependencies():
+def check_for_dependencies(solver: str):
     """
         Checks rather Graphviz, CBC or gurobi are installed.
+
+        :param solver: name of the solver chosen in the GUI sidebar
+        :type document_path: str
     """
 
     # graphviz paths
@@ -404,20 +407,45 @@ def check_for_dependencies():
     if not dot_bool:
         raise ImportError("Graphviz is not installed on your device.")
 
-    # cbc solver paths
-    #cbc_paths = ["/usr/local/bin",
-    #             "/opt/homebrew/bin"]
-    #cbc_bool = False
-    #for path in cbc_paths:
-    #    if Path(path).is_dir():
-    #        if Path(path).is_dir():
-    ##            list = glob.glob(path + "/*")
-     #           for i in list:
-     #               if "cbc" in i:
-     #                   cbc_bool = True
-      #                  os.environ["PATH"] += os.pathsep + path
-    #if not cbc_bool:
-    #    raise ImportError("CBC Solver is not installed on your device.")
+    # Check if a solver is installed
+#     cbc_bool = False
+#     gurobi_bool = False
+#
+#     if solver == "cbc":
+#         # cbc solver paths
+#         cbc_paths = ["/opt/anaconda3/bin",
+#                      "/usr/local/bin",
+#                      "/opt/homebrew/bin"]
+#         for path in cbc_paths:
+#             if Path(path).is_dir():
+#                 if Path(path).is_dir():
+#                     list = glob.glob(path + "/*")
+#                     for i in list:
+#                         if "cbc" in i:
+#                             cbc_bool = True
+#                             os.environ["PATH"] += os.pathsep + path
+#
+#     if solver == "gurobi":
+#         # TODO paths need to be updated for win
+#         # gurobi solver paths
+#         gurobi_paths = ["/opt/anaconda3/bin",
+#                         "/usr/local/bin",
+#                         "/opt/homebrew/bin"]
+#         for path in gurobi_paths:
+#             if Path(path).is_dir():
+#                 if Path(path).is_dir():
+#                     list = glob.glob(path + "/*")
+#                     for i in list:
+#                         if "cbc" in i:
+#                             gurobi_bool = True
+#                             os.environ["PATH"] += os.pathsep + path
+#
+#     if not cbc_bool and gurobi_bool:
+#         raise ImportError("No supported solver is installed on your device. \
+#                           We recommend using CBC or gurobi. Check our \
+#                           documentation for more information. If you want \
+#                           to use another solver please open an issue on \
+#                           GitHub.")
 
 
 def set_parenting_sesmg_path() -> str:
