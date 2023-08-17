@@ -148,11 +148,36 @@ of the gurobi-solver is described in detail `here <https://www.gurobi.com/docume
 
 4. Installing the SESMG application
 You will find the latest released SESMG version here: `SESMG releases on Github <https://github.com/SESMG/SESMG/releases/latest/>`_. 
-Download the SESMG.dmg and place it in a directory of your choice. You can 
-change the directory afterwards. Open the SESMG application by running the 
-executable file as commum. Be aware that it can take several minutes and will 
-be running withouth any loading or progress screen. Check your taskmanager to 
-be sure the process startet by looking for SESMG.
+Download the SESMG.dmg, open it and place the application in a directory of 
+your choice. You can change the directory afterwards. 
+
+.. figure:: images/manual/Installation/sesmg_installation_mac_5_dmg.png
+   :width: 40 %
+   :align: center
+
+Due to a bug in a subpacke it is not possible yet to open the SESMG as commum 
+by double-clicking it. You need to use the terminal to open the application. 
+Navitage to the directory by using the command inputs (e. g. cd) or right-click 
+the folder in which the application is placed (e. g. "desktop") and choose 
+"new terminal at the folder". Type in the command ``open SESMG.app``.
+
+.. figure:: images/manual/Installation/sesmg_installation_mac_6_openapp.png
+   :width: 40 %
+   :align: center
+
+Be aware that it can take several minutes and will be running withouth any 
+loading or progress screen. Check your taskmanager to be sure the process 
+startet by looking for SESMG.
+
+.. warning::
+
+    A known issue for macOS is that the programm does not close when you close 
+    the app. To kill all processes you need to use your taskmanager and stop 
+    the "SESMG"-processes manually. Make sure to kill it after each session. 
+    Otherwise you will not be able to reopen it by using the way described 
+    above. 
+    The problem is caused by a subpackage. We are working on a better 
+    solution! 
 
 .. note:: 
 
