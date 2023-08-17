@@ -155,7 +155,7 @@ your choice. You can change the directory afterwards.
    :width: 40 %
    :align: center
 
-Due to a bug in a subpacke it is not possible yet to open the SESMG as commum 
+Due to a bug in a subpackage it is not possible yet to open the SESMG as commum 
 by double-clicking it. You need to use the terminal to open the application. 
 Navitage to the directory by using the command inputs (e. g. cd) or right-click 
 the folder in which the application is placed (e. g. "desktop") and choose 
