@@ -1,13 +1,18 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import copy_metadata
 
+import sys
+sys.setrecursionlimit(sys.getrecursionlimit()*5)
+
 datas = [('../../program_files','program_files'),
 	 ('../../docs', 'docs'),
          ('../../README.md', '.'),
 	 ('../../Lib/site-packages/typing_extensions.py', '.'),
 	 ('../../Lib/site-packages/six.py', '.'),
 	 ('../../Lib/site-packages/memory_profiler.py', '.'),
-         ('../../Lib/site-packages/decorator.py', '.')]
+         ('../../Lib/site-packages/decorator.py', '.'),
+	 ('../../Lib/site-packages/cycler.py', '.'),
+	 ('../../Lib/site-packages/decouple.py', '.')]
 datas += copy_metadata('streamlit')
 
 
@@ -41,7 +46,7 @@ exe = EXE(
     a.datas,
     [],
     name='SESMG',
-    debug=True,
+    debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
@@ -57,6 +62,6 @@ exe = EXE(
 app = BUNDLE(
     exe,
     name='SESMG.exe',
-    icon=None,
+    icon='SESMG.ico',
     bundle_identifier=None,
 )
