@@ -84,9 +84,6 @@ def result_processing_sidebar() -> None:
             st.session_state["state_pareto_result_path"] = \
                 os.path.join(st.session_state["state_result_path"],
                              pareto_folder_dict[pareto_point_chosen])
-            # st.session_state["state_pareto_result_path"] = \
-            #     st.session_state["state_result_path"] + \
-            #     "/" + pareto_folder_dict[pareto_point_chosen]
 
 
 def short_result_summary_time(result_path_summary) -> None:
