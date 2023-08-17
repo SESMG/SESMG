@@ -1,6 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import copy_metadata
 
+import sys
+sys.setrecursionlimit(sys.getrecursionlimit()*5)
+
 datas = [('../../program_files','program_files'),
 	 ('../../docs', 'docs'),
          ('../../README.md', '.'),
