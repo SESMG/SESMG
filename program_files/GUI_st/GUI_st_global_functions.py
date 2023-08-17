@@ -405,19 +405,19 @@ def check_for_dependencies():
         raise ImportError("Graphviz is not installed on your device.")
 
     # cbc solver paths
-    cbc_paths = ["/usr/local/bin",
-                 "/opt/homebrew/bin"]
-    cbc_bool = False
-    for path in cbc_paths:
-        if Path(path).is_dir():
-            if Path(path).is_dir():
-                list = glob.glob(path + "/*")
-                for i in list:
-                    if "cbc" in i:
-                        cbc_bool = True
-                        os.environ["PATH"] += os.pathsep + path
-    if not cbc_bool:
-        raise ImportError("CBC Solver is not installed on your device.")
+    #cbc_paths = ["/usr/local/bin",
+    #             "/opt/homebrew/bin"]
+    #cbc_bool = False
+    #for path in cbc_paths:
+    #    if Path(path).is_dir():
+    #        if Path(path).is_dir():
+    ##            list = glob.glob(path + "/*")
+     #           for i in list:
+     #               if "cbc" in i:
+     #                   cbc_bool = True
+      #                  os.environ["PATH"] += os.pathsep + path
+    #if not cbc_bool:
+    #    raise ImportError("CBC Solver is not installed on your device.")
 
 
 def set_parenting_sesmg_path() -> str:
