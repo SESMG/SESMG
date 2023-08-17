@@ -2,44 +2,45 @@ name: Build Executables
 on: push
 
 jobs:
-  #macos:
-  #  name: Build for macOS
-  #  runs-on: macos-latest
-  #  steps:
-  #    - name: Checkout
-  #      uses: actions/checkout@v2
+  macos:
+    name: Build for macOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-  #    - name: Setup Python
-  #      run: |
-  #        curl https://www.python.org/ftp/python/3.9.13/python-3.9.13-macosx10.9.pkg --output pythonInstaller.pkg
-  #        sudo installer -pkg pythonInstaller.pkg -target /
-  #    - name: Create Executable
-  #      run: |
-  #        python3 -m venv .
-  #        . bin/activate
-  #        pip3 install -U setuptools wheel pip pyinstaller
-  #        pip3 install twisted[tls] appnope requests certifi
-  #        pip3 install -r requirements.txt  
-  #        pyinstaller .github/deploy/SESMG_macos.spec
-  #    - name: Prepare for deployment
-  #      run: |
-  #        brew install create-dmg
-  #        mkdir -p dist/dmg
-  #        cp -r "dist/SESMG.app" dist/dmg
-  #        create-dmg \
-  #        --volname "SESMG" \
-  #        --hide-extension "SESMG.app" \
-  #        "dist/SESMG.dmg" \
-  #        "dist/dmg/"
-  #    - name: Upload Artifact
-  #      uses: actions/upload-artifact@v3
-  #      with:
-  #        name: SESMG.dmg
-  #        path: dist/SESMG.dmg
+      - name: Setup Python
+        run: |
+          curl https://www.python.org/ftp/python/3.9.13/python-3.9.13-macosx10.9.pkg --output pythonInstaller.pkg
+          sudo installer -pkg pythonInstaller.pkg -target /
+      - name: Create Executable
+        run: |
+          python3 -m venv .
+          . bin/activate
+          PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install git+https://github.com/pyinstaller/pyinstaller.git@develop
+          pip3 install twisted[tls] appnope requests certifi
+          pip3 install -r requirements.txt  
+          pyinstaller .github/deploy/SESMG_macos.spec
+      - name: Prepare for deployment
+        run: |
+          brew install create-dmg
+          mkdir -p dist/dmg
+          cp -r "dist/SESMG.app" dist/dmg
+          create-dmg \
+          --volname "SESMG" \
+          --hide-extension "SESMG.app" \
+          "dist/SESMG.dmg" \
+          "dist/dmg/"
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: SESMG.dmg
+          path: dist/SESMG.dmg
           
   linux:
     name: Build on linux
     runs-on: ubuntu-20.04
+    needs: macos 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -83,7 +84,7 @@ jobs:
   windows:
       name: Build on windows
       runs-on: windows-latest
-      needs: linux
+      needs: [macos, linux]
       steps:
         - name: Checkout
           uses: actions/checkout@v2
@@ -116,7 +117,7 @@ jobs:
   deploy:
     name: Push builds
     runs-on: ubuntu-20.04
-    needs: [linux, windows]
+    needs: [macos, linux, windows]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
