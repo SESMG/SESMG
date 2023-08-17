@@ -107,8 +107,8 @@ if __name__ == '__main__':
         cmd = "python3.9 -m streamlit run {} --server.headless=True".format(
             "./program_files/GUI_st/1_Main_Application.py")
     elif getattr(sys, 'frozen', False) and sys.platform == "win32":
-        cmd = "python -m streamlit run {} --server.headless=True --server.enableXsrfProtection=false".format(
-            ".\\program_files\\GUI_st\\1_Main_Application.py")
+        cmd = "python -m streamlit run {} --server.headless=True --global.developmentMode=False --server.enableXsrfProtection=false".format(
+            "program_files\\GUI_st\\1_Main_Application.py")
     else:
         cmd = "streamlit run {} --server.headless=True".format(
                 "./GUI_st/1_Main_Application.py")
