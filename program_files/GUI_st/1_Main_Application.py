@@ -586,7 +586,8 @@ main_clear_cache_sidebar()
 
 # check rather the dependencies to be installed by the user are
 # installed
-GUI_functions.check_for_dependencies()
+# TODO: update function and implement again (see global_functions)
+# GUI_functions.check_for_dependencies()
 
 # load the start page if modell run is not submitted
 if st.session_state["state_submitted_optimization"] == "not done":
