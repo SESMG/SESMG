@@ -164,6 +164,15 @@ the folder in which the application is placed (e. g. "desktop") and choose
 .. figure:: images/manual/Installation/sesmg_installation_mac_6_openapp.png
    :width: 40 %
    :align: center
+   
+.. note:: 
+
+	You have to confirm the file run in your mac's security settings to be able 
+	to run it. Confirm with 'Open Anyway'.
+
+.. figure:: images/manual/Installation/sesmg_installation_mac_3.png
+   :width: 40 %
+   :align: center
 
 Be aware that it can take several minutes and will be running withouth any 
 loading or progress screen. Check your taskmanager to be sure the process 
