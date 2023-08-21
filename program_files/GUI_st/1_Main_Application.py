@@ -584,10 +584,6 @@ def change_state_submitted_clear_cache() -> None:
 model_definition_input_file = main_input_sidebar()
 main_clear_cache_sidebar()
 
-# check rather the dependencies to be installed by the user are
-# installed
-GUI_functions.check_for_dependencies(solver=GUI_main_dict["input_solver"])
-
 # load the start page if modell run is not submitted
 if st.session_state["state_submitted_optimization"] == "not done":
     main_start_page()
@@ -602,6 +598,10 @@ if st.session_state["state_submitted_optimization"] == "done":
         main_error_definition()
 
     elif model_definition_input_file != "":
+
+        # check rather the dependencies to be installed by the user are
+        # installed
+        GUI_functions.check_for_dependencies(solver=GUI_main_dict["input_solver"])
 
         # save the GUI_main_dict as a chache for the next session
         GUI_functions.save_GUI_cache_dict(
