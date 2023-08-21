@@ -103,6 +103,16 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
     # in the model definition file
     busd = Bus.buses(nodes_data=nodes_data, nodes=nodes)
     
+    if len(nodes_data["buses"][~nodes_data["buses"][
+        "district heating conn."].isin(["0", 0])]) > 0:
+        # creates the thermal network components as defined in the model
+        # definition file and adds them to the list of components (nodes)
+        nodes, busd = district_heating.district_heating(
+            nodes_data=nodes_data, nodes=nodes, busd=busd,
+            district_heating_path=district_heating_path,
+            result_path=result_path, cluster_dh=cluster_dh,
+            anergy_or_exergy=False)
+    
     # PARALLEL CREATION OF ALL OBJECTS OF THE MODEL DEFINITION FILE
 
     # creates source objects as defined in the model definition file and
@@ -133,16 +143,6 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
     thread3.join()
     thread4.join()
     thread5.join()
-    
-    if len(nodes_data["buses"][~nodes_data["buses"][
-        "district heating conn."].isin(["0", 0])]) > 0:
-        # creates the thermal network components as defined in the model
-        # definition file and adds them to the list of components (nodes)
-        nodes = district_heating.district_heating(
-            nodes_data=nodes_data, nodes=nodes, busd=busd,
-            district_heating_path=district_heating_path,
-            result_path=result_path, cluster_dh=cluster_dh,
-            anergy_or_exergy=False)
     
     # adds the created components to the energy system created in the
     # beginning of this method

@@ -174,7 +174,8 @@ def append_pipe(nodes: list, length: float, street: str,
 
 
 def remove_redundant_sinks(
-        oemof_opti_model: optimization.OemofInvestOptimizationModel
+        oemof_opti_model: optimization.OemofInvestOptimizationModel,
+        busd: dict
 ) -> optimization.OemofInvestOptimizationModel:
     """
         Within the dhnx algorithm empty sinks are created,
@@ -188,18 +189,22 @@ def remove_redundant_sinks(
             (optimization.OemofInvestOptimizationModel) - dh model \
             without unused sinks
     """
+    from oemof.solph import Flow
     sinks = []
     # get demand created bei dhnx and add them to the list "sinks"
     for i in range(len(oemof_opti_model.nodes)):
         if "demand" in str(oemof_opti_model.nodes[i]):
             sinks.append(i)
+        if "bus" in str(oemof_opti_model.nodes[i]):
+            busd.update({str(oemof_opti_model.nodes[i].label):
+                             oemof_opti_model.nodes[i]})
     # delete the created sinks
     already_deleted = 0
     for sink in sinks:
         oemof_opti_model.nodes.pop(sink - already_deleted)
         already_deleted += 1
     # return the oemof model without the unused sinks
-    return oemof_opti_model
+    return oemof_opti_model, busd
 
 
 def create_connection_points(consumers: pandas.DataFrame,
@@ -645,8 +650,8 @@ def connect_dh_to_system(
             (optimization.OemofInvestOptimizationModel) - oemof dh \
             model within connection to the main model
     """
-    oemof_opti_model = remove_redundant_sinks(
-        oemof_opti_model=oemof_opti_model)
+    oemof_opti_model, busd = remove_redundant_sinks(
+        oemof_opti_model=oemof_opti_model, busd=busd)
     oemof_opti_model = calc_heat_pipe_attributes(
         oemof_opti_model=oemof_opti_model,
         pipe_types=pipe_types)
@@ -691,7 +696,7 @@ def connect_dh_to_system(
             )
         )
         
-    return oemof_opti_model
+    return oemof_opti_model, busd
 
 
 def create_link_between_dh_heat_bus_and_excess_shortage_bus(
@@ -912,7 +917,7 @@ def create_connect_dhnx(nodes_data: dict, busd: dict,
             thermal_network=thermal_net,
             nodes_data=nodes_data)
     else:
-        oemof_opti_model = connect_dh_to_system(
+        oemof_opti_model, busd = connect_dh_to_system(
             oemof_opti_model=oemof_opti_model,
             busd=busd,
             pipe_types=nodes_data["pipe types"],
@@ -938,7 +943,7 @@ def create_connect_dhnx(nodes_data: dict, busd: dict,
         anergy_or_exergy=anergy_or_exergy,
         thermal_net=thermal_net)
     
-    return oemof_opti_model.nodes
+    return oemof_opti_model.nodes, busd
 
 
 def create_dh_map(thermal_net: ThermalNetwork, result_path: str) -> None:
@@ -1029,7 +1034,7 @@ def use_data_of_already_calculated_thermal_network_data(
 def district_heating(
     nodes_data: dict, nodes: list, busd: dict, district_heating_path: str,
     result_path: str, cluster_dh: bool, anergy_or_exergy: bool
-) -> list:
+) -> (list, dict):
     """
         The district_heating method represents the main method of heat
         network creation, it is called by the main algorithm to perform
@@ -1092,6 +1097,7 @@ def district_heating(
             thermal_net = create_supply_line(
                 streets=nodes_data["district heating"],
                 thermal_net=thermal_net)
+            
             # if any consumers where connected to the thermal network
             if thermal_net.components["consumers"].values.any():
                 thermal_net = adapt_dhnx_style(thermal_net=thermal_net,
@@ -1116,17 +1122,17 @@ def district_heating(
             result_path=result_path)
     if len(thermal_net.components["pipes"]) > 0:
         if cluster_dh == 1:
-            new_nodes = create_connect_dhnx(nodes_data=nodes_data,
+            new_nodes, busd = create_connect_dhnx(nodes_data=nodes_data,
                                             busd=busd,
                                             clustering=True,
                                             anergy_or_exergy=anergy_or_exergy,
                                             thermal_net=thermal_net)
         else:
-            new_nodes = create_connect_dhnx(nodes_data=nodes_data,
+            new_nodes, busd = create_connect_dhnx(nodes_data=nodes_data,
                                             busd=busd,
                                             clustering=False,
                                             anergy_or_exergy=anergy_or_exergy,
                                             thermal_net=thermal_net)
         for node in new_nodes:
             nodes.append(node)
-    return nodes
+    return nodes, busd

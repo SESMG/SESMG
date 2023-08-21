@@ -420,6 +420,11 @@ class Transformers:
                 float("+inf"),
                 self.weather_data["water_temp"],
             ],
+            "thermal-network": [
+                None,
+                float("+inf"),
+                self.weather_data["heat_network_temp"],
+            ]
         }
         # differentiation between heat sources under consideration of mode
         # of operation
@@ -429,14 +434,33 @@ class Transformers:
                 transformer["label"] + " Error in heat source attribute"
             )
         )
-        
-        # Creates heat source for transformer. The heat source costs are
-        # considered by the transformer.
-        self.nodes_transformer.append(
-            Source(
-                label=transformer_label,
-                outputs={
-                    self.busd[transformer["label"] + temp + "_bus"]: Flow(
+        if transformer_label is not None:
+            # Creates heat source for transformer. The heat source costs are
+            # considered by the transformer.
+            self.nodes_transformer.append(
+                Source(
+                    label=transformer_label,
+                    outputs={
+                        self.busd[transformer["label"] + temp + "_bus"]: Flow(
+                            investment=Investment(
+                                maximum=heatsource_cap,
+                                custom_attributes={
+                                    "periodical_constraint_costs": 0,
+                                    "fix_constraint_costs": 0},
+                            ),
+                            custom_attributes={"emission_factor": 0},
+                        )
+                    },
+                )
+            )
+        else:
+            # enables the connection of a compression heat transformer
+            # to the thermal network by connecting its input bus on the
+            # in input2 given input bus
+            self.nodes_transformer.append(
+                Transformer(
+                    label=transformer["label"] + "thermal_network_connection",
+                    inputs={self.busd[transformer["input2"]]: Flow(
                         investment=Investment(
                             maximum=heatsource_cap,
                             custom_attributes={
@@ -444,10 +468,27 @@ class Transformers:
                                 "fix_constraint_costs": 0},
                         ),
                         custom_attributes={"emission_factor": 0},
-                    )
-                },
+                    )},
+                    outputs={
+                        self.busd[transformer["label"] + temp + "_bus"]: Flow(
+                            investment=Investment(
+                                maximum=heatsource_cap,
+                                custom_attributes={
+                                    "periodical_constraint_costs": 0,
+                                    "fix_constraint_costs": 0},
+                            ),
+                            custom_attributes={"emission_factor": 0},
+                        )
+                    },
+                    conversion_factors={
+                        self.busd[transformer["input2"]]:
+                            [1] * len(self.weather_data["heat_network_temp"]),
+                        self.busd[transformer["input"]]:
+                            [1] * len(self.weather_data["heat_network_temp"])
+                    }
+                )
             )
-        )
+            
         
         # Returns logging info
         logging.info("\t Heat Source created: " + transformer["label"]
