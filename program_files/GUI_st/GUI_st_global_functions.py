@@ -413,9 +413,9 @@ def check_for_dependencies(solver: str):
 
     if solver == "cbc":
         # cbc solver paths
-        cbc_paths = ["/opt/anaconda3/bin",
-                     "/usr/local/bin",
-                     "/opt/homebrew/bin"]
+        cbc_paths = ["/opt/homebrew/bin",
+                     "/opt/anaconda3/bin",
+                     "/usr/local/bin"]
         for path in cbc_paths:
             if Path(path).is_dir():
                 if Path(path).is_dir():
@@ -428,20 +428,21 @@ def check_for_dependencies(solver: str):
     if solver == "gurobi":
         # TODO paths need to be updated for win
         # gurobi solver paths
-        gurobi_paths = ["/opt/anaconda3/bin",
-                        "/usr/local/bin",
+        gurobi_paths = ["/usr/local/bin",
+                        "/opt/anaconda3/bin",
                         "/opt/homebrew/bin"]
         for path in gurobi_paths:
             if Path(path).is_dir():
                 if Path(path).is_dir():
                     list = glob.glob(path + "/*")
                     for i in list:
-                        if "cbc" in i:
+                        if "gurobi" in i:
                             gurobi_bool = True
                             os.environ["PATH"] += os.pathsep + path
 
-    if not cbc_bool and gurobi_bool:
-        raise ImportError("No supported solver is installed on your device. \
+    if not cbc_bool or gurobi_bool:
+        raise ImportError("The selected solver can not be found on your \
+                          device. Make sure that it is installed correctly. \
                           We recommend using CBC or gurobi. Check our \
                           documentation for more information. If you want \
                           to use another solver please open an issue on \
