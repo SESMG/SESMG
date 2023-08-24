@@ -12,7 +12,8 @@ datas = [('../../program_files','program_files'),
 	 ('../../Lib/python3.9/site-packages/memory_profiler.py', '.'),
          ('../../Lib/python3.9/site-packages/decorator.py', '.'),
 	 ('../../Lib/python3.9/site-packages/cycler.py', '.'),
-	 ('../../Lib/python3.9/site-packages/decouple.py', '.')]
+	 ('../../Lib/python3.9/site-packages/decouple.py', '.'),
+	 ('../../.streamlit','.streamlit')]
 datas += copy_metadata('streamlit')
 
 
@@ -44,7 +45,7 @@ exe = EXE(
     a.datas,
     [],
     name='SESMG',
-    debug=False,
+    debug=True,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
