@@ -77,14 +77,18 @@ def us_application() -> None:
                         r"../../urban_district_upscaling/plain_scenario.xlsx")
                 ]
 
-            # get the model definition sheet as a dict and model definition
-            # worksheets as a list as return of the main urban district
-            # upscaling function
-            model_definition_sheets, model_definition_worksheets = \
-                urban_district_upscaling_pre_processing(
-                    paths=us_path_list,
-                    clustering=False,
-                    clustering_dh=False)
+                # get the model definition sheet as a dict and model definition
+                # worksheets as a list as return of the main urban district
+                # upscaling function
+                model_definition_sheets, model_definition_worksheets = \
+                    urban_district_upscaling_pre_processing(
+                        paths=us_path_list,
+                        clustering=False,
+                        clustering_dh=False)
+                    
+            else:
+                
+                st.error()
 
             # define urban district upscaling model definition as session state
             st.session_state["state_model_definition_sheets"] = \
