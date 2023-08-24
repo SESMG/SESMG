@@ -85,10 +85,12 @@ def us_application() -> None:
                         paths=us_path_list,
                         clustering=False,
                         clustering_dh=False)
-                    
+
+            # raise streamlit error message when an input element is missing
             else:
-                
-                st.error()
+
+                st.error(body=GUI_helper["udu_error_defintion"],
+                         icon="🚨")
 
             # define urban district upscaling model definition as session state
             st.session_state["state_model_definition_sheets"] = \
