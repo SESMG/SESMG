@@ -395,7 +395,8 @@ def check_for_dependencies(solver: str):
     # graphviz paths
     dot_paths = ["C:\\Program Files (x86)\\Graphviz2.38\\bin",
                  "/usr/local/bin",
-                 "/opt/anaconda3/bin"]
+                 "/opt/anaconda3/bin",
+                 "/opt/homebrew/bin"]
     dot_bool = False
     for path in dot_paths:
         if Path(path).is_dir():
