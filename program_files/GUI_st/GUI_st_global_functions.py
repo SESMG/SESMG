@@ -416,7 +416,9 @@ def check_for_dependencies(solver: str):
         # cbc solver paths
         cbc_paths = ["/opt/homebrew/bin",
                      "/opt/anaconda3/bin",
-                     "/usr/local/bin"]
+                     "/usr/local/bin",
+                     "C:\\Program Files\\COIN\\bin"
+                     ]
         for path in cbc_paths:
             if Path(path).is_dir():
                 if Path(path).is_dir():
