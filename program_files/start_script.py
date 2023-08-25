@@ -122,7 +122,7 @@ if __name__ == '__main__':
         
         #p = sp.Popen(streamlit.web.bootstrap.run("./program_files/GUI_st/1_Main_Application.py", '', [], flag_options={"server.headless": "true", "global.developmentMode": "false", "server.enableXsrfProtection": "false", "server.port": "8501"}), stdout=sp.DEVNULL)
 
-    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    elif getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
         # spawn for win 
         multiprocessing.set_start_method("spawn")
         process2 = multiprocessing.Process(target=start_streamlit, args=[])
