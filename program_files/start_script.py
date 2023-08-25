@@ -60,19 +60,49 @@ def create_pyside_gui():
     app.exec_()
 
 
-def start_streamlit():
-    from streamlit import config as _config
+# =============================================================================
+# def start_streamlit():
+#     from streamlit import config as _config
+#     os.chdir(os.path.dirname(__file__))
+#     _config.set_option("server.headless", True)
+#     _config.set_option("global.developmentMode", False)
+#     _config.set_option("server.enableXsrfProtection", False)
+#     _config.show_config()
+#     import streamlit.web.bootstrap
+#     streamlit.web.bootstrap.run(str(sys._MEIPASS) + "/program_files/GUI_st/1_Main_Application.py", '', [], {})
+# =============================================================================
+
+
+def start_streamlit() -> None:
+    """
+    This function initializes and starts a Streamlit application in headless \
+    mode.
+
+    This function sets up the Streamlit configuration options for headless \
+    mode, disables development mode and XSRF protection, and then runs the \
+    Streamlit application.
+    """
+    # Change the current working directory to the directory of this script
     os.chdir(os.path.dirname(__file__))
+
+    # Configure Streamlit options
+    from streamlit import config as _config
     _config.set_option("server.headless", True)
     _config.set_option("global.developmentMode", False)
     _config.set_option("server.enableXsrfProtection", False)
+    
+    # Show the Streamlit configuration
     _config.show_config()
+    
+    # Import and run the Streamlit application
     import streamlit.web.bootstrap
     streamlit.web.bootstrap.run(str(sys._MEIPASS) + "/program_files/GUI_st/1_Main_Application.py", '', [], {})
 
+
 if __name__ == '__main__':
 
-    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS') and sys.platform == "darwin":
+        # fork for MacOS
         multiprocessing.set_start_method("fork")
         process2 = multiprocessing.Process(target=start_streamlit, args=[])
         process2.start()
@@ -92,6 +122,13 @@ if __name__ == '__main__':
         
         #p = sp.Popen(streamlit.web.bootstrap.run("./program_files/GUI_st/1_Main_Application.py", '', [], flag_options={"server.headless": "true", "global.developmentMode": "false", "server.enableXsrfProtection": "false", "server.port": "8501"}), stdout=sp.DEVNULL)
 
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        # spawn for win 
+        multiprocessing.set_start_method("spawn")
+        process2 = multiprocessing.Process(target=start_streamlit, args=[])
+        process2.start()
+        create_pyside_gui()
+        
     else:
         from streamlit.web import cli as stcli
 
