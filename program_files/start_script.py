@@ -1,3 +1,8 @@
+"""
+    Gregor Becker - gregor.becker@fh-muenster.de
+    Jan N. Tockloth - jan.tockloth@fh-muenster.de
+"""
+
 import traceback
 import sys
 import os
@@ -22,6 +27,9 @@ os.chdir(os.path.dirname(__file__))
 
 from PySide2 import QtCore, QtWebEngineWidgets, QtWidgets
 from program_files.GUI_st import GUI_st_global_functions
+from program_files.start_streamlit import start_streamlit
+# start_streamlit needs to be imported from an external file, due to a bug
+# in the multiprcessing package
 
 
 def kill_server(p):
@@ -73,37 +81,39 @@ def create_pyside_gui():
 # =============================================================================
 
 
-def start_streamlit() -> None:
-    """
-    This function initializes and starts a Streamlit application in headless \
-    mode.
-
-    This function sets up the Streamlit configuration options for headless \
-    mode, disables development mode and XSRF protection, and then runs the \
-    Streamlit application.
-    """
-    # Change the current working directory to the directory of this script
-    os.chdir(os.path.dirname(__file__))
-
-    # Configure Streamlit options
-    from streamlit import config as _config
-    _config.set_option("server.headless", True)
-    _config.set_option("global.developmentMode", False)
-    _config.set_option("server.enableXsrfProtection", False)
-    
-    # Show the Streamlit configuration
-    _config.show_config()
-    
-    # Import and run the Streamlit application
-    import streamlit.web.bootstrap
-    streamlit.web.bootstrap.run(str(sys._MEIPASS) + "/program_files/GUI_st/1_Main_Application.py", '', [], {})
+# =============================================================================
+# def start_streamlit() -> None:
+#     """
+#     This function initializes and starts a Streamlit application in headless \
+#     mode.
+# 
+#     This function sets up the Streamlit configuration options for headless \
+#     mode, disables development mode and XSRF protection, and then runs the \
+#     Streamlit application.
+#     """
+#     # Change the current working directory to the directory of this script
+#     os.chdir(os.path.dirname(__file__))
+# 
+#     # Configure Streamlit options
+#     from streamlit import config as _config
+#     _config.set_option("server.headless", True)
+#     _config.set_option("global.developmentMode", False)
+#     _config.set_option("server.enableXsrfProtection", False)
+#     
+#     # Show the Streamlit configuration
+#     _config.show_config()
+#     
+#     # Import and run the Streamlit application
+#     import streamlit.web.bootstrap
+#     streamlit.web.bootstrap.run(str(sys._MEIPASS) + "/program_files/GUI_st/1_Main_Application.py", '', [], {})
+# =============================================================================
 
 
 if __name__ == '__main__':
 
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS') and sys.platform == "darwin":
         # fork for MacOS
-        multiprocessing.set_start_method("fork")
+        multiprocessing.set_start_method("spawn")
         process2 = multiprocessing.Process(target=start_streamlit, args=[])
         process2.start()
         create_pyside_gui()
