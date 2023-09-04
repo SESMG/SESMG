@@ -7,10 +7,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
-        with:
-          node-version: latest
+        uses: actions/checkout@v3
       - name: Setup Python
         run: |
           curl https://www.python.org/ftp/python/3.9.13/python-3.9.13-macosx10.9.pkg --output pythonInstaller.pkg
@@ -45,10 +42,7 @@ jobs:
     needs: macos 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
-        with:
-          node-version: latest
+        uses: actions/checkout@v3
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -91,10 +85,7 @@ jobs:
       needs: [macos, linux]
       steps:
         - name: Checkout
-          uses: actions/checkout@v2
-        - uses: actions/setup-node@v3
-          with:
-            node-version: latest
+          uses: actions/checkout@v3
         - name: Setup Python
           uses: actions/setup-python@v4
           with:
@@ -126,7 +117,7 @@ jobs:
     needs: [macos, linux, windows]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Download MAC artifact
         uses: actions/download-artifact@v3
         with:
