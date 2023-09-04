@@ -31,6 +31,9 @@ from program_files.start_streamlit import start_streamlit
 # start_streamlit needs to be imported from an external file, due to a bug
 # in the multiprcessing package
 
+# Enable compatibility with macOS
+os.environ['QT_MAC_WANTS_LAYER'] = '1'
+
 
 def kill_server(p):
     """
@@ -53,94 +56,79 @@ def kill_server(p):
         pass
 
 
-def create_pyside_gui():
+def create_pyside_gui() -> None:
+    """
+    Create a PySide2 GUI to display a Streamlit app using QtWebEngineView.
+
+    This function initializes a Qt application, creates a QMainWindow,
+    and embeds a QWebEngineView widget to display a Streamlit app.
+    It sets focus policies and loads the app's URL.
+    """
 
     hostname = 'localhost'
     port = 8501
 
     # Initialize a Qt application and WebEngineView
-    app = QtWidgets.QApplication()
+    app = QtWidgets.QApplication(sys.argv)
+    # Create a PySide2 QMainWindow
+    main_window = QtWidgets.QMainWindow()
+    # Create a QWebEngineView widget
     view = QtWebEngineWidgets.QWebEngineView()
-
+    # Set the focus policy for the QWebEngineView widget
+    view.setFocusPolicy(QtCore.Qt.StrongFocus)
+    # Load the Streamlit app URL
+    view.load(QtCore.QUrl(f'{"http://localhost:8501"}'))
+    # Set the view as the central widget
+    main_window.setCentralWidget(view)
+    # Set focus to the main_window
+    main_window.setFocus()
+    # Show the main window
+    main_window.show()
     # Load and show the Streamlit app in the WebEngineView
-    view.load(QtCore.QUrl(f'http://localhost:8501'))
-    view.show()
     app.exec_()
 
 
-# =============================================================================
-# def start_streamlit():
-#     from streamlit import config as _config
-#     os.chdir(os.path.dirname(__file__))
-#     _config.set_option("server.headless", True)
-#     _config.set_option("global.developmentMode", False)
-#     _config.set_option("server.enableXsrfProtection", False)
-#     _config.show_config()
-#     import streamlit.web.bootstrap
-#     streamlit.web.bootstrap.run(str(sys._MEIPASS) + "/program_files/GUI_st/1_Main_Application.py", '', [], {})
-# =============================================================================
-
-
-# =============================================================================
-# def start_streamlit() -> None:
-#     """
-#     This function initializes and starts a Streamlit application in headless \
-#     mode.
-# 
-#     This function sets up the Streamlit configuration options for headless \
-#     mode, disables development mode and XSRF protection, and then runs the \
-#     Streamlit application.
-#     """
-#     # Change the current working directory to the directory of this script
-#     os.chdir(os.path.dirname(__file__))
-# 
-#     # Configure Streamlit options
-#     from streamlit import config as _config
-#     _config.set_option("server.headless", True)
-#     _config.set_option("global.developmentMode", False)
-#     _config.set_option("server.enableXsrfProtection", False)
-#     
-#     # Show the Streamlit configuration
-#     _config.show_config()
-#     
-#     # Import and run the Streamlit application
-#     import streamlit.web.bootstrap
-#     streamlit.web.bootstrap.run(str(sys._MEIPASS) + "/program_files/GUI_st/1_Main_Application.py", '', [], {})
-# =============================================================================
-
-
 if __name__ == '__main__':
+    # Check if the script is being executed as the main program
 
-    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS') and sys.platform == "darwin":
-        # fork for MacOS
+    if getattr(sys, 'frozen', False) \
+            and hasattr(sys, '_MEIPASS') \
+            and sys.platform == "darwin":
+        # Check if the script is frozen (compiled) and running on macOS
+
+        # Set the start method for multiprocessing to "spawn"
         multiprocessing.set_start_method("spawn")
+        # Create a new process to run the 'start_streamlit' function
         process2 = multiprocessing.Process(target=start_streamlit, args=[])
+        # Start the new process for the Streamlit app
         process2.start()
+        # Create and run the PySide2 GUI
         create_pyside_gui()
-
-        #sys.argv = ["streamlit", "run", "--server.headless=True", "--global.developmentMode=False", "--server.enableXsrfProtection=false",  "./program_files/GUI_st/1_Main_Application.py"]
-        #sys.exit(stcli.main())
-       # if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS') and sys.platform == "darwin":
-       #     cmd = "python3.9 -m streamlit run {} --server.headless=True --global.developmentMode=False --server.enableXsrfProtection=false".format(
-       #         "./program_files/GUI_st/1_Main_Application.py")
-       # elif getattr(sys, 'frozen', False) and sys.platform == "win32":
-       #     cmd = "python -m streamlit run {} --server.headless=True --global.developmentMode=False --server.enableXsrfProtection=false".format(
-       #         "program_files\\GUI_st\\1_Main_Application.py")
-       # else:
-       #     cmd = "streamlit run {} --server.headless=True".format(
-       #             "./GUI_st/1_Main_Application.py")
-        
-        #p = sp.Popen(streamlit.web.bootstrap.run("./program_files/GUI_st/1_Main_Application.py", '', [], flag_options={"server.headless": "true", "global.developmentMode": "false", "server.enableXsrfProtection": "false", "server.port": "8501"}), stdout=sp.DEVNULL)
 
     elif getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-        # spawn for win 
+        # Check if the script is frozen (compiled) and running on Windows
+        # or other platforms
+        # Set the start method for multiprocessing to "spawn"
         multiprocessing.set_start_method("spawn")
+        # Create a new process to run the 'start_streamlit' function
         process2 = multiprocessing.Process(target=start_streamlit, args=[])
+        # Start the new process for the Streamlit app
         process2.start()
+        # Create and run the PySide2 GUI
         create_pyside_gui()
-        
+
     else:
+        # If not frozen or running on macOS, execute the following code:
+        # Import the Streamlit web CLI module
         from streamlit.web import cli as stcli
 
-        sys.argv = ["streamlit", "run", "--server.headless=True", "--global.developmentMode=False", "--server.enableXsrfProtection=false",  "../program_files/GUI_st/1_Main_Application.py"]
+        # Configure the command-line arguments for running Streamlit
+        sys.argv = ["streamlit",
+                    "run",
+                    "--server.headless=True",
+                    "--global.developmentMode=False",
+                    "--server.enableXsrfProtection=false",
+                    "../program_files/GUI_st/1_Main_Application.py"]
+
+        # Run the Streamlit app using the specified command-line arguments
         sys.exit(stcli.main())
