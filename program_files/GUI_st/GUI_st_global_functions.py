@@ -396,7 +396,8 @@ def check_for_dependencies(solver: str):
     dot_paths = ["C:\\Program Files (x86)\\Graphviz2.38\\bin",
                  "/usr/local/bin",
                  "/opt/anaconda3/bin",
-                 "/opt/homebrew/bin"]
+                 "/opt/homebrew/bin",
+                 "/usr/bin"]
     dot_bool = False
     for path in dot_paths:
         if Path(path).is_dir():
@@ -417,7 +418,8 @@ def check_for_dependencies(solver: str):
         cbc_paths = ["/opt/homebrew/bin",
                      "/opt/anaconda3/bin",
                      "/usr/local/bin",
-                     "C:\\Program Files\\COIN\\bin"
+                     "C:\\Program Files\\COIN\\bin",
+                     "/usr/bin"
                      ]
         for path in cbc_paths:
             if Path(path).is_dir():
