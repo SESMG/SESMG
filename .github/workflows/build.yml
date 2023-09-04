@@ -8,7 +8,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
+      - uses: actions/setup-node@v3
+        with:
+          node-version: latest
       - name: Setup Python
         run: |
           curl https://www.python.org/ftp/python/3.9.13/python-3.9.13-macosx10.9.pkg --output pythonInstaller.pkg
@@ -44,7 +46,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
+      - uses: actions/setup-node@v3
+        with:
+          node-version: latest
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -88,7 +92,9 @@ jobs:
       steps:
         - name: Checkout
           uses: actions/checkout@v2
-
+        - uses: actions/setup-node@v3
+          with:
+            node-version: latest
         - name: Setup Python
           uses: actions/setup-python@v4
           with:
