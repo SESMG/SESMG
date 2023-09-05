@@ -31,9 +31,6 @@ from program_files.start_streamlit import start_streamlit
 # start_streamlit needs to be imported from an external file, due to a bug
 # in the multiprcessing package
 
-# Enable compatibility with macOS
-os.environ['QT_MAC_WANTS_LAYER'] = '1'
-
 
 def kill_server(p):
     """
