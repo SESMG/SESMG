@@ -401,8 +401,8 @@ def check_for_dependencies(solver: str):
     dot_bool = False
     for path in dot_paths:
         if Path(path).is_dir():
-            list = glob.glob(path + "/*")
-            for i in list:
+            directory_files = glob.glob(path + "/*")
+            for i in directory_files:
                 if "dot" in i:
                     dot_bool = True
                     os.environ["PATH"] += os.pathsep + path
@@ -423,12 +423,11 @@ def check_for_dependencies(solver: str):
                      ]
         for path in cbc_paths:
             if Path(path).is_dir():
-                if Path(path).is_dir():
-                    list = glob.glob(path + "/*")
-                    for i in list:
-                        if "cbc" in i:
-                            cbc_bool = True
-                            os.environ["PATH"] += os.pathsep + path
+                directory_files = glob.glob(path + "/*")
+                for i in directory_files:
+                    if "cbc" in i:
+                        cbc_bool = True
+                        os.environ["PATH"] += os.pathsep + path
 
     if solver == "gurobi":
         # TODO paths need to be updated for win
@@ -436,16 +435,23 @@ def check_for_dependencies(solver: str):
         gurobi_paths = ["/usr/local/bin",
                         "/opt/anaconda3/bin",
                         "/opt/homebrew/bin"]
+        
         for path in gurobi_paths:
             if Path(path).is_dir():
-                if Path(path).is_dir():
-                    list = glob.glob(path + "/*")
-                    for i in list:
-                        if "gurobi" in i:
-                            gurobi_bool = True
-                            os.environ["PATH"] += os.pathsep + path
+                directory_files = glob.glob(path + "/*")
+                st.write(directory_files)
+                print(directory_files)
+                for i in directory_files:
+                    if "gurobi" in i:
+                        gurobi_bool = True
+                        os.environ["PATH"] += os.pathsep + path
 
-    if not cbc_bool or gurobi_bool:
+    print("CBC:")
+    print(cbc_bool)
+    print("gurobi:")
+    print(gurobi_bool) 
+    
+    if not (cbc_bool or gurobi_bool):
         raise ImportError("The selected solver can not be found on your \
                           device. Make sure that it is installed correctly. \
                           We recommend using CBC or gurobi. Check our \
