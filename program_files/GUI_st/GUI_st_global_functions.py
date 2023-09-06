@@ -385,6 +385,25 @@ def load_result_folder_list() -> list:
 
 
 def identify_win_solver_path(path_list: list) -> str:
+    """
+        Identify the path to a solver executable on a Windows system.
+
+        This function iterates through a list of paths, typically obtained \
+        using 'where' command on Windows, to find the first valid path to a \
+        solver executable. It removes the file extension (e.g., .exe or .bat) \
+        from the path and returns the cleaned path.
+
+        :param path_list: list of file paths to solver executables.
+        :type path_list: list
+
+        :return: - **path_str** (str) - cleaned path to the solver \
+            executable, without the file extension.
+
+        Example:
+            >>> paths = ['C:\\path\\to\\solver.exe', 'C:\\another\\solver.bat']
+            >>> identify_win_solver_path(paths)
+            'C:\\path\\to\\solver'
+    """
 
     for i in path_list:
         pos = i.find('.')
@@ -394,6 +413,7 @@ def identify_win_solver_path(path_list: list) -> str:
             i = i[0:pos]
             path_str = i
             break
+
     return path_str
 
 
@@ -465,7 +485,7 @@ def check_for_dependencies(solver: str):
             gurobi_path_list = os.popen('where gurobi').read()
             gurobi_path_list.split('\n')
             # Iterate through the list of paths to find the first valid one.
-            gurobi_path_str = identify_win_solver_path(path_list=gurobi_path_list)
+            gurobi_path_str = identify_win_solver_path(gurobi_path_list)
             # remove unused path elements
             gurobi_path_str = gurobi_path_str[:-8]
         # Append the Gurobi solver path to the system's PATH environment.
