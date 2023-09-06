@@ -14,22 +14,13 @@ parent = os.path.abspath('..')
 sys.path.insert(1, parent)
 
 import subprocess as sp
-#import matplotlib.pyplot as plt
-#import streamlit
-#import atexit
-#import matplotlib
-#import sys
-#import streamlit.web.bootstrap
 from pathlib import Path
-#from threading import Thread
 
 os.chdir(os.path.dirname(__file__))
 
-from PySide2 import QtCore, QtWebEngineWidgets, QtWidgets
+from PySide6 import QtCore, QtWebEngineWidgets, QtWidgets
 from program_files.GUI_st import GUI_st_global_functions
 from program_files.start_streamlit import start_streamlit
-# start_streamlit needs to be imported from an external file, due to a bug
-# in the multiprcessing package
 
 
 def kill_server(p):

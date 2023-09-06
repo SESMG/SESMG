@@ -21,4 +21,4 @@ dash_canvas>=0.1.0
 h5py==3.6.0
 pandas<2.0.0
 pytest
-pyside2
+pyside6
