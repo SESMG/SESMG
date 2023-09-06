@@ -425,22 +425,33 @@ def check_for_dependencies(solver: str):
         :type document_path: str
     """
 
-    # graphviz paths
-    dot_paths = ["C:\\Program Files (x86)\\Graphviz2.38\\bin",
-                 "/usr/local/bin",
-                 "/opt/anaconda3/bin",
-                 "/opt/homebrew/bin",
-                 "/usr/bin"]
-    dot_bool = False
-    for path in dot_paths:
-        if Path(path).is_dir():
-            directory_files = glob.glob(path + "/*")
-            for i in directory_files:
-                if "dot" in i:
-                    dot_bool = True
-                    os.environ["PATH"] += os.pathsep + path
-    if not dot_bool:
-        raise ImportError("Graphviz is not installed on your device.")
+    # check for graphviz dpendencies
+    if not sys.platform == "win32":
+
+        # 'which' command to find the path to the graphviz executable.
+        dot_path_str = os.popen('which dot').read()[:-4]
+        # Set a boolean flag indicating that graphviz is available.
+        dot_bool = True
+        # Append the graphviz path to the system's PATH environment
+        # variable.
+        os.environ["PATH"] += os.pathsep + dot_path_str
+
+    # Execution path for Windows platforms
+    else:
+        # Use the 'where' command to find the path(s) to graphviz executable.
+        dot_path_list = os.popen('where dot').read()
+        dot_path_list.split('\n')
+        # Iterate through the list of paths to find the first valid one.
+        dot_path_str = identify_win_solver_path(path_list=dot_path_list)
+        # remove unused path elements
+        dot_path_str = dot_path_str[:-11]
+        # Set a boolean flag indicating that graphviz is available.
+        dot_bool = True
+        # Append the graphviz path to the system's PATH environment variable.
+        os.environ["PATH"] += os.pathsep + dot_path_str
+
+        if not dot_bool:
+            raise ImportError("Graphviz is not installed on your device.")
 
     # Check if a solver is installed
     cbc_bool = False
@@ -452,8 +463,15 @@ def check_for_dependencies(solver: str):
         if not sys.platform == "win32":
             # 'which' command to find the path to the CBC solver executable.
             cbc_path_str = os.popen('which cbc').read()[:-5]
-        # Execution path for Mac and Windows platforms.
-        else:
+            # Set a boolean flag indicating that CBC solver is available.
+            cbc_bool = True
+            # Append the CBC solver path to the system's PATH environment
+            # variable.
+            os.environ["PATH"] += os.pathsep + cbc_path_str
+
+        # Execution path for Windows platforms.
+        # use cbc with path variables if defined
+        elif os.popen('where cbc').read() != "" and sys.platform == "win32":
             # Use the 'where' command to find the path(s) to the CBC solver
             # executable(s).
             cbc_path_list = os.popen('where cbc').read()
@@ -462,13 +480,29 @@ def check_for_dependencies(solver: str):
             cbc_path_str = identify_win_solver_path(path_list=cbc_path_list)
             # remove unused path elements
             cbc_path_str = cbc_path_str[:-5]
-        # Append the CBC solver path to the system's PATH environment variable.
-        os.environ["PATH"] += os.pathsep + cbc_path_str
+            # Set a boolean flag indicating that CBC solver is available.
+            cbc_bool = True
+            # Append the CBC solver path to the system's PATH environment
+            # variable.
+            os.environ["PATH"] += os.pathsep + cbc_path_str
+
+        # search for cbc on win
+        else:
+            # check if SESMG main directory exists and create it
+            cbc_directory_path = set_parenting_sesmg_path()
+            # define path to the cbc.exe in the SESMG main directory
+            cbc_path_str = os.path.join(cbc_directory_path, 'cbc.exe')
+
+            if not os.path.exists(cbc_path_str):
+                raise ImportError("The cbc solver can not be found. Make sure \
+                                  to follow the instalaltion instructions.")
+            else:
+                # Set a boolean flag indicating that CBC solver is available.
+                cbc_bool = True
+
         print("CBC:")
         print(cbc_bool)
         print(cbc_path_str)
-        # Set a boolean flag indicating that CBC solver is available.
-        cbc_bool = True
 
     # check is solver is gurobi
     elif solver == "gurobi":
@@ -478,6 +512,7 @@ def check_for_dependencies(solver: str):
             # Use the 'which' command to find the path to the Gurobi solver
             # executable.
             gurobi_path_str = os.popen('which gurobi.sh').read()[:-11]
+            gurobi_bool = True
         # Execution path for Windows platform.
         else:
             # 'where' command to find the path(s) to the Gurobi solver
@@ -488,13 +523,14 @@ def check_for_dependencies(solver: str):
             gurobi_path_str = identify_win_solver_path(gurobi_path_list)
             # remove unused path elements
             gurobi_path_str = gurobi_path_str[:-8]
+            gurobi_bool = True
         # Append the Gurobi solver path to the system's PATH environment.
         os.environ["PATH"] += os.pathsep + gurobi_path_str
         print("gurobi:")
         print(gurobi_bool)
         print(gurobi_path_str)
         # Set a boolean flag indicating that Gurobi solver is available.
-        gurobi_bool = True
+        
 
     if not (cbc_bool or gurobi_bool):
         raise ImportError("The selected solver can not be found on your \
