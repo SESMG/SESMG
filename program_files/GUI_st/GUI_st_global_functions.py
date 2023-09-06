@@ -384,6 +384,19 @@ def load_result_folder_list() -> list:
     return existing_result_foldernames_list
 
 
+def identify_win_solver_path(path_list: list) -> str:
+
+    for i in path_list:
+        pos = i.find('.')
+        if pos > 0:
+            # Extract and store the path without the file extension.
+            # cut of .exe / .bat
+            i = i[0:pos]
+            path_str = i
+            break
+    return path_str
+
+
 def check_for_dependencies(solver: str):
     """
         Checks rather Graphviz, CBC or gurobi are installed.
@@ -423,15 +436,12 @@ def check_for_dependencies(solver: str):
         else:
             # Use the 'where' command to find the path(s) to the CBC solver
             # executable(s).
-            cbc_path_list = os.popen('where cbc').read()[:-5]
+            cbc_path_list = os.popen('where cbc').read()
+            cbc_path_list.split('\n')
             # Iterate through the list of paths to find the first valid one.
-            for i in cbc_path_list:
-                pos = i.find('.')
-                if pos > 0:
-                    # Extract and store the path without the file extension.
-                    i = i[0:pos]
-                    cbc_path_str = i
-                    break
+            cbc_path_str = identify_win_solver_path(path_list=cbc_path_list)
+            # remove unused path elements
+            cbc_path_str = cbc_path_str[:-5]
         # Append the CBC solver path to the system's PATH environment variable.
         os.environ["PATH"] += os.pathsep + cbc_path_str
         print("CBC:")
@@ -452,15 +462,12 @@ def check_for_dependencies(solver: str):
         else:
             # 'where' command to find the path(s) to the Gurobi solver
             # executable.
-            gurobi_path_list = os.popen('where gurobi').read()[:-5]
+            gurobi_path_list = os.popen('where gurobi').read()
+            gurobi_path_list.split('\n')
             # Iterate through the list of paths to find the first valid one.
-            for i in gurobi_path_list:
-                pos = i.find('.')
-                if pos > 0:
-                    # Extract and store the path without the file extension.
-                    i = i[0:pos]
-                    gurobi_path_str = i
-                    break
+            gurobi_path_str = identify_win_solver_path(path_list=gurobi_path_list)
+            # remove unused path elements
+            gurobi_path_str = gurobi_path_str[:-8]
         # Append the Gurobi solver path to the system's PATH environment.
         os.environ["PATH"] += os.pathsep + gurobi_path_str
         print("gurobi:")
