@@ -88,6 +88,7 @@ The latest released SESMG version can be accessed here: `SESMG releases on Githu
 Download the SESMG.exe and place it in a directory of your choice. Open the SESMG application by running SESMG.exe. The starting process usually takes a few minutes.
 
 .. note::
+
 	With the first use you may have to confirm in windows-defender or other protection software that the SESMG is trustworthy. 
 	The message may differ from the screenshot depending on the system language and anti-virus software.
 	.. figure:: windows_defender_warning.png
@@ -95,6 +96,7 @@ Download the SESMG.exe and place it in a directory of your choice. Open the SESM
    	:align: center
 
 .. note::
+
 	While the SESMG is starting, a message like "the website is not available" may appear. Wait a moment and press "reload". If necessary, repeat this step. 
 	The message may differ from the screenshot depending on the system language and applied browser.
 	.. figure:: website_not_accessible_warning.png
