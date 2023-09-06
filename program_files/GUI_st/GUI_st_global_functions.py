@@ -413,39 +413,105 @@ def check_for_dependencies(solver: str):
     cbc_bool = False
     gurobi_bool = False
 
-    if solver == "cbc":
-        # cbc solver paths
-        cbc_paths = ["/opt/homebrew/bin",
-                     "/opt/anaconda3/bin",
-                     "/usr/local/bin",
-                     "C:\\Program Files\\COIN\\bin",
-                     "/usr/bin"
-                     ]
-        for path in cbc_paths:
-            if Path(path).is_dir():
-                directory_files = glob.glob(path + "/*")
-                for i in directory_files:
-                    if "cbc" in i:
-                        cbc_bool = True
-                        os.environ["PATH"] += os.pathsep + path
 
-    if solver == "gurobi":
-        # TODO paths need to be updated for win
-        # gurobi solver paths
-        gurobi_paths = ["/usr/local/bin",
-                        "/opt/anaconda3/bin",
-                        "/opt/homebrew/bin"]
+    # Check if the selected solver is "cbc" and the current platform is not Windows.
+    if solver == "cbc" and not sys.platform == "win32":
+        # Use the 'which' command to find the path to the CBC solver executable.
+        cbc_path_str = os.popen('which cbc').read()[:-5]
+    
+        # Append the CBC solver path to the system's PATH environment variable.
+        os.environ["PATH"] += os.pathsep + cbc_path_str
+    
+        # Set a boolean flag indicating that CBC solver is available.
+        cbc_bool = True
+    
+    # Check if the selected solver is "gurobi" and the current platform is not Windows.
+    elif solver == "gurobi" and not sys.platform == "win32":
+        # Use the 'which' command to find the path to the Gurobi solver executable.
+        gurobi_path_str = os.popen('which gurobi.sh').read()[:-11]
+    
+        # Append the Gurobi solver path to the system's PATH environment variable.
+        os.environ["PATH"] += os.pathsep + gurobi_path_str
+    
+        # Set a boolean flag indicating that Gurobi solver is available.
+        gurobi_bool = True
+    
+    # If the solver is "cbc" and the platform is Windows, attempt to find the CBC solver executable.
+    elif solver == "cbc":
+        # Use the 'where' command to find the path(s) to the CBC solver executable(s).
+        cbc_path_list = os.popen('where cbc').read()[:-5]
+    
+        # Iterate through the list of paths to find the first valid one.
+        for i in cbc_path_list:
+            pos = i.find('.')
+            if pos > 0:
+                # Extract and store the path without the file extension.
+                i = i[0:pos]
+                cbc_path_str = i
+                break
         
-        for path in gurobi_paths:
-            if Path(path).is_dir():
-                directory_files = glob.glob(path + "/*")
-                st.write(directory_files)
-                print(directory_files)
-                for i in directory_files:
-                    if "gurobi" in i:
-                        gurobi_bool = True
-                        os.environ["PATH"] += os.pathsep + path
-
+        # Append the Gurobi solver path to the system's PATH environment variable.
+        os.environ["PATH"] += os.pathsep + cbc_path_str
+    
+        # Set a boolean flag indicating that CBC solver is available.
+        cbc_bool = True
+    
+    # If the solver is "gurobi" and the platform is Windows, attempt to find the CBC solver executable.
+    elif solver == "gurobi":
+        # Use the 'where' command to find the path(s) to the CBC solver executable(s).
+        gurobi_path_list = os.popen('where gurobi').read()[:-5]
+    
+        # Iterate through the list of paths to find the first valid one.
+        for i in gurobi_path_list:
+            pos = i.find('.')
+            if pos > 0:
+                # Extract and store the path without the file extension.
+                i = i[0:pos]
+                cbc_path_str = i
+                break
+        
+        # Append the Gurobi solver path to the system's PATH environment variable.
+        os.environ["PATH"] += os.pathsep + gurobi_path_str
+    
+        # Set a boolean flag indicating that CBC solver is available.
+        gurobi_bool = True
+        
+    
+# =============================================================================
+#     if solver == "cbc":
+#         # cbc solver paths
+#         cbc_paths = ["/opt/homebrew/bin",
+#                      "/opt/anaconda3/bin",
+#                      "/usr/local/bin",
+#                      "C:\\Program Files\\COIN\\bin",
+#                      "/usr/bin"
+#                      ]
+#         for path in cbc_paths:
+#             if Path(path).is_dir():
+#                 directory_files = glob.glob(path + "/*")
+#                 for i in directory_files:
+#                     if "cbc" in i:
+#                         cbc_bool = True
+#                         os.environ["PATH"] += os.pathsep + path
+# 
+#     if solver == "gurobi":
+#         # TODO paths need to be updated for win
+#         # gurobi solver paths
+#         gurobi_paths = ["/usr/local/bin",
+#                         "/opt/anaconda3/bin",
+#                         "/opt/homebrew/bin"]
+#         
+#         for path in gurobi_paths:
+#             if Path(path).is_dir():
+#                 directory_files = glob.glob(path + "/*")
+#                 st.write(directory_files)
+#                 print(directory_files)
+#                 for i in directory_files:
+#                     if "gurobi" in i:
+#                         gurobi_bool = True
+#                         os.environ["PATH"] += os.pathsep + path
+# 
+# =============================================================================
     print("CBC:")
     print(cbc_bool)
     print("gurobi:")
