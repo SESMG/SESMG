@@ -52,7 +52,7 @@ Windows users can download the preferred version here: `Python download page for
 
 
 2. Installing Graphiz
-You kann download Graphiz here: `Graphiz download <https://graphviz.org/download/>`_
+You kann download Graphiz here: `Graphiz download <https://graphviz.org/download/>`_. Restart your computer after succesfully installing graphviz.
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_4.png
    :width: 40 %
@@ -63,20 +63,25 @@ You kann download Graphiz here: `Graphiz download <https://graphviz.org/download
 	Make sure to select "Add Graphiz to system path for all users" at the 
 	beginning of the installation, otherwise you can use the default settings.
 
+.. note:: 
+
+	Make sure to restart your computer before proceeding with the next steps.
+
+
 .. figure:: images/manual/Installation/sesmg_installation_ms_5.png
    :width: 40 %
    :align: center
 
 
 3. Installing a solver
-You can download the free and open-source CBC-solver here: `cbc solver for windows <https://www.coin-or.org/download/binary/Cbc/>`_. 
-Alternatively you can uses the `direct download link <https://www.coin-or.org/download/binary/Cbc/Cbc-2.10-win64-msvc16-mdd.zip>`_
 
-.. figure:: images/manual/Installation/sesmg_installation_ms_6.png
-   :width: 40 %
-   :align: center
+3a. The free and open-source CBC-solver is recommended for new users and users which are not facing any run-time issues. To use the solver, the following steps must be carried out:
+	- if not already existing, create a folder called "SESMG" in the following directory: "/users/<your username>/documents/"
+	- download the most recent CBC-version for your operating system: `cbc solver for windows <https://www.coin-or.org/download/binary/Cbc/>`_. Alternatively you can uses the `direct download link 		  <https://www.coin-or.org/download/binary/Cbc/Cbc-2.10-win64-msvc16-mdd.zip>`_
+	- unzip the downloaded folder
+	- copy the "cbc.exe" (stored in the "bin" directory of the unziped folder) file into the following directory: ""/users/<your username>/documents/SESMG"
 
-The gurobi-solver may be used as an **alternative** to the CBC-solver. Be 
+3b. The gurobi-solver may be used as an **alternative** to the CBC-solver. Be 
 aware, that the gurobi-solver is not open-source and a license is required. 
 However, the gurobi-solver may be faster for certain types of optimization problems, 
 especially for those containing binary decisions. The installation procedure of 
