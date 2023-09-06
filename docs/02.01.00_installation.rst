@@ -1,13 +1,13 @@
 Installation
 ************
 
-There are two possible ways to install the SESMG application. We can choose 
-between the installation as an independent application, which is appropriate 
+There are two possible ways to install the SESMG application. It can chosen 
+between the installation as an independent **application**, which is appropriate 
 for common users, and an installation for advanced users or developers. We 
 recommend the installation as an independent application for the beginning. 
 You can easily switch later on.
 
-We recommend the advanced installation which will create the SESMG with its
+We recommend the **extended installation** which will create the SESMG with its
 folder structure on your machine allowing you to work on it or adjust settings. 
 You can follow the `extended installation instructions <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html#extended-installation>`_ 
 below. If you have programming experience and want to set your own virtual 
@@ -84,11 +84,23 @@ the gurobi-solver is described in detail `here <https://www.gurobi.com/documenta
 
 
 4. Installing the SESMG application
-You will find the latest released SESMG version here: `SESMG releases on Github <https://github.com/SESMG/SESMG/releases/latest/>`_. 
-Download the SESMG.exe and place it in a directory of your choice. You can 
-change the directory afterwards. Open the SESMG application by running the 
-executable file as commum. Be aware that it can take a few seconds up to a minute.
+The latest released SESMG version can be accessed here: `SESMG releases on Github <https://github.com/SESMG/SESMG/releases/latest/>`_. 
+Download the SESMG.exe and place it in a directory of your choice. Open the SESMG application by running SESMG.exe. The starting process usually takes a few minutes.
 
+.. note::
+	With the first use you may have to confirm in windows-defender or other protection software that the SESMG is trustworthy. 
+	The message may differ from the screenshot depending on the system language and anti-virus software.
+	.. figure:: windows_defender_warning.png
+   	:width: 40 %
+   	:align: center
+
+.. note::
+	While the SESMG is starting, a message like "the website is not available" may appear. Wait a moment and press "reload". If necessary, repeat this step. 
+	The message may differ from the screenshot depending on the system language and applied browser.
+	.. figure:: website_not_accessible_warning.png
+   	:width: 40 %
+   	:align: center
+	
 .. note:: 
 
 	The application will create a SESMG directory when starting the first model 
