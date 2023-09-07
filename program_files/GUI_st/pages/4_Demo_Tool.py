@@ -318,8 +318,16 @@ def demo_start_page() -> None:
     st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
 
     # upload demo tool graph image
-    img = str(get_bundle_dir()) \
-          + "/docs/images/manual/DemoTool/demo_system_graph.png"
+    img = os.path.join(get_bundle_dir(),
+                       'docs',
+                       'images',
+                       'manual',
+                       'DemoTool',
+                       'demo_system_graph.png'
+                       )
+    
+    #str(get_bundle_dir()) \
+     #     + "/docs/images/manual/DemoTool/demo_system_graph.png"
     st.image(img, caption="", width=500)
 
     # import markdown tables from GUI files
