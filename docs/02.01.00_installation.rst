@@ -22,36 +22,7 @@ SESMG as Application
 Windows
 -------
 
-1. Installing Python (3.8 or 3.9)
-Windows users can download the preferred version here: `Python download page for windows <https://www.python.org/downloads/windows/>`_.
-
-.. note:: 
-
-	Make sure to use the installer referring to your windows version (e.g. 
-	"Windows x86-64 executable installer" for windows 64-bit version). You can 
-	check the build in bit version following `these steps <https://support.microsoft.com/en-us/windows/32-bit-and-64-bit-windows-frequently-asked-questions-c6ca9541-8dce-4d48-0415-94a3faa2e13d>`_.
-	
-.. note:: 
-
-	The SESMG is not compatible with the python version 3.9.7, due to a 
-	confliciting bug in this version to the subpackage streamlit. You need to 
-	install another pyhton version or update to another python version e. g. 
-	3.9.13, which is widely tested.
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_1.png
-   :width: 40 %
-   :align: center
-   
-.. note:: 
-
-	Make sure to select "Add python to PATH" at the beginning of the Python installation.
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_2.png
-   :width: 40 %
-   :align: center
-
-
-2. Installing Graphiz
+1. Installing Graphiz
 You kann download Graphiz here: `Graphiz download <https://graphviz.org/download/>`_. Restart your computer after succesfully installing graphviz.
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_4.png
@@ -73,23 +44,23 @@ You kann download Graphiz here: `Graphiz download <https://graphviz.org/download
    :align: center
 
 
-3. Installing a solver
+2. Installing a solver
 
-3a. The free and open-source CBC-solver is recommended for new users and users which are not facing any run-time issues. To use the solver, the following steps must be carried out:
+2a. The free and open-source CBC-solver is recommended for new users and users which are not facing any run-time issues. To use the solver, the following steps must be carried out:
 
 	- if not already existing, create a folder called "SESMG" in the following directory: "/users/<your username>/documents/"
 	- download the most recent CBC-version for your operating system: `cbc solver for windows <https://www.coin-or.org/download/binary/Cbc/>`_. Alternatively you can uses the `direct download link 		  <https://www.coin-or.org/download/binary/Cbc/Cbc-2.10-win64-msvc16-mdd.zip>`_
 	- unzip the downloaded folder
 	- copy the "cbc.exe" (stored in the "bin" directory of the unziped folder) file into the following directory: "/users/<your username>/documents/SESMG"
 
-3b. The gurobi-solver may be used as an **alternative** to the CBC-solver. Be 
+2b. The gurobi-solver may be used as an **alternative** to the CBC-solver. Be 
 aware, that the gurobi-solver is not open-source and a license is required. 
 However, the gurobi-solver may be faster for certain types of optimization problems, 
 especially for those containing binary decisions. The installation procedure of 
 the gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_.  
 
 
-4. Installing the SESMG application
+3. Installing the SESMG application
 The latest released SESMG version can be accessed here: `SESMG releases on Github <https://github.com/SESMG/SESMG/releases/latest/>`_. 
 Download the SESMG.exe and place it in a directory of your choice. Open the SESMG application by running SESMG.exe. The starting process usually takes a few minutes.
 
@@ -116,34 +87,7 @@ Download the SESMG.exe and place it in a directory of your choice. Open the SESM
 MacOS
 -----
 
-1. Installing Python (3.8 or 3.9) 
-Mac users can download the installer for the preferred version here: `Python download page for MacOS <https://www.python.org/downloads/macos/>`_. 
-Execute the installer on your computer.
-
-.. note:: 
-
-	Make sure to use the installer referring to your chip (Intel-only or 
-	universal2) version (e.g. "macOS 64-bit universal2 installer" for mac with 
-	Apple M1 / M2). You can check the kind of build in chip by opening the 
-	"About this Mac" options.
-	
-.. note:: 
-
-	The SESMG is not compatible with the python version 3.9.7, due to a 
-	confliciting bug in this version to the subpackage streamlit. You need to 
-	install another pyhton version or update to another python version e. g. 
-	3.9.13, which is widely tested.
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_1.png
-   :width: 40 %
-   :align: center
-
-.. note:: 
-
-	Make sure to select "Add python to PATH" at the beginning of the Python installation.
-
-
-2. Installing Graphiz
+1. Installing Graphiz
 You kann download Graphiz here: `Graphiz download <https://graphviz.org/download/>`_
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_4.png
@@ -151,7 +95,7 @@ You kann download Graphiz here: `Graphiz download <https://graphviz.org/download
    :align: center
 
 
-3. Installing a solver
+2. Installing a solver
 You can download the free and open-source CBC-solver here: `cbc solver for MacOS <https://www.coin-or.org/download/binary/Cbc/>`_. 
 Alternatively you can use Homebrew to install the CBC-solver by following `the instructions from Brew <https://formulae.brew.sh/formula/cbc/>`_.
 
@@ -162,7 +106,7 @@ especially for those containing binary decisions. The installation procedure
 of the gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_.  
 
 
-4. Installing the SESMG application
+3. Installing the SESMG application
 You will find the latest released SESMG version here: `SESMG releases on Github <https://github.com/SESMG/SESMG/releases/latest/>`_. 
 Download the SESMG.dmg, open it and place the application in a directory of 
 your choice. You can change the directory afterwards. 
@@ -215,20 +159,7 @@ startet by looking for SESMG.
 Linux
 -----
 
-1. Installing Python (3.8 or 3.9)
-
-- go to `<https://phoenixnap.com/kb/how-to-install-python-3-ubuntu/>`_
-
-Check your Version with ``$ python3 --version``.
-
-.. note:: 
-
-	The SESMG is not compatible with the python version 3.9.7, due to a 
-	confliciting bug in this version to the subpackage streamlit. You need to 
-	install another pyhton version or update to another python version e. g. 
-	3.9.13, which is widely tested.
-	
-2. Installing Graphviz:
+1. Installing Graphviz:
 
 .. note::
 	
@@ -237,7 +168,7 @@ Check your Version with ``$ python3 --version``.
 
 ``$ sudo apt-get install graphviz``
 	
-3. Installing the CBC-solver: 
+2. Installing the CBC-solver: 
 
 ``$ sudo apt-get install coinor-cbc``
 
@@ -247,11 +178,7 @@ the gurobi-solver may be faster for certain types of optimization problems, espe
 for those containing binary decisions. The installation procedure of the 
 gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_.  
 
-4. Installing the libpq-dev to avoid a psycopg2 error:
-
-``$ sudo apt-get install libpq-dev``
-
-5. Installing the SESMG application
+3. Installing the SESMG application
 You will find the latest released SESMG version here: `SESMG releases on Github <https://github.com/SESMG/SESMG/releases/latest/>`_. 
 Download the SESMG.deb and place it in a directory of your choice. You can 
 change the directory afterwards. Open the SESMG application by running the 
@@ -264,6 +191,22 @@ be sure the process startet by looking for SESMG.
 	The application will create a SESMG directory when starting the first 
 	model run. By default it will be created in the /user/documents/ directory 
 	as /SESMG.
+
+4. Defining the SESMG system rights 
+
+Use the following two commands in your terminal after installing the SESMG.
+
+``
+sudo apt install -y \
+libfontconfig1-dev libfreetype6-dev \
+libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev \
+libxi-dev libxrender-dev \
+libxkbcommon-dev libxkbcommon-x11-dev libatspi2.0-dev \
+libopengl0 '^libxcb.*-dev' libgl1 \
+libegl1 \
+libdbus-glib-1-2``
+
+``sudo chmod -R 755 /opt/SESMG``
 
 
 
