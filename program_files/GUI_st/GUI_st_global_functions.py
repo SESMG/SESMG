@@ -500,10 +500,6 @@ def check_for_dependencies(solver: str):
                 # Set a boolean flag indicating that CBC solver is available.
                 cbc_bool = True
 
-        print("CBC:")
-        print(cbc_bool)
-        print(cbc_path_str)
-
     # check is solver is gurobi
     elif solver == "gurobi":
 
@@ -526,10 +522,6 @@ def check_for_dependencies(solver: str):
             gurobi_bool = True
         # Append the Gurobi solver path to the system's PATH environment.
         os.environ["PATH"] += os.pathsep + gurobi_path_str
-        print("gurobi:")
-        print(gurobi_bool)
-        print(gurobi_path_str)
-        # Set a boolean flag indicating that Gurobi solver is available.
 
     if not (cbc_bool or gurobi_bool):
         raise ImportError("The selected solver can not be found on your \

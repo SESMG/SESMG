@@ -3,22 +3,20 @@
     Jan N. Tockloth - jan.tockloth@fh-muenster.de
 """
 
-import traceback
 import sys
 import os
 import multiprocessing
 multiprocessing.freeze_support()
-    
+
 # setting new system path to be able to refer to parent directories
 parent = os.path.abspath('..')
 sys.path.insert(1, parent)
 
 import subprocess as sp
-from pathlib import Path
 
 os.chdir(os.path.dirname(__file__))
 
-from PySide6 import QtCore, QtWebEngineWidgets, QtWidgets
+from PySide6 import QtCore, QtWidgets, QtWebEngineWidgets
 from program_files.GUI_st import GUI_st_global_functions
 from program_files.start_streamlit import start_streamlit
 
@@ -44,9 +42,14 @@ def kill_server(p):
         pass
 
 
+class MyMainWindow(QtWidgets.QMainWindow):
+    def closeEvent(self, event):
+        QtCore.QCoreApplication.quit()
+
+
 def create_pyside_gui() -> None:
     """
-    Create a PySide2 GUI to display a Streamlit app using QtWebEngineView.
+    Create a PySide6 GUI to display a Streamlit app using QtWebEngineView.
 
     This function initializes a Qt application, creates a QMainWindow,
     and embeds a QWebEngineView widget to display a Streamlit app.
@@ -56,16 +59,16 @@ def create_pyside_gui() -> None:
     hostname = 'localhost'
     port = 8501
 
-    # Initialize a Qt application and WebEngineView
-    app = QtWidgets.QApplication(sys.argv)
-    # Create a PySide2 QMainWindow
-    main_window = QtWidgets.QMainWindow()
+    # Initialize a Qt application
+    app = QtWidgets.QApplication([])
+    # Create a PySide6 QMainWindow
+    main_window = MyMainWindow()
     # Create a QWebEngineView widget
     view = QtWebEngineWidgets.QWebEngineView()
     # Set the focus policy for the QWebEngineView widget
     view.setFocusPolicy(QtCore.Qt.StrongFocus)
     # Load the Streamlit app URL
-    view.load(QtCore.QUrl(f'{"http://localhost:8501"}'))
+    view.setUrl(QtCore.QUrl(f'{"http://localhost:8501"}'))
     # Set the view as the central widget
     main_window.setCentralWidget(view)
     # Set focus to the main_window
@@ -73,7 +76,7 @@ def create_pyside_gui() -> None:
     # Show the main window
     main_window.show()
     # Load and show the Streamlit app in the WebEngineView
-    app.exec_()
+    sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
@@ -90,7 +93,7 @@ if __name__ == '__main__':
         process2 = multiprocessing.Process(target=start_streamlit, args=[])
         # Start the new process for the Streamlit app
         process2.start()
-        # Create and run the PySide2 GUI
+        # Create and run the PySide6 GUI
         create_pyside_gui()
 
     elif getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
@@ -102,7 +105,7 @@ if __name__ == '__main__':
         process2 = multiprocessing.Process(target=start_streamlit, args=[])
         # Start the new process for the Streamlit app
         process2.start()
-        # Create and run the PySide2 GUI
+        # Create and run the PySide6 GUI
         create_pyside_gui()
 
     else:
