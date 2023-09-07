@@ -440,11 +440,11 @@ def check_for_dependencies(solver: str):
     else:
         # Use the 'where' command to find the path(s) to graphviz executable.
         dot_path_list = os.popen('where dot').read()
-        dot_path_list.split('\n')
+        dot_path_list = dot_path_list.split('\n')
         # Iterate through the list of paths to find the first valid one.
         dot_path_str = identify_win_solver_path(path_list=dot_path_list)
         # remove unused path elements
-        dot_path_str = dot_path_str[:-11]
+        dot_path_str = dot_path_str[:-5]
         # Set a boolean flag indicating that graphviz is available.
         dot_bool = True
         # Append the graphviz path to the system's PATH environment variable.
@@ -475,7 +475,7 @@ def check_for_dependencies(solver: str):
             # Use the 'where' command to find the path(s) to the CBC solver
             # executable(s).
             cbc_path_list = os.popen('where cbc').read()
-            cbc_path_list.split('\n')
+            cbc_path_list = cbc_path_list.split('\n')
             # Iterate through the list of paths to find the first valid one.
             cbc_path_str = identify_win_solver_path(path_list=cbc_path_list)
             # remove unused path elements
@@ -518,7 +518,7 @@ def check_for_dependencies(solver: str):
             # 'where' command to find the path(s) to the Gurobi solver
             # executable.
             gurobi_path_list = os.popen('where gurobi').read()
-            gurobi_path_list.split('\n')
+            gurobi_path_list = gurobi_path_list.split('\n')
             # Iterate through the list of paths to find the first valid one.
             gurobi_path_str = identify_win_solver_path(gurobi_path_list)
             # remove unused path elements
@@ -530,7 +530,6 @@ def check_for_dependencies(solver: str):
         print(gurobi_bool)
         print(gurobi_path_str)
         # Set a boolean flag indicating that Gurobi solver is available.
-        
 
     if not (cbc_bool or gurobi_bool):
         raise ImportError("The selected solver can not be found on your \
