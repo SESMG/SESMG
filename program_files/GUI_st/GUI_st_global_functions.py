@@ -14,7 +14,7 @@ from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main, sesmg_main_including_premodel
 
 
-def get_bundle_dir():
+def get_bundle_dir() -> str:
     """
        Get the path to the bundle directory.
 
