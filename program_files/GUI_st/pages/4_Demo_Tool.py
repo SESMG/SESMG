@@ -338,6 +338,8 @@ def demo_start_page() -> None:
     path_im = os.path.join(path, 'demo_system_graph.png')
     st.image(path_im, caption="", width=500)
     st.write(path_im)
+    
+    st.image('https://raw.githubusercontent.com/SESMG/SESMG/master/docs/images/manual/DemoTool/demo_system_graph.png', caption="", width=50)
 
     # import markdown tables from GUI files
     imported_markdown = read_markdown_document(
