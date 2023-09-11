@@ -13,7 +13,9 @@ datas = [('../../program_files','program_files'),
          ('../../Lib/python3.9/site-packages/decorator.py', '.'),
 	 ('../../Lib/python3.9/site-packages/cycler.py', '.'),
 	 ('../../Lib/python3.9/site-packages/decouple.py', '.'),
-	 ('../../.streamlit','.streamlit')]
+	 ('../../.streamlit','.streamlit'),
+	 ('../../docs/images/manual/DemoTool/demo_system_graph.png','.')
+	 ]
 datas += copy_metadata('streamlit')
 
 options = [ ('W ignore', None, 'OPTION') ]

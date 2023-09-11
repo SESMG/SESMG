@@ -318,17 +318,26 @@ def demo_start_page() -> None:
     st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
 
     # upload demo tool graph image
-    img = os.path.join(get_bundle_dir(),
+    img = os.path.join(str(get_bundle_dir()),
                        'docs',
                        'images',
                        'manual',
                        'DemoTool',
                        'demo_system_graph.png'
                        )
-    
     #str(get_bundle_dir()) \
      #     + "/docs/images/manual/DemoTool/demo_system_graph.png"
     st.image(img, caption="", width=500)
+    import sys
+    from pathlib import Path
+    
+    path_base = os.getcwd()
+    # prints parent directory
+    path = os.path.abspath(os.path.join(path_base, os.pardir))
+    
+    path_im = os.path.join(path, 'demo_system_graph.png')
+    st.image(path_im, caption="", width=500)
+    st.write(path_im)
 
     # import markdown tables from GUI files
     imported_markdown = read_markdown_document(
@@ -339,8 +348,7 @@ def demo_start_page() -> None:
     st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
 
     # upload dh image
-    img = str(get_bundle_dir()) \
-          + "/docs/images/manual/DemoTool/district_heating_network.png"
+    img = str(get_bundle_dir()) + "/docs/images/manual/DemoTool/district_heating_network.png"
     st.image(img, caption="", width=500)
 
 

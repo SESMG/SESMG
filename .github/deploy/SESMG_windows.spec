@@ -12,7 +12,9 @@ datas = [('../../program_files','program_files'),
 	 ('../../Lib/site-packages/memory_profiler.py', '.'),
          ('../../Lib/site-packages/decorator.py', '.'),
 	 ('../../Lib/site-packages/cycler.py', '.'),
-	 ('../../Lib/site-packages/decouple.py', '.')]
+	 ('../../Lib/site-packages/decouple.py', '.'),
+	 ('../../docs/images/manual/DemoTool/demo_system_graph.png','.')
+	 ]
 datas += copy_metadata('streamlit')
 
 options = [ ('W ignore', None, 'OPTION') ]
