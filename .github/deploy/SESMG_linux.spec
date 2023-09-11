@@ -15,6 +15,7 @@ datas = [('../../program_files','program_files'),
 	 ('../../lib/python3.9/site-packages/decouple.py', '.')]
 datas += copy_metadata('streamlit')
 
+options = [ ('W ignore', None, 'OPTION') ]
 
 block_cipher = None
 
@@ -38,7 +39,7 @@ pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(pyz,
           a.scripts,
-          [],
+          options,
           exclude_binaries=True,
           name='SESMG',
           debug=False,

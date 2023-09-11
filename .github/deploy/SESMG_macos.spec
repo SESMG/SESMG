@@ -16,6 +16,7 @@ datas = [('../../program_files','program_files'),
 	 ('../../.streamlit','.streamlit')]
 datas += copy_metadata('streamlit')
 
+options = [ ('W ignore', None, 'OPTION') ]
 
 block_cipher = None
 
@@ -43,9 +44,9 @@ exe = EXE(
     a.binaries,
     a.zipfiles,
     a.datas,
-    [],
+    options,
     name='SESMG',
-    debug=True,
+    debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,

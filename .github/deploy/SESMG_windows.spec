@@ -15,8 +15,7 @@ datas = [('../../program_files','program_files'),
 	 ('../../Lib/site-packages/decouple.py', '.')]
 datas += copy_metadata('streamlit')
 
-
-
+options = [ ('W ignore', None, 'OPTION') ]
 
 block_cipher = None
 
@@ -44,7 +43,7 @@ exe = EXE(
     a.binaries,
     a.zipfiles,
     a.datas,
-    [],
+    options,
     name='SESMG',
     debug=False,
     bootloader_ignore_signals=False,
