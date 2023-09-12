@@ -587,22 +587,6 @@ main_clear_cache_sidebar()
 # load the start page if modell run is not submitted
 if st.session_state["state_submitted_optimization"] == "not done":
     main_start_page()
-    st.write("get_bundle_dir")
-    st.write(GUI_functions.get_bundle_dir())
-    st.write("get_bundle_dir + path as str")
-    document_path = "docs/GUI_texts/demo_tool_text.md"
-    st.write(str(GUI_functions.get_bundle_dir()) + "/" + document_path)
-    st.write("bundledir with os.path.join")
-    st.write(os.path.join(GUI_functions.get_bundle_dir(),
-                       'docs',
-                       'images',
-                       'manual',
-                       'DemoTool',
-                       'demo_system_graph.png'
-                       ))
-    st.write('Path(sys._MEIPASS)')
-    from pathlib import Path
-    st.write(Path(sys._MEIPASS))
 
 # starting process is modell run is  submitted
 if st.session_state["state_submitted_optimization"] == "done":
