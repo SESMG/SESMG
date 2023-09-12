@@ -6,10 +6,10 @@
 """
 
 import os
-import glob
 import openpyxl
 import streamlit as st
 import pandas as pd
+from PIL import Image
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main
 from program_files.GUI_st.GUI_st_global_functions import \
@@ -310,71 +310,34 @@ def demo_start_page() -> None:
     """
 
     # import markdown text from GUI files
-    imported_markdown = read_markdown_document(
+    imported_markdown_dttext = read_markdown_document(
         document_path="docs/GUI_texts/demo_tool_text.md",
-        folder_path=f'{"docs/images/manual/DemoTool/*"}')
-
+        folder_path=f'{"docs/images/manual/DemoTool/*"}',
+        fixed_image_width=500)
     # show markdown text
-    st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
-
-    # upload demo tool graph image
-    img = os.path.join(str(get_bundle_dir()),
-                       'docs',
-                       'images',
-                       'manual',
-                       'DemoTool',
-                       'demo_system_graph.png'
-                       )
-    #str(get_bundle_dir()) \
-     #     + "/docs/images/manual/DemoTool/demo_system_graph.png"
-    st.image(img, caption="", width=500)
-    import sys
-    from pathlib import Path
-    
-    path_base = os.getcwd()
-    # prints parent directory
-    path = os.path.abspath(os.path.join(path_base, os.pardir))
-    
-    path_im = os.path.join(path, 'demo_system_graph.png')
-    st.image(path_im, caption="", width=500)
-    st.write(path_im)
-    
-    st.image('https://raw.githubusercontent.com/SESMG/SESMG/master/docs/images/manual/DemoTool/demo_system_graph.png', caption="", width=50)
+    st.markdown(''.join(imported_markdown_dttext), unsafe_allow_html=True)
+    # upload dh image
+    image_path_system = str(get_bundle_dir()) \
+        + "/docs/images/manual/DemoTool/demo_system_graph.png"
+    # open image
+    image_system = Image.open(image_path_system)
+    # convert image to numpy array
+    st.image(image_system, width=500)
 
     # import markdown tables from GUI files
-    imported_markdown = read_markdown_document(
+    imported_markdown_dttab = read_markdown_document(
         document_path="docs/GUI_texts/demo_tool_tables.md",
         folder_path=f'{"docs/images/manual/DemoTool/*"}')
-
     # show markdown text
-    st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
-
+    st.markdown(''.join(imported_markdown_dttab), unsafe_allow_html=True)
     # upload dh image
-    img = str(get_bundle_dir()) + "/docs/images/manual/DemoTool/district_heating_network.png"
-    st.image(img, caption="", width=500)
-
-
-    from PIL import Image
-    from numpy import asarray
-    # load the image
-    image = Image.open(path_im)
+    image_path_dh = str(get_bundle_dir()) \
+        + "/docs/images/manual/DemoTool/district_heating_network.png"
+    # open image
+    image_dh = Image.open(image_path_dh)
     # convert image to numpy array
-    data = asarray(image)
-    st.write(type(data))
-    # summarize shape
-    st.write(data.shape)
+    st.image(image_dh, width=500)
 
-    # create Pillow image
-    image2 = Image.fromarray(data)
-    st.write(type(image2))
-
-    # summarize image details
-    st.write(image2.mode)
-    st.write(image2.size)
-
-    st.image(image)
-    st.image(image2)
-    
 
 def change_state_submitted_demo_run() -> None:
     """
