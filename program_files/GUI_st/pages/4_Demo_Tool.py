@@ -354,6 +354,28 @@ def demo_start_page() -> None:
     st.image(img, caption="", width=500)
 
 
+    from PIL import Image
+    from numpy import asarray
+    # load the image
+    image = Image.open(path)
+    # convert image to numpy array
+    data = asarray(image)
+    st.write(type(data))
+    # summarize shape
+    st.write(data.shape)
+
+    # create Pillow image
+    image2 = Image.fromarray(data)
+    st.write(type(image2))
+
+    # summarize image details
+    st.write(image2.mode)
+    st.write(image2.size)
+
+    st.image(image)
+    st.image(image2)
+    
+
 def change_state_submitted_demo_run() -> None:
     """
         Setup session state for the demo run form-submit as an change
