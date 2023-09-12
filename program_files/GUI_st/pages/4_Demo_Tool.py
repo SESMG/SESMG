@@ -357,7 +357,7 @@ def demo_start_page() -> None:
     from PIL import Image
     from numpy import asarray
     # load the image
-    image = Image.open(path)
+    image = Image.open(path_im)
     # convert image to numpy array
     data = asarray(image)
     st.write(type(data))
