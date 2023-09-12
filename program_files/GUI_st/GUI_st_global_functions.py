@@ -507,7 +507,8 @@ def check_for_dependencies(solver: str):
             else:
                 # Set a boolean flag indicating that CBC solver is available.
                 cbc_bool = True
-
+                os.environ["PATH"] += os.pathsep + cbc_path_str
+                
     # check is solver is gurobi
     elif solver == "gurobi":
 
