@@ -48,10 +48,10 @@ You kann download Graphiz here: `Graphiz download <https://graphviz.org/download
 
 2a. The free and open-source CBC-solver is recommended for new users and users which are not facing any run-time issues. To use the solver, the following steps must be carried out:
 
-	- if not already existing, create a folder called "SESMG" in the following directory: "/users/<your username>/documents/"
+	- if not already existing, create a folder called "SESMG" in the following directory: "/documents/"
 	- download the most recent CBC-version for your operating system: `cbc solver for windows <https://www.coin-or.org/download/binary/Cbc/>`_. Alternatively you can uses the `direct download link 		  <https://www.coin-or.org/download/binary/Cbc/Cbc-2.10-win64-msvc16-mdd.zip>`_
 	- unzip the downloaded folder
-	- copy the "cbc.exe" (stored in the "bin" directory of the unziped folder) file into the following directory: "/users/<your username>/documents/SESMG"
+	- copy the "cbc.exe" (stored in the "bin" directory of the unziped folder) file into the following directory: "/documents/SESMG"
 
 2b. The gurobi-solver may be used as an **alternative** to the CBC-solver. Be 
 aware, that the gurobi-solver is not open-source and a license is required. 
@@ -62,7 +62,7 @@ the gurobi-solver is described in detail `here <https://www.gurobi.com/documenta
 
 3. Installing the SESMG application
 The latest released SESMG version can be accessed here: `SESMG releases on Github <https://github.com/SESMG/SESMG/releases/latest/>`_. 
-Download the SESMG.exe and place it in a directory of your choice. Open the SESMG application by running SESMG.exe. The starting process usually takes a few minutes.
+Download the SESMG.exe, unzip it, and place it in a directory of your choice. Open the SESMG application by running SESMG.exe. The starting process usually takes a few minutes.
 
 .. tip::
 
