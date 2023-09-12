@@ -8,6 +8,7 @@ import glob
 import os
 import sys
 from pathlib import Path
+from PIL import Image
 import streamlit as st
 
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
@@ -253,7 +254,7 @@ def run_SESMG(GUI_main_dict: dict,
 
 
 def read_markdown_document(document_path: str, folder_path: str,
-                           main_page=True) -> list:
+                           main_page=True, fixed_image_width=None) -> list:
     """
         Using this method, texts stored in the repository in the form
         of markdown files can be used as the content of a streamlit
@@ -271,6 +272,10 @@ def read_markdown_document(document_path: str, folder_path: str,
             main page content is the Readme reduced by the \
             installation part
         :type main_page: bool
+        :param fixed_image_width: sets the width of the image on default None \
+            as the max width or can be defined as an int for the st.image() \
+            function
+        :type fixed_image_width: int
 
         :return: - **readme_buffer** (list) - list of markdown text \
             which is educed by the parts between ## Quick Start \
@@ -308,8 +313,11 @@ def read_markdown_document(document_path: str, folder_path: str,
                     st.markdown(''.join(readme_buffer[:-1]))
                     # Display the image from the Resources folder using
                     # the image name from the resource_files list
-                    st.image(str(get_bundle_dir())
-                             + "/" + folder_path[:-1] + f'{image}')
+                    # load the image
+                    image = Image.open(str(get_bundle_dir())\
+                                            + "/" + folder_path[:-1] + f'{image}')
+                    # convert image to numpy array
+                    st.image(image, width=fixed_image_width)
                     # Clear the buffer list
                     readme_buffer.clear()
 
