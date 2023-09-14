@@ -6,16 +6,17 @@
 """
 
 import os
-import glob
 import openpyxl
 import streamlit as st
 import pandas as pd
+from PIL import Image
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main
 from program_files.GUI_st.GUI_st_global_functions import \
-    st_settings_global, read_markdown_document, import_GUI_input_values_json
+    st_settings_global, read_markdown_document, import_GUI_input_values_json, \
+    get_bundle_dir, create_result_directory, set_result_path
 
-# Import GUI help comments from the comment json and safe as a dict
+# Import GUI help comments from the comment json and save as a dict
 GUI_helper = import_GUI_input_values_json(
     os.path.dirname(os.path.dirname(__file__)) + "/GUI_st_help_comments.json")
 
@@ -33,8 +34,8 @@ mainpath_mf = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.dirname(__file__))))
 # define main path to SESMG program files folder
 mainpath_pf = os.path.join(mainpath_mf, "program_files")
-# define main path to SESMG results/demo folder
-mainpath_rdf = os.path.join(mainpath_mf, "results", "demo")
+# define the path to the result folder based on the GUI_settings.json
+mainpath_rdf = os.path.join(set_result_path(), 'demo')
 
 # setting initial session state for mdoel run
 if "state_submitted_demo_run" not in st.session_state:
@@ -245,13 +246,7 @@ def create_demo_model_definition() -> None:
     sheet["C5"] = input_values_dict["input_chp_sub_urban"]
     sheet["C6"] = input_values_dict["input_chp_rural"]
 
-    # check if /demo exists in results direcotry
-    if mainpath_rdf \
-            not in glob.glob(os.path.join(mainpath_mf, "results", "*")):
-        # create /results/demo directory
-        os.mkdir(path=os.path.join(mainpath_rdf))
-
-    # safe motified xlsx file in the results/demo folder
+    # save motified xlsx file in the results/demo folder
     xfile.save(os.path.join(mainpath_rdf, "model_definition.xlsx"))
 
     # run sesmg DEMO version
@@ -315,28 +310,33 @@ def demo_start_page() -> None:
     """
 
     # import markdown text from GUI files
-    imported_markdown = read_markdown_document(
+    imported_markdown_dttext = read_markdown_document(
         document_path="docs/GUI_texts/demo_tool_text.md",
-        folder_path=f'{"docs/images/manual/DemoTool/*"}')
-
+        folder_path=f'{"docs/images/manual/DemoTool/*"}',
+        fixed_image_width=500)
     # show markdown text
-    st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
-
-    # upload demo tool graph image
-    img = "docs/images/manual/DemoTool/demo_system_graph.png"
-    st.image(img, caption="", width=500)
+    st.markdown(''.join(imported_markdown_dttext), unsafe_allow_html=True)
+    # upload dh image
+    image_path_system = str(get_bundle_dir()) \
+        + "/docs/images/manual/DemoTool/demo_system_graph.png"
+    # open image
+    image_system = Image.open(image_path_system)
+    # convert image to numpy array
+    st.image(image_system, width=500)
 
     # import markdown tables from GUI files
-    imported_markdown = read_markdown_document(
+    imported_markdown_dttab = read_markdown_document(
         document_path="docs/GUI_texts/demo_tool_tables.md",
         folder_path=f'{"docs/images/manual/DemoTool/*"}')
-
     # show markdown text
-    st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
-
+    st.markdown(''.join(imported_markdown_dttab), unsafe_allow_html=True)
     # upload dh image
-    img = "docs/images/manual/DemoTool/district_heating_network.png"
-    st.image(img, caption="", width=500)
+    image_path_dh = str(get_bundle_dir()) \
+        + "/docs/images/manual/DemoTool/district_heating_network.png"
+    # open image
+    image_dh = Image.open(image_path_dh)
+    # convert image to numpy array
+    st.image(image_dh, width=500)
 
 
 def change_state_submitted_demo_run() -> None:
@@ -361,6 +361,12 @@ demo_start_page()
 
 # show results after submit button was clicked
 if st.session_state["state_submitted_demo_run"] == "done":
+    # Check if the results folder path exists
+    if os.path.exists(mainpath_rdf) is False:
+        # If not, create the result directory using a separate function
+        create_result_directory()
+        # Create the demo folder directory
+        os.makedirs(mainpath_rdf)
     # create demo model definition and start model run
     create_demo_model_definition()
     # show generated results
