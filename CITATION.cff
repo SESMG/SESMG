@@ -7,17 +7,17 @@ authors:
 - family-names: "Becker"
   given-names: "Gregor"
   orcid: "https://orcid.org/0000-0001-8803-6873"
-- family-names: "Budde"
-  given-names: "Janik"
-  orcid: "https://orcid.org/0000-0002-1617-5900"
 - family-names: "Tockloth"
   given-names: "Jan"
   orcid: "https://orcid.org/0000-0003-2582-1043"
+- family-names: "Budde"
+  given-names: "Janik"
+  orcid: "https://orcid.org/0000-0002-1617-5900"
 - family-names: "Vennemann"
   given-names: "Peter"
   orcid: "https://orcid.org/0000-0002-0767-5014"
 title: "SESMG"
-version: 0.3.0
+version: 1.0.0
 doi: 10.5281/zenodo.5412026
-date-released: 2022-08-16
-url: "https://github.com/chrklemm/SESMG"
+date-released: 2023-09-14
+url: "https://github.com/SESMG/SESMG"
