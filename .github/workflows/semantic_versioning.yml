@@ -53,6 +53,7 @@ jobs:
          
   macos:
     name: Build for macOS
+    needs: release
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -88,7 +89,7 @@ jobs:
   linux:
     name: Build on linux
     runs-on: ubuntu-20.04
-    needs: macos 
+    needs: [release, macos] 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -131,7 +132,7 @@ jobs:
   windows:
       name: Build on windows
       runs-on: windows-latest
-      needs: [macos, linux]
+      needs: [release, macos, linux]
       steps:
         - name: Checkout
           uses: actions/checkout@v3
