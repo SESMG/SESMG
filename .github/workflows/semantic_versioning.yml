@@ -50,16 +50,13 @@ jobs:
          else
             echo "bool='true'" >> "$GITHUB_OUTPUT"
          fi
-
+         
   macos:
     name: Build for macOS
     runs-on: macos-latest
-    needs: release
-    if: ${{ needs.release.outputs.bool == 'true' }} 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-          
+        uses: actions/checkout@v3
       - name: Setup Python
         run: |
           curl https://www.python.org/ftp/python/3.9.13/python-3.9.13-macosx10.9.pkg --output pythonInstaller.pkg
@@ -68,7 +65,7 @@ jobs:
         run: |
           python3 -m venv .
           . bin/activate
-          pip3 install -U setuptools wheel pip pyinstaller
+          PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install git+https://github.com/pyinstaller/pyinstaller.git@develop
           pip3 install twisted[tls] appnope requests certifi
           pip3 install -r requirements.txt  
           pyinstaller .github/deploy/SESMG_macos.spec
@@ -91,11 +88,10 @@ jobs:
   linux:
     name: Build on linux
     runs-on: ubuntu-20.04
-    needs: [release, macos]
+    needs: macos 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-
+        uses: actions/checkout@v3
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -135,11 +131,10 @@ jobs:
   windows:
       name: Build on windows
       runs-on: windows-latest
-      needs: [release, macos, linux]
+      needs: [macos, linux]
       steps:
         - name: Checkout
-          uses: actions/checkout@v2
-
+          uses: actions/checkout@v3
         - name: Setup Python
           uses: actions/setup-python@v4
           with:
@@ -164,7 +159,6 @@ jobs:
             name: SESMG.exe
             path: |
               dist/SESMG.exe
-
             
   deploy:
     name: Push builds 
