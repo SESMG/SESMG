@@ -1,23 +1,56 @@
-cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
+cff-version: "1.2.0"
 authors:
-- family-names: "Klemm"
-  given-names: "Christian"
+- family-names: Klemm
+  given-names: Christian
   orcid: "https://orcid.org/0000-0003-0801-4178"
-- family-names: "Becker"
-  given-names: "Gregor"
+- family-names: Becker
+  given-names: Gregor
   orcid: "https://orcid.org/0000-0001-8803-6873"
-- family-names: "Tockloth"
-  given-names: "Jan"
+- family-names: Tockloth
+  given-names: Jan N.
   orcid: "https://orcid.org/0000-0003-2582-1043"
-- family-names: "Budde"
-  given-names: "Janik"
+- family-names: Budde
+  given-names: Janik
   orcid: "https://orcid.org/0000-0002-1617-5900"
-- family-names: "Vennemann"
-  given-names: "Peter"
+- family-names: Vennemann
+  given-names: Peter
   orcid: "https://orcid.org/0000-0002-0767-5014"
-title: "SESMG"
-version: 1.0.0
-doi: 10.5281/zenodo.5412026
-date-released: 2023-09-14
-url: "https://github.com/SESMG/SESMG"
+contact:
+- family-names: Klemm
+  given-names: Christian
+  orcid: "https://orcid.org/0000-0003-0801-4178"
+doi: 10.5281/zenodo.8344791
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - family-names: Klemm
+    given-names: Christian
+    orcid: "https://orcid.org/0000-0003-0801-4178"
+  - family-names: Becker
+    given-names: Gregor
+    orcid: "https://orcid.org/0000-0001-8803-6873"
+  - family-names: Tockloth
+    given-names: Jan N.
+    orcid: "https://orcid.org/0000-0003-2582-1043"
+  - family-names: Budde
+    given-names: Janik
+    orcid: "https://orcid.org/0000-0002-1617-5900"
+  - family-names: Vennemann
+    given-names: Peter
+    orcid: "https://orcid.org/0000-0002-0767-5014"
+  date-published: 2023-09-17
+  doi: 10.21105/joss.05519
+  issn: 2475-9066
+  issue: 89
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 5519
+  title: "The Spreadsheet Energy System Model Generator (SESMG): A tool
+    for the optimization of urban energy systems"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.05519"
+  volume: 8
+title: "The Spreadsheet Energy System Model Generator (SESMG): A tool
+  for the optimization of urban energy systems"
