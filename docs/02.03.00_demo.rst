@@ -40,7 +40,7 @@ Instruction
 
 7: Start of the simulation after designing the system components. 
 
-8: Annual monetary costs of the defined energy system as well as the relative differnce to the status quo.
+8: Annual monetary costs of the defined energy system as well as the relative difference to the status quo.
 
-9: Annual green house gas emissions of defined energy system as well as the relative differnce to the status quo.
+9: Annual green house gas emissions of defined energy system as well as the relative difference to the status quo.
 
