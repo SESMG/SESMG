@@ -28,7 +28,7 @@ Instruction
    
 1: Tab to select the demo tool.
 
-2: Information is given about the fictitional scenario specifying the kind of district.
+2: Information is given about the fictional scenario specifying the kind of district.
 
 3: Overview of the system, the possible technologies one can use, the energy demands and import/ export costs.
 
