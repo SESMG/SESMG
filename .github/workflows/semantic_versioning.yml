@@ -53,6 +53,7 @@ jobs:
          
   macos:
     name: Build for macOS
+    if: ${{ needs.release.outputs.bool == 'true' }}
     needs: release
     runs-on: macos-latest
     steps:
