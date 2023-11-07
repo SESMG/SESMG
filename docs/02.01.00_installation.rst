@@ -192,7 +192,15 @@ be sure the process startet by looking for SESMG.
 
 Use the following two commands in your terminal after installing the SESMG.
 
-``sudo apt install -y libfontconfig1-dev libfreetype6-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxkbcommon-dev libxkbcommon-x11-dev libatspi2.0-dev libopengl0 '^libxcb.*-dev' libgl1 libegl1 libdbus-glib-1-2``
+``sudo apt install -y libfontconfig1-dev libfreetype6-dev libx11-dev``
+
+``sudo apt install -y libx11-xcb-dev libxext-dev libxfixes-dev``
+
+``sudo apt install -y libxi-dev libxrender-dev libxkbcommon-dev``
+
+``sudo apt install -y libxkbcommon-x11-dev libatspi2.0-dev libopengl0`` 
+
+``sudo apt install -y '^libxcb.*-dev' libgl1 libegl1 libdbus-glib-1-2``
 
 ``sudo chmod -R 755 /opt/SESMG``
 
@@ -589,5 +597,3 @@ in the virtual environment
 	directory. You can change the directory by adding the preferred path to the 
 	GUI_st_settings.json. Make sure that each subdirectory is defined as its own 
 	list entry by following the given layout.
-
-
