@@ -45,7 +45,8 @@ def test_import_open_fred_weather_data():
     test_nodes_data = test_nodes_data.drop(columns=["timestamp",
                                                     "ground_temp",
                                                     "water_temp",
-                                                    "groundwater_temp"])
+                                                    "groundwater_temp",
+                                                    "heat_network_temp"])
     
     return_nodes_data = import_weather_data.import_open_fred_weather_data(
         nodes_data={
@@ -65,7 +66,7 @@ def test_import_open_fred_weather_data():
         lat=51.3,
         lon=6.77
     )
-    
+        
     pandas.testing.assert_frame_equal(
         left=return_nodes_data["weather data"].sort_index(axis=1),
         right=test_nodes_data.sort_index(axis=1)
