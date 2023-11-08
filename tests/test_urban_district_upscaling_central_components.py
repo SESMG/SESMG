@@ -72,7 +72,7 @@ def test_create_power_to_gas_entry():
                 "area": [float(0)] * 3,
                 "length of the geoth. probe": [0.0] * 3,
                 "heat extraction": [0.0] * 3,
-                "temperature high": ["0"] * 3}),
+                "temperature high": ["0"]* 3}),
             right=transformers,
             on="transformer_type").drop(columns=["transformer_type"]),
         "storages": pandas.merge(
@@ -105,10 +105,6 @@ def test_create_power_to_gas_system(test_create_power_to_gas_entry):
     for key in sheets.keys():
         if len(test_create_power_to_gas_entry[key]) > 1:
             test_create_power_to_gas_entry[key].set_index(None, inplace=True)
-        if key == "transformers":
-            for column in ["heat source", "mode"]:
-                test_create_power_to_gas_entry[key][column] =\
-                    pandas.to_numeric(test_create_power_to_gas_entry[key][column])
         pandas.testing.assert_frame_equal(
             sheets[key].sort_index(axis=1),
             test_create_power_to_gas_entry[key].sort_index(axis=1))
@@ -230,10 +226,6 @@ def test_create_central_heating_transformer(test_central_heating_plant_entry):
         standard_parameters=standard_parameters)
     # assert rather the two dataframes are equal
     for key in sheets.keys():
-        if key == "transformers":
-            for column in ["heat source", "mode"]:
-                test_central_heating_plant_entry[key][column] = \
-                    pandas.to_numeric(test_central_heating_plant_entry[key][column])
         pandas.testing.assert_frame_equal(
             sheets[key].sort_index(axis=1),
             test_central_heating_plant_entry[key].sort_index(axis=1))
@@ -305,10 +297,6 @@ def test_create_central_chp(test_central_CHP_entry):
         if len(sheets[key]) > 1:
             test_central_CHP_entry[key].set_index(None, inplace=True,
                                                   drop=True)
-        if key == "transformers":
-            for column in ["heat source", "mode"]:
-                test_central_CHP_entry[key][column] = \
-                    pandas.to_numeric(test_central_CHP_entry[key][column])
         pandas.testing.assert_frame_equal(
             sheets[key].sort_index(axis=1),
             test_central_CHP_entry[key].sort_index(axis=1))
