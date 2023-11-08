@@ -242,12 +242,7 @@ def competition_constraint(om: solph.Model, nodes_data: dict,
                     * om.flows[inflow, outflow].competition_factor
                     for (inflow, outflow) in flows
                 )
-                limit = row["limit"]
-                limit = limit - (
-                    sum(om.flows[inflow, outflow].investment.existing
-                        for (inflow, outflow) in flows)
-                )
-                return limit >= competition_flow
+                return competition_flow
 
             #setattr(
             #    om,
@@ -256,18 +251,36 @@ def competition_constraint(om: solph.Model, nodes_data: dict,
             #    po.Constraint(om.TIMESTEPS, expr=competition_rule),
             #)
 
+            #setattr(
+            #    om,
+            #    row["component 1"] + "_" + row["component 2"]
+            #    + "competition_constraint",
+            #    po.Constraint(om.TIMESTEPS, noruleinit=True),
+            #)
+            #setattr(
+            #    om,
+            #    row["component 1"] + "_" + row["component 2"]
+            #    + "competition_constraint" + "_build",
+            #    po.BuildAction(rule=competition_rule),
+            #)
             setattr(
                 om,
-                row["component 1"] + "_" + row["component 2"]
-                + "competition_constraint",
-                po.Constraint(om.TIMESTEPS, noruleinit=True),
+                row["component 1"] + "_" + row["component 2"],
+                po.Expression(expr=competition_rule)
             )
+            
+            limit = row["limit"]
+            limit = limit - (
+               sum(om.flows[inflow, outflow].investment.existing
+                   for (inflow, outflow) in flows)
+                )
+            
             setattr(
                 om,
-                row["component 1"] + "_" + row["component 2"]
-                + "competition_constraint" + "_build",
-                po.BuildAction(rule=competition_rule),
-            )
+                row["component 1"] + "_" + row["component 2"] + "_constraint",
+                po.Constraint(expr=(getattr(
+                    om,
+                    row["component 1"] + "_" + row["component 2"]) <= limit)))
             
     return om
 
@@ -407,7 +420,7 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
 
     # solving the linear problem using the given solver
     if solver == 'gurobi':
-        om.solve(solver=solver, cmdline_options={"threads": num_threads})
+        om.solve(solver=solver, cmdline_options={"threads": num_threads}, solve_kwargs={"tee": True})
     else:
         om.solve(solver=solver)
     logging.info("\t Memory Usage during processing: "
