@@ -61,6 +61,10 @@ def test_create_transformer(test_decentral_gasheating_entry):
         standard_parameters=standard_parameters,
         flow_temp="60",
         building_type="SFB")
+    for column in ["heat source", "mode"]:
+        test_decentral_gasheating_entry["transformers"][column] = \
+            pandas.to_numeric(test_decentral_gasheating_entry["transformers"]
+                              [column])
     # assert rather the two dataframes are equal
     pandas.testing.assert_frame_equal(
         sheets["transformers"].sort_index(axis=1),
