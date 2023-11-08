@@ -46,6 +46,6 @@ napoleon_use_ivar = True
 napoleon_use_rtype = False
 napoleon_use_param = False
 
-
-def setup(app):
-    app.add_stylesheet("custom.css")
+html_css_files = [
+    '_static/custom.css',
+]
