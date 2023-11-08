@@ -20,4 +20,5 @@ dash>=2.4.0
 dash_canvas>=0.1.0 
 h5py==3.6.0
 pyutilib>=6.0.0
+pandas==1.5.3
 pytest
