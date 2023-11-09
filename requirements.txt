@@ -1,6 +1,6 @@
-streamlit>=1.17.0
+streamlit<1.27.0
 streamlit-aggrid>=0.3.0
-oemof.solph>=0.5.0
+oemof.solph<0.5.1
 openpyxl>=3.0.0  
 oemof.thermal @ https://github.com/oemof/oemof-thermal/archive/refs/heads/dev.zip
 feedinlib @ https://github.com/SESMG/feedinlib/archive/refs/heads/dev.zip
@@ -20,4 +20,5 @@ dash>=2.4.0
 dash_canvas>=0.1.0 
 h5py==3.6.0
 pyutilib>=6.0.0
+pandas==1.5.3
 pytest

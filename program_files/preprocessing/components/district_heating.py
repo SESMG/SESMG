@@ -525,6 +525,10 @@ def adapt_dhnx_style(thermal_net: ThermalNetwork, cluster_dh: bool
             thermal_net.components["pipes"].replace(
                 to_replace=pipe["id"], value=pipe["id"][5:], inplace=True
             )
+        for num, pipe in pipes.iterrows():
+            thermal_net.components["pipes"].replace(
+                to_replace=pipe["id"], value=str(int(pipe["id"]) - 1), inplace=True
+            )	
             
     # reset the index on the id column of each DataFrame
     for index in ["consumers", "pipes", "producers", "forks"]:
@@ -600,12 +604,16 @@ def create_components(nodes_data: dict, anergy_or_exergy: bool,
         },
         "network": {
             "pipes": pipe_types.loc[(pipe_types["anergy_or_exergy"] == label_5)
-                                    & (pipe_types["distribution_pipe"] == 1)],
+                                    & (pipe_types["distribution_pipe"] == 1) & (pipe_types["active"] == 1)],
             "pipes_houses": pipe_types.loc[
                 (pipe_types["anergy_or_exergy"] == label_5)
-                & (pipe_types["building_pipe"] == 1)],
+                & (pipe_types["building_pipe"] == 1) & (pipe_types["active"] == 1)],
         },
     }
+    print("Distribution PIPES")
+    print(invest_opt["network"]["pipes"])
+    print("HOUSE PIPES")
+    print(invest_opt["network"]["pipes_houses"])
     # start dhnx algorithm to create dh components
     oemof_opti_model = optimization.setup_optimise_investment(
         thermal_network=thermal_net,
@@ -620,7 +628,7 @@ def create_components(nodes_data: dict, anergy_or_exergy: bool,
         ),
         frequence=(str(frequency[0])).upper(),
         label_5=label_5,
-        bidirectional_pipes=True
+        bidirectional_pipes=True,
     )
     return oemof_opti_model
 

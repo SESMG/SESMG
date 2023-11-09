@@ -350,8 +350,8 @@ def bus_technical_pre_selection(components_xlsx: pandas.DataFrame,
             if label not in dh_investment_list \
                     and label[0:9] not in dh_investment_list \
                     and label.split('_')[0] not in dh_investment_list:
-                if dh_bus['district heating conn.'] == "dh-system":
-                    bus_xlsx.at[num, 'active'] = 0
+                #if dh_bus['district heating conn.'] == "dh-system":
+                #    bus_xlsx.at[num, 'active'] = 0
                 bus_xlsx.at[num, 'district heating conn.'] = 0
                 
             elif len(dh_investment_list) < 2:
@@ -384,7 +384,7 @@ def insulation_technical_pre_selection(components_xlsx: pandas.DataFrame,
     # carried out
     for i, insulation in components_xlsx.iterrows():
         if str(insulation['label'] + "-insulation") \
-                not in insulation_investment_list:
+                not in insulation_investment_list and insulation['existing'] != 1:
             components_xlsx.at[i, 'active'] = 0
 
 
