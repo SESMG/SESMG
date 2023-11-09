@@ -11,6 +11,8 @@ import streamlit as st
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main, sesmg_main_including_premodel
 
+from PIL import Image
+
 
 def st_settings_global() -> None:
     """
@@ -146,6 +148,66 @@ def create_timeseries_parameter_list(GUI_main_dict: dict,
     # append input_timseries_season value and return
     return parameter_list + input_value_season
 
+
+def run_SESMG_for_graph(model_definition_file: str, result_path: str, num_threads: int,
+                       cluster_dh, district_heating_path=None) -> None:
+    """
+    Function to run SESMG just until the Graph is created
+    """
+
+    # sets number of threads for numpy
+    os.environ['NUMEXPR_NUM_THREADS'] = str(num_threads)
+    # defines a logging file
+    logger.define_logging(logpath=result_path)
+    # imports data from the excel file and returns it as a dictionary
+    nodes_data = create_energy_system.import_model_definition(
+        filepath=model_definition_file)
+
+    # BESCHREIBUNG NOCH HINZUFÜGEN
+    model_definition_file = result_path + "/modified_model_definition.xlsx"
+
+    # created an energysystem as defined in the model definition file
+    esys, nodes_data = create_energy_system.define_energy_system(
+        nodes_data=nodes_data)
+
+    # creates a list where the created components will be stored
+    nodes = []
+
+    # creates bus objects, excess sinks, and shortage sources as defined
+    # in the model definition file
+    busd = Bus.buses(nodes_data=nodes_data, nodes=nodes)
+
+    # PARALLEL CREATION OF ALL OBJECTS OF THE MODEL DEFINITION FILE
+    thread1 = Thread(target=Source.Sources, args=(nodes_data, nodes, busd))
+    thread1.start()
+    thread2 = Thread(target=Sink.Sinks, args=(nodes_data, busd, nodes))
+    thread2.start()
+    thread3 = Thread(target=Transformer.Transformers,
+                     args=(nodes_data, nodes, busd))
+    thread3.start()
+    thread4 = Thread(target=Storage.Storages, args=(nodes_data, nodes, busd))
+    thread4.start()
+    thread5 = Thread(target=Link.Links, args=(nodes_data, nodes, busd))
+    thread5.start()
+
+    thread1.join()
+    thread2.join()
+    thread3.join()
+    thread4.join()
+    thread5.join()
+
+    if len(nodes_data["buses"][~nodes_data["buses"][
+        "district heating conn."].isin(["0", 0])]) > 0:
+        nodes = district_heating.district_heating(
+            nodes_data=nodes_data, nodes=nodes, busd=busd,
+            district_heating_path=district_heating_path,
+            result_path=result_path, cluster_dh=cluster_dh,
+            anergy_or_exergy=False)
+
+    esys.add(*nodes)
+
+    ESGraphRenderer(energy_system=esys, filepath=result_path, view=True,
+                    legend=True)
 
 def run_SESMG(GUI_main_dict: dict,
               model_definition: str,
@@ -358,3 +420,40 @@ def show_error_with_link() -> None:
     link_text = "Troubleshooting Guide"
     error_message_with_link = f"{error_message}[{link_text}]({link})"
     st.markdown(error_message_with_link)
+
+
+def short_result_graph(result_path_graph: str) -> None:
+    """
+        Function to display the energy systems structure in a streamlit
+        expander.
+
+        :param result_path_graph: path to a result graph.gv.png file
+        :type result_path_graph: str
+    """
+    # Header
+    st.subheader("Energy System Graph")
+    # Importing and printing the energy system graph
+    with st.expander("Show the structure of the modeled energy system"):
+        es_graph = Image.open(result_path_graph, "r")
+        st.image(es_graph)
+
+
+def create_exception_for_failed_runs(GUI_main_dict):
+    """
+        Create a streamlit exception that shows the user the energy graph if it was created before the run stopped.
+
+        :param GUI_main_dict: :param GUI_main_dict: Dictionary which is passed to the method \
+            by the GUI and contains the user's input.
+        :type GUI_main_dict: dict
+
+    """
+
+    # create the paths for the different saved energy graphs
+    graph_file_path = GUI_main_dict["res_path"] + "/graph.gv.png"
+
+    # check if there is a graph for either a normal or a pareto run
+    if os.path.isfile(graph_file_path):
+        st.markdown("If the Troubleshooting is not helpful, maybe also the graph shows the mistakes:")
+        print("path")
+        print(graph_file_path)
+        short_result_graph(result_path_graph=graph_file_path)

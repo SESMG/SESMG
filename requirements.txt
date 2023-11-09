@@ -1,4 +1,4 @@
-streamlit>=1.17.0
+streamlit>=1.26.0
 streamlit-aggrid>=0.3.0
 oemof.solph>=0.5.0
 openpyxl>=3.0.0  

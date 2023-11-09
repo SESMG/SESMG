@@ -224,6 +224,11 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict) -> str:
     # TODO enable more than one model definition (districts)
     save_path = create_model_definition_save_folder(model_definition,
                                                     directory, "0")
+
+    # add the path to the result dict so it can be used to show the graph if the run crashes
+    # TODO check if this results in any mistakes (added by Franzi)
+    GUI_main_dict["res_path"] = save_path
+
     # append optimum of first criterion driven run to the list of
     # result folders
     result_folders["0"].append(save_path)

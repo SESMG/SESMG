@@ -5,15 +5,19 @@
 """
 import glob
 import os
+import multiprocessing
+
+import dash
+from dash import html, dash_table
 import streamlit as st
+from streamlit.components.v1 import iframe
 import pandas as pd
-from st_aggrid import AgGrid, GridUpdateMode
 import plotly.express as px
-from PIL import Image
 
 from program_files.GUI_st.GUI_st_global_functions import \
     import_GUI_input_values_json, st_settings_global, read_markdown_document, \
-    load_result_folder_list, show_error_with_link
+    load_result_folder_list, show_error_with_link, short_result_graph, \
+    create_exception_for_failed_runs
 
 
 def result_processing_sidebar() -> None:
@@ -52,6 +56,14 @@ def result_processing_sidebar() -> None:
                                     os.path.abspath(__file__))))),
                              "results",
                              existing_result_folder)
+
+            # set session state with full folder path to the pareto result folder (added)
+            st.session_state["state_pareto_result_path"] = \
+                os.path.join(os.path.dirname(os.path.dirname(
+                    os.path.dirname(os.path.dirname(
+                        os.path.abspath(__file__))))),
+                    "results",
+                    existing_result_folder)
 
         if st.session_state["state_result_path"] != "not set" and \
                 os.path.join(st.session_state["state_result_path"],
@@ -194,6 +206,62 @@ def short_result_premodelling(result_GUI_settings_dict: dict) -> None:
             ["input_premodeling_tightening_factor"])
 
 
+def start_dash_server(df_components) -> None:
+    """
+        function to start dash application
+        :param df_components: df containing all components for the result table
+    """
+
+    # create table
+    # start Dash-App
+    app = dash.Dash(__name__, suppress_callback_exceptions=True)
+
+    # Layout of the Dash-App
+    app.layout = html.Div([
+        dash_table.DataTable(
+            data=df_components.to_dict('records'),
+            columns=[{'id': c, 'name': c} for c in df_components.columns],
+            filter_action='native',  # activates filter
+            page_action='none',  # 'none' deactivates the pagination
+            fixed_rows={'headers': True},  # fixed headers also when scrolling down in the table
+            style_table={'height': '400'}
+        )
+    ])
+    # set port
+    app.run_server(port=8503, debug=True, use_reloader=False)
+
+# TODO ich habe diese Funktionen einmal drin gelassen, mache es aber jetzt über die streamlit tabelle
+
+
+def dash_result_table(result_path_components: str) -> None:
+    """
+        Function to create table of components.
+
+        :param result_path_components: path to a result components.csv \
+            file
+        :type result_path_components: str
+    """
+
+    # Header
+    st.subheader("Result Table")
+
+    # Import components.csv and create dataframe
+    df_components = pd.read_csv(result_path_components)
+
+    # starting parallel dash process
+    dash_process = multiprocessing.Process(target=start_dash_server, args=(df_components,))
+    dash_process.start()
+
+    # waiting for the end of the dash application to avoid an endless dash process
+    dash_process.join()
+
+    # URL for the Dash-Application
+    dash_app_url = "http://127.0.0.1:8503/"
+
+    # Using the dash-table in streamlit
+    iframe(dash_app_url, width=1000, height=500)
+
+
 def short_result_table(result_path_components: str) -> None:
     """
         Function to create table of components.
@@ -202,57 +270,47 @@ def short_result_table(result_path_components: str) -> None:
             file
         :type result_path_components: str
     """
+
     # Header
     st.subheader("Result Table")
+
     # Import components.csv and create dataframe
     df_components = pd.read_csv(result_path_components)
 
-    # CSS to inject contained in a string
-    hide_dataframe_row_index = """
-                <style>
-                .row_heading.level0 {display:none}
-                .blank {display:none}
-                </style>
-                """
+    # chosing between small table and table with whole data
+    with st.form("my_form"):
+
+        # formular-submit-button
+        submit_button = st.form_submit_button("Show complete table")
+
+        if submit_button:
+            # Toggle the value of show_complete_table
+            st.session_state.show_complete_table = not st.session_state.get("show_complete_table", False)
 
     # create table
-
-    # add dicctionarry for a possible empty row
-    # funktioniert hier nicht, da Java Skript mit null arbeitet statt mit None, könnte man transformieren, aber erstmal
-    # Jan fragen, ob es nicht auch leichter geht
-    leere_zeile = {}
-    for spalte in df_components.columns:
-        leere_zeile[spalte] = None
-
-    df_components = df_components.append(leere_zeile, ignore_index=True)
-
-    print(df_components)
-
-
-
     # set min hight which is the header height
-    ag_min_height = 40
-    # set hight per row
-    ag_row_height = 27.6
+    ag_min_height = 47
+    # set right per row
+    ag_row_height = 33.5
     # calculate logical height based on the df length
-    logical_df_height = ag_min_height + (len(df_components)+1) * ag_row_height
-    # set maximum height for st.AgGrid Table
+    logical_df_height = ag_min_height + len(df_components) * ag_row_height
+    # set maximum height for Table
     ag_max_height = 200
 
-    # Inject CSS with Markdown
-    st.markdown(hide_dataframe_row_index, unsafe_allow_html=True)
+    # set table height based on the button state
+    if st.session_state.get("show_complete_table", False):
+        # if button was clicked, set height to None
+        table_height = None
+    else:
+        # otherwise, calculate minimum height
+        table_height = int(min(logical_df_height, ag_max_height))
 
-    # Creating st_aggrid table with setting the height to the min of the \
-    # logical height or the max height
+    # create streamlit table
+    st.data_editor(df_components,
+                   height=table_height,
+                   use_container_width=True  # desired height in pixels
+                   )
 
-    AgGrid(df_components,
-           fit_columns_on_grid_load=True,
-           height=min(ag_max_height,logical_df_height))
-
-    # das Problem tritt jetzt noch auf wenn ag_max_height ausgewählt wird, man könnte natürlich auch einfach immer die
-    # ganze Tabelle anzeigen lassen, aber ich suche noch nach dem Grund warum es bei max height abgeschnitten wird
-    # Idee Benjamin war noch eine leere Zeile anzeigen zu lassen, habe ich versucht, funktioniert, aber auch nur wenn
-    # die logical height ausgewählt wird, siehe oben
 
 def short_result_interactive_dia(result_path_results: str) -> None:
     """
@@ -365,20 +423,34 @@ def show_pareto(result_path_pareto: str) -> None:
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
-def short_result_graph(result_path_graph: str) -> None:
+def create_exception_for_failed_runs_result_processing():
     """
-        Function to display the energy systems structure in a streamlit
-        expander.
+    Create a streamlit exception that shows the user the energy graph if it was created before the run stopped.
+    """
 
-        :param result_path_graph: path to a result graph.gv.png file
-        :type result_path_graph: str
-    """
-    # Header
-    st.subheader("Energy System Graph")
-    # Importing and printing the energy system graph
-    with st.expander("Show the structure of the modeled energy system"):
-        es_graph = Image.open(result_path_graph, "r")
-        st.image(es_graph)
+    # initialize session state  if no result paths are defined on main page
+    if "state_result_path" not in st.session_state:
+        st.session_state["state_result_path"] = "not set"
+    if "state_pareto_result_path" not in st.session_state:
+        st.session_state["state_pareto_result_path"] = "not set"
+
+    # create the paths for the different safed energy graphs
+    graph_file_path_normal = st.session_state["state_result_path"] + "/graph.gv.png"
+    graph_file_path_pareto = st.session_state["state_pareto_result_path"] + "/graph.gv.png"
+
+    # check if there is a pareto graph
+    if os.path.isfile(graph_file_path_pareto):
+        st.markdown("If the Troubleshooting is not helpful, maybe also the graph shows the mistakes:")
+        short_result_graph(result_path_graph=graph_file_path_pareto)
+
+    # check if there is no pareto graph but a graph for a normal run
+    if os.path.isfile(graph_file_path_normal) and not os.path.isfile(graph_file_path_pareto):
+        st.markdown("If the Troubleshooting is not helpful, maybe also the graph shows the mistakes:")
+        short_result_graph(result_path_graph=graph_file_path_normal)
+
+    # check if there is not a energy graph at all
+    if not os.path.isfile(graph_file_path_pareto) and not os.path.isfile(graph_file_path_normal):
+        st.markdown("No graph could be created, check the model definition again!")
 
 
 try:
@@ -389,6 +461,8 @@ try:
     # initialize session state  if no result paths are defined on main page
     if "state_result_path" not in st.session_state:
         st.session_state["state_result_path"] = "not set"
+    if "state_pareto_result_path" not in st.session_state:
+        st.session_state["state_pareto_result_path"] = "not set"
 
     # start sidebar functions
     result_processing_sidebar()
@@ -439,6 +513,7 @@ try:
         short_result_table(
             result_path_components=st.session_state["state_result_path"]
             + "/components.csv")
+
         # show interactive result diagram
         short_result_interactive_dia(
             result_path_results=st.session_state["state_result_path"]
@@ -448,6 +523,7 @@ try:
     # elements for a pareto run if not.
     elif os.path.join(st.session_state["state_result_path"], "components.csv") \
             not in glob.glob(st.session_state["state_result_path"] + "/*"):
+
         # show building specific results
         show_pareto(
             result_path_pareto=os.path.join(st.session_state["state_result_path"],
@@ -506,8 +582,15 @@ except Exception as e:
     show_error_with_link()
     # display the exception along with the traceback
     st.exception(e)
+    # show the graph if it was created or tell the user that no graph was created
+    create_exception_for_failed_runs_result_processing()
 
-    # show result graph even when the model run crashes
-    short_result_graph(
-        result_path_graph=st.session_state["state_result_path"]
-                          + "/graph.gv.png")
+
+
+
+
+
+
+
+
+

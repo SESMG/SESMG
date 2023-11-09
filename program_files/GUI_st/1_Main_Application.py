@@ -19,7 +19,8 @@ from program_files.GUI_st.GUI_st_global_functions import \
     import_GUI_input_values_json, st_settings_global, run_SESMG, \
     read_markdown_document, create_simplification_index, \
     create_cluster_simplification_index, load_result_folder_list, \
-    show_error_with_link
+    show_error_with_link, short_result_graph, run_SESMG_for_graph, \
+    create_exception_for_failed_runs
 from program_files.preprocessing.pareto_optimization import run_pareto
 
 
@@ -101,6 +102,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
             (st.runtime.uploaded_file_manager.UploadedFile) - model \
             defintion as a st.UploadedFile
     """
+
     # Creating Frame as st.form_submit_button
     with st.sidebar.form("Input Parameters"):
 
@@ -465,7 +467,22 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
 
             GUI_main_dict["input_console_results"] = False
 
+        # TODO hier hab ich mal angefangen! Gerade erstmal das mit den error messages hinbekommen!
+        # CREATE FORM SUBMIT BUTTON TO SHOW THE GRAPH
+        # creating sidebar form submit structure
+        with st.sidebar.form("Show Graph"):
+            if "state_submitted_graph" not in st.session_state:
+                st.session_state["state_submitted_graph"] = "not done"
+
+            # create submit button
+            st.form_submit_button(
+                label="Show Result Graph",
+                on_click=change_state_submitted_graph,
+                help=None)
+
     return model_definition_input
+    # das Problem ist, dass diese Variable nicht richtig an die andere Funktion übergeben wird, da sie nicht als
+    # globale Variable definiert ist!
 
 
 def main_error_definition() -> None:
@@ -487,6 +504,7 @@ def main_clear_cache_sidebar() -> None:
 
     # creating sidebar form submit structure
     with st.sidebar.form("Clear Cache"):
+
         # set initial session state for clear cache submit button
         if "state_submitted_clear_cache" not in st.session_state:
             st.session_state["state_submitted_clear_cache"] = "not done"
@@ -506,6 +524,35 @@ def main_clear_cache_sidebar() -> None:
         st.session_state["state_submitted_clear_cache"] = "not done"
         # rerun whole script to update GUI settings
         st.experimental_rerun()
+
+
+def show_result_graph(model_definition_input_file) ->None:
+    """
+        show only the system graph when the submit field is selected
+    """
+    # Check if a model definition file has been uploaded
+    if model_definition_input_file is None:
+        st.error("Please upload a model definition file before showing the Result Graph.")
+        return
+
+    # function to create the result paths and store session state
+    create_result_paths()
+
+    with st.spinner("Graph is loading..."):
+        # start model run
+        run_SESMG_for_graph(
+            model_definition_file=model_definition_input_file,
+            result_path=save_path,
+            num_threads=GUI_main_dict["input_num_threads"],
+            cluster_dh=GUI_main_dict["input_cluster_dh"],
+            district_heating_path=GUI_main_dict["input_dh_folder"],
+        )
+
+        # save GUI settings in result folder and reset session state
+        save_run_settings()
+
+    # show the created energy system graph
+    short_result_graph(result_path_graph=st.session_state["state_result_path"] + "/graph.gv.png")
 
 
 def create_result_paths() -> None:
@@ -562,27 +609,34 @@ def change_state_submitted_clear_cache() -> None:
     st.session_state["state_submitted_optimization"] = "not done"
 
 
+def change_state_submitted_graph() -> None:
+    """
+        Setup session state for the show_result_graph form-submit as an
+        change event as on-click to switch the state.
+    """
+    st.session_state["state_submitted_graph"] = "done"
+
 try:
     # staring sidebar elements as standing elements
     model_definition_input_file = main_input_sidebar()
     main_clear_cache_sidebar()
 
-    # load the start page if modell run is not submitted
+    # load the start page if model run is not submitted
     if st.session_state["state_submitted_optimization"] == "not done":
         main_start_page()
 
-    # starting process is modell run is  submitted
+    # starting process if model run is  submitted
     if st.session_state["state_submitted_optimization"] == "done":
 
         # raise error if run is started without uploading a model definition
         if not model_definition_input_file:
 
-            # load error messsage
+            # load error message
             main_error_definition()
 
         elif model_definition_input_file != "":
 
-            # safe the GUI_main_dice as a chache for the next session
+            # safe the GUI_main_dice as a cache for the next session
             safe_GUI_input_values(input_values_dict=GUI_main_dict,
                                   json_file_path=os.path.dirname(__file__)
                                                  + "/GUI_st_cache.json")
@@ -593,7 +647,7 @@ try:
             # Starting the model run
             if len(GUI_main_dict["input_pareto_points"]) == 0:
 
-                # function to create the result pasths and store session state
+                # function to create the result paths and store session state
                 create_result_paths()
 
                 with st.spinner("Modeling in Progress..."):
@@ -609,12 +663,12 @@ try:
                 # switch page after the model run completed
                 nav_page(page_name="Result_Processing", timeout_secs=3)
 
-            # Starting a pareto modeul rum
+            # Starting a pareto model rum
             elif len(GUI_main_dict["input_pareto_points"]) != 0:
 
                 with st.spinner("Modeling in Progress..."):
 
-                    # run_pareto retuns res path
+                    # run_pareto returns res path
                     GUI_main_dict["res_path"] = \
                         run_pareto(
                             limits=[i / 100 for i in
@@ -622,6 +676,7 @@ try:
                             model_definition=model_definition_input_file,
                             GUI_main_dict=GUI_main_dict)
 
+                    # TODO geht das auch fürs Result Processing
                     # safe path as session state for the result processing page
                     st.session_state["state_result_path"] = \
                         GUI_main_dict["res_path"]
@@ -632,9 +687,12 @@ try:
                 # switch page after the model run completed
                 nav_page(page_name="Result_Processing", timeout_secs=3)
 
-# Show an error message with additional information and defining a function that adds the link to the error message
 except Exception as e:
     show_error_with_link()
     # display the exception along with the traceback
     st.exception(e)
+    # show the graph if it was created beforehand
+    create_exception_for_failed_runs(GUI_main_dict)
+
+
 
