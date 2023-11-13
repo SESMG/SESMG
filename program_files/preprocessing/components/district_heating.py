@@ -16,7 +16,12 @@ from program_files.preprocessing.components.district_heating_clustering \
 def load_thermal_network_data(thermal_net: ThermalNetwork, path: str
                               ) -> ThermalNetwork:
     """
-        Method to load already calculated thermal network data.
+        This function takes a ThermalNetwork instance and a path as
+        input. It then reads CSV files for different components
+        (consumers, pipes, producers, forks) from the specified path
+        and attaches the data to the corresponding components in the
+        ThermalNetwork instance. Finally, it returns the modified
+        ThermalNetwork.
         
         :param thermal_net: DHNx ThermalNetwork instance used to \
             create the components of the thermal network for the \
@@ -29,9 +34,13 @@ def load_thermal_network_data(thermal_net: ThermalNetwork, path: str
             ThermalNetwork instance to which the already existing data \
             was attached.
     """
+    # Loop through comp dataframes (consumers, pipes, producers, forks)
     for dataframe in ["consumers", "pipes", "producers", "forks"]:
+        # # Read CSV files for each dataframe and assign them to the
+        # respective component in the ThermalNetwork
         thermal_net.components[dataframe] = \
             pandas.read_csv(path + "/" + dataframe + ".csv")
+    # Return the modified ThermalNetwork with attached data
     return thermal_net
 
 
@@ -45,7 +54,9 @@ def save_thermal_network_data(thermal_net: ThermalNetwork, path: str) -> None:
         :param path: path where the ThermalNetwork data will be stored.
         :type path: str
     """
+    # Loop through comp dataframes (consumers, pipes, producers, forks)
     for dataframe in ["consumers", "pipes", "producers", "forks"]:
+        # Save each dataframe to a CSV file in the specified path
         thermal_net.components[dataframe].to_csv(
                 path + "/" + dataframe + ".csv")
 
@@ -54,15 +65,16 @@ def concat_on_thermal_net_components(comp_type: str, new_dict: dict,
                                      thermal_net: dhnx.network.ThermalNetwork
                                      ) -> dhnx.network.ThermalNetwork:
     """
-        Outsourced the concatenation of a new row (component) to the \
-        thermal network component dataframes (consumers, producers, \
-        forks etc.) which is part of several algorithm steps.
+        Concatenates a new row (component) to the thermal network
+        component DataFrames (consumers, producers, forks, etc.) as
+        part of several algorithm steps.
+
         
-        :param comp_type: defines on which thermal net components \
-            DataFrame the new dict will be appended
+        :param comp_type: Defines on which thermal net components \
+            DataFrame the new dict will be appended.
         :type comp_type: str
-        :param new_dict: holds the information of the new component to \
-            be appended on an existing DataFrame
+        :param new_dict: Holds the information of the new component to \
+            be appended on an existing DataFrame.
         :type new_dict: dict
         :param thermal_net: DHNx ThermalNetwork instance used to \
             create the components of the thermal network for the \
@@ -72,7 +84,10 @@ def concat_on_thermal_net_components(comp_type: str, new_dict: dict,
         :return: - **thermal_net** (dhnx.network.ThermalNetwork) - \
             updated instance of the DHNx ThermalNetwork
     """
-    # create consumers forks pandas Dataframe for thermal network
+    # Concatenate the new component information to the specified
+    # component type DataFrame
+    # 1 Existing DataFrame
+    # 2 new Component information as DataFrame
     thermal_net.components[comp_type] = pandas.concat(
         [thermal_net.components[comp_type],
          pandas.DataFrame([pandas.Series(data=new_dict)])]
@@ -83,8 +98,8 @@ def concat_on_thermal_net_components(comp_type: str, new_dict: dict,
 def clear_thermal_net(thermal_net: dhnx.network.ThermalNetwork
                       ) -> dhnx.network.ThermalNetwork:
     """
-        Method to clear the pandas dataframes of thermal network
-        that might consist of old information.
+        Clears the pandas dataframes of the thermal network that might
+        consist of old information.
         
         :param thermal_net: DHNx ThermalNetwork instance possibly \
             holding information of an older optimization run
@@ -93,8 +108,11 @@ def clear_thermal_net(thermal_net: dhnx.network.ThermalNetwork
         :return: **thermal_net** (dhnx.network.ThermalNetwork) - \
             cleared instance of the DHNx ThermalNetwork
     """
+    # Iterate over the dataframes in thermal_net.components and replace
+    # them with empty dataframes
     for dataframe in ["forks", "consumers", "pipes", "producers"]:
         thermal_net.components[dataframe] = pandas.DataFrame()
+        
     return thermal_net
 
 
