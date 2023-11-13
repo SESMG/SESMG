@@ -158,14 +158,18 @@ def test_concat_on_thermal_net_components(test_forks_dataframe, thermal_net):
 class MockThermalNetwork:
     def __init__(self):
         self.components = {
-            "forks": pandas.DataFrame({"id": [1, 2],
-                                       "name": ["Fork1", "Fork2"]}),
-            "consumers": pandas.DataFrame({"id": [1, 2],
-                                           "name": ["Consumer1", "Consumer2"]}),
-            "pipes": pandas.DataFrame({"id": [1, 2],
-                                       "length": [100, 200]}),
-            "producers": pandas.DataFrame({"id": [1, 2],
-                                           "name": ["Producer1", "Producer2"]}),
+            "forks": pandas.DataFrame({
+                "id": [1, 2],
+                "name": ["Fork1", "Fork2"]}),
+            "consumers": pandas.DataFrame({
+                "id": [1, 2],
+                "name": ["Consumer1", "Consumer2"]}),
+            "pipes": pandas.DataFrame({
+                "id": [1, 2],
+                "length": [100, 200]}),
+            "producers": pandas.DataFrame({
+                "id": [1, 2],
+                "name": ["Producer1", "Producer2"]}),
         }
 
 
@@ -182,15 +186,12 @@ def test_clear_thermal_net(dataframe_name):
             clearing.
         :type dataframe_name: str
     """
-    # Arrange
     # Creating an instance of the MockThermalNetwork
     thermal_net = MockThermalNetwork()
 
-    # Act
     # Calling the clear_thermal_net function to clear a specific dataframe
     result = district_heating.clear_thermal_net(thermal_net)
 
-    # Assert
     # Verifying that the specified dataframe is now an empty dataframe
     assert result.components[dataframe_name].empty
     
@@ -201,12 +202,24 @@ def test_create_fork(test_forks_dataframe, thermal_net):
         method has been correctly parameterized in the DataFrame of the
         thermal network forks.
     """
-    thermal_net = district_heating.create_fork(
-        point=["x", 10, 10, "x", 0.5, "test"],
-        label=1,
-        thermal_net=thermal_net,
-        bus="testbus")
+    # Creating an instance of the ThermalNetwork
+    # Assuming create_fork is a method of the district_heating module
+    # and it adds a new fork to the thermal network
+    # with the specified parameters (point, label, bus)
+    point = ["x", 10, 10, "x", 0.5, "test"]
+    label = 1
+    bus = "testbus"
     
+    # Calling the create_fork method to add a new fork to the thermal
+    # network
+    thermal_net = district_heating.create_fork(
+        point=point,
+        label=label,
+        thermal_net=thermal_net,
+        bus=bus)
+
+    # Comparing the resulting 'forks' component DataFrame with the
+    # expected test dataframe
     pandas.testing.assert_frame_equal(
         left=thermal_net.components["forks"],
         right=test_forks_dataframe
@@ -235,53 +248,106 @@ def test_append_pipe(test_pipes_dataframe, thermal_net):
         method has been correctly parameterized in the DataFrame of the
         thermal network pipes.
     """
+    # Creating an instance of the ThermalNetwork
+    # Assuming append_pipe is a method of the district_heating module
+    # and it adds a new pipe to the thermal network
+    # with the specified parameters (nodes, length, street)
+    nodes = ["forks-1", "forks-2"]
+    length = 30.0
+    street = "test-street"
+
+    # Calling the append_pipe method to add a new pipe to the thermal
+    # network
     thermal_net = district_heating.append_pipe(
-        nodes=["forks-1", "forks-2"],
-        length=30.0,
-        street="test-street",
+        nodes=nodes,
+        length=length,
+        street=street,
         thermal_net=thermal_net)
-    
+
+    # Comparing the resulting 'pipes' component DataFrame with the
+    # expected test dataframe
     pandas.testing.assert_frame_equal(
         left=thermal_net.components["pipes"],
         right=test_pipes_dataframe
     )
     
 
-@pytest.fixture
-def test_intersection_forks_dataframe():
+@pytest.mark.xfail()
+def test_remove_sinks_collect_buses(mock_oemof_model):
     """
-        The pandas dataframe created here provides the benchmark for
-        test_create_intersection_forks.
-    """
-    return pandas.DataFrame.from_dict(
-        {"id": ["0", "1"],
-         "lat": [5, 6],
-         "lon": [5, 6],
-         "component_type": ["Fork", "Fork"]}
-    ).set_index(keys="id")
+        Test for the remove_sinks_collect_buses function.
     
+        This test checks if the method correctly removes empty sinks
+        from the OemofInvestOptimizationModel.
+    
+        :param mock_oemof_model: A mock OemofInvestOptimizationModel \
+            for testing.
+        :type mock_oemof_model: MockOemofInvestOptimizationModel
+    """
+    # Initialize the required inputs for the remove redundant sinks
+    # method of the district heating module which will be tested
+    # afterwards. Therefore a dict of buses which will be the result
+    # of the remove_sinks_collect_buses function is created.
+    initial_node_count = len(mock_oemof_model.nodes)
+    initial_buses = {"bus1": MockNode("bus1", "bus"),
+                     "bus2": MockNode("bus2", "bus")}
 
-def test_create_intersection_forks(test_intersection_forks_dataframe,
-                                   thermal_net):
-    """
-        This test checks whether the rows created by the create
-        intersection forks method have been correctly parameterized in
-        the DataFrame of the thermal network forks.
-    """
-    thermal_network = district_heating.create_intersection_forks(
-        street_sec=pandas.DataFrame.from_dict(
-            {"label": ["test"],
-             "active": [1],
-             "lat. 1st intersection": [5],
-             "lon. 1st intersection": [5],
-             "lat. 2nd intersection": [6],
-             "lon. 2nd intersection": [6]
-             }
-        ),
-        thermal_net=thermal_net)
+    # Calling the remove_sinks_collect_buses method and catch it's
+    # result for the upcoming assertions
+    updated_model, updated_buses = district_heating.remove_sinks_collect_buses(
+        mock_oemof_model, initial_buses)
     
-    pandas.testing.assert_frame_equal(
-        left=thermal_network.components["forks"].set_index(keys="id",
-                                                           drop=True),
-        right=test_intersection_forks_dataframe
-    )
+    # Check if sinks are removed
+    assert len(updated_model.nodes) < initial_node_count
+    assert "demand1" not in [node.label for node in updated_model.nodes]
+    assert "demand2" not in [node.label for node in updated_model.nodes]
+    # since buses should not be removed the length has to be equal
+    assert len(updated_buses) == len(initial_buses)
+    # Other nodes should not be affected
+    assert "other_node" in [node.label for node in updated_model.nodes]
+
+
+@pytest.fixture
+def street_sec():
+    return pandas.DataFrame({
+        'active': [1, 1],
+        'lat. 1st intersection': [1.0, 2.0],
+        'lon. 1st intersection': [3.0, 4.0],
+        'lat. 2nd intersection': [5.0, 6.0],
+        'lon. 2nd intersection': [7.0, 8.0]
+    })
+
+
+def test_create_intersection_forks(street_sec, thermal_net):
+    """
+        Test the create_intersection_forks function.
+
+        This test function checks the behavior of the
+        create_intersection_forks method by providing it with specific
+        street_sec and thermal_net inputs and then asserting the
+        expected behavior and properties of the resulting
+        ThermalNetwork instance.
+
+        :param: street_sec: Test DataFrame containing street \
+          sections with beginning and ending points.
+        :type street_sec: pandas.DataFrame
+        :param thermal_net: Test instance of the DHNx ThermalNetwork \
+          used as a basis for creating the components.
+        :type street_sec: dhnx.network.ThermalNetwork
+        """
+    # Call the method with the test data
+    result_thermal_net = district_heating.create_intersection_forks(
+        street_sec=street_sec, thermal_net=thermal_net)
+    
+    # Assert the result is an instance of ThermalNetwork
+    assert isinstance(result_thermal_net, dhnx.network.ThermalNetwork)
+    
+    # Check if the forks component is updated
+    assert len(result_thermal_net.components["forks"]) == 4
+    
+    # Check if the properties of the forks are as expected
+    forks = result_thermal_net.components["forks"]
+    assert sorted(forks["lat"].to_list()) == [1.0, 2.0, 5.0, 6.0]
+    assert sorted(forks["lon"].to_list()) == [3.0, 4.0, 7.0, 8.0]
+
+

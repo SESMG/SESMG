@@ -155,7 +155,7 @@ def create_fork(point: list, label: int, thermal_net: ThermalNetwork, bus=None
 
 
 def append_pipe(nodes: list, length: float, street: str,
-                thermal_net) -> ThermalNetwork:
+                thermal_net: ThermalNetwork) -> ThermalNetwork:
     """
         Method which is used to append the heatpipeline specified by
         the method's parameter to the list of pipes
@@ -180,6 +180,7 @@ def append_pipe(nodes: list, length: float, street: str,
             network for the energy system. Within this method a new \
             pipe was added.
     """
+    # Creating a dictionary representing the new pipe
     pipe_dict = {
         "id": "pipe-{}".format(len(thermal_net.components["pipes"]) + 1),
         "from_node": nodes[0],
@@ -188,13 +189,15 @@ def append_pipe(nodes: list, length: float, street: str,
         "component_type": "Pipe",
         "street": street,
     }
+    # Using the concat_on_thermal_net_components function to add the new
+    # pipe to the 'pipes' component
     return concat_on_thermal_net_components("pipes", pipe_dict, thermal_net)
 
 
-def remove_redundant_sinks(
+def remove_sinks_collect_buses(
         oemof_opti_model: optimization.OemofInvestOptimizationModel,
         busd: dict
-) -> optimization.OemofInvestOptimizationModel:
+) -> (optimization.OemofInvestOptimizationModel, dict):
     """
         Within the dhnx algorithm empty sinks are created,
         which are removed in this method.
@@ -202,26 +205,34 @@ def remove_redundant_sinks(
         :param oemof_opti_model: parameter holding the district \
             heating optimization model
         :type oemof_opti_model: optimization.OemofInvestOptimizationModel
+        :param busd: dictionary holding the energy system buses
+        :type busd: dict
         
-        :return: **oemof_opti_model** \
+        :return: - **oemof_opti_model** \
             (optimization.OemofInvestOptimizationModel) - dh model \
             without unused sinks
+                - **busd** (dict) - As the busd is always handled as \
+            a dictionary of all buses within the SESMG, the buses of \
+            the heating network are also added.
     """
-    from oemof.solph import Flow
     sinks = []
-    # get demand created bei dhnx and add them to the list "sinks"
+    # iterate threw all the energy system nodes
     for i in range(len(oemof_opti_model.nodes)):
+        # get demand created bei dhnx and add them to the list "sinks"
         if "demand" in str(oemof_opti_model.nodes[i]):
             sinks.append(i)
+        # get buses created bei dhnx and add them to the dict "busd"
         if "bus" in str(oemof_opti_model.nodes[i]):
             busd.update({str(oemof_opti_model.nodes[i].label):
-                             oemof_opti_model.nodes[i]})
-    # delete the created sinks
+                         oemof_opti_model.nodes[i]})
+    # delete the sinks created by the dhnx algorithm and not used
+    # within the SESMG generated energy system
     already_deleted = 0
     for sink in sinks:
         oemof_opti_model.nodes.pop(sink - already_deleted)
         already_deleted += 1
-    # return the oemof model without the unused sinks
+    # return the oemof model without the unused sinks as well as the
+    # dictionary holding the energy system's buses
     return oemof_opti_model, busd
 
 
@@ -318,26 +329,25 @@ def create_intersection_forks(street_sec: pandas.DataFrame,
             ThermalNetwork instance after attaching of the network's \
             intersection forks
     """
+    # Dictionary to store unique road section points
     road_section_points = {}
+    
+    # Counter for fork numbering
     fork_num = len(thermal_net.components["forks"])
+    
     # create a dictionary containing all street points once
     for num, street in street_sec[street_sec["active"] == 1].iterrows():
         for i in ["1st", "2nd"]:
-            if [
-                street["lat. {} intersection".format(i)],
-                street["lon. {} intersection".format(i)],
-            ] not in road_section_points.values():
-                road_section_points.update(
-                    {
-                        "forks-{}".format(fork_num): [
-                            street["lat. {} intersection".format(i)],
-                            street["lon. {} intersection".format(i)],
-                        ]
-                    }
-                )
+            point = [street["lat. {} intersection".format(i)],
+                     street["lon. {} intersection".format(i)]]
+            # Check if the point is not already in the dictionary
+            if point not in road_section_points.values():
+                # Add the point to the dictionary with a unique key
+                road_section_points.update({"forks-{}".format(fork_num):
+                                            point})
                 fork_num += 1
             
-    # append all points on forks dataframe
+    # append all points on forks dataframe of the thermal network
     for point in road_section_points:
         thermal_net = concat_on_thermal_net_components(
             comp_type="forks",
@@ -676,7 +686,7 @@ def connect_dh_to_system(
             (optimization.OemofInvestOptimizationModel) - oemof dh \
             model within connection to the main model
     """
-    oemof_opti_model, busd = remove_redundant_sinks(
+    oemof_opti_model, busd = remove_sinks_collect_buses(
         oemof_opti_model=oemof_opti_model, busd=busd)
     oemof_opti_model = calc_heat_pipe_attributes(
         oemof_opti_model=oemof_opti_model,
