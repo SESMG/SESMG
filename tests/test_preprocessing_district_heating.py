@@ -374,5 +374,53 @@ def test_create_intersection_forks(street_sec, thermal_net):
     forks = result_thermal_net.components["forks"]
     assert sorted(forks["lat"].to_list()) == [1.0, 2.0, 5.0, 6.0]
     assert sorted(forks["lon"].to_list()) == [3.0, 4.0, 7.0, 8.0]
+    
+    
+class MockThermalNetwork:
+    def __init__(self, forks, pipes):
+        self.components = {"forks": forks,
+                           "pipes": pipes}
 
 
+@pytest.fixture
+def sample_points_data():
+    return MockThermalNetwork(
+        forks=pandas.DataFrame(data={
+            "lat": [5.0, 10.0, 20.0, 12.0, 22.0],
+            "lon": [2.0, 15.0, 25.0, 18.0, 28.0],
+            "id": ["consumers-1", "forks-1", "forks-2", "forks-3", "forks-4"],
+            "t": ["", 0, 0.25, 0.5, 0.75]
+        }),
+        pipes=pandas.DataFrame(data={}),
+    )
+
+
+@pytest.fixture
+def sample_streets_data():
+    data = {
+        "label": ["street1", "street2"],
+        "active": [1, 1],
+        "lat. 1st intersection": [10.0, 20.0],
+        "lon. 1st intersection": [15.0, 25.0],
+        "lat. 2nd intersection": [12.0, 22.0],
+        "lon. 2nd intersection": [18.0, 28.0],
+    }
+    return pandas.DataFrame(data)
+
+
+def test_create_supply_line(sample_streets_data, sample_points_data):
+    # Call the method with sample data
+    result_thermal_net = district_heating.create_supply_line(
+        streets=sample_streets_data,
+        thermal_net=sample_points_data)
+
+    pipes = result_thermal_net.components["pipes"]
+    # Check if pipes where added to the thermal network pipes dataframe
+    assert len(pipes) > 0
+    
+    # Check if forks-1 -- a from node -- is listed in from node column
+    assert "forks-1" in pipes["from_node"].to_list()
+    # Check if length of pipe 1 is listed in length column
+    assert 396208.1053375902 in pipes["length"].to_list()
+    # Check if forks-3 -- a to node -- is listed in to node column
+    assert "forks-3" in pipes["to_node"].to_list()

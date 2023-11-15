@@ -412,69 +412,58 @@ def create_supply_line(streets: pandas.DataFrame,
             supply lines
     """
     pipes = {}
-    for num, street in streets[streets["active"] == 1].iterrows():
+    # Iterate through active street sections
+    for _, street in streets[streets["active"] == 1].iterrows():
         road_section = []
-        for key, point in thermal_net.components["forks"].iterrows():
-            if (
-                point["lat"] == street["lat. 1st intersection"]
-                and point["lon"] == street["lon. 1st intersection"]
-            ):
-                # check if begin of road section is begin or end of
-                # another
-                road_section.append(
-                    [
-                        point["id"],
-                        street["lat. 1st intersection"],
-                        street["lon. 1st intersection"],
-                        0,
-                        0.0,
-                        street["label"],
-                    ]
-                )
-            if (
-                point["lat"] == street["lat. 2nd intersection"]
-                and point["lon"] == street["lon. 2nd intersection"]
-            ):
-                # check if begin of road section is begin or end of
-                # another
-                road_section.append(
-                    [
-                        point["id"],
-                        street["lat. 2nd intersection"],
-                        street["lon. 2nd intersection"],
-                        0,
-                        1.0,
-                        street["label"],
-                    ]
-                )
-            if "street" in point:
-                if point["street"] == street["label"]:
+        # Iterate through forks and determine their connection to the
+        # street
+        for _, point in thermal_net.components["forks"].iterrows():
+            for i in ["1st intersection", "2nd intersection"]:
+                if (point["lat"] == street["lat. {}".format(i)]
+                        and point["lon"] == street["lon. {}".format(i)]):
+                    # Check if the point is the beginning or end of the
+                    # road section
                     road_section.append(
                         [
                             point["id"],
-                            point["lat"],
-                            point["lon"],
+                            street["lat. {}".format(i)],
+                            street["lon. {}".format(i)],
                             0,
-                            point["t"],
+                            0.0 if i == "1st intersection" else 1.0,
                             street["label"],
                         ]
                     )
+            # Check if the point is on the current street
+            if "street" in point and point["street"] == street["label"]:
+                road_section.append(
+                    [
+                        point["id"],
+                        point["lat"],
+                        point["lon"],
+                        0,
+                        point["t"],
+                        street["label"],
+                    ]
+                )
 
         # Order Connection points on the currently considered road
         # section
         pipes.update({street["label"]: calc_street_lengths(road_section)})
 
+    # Iterate through calculated pipes and add them to the thermal
+    # network
     for street in pipes:
         for pipe in pipes[street]:
             ends = pipe[0].split(" - ")
-            if "fork" in ends[0] and "consumers" in ends[0]:
-                ends[0] = "forks-{}".format(ends[0][10:-5])
-            else:
-                ends[0] = "forks-{}".format(ends[0])
-            if "fork" in ends[1] and "consumers" in ends[1]:
-                ends[1] = "forks-{}".format(ends[1][10:-5])
-            else:
-                ends[1] = "forks-{}".format(ends[1])
+            # Update pipe ends if they involve forks connected to
+            # consumers
+            for num in [0, 1]:
+                if "fork" in ends[num] and "consumers" in ends[num]:
+                    ends[num] = "forks-{}".format(ends[num][10:-5])
+                else:
+                    ends[num] = "forks-{}".format(ends[num][-1])
+                    
+            # Append the pipe to the thermal network
             thermal_net = append_pipe(
                 nodes=[ends[0], ends[1]],
                 length=pipe[1],
