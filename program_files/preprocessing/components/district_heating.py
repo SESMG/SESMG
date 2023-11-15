@@ -236,79 +236,108 @@ def remove_sinks_collect_buses(
     return oemof_opti_model, busd
 
 
-def create_connection_points(consumers: pandas.DataFrame,
-                             road_sections: pandas.DataFrame,
-                             thermal_net: ThermalNetwork) -> ThermalNetwork:
+def create_connection_consumers_and_producers(
+        data: pandas.DataFrame, road_sections: pandas.DataFrame,
+        thermal_net: ThermalNetwork, is_consumer: bool) -> ThermalNetwork:
     """
         Create the entries for the connection points and adds them to
         thermal network forks, consumers and pipes.
         
         NOTE:
         
-              bus label structure has to be <ID>_...
+              bus label structure for consumers has to be <ID>_...
     
-        :param consumers: holding nodes_data["buses"]
-        :type consumers: pandas.Dataframe
+        :param data: holding nodes_data["buses"]
+        :type data: pandas.Dataframe
         :param road_sections: holding nodes_data["district heating"]
         :type road_sections: pandas.Dataframe
         :param thermal_net: DHNx ThermalNetwork instance used to \
             create the components of the thermal network for the \
             energy system.
         :type thermal_net: ThermalNetwork
+        :param is_consumer: boolean differentiating consumers and \
+            producers
+        :type is_consumer: bool
         
         :return: - **thermal_net** (ThermalNetwork) - DHNx \
             ThermalNetwork instance after attaching of the network's \
-            consumers
+            consumers/producers
+    
     """
-    consumer_counter = 0
-    # locate the DataFrame entries necessary for consumer connections
-    dh_consumers = consumers[(consumers["active"] == 1)
-                             & (consumers["district heating conn."] == 1)]
-    # iterate threw all active and connectable buses
-    for num, consumer in dh_consumers.iterrows():
-        # get the first part of the bus label which represents the
-        # building label
-        label = consumer["label"].split("_")[0]
+    counter = 0
+    # Filter relevant components based on their district heating conn.
+    # entries
+    if is_consumer:
+        dh_components = data[(data["active"] == 1)
+                             & (data["district heating conn."] == 1)]
+    else:
+        dh_components = data[(data["district heating conn."] == "dh-system")
+                             & (data["active"] == 1)]
+        
+    for _, comp in dh_components.iterrows():
+        # calculate the perpendicular foot point
         foot_point = get_nearest_perp_foot_point(
-            building=consumer,
-            streets=road_sections,
-            index=consumer_counter,
-            building_type="consumers"
+                building=comp,
+                streets=road_sections,
+                index=counter,
+                building_type="consumers" if is_consumer else "producers"
         )
-        # add consumer to thermal network components (dummy
-        # because cut from system after creating dhnx components
+        # Create dictionary which will be the new component's series
+        # appended on the components dataframe
+        # Entries within the **() are only appended in case of the
+        # usage of this method for consumers creation process
+        entry_dict = {
+            "id": "consumers-" if is_consumer else "producers-" + str(counter),
+            "lat": float(comp["lat"]),
+            "lon": float(comp["lon"]),
+            "component_type": "Consumer" if is_consumer else "Producer",
+            "active": 1,
+            **({"P_heat_max": 1,
+                "input": comp["label"],
+                "label": comp["label"],
+                "street": foot_point[5]}
+                if is_consumer else {})
+        }
+        # Add the calculated entry to the thermal network components
         thermal_net = concat_on_thermal_net_components(
-            comp_type="consumers",
-            new_dict={
-                "id": "consumers-{}".format(consumer_counter),
-                "lat": float(consumer["lat"]),
-                "lon": float(consumer["lon"]),
-                "component_type": "Consumer",
-                "P_heat_max": 1,
-                "input": consumer["label"],
-                "label": consumer["label"],
-                "street": foot_point[5],
-            },
-            thermal_net=thermal_net
+                comp_type="consumers" if is_consumer else "producers",
+                new_dict=entry_dict,
+                thermal_net=thermal_net
         )
-        # add fork of perpendicular foot point to the dataframe
-        # of forks
+        # Get the current length of the forks dataframe
+        forks_len = len(thermal_net.components["forks"])
+        # Determine the label for the fork based on the is_consumer bool
+        fork_label = foot_point[0][10:-5] if is_consumer else forks_len + 1
+        # Determine the label based on the is_consumer flag
+        label = comp["label"].split("_")[0] if is_consumer else comp["label"]
+        # Determine the pipe label based on the is_consumer flag
+        if is_consumer:
+            pipe_label = ["forks-{}".format(foot_point[0][10:-5]),
+                          foot_point[0][:-5]]
+        else:
+            pipe_label = ["producers-{}".format(counter),
+                          "forks-{}".format(forks_len)]
+
+        # Add the calculated point to the forks DataFrame
         thermal_net = create_fork(
             point=foot_point,
-            label=foot_point[0][10:-5],
-            thermal_net=thermal_net)
-        # add pipe between the perpendicular foot point and the
-        # building to the dataframe of pipes
+            label=fork_label,
+            thermal_net=thermal_net,
+            bus=None if is_consumer else comp["label"]
+        )
+        
+        # Add the pipe to connect fork and producer/consumer node
         thermal_net = append_pipe(
-            nodes=["forks-{}".format(foot_point[0][10:-5]),
-                   foot_point[0][:-5]],
+            nodes=pipe_label,
             length=foot_point[3],
             street=label,
             thermal_net=thermal_net
         )
-        consumer_counter += 1
-        logging.info("\t Connected {} to district heating "
-                     "network".format(label))
+        counter += 1
+        logging.info(
+            "\t Connected {} to district heating network".format(label)
+        )
+    
     return thermal_net
 
 
@@ -360,74 +389,6 @@ def create_intersection_forks(street_sec: pandas.DataFrame,
             thermal_net=thermal_net
         )
     
-    return thermal_net
-
-
-def create_producer_connection_point(
-        buses: pandas.DataFrame, road_sections: pandas.DataFrame,
-        thermal_net: ThermalNetwork) -> ThermalNetwork:
-    """
-        Create the entries for the producers connection points and adds
-        them to thermal network forks, producers and pipes
-    
-        :param buses: pandas DataFrame containing the model definition \
-            buses data
-        :type buses: pandas.DataFrame ['buses']
-        :param road_sections: Dataframe containing the street sections \
-            start and end points
-        :type road_sections: pandas.Dataframe
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-        
-        :return: - **thermal_net** (ThermalNetwork) - DHNx \
-            ThermalNetwork instance after attaching of the network's \
-            producer connection points
-    """
-    number = 0
-    dh_producers = buses[(buses["district heating conn."] == "dh-system")
-                         & (buses["active"] == 1)]
-    for num, bus in dh_producers.iterrows():
-        # create a producer buses and its connections point and pipe
-        # due to the given lat and lon from buses sheet
-        thermal_net = concat_on_thermal_net_components(
-            comp_type="producers",
-            new_dict={
-                "id": number,
-                "lat": bus["lat"],
-                "lon": bus["lon"],
-                "component_type": "Producer",
-                "active": 1,
-            },
-            thermal_net=thermal_net
-        )
-        # calculate the perpendicular foot point
-        foot_point = get_nearest_perp_foot_point(
-            building=bus,
-            streets=road_sections,
-            index=number,
-            building_type="producers"
-        )
-        # add the calculated point to the forks Dataframe
-        thermal_net = create_fork(
-            point=foot_point,
-            label=len(thermal_net.components["forks"]) + 1,
-            thermal_net=thermal_net,
-            bus=bus["label"]
-        )
-        # add the pipe to connect fork and producer node
-        thermal_net = append_pipe(
-            nodes=["producers-{}".format(number),
-                   "forks-{}".format(len(thermal_net.components["forks"]))],
-            length=foot_point[3],
-            street=bus["label"],
-            thermal_net=thermal_net
-        )
-        number += 1
-        logging.info(
-            "\t Connected {} to district heating network".format(bus["label"])
-        )
     return thermal_net
 
 
@@ -555,7 +516,8 @@ def adapt_dhnx_style(thermal_net: ThermalNetwork, cluster_dh: bool
             )
         for num, pipe in pipes.iterrows():
             thermal_net.components["pipes"].replace(
-                to_replace=pipe["id"], value=str(int(pipe["id"]) - 1), inplace=True
+                to_replace=pipe["id"], value=str(int(pipe["id"]) - 1),
+                inplace=True
             )	
             
     # reset the index on the id column of each DataFrame
@@ -632,10 +594,12 @@ def create_components(nodes_data: dict, anergy_or_exergy: bool,
         },
         "network": {
             "pipes": pipe_types.loc[(pipe_types["anergy_or_exergy"] == label_5)
-                                    & (pipe_types["distribution_pipe"] == 1) & (pipe_types["active"] == 1)],
+                                    & (pipe_types["distribution_pipe"] == 1)
+                                    & (pipe_types["active"] == 1)],
             "pipes_houses": pipe_types.loc[
                 (pipe_types["anergy_or_exergy"] == label_5)
-                & (pipe_types["building_pipe"] == 1) & (pipe_types["active"] == 1)],
+                & (pipe_types["building_pipe"] == 1)
+                & (pipe_types["active"] == 1)],
         },
     }
     print("Distribution PIPES")
@@ -1115,20 +1079,22 @@ def district_heating(
             )
             # create pipes and connection point for building-streets
             # connection
-            thermal_net = create_connection_points(
-                consumers=nodes_data["buses"],
+            thermal_net = create_connection_consumers_and_producers(
+                data=nodes_data["buses"],
                 road_sections=street_sections,
-                thermal_net=thermal_net)
+                thermal_net=thermal_net,
+                is_consumer=True)
             # appends the intersections to the thermal network forks
             thermal_net = create_intersection_forks(
                 street_sec=nodes_data["district heating"],
                 thermal_net=thermal_net)
             # create pipes and connection point for producer-streets
             # connection
-            thermal_net = create_producer_connection_point(
-                buses=nodes_data["buses"],
+            thermal_net = create_connection_consumers_and_producers(
+                data=nodes_data["buses"],
                 road_sections=street_sections,
-                thermal_net=thermal_net)
+                thermal_net=thermal_net,
+                is_consumer=False)
             # create supply line laid on the road
             thermal_net = create_supply_line(
                 streets=nodes_data["district heating"],
@@ -1158,17 +1124,19 @@ def district_heating(
             result_path=result_path)
     if len(thermal_net.components["pipes"]) > 0:
         if cluster_dh == 1:
-            new_nodes, busd = create_connect_dhnx(nodes_data=nodes_data,
-                                            busd=busd,
-                                            clustering=True,
-                                            anergy_or_exergy=anergy_or_exergy,
-                                            thermal_net=thermal_net)
+            new_nodes, busd = create_connect_dhnx(
+                nodes_data=nodes_data,
+                busd=busd,
+                clustering=True,
+                anergy_or_exergy=anergy_or_exergy,
+                thermal_net=thermal_net)
         else:
-            new_nodes, busd = create_connect_dhnx(nodes_data=nodes_data,
-                                            busd=busd,
-                                            clustering=False,
-                                            anergy_or_exergy=anergy_or_exergy,
-                                            thermal_net=thermal_net)
+            new_nodes, busd = create_connect_dhnx(
+                nodes_data=nodes_data,
+                busd=busd,
+                clustering=False,
+                anergy_or_exergy=anergy_or_exergy,
+                thermal_net=thermal_net)
         for node in new_nodes:
             nodes.append(node)
     return nodes, busd

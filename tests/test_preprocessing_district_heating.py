@@ -271,8 +271,27 @@ def test_append_pipe(test_pipes_dataframe, thermal_net):
         right=test_pipes_dataframe
     )
     
+    
+class MockOemofInvestOptimizationModel:
+    def __init__(self, nodes):
+        self.nodes = nodes
+        
 
-@pytest.mark.xfail()
+@pytest.fixture
+def mock_oemof_model():
+    """
+        Initialize a dummy thermal network consisting of two buses,
+        two sinks and a source
+    """
+    from oemof import solph
+    return MockOemofInvestOptimizationModel([
+        solph.buses.Bus(label="bus1"),
+        solph.buses.Bus(label="bus2"),
+        solph.components.Sink(label="demand1"),
+        solph.components.Sink(label="demand2"),
+        solph.components.Source(label="other_node")])
+
+
 def test_remove_sinks_collect_buses(mock_oemof_model):
     """
         Test for the remove_sinks_collect_buses function.
@@ -289,22 +308,28 @@ def test_remove_sinks_collect_buses(mock_oemof_model):
     # afterwards. Therefore a dict of buses which will be the result
     # of the remove_sinks_collect_buses function is created.
     initial_node_count = len(mock_oemof_model.nodes)
-    initial_buses = {"bus1": MockNode("bus1", "bus"),
-                     "bus2": MockNode("bus2", "bus")}
+    initial_buses = {}
 
     # Calling the remove_sinks_collect_buses method and catch it's
     # result for the upcoming assertions
     updated_model, updated_buses = district_heating.remove_sinks_collect_buses(
-        mock_oemof_model, initial_buses)
+        oemof_opti_model=mock_oemof_model, busd=initial_buses)
     
     # Check if sinks are removed
     assert len(updated_model.nodes) < initial_node_count
     assert "demand1" not in [node.label for node in updated_model.nodes]
     assert "demand2" not in [node.label for node in updated_model.nodes]
     # since buses should not be removed the length has to be equal
-    assert len(updated_buses) == len(initial_buses)
+    assert len(updated_buses) == 2
     # Other nodes should not be affected
     assert "other_node" in [node.label for node in updated_model.nodes]
+    
+    
+def test_create_connection_points():
+    """
+        TODO
+    """
+    pass
 
 
 @pytest.fixture
