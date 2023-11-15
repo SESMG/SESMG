@@ -376,7 +376,7 @@ def test_create_intersection_forks(street_sec, thermal_net):
     assert sorted(forks["lon"].to_list()) == [3.0, 4.0, 7.0, 8.0]
     
     
-class MockThermalNetwork:
+class MockThermalNetwork2:
     def __init__(self, forks, pipes):
         self.components = {"forks": forks,
                            "pipes": pipes}
@@ -384,7 +384,7 @@ class MockThermalNetwork:
 
 @pytest.fixture
 def sample_points_data():
-    return MockThermalNetwork(
+    return MockThermalNetwork2(
         forks=pandas.DataFrame(data={
             "lat": [5.0, 10.0, 20.0, 12.0, 22.0],
             "lon": [2.0, 15.0, 25.0, 18.0, 28.0],
