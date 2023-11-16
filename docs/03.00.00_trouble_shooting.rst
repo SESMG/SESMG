@@ -129,6 +129,13 @@ the "SESMG"-processes manually. Make sure to kill it after each session.
 Otherwise you will not be able to reopen it by using the way described 
 above. We are working on it!
 
+Error I-010: Encountered error while trying to install future
+-------------------------------------------------------------------------
+
+**Possible Error Cause:** Future package cannot be installed because pip is not upgraded.
+    
+**Debugging:** Upgrade pip with: "py -3.X -m pip install --upgrade pip". Change 3.X to your python version.
+
 
 Modeling
 ========
