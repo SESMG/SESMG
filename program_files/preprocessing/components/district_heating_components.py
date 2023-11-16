@@ -280,12 +280,15 @@ def create_connection_consumers_and_producers(
                 building_type="consumers" if is_consumer else "producers"
         )
         
+        comp_id = ("consumers-" + str(counter) if is_consumer
+                   else "producers-" + str(counter))
+        
         # Create dictionary which will be the new component's series
         # appended on the components dataframe
         # Entries within the **() are only appended in case of the
         # usage of this method for consumers creation process
         entry_dict = {
-            "id": "consumers-" if is_consumer else "producers-" + str(counter),
+            "id": comp_id,
             "lat": float(comp["lat"]),
             "lon": float(comp["lon"]),
             "component_type": "Consumer" if is_consumer else "Producer",
@@ -308,7 +311,7 @@ def create_connection_consumers_and_producers(
         forks_len = len(thermal_net.components["forks"])
         
         # Determine the label for the fork based on the is_consumer bool
-        fork_label = foot_point[0][10:-5] if is_consumer else forks_len + 1
+        fork_label = foot_point[0][10:-5] if is_consumer else forks_len
         
         # Determine the label based on the is_consumer flag
         label = comp["label"].split("_")[0] if is_consumer else comp["label"]

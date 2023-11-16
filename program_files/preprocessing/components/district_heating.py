@@ -217,6 +217,14 @@ def adapt_dhnx_style(thermal_net: ThermalNetwork, cluster_dh: bool
                 value=consumer["id"][10:],
                 inplace=True
             )
+        producers = thermal_net.components["producers"]
+        producer_df = producers.loc[producers["id"] != type(int)]
+        for num, consumer in producer_df.iterrows():
+            thermal_net.components["producers"].replace(
+                    to_replace=consumer["id"],
+                    value=consumer["id"][10:],
+                    inplace=True
+            )
         pipes = thermal_net.components["pipes"]
         for num, pipe in pipes.loc[pipes["id"] != type(int)].iterrows():
             thermal_net.components["pipes"].replace(
@@ -399,7 +407,7 @@ def add_excess_shortage_to_dh(
                 # run link creation between the fork and the
                 # excess/shortage bus
                 oemof_opti_model.nodes.append(
-                    create_link_between_dh_heat_bus_and_excess_shortage_bus(
+                    dh_components.create_link_between_dh_heat_bus_and_excess_shortage_bus(
                         busd=busd,
                         bus=bus,
                         oemof_opti_model=oemof_opti_model,
@@ -534,7 +542,7 @@ def use_data_of_already_calculated_thermal_network_data(
 
 def district_heating(
     nodes_data: dict, nodes: list, busd: dict, district_heating_path: str,
-    result_path: str, cluster_dh: bool, anergy_or_exergy: bool
+    result_path: str, cluster_dh: bool, is_anergy: bool
 ) -> (list, dict):
     """
         The district_heating method represents the main method of heat
@@ -561,24 +569,27 @@ def district_heating(
         :param cluster_dh: boolean which defines rather the heat \
             network is clustered spatially or not
         :type cluster_dh: bool
-        :param anergy_or_exergy: bool which defines rather the \
+        :param is_anergy: bool which defines rather the \
             considered network is an exergy net (False) or an anergy \
             net (True)
-        :type anergy_or_exergy: bool
+        :type is_anergy: bool
         
         :return: - **nodes** (list) - list containing the energy \
             systems' nodes after the thermal network components were \
             added
     """
+    print(is_anergy)
     thermal_net = clear_thermal_net(dhnx.network.ThermalNetwork())
-    # check rather saved calculation are distributed
+
+    # Check if saved calculations are distributed ("" no saved data)
     if district_heating_path == "":
-        # check if the model definition includes district heating
+        # Check if the model definition includes district heating
         if len(nodes_data["district heating"]) != 0:
             street_sections = convert_dh_street_sections_list(
                 nodes_data["district heating"].copy()
             )
-            # create pipes and connection point for building-streets
+
+            # Create pipes and connection points for building-streets
             # connection
             thermal_net = \
                 dh_components.create_connection_consumers_and_producers(
@@ -586,11 +597,13 @@ def district_heating(
                     road_sections=street_sections,
                     thermal_net=thermal_net,
                     is_consumer=True)
-            # appends the intersections to the thermal network forks
+            
+            # Append intersections to the thermal network forks
             thermal_net = dh_components.create_intersection_forks(
                 street_sec=nodes_data["district heating"],
                 thermal_net=thermal_net)
-            # create pipes and connection point for producer-streets
+
+            # Create pipes and connection points for producer-streets
             # connection
             thermal_net = \
                 dh_components.create_connection_consumers_and_producers(
@@ -598,25 +611,28 @@ def district_heating(
                     road_sections=street_sections,
                     thermal_net=thermal_net,
                     is_consumer=False)
-            # create supply line laid on the road
+
+            # Create supply line laid on the road
             thermal_net = dh_components.create_supply_line(
                 streets=nodes_data["district heating"],
                 thermal_net=thermal_net)
             
-            # if any consumers where connected to the thermal network
+            # Check if consumers are connected to the thermal network
             if thermal_net.components["consumers"].values.any():
+                
                 thermal_net = adapt_dhnx_style(thermal_net=thermal_net,
                                                cluster_dh=False)
+                
                 if cluster_dh:
                     thermal_net = clustering_dh_network(
                         nodes_data=nodes_data,
                         thermal_network=thermal_net)
-                # save the calculated thermal network data within the
-                # optimization
-                # result path
+                    
+                # Save calculated thermal network data
                 save_thermal_network_data(thermal_net=thermal_net,
                                           path=result_path)
-                # create a map of the created thermal network
+                
+                # Create a map of the thermal network
                 create_dh_map(thermal_net=thermal_net, result_path=result_path)
     else:
         thermal_net = use_data_of_already_calculated_thermal_network_data(
@@ -625,21 +641,15 @@ def district_heating(
             cluster_dh=cluster_dh,
             nodes_data=nodes_data,
             result_path=result_path)
+
+    # Check if pipes are present in the thermal network
     if len(thermal_net.components["pipes"]) > 0:
-        if cluster_dh == 1:
-            new_nodes, busd = create_connect_dhnx(
-                nodes_data=nodes_data,
-                busd=busd,
-                clustering=True,
-                anergy_or_exergy=anergy_or_exergy,
-                thermal_net=thermal_net)
-        else:
-            new_nodes, busd = create_connect_dhnx(
-                nodes_data=nodes_data,
-                busd=busd,
-                clustering=False,
-                anergy_or_exergy=anergy_or_exergy,
-                thermal_net=thermal_net)
+        new_nodes, busd = create_connect_dhnx(
+            nodes_data=nodes_data,
+            busd=busd,
+            clustering=cluster_dh,
+            anergy_or_exergy=is_anergy,
+            thermal_net=thermal_net)
         for node in new_nodes:
             nodes.append(node)
     return nodes, busd
