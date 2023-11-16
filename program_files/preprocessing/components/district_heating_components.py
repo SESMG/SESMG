@@ -487,3 +487,52 @@ def connect_dh_to_system(
         )
     
     return oemof_opti_model, busd
+
+
+def create_link_between_dh_heat_bus_and_excess_shortage_bus(
+        busd: dict, bus: pandas.Series,
+        oemof_opti_model: optimization.OemofInvestOptimizationModel,
+        fork_label: heatpipe.Label) -> solph.components.experimental.Link:
+    """
+        Create the link between the bus which enables the heat
+        shortage for the district heating network and the fork of the
+        district heating network.
+
+        :param busd: dictionary holding the energy systems' buses
+        :type busd: dict
+        :param bus: Series holding the shortage bus information
+        :type bus: pandas.Series
+        :param oemof_opti_model: Oemof model holing thermal network
+        :type oemof_opti_model: optimization.OemofInvestOptimizationModel
+        :param fork_label: heatpipe label of the fork which will be \
+            connected to the shortage bus
+        :type fork_label: heatpipe.Label
+
+        :return: - **-** (solph.components.experimental.Link) - Link \
+            component which connects the shortage bus and the heat \
+            network's fork
+    """
+    # Extract the fork ID from the label
+    fork_id = fork_label.tag4.split("-")[-1]
+
+    # Create and return the Oemof solph link connecting the
+    # excess/shortage bus with the thermal network fork
+    return solph.components.experimental.Link(
+            label=("link-dhnx-" + bus["label"] + "-f{}".format(fork_id)),
+            inputs={
+                oemof_opti_model.buses[fork_label]: solph.Flow(
+                        custom_attributes={"emission_factor": 0}),
+                busd[bus["label"]]: solph.Flow(
+                        custom_attributes={"emission_factor": 0}),
+            },
+            outputs={
+                busd[bus["label"]]: solph.Flow(
+                        custom_attributes={"emission_factor": 0}),
+                oemof_opti_model.buses[fork_label]: solph.Flow(
+                        custom_attributes={"emission_factor": 0}),
+            },
+            conversion_factors={
+                (oemof_opti_model.buses[fork_label], busd[bus["label"]]): 1,
+                (busd[bus["label"]], oemof_opti_model.buses[fork_label]): 1
+            },
+    )

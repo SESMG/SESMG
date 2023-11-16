@@ -117,6 +117,39 @@ def clear_thermal_net(thermal_net: dhnx.network.ThermalNetwork
     return thermal_net
 
 
+def create_dh_map(thermal_net: ThermalNetwork, result_path: str) -> None:
+    """
+        Within this method the calculated thermal network is plotted as
+        a matplotlib pyplot which can be used for verification of the
+        perpendicular foot print search as well as the imported data.
+
+        :param thermal_net: DHNx ThermalNetwork instance used to \
+            create the components of the thermal network for the \
+            energy system.
+        :type thermal_net: ThermalNetwork
+        :param result_path: path where the resulting map will be stored
+        :type result_path: str
+    """
+    import matplotlib.pyplot as plt
+    static_map = StaticMap(thermal_net).draw(background_map=False)
+    plt.title("Given network")
+    dh_comps = {
+        "forks": [thermal_net.components.forks, "tab:grey"],
+        "consumers": [thermal_net.components.consumers, "tab:green"],
+        "producers": [thermal_net.components.producers, "tab:red"]
+    }
+    for index in dh_comps:
+        plt.scatter(
+            dh_comps[index][0]["lon"],
+            dh_comps[index][0]["lat"],
+            color=dh_comps[index][1],
+            label=index,
+            zorder=2.5,
+            s=50)
+    plt.legend()
+    plt.savefig(result_path + "/district_heating.jpeg")
+    
+    
 def remove_sinks_collect_buses(
         oemof_opti_model: optimization.OemofInvestOptimizationModel,
         busd: dict
@@ -299,53 +332,6 @@ def create_components(nodes_data: dict, label_5: str,
     return oemof_opti_model
 
 
-def create_link_between_dh_heat_bus_and_excess_shortage_bus(
-        busd: dict, bus: pandas.Series,
-        oemof_opti_model: optimization.OemofInvestOptimizationModel,
-        fork_label: heatpipe.Label) -> solph.components.experimental.Link:
-    """
-        Create the link between the bus which enables the heat
-        shortage for the district heating network and the fork of the
-        district heating network.
-        
-        :param busd: dictionary holding the energy systems' buses
-        :type busd: dict
-        :param bus: Series holding the shortage bus information
-        :type bus: pandas.Series
-        :param oemof_opti_model: Oemof model holing thermal network
-        :type oemof_opti_model: optimization.OemofInvestOptimizationModel
-        :param fork_label: heatpipe label of the fork which will be \
-            connected to the shortage bus
-        :type fork_label: heatpipe.Label
-        
-        :return: - **-** (solph.components.experimental.Link) - Link \
-            component which connects the shortage bus and the heat \
-            network's fork
-    """
-    # return the oemof solph link which connects the excess/shortage
-    # bus with the thermal network fork
-    fork_id = fork_label.tag4.split("-")[-1]
-    return solph.components.experimental.Link(
-        label=("link-dhnx-" + bus["label"] + "-f{}".format(fork_id)),
-        inputs={
-            oemof_opti_model.buses[fork_label]: solph.Flow(
-                custom_attributes={"emission_factor": 0}),
-            busd[bus["label"]]: solph.Flow(
-                custom_attributes={"emission_factor": 0}),
-        },
-        outputs={
-            busd[bus["label"]]: solph.Flow(
-                custom_attributes={"emission_factor": 0}),
-            oemof_opti_model.buses[fork_label]: solph.Flow(
-                custom_attributes={"emission_factor": 0}),
-        },
-        conversion_factors={
-            (oemof_opti_model.buses[fork_label], busd[bus["label"]]): 1,
-            (busd[bus["label"]], oemof_opti_model.buses[fork_label]): 1
-        },
-    )
-
-
 def add_excess_shortage_to_dh(
         oemof_opti_model: optimization.OemofInvestOptimizationModel,
         nodes_data: dict, busd: dict, thermal_net: ThermalNetwork,
@@ -454,9 +440,10 @@ def create_connect_dhnx(nodes_data: dict, busd: dict,
     thermal_net.is_consistent()
     thermal_net.set_timeindex()
     # create components of district heating system
-    oemof_opti_model = create_components(nodes_data=nodes_data,
-                                         anergy_or_exergy=anergy_or_exergy,
-                                         thermal_net=thermal_net)
+    oemof_opti_model = create_components(
+        nodes_data=nodes_data,
+        label_5="anergy" if anergy_or_exergy else "exergy",
+        thermal_net=thermal_net)
     if clustering:
         oemof_opti_model = connect_clustered_dh_to_system(
             oemof_opti_model=oemof_opti_model,
@@ -464,7 +451,7 @@ def create_connect_dhnx(nodes_data: dict, busd: dict,
             thermal_network=thermal_net,
             nodes_data=nodes_data)
     else:
-        oemof_opti_model, busd = connect_dh_to_system(
+        oemof_opti_model, busd = dh_components.connect_dh_to_system(
             oemof_opti_model=oemof_opti_model,
             busd=busd,
             pipe_types=nodes_data["pipe types"],
@@ -492,39 +479,6 @@ def create_connect_dhnx(nodes_data: dict, busd: dict,
     
     return oemof_opti_model.nodes, busd
 
-
-def create_dh_map(thermal_net: ThermalNetwork, result_path: str) -> None:
-    """
-        Within this method the calculated thermal network is plotted as
-        a matplotlib pyplot which can be used for verification of the
-        perpendicular foot print search as well as the imported data.
-        
-        :param thermal_net: DHNx ThermalNetwork instance used to \
-            create the components of the thermal network for the \
-            energy system.
-        :type thermal_net: ThermalNetwork
-        :param result_path: path where the resulting map will be stored
-        :type result_path: str
-    """
-    import matplotlib.pyplot as plt
-    static_map = StaticMap(thermal_net).draw(background_map=False)
-    plt.title("Given network")
-    dh_components = {
-        "forks": [thermal_net.components.forks, "tab:grey"],
-        "consumers": [thermal_net.components.consumers, "tab:green"],
-        "producers": [thermal_net.components.producers, "tab:red"]
-    }
-    for index in dh_components:
-        plt.scatter(
-            dh_components[index][0]["lon"],
-            dh_components[index][0]["lat"],
-            color=dh_components[index][1],
-            label=index,
-            zorder=2.5,
-            s=50)
-    plt.legend()
-    plt.savefig(result_path + "/district_heating.jpeg")
-    
     
 def use_data_of_already_calculated_thermal_network_data(
         thermal_net: ThermalNetwork, district_heating_path: str,

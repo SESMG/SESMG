@@ -242,7 +242,7 @@ def test_create_producer_connection():
         buses={
             heatpipe.Label(
                 "producers", "heat", "bus", "producers-0", "exergy"):
-                solph.buses.Bus(label="producers_heat_bus_0_exergy")},
+            solph.buses.Bus(label="producers_heat_bus_0_exergy")},
         nodes=[]
     )
 
@@ -290,7 +290,7 @@ def test_connect_dh_to_system():
         buses={
             heatpipe.Label(
                 "consumers", "heat", "bus", "consumers-0", "exergy"):
-                solph.buses.Bus(label="consumers_heat_bus_0_exergy")},
+            solph.buses.Bus(label="consumers_heat_bus_0_exergy")},
         nodes=[solph.Bus(label="consumers_heat_bus_consumers-0_exergy")])
     
     # Create a mock ThermalNetwork
@@ -338,3 +338,39 @@ def test_connect_dh_to_system():
     assert "input_1" in updated_busd
     assert updated_busd["input_1"].label == "input_1"
 
+
+def test_create_link_between_dh_heat_bus_and_excess_shortage_bus():
+    """
+        Test the creation of a link between the district heating heat
+        bus and the excess/shortage bus.
+
+        This test ensures that the created link has the correct
+        properties and connections.
+    """
+    # Define a mock bus dictionary
+    busd = {"bus1": solph.buses.Bus(label="bus1")}
+
+    # Define a mock bus Series
+    bus = pandas.Series({"label": "bus1"})
+
+    # Define a mock fork label
+    fork_label = heatpipe.Label("", "", "", "forks-0", "")
+
+    # Create a mock OemofOptiModel
+    oemof_opti_model = MockOemofOptiModel(
+        buses={fork_label: solph.buses.Bus(label="forks-1")},
+        nodes={}
+    )
+    
+    # Call the method
+    result = district_heating_components.create_link_between_dh_heat_bus_and_excess_shortage_bus(
+        busd=busd,
+        bus=bus,
+        oemof_opti_model=oemof_opti_model,
+        fork_label=fork_label
+    )
+
+    # Assert the link properties
+    assert result.label.startswith("link-dhnx-bus1-f0")
+    assert result.inputs[oemof_opti_model.buses[fork_label]
+                         ].emission_factor == 0
