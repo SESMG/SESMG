@@ -249,7 +249,132 @@ def test_remove_sinks_collect_buses(mock_oemof_model):
     assert "other_node" in [node.label for node in updated_model.nodes]
     
     
+class MockThermalNetwork2:
+    """
+        A mock class representing a simplified version of the
+        ThermalNetwork.
+    
+        This class is used for testing purposes to simulate a
+        ThermalNetwork instance. It includes placeholders for
+        components such as forks, pipes, consumers, and producers.
+    
+        :param forks: DataFrame representing fork components.
+        :type forks: pandas.DataFrame
+        :param pipes: DataFrame representing pipe components.
+        :type pipes: pandas.DataFrame
+        :param consumers: DataFrame representing consumer components.
+        :type consumers: pandas.DataFrame
+        :param producers: DataFrame representing producer components.
+        :type producers: pandas.DataFrame
+    """
 
+    def __init__(self, forks, pipes, consumers, producers):
+        """
+            Initialize the MockThermalNetwork2 instance with provided
+            dataframes.
+    
+            :param forks: DataFrame representing fork components.
+            :type forks: pandas.DataFrame
+            :param pipes: DataFrame representing pipe components.
+            :type pipes: pandas.DataFrame
+            :param consumers: DataFrame representing consumer \
+                components.
+            :type consumers: pandas.DataFrame
+            :param producers: DataFrame representing producer \
+                components.
+            :type producers: pandas.DataFrame
+        """
+        self.components = {"forks": forks,
+                           "pipes": pipes,
+                           "consumers": consumers,
+                           "producers": producers}
+        self.sequences = {"consumers": {"heat_flow": pandas.DataFrame()},
+                          "producers": {}}
+
+    def to_nx_graph(self):
+        """
+            Convert the MockThermalNetwork2 instance to a NetworkX graph.
+    
+            This method utilizes the
+            dhnx.network.thermal_network_to_nx_graph
+            function to convert the ThermalNetwork components into a NetworkX graph.
+    
+            :return: NetworkX graph representation of the ThermalNetwork.
+            :rtype: networkx.Graph
+        """
+        nx_graph = dhnx.network.thermal_network_to_nx_graph(self)
+        return nx_graph
     
     
+def test_create_components():
+    """
+        Test the creation of thermal network Oemof components.
 
+        This test function creates mock data for the model definition
+        sheet and a ThermalNetwork instance. It then calls the
+        create_components method, which runs the dhnx methods for
+        creating thermal network Oemof  components.
+        The test asserts the expected changes in the result, such as
+        the type of the result and the number of nodes added to the
+        OemofInvestOptimizationModel.
+    """
+    # Mock data for nodes_data
+    nodes_data = {
+        "energysystem": pandas.DataFrame({
+            "temporal resolution": ["h"],
+            "start date": ["2023-01-01"],
+            "periods": [8760]
+        }),
+        "pipe types": pandas.DataFrame({
+            "label_3": ["DNTest"],
+            "min. investment capacity": [0],
+            "max. investment capacity": [100],
+            "periodical costs": [50],
+            "fix investment costs": [500],
+            "periodical constraint costs": [10],
+            "fix investment constraint costs": [100],
+            "anergy_or_exergy": ["exergy"],
+            "distribution_pipe": [1],
+            "building_pipe": [1],
+            "active": [1],
+            "nonconvex": [1],
+            "l_factor": [0],
+            "l_factor_fix": [0.1],
+        })
+    }
+
+    # Mock ThermalNetwork instance
+    thermal_net = MockThermalNetwork2(
+        forks=pandas.DataFrame(
+            {"id": [0, 1],
+             "name": ["Fork1", "Fork2"],
+             "component_type": ["Forks", "Forks"]}),
+        consumers=pandas.DataFrame(
+            {"id": [0],
+             "name": ["Consumer1"],
+             "component_type": ["Consumers"]}),
+        producers=pandas.DataFrame(
+            {"id": [0],
+             "name": ["Producer1"],
+             "component_type": ["Producers"]}),
+        pipes=pandas.DataFrame(
+            {"id": [0, 1, 2],
+             "from_node": ["producers-0", "forks-0", "forks-1"],
+             "to_node": ["forks-0", "forks-1", "consumers-0"],
+             "length": [10, 10, 10]}
+        )
+        )
+
+    # Call the method
+    result = district_heating.create_components(
+        nodes_data=nodes_data,
+        label_5="exergy",
+        thermal_net=thermal_net
+    )
+
+    # Assert the changes in the result - Assuming it adds 8 nodes to
+    # the thermal network instance
+    assert isinstance(
+        result,
+        dhnx.optimization.optimization_models.OemofInvestOptimizationModel)
+    assert len(result.nodes) == 8

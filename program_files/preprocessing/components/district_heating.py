@@ -203,7 +203,30 @@ def adapt_dhnx_style(thermal_net: ThermalNetwork, cluster_dh: bool
     return thermal_net
 
 
-def create_components(nodes_data: dict, anergy_or_exergy: bool,
+def filter_pipe_types(pipe_types: pandas.DataFrame, label_5: str,
+                      pipe_type: str, active=1) -> pandas.DataFrame:
+    """
+        Filter pipe types based on given conditions.
+    
+        :param pipe_types: DataFrame holding pipe types information.
+        :type pipe_types: pandas.DataFrame
+        :param label_5: Label for filtering based on anergy/exergy.
+        :type label_5: str
+        :param pipe_type: Pipe type to filter.
+        :type pipe_type: str
+        :param active: Value for the "active" column, defaults to 1.
+        :type active: int, optional
+    
+        :return: *-* (pandas.DataFrame) - Filtered DataFrame.
+    """
+    return pipe_types.loc[
+        (pipe_types["anergy_or_exergy"] == label_5)
+        & (pipe_types[pipe_type] == 1)
+        & (pipe_types["active"] == active)
+    ]
+
+
+def create_components(nodes_data: dict, label_5: str,
                       thermal_net: ThermalNetwork
                       ) -> optimization.OemofInvestOptimizationModel:
     """
@@ -212,10 +235,9 @@ def create_components(nodes_data: dict, anergy_or_exergy: bool,
         :param nodes_data: dictionary holing model definition sheet \
             information
         :type nodes_data: dict
-        :param anergy_or_exergy: bool which defines rather the \
-            considered network is an exergy net (False) or an anergy \
-            net (True)
-        :type anergy_or_exergy: bool
+        :param label_5: str which defines rather the considered \
+            network is an exergy net or an anergy net
+        :type label_5: bool
         :param thermal_net: DHNx ThermalNetwork instance used to \
             create the components of the thermal network for the \
             energy system.
@@ -225,10 +247,11 @@ def create_components(nodes_data: dict, anergy_or_exergy: bool,
             (optimization.OemofInvestOptimizationModel) - model \
             holding dh components
     """
+    # Extract relevant data from nodes_data energysystem
     frequency = nodes_data["energysystem"]["temporal resolution"].values
-    start_date = str(nodes_data["energysystem"]["start date"].values[0])
-    # changes names of data columns,
-    # so it fits the needs of the feedinlib
+    date = str(nodes_data["energysystem"]["start date"].values[0])
+    
+    # Rename data columns to fit feedinlib requirements
     name_dc = {"min. investment capacity": "cap_min",
                "max. investment capacity": "cap_max",
                "periodical costs": "capex_pipes",
@@ -236,63 +259,39 @@ def create_components(nodes_data: dict, anergy_or_exergy: bool,
                "periodical constraint costs": "periodical_constraint_costs",
                "fix investment constraint costs": "fix_constraint_costs"}
     nodes_data["pipe types"] = nodes_data["pipe types"].rename(columns=name_dc)
+
+    # Common parameters for consumers and producers
+    common_param = {"label_2": "heat", "active": 1, "excess": 0, "shortage": 0}
     
-    pipe_types = nodes_data["pipe types"]
-    label_5 = "anergy" if anergy_or_exergy else "exergy"
-    
-    # set standard investment options that do not require user modification
-    invest_opt = {
-        "consumers": {
-            "bus": pandas.DataFrame(
-                {"label_2": "heat",
-                 "active": 1,
-                 "excess": 0,
-                 "shortage": 0}, index=[0]
-            ),
-            "demand": pandas.DataFrame(
-                {"label_2": "heat", "active": 1, "nominal_value": 1}, index=[0]
-            ),
-        },
-        "producers": {
-            "bus": pandas.DataFrame(
-                {
-                    "Unnamed: 0": 1,
-                    "label_2": "heat",
-                    "active": 1,
-                    "excess": 0,
-                    "shortage": 0,
-                },
-                index=[0],
-            ),
-            "source": pandas.DataFrame(
-                {"label_2": "heat", "active": 0}, index=[0]),
-        },
-        "network": {
-            "pipes": pipe_types.loc[(pipe_types["anergy_or_exergy"] == label_5)
-                                    & (pipe_types["distribution_pipe"] == 1)
-                                    & (pipe_types["active"] == 1)],
-            "pipes_houses": pipe_types.loc[
-                (pipe_types["anergy_or_exergy"] == label_5)
-                & (pipe_types["building_pipe"] == 1)
-                & (pipe_types["active"] == 1)],
-        },
+    consumers = {
+        "bus": pandas.DataFrame(data=common_param, index=[0]),
+        "demand": pandas.DataFrame(
+            {"label_2": "heat", "active": 1, "nominal_value": 1}, index=[0]),
     }
-    print("Distribution PIPES")
-    print(invest_opt["network"]["pipes"])
-    print("HOUSE PIPES")
-    print(invest_opt["network"]["pipes_houses"])
-    # start dhnx algorithm to create dh components
+    
+    producers = {
+        "bus": pandas.DataFrame({"Unnamed: 0": 1, **common_param}, index=[0]),
+        "source": pandas.DataFrame(
+            {"label_2": "heat", "active": 0}, index=[0]),
+    }
+
+    pipe_types = nodes_data["pipe types"]
+    network = {
+        "pipes": filter_pipe_types(pipe_types, label_5, "distribution_pipe"),
+        "pipes_houses": filter_pipe_types(pipe_types, label_5, "building_pipe")
+    }
+
+    # Extract the day, month, and year for start_date
+    start_date = str(date[9:10]) + "/" + str(date[6:7]) + "/" + str(date[0:4])
+
+    # Start dhnx algorithm to create dh components
     oemof_opti_model = optimization.setup_optimise_investment(
         thermal_network=thermal_net,
-        invest_options=invest_opt,
+        invest_options={"consumers": consumers,
+                        "producers": producers,
+                        "network": network},
         num_ts=nodes_data["energysystem"]["periods"],
-        start_date=(
-            str(start_date[9:10])
-            + "/"
-            + str(start_date[6:7])
-            + "/"
-            + str(start_date[0:4])
-        ),
+        start_date=start_date,
         frequence=(str(frequency[0])).upper(),
         label_5=label_5,
         bidirectional_pipes=True,
