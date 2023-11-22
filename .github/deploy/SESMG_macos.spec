@@ -11,7 +11,6 @@ datas = [('../../program_files','program_files'),
 	 ('../../Lib/python3.9/site-packages/six.py', '.'),
 	 ('../../Lib/python3.9/site-packages/memory_profiler.py', '.'),
          ('../../Lib/python3.9/site-packages/decorator.py', '.'),
-	 ('../../Lib/python3.9/site-packages/cycler.py', '.'),
 	 ('../../Lib/python3.9/site-packages/decouple.py', '.'),
 	 ('../../.streamlit','.streamlit')]
 datas += copy_metadata('streamlit')
