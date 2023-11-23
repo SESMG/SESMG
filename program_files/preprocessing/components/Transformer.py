@@ -423,7 +423,7 @@ class Transformers:
             "thermal-network": [
                 None,
                 float("+inf"),
-                self.weather_data["heat_network_temp"],
+                self.weather_data["exergy_network_temp"],
             ]
         }
         # differentiation between heat sources under consideration of mode
@@ -482,14 +482,13 @@ class Transformers:
                     },
                     conversion_factors={
                         self.busd[transformer["input2"]]:
-                            [1] * len(self.weather_data["heat_network_temp"]),
+                            [1] * len(self.weather_data["exergy_network_temp"]),
                         self.busd[transformer["input"]]:
-                            [1] * len(self.weather_data["heat_network_temp"])
+                            [1] * len(self.weather_data["exergy_network_temp"])
                     }
                 )
             )
             
-        
         # Returns logging info
         logging.info("\t Heat Source created: " + transformer["label"]
                      + temp + "_source")

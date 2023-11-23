@@ -29,18 +29,14 @@ def convert_dh_street_sections_list(street_sec: pandas.DataFrame
     # iterating threw the given street points and converting each active
     # one to EPSG31466
     for num, street in street_sec[street_sec["active"] == 1].iterrows():
-        (
-            street_sec.at[num, "lat. 1st intersection"],
-            street_sec.at[num, "lon. 1st intersection"],
-        ) = transf_WGS84_GK.transform(
-            street["lat. 1st intersection"], street["lon. 1st intersection"]
-        )
-        (
-            street_sec.at[num, "lat. 2nd intersection"],
-            street_sec.at[num, "lon. 2nd intersection"],
-        ) = transf_WGS84_GK.transform(
-            street["lat. 2nd intersection"], street["lon. 2nd intersection"]
-        )
+        for i in ["1st", "2nd"]:
+            (
+                street_sec.at[num, "lat. {} intersection".format(i)],
+                street_sec.at[num, "lon. {} intersection".format(i)],
+            ) = transf_WGS84_GK.transform(
+                street["lat. {} intersection".format(i)],
+                street["lon. {} intersection".format(i)]
+            )
     return street_sec
 
 

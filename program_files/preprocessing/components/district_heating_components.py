@@ -53,7 +53,8 @@ def create_fork(point: list, label: int, thermal_net: ThermalNetwork, bus=None
 
 
 def append_pipe(nodes: list, length: float, street: str,
-                thermal_net: ThermalNetwork) -> ThermalNetwork:
+                thermal_net: ThermalNetwork, is_exergy: bool
+                ) -> ThermalNetwork:
     """
         Method which is used to append the heatpipeline specified by
         the method's parameter to the list of pipes
@@ -86,6 +87,7 @@ def append_pipe(nodes: list, length: float, street: str,
         "length": length,
         "component_type": "Pipe",
         "street": street,
+        "is_exergy": is_exergy
     }
     
     # Using the concat_on_thermal_net_components function to add the new
@@ -147,7 +149,8 @@ def create_intersection_forks(street_sec: pandas.DataFrame,
 
 
 def create_supply_line(streets: pandas.DataFrame,
-                       thermal_net: ThermalNetwork) -> ThermalNetwork:
+                       thermal_net: ThermalNetwork,
+                       is_exergy: bool) -> ThermalNetwork:
     """
         Acquisition of all points of a route (road sections), order
         itself in ascending order and creation of the lines to link the
@@ -226,14 +229,16 @@ def create_supply_line(streets: pandas.DataFrame,
                     nodes=[ends[0], ends[1]],
                     length=pipe[1],
                     street=street,
-                    thermal_net=thermal_net)
+                    thermal_net=thermal_net,
+                    is_exergy=is_exergy)
     
     return thermal_net
 
 
 def create_connection_consumers_and_producers(
         data: pandas.DataFrame, road_sections: pandas.DataFrame,
-        thermal_net: ThermalNetwork, is_consumer: bool) -> ThermalNetwork:
+        thermal_net: ThermalNetwork, is_consumer: bool,
+        is_exergy: bool) -> ThermalNetwork:
     """
         Create the entries for the connection points and adds them to
         thermal network forks, consumers and pipes.
@@ -261,14 +266,18 @@ def create_connection_consumers_and_producers(
     """
     counter = 0
     
+    net_type = "(exergy)" if is_exergy else "(anergy)"
     # Filter relevant components based on their district heating conn.
     # entries
     if is_consumer:
-        dh_components = data[(data["active"] == 1)
-                             & (data["district heating conn."] == 1)]
+        dh_components = \
+            data[(data["active"] == 1)
+                 & (data["district heating conn. {}".format(net_type)] == 1)]
     else:
-        dh_components = data[(data["district heating conn."] == "dh-system")
-                             & (data["active"] == 1)]
+        dh_components = \
+            data[(data["district heating conn. {}".format(net_type)]
+                  == "dh-system")
+                 & (data["active"] == 1)]
     
     for _, comp in dh_components.iterrows():
         
@@ -296,7 +305,9 @@ def create_connection_consumers_and_producers(
             **({"P_heat_max": 1,
                 "input": comp["label"],
                 "label": comp["label"],
-                "street": foot_point[5]}
+                "street": foot_point[5],
+                "electricity_bus": comp["electricity bus"],
+                "flow_temperature": comp["flow temperature"]}
                if is_consumer else {})
         }
         
@@ -337,7 +348,8 @@ def create_connection_consumers_and_producers(
                 nodes=pipe_label,
                 length=foot_point[3],
                 street=label,
-                thermal_net=thermal_net
+                thermal_net=thermal_net,
+                is_exergy=is_exergy
         )
         counter += 1
         logging.info(
@@ -408,7 +420,7 @@ def create_producer_connection(
     return oemof_opti_model
 
 
-def connect_dh_to_system(
+def connect_dh_to_system_exergy(
         oemof_opti_model: optimization.OemofInvestOptimizationModel,
         busd: dict, pipe_types: pandas.DataFrame, thermal_net: ThermalNetwork
 ) -> (optimization.OemofInvestOptimizationModel, dict):
@@ -478,6 +490,7 @@ def connect_dh_to_system(
         conversion_factors = {
             (label, busd[consumer["input"]]): float(heatstation["efficiency"])
         }
+        
         # Add a Transformer component to the OemofInvestOptimizationModel
         oemof_opti_model.nodes.append(
                 solph.components.Transformer(
@@ -489,6 +502,110 @@ def connect_dh_to_system(
                 )
         )
     
+    return oemof_opti_model, busd
+
+
+def connect_dh_to_system_anergy(
+        oemof_opti_model: optimization.OemofInvestOptimizationModel,
+        busd: dict, pipe_types: pandas.DataFrame, thermal_net: ThermalNetwork,
+        network_temp: pandas.Series
+) -> (optimization.OemofInvestOptimizationModel, dict):
+    """
+        Connects the district heating (DH) system to the main energy
+        system model.
+
+        Method which creates links to connect the model definition
+        based created sinks to the thermal network components created
+        before.
+
+        :param oemof_opti_model: Oemof model holing thermal network
+        :type oemof_opti_model: optimization.OemofInvestOptimizationModel
+        :param busd: dictionary containing model definitions' buses
+        :type busd: dict
+        :param pipe_types: DataFrame holing the model definition's \
+            pipe types sheet information
+        :type pipe_types: pandas.DataFrame
+        :param thermal_net: DHNx ThermalNetwork instance used to \
+            create the components of the thermal network for the \
+            energy system.
+        :type thermal_net: ThermalNetwork
+
+        :return: - **oemof_opti_model** \
+            (optimization.OemofInvestOptimizationModel) - oemof dh \
+            model within connection to the main model
+                 - **busd** (dict) - dict containing the energy \
+            system's buses
+    """
+    import \
+        oemof.thermal.compression_heatpumps_and_chillers as cmpr_hp_chiller
+    # Remove dhnx created sinks and collect dhnx buses (busd)
+    oemof_opti_model, busd = district_heating.remove_sinks_collect_buses(
+            oemof_opti_model=oemof_opti_model, busd=busd)
+
+    # Calculate heat pipe attributes
+    oemof_opti_model = dh_calculations.calc_heat_pipe_attributes(
+            oemof_opti_model=oemof_opti_model,
+            pipe_types=pipe_types)
+    
+    # Create links to connect consumers' heat bus to the DH system
+    for num, consumer in thermal_net.components["consumers"].iterrows():
+        # Create label for the heat bus of consumers
+        label = heatpipe.Label("consumers", "heat", "bus",
+                               "consumers-{}".format(consumer["id"]), "anergy")
+        
+        # Define inputs and outputs for the Transformer
+        inputs = {oemof_opti_model.buses[label]: solph.Flow(
+                  custom_attributes={"emission_factor": 0}),
+                  busd[consumer["electricity_bus"]]: solph.Flow(
+                  custom_attributes={"emission_factor": 0})}
+        
+        anergy_hp = pipe_types.loc[pipe_types["label_3"] == "anergy_hp"]
+        outputs = {
+            busd[consumer["input"]]: solph.Flow(
+                    investment=solph.Investment(
+                            ep_costs=float(anergy_hp["capex_pipes"]),
+                            minimum=0,
+                            maximum=999 * len(consumer["input"]),
+                            existing=0,
+                            nonconvex=False,
+                            custom_attributes={
+                                "fix_constraint_costs": 0,
+                                "periodical_constraint_costs":
+                                    float(anergy_hp[
+                                              "periodical_constraint_costs"])},
+                    ),
+                    custom_attributes={"emission_factor": 0},
+            )}
+
+        temp_high = [consumer["flow_temperature"]] * len(network_temp)
+        # calculation of COPs with set parameters
+        cops_hp = cmpr_hp_chiller.calc_cops(
+                temp_high=temp_high,
+                temp_low=network_temp.to_list(),
+                quality_grade=0.6, # TODO
+                temp_threshold_icing=3,
+                factor_icing=0.8,
+                mode="heat_pump",
+        )
+        
+        conversion_factors = {
+            oemof_opti_model.buses[label]: [((cop - 1) / cop)
+                                            / float(anergy_hp["efficiency"])
+                                            for cop in cops_hp],
+            busd[consumer["electricity_bus"]]: [1 / cop for cop in cops_hp]
+        }
+        
+        # Add a Transformer component to the OemofInvestOptimizationModel
+        oemof_opti_model.nodes.append(
+                solph.components.Transformer(
+                        label=("dh_anergy_hp_"
+                               + consumer["label"].split("_")[0]),
+                        inputs=inputs,
+                        outputs=outputs,
+                        conversion_factors=conversion_factors
+                )
+        )
+        
     return oemof_opti_model, busd
 
 

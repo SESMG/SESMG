@@ -23,8 +23,10 @@ def temp_dir():
     temp_dir = tempfile.mkdtemp()
     yield temp_dir
     # Remove the temporary directory and its contents
-    for file_name in ["consumers.csv", "pipes.csv",
-                      "producers.csv", "forks.csv"]:
+    for file_name in ["consumers_exergy.csv", "pipes_exergy.csv",
+                      "producers_exergy.csv", "forks_exergy.csv",
+                      "consumers_anergy.csv", "pipes_anergy.csv",
+                      "producers_anergy.csv", "forks_anergy.csv"]:
         file_path = os.path.join(temp_dir, file_name)
         if os.path.exists(file_path):
             os.remove(file_path)
@@ -41,9 +43,11 @@ def create_test_csv_files(temp_dir):
     """
     # Create test CSV files for each component
     for dataframe in ["consumers", "pipes", "producers", "forks"]:
-        data = {'Column1': [1, 2, 3], 'Column2': [4, 5, 6]}
-        df = pandas.DataFrame(data)
-        df.to_csv(os.path.join(temp_dir, f"{dataframe}.csv"), index=False)
+        for is_exergy in ["exergy", "anergy"]:
+            data = {'Column1': [1, 2, 3], 'Column2': [4, 5, 6]}
+            df = pandas.DataFrame(data)
+            df.to_csv(os.path.join(temp_dir, f"{dataframe}_{is_exergy}.csv"),
+                      index=False)
 
 
 def test_load_thermal_network_data(temp_dir, thermal_net):
@@ -61,7 +65,7 @@ def test_load_thermal_network_data(temp_dir, thermal_net):
 
     # Call the function to load data
     loaded_thermal_net = district_heating.load_thermal_network_data(
-        thermal_net=thermal_net, path=temp_dir)
+        thermal_net=thermal_net, path=temp_dir, is_exergy=True)
 
     # Check if the components in the ThermalNetwork have been loaded
     # Check if the loaded dataframes are not empty
@@ -96,11 +100,12 @@ def test_save_thermal_network_data(temp_dir, thermal_net):
     thermal_net.components = test_dataframes
 
     # Call the function to save data
-    district_heating.save_thermal_network_data(thermal_net, temp_dir)
+    district_heating.save_thermal_network_data(
+        thermal_net=thermal_net, path=temp_dir, is_exergy=True)
 
     # Check if the CSV files have been created in the specified directory
     for dataframe in ["consumers", "pipes", "producers", "forks"]:
-        file_path = os.path.join(temp_dir, f"{dataframe}.csv")
+        file_path = os.path.join(temp_dir, f"{dataframe}_exergy.csv")
         assert os.path.exists(file_path)
 
         # Check if the content of the saved CSV matches the original DataFrame

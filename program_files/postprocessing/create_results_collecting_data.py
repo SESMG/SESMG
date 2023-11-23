@@ -368,8 +368,15 @@ def change_heatpipelines_label(comp_label: str, result_path: str) -> str:
         :return: - **loc_label** (str) - string containig the easy \
             readable label for the list of components (loc)
     """
-    # get the energy system's pipes
-    pipes_esys = pandas.read_csv(result_path + "/pipes.csv", index_col="id")
+    if "exergy" in comp_label:
+        # get the energy system's pipes
+        pipes_esys = pandas.read_csv(result_path
+                                     + "/pipes_exergy.csv", index_col="id")
+    else:
+        # get the energy system's pipes
+        pipes_esys = pandas.read_csv(result_path
+                                     + "/pipes_anergy.csv", index_col="id")
+        
     # cut the "infrastructure_ from the pipes label
     loc_label = str(comp_label)[20:]
     # get the heatpipes nodes

@@ -75,46 +75,63 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
     logger.define_logging(logpath=result_path)
     # imports data from the excel file and returns it as a dictionary
     nodes_data = create_energy_system.import_model_definition(
-        filepath=model_definition_file)
-
+            filepath=model_definition_file)
+    
     # if the user has chosen two switch the optimization criteria the
     # nodes data dict is adapted
     if criterion_switch:
         pareto_optimization.change_optimization_criterion(
                 nodes_data=nodes_data)
-
+    
     # Timeseries Preprocessing
     data_preparation.timeseries_preparation(
-        timeseries_prep_param=timeseries_prep,
-        nodes_data=nodes_data,
-        result_path=result_path)
-
+            timeseries_prep_param=timeseries_prep,
+            nodes_data=nodes_data,
+            result_path=result_path)
+    
     if timeseries_prep[0] != 'none':
         model_definition_file = result_path + "/modified_model_definition.xlsx"
-
+    
     # created an energysystem as defined in the model definition file
     esys, nodes_data = create_energy_system.define_energy_system(
-        nodes_data=nodes_data)
-
+            nodes_data=nodes_data)
+    
     # creates a list where the created components will be stored
     nodes = []
-
+    
     # creates bus objects, excess sinks, and shortage sources as defined
     # in the model definition file
     busd = Bus.buses(nodes_data=nodes_data, nodes=nodes)
     
     if len(nodes_data["buses"][~nodes_data["buses"][
-        "district heating conn."].isin(["0", 0])]) > 0:
-        # creates the thermal network components as defined in the model
-        # definition file and adds them to the list of components (nodes)
-        nodes, busd = district_heating.district_heating(
-            nodes_data=nodes_data, nodes=nodes, busd=busd,
-            district_heating_path=district_heating_path,
-            result_path=result_path, cluster_dh=cluster_dh,
-            anergy_or_exergy=False)
+            "district heating conn. (exergy)"].isin(["0", 0])]) > 0:
+        if len(nodes_data["pipe types"][
+                (nodes_data["pipe types"]["active"] == 1)
+                & (nodes_data["pipe types"]["anergy_or_exergy"] == "exergy")]):
+            # creates the thermal network components as defined in
+            # the model definition file and adds them to the list
+            # of components (nodes)
+            nodes, busd = district_heating.district_heating(
+                    nodes_data=nodes_data, nodes=nodes, busd=busd,
+                    district_heating_path=district_heating_path,
+                    result_path=result_path, cluster_dh=cluster_dh,
+                    is_exergy=True)
+    if len(nodes_data["buses"][~nodes_data["buses"][
+            "district heating conn. (anergy)"].isin(["0", 0])]) > 0:
+        if len(nodes_data["pipe types"][
+                (nodes_data["pipe types"]["active"] == 1)
+               & (nodes_data["pipe types"]["anergy_or_exergy"] == "anergy")]):
+            # creates the thermal network components as defined in the
+            # model definition file and adds them to the list of
+            # components (nodes)
+            nodes, busd = district_heating.district_heating(
+                    nodes_data=nodes_data, nodes=nodes, busd=busd,
+                    district_heating_path=district_heating_path,
+                    result_path=result_path, cluster_dh=cluster_dh,
+                    is_exergy=False)
     
     # PARALLEL CREATION OF ALL OBJECTS OF THE MODEL DEFINITION FILE
-
+    
     # creates source objects as defined in the model definition file and
     # adds them to the list of components (nodes)
     thread1 = Thread(target=Source.Sources, args=(nodes_data, nodes, busd))
@@ -136,7 +153,7 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
     # adds them to the list of components (nodes)
     thread5 = Thread(target=Link.Links, args=(nodes_data, nodes, busd))
     thread5.start()
-
+    
     # wait until the threads have done their tasks
     thread1.join()
     thread2.join()
@@ -154,21 +171,21 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
     
     # optimizes the energysystem and returns the optimized energy system
     om = optimize_model.least_cost_model(
-        energy_system=esys, num_threads=num_threads, nodes_data=nodes_data,
-        busd=busd, solver=solver
+            energy_system=esys, num_threads=num_threads, nodes_data=nodes_data,
+            busd=busd, solver=solver
     )
-
+    
     # shows and saves results iof the optimized model / postprocessing
     if xlsx_results:
         create_results.xlsx(nodes_data=nodes_data, optimization_model=om,
                             filepath=result_path)
-        
+    
     # creates the data used for the results presentation in the GUI
     create_results.Results(
-        nodes_data=nodes_data, optimization_model=om, energy_system=esys,
-        result_path=result_path, console_log=console_results,
-        cluster_dh=cluster_dh)
-
+            nodes_data=nodes_data, optimization_model=om, energy_system=esys,
+            result_path=result_path, console_log=console_results,
+            cluster_dh=cluster_dh)
+    
     logging.info('\t ' + 56 * '-')
     logging.info('\t Modelling and optimization successfully completed!')
 
@@ -243,43 +260,44 @@ def sesmg_main_including_premodel(
     logging.info('STARTING PRE-MODEL')
     logging.info('Pre-modeling results will be stored in: '
                  + result_path + str('/pre_model'))
-
+    
     # starting the optimization of the model definition with timeseries
     # preparation parameters used for model simplification
     sesmg_main(
-        model_definition_file=model_definition_file,
-        result_path=result_path + str('/pre_model'),
-        num_threads=num_threads,
-        timeseries_prep=pre_model_timeseries_prep,
-        graph=graph,
-        criterion_switch=criterion_switch,
-        xlsx_results=xlsx_results,
-        console_results=console_results,
-        solver=solver,
-        district_heating_path=district_heating_path,
-        cluster_dh=cluster_dh)
-
+            model_definition_file=model_definition_file,
+            result_path=result_path + str('/pre_model'),
+            num_threads=num_threads,
+            timeseries_prep=pre_model_timeseries_prep,
+            graph=graph,
+            criterion_switch=criterion_switch,
+            xlsx_results=xlsx_results,
+            console_results=console_results,
+            solver=solver,
+            district_heating_path=district_heating_path,
+            cluster_dh=cluster_dh)
+    
     # create updated model definition for main-modeling run
     logging.info('UPDATING DATA BASED ON PRE-MODEL RESULTS')
     update_model_according_pre_model_results(
-        model_definition_path=model_definition_file,
-        results_components_path=result_path + '/pre_model/components.csv',
-        updated_model_definition_path=result_path + '/updated_scenario.xlsx',
-        investment_boundary_factor=investment_boundary_factor,
-        investment_boundaries=investment_boundaries)
-
+            model_definition_path=model_definition_file,
+            results_components_path=result_path + '/pre_model/components.csv',
+            updated_model_definition_path=result_path +
+                                          '/updated_scenario.xlsx',
+            investment_boundary_factor=investment_boundary_factor,
+            investment_boundaries=investment_boundaries)
+    
     # start main-modeling run
     logging.info('STARTING MAIN-MODEL')
-
+    
     sesmg_main(
-        model_definition_file=result_path + '/updated_scenario.xlsx',
-        result_path=result_path,
-        num_threads=num_threads,
-        timeseries_prep=timeseries_prep,
-        graph=graph,
-        criterion_switch=criterion_switch,
-        xlsx_results=xlsx_results,
-        console_results=console_results,
-        solver=solver,
-        district_heating_path=district_heating_path,
-        cluster_dh=cluster_dh)
+            model_definition_file=result_path + '/updated_scenario.xlsx',
+            result_path=result_path,
+            num_threads=num_threads,
+            timeseries_prep=timeseries_prep,
+            graph=graph,
+            criterion_switch=criterion_switch,
+            xlsx_results=xlsx_results,
+            console_results=console_results,
+            solver=solver,
+            district_heating_path=district_heating_path,
+            cluster_dh=cluster_dh)

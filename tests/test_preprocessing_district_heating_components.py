@@ -73,7 +73,8 @@ def test_pipes_dataframe():
              "to_node": ["forks-2"],
              "length": [30.0],
              "component_type": ["Pipe"],
-             "street": ["test-street"]}
+             "street": ["test-street"],
+             "is_exergy": [True]}
     )
 
 
@@ -97,7 +98,8 @@ def test_append_pipe(test_pipes_dataframe, thermal_net):
             nodes=nodes,
             length=length,
             street=street,
-            thermal_net=thermal_net)
+            thermal_net=thermal_net,
+            is_exergy=True)
     
     # Comparing the resulting 'pipes' component DataFrame with the
     # expected test dataframe
@@ -197,7 +199,8 @@ def test_create_supply_line(sample_streets_data, sample_points_data):
     # Call the method with sample data
     result_thermal_net = district_heating_components.create_supply_line(
             streets=sample_streets_data,
-            thermal_net=sample_points_data)
+            thermal_net=sample_points_data,
+            is_exergy=True)
     
     pipes = result_thermal_net.components["pipes"]
     # Check if pipes where added to the thermal network pipes dataframe
@@ -270,7 +273,7 @@ def test_create_producer_connection():
     assert str(result.nodes[0]) == "heat_input1_dh_source_link_exergy"
 
 
-def test_connect_dh_to_system():
+def test_connect_dh_to_system_exergy():
     """
         Test the 'connect_dh_to_system' method from the
         'district_heating_components' module.
@@ -317,7 +320,8 @@ def test_connect_dh_to_system():
     })
     
     # Call the method
-    result, updated_busd = district_heating_components.connect_dh_to_system(
+    result, updated_busd = \
+        district_heating_components.connect_dh_to_system_exergy(
             oemof_opti_model=oemof_opti_model,
             busd=busd,
             pipe_types=pipe_types,
