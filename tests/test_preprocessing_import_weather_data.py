@@ -46,7 +46,8 @@ def test_import_open_fred_weather_data():
                                                     "ground_temp",
                                                     "water_temp",
                                                     "groundwater_temp",
-                                                    "heat_network_temp"])
+                                                    "exergy_network_temp",
+                                                    "anergy_network_temp"])
     
     return_nodes_data = import_weather_data.import_open_fred_weather_data(
         nodes_data={
