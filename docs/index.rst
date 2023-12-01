@@ -87,6 +87,7 @@ The manual section contains detailed instructions on how to install and apply th
 * :doc:`02.02.05_technical_data`
 * :doc:`02.02.06_examples`
 * :doc:`02.03.00_demo`
+* :doc:`02.04.00_additional_features`
 
 	
 	
