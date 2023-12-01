@@ -99,6 +99,7 @@ The manual section contains detailed instructions on how to install and apply th
 	02.01.00_installation
 	02.02.00_application
 	02.03.00_demo
+	02.04.00_additional_features
 
 
 Troubleshooting 
