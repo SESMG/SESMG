@@ -1,8 +1,11 @@
 Additional Features
 *********
 
-...
+There are additional features available that can be used with the SESMG, but are currently not represented in the GUI.
 
 SESMG-Data
 ===========
-
+The program SESMG-Data automizes the Data-Processing for Energy System Models. The basis for this restructuring is a database that contains multiple .csv files and can 
+be used automatically to create different outputs that are later needed in the automated modeling process of urban energy systems.
+The goal of the program is to implement a comprehensive database that minimizes the risk of errors by providing a centralized repository of information.
+Further information about installation and usage can be found in the README  `here <https://github.com/SESMG/SESMG-Data/blob/Merged_program/README.md>`_. 
