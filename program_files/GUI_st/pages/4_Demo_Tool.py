@@ -10,10 +10,13 @@ import glob
 import openpyxl
 import streamlit as st
 import pandas as pd
+import altair as alt
+import numpy as np
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main
 from program_files.GUI_st.GUI_st_global_functions import \
     st_settings_global, read_markdown_document, import_GUI_input_values_json
+from datetime import datetime
 
 # Import GUI help comments from the comment json and safe as a dict
 GUI_helper = import_GUI_input_values_json(
@@ -52,7 +55,7 @@ def dt_input_sidebar() -> dict:
     with st.sidebar.form("Simulation input"):
 
         # input value for model run name
-        st.text_input(label="Name",
+        input_values_dict["input_name"] = st.text_input(label="Name",
                       value="")
 
         # input value for photovoltaics
@@ -106,12 +109,23 @@ def dt_input_sidebar() -> dict:
                      "rural"],
             help=GUI_helper["demo_sb_heat_network_chp"])
 
-        # If input_dh is equal to the name of the options, then the \
-        # values for the input parameters in input_values_dict are taken from \
-        # the params dictionary. Otherwise, the values are set binary.
-        # Vales are set according to the chosen dh network.
+        input_chp = st.number_input(
+            label="Design of a CHP",
+            min_value=0,
+            max_value=20000,
+            step=1,
+            help=GUI_helper["demo_sb_heat_network_chp"]
+        )
+
+        if input_chp < 5000:
+            st.write("Die CHP-Anlage hat eine niedrige Kapazität.")
+        elif input_chp < 15000:
+            st.write("Die CHP-Anlage hat eine mittlere Kapazität.")
+        else:
+            st.write("Die CHP-Anlage hat eine hohe Kapazität.")
 
         if input_dh == "No District Heating Network":
+            # If there is no district heating network, set all values to 0
             input_values_dict["input_chp_urban"] = 0
             input_values_dict["input_dh_urban"] = 0
             input_values_dict["input_chp_sub_urban"] = 0
@@ -120,6 +134,7 @@ def dt_input_sidebar() -> dict:
             input_values_dict["input_dh_rural"] = 0
 
         elif input_dh == "urban":
+            # If the district heating type is urban, set the corresponding values to 1
             input_values_dict["input_chp_urban"] = 1
             input_values_dict["input_dh_urban"] = 1
             input_values_dict["input_chp_sub_urban"] = 0
@@ -128,6 +143,7 @@ def dt_input_sidebar() -> dict:
             input_values_dict["input_dh_rural"] = 0
 
         elif input_dh == "sub-urban":
+            # If the district heating type is sub-urban, set the corresponding values to 1
             input_values_dict["input_chp_urban"] = 1
             input_values_dict["input_dh_urban"] = 1
             input_values_dict["input_chp_sub_urban"] = 1
@@ -136,12 +152,19 @@ def dt_input_sidebar() -> dict:
             input_values_dict["input_dh_rural"] = 0
 
         elif input_dh == "rural":
+            # If the district heating type is rural, set all values to 1
             input_values_dict["input_chp_urban"] = 1
             input_values_dict["input_dh_urban"] = 1
             input_values_dict["input_chp_sub_urban"] = 1
             input_values_dict["input_dh_sub_urban"] = 1
             input_values_dict["input_chp_rural"] = 1
             input_values_dict["input_dh_rural"] = 1
+
+        # selectbox to choose solver
+        input_values_dict["solver_select"] = st.selectbox(
+            label="Optimization Solver",
+            options=("cbc", "gurobi"),
+            help=GUI_helper["main_sb_solver"])
 
         # create slider to choose the optimization criterion
         input_values_dict["input_criterion"] = st.select_slider(
@@ -176,7 +199,7 @@ def execute_sesmg_demo(demo_file: str, demo_results: str, mode: str) -> None:
         criterion_switch = True
     else:
         criterion_switch = False
-
+    # "slicing A", "80", "None", "days"
     # run sesmg main function with reduced / fixed input options
     sesmg_main(
         model_definition_file=demo_file,
@@ -187,7 +210,7 @@ def execute_sesmg_demo(demo_file: str, demo_results: str, mode: str) -> None:
         criterion_switch=criterion_switch,
         xlsx_results=False,
         console_results=False,
-        solver="cbc",
+        solver=input_values_dict["solver_select"],
         cluster_dh=False,
         district_heating_path=""
     )
@@ -308,6 +331,129 @@ def show_demo_run_results(mode: str) -> None:
         delta=rel_result_emissions,
         delta_color="inverse")
 
+    # define new row with new values
+    new_row = pd.DataFrame(
+        {
+            'Costs in million €/a': [annual_costs],
+            'CO2-emissions in t/a': [annual_emissions],
+            'Name': [input_values_dict["input_name"]]
+        }
+    )
+
+    additional_points = pd.DataFrame()
+
+    # Append a new row to the additional_points DataFrame
+    additional_points = additional_points.append(new_row, ignore_index=True)
+
+    return additional_points
+
+def save_additional_points(additional_points):
+    # Specify the file path where you want to save or append to the CSV file
+    file_path = os.path.join('program_files', 'demo_tool', 'demo_tool_results.csv')
+
+    if additional_points.empty:
+        additional_points = pd.DataFrame()
+
+    # Check if the file already exists
+    if os.path.exists(file_path):
+        # Append new data to the existing CSV file
+        additional_points.to_csv(file_path, mode='a', header=False, index=False)
+    else:
+        # Save the Pandas DataFrame to a new CSV file
+        additional_points.to_csv(file_path, index=False)
+
+def show_demo_run_results_on_graph():
+
+    # Display demo results on pareto graph.
+    # first DataFrame with pareto points
+    pareto_points = pd.DataFrame(
+        {
+            "Costs in million €/a": [13.89603207, 11.35305948, 10.48224024, 9.81291472, 9.457649, 9.19935371,
+                                     8.94129078, 8.68912473, 8.50804131, 8.39338222, 8.33017516],
+            'CO2-emissions in t/a': [8211, 8513.468936, 8815.334145, 9117.199354, 9419.064563, 9720.929772, 10022.79498,
+                                     10324.66019, 10626.5254, 10928.39061, 11230.25582],
+        }
+    )
+
+    # third data frame with status quo
+    status_quo_points = pd.DataFrame(
+        {
+            'Costs in million €/a': [13.68616781],
+            'CO2-emissions in t/a': [17221.43690357],
+            'Name': ['Status Quo']
+        }
+    )
+
+    file_path = os.path.join('program_files', 'demo_tool', 'demo_tool_results.csv')
+
+    # open csv and transform it to a dataframe
+    additional_points = pd.read_csv(file_path)
+
+    # Die neuen Daten für die Zeile
+    new_row_data = {
+        'Costs in million €/a': [13.68616781],
+        'CO2-emissions in t/a': [17221.43690357],
+        'Name': ['Status Quo']
+    }
+
+    # Hinzufügen der neuen Zeile zum DataFrame
+    additional_points = additional_points.append(pd.DataFrame(new_row_data), ignore_index=True)
+
+    combined_df = pd.concat([additional_points, status_quo_points], ignore_index=True)
+
+    # create pareto point chart layer
+    pareto_points_chart = alt.Chart(pareto_points).mark_line().encode(
+        x=alt.X('Costs in million €/a',
+                scale=alt.Scale(domain=(8.2, max(combined_df['Costs in million €/a']) * 1.05))),
+        y=alt.Y('CO2-emissions in t/a',
+                scale=alt.Scale(domain=(8000, max(combined_df['CO2-emissions in t/a']) * 1.05)))
+    ).properties(
+        width=1000,
+        height=800
+    ).interactive()
+
+    # create status qou point chart layer
+    status_quo_points_chart = alt.Chart(status_quo_points).mark_text(
+        size=15,
+        text="🔵 Status Quo",
+        dx=40, dy=0,
+        align="center",
+        color="blue").encode(
+        x=alt.X('Costs in million €/a',
+                scale=alt.Scale(domain=(8.2, max(combined_df['Costs in million €/a']) * 1.05))),
+        y=alt.Y('CO2-emissions in t/a',
+                scale=alt.Scale(domain=(8000, max(combined_df['CO2-emissions in t/a']) * 1.05))),
+        tooltip=['Costs in million €/a', 'CO2-emissions in t/a', 'Name']
+    ).properties(
+        width=1000,
+        height=800
+    )
+
+    # create additional point chart layer
+    additional_points_chart = alt.Chart(additional_points).mark_circle().encode(
+        x=alt.X('Costs in million €/a',
+                scale=alt.Scale(domain=(8.2, max(combined_df['Costs in million €/a']) * 1.05))),
+        y=alt.Y('CO2-emissions in t/a',
+                scale=alt.Scale(domain=(8000, max(combined_df['CO2-emissions in t/a']) * 1.05))),
+        color='Name'
+    ).properties(
+        width=1000,
+        height=800
+    ).interactive()
+
+    # write subheader, combine all chart layer and show the combinded chart
+    st.subheader("Your solution on pareto graph:")
+    st.altair_chart(additional_points_chart + pareto_points_chart + status_quo_points_chart, theme="streamlit",
+                    use_container_width=True)
+
+    # Speichern der Ergebnisse Button
+    if st.button("Speichern der Ergebnisse"):
+        # Hinzufügen des aktuellen Zeitstempels
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        # Speichern Sie die aktualisierte DataFrame in einer CSV-Datei mit dem Zeitstempel
+        combined_df.to_csv(f'program_files/demo_tool/demo_tool_results_{timestamp}.csv', index=False)
+        st.success("Ergebnisse erfolgreich gespeichert!")
+
 
 def demo_start_page() -> None:
     """
@@ -338,6 +484,20 @@ def demo_start_page() -> None:
     img = "docs/images/manual/DemoTool/district_heating_network.png"
     st.image(img, caption="", width=500)
 
+def change_state_submitted_demo_run_delete():
+    file_path = os.path.join('program_files', 'demo_tool', 'demo_tool_results.csv')
+
+    # read csv
+    additional_points = pd.read_csv(file_path)
+
+    # Lösche alle Werte außer der ersten Zeile im DataFrame
+    additional_points = additional_points.iloc[0:0]
+
+    # safe csv
+    additional_points.to_csv(file_path, index=False)
+
+    st.experimental_rerun()
+
 
 def change_state_submitted_demo_run() -> None:
     """
@@ -346,7 +506,6 @@ def change_state_submitted_demo_run() -> None:
     """
     st.session_state["state_submitted_demo_run"] = "done"
 
-
 # run demo application
 # initialize global streamlit settings
 st_settings_global()
@@ -354,14 +513,32 @@ st_settings_global()
 # run demotool input sidebar
 input_values_dict = dt_input_sidebar()
 
-# creating main demo tool
-# loading start page
-demo_start_page()
+def start():
+    # creating main demo tool
+    # loading start page
+    demo_start_page()
+
+    # show results after submit button was clicked
+    if st.session_state["state_submitted_demo_run"] == "done":
+        # create demo model definition and start model run
+        create_demo_model_definition()
+
+        # show generated results
+        additional_points = show_demo_run_results(mode=input_values_dict["input_criterion"])
+
+        save_additional_points(additional_points)
+
+    show_demo_run_results_on_graph()
+
+start()
+
+button = st.button(label="Werte löschen")
+
+if button:
+    change_state_submitted_demo_run_delete()
 
 
-# show results after submit button was clicked
-if st.session_state["state_submitted_demo_run"] == "done":
-    # create demo model definition and start model run
-    create_demo_model_definition()
-    # show generated results
-    show_demo_run_results(mode=input_values_dict["input_criterion"])
+
+
+
+
