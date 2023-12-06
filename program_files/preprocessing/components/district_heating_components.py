@@ -209,7 +209,7 @@ def create_supply_line(streets: pandas.DataFrame,
         # section
         pipes.update({street["label"]:
                       dh_calculations.calc_street_lengths(road_section)})
-    
+        
     # Iterate through calculated pipes and add them to the thermal
     # network
     for street in pipes:
@@ -222,8 +222,8 @@ def create_supply_line(streets: pandas.DataFrame,
                 if "fork" in ends[num] and "consumers" in ends[num]:
                     ends[num] = "forks-{}".format(ends[num][10:-5])
                 else:
-                    ends[num] = "forks-{}".format(ends[num][-1])
-            
+                    ends[num] = "forks-{}".format(ends[num])
+
             # Append the pipe to the thermal network
             thermal_net = append_pipe(
                     nodes=[ends[0], ends[1]],
@@ -302,12 +302,14 @@ def create_connection_consumers_and_producers(
             "lon": float(comp["lon"]),
             "component_type": "Consumer" if is_consumer else "Producer",
             "active": 1,
-            **({"P_heat_max": 1,
+            **({"existing heathouse station": comp["exiting heathouse station"],
+                "P_heat_max": 1,
                 "input": comp["label"],
                 "label": comp["label"],
                 "street": foot_point[5],
                 "electricity_bus": comp["electricity bus"],
-                "flow_temperature": comp["flow temperature"]}
+                "flow_temperature": comp["flow temperature"],
+                }
                if is_consumer else {})
         }
         
@@ -470,19 +472,21 @@ def connect_dh_to_system_exergy(
                   custom_attributes={"emission_factor": 0})}
         
         heatstation = pipe_types.loc[pipe_types["label_3"] == "dh_heatstation"]
+        ep_costs = (float(heatstation["capex_pipes"])
+                    if consumer["existing heathouse station"] == 0 else 0)
+        ep_emi = (float(heatstation["periodical_constraint_costs"])
+                    if consumer["existing heathouse station"] == 0 else 0)
         outputs = {
             busd[consumer["input"]]: solph.Flow(
                     investment=solph.Investment(
-                            ep_costs=float(heatstation["capex_pipes"]),
+                            ep_costs=ep_costs,
                             minimum=0,
                             maximum=999 * len(consumer["input"]),
                             existing=0,
                             nonconvex=False,
                             custom_attributes={
                                 "fix_constraint_costs": 0,
-                                "periodical_constraint_costs":
-                                    float(heatstation[
-                                              "periodical_constraint_costs"])},
+                                "periodical_constraint_costs": ep_emi},
                     ),
                     custom_attributes={"emission_factor": 0},
             )}
