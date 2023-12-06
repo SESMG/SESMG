@@ -207,11 +207,11 @@ def test_create_supply_line(sample_streets_data, sample_points_data):
     assert len(pipes) > 0
     
     # Check if forks-1 -- a from node -- is listed in from node column
-    assert "forks-1" in pipes["from_node"].to_list()
+    assert "forks-forks-1" in pipes["from_node"].to_list()
     # Check if length of pipe 1 is listed in length column
     assert 396208.1053375902 in pipes["length"].to_list()
     # Check if forks-3 -- a to node -- is listed in to node column
-    assert "forks-3" in pipes["to_node"].to_list()
+    assert "forks-forks-3" in pipes["to_node"].to_list()
     
     
 class MockOemofOptiModel:
@@ -302,7 +302,8 @@ def test_connect_dh_to_system_exergy():
                 "id": [0],
                 "input": ["input_1"],
                 "label": ["Testhouse_heat_bus"],
-                "active": [1]
+                "active": [1],
+                "existing heathouse station": [0]
             }),
             pipes=None,
             forks=None
