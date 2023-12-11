@@ -324,50 +324,57 @@ class Sinks:
         start_date = datetime.strptime(
             str(self.energysystem["start date"]), "%Y-%m-%d %H:%M:%S"
         )
-
-        # Create DataFrame
-        demand = pandas.DataFrame(
-            index=pandas.date_range(
-                datetime(
-                    year=start_date.year,
-                    month=start_date.month,
-                    day=start_date.day,
-                    hour=start_date.hour
-                ),
-                periods=self.energysystem["periods"],
-                freq=temp_resolution,
-            )
-        )
         
         heat_slps = self.slps["heat_slps_commercial"] + self.slps["heat_slps"]
         # creates time series for heat sinks
         if sink["load profile"] in heat_slps:
-            # sets the parameters of the heat slps
-            args = {
-                "temperature": self.weather_data["temperature"],
-                "shlp_type": sink["load profile"],
-                "wind_class": sink["wind class"],
-                "annual_heat_demand": 1,
-                "name": sink["load profile"],
-            }
-            # handling non commercial buildings
-            if sink["load profile"] in self.slps["heat_slps"]:
-                # adds the building class which is only necessary for
-                # the non commercial slps
-                args.update({"building_class": sink["building class"]})
-                
+    
+            # Create DataFrame
+            demand = pandas.DataFrame(
+                index=pandas.date_range(
+                    datetime(
+                        year=start_date.year,
+                        month=start_date.month,
+                        day=start_date.day,
+                        hour=start_date.hour
+                    ),
+                    periods=self.energysystem["periods"],
+                    freq=temp_resolution,
+                )
+            )
+            
             # create the demandlib's data set
+            # using the parameters of the heat slps
+            # **() and the building class which is only necessary for
+            # the non commercial slps
             demand[sink["load profile"]] = bdew.HeatBuilding(
-                demand.index, **args
-            ).get_bdew_profile()
+                df_index=demand.index,
+                **{
+                    "temperature": self.weather_data["temperature"],
+                    "shlp_type": sink["load profile"],
+                    "wind_class": sink["wind class"],
+                    "annual_heat_demand": 1,
+                    "name": sink["load profile"],
+                    **({"building_class": sink["building class"]}
+                        if sink["load profile"] in self.slps["heat_slps"]
+                       else {})
+                }).get_bdew_profile()
             
         # create time series for electricity sinks
         elif sink["load profile"] in self.slps["electricity_slps"]:
+            
             # Imports standard load profiles
             e_slp = bdew.ElecSlp(year=start_date.year)
-            demand = e_slp.get_profile({sink["load profile"]: 1})
-            # creates time series based on standard load profiles
-            demand = demand.resample(temp_resolution).mean()
+            
+            # get the electricity demand timeseries and resample it on
+            # the user chosen temporal resolution
+            demand = e_slp.get_profile(
+                ann_el_demand_per_sector={sink["load profile"]: 1}
+            ).resample(temp_resolution).mean()
+            
+        else:
+            raise ValueError(sink["load profile"]
+                             + "is an unsupported sink type!")
             
         # starts the create_sink method with the parameters set before
         self.create_sink(
