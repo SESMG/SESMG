@@ -219,19 +219,20 @@ def test_positive_read_markdown_document():
 
     # creating the reduced README file as a str in a list
     reduced_readme = read_markdown_document(
-        document_path=os.path.join(
-            os.path.dirname(os.path.dirname(__file__)), "README.md"),
+        document_path="README.md",
         folder_path="empty")
 
     # iterate through the list and check if unique text part bevor and \
     # behind the reduced part are printed as required
     # testing part before drop
     for item in reduced_readme:
+        # function will return -1 if str not found
         if item.find("(oemof)") != -1:
             test_target_1 = True
 
     # testing part behind drop
     for item in reduced_readme:
+        # function will return -1 if str not found
         if item.find("Code of Conduct") != -1:
             test_target_2 = True
 
@@ -251,13 +252,13 @@ def test_negative_read_markdown_document():
 
     # creating the reduced README file as a str in a list
     reduced_readme = read_markdown_document(
-        document_path=os.path.join(
-            os.path.dirname(__file__), "README.md"),
+        document_path="README.md",
         folder_path="empty")
 
     # iterate through the list and check if part which is suppost to be \
     # dropped is not in the list of str
     for item in reduced_readme:
+        # function will return -1 if str not found
         if item.find("install coinor-cbc") != -1:
             test_target = True
 
