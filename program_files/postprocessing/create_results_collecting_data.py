@@ -169,10 +169,14 @@ def get_investment(node, esys: solph.EnergySystem, results: dict,
     # get the specified flows investment variable
     if not comp_type == "clustered_dh" \
             and "invest" in results[component_node, bus_node]["scalars"]:
-        return results[component_node, bus_node]["scalars"]["invest"] if results[component_node, bus_node]["scalars"]["invest"] > 0.000001 else 0
+        return results[component_node, bus_node]["scalars"]["invest"] \
+            if results[component_node, bus_node]["scalars"]["invest"] \
+            > 0.000001 else 0
     elif comp_type == "clustered_dh" \
             and "invest" in results[bus_node, component_node]["scalars"]:
-        return results[bus_node, component_node]["scalars"]["invest"] if results[bus_node, component_node]["scalars"]["invest"] > 0.000001 else 0
+        return results[bus_node, component_node]["scalars"]["invest"] \
+            if results[bus_node, component_node]["scalars"]["invest"] \
+            > 0.000001 else 0
     else:
         return 0
 

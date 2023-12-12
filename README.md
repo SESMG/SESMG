@@ -6,6 +6,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/5ab50cca9d852028f3df/maintainability)](https://codeclimate.com/github/SESMG/SESMG/maintainability)
 [![Documentation Status](https://readthedocs.org/projects/spreadsheet-energy-system-model-generator/badge/?version=latest)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/?badge=latest)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.05519/status.svg)](https://doi.org/10.21105/joss.05519)
 
 ## Software Description
 
@@ -29,59 +30,14 @@ Furthermore, the **SESMG** comes with important modeling methods, enabling holis
 
 #### Please note: 
 A detailed description of the installation process for Windows, MacOS and Linux can be found in the [documentation (chapter installation)](
-https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html). The Quick Start installation guide is only recommended for advanced users or users with programming experience!
-
-### Step 1) Download Python 3.8 or newer (Python 3.10 was not tested yet)
-
-- go to the Python download page
-- chose a Python version (e.g. “Python 3.9.13”) and click “download”
-- download the operating system specific installer (e.g. “Windows x86-64 executable installer”)
-- execute the installer on your computer
-
-### Step 2) Download the Spreadsheet Energy System Model Generator from [GitHub](https://github.com/SESMG/SESMG) as .zip folder and extract the .zip folder into any directory on the computer. 
-
-### Step 3) Install pip (Linux only)
-
-run `$ sudo apt-get install python3-pip`
-
-### Step 4) Download the CBC-solver (Windows and Linux only) 
-
-#### For Windows:
-
-Download [here](http://ampl.com/dl/open/cbc/cbc-win64.zip)
-
-<u>Within this step there are two options: </u>
-- install the cbc-Solver on your whole operating system 
-- copy and paste the downloaded executable two your **SESMG**-working directory
-
-#### For Linux:
-
-run `$ sudo apt-get install coinor-cbc`
-
-### Step 5) Install Graphviz (Windows and Linux only) 
-
-#### For Windows:
-Download [here](https://graphviz.gitlab.io/download/)
-
-- select and download the graphviz version for your device (e.g. graphviz-2.38.msi for Windows)
-- Execute the installation manager you just downloaded. Choose the following directory for the installation: “C:\Program Files (x86)\Graphviz2.38" (should be the default settings)
-
-#### For Linux:
-
-run `$ sudo apt-get install graphviz`
-
-### Step 6) Install libpq-dev to avoid a psycopg2 error (Linux only)
-
-run `$ sudo apt-get install libpq-dev`
-
-### Step 7) Start the operating system specific installation file. 
+https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html). 
 
 
 ## SESMG Features & Releases 
 [![Generic badge](https://img.shields.io/badge/content-what/why-darkgreen.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
 ### Examples
-Examples are stored in a separate GIT-Repository: https://github.com/chrklemm/SESMG_Examples
+Examples are stored in a separate GIT-Repository: https://github.com/SESMG/SESMG_Examples
 
 ### Project status
 ✓ Draft (alpha, beta) State <br />

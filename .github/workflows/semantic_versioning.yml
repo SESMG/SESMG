@@ -14,12 +14,199 @@ jobs:
     concurrency: release
     permissions: 
       contents: write
+    outputs:
+      bool: ${{ steps.new_release.outputs.bool }}
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
+      - name: get current version
+          id: before_release_version
+          run: |
+            current_release=$(python3 setup.py --version)
+            echo "CURRENT_RELEASE=v$current_release" >> $GITHUB_ENV
+
       - name: Python Semantic Release
         uses: relekang/python-semantic-release@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+
+            - name: get current version
+              id: after_release_version
+              run: |
+                current_version=$(python3 setup.py --version)
+                echo "CURRENT_VERSION=v$current_version" >> $GITHUB_ENV
+
+            - name: check rather a new verion was released
+              id: new_release
+              run: |
+                if ${{ env.CURRENT_RELEASE == env.CURRENT_VERSION }} == 'true' ; then
+                   echo "bool='false'" >> "$GITHUB_OUTPUT"
+                else
+                   echo "bool='true'" >> "$GITHUB_OUTPUT"
+                fi
+
+        macos:
+          name: Build for macOS
+          if: ${{ needs.release.outputs.bool == 'true' }}
+          needs: release
+          runs-on: macos-latest
+          steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+            - name: Setup Python
+              run: |
+                curl https://www.python.org/ftp/python/3.9.13/python-3.9.13-macosx10.9.pkg --output pythonInstaller.pkg
+                sudo installer -pkg pythonInstaller.pkg -target /
+            - name: Create Executable
+              run: |
+                python3 -m venv .
+                . bin/activate
+                PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install git+https://github.com/pyinstaller/pyinstaller.git@develop
+                pip3 install twisted[tls] appnope requests certifi
+                pip3 install -r requirements.txt
+                pyinstaller .github/deploy/SESMG_macos.spec
+            - name: Prepare for deployment
+              run: |
+                brew install create-dmg
+                mkdir -p dist/dmg
+                cp -r "dist/SESMG.app" dist/dmg
+                create-dmg \
+                --volname "SESMG" \
+                --hide-extension "SESMG.app" \
+                "dist/SESMG.dmg" \
+                "dist/dmg/"
+            - name: Upload Artifact
+              uses: actions/upload-artifact@v3
+              with:
+                name: SESMG.dmg
+                path: dist/SESMG.dmg
+
+        linux:
+          name: Build on linux
+          runs-on: ubuntu-20.04
+          needs: [ release, macos ]
+          steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+            - name: Setup Python
+              uses: actions/setup-python@v4
+              with:
+                python-version: '3.9.13'
+
+            - name: Create Executable
+              run: |
+                pip3 install virtualenv
+                python3 -m virtualenv .
+                . bin/activate
+                sudo apt-get update
+                sudo apt-get install libc6
+                pip3 install --upgrade setuptools
+                pip3 install pyinstaller
+                pip3 install twisted[tls] appnope requests certifi
+                pip3 install -r requirements.txt
+                pyinstaller .github/deploy/SESMG_linux.spec
+            - name: Prepare for deployment
+              run: |
+                sudo apt-get install ruby-dev build-essential && sudo gem i fpm -f
+                mkdir -p package/opt
+                mkdir -p package/usr/share/applications
+                mkdir -p package/usr/share/icons/hicolor/scalable/apps
+                cp -r dist/SESMG package/opt/SESMG
+                cp .github/deploy/SESMG.desktop package/usr/share/applications
+                find package/opt/SESMG -type f -exec chmod 644 -- {} +
+                find package/opt/SESMG -type d -exec chmod 755 -- {} +
+                find package/usr/share -type f -exec chmod 644 -- {} +
+                chmod +x package/opt/SESMG/SESMG
+                fpm -C package -s dir -t deb -n "SESMG" -v 0.1.0 -p dist/SESMG.deb
+            - name: Upload Artifact
+              uses: actions/upload-artifact@v3
+              with:
+                name: SESMG.deb
+                path: dist/SESMG.deb
+
+        windows:
+          name: Build on windows
+          runs-on: windows-latest
+          needs: [ release, macos, linux ]
+          steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+            - name: Setup Python
+              uses: actions/setup-python@v4
+              with:
+                python-version: '3.9.13'
+
+            - name: Add msbuild to PATH
+              uses: microsoft/setup-msbuild@v1.1
+
+            - name: Create Executable
+              run: |
+                python3 -m venv .
+                Scripts/activate.bat
+                Scripts/pip3 install --upgrade setuptools
+                Scripts/pip3 install pyinstaller
+                Scripts/pip3 install twisted[tls] appnope requests certifi
+                Scripts/pip3 install -r requirements.txt
+                Scripts/pyinstaller .github/deploy/SESMG_windows.spec
+
+            - name: Upload Artifact
+              uses: actions/upload-artifact@v2
+              with:
+                name: SESMG.exe
+                path: |
+                  dist/SESMG.exe
+
+        deploy:
+          name: Push builds
+          runs-on: ubuntu-20.04
+          needs: [ release, linux, macos, windows ]
+          steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+            - name: Download MAC artifact
+              uses: actions/download-artifact@v3
+              with:
+                name: SESMG.dmg
+            - name: Download LINUX artifact
+              uses: actions/download-artifact@v3
+              with:
+                name: SESMG.deb
+            - name: Download WINDOWS artifact
+              uses: actions/download-artifact@v3
+              with:
+                name: SESMG.exe
+
+            - name: GET VERSION
+              run: |
+                VERSION=$(python setup.py --version)
+                echo "VERSION=v$VERSION" >> $GITHUB_ENV
+            - name: Upload MAC binaries to release
+              uses: svenstaro/upload-release-action@v2
+              with:
+                repo_token: ${{ secrets.GITHUB_TOKEN }}
+                file: ./SESMG.dmg
+                asset_name: SESMG.dmg
+                tag: ${{ env.VERSION }}
+                overwrite: true
+            - name: Upload LINUX binaries to release
+              uses: svenstaro/upload-release-action@v2
+              with:
+                repo_token: ${{ secrets.GITHUB_TOKEN }}
+                file: ./SESMG.deb
+                asset_name: SESMG.deb
+                tag: ${{ env.VERSION }}
+                overwrite: true
+            - name: Upload WINDOWS binaries to release
+              uses: svenstaro/upload-release-action@v2
+              with:
+                repo_token: ${{ secrets.GITHUB_TOKEN }}
+                file: ./SESMG.exe
+                asset_name: SESMG.exe
+                tag: ${{ env.VERSION }}
+                overwrite: true
