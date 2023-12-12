@@ -495,7 +495,7 @@ def copying_sheets(paths: list, standard_parameters: pandas.ExcelFile,
 
 def urban_district_upscaling_pre_processing(
     paths: list, open_fred_list: list, clustering: bool, clustering_dh: bool
-) -> bytes:
+) -> (dict, dict):
     """
         The Urban District Upscaling Pre Processing method is used to
         systematically create a model definition for a few 10 to a few
@@ -624,13 +624,5 @@ def urban_district_upscaling_pre_processing(
             central_electricity_network=central_electricity_network,
             clustering_dh=clustering_dh,
         )
-    output = BytesIO()
-    # open the new excel file and add all the created components
-    j = 0
-    writer = pandas.ExcelWriter(output, engine="xlsxwriter")
-    for i in sheets:
-        sheets[i].to_excel(writer, worksheets[j], index=False)
-        j = j + 1
-    writer.close()
-    processed_data = output.getvalue()
-    return processed_data
+
+    return sheets, worksheets

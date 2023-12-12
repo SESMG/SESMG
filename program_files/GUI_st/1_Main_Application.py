@@ -9,30 +9,32 @@ from datetime import datetime
 from streamlit.components.v1 import html
 import streamlit as st
 
-
 # Setting new system path to be able to refer to parent directories
-parent = os.path.abspath('.')
+parent = os.path.abspath('..')
 sys.path.insert(1, parent)
+sys.path.append(str(os.path.dirname(os.path.dirname(os.path.dirname(
+    os.path.abspath(__file__))))))
 
-from program_files.GUI_st.GUI_st_global_functions import \
-    clear_GUI_main_settings, safe_GUI_input_values, \
-    import_GUI_input_values_json, st_settings_global, run_SESMG, \
-    read_markdown_document, create_simplification_index, \
-    create_cluster_simplification_index, load_result_folder_list
+import program_files.GUI_st.GUI_st_global_functions as GUI_functions
 from program_files.preprocessing.pareto_optimization import run_pareto
 
 # settings the initial streamlit page settings
-st_settings_global()
+GUI_functions.st_settings_global()
 
 # opening the input value dict, which will be saved as a json
 GUI_main_dict = {}
 
+# define path to json
+internal_directory_path = GUI_functions.set_internal_directory_path()
+path_to_cache_json = os.path.join(internal_directory_path,
+                                  'GUI_st_cache.json')
 # Import the saved GUI settings from the last session
-settings_cache_dict_reload = import_GUI_input_values_json(
-    os.path.dirname(__file__) + "/GUI_st_cache.json")
+settings_cache_dict_reload = \
+    GUI_functions.import_GUI_input_values_json(
+        json_file_path=path_to_cache_json)
 
-# Import GUI help comments from the comment json and safe as a dict
-GUI_helper = import_GUI_input_values_json(
+# Import GUI help comments from the comment json and save as a dict
+GUI_helper = GUI_functions.import_GUI_input_values_json(
     os.path.dirname(__file__) + "/GUI_st_help_comments.json")
 
 
@@ -80,7 +82,7 @@ def main_start_page() -> None:
         Definition of the start page for the GUI with introducing texts.
     """
 
-    reduced_readme = read_markdown_document(
+    reduced_readme = GUI_functions.read_markdown_document(
         "README.md", f'{"docs/images/readme/*"}')
 
     # Display any remaining lines in the readme using the st.markdown() \
@@ -213,7 +215,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                         help=GUI_helper["main_dd_timeser_season"])
 
             # transform input values of Timeseries Simplification to an index
-            # which will be safed in the GUI cache to be able to reload
+            # which will be saved in the GUI cache to be able to reload
             # setting. Needs to be an index for st.selectboxes.
             # create list for transformation from simplification input to
             # index values
@@ -231,12 +233,13 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                  input_timeseries_season_dict,
                  "input_timeseries_season"]]
 
-            # transform to index values and safe in the GUI_main_dict
-            create_simplification_index(input_list=simpification_index_list,
-                                        input_output_dict=GUI_main_dict)
+            # transform to index values and save in the GUI_main_dict
+            GUI_functions.create_simplification_index(
+                input_list=simpification_index_list,
+                input_output_dict=GUI_main_dict)
 
             # transform input_timeseries_cluster_index seperately
-            create_cluster_simplification_index(
+            GUI_functions.create_cluster_simplification_index(
                 input_value="input_timeseries_cluster_index",
                 input_output_dict=GUI_main_dict,
                 input_value_index="input_timeseries_cluster_index_index")
@@ -315,7 +318,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                         help=GUI_helper["main_dd_prem_timeser_season"])
 
             # transform input values of Timeseries Simplification to an
-            # index which will be safed in the GUI cache to be able to
+            # index which will be saved in the GUI cache to be able to
             # reload setting. Needs to be an index for st.selectboxes.
             # create list for transformation from premodel
             # simplification input to index values
@@ -333,13 +336,13 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                  input_timeseries_season_dict,
                  "input_premodeling_timeseries_season"]]
 
-            # transform to index values and safe in the GUI_main_dict
-            create_simplification_index(
+            # transform to index values and save in the GUI_main_dict
+            GUI_functions.create_simplification_index(
                 input_list=simpification_premodel_index_list,
                 input_output_dict=GUI_main_dict)
 
             # transform input_timeseries_cluster_index seperately
-            create_cluster_simplification_index(
+            GUI_functions.create_cluster_simplification_index(
                 input_value="input_premodeling_timeseries_cluster_index",
                 input_output_dict=GUI_main_dict,
                 input_value_index="input_premodeling_timeseries_cluster_index_index")
@@ -379,30 +382,43 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
 
                 # read sub folders in the result folder directory un wich \
                 # the preresults are stored
-                existing_result_foldernames_list = load_result_folder_list()
-                # create select box with the folder names which are in the \
-                # results folder
-                existing_result_folder = st.selectbox(
-                    label="Choose a district heating precalculation folder",
-                    options=existing_result_foldernames_list,
-                    help=GUI_helper["main_dd_result_folder"],
-                    index=settings_cache_dict_reload[
-                        "input_dh_folder_index"])
+                existing_result_foldernames_list = \
+                    GUI_functions.load_result_folder_list()
 
-                # set variable as the list index to save in cache
-                GUI_main_dict["input_dh_folder_index"] = \
-                    existing_result_foldernames_list.index(
-                    existing_result_folder)
+                # Check if result folder(s) exist to be displayes in the list
+                if len(existing_result_foldernames_list) > 0:
+                    # create select box with the folder names which are in \
+                    # the results folder
+                    existing_result_folder = st.selectbox(
+                        label="Choose a district heating precalculation folder",
+                        options=existing_result_foldernames_list,
+                        help=GUI_helper["main_dd_result_folder"],
+                        index=settings_cache_dict_reload[
+                            "input_dh_folder_index"])
+
+                    # set variable as the list index to save in cache
+                    GUI_main_dict["input_dh_folder_index"] = \
+                        existing_result_foldernames_list.index(
+                        existing_result_folder)
+
+                else:
+                    # create select box with the folder names which are in \
+                    # the results folder without index. The index has to be \
+                    # excluded when the list is empty.
+                    existing_result_folder = st.selectbox(
+                        label="Choose a district heating precalculation folder",
+                        options=existing_result_foldernames_list,
+                        help=GUI_helper["main_dd_result_folder"])
+                    # set variable to zero to save in cache
+                    GUI_main_dict["input_dh_folder_index"] = 0
 
                 # set the path to dh precalc if active or not
                 if GUI_main_dict["input_activate_dh_precalc"]:
                     # create path to precalc folder
                     GUI_main_dict["input_dh_folder"] = \
-                        os.path.join(os.path.dirname(os.path.dirname(
-                                        os.path.dirname(
-                                            os.path.abspath(__file__)))),
-                                     "results",
+                        os.path.join(GUI_functions.set_result_path(),
                                      existing_result_folder)
+
                 else:
                     GUI_main_dict["input_dh_folder"] = ""
 
@@ -495,9 +511,9 @@ def main_clear_cache_sidebar() -> None:
 
     # Clear all GUI settings if clear latest result paths clicked
     if st.session_state["state_submitted_clear_cache"] == "done":
-        # create and safe dict, set paths empty
-        clear_GUI_main_settings(json_file_path=os.path.dirname(__file__)
-                                + "/GUI_st_cache.json")
+        # create and save dict, set paths empty
+        GUI_functions.clear_GUI_main_settings(
+            json_file_path=path_to_cache_json)
         # reset session state for clear cache
         st.session_state["state_submitted_clear_cache"] = "not done"
         # rerun whole script to update GUI settings
@@ -507,11 +523,17 @@ def main_clear_cache_sidebar() -> None:
 def create_result_paths() -> None:
     """
         Create result paths and result folder. Set session.states
-
     """
-    # Setting the path where to safe the modeling results
-    res_folder_path = os.path.join(os.path.dirname(
-        os.path.dirname(os.path.dirname(__file__))), 'results')
+    # set the result path based on the gui_st_settings.json
+    res_folder_path = GUI_functions.set_result_path()
+
+    # Check if the results folder path exists
+    if os.path.exists(res_folder_path) is False:
+        # If not, create the result directory using a separate function
+        GUI_functions.create_result_directory()
+
+    # If the results folder path exists, create subdirectories for the
+    # current run
     GUI_main_dict["res_path"] = res_folder_path \
         + '/' \
         + model_definition_input_file.name.split("/")[-1][:-5] \
@@ -520,7 +542,7 @@ def create_result_paths() -> None:
     GUI_main_dict["premodeling_res_path"] = \
         GUI_main_dict["res_path"] + "/pre_model_results"
 
-    # safe path as session state for the result processing page
+    # Save paths as session states for the result processing page
     st.session_state["state_result_path"] = GUI_main_dict["res_path"]
     st.session_state["state_premodeling_res_path"] = \
         GUI_main_dict["premodeling_res_path"]
@@ -528,11 +550,11 @@ def create_result_paths() -> None:
 
 def save_run_settings() -> None:
     """
-        Function to safe the GUI setting in the result folder and reset
+        Function to save the GUI setting in the result folder and reset
         session state.
     """
     # save GUI settings in result folder
-    safe_GUI_input_values(
+    GUI_functions.save_json_file(
         input_values_dict=GUI_main_dict,
         json_file_path=st.session_state["state_result_path"]
         + "/GUI_st_run_settings.json")
@@ -577,10 +599,15 @@ if st.session_state["state_submitted_optimization"] == "done":
 
     elif model_definition_input_file != "":
 
-        # safe the GUI_main_dice as a chache for the next session
-        safe_GUI_input_values(input_values_dict=GUI_main_dict,
-                              json_file_path=os.path.dirname(__file__)
-                              + "/GUI_st_cache.json")
+        # check rather the dependencies to be installed by the user are
+        # installed
+        GUI_functions.check_for_dependencies(
+                solver=GUI_main_dict["input_solver"])
+
+        # save the GUI_main_dict as a chache for the next session
+        GUI_functions.save_GUI_cache_dict(
+            input_values_dict=GUI_main_dict,
+            json_file_path=path_to_cache_json)
 
         # create spinner info text
         st.info(GUI_helper["main_info_spinner"], icon="ℹ️")
@@ -588,15 +615,16 @@ if st.session_state["state_submitted_optimization"] == "done":
         # Starting the model run
         if len(GUI_main_dict["input_pareto_points"]) == 0:
 
-            # function to create the result pasths and store session state
+            # function to create the result paths and store session state
             create_result_paths()
 
             with st.spinner("Modeling in Progress..."):
 
                 # start model run
-                run_SESMG(GUI_main_dict=GUI_main_dict,
-                          model_definition=model_definition_input_file,
-                          save_path=GUI_main_dict["res_path"])
+                GUI_functions.run_SESMG(
+                    GUI_main_dict=GUI_main_dict,
+                    model_definition=model_definition_input_file,
+                    save_path=GUI_main_dict["res_path"])
 
                 # save GUI settings in result folder and reset session state
                 save_run_settings()
@@ -604,20 +632,20 @@ if st.session_state["state_submitted_optimization"] == "done":
             # switch page after the model run completed
             nav_page(page_name="Result_Processing", timeout_secs=3)
 
-        # Starting a pareto modeul rum
+        # Starting a pareto model rum
         elif len(GUI_main_dict["input_pareto_points"]) != 0:
 
             with st.spinner("Modeling in Progress..."):
 
-                # run_pareto retuns res path
+                # run_pareto returns res path
                 GUI_main_dict["res_path"] = \
                     run_pareto(
-                        limits=[i / 100 for i in
+                        limits=[int(i) / 100 for i in
                                 GUI_main_dict["input_pareto_points"]],
                         model_definition=model_definition_input_file,
                         GUI_main_dict=GUI_main_dict)
 
-                # safe path as session state for the result processing page
+                # save path as session state for the result processing page
                 st.session_state["state_result_path"] = \
                     GUI_main_dict["res_path"]
 

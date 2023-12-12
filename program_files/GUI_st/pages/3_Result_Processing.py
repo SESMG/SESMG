@@ -13,7 +13,7 @@ from PIL import Image
 
 from program_files.GUI_st.GUI_st_global_functions import \
     import_GUI_input_values_json, st_settings_global, read_markdown_document, \
-    load_result_folder_list
+    load_result_folder_list, set_result_path
 
 
 def result_processing_sidebar() -> None:
@@ -21,7 +21,7 @@ def result_processing_sidebar() -> None:
         Function to create the sidebar.
     """
 
-    # Import GUI help comments from the comment json and safe as an dict
+    # Import GUI help comments from the comment json and save as an dict
     GUI_helper = import_GUI_input_values_json(
         os.path.dirname(os.path.dirname(__file__))
         + "/GUI_st_help_comments.json")
@@ -46,11 +46,11 @@ def result_processing_sidebar() -> None:
 
         if run_existing_results:
             # set session state with full folder path to the result folder
+            # choosing the standard result directory
+            # Define the path to the results folder within based on the
+            # given directory in GUI_st_settings.json
             st.session_state["state_result_path"] = \
-                os.path.join(os.path.dirname(os.path.dirname(
-                                os.path.dirname(os.path.dirname(
-                                    os.path.abspath(__file__))))),
-                             "results",
+                os.path.join(set_result_path(),
                              existing_result_folder)
 
         if st.session_state["state_result_path"] != "not set" and \
@@ -63,7 +63,7 @@ def result_processing_sidebar() -> None:
             # read out sub folders of pareto list
             existing_result_foldernames_list = next(
                 os.walk(st.session_state["state_result_path"]))[1]
-            # split folder names and safe pareto point positions in a list
+            # split folder names and save pareto point positions in a list
             pareto_points_list = [directory.split(
                 "_")[-2] for directory in existing_result_foldernames_list]
 
@@ -84,9 +84,6 @@ def result_processing_sidebar() -> None:
             st.session_state["state_pareto_result_path"] = \
                 os.path.join(st.session_state["state_result_path"],
                              pareto_folder_dict[pareto_point_chosen])
-            # st.session_state["state_pareto_result_path"] = \
-            #     st.session_state["state_result_path"] + \
-            #     "/" + pareto_folder_dict[pareto_point_chosen]
 
 
 def short_result_summary_time(result_path_summary) -> None:
@@ -374,9 +371,11 @@ result_processing_sidebar()
 
 # show introduction page if no result paths are not set
 if st.session_state["state_result_path"] == "not set":
-    read_markdown_document(
+    doc = read_markdown_document(
         document_path="docs/GUI_texts/results.md",
         folder_path=f'{"docs/images/manual/Results/*"}')
+    
+    st.markdown(''.join(doc), unsafe_allow_html=True)
 
 # check if components.csv is in the result folder. Loading result page \
 # elements for a non-pareto run if so.

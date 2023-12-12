@@ -12,9 +12,10 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 import numpy as np
+from PIL import Image
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main
-from program_files.GUI_st.GUI_st_global_functions import \
+from program_files.GUI_st.GUI_st_global_functions import get_bundle_dir, \
     st_settings_global, read_markdown_document, import_GUI_input_values_json
 from datetime import datetime
 
@@ -55,8 +56,7 @@ def dt_input_sidebar() -> dict:
     with st.sidebar.form("Simulation input"):
 
         # input value for model run name
-        input_values_dict["input_name"] = st.text_input(label="Name",
-                      value="")
+        input_values_dict["input_name"] = st.text_input(label="Name", value="")
 
         # input value for photovoltaics
         input_values_dict["input_pv"] = st.number_input(
@@ -349,7 +349,8 @@ def show_demo_run_results(mode: str) -> None:
 
 def save_additional_points(additional_points):
     # Specify the file path where you want to save or append to the CSV file
-    file_path = os.path.join('program_files', 'demo_tool', 'demo_tool_results.csv')
+    file_path = str(get_bundle_dir()) + "/" \
+        + os.path.join('program_files', 'demo_tool', 'demo_tool_results.csv')
 
     if additional_points.empty:
         additional_points = pd.DataFrame()
@@ -384,7 +385,8 @@ def show_demo_run_results_on_graph():
         }
     )
 
-    file_path = os.path.join('program_files', 'demo_tool', 'demo_tool_results.csv')
+    file_path = str(get_bundle_dir()) + "/" \
+        + os.path.join('program_files', 'demo_tool', 'demo_tool_results.csv')
 
     # open csv and transform it to a dataframe
     additional_points = pd.read_csv(file_path)
@@ -467,10 +469,13 @@ def demo_start_page() -> None:
 
     # show markdown text
     st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
-
-    # upload demo tool graph image
-    img = "docs/images/manual/DemoTool/demo_system_graph.png"
-    st.image(img, caption="", width=500)
+    # upload dh image
+    image_path_system = str(get_bundle_dir()) \
+        + "/docs/images/manual/DemoTool/demo_system_graph.png"
+    # open image
+    image_system = Image.open(image_path_system)
+    # convert image to numpy array
+    st.image(image_system, width=500)
 
     # import markdown tables from GUI files
     imported_markdown = read_markdown_document(
@@ -481,11 +486,17 @@ def demo_start_page() -> None:
     st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
 
     # upload dh image
-    img = "docs/images/manual/DemoTool/district_heating_network.png"
-    st.image(img, caption="", width=500)
+    image_path_dh = str(get_bundle_dir()) \
+                    + "/docs/images/manual/DemoTool/district_heating_network" \
+                      ".png"
+    # open image
+    image_dh = Image.open(image_path_dh)
+    # convert image to numpy array
+    st.image(image_dh, width=500)
 
 def change_state_submitted_demo_run_delete():
-    file_path = os.path.join('program_files', 'demo_tool', 'demo_tool_results.csv')
+    file_path = str(get_bundle_dir()) + "/" \
+        + os.path.join('program_files', 'demo_tool', 'demo_tool_results.csv')
 
     # read csv
     additional_points = pd.read_csv(file_path)
