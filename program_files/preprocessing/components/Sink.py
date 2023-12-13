@@ -142,105 +142,115 @@ class Sinks:
         else:
             return 0, 0, [0]
 
+    def create_insulation_source(self, label: str, bus: str, args: dict
+                                 ) -> None:
+        """
+            Create insulation sources for the considered sink "label".
+    
+            :param label: Label of the considered sink.
+            :type label: str
+            :param bus: Bus associated with the sink (input).
+            :type bus: str
+            :param args: Dictionary containing additional arguments.
+            :type args: dict
+        """
+    
+        # Filter active insulation for the given label
+        active_ins = self.insulation.query("active == 1")
+        filtered_active_ins = active_ins.query("sink == {}".format(label))
+    
+        # Iterate over the filtered active insulation
+        for num, ins in filtered_active_ins.iterrows():
+            # Calculate parameters for the insulation
+            ep_costs, ep_constr_costs, temp = self.calc_insulation_parameter(
+                ins=ins)
+        
+            # Check if insulation is existing
+            if "existing" in self.insulation and ins["existing"]:
+                ep_costs = 0
+                ep_constr_costs = 0
+                maximum = 0
+                existing = max(temp)
+            else:
+                maximum = max(temp)
+                existing = 0
+        
+            # Update insulation data with capacity-specific values
+            self.insulation.loc[num, "ep_costs_kW"] = ep_costs
+            self.insulation.loc[num, "ep_constr_costs_kW"] = ep_constr_costs
+        
+            # Create investment object for the insulation
+            investment = Investment(
+                ep_costs=ep_costs,
+                custom_attributes={
+                    "periodical_constraint_costs": ep_constr_costs,
+                    "constraint2": 1,
+                    "fix_constraint_costs": 0
+                },
+                minimum=0,
+                maximum=maximum,
+                existing=existing
+            )
+        
+            # Add a Source node to the list of energy consumers
+            self.nodes_sinks.append(
+                Source(
+                    label="{}-insulation".format(ins["label"]),
+                    outputs={
+                        self.busd[bus]: Flow(
+                            investment=investment,
+                            custom_attributes={"emission_factor": 0},
+                            fix=(args["fix"] / args["fix"].max()),
+                        )}))
+
     def create_sink(self, sink: pandas.Series, nominal_value=None,
                     load_profile=None, args=None) -> None:
         """
             Creates an oemof sink with fixed or unfixed timeseries.
 
-            :param sink: dictionary containing all information for the \
-                creation of an oemof sink. At least the following \
-                key-value-pairs have to be included:
-                
-                     - label
-                     - input
-    
+            :param sink: pandas.Series containing information for the \
+                creation of an oemof sink.
             :type sink: pandas.Series
             :param nominal_value: Float containing the nominal demand \
                 of the sink to be created. Only used if the args \
                 parameter remains empty.
             :type nominal_value: float
             :param load_profile: load Profile contains the time series \
-                of the sink to be created, this is used for the fixed \
+                of the sink to be created. This is used for the fixed \
                 (fix) or the maximum (unfix) time series depending on \
                 the sink type. Only used if the args parameter remains \
                 empty.
+            :type load_profile: pandas.Series
             :param args: dictionary rather containing the \
                 'fix-attribute' or the 'min-' and 'max-attribute' of a \
                 sink
             :type args: dict
         """
 
-        if args is None:
-            args = {"nominal_value": nominal_value}
-            if sink["fixed"] == 1:
-                # sets attributes for a fixed richardson sink
-                args.update({"fix": load_profile})
-            elif sink["fixed"] == 0:
-                # sets attributes for an unfixed richardson sink
-                args.update({"max": load_profile})
-                
-        # creates an oemof Sink and appends it to the class intern list
+        args = args or {"nominal_value": nominal_value}
+        
+        key = "fix" if sink["fixed"] == 1 else "max"
+        args.update({key: load_profile})
+
+        # Create an oemof Sink and append it to the class internal list
         # of created sinks
         self.nodes_sinks.append(
             Sink(label=sink["label"],
                  inputs={self.busd[sink["input"]]: Flow(**args)})
         )
         
-        # create insulation sources to the energy system components
-        insulations = self.insulation[self.insulation["active"] == 1]
-        for num, ins in insulations.iterrows():
-            # if insulation sink == sink under investigation (above)
-            if ins["sink"] == sink["label"]:
-                ep_costs, ep_constr_costs, temp = \
-                    self.calc_insulation_parameter(ins=ins)
-                if "existing" in self.insulation and ins["existing"]:
-                    # add capacity specific costs to self.insulation
-                    self.insulation.loc[num, "ep_costs_kW"] = 0
-                    # add capacity specific emissions to self.insulation
-                    self.insulation.loc[num, "ep_constr_costs_kW"] = 0
-                    maximum = 0
-                    existing = max(temp)
-                else:
-                    # add capacity specific costs to self.insulation
-                    self.insulation.loc[num, "ep_costs_kW"] = ep_costs
-                    # add capacity specific emissions to self.insulation
-                    self.insulation.loc[num, "ep_constr_costs_kW"] = \
-                        ep_constr_costs
-                    maximum = max(temp)
-                    existing = 0
-                    
-                self.nodes_sinks.append(
-                    Source(
-                        label="{}-insulation".format(ins["label"]),
-                        outputs={
-                            self.busd[sink["input"]]: Flow(
-                                investment=Investment(
-                                    ep_costs=ep_costs,
-                                    custom_attributes={
-                                        "periodical_constraint_costs":
-                                        ep_constr_costs,
-                                        "constraint2": 1,
-                                        "fix_constraint_costs": 0},
-                                    minimum=0,
-                                    maximum=maximum,
-                                    existing=existing
-                                ),
-                                custom_attributes={"emission_factor": 0},
-                                fix=(args["fix"] / args["fix"].max()),
-                            )}))
-
+        # Create the corresponding insulation measures for the sink
+        self.create_insulation_source(label=sink["label"],
+                                      bus=sink["input"],
+                                      args=args)
+        
     def unfixed_sink(self, sink: pandas.Series) -> None:
         """
             Creates a sink object with an unfixed energy input and the
             use of the create_sink method.
     
             :param sink: dictionary containing all information for the \
-                creation of an oemof sink. For this function the \
-                following key-value-pairs have to be included:
-                    
-                    - label
-                    - nominal value
-
+                creation of an oemof sink.
             :type sink: pandas.Series
         """
         # starts the create_sink method with the parameters set before
@@ -262,35 +272,27 @@ class Sinks:
             required.
     
             :param sink: dictionary containing all information for the \
-                creation of an oemof sink. At least the following \
-                key-value-pairs have to be included:
-    
-                    - label
-                    - nominal value
-                    - fixed
-
+                creation of an oemof sink
             :type sink: pandas.Series
         """
-        # sets the nominal value
-        args = {"nominal_value": sink["nominal value"]}
-        # handling unfixed time series sinks
-        if sink["fixed"] == 0:
-            # sets the attributes for an unfixed time_series sink
-            args.update(
+        # Set the nominal value and make the distinction between unfixed
+        # sink (sink["fixed"] == 0) and fixed sink (sink["fixed"] == 1)
+        args = {
+            "nominal_value": sink["nominal value"],
+            **(
                 {
                     "min": self.timeseries[sink["label"] + ".min"].tolist(),
                     "max": self.timeseries[sink["label"] + ".max"].tolist(),
                 }
-            )
-        # handling fixed time series sinks
-        elif sink["fixed"] == 1:
-            # sets the attributes for a fixed time_series sink
-            args.update({"fix": self.timeseries[sink["label"] + ".fix"]})
-            
-        # starts the create_sink method with the parameters set before
+                if sink["fixed"] == 0 else
+                {
+                    "fix": self.timeseries[sink["label"] + ".fix"].tolist()
+                })}
+
+        # Create the sink using the create_sink method
         self.create_sink(sink, args=args)
 
-        # returns logging info
+        # Log the creation of the sink
         logging.info("\t Sink created: " + sink["label"])
 
     def slp_sink(self, sink: pandas.Series) -> None:

@@ -69,7 +69,7 @@ def test_buses(test_bus_entry):
     
     nodes = []
     
-    busd = Bus.buses(nodes_data=nodes_data, nodes=nodes)
+    busd, nodes = Bus.buses(nd_buses=nodes_data["buses"], nodes=nodes)
     
     for num in range(len(nodes)):
         # test if the two nodes labels are equal

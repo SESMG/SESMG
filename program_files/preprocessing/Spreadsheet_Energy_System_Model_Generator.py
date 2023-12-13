@@ -27,6 +27,43 @@ from program_files.preprocessing.pre_model_analysis import \
     update_model_according_pre_model_results
 
 
+def call_district_heating_creation(nodes_data, nodes, busd,
+                                   district_heating_path, result_path,
+                                   cluster_dh) -> (dict, list):
+    """
+    
+    """
+    buses = nodes_data["buses"]
+    # get only the active pipe types
+    pipe_types = nodes_data["pipe types"].query("active == 1")
+    
+    if len(buses[~buses["district heating conn. (exergy)"].isin(["0", 0])]
+           ) > 0:
+        if len(pipe_types.query("anergy_or_exergy == exergy")):
+            # creates the thermal network components as defined in
+            # the model definition file and adds them to the list
+            # of components (nodes)
+            nodes, busd = district_heating.district_heating(
+                    nodes_data=nodes_data, nodes=nodes, busd=busd,
+                    district_heating_path=district_heating_path,
+                    result_path=result_path, cluster_dh=cluster_dh,
+                    is_exergy=True)
+            
+    if len(buses[~buses["district heating conn. (anergy)"].isin(["0", 0])]
+           ) > 0:
+        if len(pipe_types.query("anergy_or_exergy == anergy")):
+            # creates the thermal network components as defined in the
+            # model definition file and adds them to the list of
+            # components (nodes)
+            nodes, busd = district_heating.district_heating(
+                    nodes_data=nodes_data, nodes=nodes, busd=busd,
+                    district_heating_path=district_heating_path,
+                    result_path=result_path, cluster_dh=cluster_dh,
+                    is_exergy=False)
+            
+    return busd, nodes
+
+
 def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
                criterion_switch: bool, xlsx_results: bool,
                console_results: bool, timeseries_prep: list, solver: str,
@@ -100,35 +137,17 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
     nodes = []
     
     # creates bus objects, excess sinks, and shortage sources as defined
-    # in the model definition file
-    busd = Bus.buses(nodes_data=nodes_data, nodes=nodes)
+    # in the model definition file buses sheet
+    busd, nodes = Bus.buses(nd_buses=nodes_data["buses"], nodes=nodes)
     
-    if len(nodes_data["buses"][~nodes_data["buses"][
-            "district heating conn. (exergy)"].isin(["0", 0])]) > 0:
-        if len(nodes_data["pipe types"][
-                (nodes_data["pipe types"]["active"] == 1)
-                & (nodes_data["pipe types"]["anergy_or_exergy"] == "exergy")]):
-            # creates the thermal network components as defined in
-            # the model definition file and adds them to the list
-            # of components (nodes)
-            nodes, busd = district_heating.district_heating(
-                    nodes_data=nodes_data, nodes=nodes, busd=busd,
-                    district_heating_path=district_heating_path,
-                    result_path=result_path, cluster_dh=cluster_dh,
-                    is_exergy=True)
-    if len(nodes_data["buses"][~nodes_data["buses"][
-            "district heating conn. (anergy)"].isin(["0", 0])]) > 0:
-        if len(nodes_data["pipe types"][
-                (nodes_data["pipe types"]["active"] == 1)
-               & (nodes_data["pipe types"]["anergy_or_exergy"] == "anergy")]):
-            # creates the thermal network components as defined in the
-            # model definition file and adds them to the list of
-            # components (nodes)
-            nodes, busd = district_heating.district_heating(
-                    nodes_data=nodes_data, nodes=nodes, busd=busd,
-                    district_heating_path=district_heating_path,
-                    result_path=result_path, cluster_dh=cluster_dh,
-                    is_exergy=False)
+    busd, nodes = call_district_heating_creation(
+        nodes_data=nodes_data,
+        nodes=nodes,
+        busd=busd,
+        district_heating_path=district_heating_path,
+        result_path=result_path,
+        cluster_dh=cluster_dh
+    )
     
     # PARALLEL CREATION OF ALL OBJECTS OF THE MODEL DEFINITION FILE
     

@@ -228,18 +228,15 @@ def test_links(test_link_nodes_data,
         "shortage constraint costs": [0] * 2
     })}
     
-    busd = Bus.buses(nodes_data=bus_data, nodes=[])
-    
-    # create the two test links
-    nodes = []
+    busd, nodes = Bus.buses(nd_buses=bus_data["buses"], nodes=[])
     
     Link.Links(nodes_data=test_link_nodes_data, nodes=nodes, busd=busd)
     
     # check rather the links' parameter are assigned correctly
     comparison_of_flow_attributes(
-        nodes=[nodes[0]],
+        nodes=[nodes[2]],
         test_link_entry=test_directed_convex_link_entry)
     
     comparison_of_flow_attributes(
-        nodes=[nodes[1]],
+        nodes=[nodes[3]],
         test_link_entry=test_undirected_non_convex_link_entry)
