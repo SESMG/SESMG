@@ -3,12 +3,11 @@
     Gregor Becker - gregor.becker@fh-muenster.de
 """
 import logging
-from oemof.solph import Investment
-from oemof.solph.components import Source, Sink
-from oemof.solph.flows import Flow
-from datetime import datetime
 import pandas
+from datetime import datetime
 from demandlib import bdew
+from oemof import solph
+from richardsonpy.classes import occupancy, electric_load
 
 
 class Sinks:
@@ -45,37 +44,82 @@ class Sinks:
         :param nodes: list of components created before (can be empty)
         :type nodes: list
     """
+    # HEAT SLPS
+    # efh,  single family building
+    # mfh,  multi family building
+    # HEAT SLPS COMMERCIAL
+    # gmf,  household-like business enterprises
+    # gpd,  paper and printing
+    # ghd,  Total load profile Business/Commerce/Services
+    # gwa,  laundries, dry cleaning
+    # ggb,  horticulture
+    # gko,  Local authorities and credit institutions
+    # gbd,  other operational services
+    # gba,  bakery
+    # gmk,  metal and automotive
+    # gbh,  accommodation
+    # gga,  restaurants
+    # gha,  retail and wholesale
+    # ELECTRICITY SLPS
+    # h0,  households
+    # g0,  commercial general
+    # g1,  commercial on weeks 8-18 h
+    # g2,  commercial with strong consumption (evening)
+    # g3,  commercial continuous
+    # g4,  shop/hairdresser
+    # g5,  bakery
+    # g6,  weekend operation
+    # l0,  agriculture general
+    # l1,  agriculture with dairy industry/animal breeding
+    # l2   other agriculture
 
     slps = {
-        "heat_slps":
-            ["efh",   # single family building
-             "mfh"],  # multi family building
-        "heat_slps_commercial":
-            ["gmf",   # household-like business enterprises
-             "gpd",   # paper and printing
-             "ghd",   # Total load profile Business/Commerce/Services
-             "gwa",   # laundries, dry cleaning
-             "ggb",   # horticulture
-             "gko",   # Local authorities and credit institutions
-             "gbd",   # other operational services
-             "gba",   # bakery
-             "gmk",   # metal and automotive
-             "gbh",   # accommodation
-             "gga",   # restaurants
-             "gha"],  # retail and wholesale
-        "electricity_slps":
-            ["h0",   # households
-             "g0",   # commercial general
-             "g1",   # commercial on weeks 8-18 h
-             "g2",   # commercial with strong consumption (evening)
-             "g3",   # commercial continuous
-             "g4",   # shop/hairdresser
-             "g5",   # bakery
-             "g6",   # weekend operation
-             "l0",   # agriculture general
-             "l1",   # agriculture with dairy industry/animal breeding
-             "l2"]   # other agriculture
+        "heat_slps": ["efh", "mfh"],
+        "heat_slps_commercial": ["gmf", "gpd", "ghd", "gwa", "ggb", "gko",
+                                 "gbd", "gba", "gmk", "gbh", "gga", "gha"],
+        "electricity_slps": ["h0", "g0", "g1", "g2",  "g3", "g4", "g5", "g6",
+                             "l0", "l1", "l2"]
     }
+
+    def __init__(self, nodes_data: dict, busd: dict, nodes: list) -> None:
+        """
+            Inits the sink class.
+        """
+        # Delete possible residues of a previous run from the class
+        # internal list nodes_sinks
+        self.nodes_sinks = []
+        # Initialise a class intern copy of the bus dictionary
+        self.busd = busd.copy()
+        self.insulation = nodes_data["insulation"].copy()
+        self.weather_data = nodes_data["weather data"].copy()
+        self.timeseries = nodes_data["timeseries"].copy()
+        self.energysystem = next(nodes_data["energysystem"].iterrows())[1]
+        switch_dict = {
+            "x": self.unfixed_sink,
+            "timeseries": self.timeseries_sink,
+            "slp": self.slp_sink,
+            "richardson": self.richardson_sink,
+        }
+    
+        # Create sink objects
+        for _, sink in nodes_data["sinks"].query("active == 1").iterrows():
+        
+            # switch the load profile to slp if load profile in slps
+            if sink["load profile"] in self.slps.values():
+                load_profile = "slp"
+            else:
+                load_profile = sink["load profile"]
+            # get the sink types creation method from the switch dict
+            switch_dict.get(load_profile, self.invalid_load_profile)(sink)
+    
+        # appends created sinks on the list of nodes
+        for index in range(len(self.nodes_sinks)):
+            nodes.append(self.nodes_sinks[index])
+        nodes_data["insulation"] = self.insulation.copy()
+
+    def invalid_load_profile(self, sink: pandas.Series) -> None:
+        raise ValueError(
+                f"{sink['load profile']} is an unsupported sink type!")
 
     def calc_insulation_parameter(self,
                                   ins: pandas.Series) -> (float, float, list):
@@ -157,7 +201,7 @@ class Sinks:
     
         # Filter active insulation for the given label
         active_ins = self.insulation.query("active == 1")
-        filtered_active_ins = active_ins.query("sink == {}".format(label))
+        filtered_active_ins = active_ins.query("sink == '{}'".format(label))
     
         # Iterate over the filtered active insulation
         for num, ins in filtered_active_ins.iterrows():
@@ -180,7 +224,7 @@ class Sinks:
             self.insulation.loc[num, "ep_constr_costs_kW"] = ep_constr_costs
         
             # Create investment object for the insulation
-            investment = Investment(
+            investment = solph.Investment(
                 ep_costs=ep_costs,
                 custom_attributes={
                     "periodical_constraint_costs": ep_constr_costs,
@@ -194,10 +238,10 @@ class Sinks:
         
             # Add a Source node to the list of energy consumers
             self.nodes_sinks.append(
-                Source(
+                solph.components.Source(
                     label="{}-insulation".format(ins["label"]),
                     outputs={
-                        self.busd[bus]: Flow(
+                        self.busd[bus]: solph.flows.Flow(
                             investment=investment,
                             custom_attributes={"emission_factor": 0},
                             fix=(args["fix"] / args["fix"].max()),
@@ -230,13 +274,14 @@ class Sinks:
         args = args or {"nominal_value": nominal_value}
         
         key = "fix" if sink["fixed"] == 1 else "max"
-        args.update({key: load_profile})
+        args.update(**({key: load_profile} if key not in args else {}))
 
         # Create an oemof Sink and append it to the class internal list
         # of created sinks
         self.nodes_sinks.append(
-            Sink(label=sink["label"],
-                 inputs={self.busd[sink["input"]]: Flow(**args)})
+            solph.components.Sink(
+                label=sink["label"],
+                inputs={self.busd[sink["input"]]: solph.flows.Flow(**args)})
         )
         
         # Create the corresponding insulation measures for the sink
@@ -286,7 +331,7 @@ class Sinks:
                 }
                 if sink["fixed"] == 0 else
                 {
-                    "fix": self.timeseries[sink["label"] + ".fix"].tolist()
+                    "fix": self.timeseries[sink["label"] + ".fix"]
                 })}
 
         # Create the sink using the create_sink method
@@ -326,25 +371,18 @@ class Sinks:
         start_date = datetime.strptime(
             str(self.energysystem["start date"]), "%Y-%m-%d %H:%M:%S"
         )
+
+        # Create DataFrame
+        demand = pandas.DataFrame(
+            index=pandas.date_range(start=start_date,
+                                    periods=self.energysystem["periods"],
+                                    freq=temp_resolution)
+        )
         
         heat_slps = self.slps["heat_slps_commercial"] + self.slps["heat_slps"]
         # creates time series for heat sinks
         if sink["load profile"] in heat_slps:
     
-            # Create DataFrame
-            demand = pandas.DataFrame(
-                index=pandas.date_range(
-                    datetime(
-                        year=start_date.year,
-                        month=start_date.month,
-                        day=start_date.day,
-                        hour=start_date.hour
-                    ),
-                    periods=self.energysystem["periods"],
-                    freq=temp_resolution,
-                )
-            )
-            
             # create the demandlib's data set
             # using the parameters of the heat slps
             # **() and the building class which is only necessary for
@@ -375,8 +413,7 @@ class Sinks:
             ).resample(temp_resolution).mean()
             
         else:
-            raise ValueError(sink["load profile"]
-                             + "is an unsupported sink type!")
+            self.invalid_load_profile(sink)
             
         # starts the create_sink method with the parameters set before
         self.create_sink(
@@ -396,40 +433,25 @@ class Sinks:
             create_sink method.
     
             :param sink: dictionary containing all information for the \
-                creation of an oemof sink. At least the following \
-                key-value-pairs have to be included:
-    
-                    - label
-                    - fixed
-                    - annual demand
-                    - occupants
-
+                creation of an oemof sink.
             :type sink: pandas.Series
-            
-            :raise ValueError: Invalid temporal resolution chosen
         """
-
-        import richardsonpy.classes.occupancy as occ
-        import richardsonpy.classes.electric_load as eload
 
         # Import Weather Data
         # Since dirhi is not longer part of the SESMGs weather data it
         # is calculated based on
         # https://power.larc.nasa.gov/docs/methodology/energy-fluxes/
-        # correction/
-        # by subtracting dhi from ghi
-        ghi = self.weather_data["ghi"].values.flatten()
-        dhi = self.weather_data["dhi"].values.flatten()
+        # correction by subtracting dhi from ghi
+        # additionally all iradiations are conversed from W/sqm to
+        # kW/sqm
+        ghi = (self.weather_data["ghi"].values.flatten()) / 1000
+        dhi = (self.weather_data["dhi"].values.flatten()) / 1000
         dirhi = ghi - dhi
-
-        # Conversion of irradiation from W/m^2 to kW/m^2
-        dhi /= 1000
-        dirhi /= 1000
 
         # sets the occupancy rates
         # Workaround, because richardson.py only allows a maximum
         # of 5 occupants
-        nb_occ = sink["occupants"] if sink["occupants"] < 5 else 5
+        nb_occ = min(sink["occupants"], 5)
 
         # sets the temporal resolution of the richardson.py time series,
         # depending on the temporal resolution of the entire model (as
@@ -439,10 +461,10 @@ class Sinks:
 
         #  Generate occupancy object
         #  (necessary as input for electric load gen)
-        occ_obj = occ.Occupancy(number_occupants=nb_occ)
+        occ_obj = occupancy.Occupancy(number_occupants=nb_occ)
 
         #  Generate stochastic electric power object
-        el_load_obj = eload.ElectricLoad(
+        el_load_obj = electric_load.ElectricLoad(
             occ_profile=occ_obj.occupancy,
             total_nb_occ=nb_occ,
             q_direct=dirhi,
@@ -463,42 +485,6 @@ class Sinks:
         self.create_sink(
             sink, load_profile=load_profile, nominal_value=0.001 * demand_ratio
         )
+        
         # returns logging info
         logging.info("\t Sink created: " + sink["label"])
-
-    def __init__(self, nodes_data: dict, busd: dict, nodes: list) -> None:
-        """
-            Inits the sink class.
-        """
-        # Delete possible residues of a previous run from the class
-        # internal list nodes_sinks
-        self.nodes_sinks = []
-        # Initialise a class intern copy of the bus dictionary
-        self.busd = busd.copy()
-        self.insulation = nodes_data["insulation"].copy()
-        self.weather_data = nodes_data["weather data"].copy()
-        self.timeseries = nodes_data["timeseries"].copy()
-        self.energysystem = next(nodes_data["energysystem"].iterrows())[1]
-        switch_dict = {
-            "x": self.unfixed_sink,
-            "timeseries": self.timeseries_sink,
-            "slp": self.slp_sink,
-            "richardson": self.richardson_sink,
-        }
-        
-        sinks = nodes_data["sinks"].loc[nodes_data["sinks"]["active"] == 1]
-        # Create sink objects
-        for num, sink in sinks.iterrows():
-            
-            # switch the load profile to slp if load profile in slps
-            if sink["load profile"] in self.slps.values():
-                load_profile = "slp"
-            else:
-                load_profile = sink["load profile"]
-            # get the sink types creation method from the switch dict
-            switch_dict.get(load_profile, "Invalid load profile")(sink)
-
-        # appends created sinks on the list of nodes
-        for index in range(len(self.nodes_sinks)):
-            nodes.append(self.nodes_sinks[index])
-        nodes_data["insulation"] = self.insulation.copy()
