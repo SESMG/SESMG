@@ -103,7 +103,7 @@ def test_create_power_to_gas_system(test_create_power_to_gas_entry):
         standard_parameters=standard_parameters)
 
     for i in ["heat source", "mode"]:
-        if test_decentral_gasheating_entry["transformers"][i].dtype != "string":
+        if test_create_power_to_gas_entry["transformers"][i].dtype != "string":
             test_create_power_to_gas_entry["transformers"][i] = \
                 test_create_power_to_gas_entry["transformers"][i].astype("float64")
     
@@ -232,7 +232,7 @@ def test_create_central_heating_transformer(test_central_heating_plant_entry):
         standard_parameters=standard_parameters)
     
     for i in ["heat source", "mode"]:
-        if test_decentral_gasheating_entry["transformers"][i].dtype != "string":
+        if test_central_heating_plant_entry["transformers"][i].dtype != "string":
             test_central_heating_plant_entry["transformers"][i] = \
                 test_central_heating_plant_entry["transformers"][i].astype("float64")
         
@@ -306,7 +306,7 @@ def test_create_central_chp(test_central_CHP_entry):
             standard_parameters=standard_parameters)
     
     for i in ["heat source", "mode"]:
-        if test_decentral_gasheating_entry["transformers"][i].dtype != "string":
+        if test_central_CHP_entry["transformers"][i].dtype != "string":
             test_central_CHP_entry["transformers"][i] = \
                 test_central_CHP_entry["transformers"][i].astype("float64")
     
