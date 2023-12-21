@@ -48,19 +48,19 @@ def import_model_definition(filepath: str, delete_units=True) -> dict:
         raise FileNotFoundError("Problem importing model definition file.")
     
     nodes_data = {
-        "buses": xls.parse("buses"),
-        "energysystem": xls.parse("energysystem"),
-        "sinks": xls.parse("sinks"),
-        "links": xls.parse("links"),
-        "sources": xls.parse("sources"),
-        "timeseries": xls.parse("time series", parse_dates=["timestamp"]),
-        "transformers": xls.parse("transformers"),
-        "storages": xls.parse("storages"),
-        "weather data": xls.parse("weather data", parse_dates=["timestamp"]),
-        "competition constraints": xls.parse("competition constraints"),
-        "insulation": xls.parse("insulation"),
-        "district heating": xls.parse("district heating"),
-        "pipe types": xls.parse("pipe types")
+        "buses": xls.parse("buses", na_filter=False),
+        "energysystem": xls.parse("energysystem", na_filter=False),
+        "sinks": xls.parse("sinks", na_filter=False),
+        "links": xls.parse("links", na_filter=False),
+        "sources": xls.parse("sources", na_filter=False),
+        "timeseries": xls.parse("time series", parse_dates=["timestamp"], na_filter=False),
+        "transformers": xls.parse("transformers", na_filter=False),
+        "storages": xls.parse("storages", na_filter=False),
+        "weather data": xls.parse("weather data", parse_dates=["timestamp"], na_filter=False),
+        "competition constraints": xls.parse("competition constraints", na_filter=False),
+        "insulation": xls.parse("insulation", na_filter=False),
+        "district heating": xls.parse("district heating", na_filter=False),
+        "pipe types": xls.parse("pipe types", na_filter=False)
     }
     if delete_units:
         # delete spreadsheet row within technology or units specific
