@@ -72,7 +72,7 @@ def test_create_power_to_gas_entry():
                 "area": [float(0)] * 3,
                 "length of the geoth. probe": [0.0] * 3,
                 "heat extraction": [0.0] * 3,
-                "temperature high": ["0"]* 3}),
+                "temperature high": ["0"] * 3}),
             right=transformers,
             on="transformer_type").drop(columns=["transformer_type"]),
         "storages": pandas.merge(
@@ -101,10 +101,15 @@ def test_create_power_to_gas_system(test_create_power_to_gas_entry):
                 "transformers": pandas.DataFrame(),
                 "storages": pandas.DataFrame(columns=["label"])},
         standard_parameters=standard_parameters)
+
+    for i in ["heat source", "mode"]:
+        test_create_power_to_gas_entry["transformers"][i] = \
+            test_create_power_to_gas_entry["transformers"][i].astype("float64")
     
     for key in sheets.keys():
         if len(test_create_power_to_gas_entry[key]) > 1:
             test_create_power_to_gas_entry[key].set_index(None, inplace=True)
+
         pandas.testing.assert_frame_equal(
             sheets[key].sort_index(axis=1),
             test_create_power_to_gas_entry[key].sort_index(axis=1))
@@ -224,6 +229,11 @@ def test_create_central_heating_transformer(test_central_heating_plant_entry):
                 "transformers": pandas.DataFrame(),
                 "links": pandas.DataFrame()},
         standard_parameters=standard_parameters)
+    
+    for i in ["heat source", "mode"]:
+        test_central_heating_plant_entry["transformers"][i] = \
+            test_central_heating_plant_entry["transformers"][i].astype("float64")
+        
     # assert rather the two dataframes are equal
     for key in sheets.keys():
         pandas.testing.assert_frame_equal(
@@ -292,6 +302,11 @@ def test_create_central_chp(test_central_CHP_entry):
                     "transformers": pandas.DataFrame(),
                     "links": pandas.DataFrame()},
             standard_parameters=standard_parameters)
+    
+    for i in ["heat source", "mode"]:
+        test_central_CHP_entry["transformers"][i] = \
+            test_central_CHP_entry["transformers"][i].astype("float64")
+    
     # assert rather the two dataframes are equal
     for key in sheets.keys():
         if len(sheets[key]) > 1:
