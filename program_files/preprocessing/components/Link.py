@@ -41,7 +41,7 @@ class Links:
     """
 
     @staticmethod
-    def get_flow(link: pandas.Series) -> Flow:
+    def get_flow(link: pandas.Series, nodes_data: dict) -> Flow:
         """
             The parameterization of the output flow of the link
             component has been outsourced to this static method.
@@ -73,9 +73,14 @@ class Links:
             raise SystemError("Parameter (un)directed not filled correctly "
                               "for the component " + link["label"])
 
+        if link["timeseries"]:
+            max = nodes_data["timeseries"][link["label"] + ".max"]
+        else:
+            max = [1] * len(nodes_data["timeseries"])
         return Flow(
             variable_costs=link["variable output costs"],
             emission_factor=link["variable output constraint costs"],
+            max=max,
             investment=Investment(
                 ep_costs=ep_costs,
                 periodical_constraint_costs=ep_constr_costs,
@@ -105,8 +110,8 @@ class Links:
                     self.busd[link["bus2"]]: Flow(emission_factor=0),
                 },
                 outputs={
-                    self.busd[link["bus2"]]: self.get_flow(link),
-                    self.busd[link["bus1"]]: self.get_flow(link),
+                    self.busd[link["bus2"]]: self.get_flow(link, nodes_data),
+                    self.busd[link["bus1"]]: self.get_flow(link, nodes_data),
                 },
                 conversion_factors={
                     (self.busd[link["bus1"]], self.busd[link["bus2"]]): link[
