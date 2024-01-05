@@ -465,8 +465,8 @@ to be entered:
 
 Costs
 ^^^^^
-- **variable output costs** in (CU/kWh): Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
-- **variable output constraint costs** in (CU/kWh): Costs incurred per kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **variable output costs** in (CU/kWh): Costs incurred per kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **variable output constraint costs** in (CU/kWh): Constraint costs incurred per kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **existing capacity** in (kW): Already installed capacity of the link.
 - **min. investment capacity** in (kW): Minimum, in addition to existing capacity, installable capacity.
 - **max. investment capacity** in (kW): Maximum capacity to be installed.
