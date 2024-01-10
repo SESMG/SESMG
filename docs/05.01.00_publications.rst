@@ -25,6 +25,8 @@ Conference Proceedings
 
 Theses
 ------
+- Niederhöfer, Daniel (2024): "**Optimierung von Energiesystemmodellen mittels Monte-Carlo-Simulation**" (Master Thesis), Münster University of Applied Sciences.  `Mail <mailto:daniel@niederhoefer-nw.de>`_
+
 - Budde, Janik (2022): "**Leitfaden zur Modellierung von Energiesystemen**" (Master Thesis), Münster University of Applied Sciences.  `Mail <mailto:janik.budde\@fh-muenster.de>`_
 
 - Petereit, Vincent (2022): "**Wirtschaftlichkeitsanalyse der Wasserstoffnutzung in Quartieren**" (Bachelor Thesis), Münster University of Applied Sciences. `Mail <mailto:vincent.petereit@fh-muenster.de>`_
