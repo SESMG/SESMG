@@ -1,42 +1,87 @@
 import olca_ipc as ipc
 import olca_schema as o
 import pandas as pd
-import time
+import os
+
+# TODO später beim erstellen mit der loc arbeiten, in der GUI eine Seite einfügen, in der eine optionale LCA gemacht wird?
+# from create_results_prepare_data import df_list_of_components
 
 # aktuelle Annahme: alle möglichen Processe sind bereits in der Datenbank vorhanden (sonst create_process)
 # TODO create product system: kann man aus mehreren processen ein product system erstellen oder geht das nicht???
 
-
 # run the jason rpc protokoll
 client = ipc.Client()
+# TODO Prüfen: Kann man den IPC Server auch automatisch starten?
+#  ja kann man aber relativ kompliziert, also noch mal in Ruhe angucken oder Gregor fragen
+#  https://github.com/GreenDelta/gdt-server
+#  darüber kann man sogar auch die dispose results machen
+
+# settings
+pd.set_option('display.max_rows', None)  # Zeige alle Zeilen an
+pd.set_option('display.max_columns', None)  # Zeige alle Spalten an
+pd.set_option('display.width', None)  # Verwende die gesamte Breite des Terminals für die Anzeige
 
 
-def get_the_corresponding_processes():
+def user_input_model_run():
     """
-    Get all the needed processes that are used to describe the energy system. Probably needs to be concected to
-    the components.csv file.
+    Ask the user for which model run he/she wants to have the lca result.
+    INFO: Das ist jetzt erstmal eine Überbrückung zur Nutzung der components csv, damit dieser file läuft, später dann
+    in den SESMG und die GUI implementieren
     """
 
-    # find multiple processes
-    # TODO automatisiert auf die Technologien zugreifen über die components datei
-    search_terms = ["8e9774f1-ef5c-4d45-82de-6ed01e2a2491", "4bf0b07d-cb0f-4b7f-b4f4-7ce99bd24f22"] #aktuell noch 2 System Processes
+    # user selects model run and therefore result
+    input_model_run = "model_definition_basic_2024-01-11--15-38-46"  # input("Enter the model run you want to analyse")
 
-    # create an empty list for all needed processes
-    all_processes = []
+    components_path = r"C:\Users\Franziska\Documents\SESMG\results\\" + input_model_run + "\\components.csv"
 
-    # iterate through all components to select the processes
-    for term in search_terms:
-        processes = client.get(o.Process, term)  # get can be used to get multiple outputs in a list
-        all_processes.append(processes)
+    # DataFrame aus der Excel-Datei erstellen
+    df_list_of_components_copy = pd.read_csv(components_path)
 
-    return all_processes
+    return df_list_of_components_copy
 
 
-def create_product_system(all_processes):
+def add_lca_uuid(df_list_of_components_copy):
+    """
+    Create a dictionary containing the ID of the components the needed value and the uuid, based on a seperate CSV file.
+        :param df_list_of_components_copy: DataFrame containing components.
+        :type pd.DataFrame
+    """
+
+    # define path that contains the uuids
+    uuid_path = r"C:\Users\Franziska\Documents\GitHub\SESMG\docs\lca\lca_uuids.csv"
+
+    # import into a df
+    df_list_of_uuid = pd.read_csv(uuid_path, usecols=[0, 1, 2])
+    # TODO später die Info über den Type des Prozesses automatisiert beziehen
+
+    # add the uuids to the right components
+    merged_df_components_with_uuids = \
+        pd.merge(df_list_of_components_copy, df_list_of_uuid, how='left', left_on='ID', right_on='ID')
+
+    # create empty lca dict
+    lca_dict = {}
+
+    # iterate through the rows in the df
+    for index, row in merged_df_components_with_uuids.iterrows():
+        component_id = row['ID']
+        output_value = row['output 1/kWh'] # TODO hier noch was anderes überlegen für die Technologien, die mehrere outputs haben
+        component_type = row['Type']
+        uuid = row['UUID']
+
+        if not pd.isnull(uuid):
+            lca_dict[component_id] = (output_value, component_type, uuid)
+
+    print("first lca dict")
+    print(lca_dict)
+    return lca_dict
+    # TODO überlegen ob die Infos Grundsätzlich über ein dict oder einen df übergeben werden sollten
+
+def create_product_system(lca_dict):
     """
     Create the product systems.
-        :param all_processes
-        :type list
+        :param lca_dict: containing the information about the energy system: names, output values, process type and
+            the uuid.
+        :type dict
     """
 
     # set configutrations for not chosing automatic linking of the processes
@@ -45,18 +90,24 @@ def create_product_system(all_processes):
         provider_linking=None,        # kein autolinking zulassen
     )
 
-    # List to store the IDs of created product systems
-    product_system_ids = []
+    # List to store created system_refs
+    system_refs = []
 
-    # iterate through all processes to create the needed product systems
-    for process in all_processes:
-        print(process.name)
-        system_ref = client.create_product_system(process, config)
-        product_system_ids.append(system_ref.id)
-        print(f"created product system {system_ref.name}, id={system_ref.id}")
+    # iterate through each component of the dictionary
+    for component_id, (output_value, component_type, uuid) in lca_dict.items():
+        # check if the component is a system
+        if component_type == 'system':
+            # create product system
+            system_ref = client.create_product_system(client.get(o.Process, uuid), config)
+            # update lca_dict with uuid2
+            lca_dict[component_id] = (output_value, component_type, uuid, system_ref.id)
+            # add the created system_ref to the list
+            system_refs.append(system_ref)
 
-    print(product_system_ids)
-    return product_system_ids
+    print("lca dict_new")
+    print(lca_dict)
+
+    return lca_dict, system_refs
 
 
 # TODO efficiencies anpassen / data harmonization
@@ -64,11 +115,19 @@ def create_product_system(all_processes):
 #  ansonsten ja beim jeden lauf neues Produktsystem (mit result.dispose!)
 
 
-def calculate_results(product_system_ids):
+def modify_unit_processes():
+    """
+    wahrscheinlich lösen mit Process Link = connection between two processes in a product system
+    Allerdings nochmal hinten angestellt, das muss ich nur machen wenn ich 100%ig ProBas verwende!
+    """
+    None
+
+
+def calculate_results(lca_dict):
     """
     Calculate the inventory of the system as well as the results of the impact assessment in one step
-        :param product_system_ids
-        :type list
+        :param lca_dict
+        :type dict
     """
 
     # create empty dictionaries for the impacts and the inventory
@@ -76,17 +135,19 @@ def calculate_results(product_system_ids):
     total_inventory_results = {}
 
     # Calculate the results for the electricity mix example
-    for product_system in product_system_ids:
+    # for product_system in product_system_ids:
+    for component_id, (output_value, component_type, uuid, uuid2) in lca_dict.items():
+    # TODO doch eventuell mit einer productsystem ids liste arbeiten, da das für die laufzeit wahrscheinlich
+    #  effizienter ist ?
+    # TODO nochmal prüfen, ob das jetzt so auch mit mehreren werten noch klappt
 
         setup = o.CalculationSetup(
-            target=o.Ref(ref_type=o.RefType.ProductSystem, id=product_system),
+            target=o.Ref(ref_type=o.RefType.ProductSystem, id=uuid2),
             # unit automatically takes the unit of the quantitive reference
             impact_method=o.Ref(id="1f08b96a-0d3c-4e9e-88bf-09f2239f95e1"), # example: ReCiPe Midpoint H
-            amount=1,  #hier später mit dem richtigen Amount verknüpfen,  #wahrscheinlich passen hierdurch die Werte nicht? Kann das sein?
-            # ACHTUNG: kann allerdings ja dann nicht immer mit dem gleichen amount verknüpft werden!
-            allocation=None,#keine allocation eingearbeit, lediglich von ProBas vordefiniert
-                                # "amount of the reference flow of the calculation target for to which the result should be scaled"
-            nw_set=None #kein normalization or weighting set
+            amount=output_value,
+            allocation=None,        # no allocation, already predefined by ProBas
+            nw_set=None             # no normalization or weighting set
         )
 
         result = client.calculate(setup)
@@ -95,12 +156,11 @@ def calculate_results(product_system_ids):
         print(result)
 
         # get inventory
-        # TODO auch wichtig später für die interpretation, dass der user auf die inventory results und die impact assessment
-        #  results zugreifen kann!
-        # TODO brauche ich das überhaupt? vielleicht bei der interpretation mit abfrage arbeiten um Laufzeit zu sparen?
+        # TODO grundsätzlich wichtig für interpretation, vielleicht später abfrage arbeiten um Laufzeit zu sparen?
         inventory = result.get_total_flows()
 
         # TODO noch testen wie berücksichtigt wird ob es input oder output ist, also nochmal händisch überprüfen
+
         for i in inventory:
             flow_name = i.envi_flow.flow.name
             if flow_name not in total_inventory_results:
@@ -117,18 +177,18 @@ def calculate_results(product_system_ids):
                 total_environmental_impacts[impact_category_name] = 0
             total_environmental_impacts[impact_category_name] += i.amount
 
-    return total_environmental_impacts, total_inventory_results
+        return total_environmental_impacts, total_inventory_results
 
 
 def create_df_from_dict(data, category_col_name, value_col_name):
     """
     Turn the two dictionaries for the inventory and the impact assessment results into dataframes for
-        :param data
-        :type
-        :param category_col_name
-        :type
-        :param value_col_name
-        :type
+        :param data: dicitonary with data
+        :type dict
+        :param category_col_name: name of the category column
+        :type str
+        :param value_col_name: name of the value column
+        :type str
     """
 
     df = pd.DataFrame(
@@ -141,36 +201,60 @@ def create_df_from_dict(data, category_col_name, value_col_name):
 
 
 # save the summarized results as a sub step in an excel file and dispose
-# TODO Variablen hier richtig übergeben, das passt so noch nicht
-def export_and_dispose(total_environmental_impacts_df, total_inventory_df):
-"""
-Export the given result to Excel and dispose it after the Export
+def export_and_save(total_environmental_impacts_df, total_inventory_df, system_refs):
+    """
+    Export the given result to Excel and dispose it after the Export
         finished.
-"""
+        :param total_inventory_df
+        :type pd.DataFrame
+        :param total_environmental_impacts_df
+        :type pd.Dataframe
+    """
+    # TODO input / output in den Ergebnissen noch anders darstellen
 
-    # TODO files her richtig angeben
-    # TODO außerdem input / output anders darstellen
-    environmental_impacts_file = 'total_environmental_impacts.xlsx'
-    inventory_results_file = 'total_inventory_results.xlsx'
+    result_path = r"C:\Users\Franziska\Documents\SESMG\results"
 
-    # TODO nochmal gucken in dem github beispiel: client.excel_export
-    total_environmental_impacts_df.to_excel(environmental_impacts_file, index=False)
-    total_inventory_df.to_excel(inventory_results_file, index=False)
+    # define the path for the excel files
+    excel_file1 = os.path.join(result_path, 'Inventory Results.xlsx')
+    excel_file2 = os.path.join(result_path, 'Total Environmental Impacts.xlsx')
 
-    # TODO dispose
+    # save dfs as excel files
+    total_inventory_df.to_excel(excel_file1, index=False)
+    total_environmental_impacts_df.to_excel(excel_file2, index=False)
+
+    print("Results were succesfully saved as excel files")
+
+    print("SR")
+    print(system_refs)
 
 
-# run program
+    # TODO Dispose nochmal prüfen, geht eigentlich nur bei results und delete nur bei datasets
+    #  alternativ beim productsystem erstellen prüfen ob es das genannte schon gibt
+    # Speichern der IDs der Produktionsysteme
+    #system_ids = [system_ref.id for system_ref in system_refs]
+
+    # dispose the no longer needed product systems
+    #for system_id in system_ids:
+    #   client.delete(o.Ref(id=system_id))
+
+    #print("Product systems were disposed")
+
+
+
+
 # run preparational steps
-all_processes = get_the_corresponding_processes()
-product_system_ids = create_product_system(all_processes)
-total_environmental_impacts, total_inventory_results = calculate_results(product_system_ids)
+df_list_of_components_copy = user_input_model_run()
+lca_dict = add_lca_uuid(df_list_of_components_copy)
+
+# run openlca steps
+lca_dict, system_refs = create_product_system(lca_dict)
+total_environmental_impacts, total_inventory_results = calculate_results(lca_dict)
 
 #create the two dfs
 total_environmental_impacts_df = create_df_from_dict(total_environmental_impacts, "Impact category", "Total Value")
-print(total_environmental_impacts_df)
 total_inventory_df = create_df_from_dict(total_inventory_results, "Flow Name", "Amount")
+print(total_environmental_impacts_df)
 print(total_inventory_df)
 
-#save
-export_and_dispose(total_environmental_impacts_df, total_inventory_df)
+# save the summarized results as a sub step in an excel file and dispose
+export_and_save(total_environmental_impacts_df, total_inventory_df, system_refs)

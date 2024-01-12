@@ -1,0 +1,4 @@
+ID,UUID,Type,Name
+ID_electricity_bus_shortage,20c15235-7bc9-4df4-83fc-9a8fd7292bab,system,El-KW-Park-DE-2030 (PRIMES) 2030 (System) (copy)
+ID_gas_bus_shortage,d166fc07-0149-4b14-8b44-5ec76243444c,flow,Erdgas-DE-HH/KV-2030 (PipelineGas-DE-2030-mix-lokal)
+ID_gasheating_transformer,83236c6a-ff8f-4644-8ac1-e090859b7552,unit,Gas-Heizung-DE-2030 2030 (Unit) (copy)
