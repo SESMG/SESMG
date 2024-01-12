@@ -50,7 +50,7 @@ def st_settings_global() -> None:
 
 def import_GUI_input_values_json(json_file_path: str) -> dict:
     """
-        Function to import GUI settings from am existing json file and
+        Function to import GUI settings from an existing json file and
         save it as a dict.
 
         :param json_file_path: file name to the underlying json with \
@@ -84,6 +84,7 @@ def import_GUI_input_values_json(json_file_path: str) -> dict:
     return GUI_settings_cache_dict_reload
 
 
+# TODO wird nur bei einem run der gestartet wird aufgerufen!
 def save_GUI_cache_dict(input_values_dict: dict,
                         json_file_path: str) -> None:
     """
@@ -108,6 +109,7 @@ def save_GUI_cache_dict(input_values_dict: dict,
                    json_file_path=json_file_path)
 
 
+# TODO wird auch nur aufgerufen, wenn ein run gestartet wird
 def save_json_file(input_values_dict: dict, json_file_path: str) -> None:
     """
         Function to save a dict as json.
@@ -122,6 +124,7 @@ def save_json_file(input_values_dict: dict, json_file_path: str) -> None:
         json.dump(input_values_dict, outfile, indent=4)
 
 
+# TODO diese funktion wird nur aufgerufen, wenn das häkchen bei clear all settings gesetzt wird!
 def clear_GUI_main_settings(json_file_path: str) -> None:
     """
         Function to clear the GUI settings dict, reset it to the
@@ -131,7 +134,6 @@ def clear_GUI_main_settings(json_file_path: str) -> None:
         :type json_file_path: str
     """
     # creating the dict of GUI input values to be saved as json
-
     if os.path.exists(json_file_path) is True:
 
         # define path to blank file
@@ -554,7 +556,7 @@ def set_parenting_sesmg_path() -> str:
                     directory
     """
 
-    # defineing path to GUI_st_settings.json
+    # defining path to GUI_st_settings.json
     settings_json_path = os.path.dirname(__file__) \
         + "/GUI_st_settings.json"
     # import json
@@ -610,6 +612,9 @@ def set_internal_directory_path() -> str:
     # create the result folder based on the SESMG main directory
     res_internal_directory_path = \
         os.path.join(res_parenting_folder_path, '.app')
+
+    print("res_internal_directory_path")
+    print(res_internal_directory_path)
 
     return res_internal_directory_path
 

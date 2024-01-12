@@ -429,6 +429,15 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                     value=settings_cache_dict_reload["input_criterion_switch"],
                     help=GUI_helper["main_cb_criterion_switch"])
 
+
+            # create lca option
+            GUI_main_dict["optional_lca"] = \
+                st.checkbox(
+                    label="Add LCA Results",
+                    value=settings_cache_dict_reload["input_lca_results"])
+            #TODO help noch hinzufügen
+
+
         # create tab 2 for processing
         with tab_bar[1]:
             # Slider number of threads
@@ -519,6 +528,11 @@ def main_clear_cache_sidebar() -> None:
         # rerun whole script to update GUI settings
         st.experimental_rerun()
 
+#def main_lca_sidebar()
+ #   """
+  #  Creating a select box weather to calculate lca results after the simulation
+   # """
+
 
 def create_result_paths() -> None:
     """
@@ -580,7 +594,7 @@ def change_state_submitted_clear_cache() -> None:
     st.session_state["state_submitted_optimization"] = "not done"
 
 
-# staring sidebar elements as standing elements
+# starting sidebar elements as standing elements
 model_definition_input_file = main_input_sidebar()
 main_clear_cache_sidebar()
 
@@ -654,3 +668,8 @@ if st.session_state["state_submitted_optimization"] == "done":
 
             # switch page after the model run completed
             nav_page(page_name="Result_Processing", timeout_secs=3)
+
+# TODO also das hier klappt: input_lca_results wird imemr hinzugefügt
+print("settings_cache_dict_reload")
+print(settings_cache_dict_reload)
+
