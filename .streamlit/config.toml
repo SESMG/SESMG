@@ -7,9 +7,6 @@
 
 # If you'd like to turn off this warning, set this to True.
 
-# Default: false
-disableWatchdogWarning = false
-
 # By default, Streamlit displays a warning when a user sets both a widget
 # default value in the function defining the widget and a widget value via
 # the widget's key in `st.session_state`.
@@ -24,17 +21,6 @@ disableWidgetStateDuplicationWarning = false
 
 # Default: true
 showWarningOnDirectExecution = true
-
-# DataFrame serialization.
-
-# Acceptable values:
-# - 'legacy' : Serialize DataFrames using Streamlit's custom format. Slow
-#              but battle-tested.
-# - 'arrow'  : Serialize DataFrames using Apache Arrow. Much faster and
-#              versatile.
-
-# Default: "arrow"
-dataFrameSerialization = "arrow"
 
 developmentMode = false
 
@@ -54,18 +40,6 @@ level = "info"
 messageFormat = "%(asctime)s %(message)s"
 
 [client]
-
-# Whether to enable st.cache. This does not affect st.cache_data or
-# st.cache_resource.
-
-# Default: true
-caching = true
-
-# If false, makes your Streamlit script not draw to a
-# Streamlit app.
-
-# Default: true
-displayEnabled = true
 
 # Controls whether uncaught app exceptions and deprecation warnings
 # are displayed in the browser. By default, this is set to True and
@@ -104,19 +78,6 @@ toolbarMode = "auto"
 
 # Default: true
 magicEnabled = true
-
-# Install a Python tracer to allow you to stop or pause your script at
-# any point and introspect it. As a side-effect, this slows down your
-# script's execution.
-
-# Default: false
-installTracer = false
-
-# Sets the MPLBACKEND environment variable to Agg inside Streamlit to
-# prevent Python crashing.
-
-# Default: true
-fixMatplotlib = true
 
 # Run the Python Garbage Collector after each script execution. This
 # can help avoid excess memory use in Streamlit apps, but could
@@ -304,12 +265,6 @@ serverPort = 8501
 token = ""
 
 [deprecation]
-
-# Set to false to disable the deprecation warning for the file uploader
-# encoding.
-
-# Default: true
-showfileUploaderEncoding = true
 
 # Set to false to disable the deprecation warning for using the global pyplot
 # instance.
