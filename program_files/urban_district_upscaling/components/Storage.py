@@ -231,15 +231,17 @@ def create_cluster_storage(storage_type: str, cluster: str,
         read_standard_parameters,
     )
     specific_dict = {}
+    
+    name = "building" + storage_dict.get(storage_type)[0]
     # load the storage standard parameter
     standard_param, standard_keys = read_standard_parameters(
-            name="building" + storage_dict.get(storage_type)[0],
+            name=name,
             parameter_type="5_storages",
             index="storage_type",
             standard_parameters=standard_parameters)
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
-        specific_dict[standard_keys[i]] = standard_param[standard_keys[i]]
+        specific_dict[standard_keys[i]] = standard_param.loc[name, standard_keys[i]]
         
     counter = storage_parameter[storage_type][0]
     # define the storage specific parameter

@@ -37,15 +37,15 @@ def test_read_standard_parameters():
     # import standard parameter
     standard_parameters_file = pandas.ExcelFile(os.path.dirname(__file__)
                                                 + "/standard_parameters.xlsx")
-    buses = standard_parameters_file.parse("1_buses")
+    buses = standard_parameters_file.parse("1_buses", na_filter=False)
     
     # create test dataframes
     test_standard_parameters = buses.loc[
         buses["bus_type"] == "building_heat_bus"].set_index(
-            "bus_type").squeeze()
+            "bus_type")
     test_standard_keys = test_standard_parameters.keys()
     
-    pandas.testing.assert_series_equal(standard_parameters,
+    pandas.testing.assert_frame_equal(standard_parameters,
                                        test_standard_parameters)
     
     assert list(standard_keys) == list(test_standard_keys)

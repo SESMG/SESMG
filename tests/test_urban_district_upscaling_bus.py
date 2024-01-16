@@ -52,6 +52,7 @@ def test_create_standard_parameter_bus(test_elec_bus_entry,
         sheets={"buses": pandas.DataFrame()},
         standard_parameters=standard_parameters)
     
+    print(sheets["buses"]["active"])
     pandas.testing.assert_frame_equal(
         sheets["buses"].sort_index(axis=1),
         test_elec_bus_entry["buses"].sort_index(axis=1))
@@ -104,12 +105,13 @@ def test_create_cluster_electricity_buses(cluster_electricity_bus_entry):
     """
     from program_files.urban_district_upscaling.components.Bus \
         import create_cluster_electricity_buses
-    
+        
     sheets = create_cluster_electricity_buses(
         building=["test1", "test1", "SFB"],
         cluster="test1",
-        sheets={"buses": pandas.DataFrame(columns=["label"]),
-                "links": pandas.DataFrame(columns=["label"])},
+        sheets={"buses": pandas.DataFrame(data={"label": ["dummy"], "active": [1], "shortage": [1], "excess": [1], "shortage costs": [0], "excess costs": [0], "shortage constraint costs": [0], "excess constraint costs": [0], "district heating conn.": [0]}),
+                "links": pandas.DataFrame(data={"label": ["dummy"], "active": [1], "bus1": ["dummy"], "bus2": ["dummy"], "(un)directed": ["dummy"], "variable output costs": [0], "variable output constraint costs": [0], "periodical constraint costs": [0], "periodical costs": [0], "non-convex investment": [0],
+                                                "fix investment costs": [0], "fix investment constraint costs": [0], "efficiency": [0], "max. investment capacity": [0], "min. investment capacity": [0], "existing capacity": [0]})},
         standard_parameters=standard_parameters)
     
     sheets = create_cluster_electricity_buses(
@@ -129,6 +131,9 @@ def test_create_cluster_electricity_buses(cluster_electricity_bus_entry):
         cluster="test1",
         sheets=sheets,
         standard_parameters=standard_parameters)
+    
+    sheets["buses"] = sheets["buses"].query("label != 'dummy'")
+    sheets["links"] = sheets["links"].query("label != 'dummy'")
 
     for key in sheets.keys():
         cluster_electricity_bus_entry[key].set_index(

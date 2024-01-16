@@ -7,8 +7,8 @@ from program_files.urban_district_upscaling.components import Source
 # import standard parameter
 standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
                                        + "/standard_parameters.xlsx")
-sources = standard_parameters.parse("3_sources")
-buses = standard_parameters.parse("1_buses")
+sources = standard_parameters.parse("3_sources", na_filter=False)
+buses = standard_parameters.parse("1_buses", na_filter=False)
 
 test_sheets_clustering = pandas.DataFrame(columns=["label"])
 test_sheets_clustering.set_index("label", inplace=True, drop=False)

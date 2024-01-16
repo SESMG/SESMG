@@ -75,7 +75,7 @@ def create_source(source_type: str, roof_num: str, building: pandas.Series,
         switch_dict["solar_thermal_collector"][1] = "_st_heat_bus"
     
     # read the source specific standard parameters
-    standard_param = standard_parameters.parse("3_sources")
+    standard_param = standard_parameters.parse("3_sources", na_filter=False)
     if not central:
         standard_param = standard_param.loc[
             standard_param["source_type"] == "solar_thermal_collector"]
@@ -114,9 +114,9 @@ def create_source(source_type: str, roof_num: str, building: pandas.Series,
     param, keys = read_standard_parameters(source_type, "3_sources",
                                            "source_type", standard_parameters)
     for i in range(len(keys)):
-        source_dict[keys[i]] = param[keys[i]]
+        source_dict[keys[i]] = param.loc[source_type, keys[i]]
 
-    source_dict["max. investment capacity"] = (
+    source_dict["max. investment capacity"] = float(
         param["Capacity per Area (kW/m2)"] * source_param[6]
     )
 
@@ -220,9 +220,9 @@ def create_competition_constraint(limit: float, label: str, roof_num: str,
     # define individual values
     constraint_dict = {
         "component 1": label + "_" + str(roof_num) + "_pv_source",
-        "factor 1": 1 / pv_param["Capacity per Area (kW/m2)"],
+        "factor 1": float(1 / pv_param["Capacity per Area (kW/m2)"]),
         "component 2": label + "_" + str(roof_num) + "_solarthermal_source",
-        "factor 2": 1 / st_param["Capacity per Area (kW/m2)"],
+        "factor 2": float(1 / st_param["Capacity per Area (kW/m2)"]),
         "limit": limit,
         "active": 1,
     }
@@ -512,7 +512,7 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
                 if pv_st == "pv" \
                         and source_param["st_{}".format(azimuth[:-4])][0] > 0:
                     sheets = create_competition_constraint(
-                        limit=param_dict["roof area {}".format(azimuth[:-4])],
+                        limit=float(param_dict["roof area {}".format(azimuth[:-4])]),
                         label=cluster,
                         roof_num=azimuth[:-4],
                         sheets=sheets,

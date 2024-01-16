@@ -6,7 +6,7 @@ from program_files.urban_district_upscaling.components import Link
 # import standard parameter
 standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
                                        + "/standard_parameters.xlsx")
-links = standard_parameters.parse("6_links")
+links = standard_parameters.parse("6_links", na_filter=False)
 
 
 @pytest.fixture
@@ -56,10 +56,10 @@ def test_clustered_electricity_links():
                     "link_type": ["building_pv_central_link",
                                   "building_central_building_link",
                                   "building_pv_central_link"],
-                    "bus1": ["",
+                    "bus1": ["None",
                              "central_electricity_bus",
                              "test_cluster_pv_bus"],
-                    "bus2": ["",
+                    "bus2": ["None",
                              "test_cluster_electricity_bus",
                              "test_cluster_electricity_bus"]}),
                 right=links,
@@ -79,20 +79,20 @@ def test_create_central_electricity_bus_connection(
         "links": pandas.DataFrame.from_dict(
             {"label": ["test_cluster_pv_central"],
              "(un)directed": ["directed"],
-             "active": [1.0],
-             "bus1": [""],
-             "bus2": [""],
+             "active": [1],
+             "bus1": ["None"],
+             "bus2": ["None"],
              "efficiency": [1.0],
-             "existing capacity": [9999.0],
-             "fix investment constraint costs": [0.0],
-             "fix investment costs": [0.0],
-             "max. investment capacity": [0.0],
-             "min. investment capacity": [0.0],
-             "non-convex investment": [0.0],
+             "existing capacity": [9999],
+             "fix investment constraint costs": [0],
+             "fix investment costs": [0],
+             "max. investment capacity": [0],
+             "min. investment capacity": [0],
+             "non-convex investment": [0],
              "periodical constraint costs": [0.00001],
              "periodical costs": [0.00001],
-             "variable output constraint costs": [0.0],
-             "variable output costs": [0.0]})}
+             "variable output constraint costs": [0],
+             "variable output costs": [0]})}
     sheets["links"].set_index("label")
     
     sheets = Link.create_central_electricity_bus_connection(

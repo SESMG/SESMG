@@ -6,7 +6,7 @@ import os
 # import standard parameter
 standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
                                        + "/standard_parameters.xlsx")
-sinks = standard_parameters.parse("2_sinks")
+sinks = standard_parameters.parse("2_sinks", na_filter=False)
 
 
 @pytest.fixture
@@ -298,7 +298,7 @@ def test_electric_vehicle_entry():
             left=pandas.DataFrame.from_dict({
                 "label": ["test_electric_vehicle"],
                 "input": ["test_electricity_bus"],
-                "nominal value": [float(1)],
+                "nominal value": [1],
                 "sink_type": ["EV_electricity_sink"]}),
             right=sinks,
             on="sink_type").drop(columns=["sink_type", "nominal value_y"])}
@@ -315,7 +315,8 @@ def test_create_sink_ev(test_electric_vehicle_entry):
     """
     time_series = \
         pandas.ExcelFile(os.path.dirname(__file__)
-                         + "/ev_timeseries.xlsx").parse("ev_timeseries")
+                         + "/ev_timeseries.xlsx").parse(
+                "ev_timeseries", na_filter=False)
     
     sheets = Sink.create_sink_ev(
         building=pandas.Series(data={
@@ -340,7 +341,8 @@ def test_create_sinks(test_SFB_electricity_sink_entry,
     """
     time_series = \
         pandas.ExcelFile(os.path.dirname(__file__)
-                         + "/ev_timeseries.xlsx").parse("ev_timeseries")
+                         + "/ev_timeseries.xlsx").parse("ev_timeseries",
+                                                        na_filter=False)
     
     sheets = Sink.create_sinks(
         building=pandas.Series({

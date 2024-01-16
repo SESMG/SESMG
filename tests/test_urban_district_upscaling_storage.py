@@ -6,7 +6,7 @@ import os
 # import standard parameter
 standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
                                        + "/standard_parameters.xlsx")
-storages = standard_parameters.parse("5_storages")
+storages = standard_parameters.parse("5_storages", na_filter=False)
 
 test_sheets_clustering = pandas.DataFrame(columns=["label"])
 test_sheets_clustering.set_index("label", inplace=True, drop=False)

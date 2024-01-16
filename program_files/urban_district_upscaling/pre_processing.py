@@ -76,12 +76,12 @@ def read_standard_parameters(name: str, parameter_type: str, index: str,
                     of name
     """
     # get the param_type sheet from standard parameters
-    standard_param_df = standard_parameters.parse(parameter_type)
+    standard_param_df = standard_parameters.parse(parameter_type, na_filter=False)
     # reset the dataframes index to the index variable set in args
     standard_param_df.set_index(index, inplace=True)
     if name in list(standard_param_df.index):
         # locate the row labeled name
-        standard_param = standard_param_df.loc[name]
+        standard_param = standard_param_df.loc[[name]]
         # get the keys of the located row
         standard_keys = standard_param.keys().tolist()
         # return parameters and keys
@@ -127,7 +127,8 @@ def create_standard_parameter_comp(
     )
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
-        specific_param[standard_keys[i]] = standard_param[standard_keys[i]]
+        specific_param[standard_keys[i]] = standard_param.loc[
+            standard_parameter_info[0], standard_keys[i]]
     # appends the new created component to storages sheet
     return append_component(sheets,
                             standard_parameter_info[1][2:],

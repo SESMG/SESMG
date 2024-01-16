@@ -59,7 +59,7 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets: dict,
     )
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
-        bus_dict[standard_keys[i]] = standard_param[standard_keys[i]]
+        bus_dict[standard_keys[i]] = standard_param.loc[bus_type, standard_keys[i]]
     # defines rather a district heating connection is possible
     if coords is not None:
         bus_dict.update(
@@ -293,7 +293,8 @@ def create_cluster_averaged_bus(sink_parameters: list, cluster: str,
             pandas.Dataframes that will represent the model \
             definition's Spreadsheets which was modified in this method
     """
-    bus_parameters = standard_parameters.parse("1_buses", index_col="bus_type")
+    bus_parameters = standard_parameters.parse("1_buses", index_col="bus_type",
+                                               na_filter=False)
     type_dict = {
         "hp_elec": ["hp_elec"] + 2 * ["hp_electricity"] + ["electricity"],
         "gas": ["gas", "res_gas", "com_gas", "gas"]}

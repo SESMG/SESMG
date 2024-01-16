@@ -6,7 +6,7 @@ from program_files.urban_district_upscaling.components import Transformer
 # import standard parameter
 standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
                                        + "/standard_parameters.xlsx")
-transformers = standard_parameters.parse("4_transformers")
+transformers = standard_parameters.parse("4_transformers", na_filter=False)
 
 @pytest.fixture
 def test_decentral_gasheating_entry():

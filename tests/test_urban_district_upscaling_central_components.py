@@ -8,9 +8,9 @@ from program_files.urban_district_upscaling.components \
 standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
                                        + "/standard_parameters.xlsx")
 buses = standard_parameters.parse("1_buses")
-transformers = standard_parameters.parse("4_transformers")
-storages = standard_parameters.parse("5_storages")
-links = standard_parameters.parse("6_links")
+transformers = standard_parameters.parse("4_transformers", na_filter=False)
+storages = standard_parameters.parse("5_storages", na_filter=False)
+links = standard_parameters.parse("6_links", na_filter=False)
 
 
 def test_create_central_heat_component():
@@ -72,7 +72,7 @@ def test_create_power_to_gas_entry():
                 "area": [float(0)] * 3,
                 "length of the geoth. probe": [0.0] * 3,
                 "heat extraction": [0.0] * 3,
-                "temperature high": ["0"]* 3}),
+                "temperature high": ["0", "0", "0"]}),
             right=transformers,
             on="transformer_type").drop(columns=["transformer_type"]),
         "storages": pandas.merge(
@@ -96,11 +96,17 @@ def test_create_power_to_gas_system(test_create_power_to_gas_entry):
     sheets = Central_components.create_power_to_gas_system(
         label="test",
         output="test_output_bus",
-        sheets={"buses": pandas.DataFrame(columns=["label"]),
+        sheets={"buses": pandas.DataFrame(data={"label": ["dummy"], "active": [1], "shortage": [1], "excess": [1], "shortage costs": [0], "excess costs": [0], "shortage constraint costs": [0], "excess constraint costs": [0], "district heating conn.": [0]}),
                 "links": pandas.DataFrame(),
                 "transformers": pandas.DataFrame(),
-                "storages": pandas.DataFrame(columns=["label"])},
+                "storages": pandas.DataFrame(data={"label": ["dummy"], "active": [1], "U value": [1], "bus": ["dummy"], "min. investment capacity": [0], "max. investment capacity": [0], "existing capacity": [0], "periodical costs": [1], "periodical constraint costs": [1],
+                                                   "non-convex investment": [0], "fix investment costs": [0], "fix investment constraint costs": [0], "input/capacity ratio": [0], "output/capacity ratio": [0], "capacity loss": [0], "efficiency inflow": [0], "efficiency outflow": [0],
+                                                   "initial capacity": [0], "capacity min": [0], "capacity max": [1], "variable input costs": [0], "variable output costs": [0], "variable input constraint costs": [0], "variable output constraint costs": [0], "diameter": [0],
+                                                   "temperature high": [0], "temperature low": [0]})},
         standard_parameters=standard_parameters)
+
+    sheets["buses"] = sheets["buses"].query("label != 'dummy'")
+    sheets["storages"] = sheets["storages"].query("label != 'dummy'")
     
     for key in sheets.keys():
         if len(test_create_power_to_gas_entry[key]) > 1:
@@ -157,7 +163,7 @@ def test_create_central_heatpump(test_central_heatpump_entry):
         create_bus=True,
         central_electricity_bus=True,
         output="test_output_bus",
-        sheets={"buses": pandas.DataFrame(columns=["label"]),
+        sheets={"buses": pandas.DataFrame(data={"label": ["dummy"], "active": [1], "shortage": [1], "excess": [1], "shortage costs": [0], "excess costs": [0], "shortage constraint costs": [0], "excess constraint costs": [0], "district heating conn.": [0]}),
                 "links": pandas.DataFrame(),
                 "transformers": pandas.DataFrame()},
         area="100",
@@ -167,7 +173,10 @@ def test_create_central_heatpump(test_central_heatpump_entry):
         heat_extraction="0.0328"
     )
     
+    sheets["buses"] = sheets["buses"].query("label != 'dummy'")
+    
     for key in sheets.keys():
+        print(key)
         pandas.testing.assert_frame_equal(
             sheets[key].sort_index(axis=1),
             test_central_heatpump_entry[key].sort_index(axis=1))
