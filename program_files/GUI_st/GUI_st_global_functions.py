@@ -74,6 +74,9 @@ def import_GUI_input_values_json(json_file_path: str) -> dict:
         with open(blank_json_file_path, "r", encoding="utf-8") as infile:
             GUI_settings_cache_dict_reload = json.load(infile)
 
+        print("cache reload")
+        print(GUI_settings_cache_dict_reload)
+
     # else load the user sprecific GUI settings
     else:
         # Import json file including several (sub)dicts for every GUI page
@@ -84,7 +87,6 @@ def import_GUI_input_values_json(json_file_path: str) -> dict:
     return GUI_settings_cache_dict_reload
 
 
-# TODO wird nur bei einem run der gestartet wird aufgerufen!
 def save_GUI_cache_dict(input_values_dict: dict,
                         json_file_path: str) -> None:
     """
@@ -109,7 +111,6 @@ def save_GUI_cache_dict(input_values_dict: dict,
                    json_file_path=json_file_path)
 
 
-# TODO wird auch nur aufgerufen, wenn ein run gestartet wird
 def save_json_file(input_values_dict: dict, json_file_path: str) -> None:
     """
         Function to save a dict as json.
@@ -124,7 +125,6 @@ def save_json_file(input_values_dict: dict, json_file_path: str) -> None:
         json.dump(input_values_dict, outfile, indent=4)
 
 
-# TODO diese funktion wird nur aufgerufen, wenn das häkchen bei clear all settings gesetzt wird!
 def clear_GUI_main_settings(json_file_path: str) -> None:
     """
         Function to clear the GUI settings dict, reset it to the
@@ -219,7 +219,8 @@ def run_SESMG(GUI_main_dict: dict,
             console_results=GUI_main_dict["input_console_results"],
             solver=GUI_main_dict["input_solver"],
             district_heating_path=GUI_main_dict["input_dh_folder"],
-            cluster_dh=GUI_main_dict["input_cluster_dh"])
+            cluster_dh=GUI_main_dict["input_cluster_dh"],
+            lca_results=GUI_main_dict["input_lca_results"])
 
     # If pre-modeling is activated a second run will be carried out
     else:

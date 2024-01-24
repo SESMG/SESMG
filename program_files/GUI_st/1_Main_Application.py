@@ -431,7 +431,7 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
 
 
             # create lca option
-            GUI_main_dict["optional_lca"] = \
+            GUI_main_dict["input_lca_results"] = \
                 st.checkbox(
                     label="Add LCA Results",
                     value=settings_cache_dict_reload["input_lca_results"])
@@ -565,7 +565,7 @@ def create_result_paths() -> None:
 def save_run_settings() -> None:
     """
         Function to save the GUI setting in the result folder and reset
-        session state.
+        session state. /GUI_st_run_settings.json is a copy of the st_cache GUI file.
     """
     # save GUI settings in result folder
     GUI_functions.save_json_file(
@@ -669,7 +669,4 @@ if st.session_state["state_submitted_optimization"] == "done":
             # switch page after the model run completed
             nav_page(page_name="Result_Processing", timeout_secs=3)
 
-# TODO also das hier klappt: input_lca_results wird imemr hinzugefügt
-print("settings_cache_dict_reload")
-print(settings_cache_dict_reload)
 

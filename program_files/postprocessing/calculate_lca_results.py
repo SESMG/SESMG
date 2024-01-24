@@ -22,7 +22,7 @@ pd.set_option('display.max_columns', None)  # Zeige alle Spalten an
 pd.set_option('display.width', None)  # Verwende die gesamte Breite des Terminals für die Anzeige
 
 
-def user_input_model_run():
+def selected_model_run():
     """
     Ask the user for which model run he/she wants to have the lca result.
     INFO: Das ist jetzt erstmal eine Überbrückung zur Nutzung der components csv, damit dieser file läuft, später dann
@@ -32,6 +32,7 @@ def user_input_model_run():
     # user selects model run and therefore result
     input_model_run = "model_definition_basic_2024-01-11--15-38-46"  # input("Enter the model run you want to analyse")
 
+    # TODO hier direkt auf den Pfad eingehen, der auch in dem run genannt wird
     components_path = r"C:\Users\Franziska\Documents\SESMG\results\\" + input_model_run + "\\components.csv"
 
     # DataFrame aus der Excel-Datei erstellen
@@ -238,6 +239,7 @@ def export_and_save(total_environmental_impacts_df, total_inventory_df, system_r
     #   client.delete(o.Ref(id=system_id))
 
     #print("Product systems were disposed")
+
 
 
 
