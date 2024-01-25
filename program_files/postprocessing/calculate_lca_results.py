@@ -2,9 +2,8 @@ import olca_ipc as ipc
 import olca_schema as o
 import pandas as pd
 import os
+import re
 
-# TODO später beim erstellen mit der loc arbeiten, in der GUI eine Seite einfügen, in der eine optionale LCA gemacht wird?
-# from create_results_prepare_data import df_list_of_components
 
 # aktuelle Annahme: alle möglichen Processe sind bereits in der Datenbank vorhanden (sonst create_process)
 # TODO create product system: kann man aus mehreren processen ein product system erstellen oder geht das nicht???
@@ -17,60 +16,89 @@ client = ipc.Client()
 #  darüber kann man sogar auch die dispose results machen
 
 # settings
-pd.set_option('display.max_rows', None)  # Zeige alle Zeilen an
-pd.set_option('display.max_columns', None)  # Zeige alle Spalten an
-pd.set_option('display.width', None)  # Verwende die gesamte Breite des Terminals für die Anzeige
+#pd.set_option('display.max_rows', None)  # Zeige alle Zeilen an
+#pd.set_option('display.max_columns', None)  # Zeige alle Spalten an
+#pd.set_option('display.width', None)  # Verwende die gesamte Breite des Terminals für die Anzeige
 
 
-def selected_model_run():
+def selected_model_run(path: str):
     """
-    Ask the user for which model run he/she wants to have the lca result.
-    INFO: Das ist jetzt erstmal eine Überbrückung zur Nutzung der components csv, damit dieser file läuft, später dann
-    in den SESMG und die GUI implementieren
+    Später hier mal testen, wie man es lösen kann wenn schon Ergebnisse für den Lauf vorliegen, also den auf den
+    result_path direkt zugreifen.
+    Wahrscheinlich auch wichtig für die Ergebnisse von Pareto-Läufen!
     """
 
-    # user selects model run and therefore result
-    input_model_run = "model_definition_basic_2024-01-11--15-38-46"  # input("Enter the model run you want to analyse")
 
-    # TODO hier direkt auf den Pfad eingehen, der auch in dem run genannt wird
-    components_path = r"C:\Users\Franziska\Documents\SESMG\results\\" + input_model_run + "\\components.csv"
+def add_uuid_to_components(nodes_data, components_list):
+    """
+    This function adds the right uuids to the components_list for the further result processing.
+        :param nodes_data: contains all informationen from the model definition sorted in a dict with the different
+            sheet names as keys
+        :type nodes_data: dict
+        :param components_list: part of the results, contains all components of the final energy system as well
+            as there technical and economical values
+        :type components_list: pd.DataFrame
 
-    # DataFrame aus der Excel-Datei erstellen
-    df_list_of_components_copy = pd.read_csv(components_path)
+    :return: - **components_list** (list) - copy of the list containing the additional uuids.
+    """
 
-    return df_list_of_components_copy
+    # create dict for uuids
+    uuid_mapping = {}
+
+    # loop through the different sheets of the nodes_data dict
+    for key, values in nodes_data.items():
+
+        # eliminate sheets that are not needed for the lca caluclation
+        if key.lower() not in ["timeseries", "weather data", "pipe types",
+                               "competition constraints", "energysystem", "district heating", "insulation"]:
+
+            # loop through each row of the dataframe in the values of the dict
+            for index, row in values.iterrows():
+                row_first_value = row.iloc[0]  # First value in current row
+                row_last_value = row.iloc[-1]  # Last value in current row
+
+                # If there's a match, add the uuid to the matching components
+                # if not matching_components.empty:
+                uuid_mapping[row_first_value] = row_last_value
+
+                print("mapping")
+                print(uuid_mapping)
+
+    # TODO heat sink window hat hier noch einen fehler!
+    # remove 'shortage' and 'excess' in components_list['ID']
+    components_list['ID'] = components_list['ID'].apply(lambda x: re.sub(r'_shortage$', '', x))
+    components_list['ID'] = components_list['ID'].apply(lambda x: re.sub(r'_excess$', '', x))
+
+    # adds the uuids to the components list
+    components_list['uuid'] = components_list['ID'].map(uuid_mapping)
+
+    print(components_list)
+    return components_list
 
 
-def add_lca_uuid(df_list_of_components_copy):
+def add_lca_uuid(components):
     """
     Create a dictionary containing the ID of the components the needed value and the uuid, based on a seperate CSV file.
-        :param df_list_of_components_copy: DataFrame containing components.
+        :param components: DataFrame containing components.
         :type pd.DataFrame
     """
 
-    # define path that contains the uuids
-    uuid_path = r"C:\Users\Franziska\Documents\GitHub\SESMG\docs\lca\lca_uuids.csv"
-
-    # import into a df
-    df_list_of_uuid = pd.read_csv(uuid_path, usecols=[0, 1, 2])
-    # TODO später die Info über den Type des Prozesses automatisiert beziehen
-
-    # add the uuids to the right components
-    merged_df_components_with_uuids = \
-        pd.merge(df_list_of_components_copy, df_list_of_uuid, how='left', left_on='ID', right_on='ID')
+    # TODO brauche ich zusätzlich eine Info über den Typ des Prozesses
+    # TODO das brauche ich eigentlich nur wenn ich safe ProBas nehme
+    # get type of the process out of the name
 
     # create empty lca dict
     lca_dict = {}
 
     # iterate through the rows in the df
-    for index, row in merged_df_components_with_uuids.iterrows():
+    for index, row in components.iterrows():
         component_id = row['ID']
         output_value = row['output 1/kWh'] # TODO hier noch was anderes überlegen für die Technologien, die mehrere outputs haben
-        component_type = row['Type']
-        uuid = row['UUID']
+        component_type = "system" #row['Type']
+        uuid = row['uuid']
 
         if not pd.isnull(uuid):
-            lca_dict[component_id] = (output_value, component_type, uuid)
+            lca_dict[component_id] = (output_value, uuid, component_type, )
 
     print("first lca dict")
     print(lca_dict)
@@ -158,6 +186,8 @@ def calculate_results(lca_dict):
 
         # get inventory
         # TODO grundsätzlich wichtig für interpretation, vielleicht später abfrage arbeiten um Laufzeit zu sparen?
+        # TODO außerdem auch wichtgit, wenn ich mich dazu entscheide die flows selber ein bischen zu analysieren,
+        #  und nicht nur das vorhefertigte impact assessment verwende
         inventory = result.get_total_flows()
 
         # TODO noch testen wie berücksichtigt wird ob es input oder output ist, also nochmal händisch überprüfen
@@ -242,21 +272,23 @@ def export_and_save(total_environmental_impacts_df, total_inventory_df, system_r
 
 
 
+def calculate_lca_results_function (path: str, components: pd.DataFrame):
 
+    # run preparational steps
+    lca_dict = add_lca_uuid(components)
 
-# run preparational steps
-df_list_of_components_copy = user_input_model_run()
-lca_dict = add_lca_uuid(df_list_of_components_copy)
+    print("lca dict")
+    print(lca_dict)
 
-# run openlca steps
-lca_dict, system_refs = create_product_system(lca_dict)
-total_environmental_impacts, total_inventory_results = calculate_results(lca_dict)
+    # run openlca steps
+    lca_dict, system_refs = create_product_system(lca_dict)
+    total_environmental_impacts, total_inventory_results = calculate_results(lca_dict)
 
-#create the two dfs
-total_environmental_impacts_df = create_df_from_dict(total_environmental_impacts, "Impact category", "Total Value")
-total_inventory_df = create_df_from_dict(total_inventory_results, "Flow Name", "Amount")
-print(total_environmental_impacts_df)
-print(total_inventory_df)
+    #create the two dfs
+    total_environmental_impacts_df = create_df_from_dict(total_environmental_impacts, "Impact category", "Total Value")
+    total_inventory_df = create_df_from_dict(total_inventory_results, "Flow Name", "Amount")
+    print(total_environmental_impacts_df)
+    print(total_inventory_df)
 
-# save the summarized results as a sub step in an excel file and dispose
-export_and_save(total_environmental_impacts_df, total_inventory_df, system_refs)
+    # save the summarized results as a sub step in an excel file and dispose
+    export_and_save(total_environmental_impacts_df, total_inventory_df, system_refs)

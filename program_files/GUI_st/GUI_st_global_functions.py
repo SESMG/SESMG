@@ -74,8 +74,6 @@ def import_GUI_input_values_json(json_file_path: str) -> dict:
         with open(blank_json_file_path, "r", encoding="utf-8") as infile:
             GUI_settings_cache_dict_reload = json.load(infile)
 
-        print("cache reload")
-        print(GUI_settings_cache_dict_reload)
 
     # else load the user sprecific GUI settings
     else:
@@ -613,9 +611,6 @@ def set_internal_directory_path() -> str:
     # create the result folder based on the SESMG main directory
     res_internal_directory_path = \
         os.path.join(res_parenting_folder_path, '.app')
-
-    print("res_internal_directory_path")
-    print(res_internal_directory_path)
 
     return res_internal_directory_path
 

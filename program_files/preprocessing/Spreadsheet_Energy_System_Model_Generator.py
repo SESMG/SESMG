@@ -12,6 +12,7 @@
     Gregor Becker - gregor.becker@fh-muenster.de
 """
 import logging
+import pandas as pd
 from oemof.tools import logger
 import os
 from threading import *
@@ -22,6 +23,7 @@ from program_files.preprocessing.components import (
     district_heating, Bus, Source, Sink, Transformer, Storage, Link)
 from program_files.preprocessing.create_graph import ESGraphRenderer
 from program_files.postprocessing import create_results
+from program_files.postprocessing.calculate_lca_results import calculate_lca_results_function, add_uuid_to_components
 from program_files.processing import optimize_model
 from program_files.preprocessing.pre_model_analysis import \
     update_model_according_pre_model_results
@@ -31,7 +33,7 @@ def call_district_heating_creation(nodes_data, nodes, busd,
                                    district_heating_path, result_path,
                                    cluster_dh) -> (dict, list):
     """
-    
+
     """
     buses = nodes_data["buses"]
     # get only the active pipe types
@@ -66,7 +68,7 @@ def call_district_heating_creation(nodes_data, nodes, busd,
 
 def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
                criterion_switch: bool, xlsx_results: bool,
-               console_results: bool, timeseries_prep: list, solver: str,
+               console_results: bool, lca_results: bool, timeseries_prep: list, solver: str,
                cluster_dh, graph=False, district_heating_path=None) -> None:
     """
         Main function of the Spreadsheet System Model Generator
@@ -105,6 +107,9 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
         :param district_heating_path: path to the folder where already \
             calculated district heating data is stored
         :type district_heating_path: str['folder']
+        :param lca_results boolean which decides weather additional lca \
+            should be calculated or not
+        :type lca_results: bool
     """
     # sets number of threads for numpy
     os.environ['NUMEXPR_NUM_THREADS'] = str(num_threads)
@@ -113,7 +118,7 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
     # imports data from the excel file and returns it as a dictionary
     nodes_data = create_energy_system.import_model_definition(
             filepath=model_definition_file)
-    
+
     # if the user has chosen two switch the optimization criteria the
     # nodes data dict is adapted
     if criterion_switch:
@@ -200,13 +205,25 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
                             filepath=result_path)
     
     # creates the data used for the results presentation in the GUI
-    create_results.Results(
+    results_instance = create_results.Results(
             nodes_data=nodes_data, optimization_model=om, energy_system=esys,
             result_path=result_path, console_log=console_results,
             cluster_dh=cluster_dh)
     
     logging.info('\t ' + 56 * '-')
     logging.info('\t Modelling and optimization successfully completed!')
+
+    # calculates additional lca results
+    components_list = results_instance.components_list
+
+    # check whether a lca analysis should be added
+    if lca_results:
+
+        # add the uuids to the components_list at the right place
+        components_list = add_uuid_to_components(nodes_data, components_list)
+
+        # calculate results
+        calculate_lca_results_function(path="test", components=components_list)
 
 
 def sesmg_main_including_premodel(
@@ -215,7 +232,7 @@ def sesmg_main_including_premodel(
         console_results: bool, timeseries_prep: list, solver: str,
         cluster_dh, pre_model_timeseries_prep: list,
         investment_boundaries: bool, investment_boundary_factor: int,
-        district_heating_path=None) -> None:
+        district_heating_path=None ) -> None:
     """
          This method solves the specified model definition file is
          solved twice. First with the pre-model time series preparatory
@@ -293,7 +310,8 @@ def sesmg_main_including_premodel(
             console_results=console_results,
             solver=solver,
             district_heating_path=district_heating_path,
-            cluster_dh=cluster_dh)
+            cluster_dh=cluster_dh,
+            lca_results=False)
     
     # create updated model definition for main-modeling run
     logging.info('UPDATING DATA BASED ON PRE-MODEL RESULTS')
@@ -319,4 +337,5 @@ def sesmg_main_including_premodel(
             console_results=console_results,
             solver=solver,
             district_heating_path=district_heating_path,
-            cluster_dh=cluster_dh)
+            cluster_dh=cluster_dh,
+            lca_results=False)

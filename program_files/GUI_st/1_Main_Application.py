@@ -528,11 +528,6 @@ def main_clear_cache_sidebar() -> None:
         # rerun whole script to update GUI settings
         st.experimental_rerun()
 
-#def main_lca_sidebar()
- #   """
-  #  Creating a select box weather to calculate lca results after the simulation
-   # """
-
 
 def create_result_paths() -> None:
     """
