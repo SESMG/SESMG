@@ -7,6 +7,8 @@ Your publication/thesis/project is missing? Contact us!
 
 Peer Review Papers
 ------------------
+- Klemm, Christian; Vennemann, Peter & Wiese, Frauke (2024): "**Potential-risk and no-regret options for urban energy system design — A sensitivity analysis**", *Sustainable Cities and Society*, 102, 105189, `https://doi.org/10.1016/j.scs.2024.105189 <https://doi.org/10.1016/j.scs.2024.105189>`_. 
+
 - Klemm, Christian; Wiese, Frauke & Vennemann, Peter (2023): "**Model-based run-time and memory reduction for a mixed-use multi-energy system model with high spatial resolution**", *Applied Energy*, 334, 120574, `https://doi.org/10.1016/j.apenergy.2022.120574 <https://doi.org/10.1016/j.apenergy.2022.120574>`_.
 
 - Becker, Gregor; Klemm, Christian & Vennemann, Peter (2022): "**Open Source District Heating Modeling Tools—A Comparative Study**", *Energies*, 15(21), 8277, `https://doi.org/10.3390/en15218277 <https://doi.org/10.3390/en15218277>`_.
@@ -26,6 +28,8 @@ Conference Proceedings
 Theses
 ------
 - Niederhöfer, Daniel (2024): "**Optimierung von Energiesystemmodellen mittels Monte-Carlo-Simulation**" (Master Thesis), Münster University of Applied Sciences.  `Mail <mailto:daniel@niederhoefer-nw.de>`_
+
+- Klemm, Christian (2023): "***Optimization of Sustainable Urban Energy Systems: Model Development and Application**" (PhD Thesis), Europa-Universität Flensburg. '`Accessible here <https://www.zhb-flensburg.de/?id=55512>`_
 
 - Budde, Janik (2022): "**Leitfaden zur Modellierung von Energiesystemen**" (Master Thesis), Münster University of Applied Sciences.  `Mail <mailto:janik.budde\@fh-muenster.de>`_
 
