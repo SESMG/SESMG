@@ -29,7 +29,7 @@ Theses
 ------
 - Niederhöfer, Daniel (2024): "**Optimierung von Energiesystemmodellen mittels Monte-Carlo-Simulation**" (Master Thesis), Münster University of Applied Sciences.  `Mail <mailto:daniel@niederhoefer-nw.de>`_
 
-- Klemm, Christian (2023): "***Optimization of Sustainable Urban Energy Systems: Model Development and Application**" (PhD Thesis), Europa-Universität Flensburg. '`Accessible here <https://www.zhb-flensburg.de/?id=55512>`_
+- Klemm, Christian (2023): "***Optimization of Sustainable Urban Energy Systems: Model Development and Application**" (PhD Thesis), Europa-Universität Flensburg. `Accessible here <https://www.zhb-flensburg.de/?id=55512>`_
 
 - Budde, Janik (2022): "**Leitfaden zur Modellierung von Energiesystemen**" (Master Thesis), Münster University of Applied Sciences.  `Mail <mailto:janik.budde\@fh-muenster.de>`_
 
