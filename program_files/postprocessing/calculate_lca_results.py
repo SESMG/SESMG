@@ -15,19 +15,6 @@ client = ipc.Client()
 #  https://github.com/GreenDelta/gdt-server
 #  darüber kann man sogar auch die dispose results machen
 
-# settings
-#pd.set_option('display.max_rows', None)  # Zeige alle Zeilen an
-#pd.set_option('display.max_columns', None)  # Zeige alle Spalten an
-#pd.set_option('display.width', None)  # Verwende die gesamte Breite des Terminals für die Anzeige
-
-
-def selected_model_run(path: str):
-    """
-    Später hier mal testen, wie man es lösen kann wenn schon Ergebnisse für den Lauf vorliegen, also den auf den
-    result_path direkt zugreifen.
-    Wahrscheinlich auch wichtig für die Ergebnisse von Pareto-Läufen!
-    """
-
 
 def add_uuid_to_components(nodes_data, components_list):
     """
@@ -61,9 +48,6 @@ def add_uuid_to_components(nodes_data, components_list):
                 # if not matching_components.empty:
                 uuid_mapping[row_first_value] = row_last_value
 
-                print("mapping")
-                print(uuid_mapping)
-
     # TODO heat sink window hat hier noch einen fehler!
     # remove 'shortage' and 'excess' in components_list['ID']
     components_list['ID'] = components_list['ID'].apply(lambda x: re.sub(r'_shortage$', '', x))
@@ -83,27 +67,36 @@ def add_lca_uuid(components):
         :type pd.DataFrame
     """
 
-    # TODO brauche ich zusätzlich eine Info über den Typ des Prozesses
-    # TODO das brauche ich eigentlich nur wenn ich safe ProBas nehme
-    # get type of the process out of the name
-
     # create empty lca dict
     lca_dict = {}
 
     # iterate through the rows in the df
     for index, row in components.iterrows():
-        component_id = row['ID']
-        output_value = row['output 1/kWh'] # TODO hier noch was anderes überlegen für die Technologien, die mehrere outputs haben
-        component_type = "system" #row['Type']
         uuid = row['uuid']
 
-        if not pd.isnull(uuid):
+        if uuid is not None and uuid != '' and not pd.isna(uuid):  # TODO Check if uuid is not None or an empty string
+
+            component_id = row['ID']
+            output_value = row['output 1/kWh'] # TODO hier noch was anderes überlegen für die Technologien, die mehrere outputs haben
+            uuid = row['uuid']
+            # get the right process based on the uuid
+            process_ref = client.get(o.Process, uuid)
+            # extract the type of the process
+            component_type = "System" if "System" in process_ref.name else "Unit" if "Unit" in process_ref.name else "Unknown"
+            # TODO brauche ich bei anderer Datenbank nicht
+            # fill lca dict with all important information
             lca_dict[component_id] = (output_value, uuid, component_type, )
 
-    print("first lca dict")
-    print(lca_dict)
     return lca_dict
-    # TODO überlegen ob die Infos Grundsätzlich über ein dict oder einen df übergeben werden sollten
+
+#def change_values_of_input_processes(lca_dict):
+
+    # iterate through each component of the dictionary
+ #   for component_id, (output_value, uuid, component_type) in lca_dict.items():
+        # check if the component is a system
+  #      if component_type == 'Unit':
+
+
 
 def create_product_system(lca_dict):
     """
@@ -113,19 +106,19 @@ def create_product_system(lca_dict):
         :type dict
     """
 
-    # set configutrations for not chosing automatic linking of the processes
+    # set configurations for not choosing automatic linking of the processes
     config = o.LinkingConfig(
-        prefer_unit_processes=False,  # beim linking werden stattdessesn System Processes ausgewählt
-        provider_linking=None,        # kein autolinking zulassen
+        prefer_unit_processes=False,  # do not choose automatic linking, but chose own system processes
+        provider_linking=None,
     )
 
     # List to store created system_refs
     system_refs = []
 
     # iterate through each component of the dictionary
-    for component_id, (output_value, component_type, uuid) in lca_dict.items():
+    for component_id, (output_value, uuid, component_type) in lca_dict.items():
         # check if the component is a system
-        if component_type == 'system':
+        if component_type == 'System':
             # create product system
             system_ref = client.create_product_system(client.get(o.Process, uuid), config)
             # update lca_dict with uuid2
@@ -140,8 +133,6 @@ def create_product_system(lca_dict):
 
 
 # TODO efficiencies anpassen / data harmonization
-# TODO am Ende Produktsysteme die so schon erstellt wurden nicht nochmal erstellen, sondern auf die zurückgreifen
-#  ansonsten ja beim jeden lauf neues Produktsystem (mit result.dispose!)
 
 
 def modify_unit_processes():
@@ -157,46 +148,41 @@ def calculate_results(lca_dict):
     Calculate the inventory of the system as well as the results of the impact assessment in one step
         :param lca_dict
         :type dict
+
+    :return: - **total_environmental_impacts** (dict)
+    :return: - **total_inventory_results** (dict)
     """
 
     # create empty dictionaries for the impacts and the inventory
     total_environmental_impacts = {}
     total_inventory_results = {}
 
-    # Calculate the results for the electricity mix example
-    # for product_system in product_system_ids:
+    # calculate the product systems
     for component_id, (output_value, component_type, uuid, uuid2) in lca_dict.items():
-    # TODO doch eventuell mit einer productsystem ids liste arbeiten, da das für die laufzeit wahrscheinlich
-    #  effizienter ist ?
-    # TODO nochmal prüfen, ob das jetzt so auch mit mehreren werten noch klappt
 
         setup = o.CalculationSetup(
             target=o.Ref(ref_type=o.RefType.ProductSystem, id=uuid2),
             # unit automatically takes the unit of the quantitive reference
-            impact_method=o.Ref(id="1f08b96a-0d3c-4e9e-88bf-09f2239f95e1"), # example: ReCiPe Midpoint H
-            amount=output_value,
+            impact_method=o.Ref(id="1f08b96a-0d3c-4e9e-88bf-09f2239f95e1"), # example: ReCiPe Midpoint H # TODO auch noch anpassen
+            amount=output_value,    # assumption: linear correlation with the output value
             allocation=None,        # no allocation, already predefined by ProBas
             nw_set=None             # no normalization or weighting set
         )
 
         result = client.calculate(setup)
-        result.wait_until_ready() #später hier noch n waiting print hinzufügen
-
-        print(result)
+        result.wait_until_ready()             # TODO später hier noch n waiting print hinzufügen
 
         # get inventory
-        # TODO grundsätzlich wichtig für interpretation, vielleicht später abfrage arbeiten um Laufzeit zu sparen?
-        # TODO außerdem auch wichtgit, wenn ich mich dazu entscheide die flows selber ein bischen zu analysieren,
-        #  und nicht nur das vorhefertigte impact assessment verwende
         inventory = result.get_total_flows()
 
-        # TODO noch testen wie berücksichtigt wird ob es input oder output ist, also nochmal händisch überprüfen
-
+        # loop through each flow in the inventory
         for i in inventory:
             flow_name = i.envi_flow.flow.name
+            # check if the flow is already in the inventory, if not add it
             if flow_name not in total_inventory_results:
-                total_inventory_results[flow_name] = {"amount": 0, "direction": i.envi_flow.is_input}
-            total_inventory_results[flow_name] =+ i.amount
+                total_inventory_results[flow_name] = \
+                    {"amount": 0, "unit": i.envi_flow.flow.ref_unit, "direction": i.envi_flow.is_input}
+            total_inventory_results[flow_name]["amount"] += i.amount
 
         # get results for the impact categories
         impact_categories = result.get_total_impacts()
@@ -205,90 +191,112 @@ def calculate_results(lca_dict):
         for i in impact_categories:
             impact_category_name = i.impact_category.name
             if impact_category_name not in total_environmental_impacts:
-                total_environmental_impacts[impact_category_name] = 0
-            total_environmental_impacts[impact_category_name] += i.amount
+                total_environmental_impacts[impact_category_name] = {"amount": 0, "unit": i.impact_category.ref_unit}
+            total_environmental_impacts[impact_category_name]["amount"] += i.amount
 
-        return total_environmental_impacts, total_inventory_results
+        print(total_inventory_results)
+        print(total_environmental_impacts)
+
+        # dispose results
+        result.dispose
+
+    return total_environmental_impacts, total_inventory_results
 
 
-def create_df_from_dict(data, category_col_name, value_col_name):
+def create_dataframes(total_inventory_results, total_environmental_impacts):
     """
-    Turn the two dictionaries for the inventory and the impact assessment results into dataframes for
-        :param data: dicitonary with data
-        :type dict
-        :param category_col_name: name of the category column
-        :type str
-        :param value_col_name: name of the value column
-        :type str
+    Creates Pandas DataFrames from total environmental impacts and inventory results
+        :param total_inventory_results: dictionary containing inventory results, where the key is the
+                                    flow name and the value is a dictionary with 'amount', 'unit', and 'direction'
+        :type total_inventory_results: dict
+        :param total_environmental_impacts: dictionary containing environmental impacts, where the key is the
+                                         flow name and the value is a dictionary with 'amount' and 'unit'
+        :type total_environmental_impacts: dict
+
+    :return: - **inventory_df** (pandas.DataFrame)
+    :return: - **impacts_df** (pandas.DataFrame)
     """
 
-    df = pd.DataFrame(
-        [(category, value)
-         for category, value in data.items()],
-        columns=[category_col_name, value_col_name]
-    )
+    # create df from the inventory dictionary
+    inventory_df = pd.DataFrame([(key, data['amount'], data['unit'], data['direction']) for
+                                 key, data in total_inventory_results.items()],
+                                columns=['flow_name', 'value', 'unit', 'input_flow'])
 
-    return df
+    # create df from the impact assessment dictionary
+    impacts_df = pd.DataFrame([(key, data['amount'], data['unit']) for
+                                 key, data in total_environmental_impacts.items()],
+                                columns=['flow_name', 'value', 'unit'])
+
+    print("besser")
+    print(inventory_df)
+    print(impacts_df)
+
+    return inventory_df, impacts_df
 
 
 # save the summarized results as a sub step in an excel file and dispose
-def export_and_save(total_environmental_impacts_df, total_inventory_df, system_refs):
+def export_and_save(inventory_df, impacts_df, path):
     """
     Export the given result to Excel and dispose it after the Export
         finished.
-        :param total_inventory_df
-        :type pd.DataFrame
-        :param total_environmental_impacts_df
-        :type pd.Dataframe
+        :param inventory_df
+        :type inventory_df: pd.DataFrame
+        :param impacts_df
+        :type impacts_df: pd.Dataframe
+        :param path
+        :type path: str
     """
-    # TODO input / output in den Ergebnissen noch anders darstellen
+    # TODO Eventuell input / output in den Ergebnissen noch anders darstellen
 
-    result_path = r"C:\Users\Franziska\Documents\SESMG\results"
-
-    # define the path for the excel files
-    excel_file1 = os.path.join(result_path, 'Inventory Results.xlsx')
-    excel_file2 = os.path.join(result_path, 'Total Environmental Impacts.xlsx')
+    # define the path for the .xlsx files
+    excel_file1 = os.path.join(path, 'inventory_results.xlsx')
+    excel_file2 = os.path.join(path, 'total_environmental_impacts.xlsx')
 
     # save dfs as excel files
-    total_inventory_df.to_excel(excel_file1, index=False)
-    total_environmental_impacts_df.to_excel(excel_file2, index=False)
+    inventory_df.to_excel(excel_file1, index=False)
+    impacts_df.to_excel(excel_file2, index=False)
 
-    print("Results were succesfully saved as excel files")
-
-    print("SR")
-    print(system_refs)
+    print("Results were successfully saved as excel files")
 
 
-    # TODO Dispose nochmal prüfen, geht eigentlich nur bei results und delete nur bei datasets
-    #  alternativ beim productsystem erstellen prüfen ob es das genannte schon gibt
-    # Speichern der IDs der Produktionsysteme
-    #system_ids = [system_ref.id for system_ref in system_refs]
+def delete_product_systems(system_refs):
+    """
+    Delete not longer needed product systems from the database
+        :param system_refs
+        :type system_refs: list
+    """
+    # TODO alternativ später beim productsystem erstellen prüfen ob es das genannte schon gibt
+    # save the IDs of the product systems
+    system_ids = [system_ref.id for system_ref in system_refs]
 
     # dispose the no longer needed product systems
-    #for system_id in system_ids:
-    #   client.delete(o.Ref(id=system_id))
-
-    #print("Product systems were disposed")
-
+    for system_id in system_ids:
+        client.delete(o.Ref(ref_type=o.RefType.ProductSystem,id=system_id))
+        print("Product systems were disposed")
 
 
-def calculate_lca_results_function (path: str, components: pd.DataFrame):
+def calculate_lca_results_function(path: str, components: pd.DataFrame):
+    """
+    Combine different functions to calculate the different lca results for a simulation as well as for the
+    different pareto points, if selected.
+        :param path
+        :type path: str
+        :param components
+        :type components: pd.DataFrame
+    """
 
-    # run preparational steps
+    # create the lca dict to prepare for the further lca calculation
     lca_dict = add_lca_uuid(components)
-
-    print("lca dict")
-    print(lca_dict)
 
     # run openlca steps
     lca_dict, system_refs = create_product_system(lca_dict)
     total_environmental_impacts, total_inventory_results = calculate_results(lca_dict)
 
-    #create the two dfs
-    total_environmental_impacts_df = create_df_from_dict(total_environmental_impacts, "Impact category", "Total Value")
-    total_inventory_df = create_df_from_dict(total_inventory_results, "Flow Name", "Amount")
-    print(total_environmental_impacts_df)
-    print(total_inventory_df)
+    # create the two dfs
+    inventory_df, impacts_df = create_dataframes(total_inventory_results, total_environmental_impacts, )
 
     # save the summarized results as a sub step in an excel file and dispose
-    export_and_save(total_environmental_impacts_df, total_inventory_df, system_refs)
+    export_and_save(inventory_df, impacts_df, path)
+
+    # delete no longer needed product systems
+    delete_product_systems(system_refs)

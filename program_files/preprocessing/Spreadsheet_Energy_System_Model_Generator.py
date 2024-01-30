@@ -223,7 +223,7 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
         components_list = add_uuid_to_components(nodes_data, components_list)
 
         # calculate results
-        calculate_lca_results_function(path="test", components=components_list)
+        calculate_lca_results_function(path=result_path, components=components_list)
 
 
 def sesmg_main_including_premodel(
