@@ -25,7 +25,11 @@ def change_unit(value_old_unit):
         :type value_old_unit: str
     :return: - **value_new_unit** (str) -
     """
-    value_new_unit = 3.6 * 10**(-6) * value_old_unit
+    value_new_unit = 3.6 * value_old_unit  #10**(-6) * value_old_unit
+
+    # TODO hier nur auf MJ gewechselt, weil dass scheinbar die festgelegte Einheit des Referenzflows ist!
+    #  könnte man später auch über die unit in dem caluclation setup lösen!
+
     return value_new_unit
 
 
@@ -263,7 +267,9 @@ def calculate_results(lca_dict):
             # calculation setup
             setup = o.CalculationSetup(
                 target=o.Ref(ref_type=o.RefType.ProductSystem, id=uuid2),
+                # TODO Beispiel aus der doku: unit=count.unit_group.ref_unit
                 # unit automatically takes the unit of the quantitive reference
+                # TODO vielleicht gibt es hier auch einen Fehler und es wird nicht automatisiert die unit genommen?
                 impact_method=o.Ref(id="1f08b96a-0d3c-4e9e-88bf-09f2239f95e1"),  # example: ReCiPe Midpoint H # TODO auch noch anpassen
                 amount=output_value,    # assumption: linear correlation with the output value
                 allocation=None,        # no allocation, already predefined by ProBas
@@ -272,6 +278,10 @@ def calculate_results(lca_dict):
 
             result = client.calculate(setup)
             result.wait_until_ready()             # TODO später hier noch n waiting print hinzufügen
+
+
+            print("result_check")
+            print(result)
 
             # get inventory
             inventory = result.get_total_flows()
@@ -297,7 +307,7 @@ def calculate_results(lca_dict):
                 total_environmental_impacts[impact_category_name]["amount"] += i.amount
 
             # dispose results
-            result.dispose
+            # result.dispose
 
     return total_environmental_impacts, total_inventory_results
 

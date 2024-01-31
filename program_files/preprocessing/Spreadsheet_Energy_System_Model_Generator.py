@@ -131,6 +131,9 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
             timeseries_prep_param=timeseries_prep,
             nodes_data=nodes_data,
             result_path=result_path)
+
+    print("var_cost_factor")
+    print(variable_cost_factor)
     
     if timeseries_prep[0] != 'none':
         model_definition_file = result_path + "/modified_model_definition.xlsx"
@@ -237,7 +240,7 @@ def sesmg_main_including_premodel(
         console_results: bool, timeseries_prep: list, solver: str,
         cluster_dh, pre_model_timeseries_prep: list,
         investment_boundaries: bool, investment_boundary_factor: int,
-        district_heating_path=None ) -> None:
+        district_heating_path=None) -> None:
     """
          This method solves the specified model definition file is
          solved twice. First with the pre-model time series preparatory

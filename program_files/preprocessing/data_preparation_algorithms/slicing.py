@@ -155,7 +155,7 @@ def data_set_slicing2(n_days: int, data_set: pandas.DataFrame, period: str
     return prep_data_set
 
 
-def timeseries_slicing(n_days: int, nodes_data: dict, period: str) -> None:
+def timeseries_slicing(n_days: int, nodes_data: dict, period: str):
     """
         uses every n-th period of the given data_set and cuts the rest
         out of the data_set

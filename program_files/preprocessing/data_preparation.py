@@ -158,7 +158,6 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str):
     timesteps = factor_dict.get(period)
     variable_cost_factor = \
         int(nodes_data['energysystem']['periods']) / (timesteps * clusters)
-
     # log the calculated variable cost factor
     logging.info('\t VARIABLE COST FACTOR')
     logging.info("\t " + str(variable_cost_factor))
@@ -179,6 +178,9 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str):
         nodes_data['energysystem']['start date'] \
         + pandas.Timedelta(timedelta)
     nodes_data['energysystem']['periods'] = (timesteps * clusters)
+
+    print("mate")
+    print(variable_cost_factor)
 
     return variable_cost_factor
 
@@ -377,12 +379,12 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
     elif data_prep == 'slicing A':
         variable_cost_factor = slicing.timeseries_slicing(n_days=int(days_per_cluster),
                                    nodes_data=nodes_data,
-                                   period=cluster_period),
+                                   period=cluster_period)
     # delete every n-th period
     elif data_prep == 'slicing B':
         variable_cost_factor = slicing.timeseries_slicing2(n_days=int(days_per_cluster),
                                     nodes_data=nodes_data,
-                                    period=cluster_period),
+                                    period=cluster_period)
 
     # DOWNSAMPLING ALGORITHM
     # use every n-th period
@@ -415,6 +417,6 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
         nodes_data['energysystem'].to_excel(writer, sheet_name='energysystem')
         nodes_data['sinks'].to_excel(writer, sheet_name='sinks')
         writer.close()
-        variable_cost_factor = 365/18
+        variable_cost_factor = 1
 
     return variable_cost_factor
