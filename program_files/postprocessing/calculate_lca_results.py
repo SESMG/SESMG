@@ -1,12 +1,13 @@
+import logging
+
 import olca_ipc as ipc
 import olca_schema as o
 import pandas as pd
 import os
 import re
 
-
 # aktuelle Annahme: alle möglichen Processe sind bereits in der Datenbank vorhanden (sonst create_process)
-# TODO create product system: kann man aus mehreren processen ein product system erstellen oder geht das nicht???
+# TODO Speicher Prozess dazu selbst erstellen!
 
 # run the jason rpc protokoll
 client = ipc.Client()
@@ -14,6 +15,18 @@ client = ipc.Client()
 #  ja kann man aber relativ kompliziert, also noch mal in Ruhe angucken oder Gregor fragen
 #  https://github.com/GreenDelta/gdt-server
 #  darüber kann man sogar auch die dispose results machen
+
+
+# TODO kann man später eventuell automatisiert über die pints bib machen
+def change_unit(value_old_unit):
+    """
+    Change the unit from kWh to TJ which is the unit for energy in openLCA
+        :param value_old_unit
+        :type value_old_unit: str
+    :return: - **value_new_unit** (str) -
+    """
+    value_new_unit = 3.6 * 10**(-6) * value_old_unit
+    return value_new_unit
 
 
 def add_uuid_to_components(nodes_data, components_list):
@@ -26,8 +39,11 @@ def add_uuid_to_components(nodes_data, components_list):
             as there technical and economical values
         :type components_list: pd.DataFrame
 
-    :return: - **components_list** (list) - copy of the list containing the additional uuids.
+    :return: - **components_list** (pd.DataFrame) - copy of the df containing the additional uuids.
     """
+
+    #print("node")
+    #print(nodes_data.items())
 
     # create dict for uuids
     uuid_mapping = {}
@@ -37,7 +53,7 @@ def add_uuid_to_components(nodes_data, components_list):
 
         # eliminate sheets that are not needed for the lca caluclation
         if key.lower() not in ["timeseries", "weather data", "pipe types",
-                               "competition constraints", "energysystem", "district heating", "insulation"]:
+                               "competition constraints", "energysystem", "district heating"]: #, "insulation"]:
 
             # loop through each row of the dataframe in the values of the dict
             for index, row in values.iterrows():
@@ -45,10 +61,10 @@ def add_uuid_to_components(nodes_data, components_list):
                 row_last_value = row.iloc[-1]  # Last value in current row
 
                 # If there's a match, add the uuid to the matching components
-                # if not matching_components.empty:
                 uuid_mapping[row_first_value] = row_last_value
 
-    # TODO heat sink window hat hier noch einen fehler!
+    # TODO heat sink window insulation erkennt zusätzlich Spalten nicht an, vielleicht einmal Gregor fragen
+    #  kein Fehler, nur komisch
     # remove 'shortage' and 'excess' in components_list['ID']
     components_list['ID'] = components_list['ID'].apply(lambda x: re.sub(r'_shortage$', '', x))
     components_list['ID'] = components_list['ID'].apply(lambda x: re.sub(r'_excess$', '', x))
@@ -57,7 +73,25 @@ def add_uuid_to_components(nodes_data, components_list):
     components_list['uuid'] = components_list['ID'].map(uuid_mapping)
 
     print(components_list)
+    print(type(components_list))
     return components_list
+
+
+def consider_var_cost_factor(components_list, variable_cost_factor):
+    """
+    Adjusts specific columns in the given DataFrame by multiplying them with the provided variable cost factor.
+
+        :param components_list: DataFrame containing the components data.
+        :type components_list: pandas.core.frame.DataFrame
+        :param variable_cost_factor: Factor to scale specific columns in the DataFrame.
+        :type variable_cost_factor: float
+    """
+
+    # Indexer for columns 3 to 6 (0-based)
+    columns_to_multiply = components_list.columns[2:6]
+
+    # Multiplication by the variable_cost_factor
+    components_list[columns_to_multiply] *= variable_cost_factor
 
 
 def add_lca_uuid(components):
@@ -75,9 +109,14 @@ def add_lca_uuid(components):
         uuid = row['uuid']
 
         if uuid is not None and uuid != '' and not pd.isna(uuid):  # TODO Check if uuid is not None or an empty string
+            # TODO wenn insulation Frage geklärt, kann diese Zeile vereinfacht werden
 
             component_id = row['ID']
-            output_value = row['output 1/kWh'] # TODO hier noch was anderes überlegen für die Technologien, die mehrere outputs haben
+            output_value_old = row['output 1/kWh'] # TODO hier noch was anderes überlegen für die Technologien, die mehrere outputs haben
+
+            # change unit to TJ (unit in the database)
+            output_value = change_unit(output_value_old) #TODO vielleicht noch vereinheitlicht an anderer Stelle besser
+
             uuid = row['uuid']
             # get the right process based on the uuid
             process_ref = client.get(o.Process, uuid)
@@ -89,13 +128,53 @@ def add_lca_uuid(components):
 
     return lca_dict
 
-#def change_values_of_input_processes(lca_dict):
+
+def change_values_of_input_processes(lca_dict):
+    """
+        :param lca_dict
+        :type lca_dict: dict
+    """
+
+    #print(lca_dict)
+
+    # TODO Achtung aktuell von dem Unit Prozess
+    #  am Ende überlegen ob so beibehalten oder schon in OpenLCA anpassen, um mehr unsicherheiten zu vermeiden?
+    # Provider Ref
+    # TODO muss noch automatisiert werden
+    gas_uuid = "1f57d050-a740-445a-ab26-955df9ed9095"
 
     # iterate through each component of the dictionary
- #   for component_id, (output_value, uuid, component_type) in lca_dict.items():
-        # check if the component is a system
-  #      if component_type == 'Unit':
+    for component_id, (output_value, uuid, component_type) in lca_dict.items():
 
+        # TODO so anpassen, dass es auch für anere Technologien funktioniert, so nur provisorisch für Gas
+        if component_id == 'ID_gas_bus':
+            gas_input = output_value
+            gas_uuid == uuid
+
+        # check if the component is a system
+        if component_type == 'Unit':
+
+            # get the right input flow
+            process_ref = client.get(o.Process, uuid)
+
+            # loop through the different exchanges (the inputs and outputs of a process)
+            for exchange in process_ref.exchanges:
+
+                # check if there are inputs and outputs with a default provider
+                if exchange.default_provider is not None:
+                    default_provider_ref = exchange.default_provider
+                    ref_id = default_provider_ref.id
+
+                    # check of some of the providers are already at another place in the energy system
+                    # goal here is to harmonize the data
+                    # TODO hier die uuid aus dem anderen process nehmen
+                    if gas_uuid == ref_id:
+                        exchange.amount = gas_input/output_value
+                        # TODO entweder input value hinzufügen oder output value von dem Gasstrom? was ist besser?
+                        #  aktuell wird einfach output value von dem Gasstrom hinzugefügt
+                        print("new values were added to the process flows")
+                        # change value(s) in the database
+                        client.put(process_ref)
 
 
 def create_product_system(lca_dict):
@@ -107,9 +186,15 @@ def create_product_system(lca_dict):
     """
 
     # set configurations for not choosing automatic linking of the processes
-    config = o.LinkingConfig(
+    config1 = o.LinkingConfig(
         prefer_unit_processes=False,  # do not choose automatic linking, but chose own system processes
         provider_linking=None,
+    )
+
+    # set configuration for the unit processes that are manually connected
+    config2 = o.LinkingConfig(
+        prefer_unit_processes=False,
+        provider_linking=o.ProviderLinking.IGNORE_DEFAULTS
     )
 
     # List to store created system_refs
@@ -117,30 +202,39 @@ def create_product_system(lca_dict):
 
     # iterate through each component of the dictionary
     for component_id, (output_value, uuid, component_type) in lca_dict.items():
+
         # check if the component is a system
         if component_type == 'System':
             # create product system
-            system_ref = client.create_product_system(client.get(o.Process, uuid), config)
+            system_ref = client.create_product_system(client.get(o.Process, uuid), config1)
             # update lca_dict with uuid2
             lca_dict[component_id] = (output_value, component_type, uuid, system_ref.id)
             # add the created system_ref to the list
             system_refs.append(system_ref)
 
+        # check if the component is a system
+        if component_type == 'Unit':
+
+            # TODO noch ne schönere Lösung überlegen, auch für andere Beispiele
+            if component_id == 'ID_gas_bus':
+                continue
+
+            else:
+                # create product system
+                system_ref = client.create_product_system(client.get(o.Process, uuid), config2)
+
+                print("product system created")
+                print(system_ref)
+
+                # update lca_dict with uuid2
+                lca_dict[component_id] = (output_value, component_type, uuid, system_ref.id)
+                # add the created system_ref to the list
+                system_refs.append(system_ref)
+
     print("lca dict_new")
     print(lca_dict)
 
     return lca_dict, system_refs
-
-
-# TODO efficiencies anpassen / data harmonization
-
-
-def modify_unit_processes():
-    """
-    wahrscheinlich lösen mit Process Link = connection between two processes in a product system
-    Allerdings nochmal hinten angestellt, das muss ich nur machen wenn ich 100%ig ProBas verwende!
-    """
-    None
 
 
 def calculate_results(lca_dict):
@@ -157,48 +251,53 @@ def calculate_results(lca_dict):
     total_environmental_impacts = {}
     total_inventory_results = {}
 
-    # calculate the product systems
-    for component_id, (output_value, component_type, uuid, uuid2) in lca_dict.items():
+    # calculate the product systems only for the components where product systems were created earlier
+    for component_id, values in lca_dict.items():
+        if len(values) == 4:
+            output_value, component_type, uuid, uuid2 = values
 
-        setup = o.CalculationSetup(
-            target=o.Ref(ref_type=o.RefType.ProductSystem, id=uuid2),
-            # unit automatically takes the unit of the quantitive reference
-            impact_method=o.Ref(id="1f08b96a-0d3c-4e9e-88bf-09f2239f95e1"), # example: ReCiPe Midpoint H # TODO auch noch anpassen
-            amount=output_value,    # assumption: linear correlation with the output value
-            allocation=None,        # no allocation, already predefined by ProBas
-            nw_set=None             # no normalization or weighting set
-        )
+            # Größenordnungen überprüfen
+            print("output")
+            print(output_value)
 
-        result = client.calculate(setup)
-        result.wait_until_ready()             # TODO später hier noch n waiting print hinzufügen
+            # calculation setup
+            setup = o.CalculationSetup(
+                target=o.Ref(ref_type=o.RefType.ProductSystem, id=uuid2),
+                # unit automatically takes the unit of the quantitive reference
+                impact_method=o.Ref(id="1f08b96a-0d3c-4e9e-88bf-09f2239f95e1"),  # example: ReCiPe Midpoint H # TODO auch noch anpassen
+                amount=output_value,    # assumption: linear correlation with the output value
+                allocation=None,        # no allocation, already predefined by ProBas
+                nw_set=None             # no normalization or weighting set
+            )
 
-        # get inventory
-        inventory = result.get_total_flows()
+            result = client.calculate(setup)
+            result.wait_until_ready()             # TODO später hier noch n waiting print hinzufügen
 
-        # loop through each flow in the inventory
-        for i in inventory:
-            flow_name = i.envi_flow.flow.name
-            # check if the flow is already in the inventory, if not add it
-            if flow_name not in total_inventory_results:
-                total_inventory_results[flow_name] = \
-                    {"amount": 0, "unit": i.envi_flow.flow.ref_unit, "direction": i.envi_flow.is_input}
-            total_inventory_results[flow_name]["amount"] += i.amount
+            # get inventory
+            inventory = result.get_total_flows()
 
-        # get results for the impact categories
-        impact_categories = result.get_total_impacts()
+            # loop through each flow in the inventory
+            for i in inventory:
+                flow_name = i.envi_flow.flow.name
+                # check if the flow is already in the inventory, if not add it
+                if flow_name not in total_inventory_results:
+                    total_inventory_results[flow_name] = \
+                        {"amount": 0, "unit": i.envi_flow.flow.ref_unit, "direction": i.envi_flow.is_input}
+                total_inventory_results[flow_name]["amount"] += i.amount
 
-        # summarize the results for the different product systems over the impact categories
-        for i in impact_categories:
-            impact_category_name = i.impact_category.name
-            if impact_category_name not in total_environmental_impacts:
-                total_environmental_impacts[impact_category_name] = {"amount": 0, "unit": i.impact_category.ref_unit}
-            total_environmental_impacts[impact_category_name]["amount"] += i.amount
+            # get results for the impact categories
+            impact_categories = result.get_total_impacts()
 
-        print(total_inventory_results)
-        print(total_environmental_impacts)
+            # summarize the results for the different product systems over the impact categories
+            for i in impact_categories:
+                impact_category_name = i.impact_category.name
+                if impact_category_name not in total_environmental_impacts:
+                    total_environmental_impacts[impact_category_name] = \
+                        {"amount": 0, "unit": i.impact_category.ref_unit}
+                total_environmental_impacts[impact_category_name]["amount"] += i.amount
 
-        # dispose results
-        result.dispose
+            # dispose results
+            result.dispose
 
     return total_environmental_impacts, total_inventory_results
 
@@ -227,7 +326,7 @@ def create_dataframes(total_inventory_results, total_environmental_impacts):
                                  key, data in total_environmental_impacts.items()],
                                 columns=['flow_name', 'value', 'unit'])
 
-    print("besser")
+    print("result dfs")
     print(inventory_df)
     print(impacts_df)
 
@@ -270,9 +369,9 @@ def delete_product_systems(system_refs):
     system_ids = [system_ref.id for system_ref in system_refs]
 
     # dispose the no longer needed product systems
-    for system_id in system_ids:
-        client.delete(o.Ref(ref_type=o.RefType.ProductSystem,id=system_id))
-        print("Product systems were disposed")
+    #for system_id in system_ids:
+     #   client.delete(o.Ref(ref_type=o.RefType.ProductSystem,id=system_id))
+      #  print("Product systems were disposed")
 
 
 def calculate_lca_results_function(path: str, components: pd.DataFrame):
@@ -287,6 +386,9 @@ def calculate_lca_results_function(path: str, components: pd.DataFrame):
 
     # create the lca dict to prepare for the further lca calculation
     lca_dict = add_lca_uuid(components)
+
+    # data harmonization
+    change_values_of_input_processes(lca_dict)
 
     # run openlca steps
     lca_dict, system_refs = create_product_system(lca_dict)

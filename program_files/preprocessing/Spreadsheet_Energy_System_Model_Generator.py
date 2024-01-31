@@ -23,7 +23,8 @@ from program_files.preprocessing.components import (
     district_heating, Bus, Source, Sink, Transformer, Storage, Link)
 from program_files.preprocessing.create_graph import ESGraphRenderer
 from program_files.postprocessing import create_results
-from program_files.postprocessing.calculate_lca_results import calculate_lca_results_function, add_uuid_to_components
+from program_files.postprocessing.calculate_lca_results import calculate_lca_results_function, add_uuid_to_components, \
+    consider_var_cost_factor
 from program_files.processing import optimize_model
 from program_files.preprocessing.pre_model_analysis import \
     update_model_according_pre_model_results
@@ -126,7 +127,7 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
                 nodes_data=nodes_data)
     
     # Timeseries Preprocessing
-    data_preparation.timeseries_preparation(
+    variable_cost_factor = data_preparation.timeseries_preparation(
             timeseries_prep_param=timeseries_prep,
             nodes_data=nodes_data,
             result_path=result_path)
@@ -221,6 +222,10 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
 
         # add the uuids to the components_list at the right place
         components_list = add_uuid_to_components(nodes_data, components_list)
+
+        # scale results with the var_cost_factor
+        consider_var_cost_factor(components_list, variable_cost_factor)
+        # TODO funktioniert so, alternativ könnte man das noch die compnents_list als return mitnehmen
 
         # calculate results
         calculate_lca_results_function(path=result_path, components=components_list)

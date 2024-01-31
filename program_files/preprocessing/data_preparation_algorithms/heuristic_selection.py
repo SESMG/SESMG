@@ -10,7 +10,7 @@ from program_files.preprocessing.data_preparation \
 
 
 def hierarchical_selection(nodes_data: dict, scheme: str, period: str,
-                           seasons: int) -> None:
+                           seasons: int):
     """
         Algorithm for the hierarchical selection of representative time
         periods of a weather data set. In this embodiment, the following
@@ -37,6 +37,9 @@ def hierarchical_selection(nodes_data: dict, scheme: str, period: str,
         :return: - **nodes_data** (dict): modified SESMG-nodes data, \
                     containing weather data, energy system parameters \
                     and timeseries
+                 - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+                    can be used to scale the results up for a year
+
     """
     
     def extract_data_slices(data_set: pandas.DataFrame, timesteps: int
@@ -314,7 +317,7 @@ def hierarchical_selection(nodes_data: dict, scheme: str, period: str,
     def select_heuristic_periods(heuristic_periods: list,
                                  period_data_slices: list,
                                  season_data: list,
-                                 seasons: int) -> pandas.DataFrame:
+                                 seasons: int):
         """
             Selects and returns representative values of time series
             according to a given heuristic scheme.
@@ -333,6 +336,8 @@ def hierarchical_selection(nodes_data: dict, scheme: str, period: str,
             :type seasons: int
             :return - **prep_weather_data** (pandas.DataFrame) - \
                 dataframe containing the sampled weather data data frame
+                    - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+                can be used to scale the results up for a year
         """
         prep_weather_data = pandas.DataFrame()
         
@@ -441,7 +446,9 @@ def hierarchical_selection(nodes_data: dict, scheme: str, period: str,
     else:
         raise ValueError("period chosen not possible")
     
-    variable_costs_date_adaption(nodes_data=nodes_data,
+    variable_cost_factor = variable_costs_date_adaption(nodes_data=nodes_data,
                                  clusters=int(len(nodes_data['weather data'])
                                               / period_length),
                                  period=period)
+
+    return variable_cost_factor
