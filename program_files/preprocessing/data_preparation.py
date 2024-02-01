@@ -347,9 +347,15 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
     cluster_period = timeseries_prep_param[3]
     cluster_seasons = int(timeseries_prep_param[4])
 
+
+    print("dataprep")
+    print(data_prep)
+
+
     if data_prep != 'none':
         # Adapting Standard Load Profile-Sinks
         slp_sink_adaption(nodes_data=nodes_data)
+        variable_cost_factor = 1
 
     # K-MEANS ALGORITHM
     if data_prep == 'k_means':
@@ -417,6 +423,8 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
         nodes_data['energysystem'].to_excel(writer, sheet_name='energysystem')
         nodes_data['sinks'].to_excel(writer, sheet_name='sinks')
         writer.close()
-        variable_cost_factor = 1
+
+
+
 
     return variable_cost_factor

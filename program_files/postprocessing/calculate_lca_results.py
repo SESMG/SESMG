@@ -1,5 +1,3 @@
-import logging
-
 import olca_ipc as ipc
 import olca_schema as o
 import pandas as pd
@@ -45,10 +43,6 @@ def add_uuid_to_components(nodes_data, components_list):
 
     :return: - **components_list** (pd.DataFrame) - copy of the df containing the additional uuids.
     """
-
-    #print("node")
-    #print(nodes_data.items())
-
     # create dict for uuids
     uuid_mapping = {}
 
@@ -64,8 +58,14 @@ def add_uuid_to_components(nodes_data, components_list):
                 row_first_value = row.iloc[0]  # First value in current row
                 row_last_value = row.iloc[-1]  # Last value in current row
 
-                # If there's a match, add the uuid to the matching components
-                uuid_mapping[row_first_value] = row_last_value
+                # check wether the component has in "input" column for data harmonization
+                if "input" in values.columns:
+                    input_value = row["input"]
+                else:
+                    input_value = "None"
+
+                # If there's a match, add the uuid and input value to the matching components
+                uuid_mapping[row_first_value] = {'uuid': row_last_value, 'input': input_value}
 
     # TODO heat sink window insulation erkennt zusätzlich Spalten nicht an, vielleicht einmal Gregor fragen
     #  kein Fehler, nur komisch
@@ -73,11 +73,13 @@ def add_uuid_to_components(nodes_data, components_list):
     components_list['ID'] = components_list['ID'].apply(lambda x: re.sub(r'_shortage$', '', x))
     components_list['ID'] = components_list['ID'].apply(lambda x: re.sub(r'_excess$', '', x))
 
-    # adds the uuids to the components list
-    components_list['uuid'] = components_list['ID'].map(uuid_mapping)
+    # adds the uuids and input values to the components list
+    components_list['uuid'] = components_list['ID'].map(lambda x: uuid_mapping.get(x, {}).get('uuid'))
+    components_list['input'] = components_list['ID'].map(lambda x: uuid_mapping.get(x, {}).get('input'))
 
+    print("components list")
     print(components_list)
-    print(type(components_list))
+
     return components_list
 
 
@@ -116,6 +118,7 @@ def add_lca_uuid(components):
             # TODO wenn insulation Frage geklärt, kann diese Zeile vereinfacht werden
 
             component_id = row['ID']
+            change_input_flow = row['input']
             output_value_old = row['output 1/kWh'] # TODO hier noch was anderes überlegen für die Technologien, die mehrere outputs haben
 
             # change unit to TJ (unit in the database)
@@ -128,7 +131,7 @@ def add_lca_uuid(components):
             component_type = "System" if "System" in process_ref.name else "Unit" if "Unit" in process_ref.name else "Unknown"
             # TODO brauche ich bei anderer Datenbank nicht
             # fill lca dict with all important information
-            lca_dict[component_id] = (output_value, uuid, component_type, )
+            lca_dict[component_id] = (change_input_flow, output_value, uuid, component_type, )
 
     return lca_dict
 
@@ -139,24 +142,18 @@ def change_values_of_input_processes(lca_dict):
         :type lca_dict: dict
     """
 
-    #print(lca_dict)
-
-    # TODO Achtung aktuell von dem Unit Prozess
-    #  am Ende überlegen ob so beibehalten oder schon in OpenLCA anpassen, um mehr unsicherheiten zu vermeiden?
-    # Provider Ref
-    # TODO muss noch automatisiert werden
-    gas_uuid = "1f57d050-a740-445a-ab26-955df9ed9095"
+    print("lca_dict_today")
+    print(lca_dict)
 
     # iterate through each component of the dictionary
-    for component_id, (output_value, uuid, component_type) in lca_dict.items():
+    for component_id, (change_input_flow, output_value, uuid, component_type) in lca_dict.items():
 
-        # TODO so anpassen, dass es auch für anere Technologien funktioniert, so nur provisorisch für Gas
-        if component_id == 'ID_gas_bus':
-            gas_input = output_value
-            gas_uuid == uuid
+        # check weather the component has is a unit process and has an input that needs to be harmonized
+        if change_input_flow != "None" and component_type == 'Unit':
 
-        # check if the component is a system
-        if component_type == 'Unit':
+            # TODO Achtung aktuell von dem Unit Prozess, wird dann mir prefered system prozesses geändert
+            selected_uuid = lca_dict.get(change_input_flow, [None, None, None, None])[2]
+            selected_output = lca_dict.get(change_input_flow, [None, None, None, None])[1]
 
             # get the right input flow
             process_ref = client.get(o.Process, uuid)
@@ -170,12 +167,11 @@ def change_values_of_input_processes(lca_dict):
                     ref_id = default_provider_ref.id
 
                     # check of some of the providers are already at another place in the energy system
-                    # goal here is to harmonize the data
-                    # TODO hier die uuid aus dem anderen process nehmen
-                    if gas_uuid == ref_id:
-                        exchange.amount = gas_input/output_value
-                        # TODO entweder input value hinzufügen oder output value von dem Gasstrom? was ist besser?
-                        #  aktuell wird einfach output value von dem Gasstrom hinzugefügt
+                    if selected_uuid == ref_id:
+                        exchange.amount = selected_output / output_value
+                        # TODO durch Verwendung des Verhältnisses hier keinen Einfluss auf den neuen Wert
+                        print("changed value")
+                        print(exchange.amount)
                         print("new values were added to the process flows")
                         # change value(s) in the database
                         client.put(process_ref)
@@ -205,35 +201,30 @@ def create_product_system(lca_dict):
     system_refs = []
 
     # iterate through each component of the dictionary
-    for component_id, (output_value, uuid, component_type) in lca_dict.items():
+    for component_id, (change_input_flow, output_value, uuid, component_type) in lca_dict.items():
 
         # check if the component is a system
         if component_type == 'System':
             # create product system
             system_ref = client.create_product_system(client.get(o.Process, uuid), config1)
             # update lca_dict with uuid2
-            lca_dict[component_id] = (output_value, component_type, uuid, system_ref.id)
+            lca_dict[component_id] = (change_input_flow, output_value, component_type, uuid, system_ref.id)
             # add the created system_ref to the list
             system_refs.append(system_ref)
 
         # check if the component is a system
-        if component_type == 'Unit':
+        if change_input_flow != "None" and component_type == 'Unit':
 
-            # TODO noch ne schönere Lösung überlegen, auch für andere Beispiele
-            if component_id == 'ID_gas_bus':
-                continue
+            # create product system
+            system_ref = client.create_product_system(client.get(o.Process, uuid), config2)
 
-            else:
-                # create product system
-                system_ref = client.create_product_system(client.get(o.Process, uuid), config2)
+            print("product system created")
+            print(system_ref)
 
-                print("product system created")
-                print(system_ref)
-
-                # update lca_dict with uuid2
-                lca_dict[component_id] = (output_value, component_type, uuid, system_ref.id)
-                # add the created system_ref to the list
-                system_refs.append(system_ref)
+            # update lca_dict with uuid2
+            lca_dict[component_id] = (change_input_flow, output_value, component_type, uuid, system_ref.id)
+            # add the created system_ref to the list
+            system_refs.append(system_ref)
 
     print("lca dict_new")
     print(lca_dict)
@@ -257,8 +248,8 @@ def calculate_results(lca_dict):
 
     # calculate the product systems only for the components where product systems were created earlier
     for component_id, values in lca_dict.items():
-        if len(values) == 4:
-            output_value, component_type, uuid, uuid2 = values
+        if len(values) == 5:
+            change_input_flow, output_value, component_type, uuid, uuid2 = values
 
             # Größenordnungen überprüfen
             print("output")
@@ -379,9 +370,9 @@ def delete_product_systems(system_refs):
     system_ids = [system_ref.id for system_ref in system_refs]
 
     # dispose the no longer needed product systems
-    #for system_id in system_ids:
-     #   client.delete(o.Ref(ref_type=o.RefType.ProductSystem,id=system_id))
-      #  print("Product systems were disposed")
+    for system_id in system_ids:
+        client.delete(o.Ref(ref_type=o.RefType.ProductSystem,id=system_id))
+        print("Product systems were disposed")
 
 
 def calculate_lca_results_function(path: str, components: pd.DataFrame):
