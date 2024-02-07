@@ -69,6 +69,7 @@ def add_uuid_to_components(nodes_data, components_list):
 
     # TODO heat sink window insulation erkennt zusätzlich Spalten nicht an, vielleicht einmal Gregor fragen
     #  kein Fehler, nur komisch
+    # TODO noch hinzufügen, ein bus kann grundsätzlich acuh beides haben!
     # remove 'shortage' and 'excess' in components_list['ID']
     components_list['ID'] = components_list['ID'].apply(lambda x: re.sub(r'_shortage$', '', x))
     components_list['ID'] = components_list['ID'].apply(lambda x: re.sub(r'_excess$', '', x))
@@ -128,7 +129,7 @@ def add_lca_uuid(components):
             # get the right process based on the uuid
             process_ref = client.get(o.Process, uuid)
             # extract the type of the process
-            component_type = "System" if "System" in process_ref.name else "Unit" if "Unit" in process_ref.name else "Unknown"
+            component_type = "System" if "LCI" in process_ref.name else "Unit" if "UP" in process_ref.name else "Unknown"
             # TODO brauche ich bei anderer Datenbank nicht
             # fill lca dict with all important information
             lca_dict[component_id] = (change_input_flow, output_value, uuid, component_type, )
@@ -142,16 +143,19 @@ def change_values_of_input_processes(lca_dict):
         :type lca_dict: dict
     """
 
-    print("lca_dict_today")
-    print(lca_dict)
+    # create copy of the dictionary
+    lca_dict_copy = dict(lca_dict)
 
     # iterate through each component of the dictionary
-    for component_id, (change_input_flow, output_value, uuid, component_type) in lca_dict.items():
+    for component_id, (change_input_flow, output_value, uuid, component_type) in lca_dict_copy.items():
 
-        # check weather the component has is a unit process and has an input that needs to be harmonized
+        # check weather the component is a unit process and has an input that needs to be harmonized
         if change_input_flow != "None" and component_type == 'Unit':
 
-            # TODO Achtung aktuell von dem Unit Prozess, wird dann mir prefered system prozesses geändert
+            print("componentID")
+            print(component_id)
+
+            # get the corresponding uuid and output of the component that in listed as an input flow from the lca_dict
             selected_uuid = lca_dict.get(change_input_flow, [None, None, None, None])[2]
             selected_output = lca_dict.get(change_input_flow, [None, None, None, None])[1]
 
@@ -166,15 +170,31 @@ def change_values_of_input_processes(lca_dict):
                     default_provider_ref = exchange.default_provider
                     ref_id = default_provider_ref.id
 
+                    # TODO nochmal prüfen, warum das gerade nicht funktioniert? Liegt wahrscheinlich irgendwie am löschen oder so
+
+                    print("selected uuid")
+                    print(selected_uuid) #passt
+
+                    print("ref_ID")
+                    print(ref_id)
+
                     # check of some of the providers are already at another place in the energy system
                     if selected_uuid == ref_id:
                         exchange.amount = selected_output / output_value
-                        # TODO durch Verwendung des Verhältnisses hier keinen Einfluss auf den neuen Wert
+                        # because of the relation of the outputs no influence on the unit of the new value
                         print("changed value")
                         print(exchange.amount)
                         print("new values were added to the process flows")
                         # change value(s) in the database
                         client.put(process_ref)
+
+            # remove the input flows thar are already considered from the dict to avoid double counting
+            del lca_dict[change_input_flow]
+
+    print("lca2")
+    print(lca_dict)
+
+    return lca_dict
 
 
 def create_product_system(lca_dict):
@@ -185,6 +205,9 @@ def create_product_system(lca_dict):
         :type dict
     """
 
+    print("current dict status")
+    print(lca_dict)
+
     # set configurations for not choosing automatic linking of the processes
     config1 = o.LinkingConfig(
         prefer_unit_processes=False,  # do not choose automatic linking, but chose own system processes
@@ -194,7 +217,7 @@ def create_product_system(lca_dict):
     # set configuration for the unit processes that are manually connected
     config2 = o.LinkingConfig(
         prefer_unit_processes=False,
-        provider_linking=o.ProviderLinking.IGNORE_DEFAULTS
+        provider_linking=o.ProviderLinking.ONLY_DEFAULTS # "onlydefaults" to make sure the system processes are selected
     )
 
     # List to store created system_refs
@@ -202,6 +225,9 @@ def create_product_system(lca_dict):
 
     # iterate through each component of the dictionary
     for component_id, (change_input_flow, output_value, uuid, component_type) in lca_dict.items():
+
+        print("problem")
+        print(component_id)
 
         # check if the component is a system
         if component_type == 'System':
@@ -212,7 +238,7 @@ def create_product_system(lca_dict):
             # add the created system_ref to the list
             system_refs.append(system_ref)
 
-        # check if the component is a system
+        # check if the component is a unit
         if change_input_flow != "None" and component_type == 'Unit':
 
             # create product system
@@ -261,7 +287,7 @@ def calculate_results(lca_dict):
                 # TODO Beispiel aus der doku: unit=count.unit_group.ref_unit
                 # unit automatically takes the unit of the quantitive reference
                 # TODO vielleicht gibt es hier auch einen Fehler und es wird nicht automatisiert die unit genommen?
-                impact_method=o.Ref(id="1f08b96a-0d3c-4e9e-88bf-09f2239f95e1"),  # example: ReCiPe Midpoint H # TODO auch noch anpassen
+                impact_method=o.Ref(id="1f08b96a-0d3c-4e9e-88bf-09f2239f95e1"),  # ReCiPe Midpoint H # TODO noch anpassen, cool wäre vielleicht auch über die GUI?
                 amount=output_value,    # assumption: linear correlation with the output value
                 allocation=None,        # no allocation, already predefined by ProBas
                 nw_set=None             # no normalization or weighting set
@@ -279,7 +305,10 @@ def calculate_results(lca_dict):
 
             # loop through each flow in the inventory
             for i in inventory:
-                flow_name = i.envi_flow.flow.name
+                flow_name_first = i.envi_flow.flow.name
+                flow_category = i.envi_flow.flow.category
+                # add the category to the name
+                flow_name = flow_name_first + " " + flow_category
                 # check if the flow is already in the inventory, if not add it
                 if flow_name not in total_inventory_results:
                     total_inventory_results[flow_name] = \
@@ -288,6 +317,7 @@ def calculate_results(lca_dict):
 
             # get results for the impact categories
             impact_categories = result.get_total_impacts()
+            # TODO hier Fehlermeldung
 
             # summarize the results for the different product systems over the impact categories
             for i in impact_categories:
