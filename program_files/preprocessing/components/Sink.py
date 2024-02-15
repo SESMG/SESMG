@@ -115,7 +115,6 @@ class Sinks:
         # appends created sinks on the list of nodes
         for index in range(len(self.nodes_sinks)):
             nodes.append(self.nodes_sinks[index])
-        nodes_data["insulation"] = self.insulation.copy()
 
     def invalid_load_profile(self, sink: pandas.Series) -> None:
         raise ValueError(

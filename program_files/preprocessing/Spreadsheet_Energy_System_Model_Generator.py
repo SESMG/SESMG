@@ -132,9 +132,6 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
             nodes_data=nodes_data,
             result_path=result_path)
 
-    print("var_cost_factor")
-    print(variable_cost_factor)
-    
     if timeseries_prep[0] != 'none':
         model_definition_file = result_path + "/modified_model_definition.xlsx"
     

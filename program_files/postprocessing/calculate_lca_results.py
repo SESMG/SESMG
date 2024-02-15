@@ -4,37 +4,28 @@ import pandas as pd
 import os
 import re
 
-# aktuelle Annahme: alle möglichen Processe sind bereits in der Datenbank vorhanden (sonst create_process)
-# TODO Speicher Prozess dazu selbst erstellen!
 
 # run the jason rpc protokoll
 client = ipc.Client()
-# TODO Prüfen: Kann man den IPC Server auch automatisch starten?
-#  ja kann man aber relativ kompliziert, also noch mal in Ruhe angucken oder Gregor fragen
-#  https://github.com/GreenDelta/gdt-server
-#  darüber kann man sogar auch die dispose results machen
+# todo start ipc server automaticallyTODO Prüfen:  https://github.com/GreenDelta/gdt-server
 
 
-# TODO kann man später eventuell automatisiert über die pints bib machen
 def change_unit(value_old_unit):
     """
-    Change the unit from kWh to TJ which is the unit for energy in openLCA
+    Change the unit from kWh to MJ which is the unit for the reference flow of energy in openLCA
         :param value_old_unit
         :type value_old_unit: str
     :return: - **value_new_unit** (str) -
     """
-    value_new_unit = 3.6 * value_old_unit  #10**(-6) * value_old_unit
-
-    # TODO hier nur auf MJ gewechselt, weil dass scheinbar die festgelegte Einheit des Referenzflows ist!
-    #  könnte man später auch über die unit in dem caluclation setup lösen!
+    value_new_unit = 3.6 * value_old_unit
 
     return value_new_unit
 
 
 def add_uuid_to_components(nodes_data, components_list):
     """
-    This function adds the right uuids to the components_list for the further result processing.
-        :param nodes_data: contains all informationen from the model definition sorted in a dict with the different
+    Add UUIDs to the components_list based on the information in nodes_data.
+        :param nodes_data: contains all information from the model definition sorted in a dict with the different
             sheet names as keys
         :type nodes_data: dict
         :param components_list: part of the results, contains all components of the final energy system as well
@@ -51,25 +42,26 @@ def add_uuid_to_components(nodes_data, components_list):
 
         # eliminate sheets that are not needed for the lca caluclation
         if key.lower() not in ["timeseries", "weather data", "pipe types",
-                               "competition constraints", "energysystem", "district heating"]: #, "insulation"]:
+                               "competition constraints", "energysystem", "district heating"]:
 
             # loop through each row of the dataframe in the values of the dict
             for index, row in values.iterrows():
                 row_first_value = row.iloc[0]  # First value in current row
-                row_last_value = row.iloc[-1]  # Last value in current row
+                row_uuid_value = row['lca uuid']  # uuid value in current row
 
-                # check wether the component has in "input" column for data harmonization
+                # add "insulation" to the ID of the heat_sink_window
+                row_first_value += "-insulation" if key == "insulation" else ""
+
+                # check whether the component has in "input" column for data harmonization
                 if "input" in values.columns:
                     input_value = row["input"]
                 else:
                     input_value = "None"
 
                 # If there's a match, add the uuid and input value to the matching components
-                uuid_mapping[row_first_value] = {'uuid': row_last_value, 'input': input_value}
+                uuid_mapping[row_first_value] = {'uuid': row_uuid_value, 'input': input_value}
 
-    # TODO heat sink window insulation erkennt zusätzlich Spalten nicht an, vielleicht einmal Gregor fragen
-    #  kein Fehler, nur komisch
-    # TODO noch hinzufügen, ein bus kann grundsätzlich acuh beides haben!
+    # TODO add option for a bus that has an shortage and excess
     # remove 'shortage' and 'excess' in components_list['ID']
     components_list['ID'] = components_list['ID'].apply(lambda x: re.sub(r'_shortage$', '', x))
     components_list['ID'] = components_list['ID'].apply(lambda x: re.sub(r'_excess$', '', x))
@@ -78,8 +70,8 @@ def add_uuid_to_components(nodes_data, components_list):
     components_list['uuid'] = components_list['ID'].map(lambda x: uuid_mapping.get(x, {}).get('uuid'))
     components_list['input'] = components_list['ID'].map(lambda x: uuid_mapping.get(x, {}).get('input'))
 
-    print("components list")
-    print(components_list)
+    print("components list uuids")
+    print(components_list['uuid'])
 
     return components_list
 
@@ -103,9 +95,12 @@ def consider_var_cost_factor(components_list, variable_cost_factor):
 
 def add_lca_uuid(components):
     """
-    Create a dictionary containing the ID of the components the needed value and the uuid, based on a seperate CSV file.
+    Create a dictionary containing the ID of the components the needed value and the uuid, based on the .csv file.
         :param components: DataFrame containing components.
-        :type pd.DataFrame
+        :type components:pd.DataFrame
+
+    :return: - **lca_dict** (dict) - dictionary containing information about components, their input flows,
+                output values, uuid and components type
     """
 
     # create empty lca dict
@@ -115,22 +110,24 @@ def add_lca_uuid(components):
     for index, row in components.iterrows():
         uuid = row['uuid']
 
-        if uuid is not None and uuid != '' and not pd.isna(uuid):  # TODO Check if uuid is not None or an empty string
-            # TODO wenn insulation Frage geklärt, kann diese Zeile vereinfacht werden
+        # check if there is an uuid for the component
+        if uuid != '':
 
             component_id = row['ID']
             change_input_flow = row['input']
-            output_value_old = row['output 1/kWh'] # TODO hier noch was anderes überlegen für die Technologien, die mehrere outputs haben
+            output_value_old = row['output 1/kWh']
+            # todo add option for technologies with multiple outputs
 
             # change unit to TJ (unit in the database)
-            output_value = change_unit(output_value_old) #TODO vielleicht noch vereinheitlicht an anderer Stelle besser
+            output_value = change_unit(output_value_old)
+            # todo maybe change unit at another point to avoid mistakes
 
             uuid = row['uuid']
             # get the right process based on the uuid
             process_ref = client.get(o.Process, uuid)
-            # extract the type of the process
-            component_type = "System" if "LCI" in process_ref.name else "Unit" if "UP" in process_ref.name else "Unknown"
-            # TODO brauche ich bei anderer Datenbank nicht
+            # extract the type of the process (note: this is database specific)
+            component_type = "System" if "LCI" in process_ref.name else "Unit" \
+                if "UP" in process_ref.name else "Unknown"
             # fill lca dict with all important information
             lca_dict[component_id] = (change_input_flow, output_value, uuid, component_type, )
 
@@ -139,8 +136,12 @@ def add_lca_uuid(components):
 
 def change_values_of_input_processes(lca_dict):
     """
-        :param lca_dict
+    Change values of input processes in the lca_dict based on harmonization with other processes
+        :param lca_dict: Dictionary containing needed information for the lca about the components of the energy system.
         :type lca_dict: dict
+
+    :return: - **lca_dict** (dict) - dictionary without the components that are now already considered in another
+                product system
     """
 
     # create copy of the dictionary
@@ -151,9 +152,6 @@ def change_values_of_input_processes(lca_dict):
 
         # check weather the component is a unit process and has an input that needs to be harmonized
         if change_input_flow != "None" and component_type == 'Unit':
-
-            print("componentID")
-            print(component_id)
 
             # get the corresponding uuid and output of the component that in listed as an input flow from the lca_dict
             selected_uuid = lca_dict.get(change_input_flow, [None, None, None, None])[2]
@@ -170,29 +168,18 @@ def change_values_of_input_processes(lca_dict):
                     default_provider_ref = exchange.default_provider
                     ref_id = default_provider_ref.id
 
-                    # TODO nochmal prüfen, warum das gerade nicht funktioniert? Liegt wahrscheinlich irgendwie am löschen oder so
-
-                    print("selected uuid")
-                    print(selected_uuid) #passt
-
-                    print("ref_ID")
-                    print(ref_id)
-
-                    # check of some of the providers are already at another place in the energy system
+                    # check of some of the default provider can be harmonized
                     if selected_uuid == ref_id:
                         exchange.amount = selected_output / output_value
                         # because of the relation of the outputs no influence on the unit of the new value
-                        print("changed value")
+                        print("new values were added to the process flows for the")
+                        print(component_id)
                         print(exchange.amount)
-                        print("new values were added to the process flows")
                         # change value(s) in the database
                         client.put(process_ref)
 
             # remove the input flows thar are already considered from the dict to avoid double counting
             del lca_dict[change_input_flow]
-
-    print("lca2")
-    print(lca_dict)
 
     return lca_dict
 
@@ -200,56 +187,37 @@ def change_values_of_input_processes(lca_dict):
 def create_product_system(lca_dict):
     """
     Create the product systems.
-        :param lca_dict: containing the information about the energy system: names, output values, process type and
-            the uuid.
-        :type dict
-    """
 
-    print("current dict status")
-    print(lca_dict)
+        :param lca_dict: Containing the information about the energy system: names, output values, process type, and the uuid.
+        :type: dict
+
+    :return: - **lca_dict** (dict): Updated dictionary with system_refs added.
+    :return: - **system_refs** (list): List to store created system_refs.
+    """
 
     # set configurations for not choosing automatic linking of the processes
     config1 = o.LinkingConfig(
         prefer_unit_processes=False,  # do not choose automatic linking, but chose own system processes
-        provider_linking=None,
-    )
+        provider_linking=None)
 
     # set configuration for the unit processes that are manually connected
     config2 = o.LinkingConfig(
         prefer_unit_processes=False,
-        provider_linking=o.ProviderLinking.ONLY_DEFAULTS # "onlydefaults" to make sure the system processes are selected
-    )
+        provider_linking=o.ProviderLinking.ONLY_DEFAULTS)   # "onlydefaults"
 
     # List to store created system_refs
     system_refs = []
 
-    # iterate through each component of the dictionary
+    # Iterate through each component of the dictionary
     for component_id, (change_input_flow, output_value, uuid, component_type) in lca_dict.items():
-
-        print("problem")
-        print(component_id)
-
-        # check if the component is a system
-        if component_type == 'System':
-            # create product system
-            system_ref = client.create_product_system(client.get(o.Process, uuid), config1)
-            # update lca_dict with uuid2
+        # Create product system based on conditions
+        if component_type == 'System' or (component_type == 'Unit' and change_input_flow != "None"):
+            config = config1 if component_type == 'System' else config2
+            # Create product system
+            system_ref = client.create_product_system(client.get(o.Process, uuid), config)
+            # Update lca_dict with uuid2
             lca_dict[component_id] = (change_input_flow, output_value, component_type, uuid, system_ref.id)
-            # add the created system_ref to the list
-            system_refs.append(system_ref)
-
-        # check if the component is a unit
-        if change_input_flow != "None" and component_type == 'Unit':
-
-            # create product system
-            system_ref = client.create_product_system(client.get(o.Process, uuid), config2)
-
-            print("product system created")
-            print(system_ref)
-
-            # update lca_dict with uuid2
-            lca_dict[component_id] = (change_input_flow, output_value, component_type, uuid, system_ref.id)
-            # add the created system_ref to the list
+            # Add the created system_ref to the list
             system_refs.append(system_ref)
 
     print("lca dict_new")
@@ -260,16 +228,16 @@ def create_product_system(lca_dict):
 
 def calculate_results(lca_dict):
     """
-    Calculate the inventory of the system as well as the results of the impact assessment in one step
-        :param lca_dict
-        :type dict
+    Calculate the inventory and impact assessment results for the energy system based on the provided lca_dict.
+        :param lca_dict: Dictionary containing information about the energy system
+        :type: dict
 
     :return: - **total_environmental_impacts** (dict)
     :return: - **total_inventory_results** (dict)
     """
 
     # create empty dictionaries for the impacts and the inventory
-    total_environmental_impacts = {}
+    environmental_impacts = {}
     total_inventory_results = {}
 
     # calculate the product systems only for the components where product systems were created earlier
@@ -277,60 +245,73 @@ def calculate_results(lca_dict):
         if len(values) == 5:
             change_input_flow, output_value, component_type, uuid, uuid2 = values
 
-            # Größenordnungen überprüfen
-            print("output")
-            print(output_value)
-
             # calculation setup
             setup = o.CalculationSetup(
                 target=o.Ref(ref_type=o.RefType.ProductSystem, id=uuid2),
-                # TODO Beispiel aus der doku: unit=count.unit_group.ref_unit
                 # unit automatically takes the unit of the quantitive reference
-                # TODO vielleicht gibt es hier auch einen Fehler und es wird nicht automatisiert die unit genommen?
-                impact_method=o.Ref(id="1f08b96a-0d3c-4e9e-88bf-09f2239f95e1"),  # ReCiPe Midpoint H # TODO noch anpassen, cool wäre vielleicht auch über die GUI?
+                impact_method=o.Ref(id="1f08b96a-0d3c-4e9e-88bf-09f2239f95e1"),
+                # ReCiPe Midpoint H # TODO add the impact assessment method as an option in the gui
                 amount=output_value,    # assumption: linear correlation with the output value
                 allocation=None,        # no allocation, already predefined by ProBas
                 nw_set=None             # no normalization or weighting set
             )
 
             result = client.calculate(setup)
-            result.wait_until_ready()             # TODO später hier noch n waiting print hinzufügen
+            result.wait_until_ready()
 
-
-            print("result_check")
-            print(result)
-
-            # get inventory
+            # Get inventory and impact categories
             inventory = result.get_total_flows()
+            impact_categories = result.get_total_impacts()
 
-            # loop through each flow in the inventory
+            # Loop through each flow in the inventory
             for i in inventory:
-                flow_name_first = i.envi_flow.flow.name
-                flow_category = i.envi_flow.flow.category
-                # add the category to the name
-                flow_name = flow_name_first + " " + flow_category
-                # check if the flow is already in the inventory, if not add it
-                if flow_name not in total_inventory_results:
-                    total_inventory_results[flow_name] = \
-                        {"amount": 0, "unit": i.envi_flow.flow.ref_unit, "direction": i.envi_flow.is_input}
+                flow_name = f"{i.envi_flow.flow.name} {i.envi_flow.flow.category}"
+                total_inventory_results.setdefault(flow_name, {"amount": 0, "unit": i.envi_flow.flow.ref_unit,
+                                                               "direction": i.envi_flow.is_input})
                 total_inventory_results[flow_name]["amount"] += i.amount
 
-            # get results for the impact categories
-            impact_categories = result.get_total_impacts()
-            # TODO hier Fehlermeldung
 
-            # summarize the results for the different product systems over the impact categories
+            # todo: add share of the components per impact category
+            # Impact categories separated by technologies
             for i in impact_categories:
                 impact_category_name = i.impact_category.name
-                if impact_category_name not in total_environmental_impacts:
-                    total_environmental_impacts[impact_category_name] = \
-                        {"amount": 0, "unit": i.impact_category.ref_unit}
-                total_environmental_impacts[impact_category_name]["amount"] += i.amount
+
+                # Create a tuple for the specific impact category and the sum
+                impact_tuple = (impact_category_name, component_id)
+                sum_tuple = (impact_category_name, "sum")
+
+                # Ensure the tuples exist in the dictionary with default values
+                environmental_impacts.setdefault(impact_tuple, {"amount": 0, "unit": i.impact_category.ref_unit})
+                environmental_impacts.setdefault(sum_tuple, {"amount": 0, "unit": i.impact_category.ref_unit})
+
+                # Update the amounts for the specific impact category and the sum
+                environmental_impacts[impact_tuple]["amount"] += i.amount
+                environmental_impacts[sum_tuple]["amount"] += i.amount
 
             # dispose results
-            # result.dispose
+            result.dispose
 
-    return total_environmental_impacts, total_inventory_results
+    return environmental_impacts, total_inventory_results
+
+
+def sort_environmental_impacts_dict(environmental_impacts):
+    """
+    Sort the environmental impact dictionary.
+    :param environmental_impacts: Dictionary containing environmental impacts.
+    :type environmental_impacts: dict
+
+    :return: - **total_environmental_impacts** (dict): sorted dictionary containing environmental impacts
+    """
+
+    # Sort dict (all components per impact category listed)
+    sorted_impacts = sorted(environmental_impacts.items(), key=lambda x: (x[0][0], x[0][1] != "sum", x[0][1]))
+
+    # create a new dictionary with the sorted values
+    total_environmental_impacts = {}
+    for key, value in sorted_impacts:
+        total_environmental_impacts[key] = value
+
+    return total_environmental_impacts
 
 
 def create_dataframes(total_inventory_results, total_environmental_impacts):
@@ -344,7 +325,8 @@ def create_dataframes(total_inventory_results, total_environmental_impacts):
         :type total_environmental_impacts: dict
 
     :return: - **inventory_df** (pandas.DataFrame)
-    :return: - **impacts_df** (pandas.DataFrame)
+    :return: - **impacts_df_summarized** (pandas.DataFrame)
+    :return: - **impacts_df_components** (pandas.DataFrame)
     """
 
     # create df from the inventory dictionary
@@ -352,50 +334,61 @@ def create_dataframes(total_inventory_results, total_environmental_impacts):
                                  key, data in total_inventory_results.items()],
                                 columns=['flow_name', 'value', 'unit', 'input_flow'])
 
-    # create df from the impact assessment dictionary
-    impacts_df = pd.DataFrame([(key, data['amount'], data['unit']) for
-                                 key, data in total_environmental_impacts.items()],
-                                columns=['flow_name', 'value', 'unit'])
+    # create df from the impact assessment dictionary with 'sum' as the second value in the tuple
+    impacts_df_summarized = pd.DataFrame([(key[0], data['amount'], data['unit']) for
+                                          key, data in total_environmental_impacts.items() if key[1] == 'sum'],
+                                         columns=['impact_category_name', 'value', 'unit'])
+
+    impacts_df_components = pd.DataFrame([(*key, data['amount'], data['unit']) for
+                               key, data in total_environmental_impacts.items()],
+                              columns=['impact_category_name', 'component_id', 'value', 'unit'])
 
     print("result dfs")
     print(inventory_df)
-    print(impacts_df)
+    print(impacts_df_summarized)
+    print(impacts_df_components)
 
-    return inventory_df, impacts_df
+    return inventory_df, impacts_df_summarized, impacts_df_components
 
 
-# save the summarized results as a sub step in an excel file and dispose
-def export_and_save(inventory_df, impacts_df, path):
+def export_and_save(inventory_df, impacts_df_summarized, impacts_df_components, path):
     """
     Export the given result to Excel and dispose it after the Export
         finished.
         :param inventory_df
         :type inventory_df: pd.DataFrame
-        :param impacts_df
-        :type impacts_df: pd.Dataframe
+        :param impacts_df_summarized
+        :type impacts_df_summarized: pd.Dataframe
+        :param impacts_df_components
+        :type impacts_df_components: pd.Dataframe
         :param path
         :type path: str
     """
-    # TODO Eventuell input / output in den Ergebnissen noch anders darstellen
 
-    # define the path for the .xlsx files
-    excel_file1 = os.path.join(path, 'inventory_results.xlsx')
-    excel_file2 = os.path.join(path, 'total_environmental_impacts.xlsx')
+    # Define the path for the .xlsx file
+    excel_file = os.path.join(path, 'lca_results.xlsx')
 
-    # save dfs as excel files
-    inventory_df.to_excel(excel_file1, index=False)
-    impacts_df.to_excel(excel_file2, index=False)
+    # Create ExcelWriter object
+    with pd.ExcelWriter(excel_file, engine='xlsxwriter') as writer:
+        # Save inventory_df in the first sheet
+        inventory_df.to_excel(writer, sheet_name='inventory_results', index=False)
+
+        # Save impacts_df_summarized in the second sheet
+        impacts_df_summarized.to_excel(writer, sheet_name='summarized', index=False)
+
+        # Save impacts_df_components in the third sheet
+        impacts_df_components.to_excel(writer, sheet_name='components', index=False)
 
     print("Results were successfully saved as excel files")
 
 
 def delete_product_systems(system_refs):
     """
-    Delete not longer needed product systems from the database
+    Delete no longer needed product systems from the database.
         :param system_refs
         :type system_refs: list
     """
-    # TODO alternativ später beim productsystem erstellen prüfen ob es das genannte schon gibt
+    # TODO store created product systems to reduce caluclation for already created systems
     # save the IDs of the product systems
     system_ids = [system_ref.id for system_ref in system_refs]
 
@@ -423,13 +416,17 @@ def calculate_lca_results_function(path: str, components: pd.DataFrame):
 
     # run openlca steps
     lca_dict, system_refs = create_product_system(lca_dict)
-    total_environmental_impacts, total_inventory_results = calculate_results(lca_dict)
+    environmental_impacts, total_inventory_results = calculate_results(lca_dict)
+
+    # sort environmental impacts dict
+    total_environmental_impacts = sort_environmental_impacts_dict(environmental_impacts)
 
     # create the two dfs
-    inventory_df, impacts_df = create_dataframes(total_inventory_results, total_environmental_impacts, )
+    inventory_df, impacts_df_summarized, impacts_df_components = \
+        create_dataframes(total_inventory_results, total_environmental_impacts)
 
-    # save the summarized results as a sub step in an excel file and dispose
-    export_and_save(inventory_df, impacts_df, path)
+    # save the summarized results as a sub step in an .xlsl file and dispose
+    export_and_save(inventory_df, impacts_df_summarized, impacts_df_components, path)
 
     # delete no longer needed product systems
     delete_product_systems(system_refs)

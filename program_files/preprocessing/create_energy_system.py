@@ -62,6 +62,7 @@ def import_model_definition(filepath: str, delete_units=True) -> dict:
         "district heating": xls.parse("district heating", na_filter=False),
         "pipe types": xls.parse("pipe types", na_filter=False)
     }
+
     if delete_units:
         # delete spreadsheet row within technology or units specific
         # parameters

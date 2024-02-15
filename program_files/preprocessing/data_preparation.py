@@ -179,9 +179,6 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str):
         + pandas.Timedelta(timedelta)
     nodes_data['energysystem']['periods'] = (timesteps * clusters)
 
-    print("mate")
-    print(variable_cost_factor)
-
     return variable_cost_factor
 
 
@@ -346,11 +343,6 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
     cluster_criterion = timeseries_prep_param[2]
     cluster_period = timeseries_prep_param[3]
     cluster_seasons = int(timeseries_prep_param[4])
-
-
-    print("dataprep")
-    print(data_prep)
-
 
     if data_prep != 'none':
         # Adapting Standard Load Profile-Sinks
