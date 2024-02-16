@@ -7,7 +7,7 @@ import re
 
 # run the jason rpc protokoll
 client = ipc.Client()
-# todo start ipc server automaticallyTODO Prüfen:  https://github.com/GreenDelta/gdt-server
+# todo start ipc server automatically:  https://github.com/GreenDelta/gdt-server
 
 
 def change_unit(value_old_unit):
@@ -70,8 +70,8 @@ def add_uuid_to_components(nodes_data, components_list):
     components_list['uuid'] = components_list['ID'].map(lambda x: uuid_mapping.get(x, {}).get('uuid'))
     components_list['input'] = components_list['ID'].map(lambda x: uuid_mapping.get(x, {}).get('input'))
 
-    print("components list uuids")
-    print(components_list['uuid'])
+    print("components list ")
+    print(components_list.to_string())
 
     return components_list
 
@@ -93,11 +93,39 @@ def consider_var_cost_factor(components_list, variable_cost_factor):
     components_list[columns_to_multiply] *= variable_cost_factor
 
 
-def add_lca_uuid(components):
+def change_components_list_to_avoid_double_counting(components):
+    """
+    Filter the DataFrame 'components' to extract components with an uuid and avoid double counting of environmental
+    impacts by substracting some components from the output values.
+        :param components
+        :type components: pandas.core.frame.DataFrame
+
+    :return: - **filtered_components** (DataFrame)
+    """
+    # filter through the rows of the df and select only rows with an added uuid
+    filtered_components = components[components['uuid'] != '']
+
+    # iterate through the rows in the df
+    for index, row in filtered_components.iterrows():
+
+        # define the name of the columns
+        change_input_flow = row['input']
+        input_value_old = row['input 1/kWh']
+
+        # remove the input values of the components that are considered twice in the results
+        # remove the gas heating transformer example from this operation
+        # todo könnte man auch automatisiert machen
+        if change_input_flow in filtered_components['ID'].values and change_input_flow != "ID_gas_bus":
+            filtered_components.loc[filtered_components['ID'] == change_input_flow, 'output 1/kWh'] -= input_value_old
+
+    return filtered_components
+
+
+def add_lca_uuid(filtered_components):
     """
     Create a dictionary containing the ID of the components the needed value and the uuid, based on the .csv file.
-        :param components: DataFrame containing components.
-        :type components:pd.DataFrame
+        :param filtered_components: DataFrame containing components.
+        :type filtered_components:pd.DataFrame
 
     :return: - **lca_dict** (dict) - dictionary containing information about components, their input flows,
                 output values, uuid and components type
@@ -107,29 +135,23 @@ def add_lca_uuid(components):
     lca_dict = {}
 
     # iterate through the rows in the df
-    for index, row in components.iterrows():
+    for index, row in filtered_components.iterrows():
         uuid = row['uuid']
+        component_id = row['ID']
+        output_value_old = row['output 1/kWh']
+        change_input_flow = row['input']
 
-        # check if there is an uuid for the component
-        if uuid != '':
+        # change unit to TJ (unit in the database)
+        output_value = change_unit(output_value_old)
+        # todo maybe change unit at another point to avoid mistakes
 
-            component_id = row['ID']
-            change_input_flow = row['input']
-            output_value_old = row['output 1/kWh']
-            # todo add option for technologies with multiple outputs
-
-            # change unit to TJ (unit in the database)
-            output_value = change_unit(output_value_old)
-            # todo maybe change unit at another point to avoid mistakes
-
-            uuid = row['uuid']
-            # get the right process based on the uuid
-            process_ref = client.get(o.Process, uuid)
-            # extract the type of the process (note: this is database specific)
-            component_type = "System" if "LCI" in process_ref.name else "Unit" \
-                if "UP" in process_ref.name else "Unknown"
-            # fill lca dict with all important information
-            lca_dict[component_id] = (change_input_flow, output_value, uuid, component_type, )
+        # get the right process based on the uuid
+        process_ref = client.get(o.Process, uuid)
+        # extract the type of the process (note: this is database specific)
+        component_type = "System" if "LCI" in process_ref.name else "Unit" \
+            if "UP" in process_ref.name else "Unknown"
+        # fill lca dict with all important information
+        lca_dict[component_id] = (change_input_flow, output_value, uuid, component_type, )
 
     return lca_dict
 
@@ -216,6 +238,8 @@ def create_product_system(lca_dict):
             # Create product system
             system_ref = client.create_product_system(client.get(o.Process, uuid), config)
             # Update lca_dict with uuid2
+            # todo hier kommt bei dem neuen system eine fehlermeldung!
+
             lca_dict[component_id] = (change_input_flow, output_value, component_type, uuid, system_ref.id)
             # Add the created system_ref to the list
             system_refs.append(system_ref)
@@ -224,7 +248,6 @@ def create_product_system(lca_dict):
     print(lca_dict)
 
     return lca_dict, system_refs
-
 
 def calculate_results(lca_dict):
     """
@@ -408,8 +431,11 @@ def calculate_lca_results_function(path: str, components: pd.DataFrame):
         :type components: pd.DataFrame
     """
 
+    # changes to the components DataFrame
+    filtered_components = change_components_list_to_avoid_double_counting(components)
+
     # create the lca dict to prepare for the further lca calculation
-    lca_dict = add_lca_uuid(components)
+    lca_dict = add_lca_uuid(filtered_components)
 
     # data harmonization
     change_values_of_input_processes(lca_dict)
