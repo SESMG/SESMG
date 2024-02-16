@@ -116,8 +116,8 @@ def k_medoids_timeseries_adaption(nodes_data: dict, clusters: int,
         prep_timeseries['timestamp'] = \
             nodes_data['timeseries']['timestamp'][
             :int(len(nodes_data['timeseries']))]  # / (clusters * 7))]
-    nodes_data['timeseries'] = prep_timeseries
-    nodes_data['weather data'] = prep_timeseries
+    nodes_data['timeseries'] = prep_timeseries.copy()
+    nodes_data['weather data'] = prep_timeseries.copy()
 
 
 def k_means_algorithm(cluster_period: int, days_per_cluster: int,
