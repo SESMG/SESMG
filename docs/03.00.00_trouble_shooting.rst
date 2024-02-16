@@ -493,6 +493,19 @@ Error M-031: Existing capacity for non-convex investment decision
 **Debugging:** Make sure no existing-capacities are given for components including non-convex decissions. If an existing capacity is required an additional component can be used for considering this capacity. 
 
 
+
+Error M-032: Key Error (column)
+-----------------------
+**Error Message:** ::
+
+   KeyError: '*column name*'
+
+**Possible Error Cause:** When using older model definition sheets in newer versions of the SESMG, certain columns might be missing or incomplete. For example, if the column 'timezone' doesn't exist or remains empty, the stated error will occur.
+
+**Debugging:** Fill in the missing content to the corresponding column or add the column as it appears in the up-to-date model definition example.
+
+
+
 Warning W-001: Need to install ... / Cartopy ...
 -----------------------------------------------------------------
 **Warning Message:** ::
