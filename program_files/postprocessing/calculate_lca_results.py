@@ -102,20 +102,22 @@ def change_components_list_to_avoid_double_counting(components):
 
     :return: - **filtered_components** (DataFrame)
     """
-    # filter through the rows of the df and select only rows with an added uuid
-    filtered_components = components[components['uuid'] != '']
+    # filter through the rows of the df and select only rows with an added uuid and non-zero output values
+    filtered_components = components[(components['uuid'] != '') & (components['output 1/kWh'] != 0)]
 
     # iterate through the rows in the df
     for index, row in filtered_components.iterrows():
 
         # define the name of the columns
         change_input_flow = row['input']
-        input_value_old = row['input 1/kWh']
+        # the second input value represents the electricity input if there are two inputs and is therefore needed
+        input_value_old = row['input 2/kWh'] if row['input 2/kWh'] != 0 else row['input 1/kWh']
 
         # remove the input values of the components that are considered twice in the results
         # remove the gas heating transformer example from this operation
         # todo könnte man auch automatisiert machen
         if change_input_flow in filtered_components['ID'].values and change_input_flow != "ID_gas_bus":
+
             filtered_components.loc[filtered_components['ID'] == change_input_flow, 'output 1/kWh'] -= input_value_old
 
     return filtered_components
