@@ -1,0 +1,246 @@
+digraph {
+	subgraph cluster_1 {
+		color=black
+		label=Legends
+		Bus [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+		Sink [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+		Source [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+		"Transform-
+er" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+		Storage [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	}
+	"ID_electr-
+icity_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"ID_electr-
+icity_bus_-
+shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"ID_heat_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"ID_heat_b-
+us_excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	ID_gas_bus [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"ID_gas_bu-
+s_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"ID_pellet-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"ID_pellet-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	ID_oil_bus [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"ID_oil_bu-
+s_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	ID_pv_bus [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"ID_pv_bus-
+_excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"ID_hp_ele-
+ctricity_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"ID_hp_ele-
+ctricity_b-
+us_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"ID_pv_to_-
+ID_electri-
+city_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"ID_electr-
+icity_to_I-
+D_hp_elect-
+ricity_bus" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"ID_electr-
+icity_sink" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"ID_heat_s-
+ink" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"ID_heat_s-
+ink_window-
+-insulation" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"ID_photov-
+oltaic_ele-
+ctricity_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"ID_solar_-
+thermal_so-
+urce_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"ID_solar_-
+thermal_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"ID_solar_-
+thermal_so-
+urce_colle-
+ctor" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"ID_gashea-
+ting_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"ID_oilhea-
+ting_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"ID_electr-
+icheating_-
+transformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"ID_pellet-
+heating_tr-
+ansformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"ID_GCHP_t-
+ransformer-
+_low_temp_-
+bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"ID_GCHP_t-
+ransformer-
+_low_temp_-
+ground_sou-
+rce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"ID_GCHP_t-
+ransformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"ID_ASHP_t-
+ransformer-
+_low_temp_-
+bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"ID_ASHP_t-
+ransformer-
+_low_temp_-
+air_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"ID_ASHP_t-
+ransformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"ID_electr-
+icity_bus_-
+shortage" -> "ID_electr-
+icity_bus"
+	"ID_pv_to_-
+ID_electri-
+city_link" -> "ID_electr-
+icity_bus"
+	"ID_electr-
+icity_bus" -> "ID_electr-
+icheating_-
+transformer"
+	"ID_electr-
+icity_bus" -> "ID_electr-
+icity_sink"
+	"ID_electr-
+icity_bus" -> "ID_electr-
+icity_to_I-
+D_hp_elect-
+ricity_bus"
+	"ID_electr-
+icity_bus" -> "ID_solar_-
+thermal_so-
+urce_colle-
+ctor"
+	"ID_electr-
+icheating_-
+transformer" -> "ID_heat_b-
+us"
+	"ID_solar_-
+thermal_so-
+urce_colle-
+ctor" -> "ID_heat_b-
+us"
+	"ID_pellet-
+heating_tr-
+ansformer" -> "ID_heat_b-
+us"
+	"ID_heat_s-
+ink_window-
+-insulation" -> "ID_heat_b-
+us"
+	"ID_oilhea-
+ting_trans-
+former" -> "ID_heat_b-
+us"
+	"ID_gashea-
+ting_trans-
+former" -> "ID_heat_b-
+us"
+	"ID_GCHP_t-
+ransformer" -> "ID_heat_b-
+us"
+	"ID_ASHP_t-
+ransformer" -> "ID_heat_b-
+us"
+	"ID_heat_b-
+us" -> "ID_heat_b-
+us_excess"
+	"ID_heat_b-
+us" -> "ID_heat_s-
+ink"
+	"ID_gas_bu-
+s_shortage" -> ID_gas_bus
+	ID_gas_bus -> "ID_gashea-
+ting_trans-
+former"
+	"ID_pellet-
+_bus_short-
+age" -> "ID_pellet-
+_bus"
+	"ID_pellet-
+_bus" -> "ID_pellet-
+heating_tr-
+ansformer"
+	"ID_oil_bu-
+s_shortage" -> ID_oil_bus
+	ID_oil_bus -> "ID_oilhea-
+ting_trans-
+former"
+	"ID_photov-
+oltaic_ele-
+ctricity_s-
+ource" -> ID_pv_bus
+	ID_pv_bus -> "ID_pv_bus-
+_excess"
+	ID_pv_bus -> "ID_pv_to_-
+ID_electri-
+city_link"
+	"ID_electr-
+icity_to_I-
+D_hp_elect-
+ricity_bus" -> "ID_hp_ele-
+ctricity_b-
+us"
+	"ID_hp_ele-
+ctricity_b-
+us_shortage" -> "ID_hp_ele-
+ctricity_b-
+us"
+	"ID_hp_ele-
+ctricity_b-
+us" -> "ID_GCHP_t-
+ransformer"
+	"ID_hp_ele-
+ctricity_b-
+us" -> "ID_ASHP_t-
+ransformer"
+	"ID_solar_-
+thermal_so-
+urce" -> "ID_solar_-
+thermal_so-
+urce_bus"
+	"ID_solar_-
+thermal_so-
+urce_bus" -> "ID_solar_-
+thermal_so-
+urce_colle-
+ctor"
+	"ID_GCHP_t-
+ransformer-
+_low_temp_-
+ground_sou-
+rce" -> "ID_GCHP_t-
+ransformer-
+_low_temp_-
+bus"
+	"ID_GCHP_t-
+ransformer-
+_low_temp_-
+bus" -> "ID_GCHP_t-
+ransformer"
+	"ID_ASHP_t-
+ransformer-
+_low_temp_-
+air_source" -> "ID_ASHP_t-
+ransformer-
+_low_temp_-
+bus"
+	"ID_ASHP_t-
+ransformer-
+_low_temp_-
+bus" -> "ID_ASHP_t-
+ransformer"
+}

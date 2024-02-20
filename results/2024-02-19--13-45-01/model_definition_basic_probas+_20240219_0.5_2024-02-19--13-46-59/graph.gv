@@ -1,0 +1,239 @@
+digraph {
+	subgraph cluster_1 {
+		color=black
+		label=Legends
+		Bus [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+		Sink [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+		Source [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+		"Transform-
+er" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+		Storage [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style=dashed width=1.1]
+	}
+	"01_electr-
+icity_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"01_electr-
+icity_bus_-
+shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"01_heat_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"01_heat_b-
+us_excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"01_gas_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"01_gas_bu-
+s_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"01_pellet-
+_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"01_pellet-
+_bus_short-
+age" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"01_oil_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"01_oil_bu-
+s_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"01_pv_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"01_pv_bus-
+_excess" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"01_hp_ele-
+ctricity_b-
+us" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"01_hp_ele-
+ctricity_b-
+us_shortage" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"01_pv_to_-
+01_electri-
+city_link" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"01_electr-
+icity_to_0-
+1_hp_elect-
+ricity_bus" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"01_electr-
+icity_sink" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"01_heat_s-
+ink" [fixedsize=shape fontsize=10 height=0.7 shape=invtrapezium style="" width=1.1]
+	"01_gashea-
+ting_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"01_oilhea-
+ting_trans-
+former" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"01_electr-
+icheating_-
+transformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"01_pellet-
+heating_tr-
+ansformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"01_GCHP_t-
+ransformer-
+_low_temp_-
+bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"01_GCHP_t-
+ransformer-
+_low_temp_-
+ground_sou-
+rce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"01_GCHP_t-
+ransformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"01_ASHP_t-
+ransformer-
+_low_temp_-
+bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"01_ASHP_t-
+ransformer-
+_low_temp_-
+air_source" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"01_ASHP_t-
+ransformer" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"01_photov-
+oltaic_ele-
+ctricity_s-
+ource" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"01_solar_-
+thermal_so-
+urce_bus" [fixedsize=shape fontsize=10 height=0.7 shape=ellipse style="" width=1.1]
+	"01_solar_-
+thermal_so-
+urce" [fixedsize=shape fontsize=10 height=0.7 shape=trapezium style="" width=1.1]
+	"01_solar_-
+thermal_so-
+urce_colle-
+ctor" [fixedsize=shape fontsize=10 height=0.7 shape=rectangle style="" width=1.1]
+	"01_electr-
+icity_bus_-
+shortage" -> "01_electr-
+icity_bus"
+	"01_pv_to_-
+01_electri-
+city_link" -> "01_electr-
+icity_bus"
+	"01_electr-
+icity_bus" -> "01_electr-
+icity_to_0-
+1_hp_elect-
+ricity_bus"
+	"01_electr-
+icity_bus" -> "01_electr-
+icity_sink"
+	"01_electr-
+icity_bus" -> "01_electr-
+icheating_-
+transformer"
+	"01_electr-
+icity_bus" -> "01_solar_-
+thermal_so-
+urce_colle-
+ctor"
+	"01_GCHP_t-
+ransformer" -> "01_heat_b-
+us"
+	"01_solar_-
+thermal_so-
+urce_colle-
+ctor" -> "01_heat_b-
+us"
+	"01_ASHP_t-
+ransformer" -> "01_heat_b-
+us"
+	"01_pellet-
+heating_tr-
+ansformer" -> "01_heat_b-
+us"
+	"01_electr-
+icheating_-
+transformer" -> "01_heat_b-
+us"
+	"01_gashea-
+ting_trans-
+former" -> "01_heat_b-
+us"
+	"01_oilhea-
+ting_trans-
+former" -> "01_heat_b-
+us"
+	"01_heat_b-
+us" -> "01_heat_b-
+us_excess"
+	"01_heat_b-
+us" -> "01_heat_s-
+ink"
+	"01_gas_bu-
+s_shortage" -> "01_gas_bus"
+	"01_gas_bus" -> "01_gashea-
+ting_trans-
+former"
+	"01_pellet-
+_bus_short-
+age" -> "01_pellet-
+_bus"
+	"01_pellet-
+_bus" -> "01_pellet-
+heating_tr-
+ansformer"
+	"01_oil_bu-
+s_shortage" -> "01_oil_bus"
+	"01_oil_bus" -> "01_oilhea-
+ting_trans-
+former"
+	"01_photov-
+oltaic_ele-
+ctricity_s-
+ource" -> "01_pv_bus"
+	"01_pv_bus" -> "01_pv_bus-
+_excess"
+	"01_pv_bus" -> "01_pv_to_-
+01_electri-
+city_link"
+	"01_hp_ele-
+ctricity_b-
+us_shortage" -> "01_hp_ele-
+ctricity_b-
+us"
+	"01_electr-
+icity_to_0-
+1_hp_elect-
+ricity_bus" -> "01_hp_ele-
+ctricity_b-
+us"
+	"01_hp_ele-
+ctricity_b-
+us" -> "01_GCHP_t-
+ransformer"
+	"01_hp_ele-
+ctricity_b-
+us" -> "01_ASHP_t-
+ransformer"
+	"01_GCHP_t-
+ransformer-
+_low_temp_-
+ground_sou-
+rce" -> "01_GCHP_t-
+ransformer-
+_low_temp_-
+bus"
+	"01_GCHP_t-
+ransformer-
+_low_temp_-
+bus" -> "01_GCHP_t-
+ransformer"
+	"01_ASHP_t-
+ransformer-
+_low_temp_-
+air_source" -> "01_ASHP_t-
+ransformer-
+_low_temp_-
+bus"
+	"01_ASHP_t-
+ransformer-
+_low_temp_-
+bus" -> "01_ASHP_t-
+ransformer"
+	"01_solar_-
+thermal_so-
+urce" -> "01_solar_-
+thermal_so-
+urce_bus"
+	"01_solar_-
+thermal_so-
+urce_bus" -> "01_solar_-
+thermal_so-
+urce_colle-
+ctor"
+}

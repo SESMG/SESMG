@@ -52,26 +52,19 @@ def add_uuid_to_components(nodes_data, components_list):
                 # add "insulation" to the ID of the heat_sink_window
                 row_first_value += "-insulation" if key == "insulation" else ""
 
-                # check whether the component has in "input" column for data harmonization
-                if "input" in values.columns:
-                    input_value = row["input"]
-                else:
-                    input_value = "None"
+                # check whether the component has in "input" or "output" column for later adaptions
+                input_value = row.get("input", "None")
+                output_value = row.get("output", "None")
 
                 # If there's a match, add the uuid and input value to the matching components
-                uuid_mapping[row_first_value] = {'uuid': row_uuid_value, 'input': input_value}
+                uuid_mapping[row_first_value] = {'uuid': row_uuid_value, 'input': input_value, 'output': output_value}
 
-    # TODO add option for a bus that has an shortage and excess
-    # remove 'shortage' and 'excess' in components_list['ID']
+    # remove 'shortage' in components_list['ID']
     components_list['ID'] = components_list['ID'].apply(lambda x: re.sub(r'_shortage$', '', x))
-    components_list['ID'] = components_list['ID'].apply(lambda x: re.sub(r'_excess$', '', x))
 
     # adds the uuids and input values to the components list
-    components_list['uuid'] = components_list['ID'].map(lambda x: uuid_mapping.get(x, {}).get('uuid'))
-    components_list['input'] = components_list['ID'].map(lambda x: uuid_mapping.get(x, {}).get('input'))
-
-    print("components list ")
-    print(components_list.to_string())
+    components_list[['uuid', 'input', 'output']] = components_list['ID'].map(
+        lambda x: uuid_mapping.get(x, {'uuid': None, 'input': None, 'output': None})).apply(pd.Series)
 
     return components_list
 
@@ -93,17 +86,49 @@ def consider_var_cost_factor(components_list, variable_cost_factor):
     components_list[columns_to_multiply] *= variable_cost_factor
 
 
-def change_components_list_to_avoid_double_counting(components):
+def change_components_list_for_excess(components):
+    """
+    Subtract the outputs from the excess buses to consider the consumption base approach for the environmental impacts.
+        :param components: Dataframe containing components data
+        :type components: pandas.core.frame.DataFrame
+
+    :return: - **components2** (DataFrame) - copy of the components DataFrame with changes in the sources that provide
+                excess energy
+    """
+
+    # handle excess buses by subtracting the impacts
+    for index, row in components.iterrows():
+
+        # check if the row has an output that needs to be subtracted for the energy excess
+        if row['output'] is not None and row['output'] != "None":
+
+            # add '_excess' to the string
+            excess_bus = row['output'] + '_excess'
+
+            if excess_bus in components['ID'].values:
+
+                # subtract the excess value from the output value of the source
+                components.loc[components['output'] == row['output'], 'output 1/kWh'] -= \
+                    components.loc[components['ID'] == excess_bus, 'input 1/kWh'].values[0]
+
+    # create copy
+    components2 = components
+
+    return components2
+
+
+def change_components_list_to_avoid_double_counting(components2):
     """
     Filter the DataFrame 'components' to extract components with an uuid and avoid double counting of environmental
-    impacts by substracting some components from the output values.
-        :param components
-        :type components: pandas.core.frame.DataFrame
+    impacts by subtracting some components from the output values.
+        :param components2: DataFrame containing components data.
+        :type components2: pandas.core.frame.DataFrame
 
     :return: - **filtered_components** (DataFrame)
     """
+
     # filter through the rows of the df and select only rows with an added uuid and non-zero output values
-    filtered_components = components[(components['uuid'] != '') & (components['output 1/kWh'] != 0)]
+    filtered_components = components2[(components2['uuid'] != '') & (components2['output 1/kWh'] != 0)]
 
     # iterate through the rows in the df
     for index, row in filtered_components.iterrows():
@@ -116,7 +141,7 @@ def change_components_list_to_avoid_double_counting(components):
         # remove the input values of the components that are considered twice in the results
         # remove the gas heating transformer example from this operation
         # todo könnte man auch automatisiert machen
-        if change_input_flow in filtered_components['ID'].values and change_input_flow != "ID_gas_bus":
+        if change_input_flow in filtered_components['ID'].values and change_input_flow != "01_gas_bus":
 
             filtered_components.loc[filtered_components['ID'] == change_input_flow, 'output 1/kWh'] -= input_value_old
 
@@ -145,7 +170,6 @@ def add_lca_uuid(filtered_components):
 
         # change unit to TJ (unit in the database)
         output_value = change_unit(output_value_old)
-        # todo maybe change unit at another point to avoid mistakes
 
         # get the right process based on the uuid
         process_ref = client.get(o.Process, uuid)
@@ -240,8 +264,6 @@ def create_product_system(lca_dict):
             # Create product system
             system_ref = client.create_product_system(client.get(o.Process, uuid), config)
             # Update lca_dict with uuid2
-            # todo hier kommt bei dem neuen system eine fehlermeldung!
-
             lca_dict[component_id] = (change_input_flow, output_value, component_type, uuid, system_ref.id)
             # Add the created system_ref to the list
             system_refs.append(system_ref)
@@ -250,6 +272,7 @@ def create_product_system(lca_dict):
     print(lca_dict)
 
     return lca_dict, system_refs
+
 
 def calculate_results(lca_dict):
     """
@@ -295,8 +318,6 @@ def calculate_results(lca_dict):
                                                                "direction": i.envi_flow.is_input})
                 total_inventory_results[flow_name]["amount"] += i.amount
 
-
-            # todo: add share of the components per impact category
             # Impact categories separated by technologies
             for i in impact_categories:
                 impact_category_name = i.impact_category.name
@@ -413,7 +434,7 @@ def delete_product_systems(system_refs):
         :param system_refs
         :type system_refs: list
     """
-    # TODO store created product systems to reduce caluclation for already created systems
+    # TODO store created product systems to reduce calculation for already created systems
     # save the IDs of the product systems
     system_ids = [system_ref.id for system_ref in system_refs]
 
@@ -433,8 +454,11 @@ def calculate_lca_results_function(path: str, components: pd.DataFrame):
         :type components: pd.DataFrame
     """
 
+    # consider the excess bus with negative impacts
+    components2 = change_components_list_for_excess(components)
+
     # changes to the components DataFrame
-    filtered_components = change_components_list_to_avoid_double_counting(components)
+    filtered_components = change_components_list_to_avoid_double_counting(components2)
 
     # create the lca dict to prepare for the further lca calculation
     lca_dict = add_lca_uuid(filtered_components)
