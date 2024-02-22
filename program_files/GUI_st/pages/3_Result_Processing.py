@@ -282,6 +282,32 @@ def create_energy_amounts_diagram(result_path_amounts: str) -> None:
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
+def create_impact_amount_diagram(result_path_impacts: str, sheet_name_impact: str) -> None:
+    """
+        Function to create impact amount diagram in streamlit
+
+        :param result_path_impacts: path to a result .xlsx file with the amounts of the impact categories
+        :type result_path_impacts: str
+        :param sheet_name_impact: current sheet that is used to create the amount diagram
+        :type sheet_name_impact: str
+
+    """
+
+    # loading result.csv as a dataframe
+    amounts_df = pd.read_excel(result_path_impacts, sheet_name=sheet_name_impact)
+    amounts_df = amounts_df.loc[:, (amounts_df != 0).any(axis=0)]
+
+    # creating column headers to select
+    list_headers = list(amounts_df.columns.values)
+
+    # create plotly chart
+    fig = px.area(amounts_df, x="reductionco2", y=list_headers).update_layout(
+        xaxis_title="Reduced GHG emissions in percentage of the \
+                maximum potential reduction (%)",
+        yaxis_title=sheet_name_impact)
+    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+
+
 def show_energy_amounts(result_path_heat_amounts: str,
                         result_path_elec_amounts: str) -> None:
     """
@@ -356,6 +382,33 @@ def short_result_graph(result_path_graph: str) -> None:
     with st.expander("Show the structure of the modeled energy system"):
         es_graph = Image.open(result_path_graph, "r")
         st.image(es_graph)
+
+
+def show_impact_categories(result_path_climate_change: str) -> None:
+    """
+        Function to create impact amounts.
+
+        :param result_path_climate_change: path to a result .xlsx file
+        :type result_path_climate_change: str
+    Returns
+    -------
+
+    """
+    # Header
+    st.subheader("Life Cycle Impact Assessment")
+
+    # define right file
+    excel_file = pd.ExcelFile(result_path_climate_change)
+
+    # Get a list of sheet names from the Excel file
+    sheet_name_impact_category = excel_file.sheet_names
+
+    tabs_and_sheets = list(zip(st.tabs(sheet_name_impact_category), sheet_name_impact_category))
+
+    for tab, sheet in tabs_and_sheets:
+        with tab:
+            st.header(sheet)
+            create_impact_amount_diagram(result_path_impacts=result_path_climate_change, sheet_name_impact=sheet)
 
 
 # starting page functions
@@ -437,6 +490,23 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         result_path_elec_amounts=st.session_state["state_result_path"]
         + "/elec_amounts.csv")
 
+    # todo gerade prüfen, ob das die richtige stelle für die gui ist
+    # check if GUI settings dict is in result folder
+    if os.path.join(st.session_state["state_result_path"],
+                    "GUI_st_run_settings.json") \
+            in glob.glob(st.session_state["state_result_path"] + "/*"):
+        # import json as in a dict
+        GUI_run_settings_dict = import_GUI_input_values_json(
+            json_file_path=os.path.join(
+                st.session_state["state_result_path"],
+                "GUI_st_run_settings.json"))
+
+        # add lca visualization if additional lca calculation was active
+        if GUI_run_settings_dict["input_lca_results"]:
+            # show impact categories
+            show_impact_categories(result_path_climate_change=st.session_state["state_result_path"]
+                                      + "/impact_amounts.xlsx")
+
     # open short results for the chosen pareto point incl. header
     st.subheader("Short Results for Pareto Point: " +
                  st.session_state["state_pareto_point_chosen"])
@@ -453,6 +523,7 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
             json_file_path=os.path.join(
                 st.session_state["state_result_path"],
                 "GUI_st_run_settings.json"))
+
         # display some GUI settings if pre-modelling was active
         if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
             # show time series simplification settings
@@ -462,6 +533,7 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
             # show time series simplification settings
             short_result_premodelling(
                 result_GUI_settings_dict=GUI_run_settings_dict)
+
     # show short result summaries key values
     short_result_summary_system(
         result_path_summary=st.session_state["state_pareto_result_path"]

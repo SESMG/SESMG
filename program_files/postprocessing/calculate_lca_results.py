@@ -112,7 +112,7 @@ def change_components_list_for_excess(components):
                     components.loc[components['ID'] == excess_bus, 'input 1/kWh'].values[0]
 
     # create copy
-    components2 = components
+    components2 = components.copy()
 
     return components2
 
@@ -140,7 +140,10 @@ def change_components_list_to_avoid_double_counting(components2):
 
         # remove the input values of the components that are considered twice in the results
         # remove the gas heating transformer example from this operation
-        # todo könnte man auch automatisiert machen
+        # todo könnte man auch automatisiert machen, wäre dann eigentlich besser
+        #  nachdem die unit prozesse zusammengeführt wurden
+        # todo etwas aufwendiger und daher erstmal rausgelassen
+
         if change_input_flow in filtered_components['ID'].values and change_input_flow != "01_gas_bus":
 
             filtered_components.loc[filtered_components['ID'] == change_input_flow, 'output 1/kWh'] -= input_value_old
@@ -482,3 +485,61 @@ def calculate_lca_results_function(path: str, components: pd.DataFrame):
 
     # delete no longer needed product systems
     delete_product_systems(system_refs)
+
+
+def collect_impact_categories(dataframes: dict, result_path: str):
+    """
+        Function to collect results sorted for each impact category. These results are later used to create the
+        diagrams for the impact amounts.
+
+        :param dataframes: dictionary containing the results for the different pareto runs, with the reduction values
+            of the run as a key and a DataFrame as a value containing all the results for the run
+        :type dataframes: dict
+        :param result_path: path to later write the collected impact amounts in a new result file.
+        :type result_path: str
+
+    """
+    # create empty dict for impact amounts
+    impact_amounts_dict = {}
+
+    # iterate threw the pareto points and hte lca_results components
+    for key, values in dataframes.items():
+
+        # go through each row in the values
+        for index, row in values.iterrows():
+            for category_name in [row["impact_category_name"]]:
+
+                # combine key and the impact category
+                key_with_category = (key, category_name)
+
+                # loop through each key and create an entry in the impact_amounts_dict
+                if key_with_category not in impact_amounts_dict:
+                    impact_amounts_dict[key_with_category] = [("reductionco2", 100 * float(key))]
+                impact_amounts_dict[key_with_category].append((row["component_id"], row["value"]))
+
+    # create empty dict
+    category_dfs = {}
+
+    # loop through each entry in the impact_amounts_dicts
+    for (key, category_name), values in impact_amounts_dict.items():
+        # turn values in a DataFrame with the columns "component_ID" und "value"
+        temp_df = pd.DataFrame(values, columns=['component_ID', 'value']).transpose()
+
+        if category_name not in category_dfs:
+            category_dfs[category_name] = temp_df
+        else:
+            # add data to the already existing df
+            category_dfs[category_name] = \
+                pd.concat([category_dfs[category_name], temp_df.iloc[1:2, :]], ignore_index=True, sort=False)
+
+    # remove columns with index name
+    for category_name, df in category_dfs.items():
+        category_dfs[category_name] = df.reset_index(drop=True)
+
+    # create an ExcelWriter object
+    with pd.ExcelWriter(result_path + "/impact_amounts.xlsx", engine='xlsxwriter') as writer:
+        # save each category in a separate sheet
+        for category, results in category_dfs.items():
+            if category not in ("Ozone depletion", "Ionising radiation", "Agricultural land occupation",
+                                "Urban land occupation", "Natural land transformation"):
+                results.to_excel(writer, sheet_name=category, index=False, header=False)
