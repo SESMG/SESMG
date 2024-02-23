@@ -451,9 +451,9 @@ def calculate_lca_results_function(path: str, components: pd.DataFrame):
     """
     Combine different functions to calculate the different lca results for a simulation as well as for the
     different pareto points, if selected.
-        :param path
+        :param path: path to result folder
         :type path: str
-        :param components
+        :param components: lis
         :type components: pd.DataFrame
     """
 
@@ -480,7 +480,7 @@ def calculate_lca_results_function(path: str, components: pd.DataFrame):
     inventory_df, impacts_df_summarized, impacts_df_components = \
         create_dataframes(total_inventory_results, total_environmental_impacts)
 
-    # save the summarized results as a sub step in an .xlsl file and dispose
+    # save the summarized results as a sub step in an .xlsx file and dispose
     export_and_save(inventory_df, impacts_df_summarized, impacts_df_components, path)
 
     # delete no longer needed product systems
@@ -525,16 +525,23 @@ def collect_impact_categories(dataframes: dict, result_path: str):
         # turn values in a DataFrame with the columns "component_ID" und "value"
         temp_df = pd.DataFrame(values, columns=['component_ID', 'value']).transpose()
 
+        # use first row as columns name and remove first row from the df
+        temp_df.columns = temp_df.iloc[0]
+        temp_df = temp_df[1:]
+
         if category_name not in category_dfs:
             category_dfs[category_name] = temp_df
-        else:
-            # add data to the already existing df
-            category_dfs[category_name] = \
-                pd.concat([category_dfs[category_name], temp_df.iloc[1:2, :]], ignore_index=True, sort=False)
 
-    # remove columns with index name
+        else:
+            category_dfs[category_name] = \
+                pd.concat([category_dfs[category_name], temp_df], ignore_index=True, sort=False)
+
+    # add columns as first row for the creation of the diagram
     for category_name, df in category_dfs.items():
-        category_dfs[category_name] = df.reset_index(drop=True)
+        columns_as_row = pd.DataFrame([df.columns.tolist()], columns=df.columns)
+        updated_df = pd.concat([columns_as_row, df], ignore_index=True)
+        # update the df in the category_df dict
+        category_dfs[category_name] = updated_df
 
     # create an ExcelWriter object
     with pd.ExcelWriter(result_path + "/impact_amounts.xlsx", engine='xlsxwriter') as writer:
