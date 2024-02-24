@@ -136,16 +136,8 @@ def change_components_list_to_avoid_double_counting(components2):
         # define the name of the columns
         change_input_flow = row['input']
 
-        # todo die Info müsste man aigentlich anders übergeben, etwas aufwendiger, wenn am ende noch Zeit
-        # chose transformer
-        if row['type'] == "transformer":
-            # the second input value represents the electricity input if there are two inputs and is therefore needed
-            input_value_old = row['input 2/kWh'] # if row['input 2/kWh'] != 0 else row['input 1/kWh']
-
-        # chose source
-        if row['type'] == "source":
-            # the first input value represents the electricity input if there are two inputs and is therefore needed
-            input_value_old = row['input 1/kWh']
+        # assure to use the electricity input, as the columns are chosen randomly
+        input_value_old = min(row['input 1/kWh'], row['input 2/kWh']) if row['input 2/kWh'] != 0 else row['input 1/kWh']
 
         # remove the input values of the components that are considered twice in the results
         # remove the gas heating transformer example from this operation
