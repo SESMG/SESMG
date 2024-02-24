@@ -135,18 +135,28 @@ def change_components_list_to_avoid_double_counting(components2):
 
         # define the name of the columns
         change_input_flow = row['input']
-        # the second input value represents the electricity input if there are two inputs and is therefore needed
-        input_value_old = row['input 2/kWh'] if row['input 2/kWh'] != 0 else row['input 1/kWh']
+
+        # todo die Info müsste man aigentlich anders übergeben, etwas aufwendiger, wenn am ende noch Zeit
+        # chose transformer
+        if row['type'] == "transformer":
+            # the second input value represents the electricity input if there are two inputs and is therefore needed
+            input_value_old = row['input 2/kWh'] # if row['input 2/kWh'] != 0 else row['input 1/kWh']
+
+        # chose source
+        if row['type'] == "source":
+            # the first input value represents the electricity input if there are two inputs and is therefore needed
+            input_value_old = row['input 1/kWh']
 
         # remove the input values of the components that are considered twice in the results
         # remove the gas heating transformer example from this operation
-        # todo könnte man auch automatisiert machen, wäre dann eigentlich besser
-        #  nachdem die unit prozesse zusammengeführt wurden
+        # todo könnte man auch automatisiert machen, nachdem die unit prozesse zusammengeführt wurden
         # todo etwas aufwendiger und daher erstmal rausgelassen
-
         if change_input_flow in filtered_components['ID'].values and change_input_flow != "01_gas_bus":
+            filtered_components.loc[
+                filtered_components['ID'] == change_input_flow, 'output 1/kWh'] -= input_value_old
 
-            filtered_components.loc[filtered_components['ID'] == change_input_flow, 'output 1/kWh'] -= input_value_old
+    print("FILTERED")
+    print(filtered_components.to_string())
 
     return filtered_components
 
@@ -179,8 +189,25 @@ def add_lca_uuid(filtered_components):
         # extract the type of the process (note: this is database specific)
         component_type = "System" if "LCI" in process_ref.name else "Unit" \
             if "UP" in process_ref.name else "Unknown"
-        # fill lca dict with all important information
-        lca_dict[component_id] = (change_input_flow, output_value, uuid, component_type, )
+
+        # combine entries with the same LCA uuid
+        if uuid in [value[2] for value in lca_dict.values()]:
+            # Search for the row with the matching uuid now
+            for existing_row_id, existing_row_values in lca_dict.items():
+                # combine putput values
+                new_output_value = lca_dict[existing_row_id][1] + output_value
+                # create new tuple
+                updated_values = (
+                    lca_dict[existing_row_id][0],
+                    new_output_value,
+                    lca_dict[existing_row_id][2],
+                    lca_dict[existing_row_id][3],)
+                # update the value
+                lca_dict[existing_row_id] = updated_values
+
+        else:
+            # fill lca dict with all important information
+            lca_dict[component_id] = (change_input_flow, output_value, uuid, component_type, )
 
     return lca_dict
 
