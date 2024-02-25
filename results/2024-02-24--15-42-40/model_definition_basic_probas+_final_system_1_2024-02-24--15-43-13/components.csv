@@ -1,0 +1,22 @@
+ID,type,input 1/kWh,input 2/kWh,output 1/kWh,output 2/kWh,capacity/kW,variable costs/CU,periodical costs/CU,investment/kW,max. invest./kW,constraints/CU
+01_electricity_bus_shortage,source,0,0,56.55,0,0.75,1079259.44,0,0,0,884.64
+01_gas_bus_shortage,source,0,0,0.0,0,0.0,0.0,0,0,0,0.0
+01_pellet_bus_shortage,source,0,0,417.95,0,10.4,0.0,0,0,0,2059.45
+01_oil_bus_shortage,source,0,0,0.0,0,0.0,0.0,0,0,0,0.0
+01_pv_bus_excess,sink,43.95,0,0.0,0,2.91,-61871.8,0,0,0,-155.83
+01_hp_electricity_bus_shortage,source,0,0,0.0,0,0.0,0.0,0,0,0,0.0
+01_pv_to_01_electricity_link,link,46.79,0,46.79,0,2.37,0.0,0.0,50.0,50,0.0
+01_electricity_to_01_hp_electricity_bus,link,22.42,0,22.42,0,1.84,0.0,0.0,50.0,50,0.0
+01_thermal_storage,storage,51.9,0,50.87,0,15.46,0.0,10378.47,17.18,30,68.73
+01_heat_without_storage_to_01_heat,link,472.94,0,472.94,0,9.36,0.0,0.0,50.0,50,0.0
+01_electricity_sink,sink,76.49,0,0.0,0,0.83,0.0,0,0,0,0.0
+01_heat_sink,sink,545.71,0,0.0,0,9.36,0.0,0,0,0,0.0
+01_heat_storage_to_01_heat,link,72.77,0,72.77,0,2.97,0.0,0.0,50.0,50,0.0
+01_gasheating_transformer,transformer,0.0,0,0.0,0,0.0,0.0,0.0,50.0,50,5500.0
+01_oilheating_transformer,transformer,0.0,0,0.0,0,0.0,0.0,0.0,50.0,50,3600.0
+01_electricheating_transformer,transformer,0.0,0,0.0,0,0.0,0.0,0.0,50.0,50,1150.0
+01_pelletheating_transformer,transformer,417.95,0,376.16,0,9.36,504075.76,0.0,50.0,50,1900.0
+01_GCHP_transformer,transformer,22.42,74.37,96.79,0,7.93,40374.86,0.0,50.0,50,14100.0
+01_ASHP_transformer,transformer,0.0,0.0,0.0,0,0.0,0.0,0.0,50.0,50,6850.0
+01_photovoltaic_electricity_source,source,0,0,90.74,0,4.05,127744.9,0.0,5.0,5,475.0
+01_solar_thermal_source,source,4.43,77.69,73.81,0,2.47,46181.33,0.0,4.0,20,300.33

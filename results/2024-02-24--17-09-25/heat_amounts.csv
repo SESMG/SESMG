@@ -1,0 +1,4 @@
+,reductionco2,ST,ST_north,Heat Demand,GCHP,ASHP,natural_gasheating,oil_heating,electric_heating,pellet_heating,thermal_storage_losses,DH
+0,0.0,0.0,0.0,304.77,186.74,52.57,0.0,0.0,1.33,64.12,0.0,0.0
+0,50.0,8.7,8.7,304.77,136.18,0.0,0.0,0.0,4.27,155.69,0.07000000000000028,0.0
+0,100.0,60.38,60.38,304.77,48.94,0.0,0.0,0.0,0.0,196.27,0.8200000000000003,0.0

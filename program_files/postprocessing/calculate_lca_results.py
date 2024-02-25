@@ -128,7 +128,11 @@ def change_components_list_to_avoid_double_counting(components2):
     """
 
     # filter through the rows of the df and select only rows with an added uuid and non-zero output values
-    filtered_components = components2[(components2['uuid'] != '') & (components2['output 1/kWh'] != 0)]
+    # always consider the electricity buses to avoid double counting
+    filtered_components = components2[
+        ((components2['uuid'] != '') & (components2['output 1/kWh'] != 0)) |
+        (components2['ID'].str.endswith('electricity_bus') & (components2['type'] == 'source'))
+        ]
 
     # iterate through the rows in the df
     for index, row in filtered_components.iterrows():
@@ -143,9 +147,13 @@ def change_components_list_to_avoid_double_counting(components2):
         # remove the gas heating transformer example from this operation
         # todo könnte man auch automatisiert machen, nachdem die unit prozesse zusammengeführt wurden
         # todo etwas aufwendiger und daher erstmal rausgelassen
-        if change_input_flow in filtered_components['ID'].values and change_input_flow != "01_gas_bus":
+
+        if change_input_flow in filtered_components['ID'].values and not change_input_flow.endswith("_gas_bus"):
             filtered_components.loc[
                 filtered_components['ID'] == change_input_flow, 'output 1/kWh'] -= input_value_old
+
+
+        # todo: hat scheinbar nicht mehr funktioniert: WARUM NICHT?? wahrscheinlich liegts am gas bus
 
     print("FILTERED")
     print(filtered_components.to_string())
