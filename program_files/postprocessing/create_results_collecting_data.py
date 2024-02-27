@@ -520,7 +520,11 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
                 comp_dict[loc_label] += [0, 0]
                 total_demand += sum(flows[0])
             if isinstance(node, Source):
-                total_usage += sum(flows[2])
+                if (node.label in list(nodes_data["sources"]["label"]) or
+                        "shortage" in node.label):
+                    total_usage += sum(flows[2])
+            if isinstance(node, Sink) and "excess" in node.label:
+                total_usage -= sum(flows[0])
             # get the component's type for the loc
             comp_dict[loc_label].append(get_comp_type(node=node))
             
