@@ -224,8 +224,7 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
         components_list = add_uuid_to_components(nodes_data, components_list)
 
         # scale results with the var_cost_factor
-        consider_var_cost_factor(components_list, variable_cost_factor)
-        # TODO funktioniert so, alternativ könnte man das noch die compnents_list als return mitnehmen
+        components_list = consider_var_cost_factor(components_list, variable_cost_factor)
 
         # calculate results
         calculate_lca_results_function(path=result_path, components=components_list)

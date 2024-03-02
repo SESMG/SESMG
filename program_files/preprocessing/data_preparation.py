@@ -138,7 +138,7 @@ def append_timeseries_to_weatherdata_sheet(nodes_data: dict
     return nodes_data['timeseries']
 
 
-def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str):
+def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str) -> str:
     """
         To be able to work with the adapted weather data set some
         parameters from nodes_data must be changed.
@@ -314,7 +314,7 @@ def timeseries_adaption(nodes_data: dict, clusters: int,
 
 
 def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
-                           result_path: str):
+                           result_path: str) -> str:
     """
         Evaluates the passed parameters for timeseries preparation and
         starts the corresponding simplification/clustering algorithm.
@@ -415,8 +415,5 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
         nodes_data['energysystem'].to_excel(writer, sheet_name='energysystem')
         nodes_data['sinks'].to_excel(writer, sheet_name='sinks')
         writer.close()
-
-
-
 
     return variable_cost_factor

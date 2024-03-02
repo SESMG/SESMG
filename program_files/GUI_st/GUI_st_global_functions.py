@@ -74,7 +74,6 @@ def import_GUI_input_values_json(json_file_path: str) -> dict:
         with open(blank_json_file_path, "r", encoding="utf-8") as infile:
             GUI_settings_cache_dict_reload = json.load(infile)
 
-
     # else load the user sprecific GUI settings
     else:
         # Import json file including several (sub)dicts for every GUI page

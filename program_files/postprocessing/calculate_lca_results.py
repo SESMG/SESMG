@@ -10,7 +10,7 @@ client = ipc.Client()
 # todo start ipc server automatically:  https://github.com/GreenDelta/gdt-server
 
 
-def change_unit(value_old_unit):
+def change_unit(value_old_unit) -> str:
     """
     Change the unit from kWh to MJ which is the unit for the reference flow of energy in openLCA
         :param value_old_unit
@@ -22,7 +22,7 @@ def change_unit(value_old_unit):
     return value_new_unit
 
 
-def add_uuid_to_components(nodes_data, components_list):
+def add_uuid_to_components(nodes_data, components_list) -> pd.DataFrame:
     """
     Add UUIDs to the components_list based on the information in nodes_data.
         :param nodes_data: contains all information from the model definition sorted in a dict with the different
@@ -46,8 +46,8 @@ def add_uuid_to_components(nodes_data, components_list):
 
             # loop through each row of the dataframe in the values of the dict
             for index, row in values.iterrows():
-                row_first_value = row.iloc[0]  # First value in current row
-                row_uuid_value = row['lca uuid']  # uuid value in current row
+                row_first_value = row['label']
+                row_uuid_value = row['lca uuid']
 
                 # add "insulation" to the ID of the heat_sink_window
                 row_first_value += "-insulation" if key == "insulation" else ""
@@ -69,7 +69,7 @@ def add_uuid_to_components(nodes_data, components_list):
     return components_list
 
 
-def consider_var_cost_factor(components_list, variable_cost_factor):
+def consider_var_cost_factor(components_list, variable_cost_factor) -> pd.DataFrame:
     """
     Adjusts specific columns in the given DataFrame by multiplying them with the provided variable cost factor.
 
@@ -77,6 +77,8 @@ def consider_var_cost_factor(components_list, variable_cost_factor):
         :type components_list: pandas.core.frame.DataFrame
         :param variable_cost_factor: Factor to scale specific columns in the DataFrame.
         :type variable_cost_factor: float
+
+    return: - **components_list** (pd.DataFrame)
     """
 
     # Indexer for columns 3 to 6 (0-based)
@@ -85,8 +87,10 @@ def consider_var_cost_factor(components_list, variable_cost_factor):
     # Multiplication by the variable_cost_factor
     components_list[columns_to_multiply] *= variable_cost_factor
 
+    return components_list
 
-def change_components_list_for_excess(components):
+
+def change_components_list_for_excess(components) -> pd.DataFrame:
     """
     Subtract the outputs from the excess buses to consider the consumption base approach for the environmental impacts.
         :param components: Dataframe containing components data
@@ -117,7 +121,7 @@ def change_components_list_for_excess(components):
     return components2
 
 
-def change_components_list_to_avoid_double_counting(components2):
+def change_components_list_to_avoid_double_counting(components2) -> pd.DataFrame:
     """
     Filter the DataFrame 'components' to extract components with an uuid and avoid double counting of environmental
     impacts by subtracting some components from the output values.
@@ -145,23 +149,15 @@ def change_components_list_to_avoid_double_counting(components2):
 
         # remove the input values of the components that are considered twice in the results
         # remove the gas heating transformer example from this operation
-        # todo könnte man auch automatisiert machen, nachdem die unit prozesse zusammengeführt wurden
-        # todo etwas aufwendiger und daher erstmal rausgelassen
-
+        # todo automatically remove unit processes from the double counting (after lca dict creation)
         if change_input_flow in filtered_components['ID'].values and not change_input_flow.endswith("_gas_bus"):
             filtered_components.loc[
                 filtered_components['ID'] == change_input_flow, 'output 1/kWh'] -= input_value_old
 
-
-        # todo: hat scheinbar nicht mehr funktioniert: WARUM NICHT?? wahrscheinlich liegts am gas bus
-
-    print("FILTERED")
-    print(filtered_components.to_string())
-
     return filtered_components
 
 
-def add_lca_uuid(filtered_components):
+def add_lca_uuid(filtered_components) -> dict:
     """
     Create a dictionary containing the ID of the components the needed value and the uuid, based on the .csv file.
         :param filtered_components: DataFrame containing components.
@@ -212,7 +208,7 @@ def add_lca_uuid(filtered_components):
     return lca_dict
 
 
-def change_values_of_input_processes(lca_dict):
+def change_values_of_input_processes(lca_dict) -> dict:
     """
     Change values of input processes in the lca_dict based on harmonization with other processes
         :param lca_dict: Dictionary containing needed information for the lca about the components of the energy system.
@@ -249,10 +245,6 @@ def change_values_of_input_processes(lca_dict):
                     # check of some of the default provider can be harmonized
                     if selected_uuid == ref_id:
                         exchange.amount = selected_output / output_value
-                        # because of the relation of the outputs no influence on the unit of the new value
-                        print("new values were added to the process flows for the")
-                        print(component_id)
-                        print(exchange.amount)
                         # change value(s) in the database
                         client.put(process_ref)
 
@@ -262,7 +254,7 @@ def change_values_of_input_processes(lca_dict):
     return lca_dict
 
 
-def create_product_system(lca_dict):
+def create_product_system(lca_dict) -> (dict, list):
     """
     Create the product systems.
 
@@ -275,13 +267,13 @@ def create_product_system(lca_dict):
 
     # set configurations for not choosing automatic linking of the processes
     config1 = o.LinkingConfig(
-        prefer_unit_processes=False,  # do not choose automatic linking, but chose own system processes
+        prefer_unit_processes=False,
         provider_linking=None)
 
     # set configuration for the unit processes that are manually connected
     config2 = o.LinkingConfig(
         prefer_unit_processes=False,
-        provider_linking=o.ProviderLinking.ONLY_DEFAULTS)   # "onlydefaults"
+        provider_linking=o.ProviderLinking.ONLY_DEFAULTS)
 
     # List to store created system_refs
     system_refs = []
@@ -298,13 +290,10 @@ def create_product_system(lca_dict):
             # Add the created system_ref to the list
             system_refs.append(system_ref)
 
-    print("lca dict_new")
-    print(lca_dict)
-
     return lca_dict, system_refs
 
 
-def calculate_results(lca_dict):
+def calculate_results(lca_dict) -> (dict, dict):
     """
     Calculate the inventory and impact assessment results for the energy system based on the provided lca_dict.
         :param lca_dict: Dictionary containing information about the energy system
@@ -326,12 +315,15 @@ def calculate_results(lca_dict):
             # calculation setup
             setup = o.CalculationSetup(
                 target=o.Ref(ref_type=o.RefType.ProductSystem, id=uuid2),
-                # unit automatically takes the unit of the quantitive reference
+                # ReCiPe Midpoint H
+                # TODO add the impact assessment method as an option in the gui
                 impact_method=o.Ref(id="1f08b96a-0d3c-4e9e-88bf-09f2239f95e1"),
-                # ReCiPe Midpoint H # TODO add the impact assessment method as an option in the gui
-                amount=output_value,    # assumption: linear correlation with the output value
-                allocation=None,        # no allocation, already predefined by ProBas
-                nw_set=None             # no normalization or weighting set
+                # assumption: linear correlation with the output value
+                amount=output_value,
+                # no allocation, already predefined by ProBas
+                allocation=None,
+                # no normalization or weighting set
+                nw_set=None
             )
 
             result = client.calculate(setup)
@@ -370,7 +362,7 @@ def calculate_results(lca_dict):
     return environmental_impacts, total_inventory_results
 
 
-def sort_environmental_impacts_dict(environmental_impacts):
+def sort_environmental_impacts_dict(environmental_impacts) -> dict:
     """
     Sort the environmental impact dictionary.
     :param environmental_impacts: Dictionary containing environmental impacts.
@@ -390,7 +382,8 @@ def sort_environmental_impacts_dict(environmental_impacts):
     return total_environmental_impacts
 
 
-def create_dataframes(total_inventory_results, total_environmental_impacts):
+def create_dataframes(total_inventory_results, total_environmental_impacts) \
+        -> (pd.DataFrame, pd.DataFrame, pd.DataFrame):
     """
     Creates Pandas DataFrames from total environmental impacts and inventory results
         :param total_inventory_results: dictionary containing inventory results, where the key is the
@@ -401,8 +394,8 @@ def create_dataframes(total_inventory_results, total_environmental_impacts):
         :type total_environmental_impacts: dict
 
     :return: - **inventory_df** (pandas.DataFrame)
-    :return: - **impacts_df_summarized** (pandas.DataFrame)
-    :return: - **impacts_df_components** (pandas.DataFrame)
+             - **impacts_df_summarized** (pandas.DataFrame)
+             - **impacts_df_components** (pandas.DataFrame)
     """
 
     # create df from the inventory dictionary
@@ -418,11 +411,6 @@ def create_dataframes(total_inventory_results, total_environmental_impacts):
     impacts_df_components = pd.DataFrame([(*key, data['amount'], data['unit']) for
                                key, data in total_environmental_impacts.items()],
                               columns=['impact_category_name', 'component_id', 'value', 'unit'])
-
-    print("result dfs")
-    print(inventory_df)
-    print(impacts_df_summarized)
-    print(impacts_df_components)
 
     return inventory_df, impacts_df_summarized, impacts_df_components
 
@@ -458,7 +446,7 @@ def export_and_save(inventory_df, impacts_df_summarized, impacts_df_components, 
     print("Results were successfully saved as excel files")
 
 
-def delete_product_systems(system_refs):
+def delete_product_systems(system_refs) -> None:
     """
     Delete no longer needed product systems from the database.
         :param system_refs
@@ -474,7 +462,7 @@ def delete_product_systems(system_refs):
         print("Product systems were disposed")
 
 
-def calculate_lca_results_function(path: str, components: pd.DataFrame):
+def calculate_lca_results_function(path: str, components: pd.DataFrame) -> None:
     """
     Combine different functions to calculate the different lca results for a simulation as well as for the
     different pareto points, if selected.
@@ -514,7 +502,7 @@ def calculate_lca_results_function(path: str, components: pd.DataFrame):
     delete_product_systems(system_refs)
 
 
-def collect_impact_categories(dataframes: dict, result_path: str):
+def collect_impact_categories(dataframes: dict, result_path: str) -> None:
     """
         Function to collect results sorted for each impact category. These results are later used to create the
         diagrams for the impact amounts.
