@@ -369,12 +369,12 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
     elif data_prep == 'slicing A':
         slicing.timeseries_slicing(n_days=int(days_per_cluster),
                                    nodes_data=nodes_data,
-                                   period=cluster_period),
+                                   period=cluster_period)
     # delete every n-th period
     elif data_prep == 'slicing B':
         slicing.timeseries_slicing2(n_days=int(days_per_cluster),
                                     nodes_data=nodes_data,
-                                    period=cluster_period),
+                                    period=cluster_period)
 
     # DOWNSAMPLING ALGORITHM
     # use every n-th period
