@@ -16,33 +16,21 @@ SESMG-LCA
 Description
 -----------
 
-The program automizes an additional life cycle assessment (LCA) for simulated and optimized energy systems. 
-For users unfamiliar with LCA, it is essential to understand that an LCA involves two main components: inventory analysis and impact assessment.
-Inventory analysis deals with the compilation and quantification of inputs and outputs for a product or system throughout its life cycle. 
-Impact assessment, on the other hand, evaluates the potential environmental impacts associated with those inputs and outputs.
-Therefore, the LCA program makes it possible to assess flows of technologies and energy systems (inventory results), as well as environmental impacts for different 
-impact categories (e.g. climate change, human toxicity, freshwater eutrophication, metal depletion, ...). 
+The program automates an additional Life Cycle Assessment (LCA) for simulated and optimized energy systems. For users unfamiliar with LCA, it is essential to understand that an LCA involves two main components: inventory analysis and impact assessment. Inventory analysis deals with the compilation and quantification of inputs and outputs for a product or system throughout its life cycle. Impact assessment, on the other hand, evaluates the potential environmental impacts associated with those inputs and outputs. Therefore, the LCA program makes it possible to assess flows of technologies and energy systems (inventory results) as well as environmental impacts for different impact categories (e.g., climate change, human toxicity, freshwater eutrophication, metal depletion, ...).
 
-The LCA program is currently implemented in a specific branch of the SESMG 'here<https://github.com/SESMG/SESMG/releases/tag/v1.0.1rc2>'. To use the feature, the user needs an installed version of the openLCA 2.0 software 
-and an implemented database within the software. Technologies in the model definition need to be assigned to a LCA dataset in the software with adding a UUID 
-(Universally Unique Identifier) key in the column "lca_uuid".  After setting up the server in the openLCA application, users can select the option for additional LCA results 
-in the GUI for a simulation or Pareto runs.
+The LCA program is currently implemented in a specific branch of the SESMG, available here. To use the feature, the user needs an installed version of the openLCA 2.0 software and an implemented database within the software. Technologies in the model definition need to be assigned to an LCA dataset in the software by adding a UUID (Universally Unique Identifier) key in the column "lca_uuid". After setting up the server in the openLCA application, users can select the option for additional LCA results in the GUI for simulation or Pareto runs.
 
-Results of the LCA application include the inventory results and the impact assessment results for the entire energy system. Moreover, results for the impact categories are 
-differentiated by technologies, saved in the results folder for each run. Additionally the envionmental impacts are summarized for the different points of the Pareto front and also 
-vizusalized in the GUI.
+Results of the LCA application include the inventory results and the impact assessment results for the entire energy system. Moreover, results for the impact categories are differentiated by technologies, saved in the results folder for each run. Additionally, the environmental impacts are summarized for the different points of the Pareto front and also visualized in the GUI.
 
 Reference Case 
 ---------------
-The functionality of the tool can be checked, also without an openLCA application, be assessing the results of an emplary reference case. Therefore the released program also contains the needed files.
+The functionality of the tool can be checked, even without an openLCA application, by assessing the results of an exemplary reference case. Therefore, the released program also contains the needed files.
 
-- model_deinition_reference_case: An example model definition for assigning UUID keys in the free database ProBas+.
-- results_reference_case: The folder contains all results (SESMG results and LCA calculations) for a Pareto run with the model definition (cost-optimized scenario, three Pareto points, emission-optimized scenario). 
-  In order to vizualise those results the user can
+- model_definition_reference_case: An example model definition for assigning UUID keys in the free database ProBas+.
+- results_reference_case: The folder contains all results (SESMG results and LCA calculations) for a Pareto run with the model definition (cost-optimized scenario, three Pareto points, emission-optimized scenario). To visualize those results, the user can:
   1. Manually create a "SESMG/results" folder in the local document directory.
-  3. Manually copy the results_reference_case folder in the "results".
-  4. See the vizualisation of the environmental impacts by selecting this folder in the "Result Processing" of the GUI. 
+  2. Manually copy the results_reference_case folder into the "results" folder.
+  3. See the visualization of the environmental impacts by selecting this folder in the "Result Processing" of the GUI.
 
-Further information about installation and usage can be found in the thesis 'Koert F., Coupling of Energy System Models with Life Cycle Assessment (2024), bachelor thesis'. The thesis serves as a comprehensive guide, providing background information and 
-ensuring that even those unfamiliar with LCA concepts can comprehend the implementation and utilization of the openLCA 2.0 software for environmental impact assessments in energy 
-system modeling. 
+
+Further information about installation and usage can be found in the thesis 'Koert F., Coupling of Energy System Models with Life Cycle Assessment (2024), bachelor thesis'. The thesis serves as a comprehensive guide, providing background information and ensuring that even those unfamiliar with LCA concepts can comprehend the implementation and utilization of the openLCA 2.0 software for environmental impact assessments in energy system modeling.
