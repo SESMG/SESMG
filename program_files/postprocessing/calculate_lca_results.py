@@ -3,7 +3,7 @@ import olca_schema as o
 import pandas as pd
 import os
 import re
-
+import csv
 
 # run the jason rpc protokoll
 client = ipc.Client()
@@ -183,6 +183,7 @@ def add_lca_uuid(filtered_components) -> dict:
         # get the right process based on the uuid
         process_ref = client.get(o.Process, uuid)
         # extract the type of the process (note: this is database specific)
+        # todo get this information automatically with the UUID
         component_type = "System" if "LCI" in process_ref.name else "Unit" \
             if "UP" in process_ref.name else "Unknown"
 
@@ -517,12 +518,18 @@ def collect_impact_categories(dataframes: dict, result_path: str) -> None:
     # create empty dict for impact amounts
     impact_amounts_dict = {}
 
+    # create empty dict for unit
+    unit_dict = {}
+
     # iterate threw the pareto points and hte lca_results components
     for key, values in dataframes.items():
 
         # go through each row in the values
         for index, row in values.iterrows():
             for category_name in [row["impact_category_name"]]:
+
+                # create dict with category and unit
+                unit_dict[category_name] = row["unit"]
 
                 # combine key and the impact category
                 key_with_category = (key, category_name)
@@ -531,6 +538,12 @@ def collect_impact_categories(dataframes: dict, result_path: str) -> None:
                 if key_with_category not in impact_amounts_dict:
                     impact_amounts_dict[key_with_category] = [("reductionco2", 100 * float(key))]
                 impact_amounts_dict[key_with_category].append((row["component_id"], row["value"]))
+
+    # Speichere unit_dict als CSV-Datei im result_path
+    unit_dict_file_path = result_path + "/impact_units.csv"
+    with open(unit_dict_file_path, "w", newline="") as unit_dict_file:
+        writer = csv.writer(unit_dict_file)
+        writer.writerows(unit_dict.items())
 
     # create empty dict
     category_dfs = {}
@@ -557,11 +570,13 @@ def collect_impact_categories(dataframes: dict, result_path: str) -> None:
         updated_df = pd.concat([columns_as_row, df], ignore_index=True)
         # update the df in the category_df dict
         category_dfs[category_name] = updated_df
+        # todo sort impacts after the run
 
     # create an ExcelWriter object
     with pd.ExcelWriter(result_path + "/impact_amounts.xlsx", engine='xlsxwriter') as writer:
         # save each category in a separate sheet
         for category, results in category_dfs.items():
             if category not in ("Ozone depletion", "Ionising radiation", "Agricultural land occupation",
-                                "Urban land occupation", "Natural land transformation"):
+                                    "Urban land occupation", "Natural land transformation"):
+
                 results.to_excel(writer, sheet_name=category, index=False, header=False)

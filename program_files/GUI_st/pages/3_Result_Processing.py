@@ -10,6 +10,7 @@ import pandas as pd
 from st_aggrid import AgGrid, GridUpdateMode
 import plotly.express as px
 from PIL import Image
+import csv
 
 from program_files.GUI_st.GUI_st_global_functions import \
     import_GUI_input_values_json, st_settings_global, read_markdown_document, \
@@ -300,11 +301,28 @@ def create_impact_amount_diagram(result_path_impacts: str, sheet_name_impact: st
     # creating column headers to select
     list_headers = list(amounts_df.columns.values)
 
+    # read units
+    # todo read directly from the lca result files
+    unit_df_path = result_path_impacts.replace("/impact_amounts.xlsx", "/impact_units.csv")
+
+    # Lese die CSV-Datei in ein Dictionary ein
+    unit_dict = {}
+    with open(unit_df_path, mode='r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        for row in csv_reader:
+            key, value = row
+            unit_dict[key] = value
+
+    # add unit for the diagram
+    category = sheet_name_impact
+    unit = unit_dict.get(category, "")
+    y_axis = f"{category} ({unit})"
+
     # create plotly chart
     fig = px.area(amounts_df, x="reductionco2", y=list_headers).update_layout(
         xaxis_title="Reduced GHG emissions in percentage of the \
                 maximum potential reduction (%)",
-        yaxis_title=sheet_name_impact)
+        yaxis_title=y_axis)
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
@@ -490,7 +508,6 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         result_path_elec_amounts=st.session_state["state_result_path"]
         + "/elec_amounts.csv")
 
-    # todo gerade prüfen, ob das die richtige stelle für die gui ist
     # check if GUI settings dict is in result folder
     if os.path.join(st.session_state["state_result_path"],
                     "GUI_st_run_settings.json") \
