@@ -28,9 +28,10 @@ The functionality of the tool can be checked, even without an openLCA applicatio
 
 - model_definition_reference_case: An example model definition for assigning UUID keys in the free database ProBas+.
 - results_reference_case: The folder contains all results (SESMG results and LCA calculations) for a Pareto run with the model definition (cost-optimized scenario, three Pareto points, emission-optimized scenario). To visualize those results, the user can:
-  1. Manually create a "SESMG/results" folder in the local document directory.
-  2. Manually copy the results_reference_case folder into the "results" folder.
-  3. See the visualization of the environmental impacts by selecting this folder in the "Result Processing" of the GUI.
+
+1. Manually create a "SESMG/results" folder in the local document directory.
+2. Manually copy the results_reference_case folder into the "results" folder.
+3. See the visualization of the environmental impacts by selecting this folder in the "Result Processing" of the GUI.
 
 
 Further information about installation and usage can be found in the thesis 'Koert F., Coupling of Energy System Models with Life Cycle Assessment (2024), bachelor thesis'. The thesis serves as a comprehensive guide, providing background information and ensuring that even those unfamiliar with LCA concepts can comprehend the implementation and utilization of the openLCA 2.0 software for environmental impact assessments in energy system modeling.
