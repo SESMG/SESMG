@@ -652,7 +652,8 @@ if st.session_state["state_submitted_optimization"] == "done":
                         limits=[int(i) / 100 for i in
                                 GUI_main_dict["input_pareto_points"]],
                         model_definition=model_definition_input_file,
-                        GUI_main_dict=GUI_main_dict)
+                        GUI_main_dict=GUI_main_dict,
+                        result_path=GUI_functions.set_result_path())
 
                 # save path as session state for the result processing page
                 st.session_state["state_result_path"] = \
