@@ -66,7 +66,7 @@ def constraint_optimization_against_two_values(
         "invest_limit_periodical_constraints",
         po.Expression(
             expr=sum(
-                om.InvestmentFlowBlock.invest[inflow, outflow]
+                om.InvestmentFlowBlock.invest[(inflow, outflow, 0)]
                 * getattr(periodical_flows[inflow, outflow],
                           "periodical_constraint_costs")
                 for (inflow, outflow) in periodical_flows
@@ -88,7 +88,7 @@ def constraint_optimization_against_two_values(
             expr=sum(
                 (getattr(nonconvex_flows[inflow, outflow],
                          "fix_constraint_costs")
-                 * om.InvestmentFlowBlock.invest_status[inflow, outflow])
+                 * om.InvestmentFlowBlock.invest_status[(inflow, outflow, 0)])
                 for (inflow, outflow) in nonconvex_flows)
         ),
     )
@@ -105,7 +105,7 @@ def constraint_optimization_against_two_values(
         "integral_limit_variable_constraints",
         po.Expression(
             expr=sum(
-                om.flow[inflow, outflow, t]
+                om.flow[(inflow, outflow, 0, t)]
                 * om.timeincrement[t]
                 * sequence(getattr(variable_flows[inflow, outflow],
                                    "emission_factor"))[t]
@@ -141,7 +141,7 @@ def constraint_optimization_against_two_values(
             "invest_limit_storage",
             po.Expression(
                 expr=sum(
-                    om.GenericInvestmentStorageBlock.invest[num]
+                    om.GenericInvestmentStorageBlock.invest[(num, 0)]
                     * getattr(comp[num], "periodical_constraint_costs")
                     for num in comp
                 )
@@ -250,7 +250,7 @@ def competition_constraint(om: solph.Model,
         # rule : sum(outflow(x) * factor x) <= (limit - existing)
         def competition_rule(om):
             competition_flow = sum(
-                om.InvestmentFlowBlock.invest[inflow, outflow]
+                om.InvestmentFlowBlock.invest[(inflow, outflow, 0)]
                 * om.flows[inflow, outflow].competition_factor
                 for (inflow, outflow) in flows
             )
@@ -393,7 +393,7 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
         for comp, outflow in om.flows.keys():
             # searching for the output-flows of the link labeled
             # z['label']
-            if isinstance(comp, solph.components.experimental.Link) \
+            if isinstance(comp, solph.components.Link) \
                     and str(comp) == row["label"]:
                 # check if the link is undirected and ensure that the
                 # solver has to invest the same amount on both

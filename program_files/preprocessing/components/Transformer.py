@@ -9,7 +9,7 @@ import numpy
 import pandas
 from oemof.solph import Investment
 from oemof.solph.flows import Flow
-from oemof.solph.components import Transformer, Source, GenericCHP
+from oemof.solph.components import Converter, Source, GenericCHP
 from oemof.solph.buses import Bus
 
 
@@ -155,7 +155,7 @@ class Transformers:
                     "emission_factor":
                         transformer[
                             "variable output constraint costs"]},
-                investment=invest)
+                nominal_value=invest)
         }
 
     def get_secondary_output_data(self, transformer: pandas.Series) -> dict:
@@ -200,7 +200,7 @@ class Transformers:
                     custom_attributes={
                         "emission_factor":
                             transformer["variable output constraint costs 2"]},
-                    investment=Investment(
+                    nominal_value=Investment(
                             existing=existing_capacity2,
                             minimum=minimum_capacity2,
                             maximum=maximum_capacity2,
@@ -236,7 +236,7 @@ class Transformers:
             :type conversion_factors: dict
         """
         self.nodes_transformer.append(
-                Transformer(label=transformer["label"],
+                Converter(label=transformer["label"],
                             **inputs,
                             **outputs,
                             **conversion_factors)
@@ -494,7 +494,7 @@ class Transformers:
                             outputs={
                                 self.busd[transformer[
                                               "label"] + temp + "_bus"]: Flow(
-                                        investment=Investment(
+                                        nominal_value=Investment(
                                                 maximum=heatsource_cap,
                                                 custom_attributes={
                                                     "periodical_constraint_costs": 0,
@@ -511,11 +511,11 @@ class Transformers:
             # to the thermal network by connecting its input bus on the
             # in input2 given input bus
             self.nodes_transformer.append(
-                    Transformer(
+                    Converter(
                             label=transformer[
                                       "label"] + "thermal_network_connection",
                             inputs={self.busd[transformer["input2"]]: Flow(
-                                    investment=Investment(
+                                    nominal_value=Investment(
                                             maximum=heatsource_cap,
                                             custom_attributes={
                                                 "periodical_constraint_costs": 0,
@@ -526,7 +526,7 @@ class Transformers:
                             outputs={
                                 self.busd[transformer[
                                               "label"] + temp + "_bus"]: Flow(
-                                        investment=Investment(
+                                        nominal_value=Investment(
                                                 maximum=heatsource_cap,
                                                 custom_attributes={
                                                     "periodical_constraint_costs": 0,
@@ -837,7 +837,7 @@ class Transformers:
                         outputs={
                             self.busd[
                                 transformer["label"] + temp + "_bus"]: Flow(
-                                    investment=Investment(
+                                    nominal_value=Investment(
                                             maximum=transformer[
                                                 "heat capacity of source"],
                                             custom_attributes={

@@ -10,8 +10,8 @@ SPDX-License-Identifier: MIT
 import logging
 import os
 import graphviz
-from oemof.network.network import Bus, Sink, Source, Transformer
-from oemof.solph.components import GenericStorage
+from oemof.solph import Bus
+from oemof.solph.components import Sink, Source, Converter, GenericStorage
 from dhnx.optimization.oemof_heatpipe import HeatPipeline
 
 
@@ -79,11 +79,11 @@ class ESGraphRenderer:
                                                             False],
             "<class 'oemof.solph.components._source.Source'>": ["trapezium",
                                                                 False],
-            "<class 'oemof.solph.components._transformer.Transformer'>": [
+            "<class 'oemof.solph.components._converter.Converter'>": [
                 "rectangle", False],
             "<class 'oemof.solph.components._generic_storage.GenericStorage'>": [
                 "rectangle", True],
-            "<class 'oemof.solph.components.experimental._link.Link'>": [
+            "<class 'oemof.solph.components._link.Link'>": [
                 "rectangle", False],
         }
         # draw a node for each of the energy_system's component.

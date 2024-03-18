@@ -3,9 +3,8 @@
     Gregor Becker - gregor.becker@fh-muenster.de
 """
 import oemof.solph as solph
-from oemof.network.network import Bus, Sink, Source
-from oemof.solph.components.experimental import Link
-from oemof.solph.components import GenericStorage
+from oemof.solph.components import GenericStorage, Link, Sink, Source
+from oemof.solph import Bus
 from dhnx.optimization.oemof_heatpipe import HeatPipeline
 import pandas
 
@@ -158,6 +157,7 @@ def get_investment(node, esys: solph.EnergySystem, results: dict,
     """
     # get the component from the energy system's variables
     component_node = esys.groups[str(node.label)]
+    
     # get the output bus which is depending on the component type since
     # the investment of storages is taken on storage content
     if comp_type != "storage" and comp_type != "clustered_dh":
@@ -221,6 +221,9 @@ def calc_periodical_costs(node, investment: float, comp_type: str,
     if investment > 0:
         ep_costs = getattr(invest_object, attributes.get(cost_type)[0])
         offset = getattr(invest_object, attributes.get(cost_type)[1])
+        if cost_type == "costs":
+            ep_costs = ep_costs.default
+            offset = offset.default
 
     if comp_type == "link":
         return (investment * 2 * ep_costs) + 2 * offset
@@ -354,7 +357,7 @@ def get_max_invest(comp_type: str, node) -> float:
     # check rather there is an opportunity to invest in the component (node)
     if hasattr(invest_object, "maximum"):
         # if yes return the maximum investment capacity
-        max_invest = round(getattr(invest_object, "maximum"), 2)
+        max_invest = round(float(getattr(invest_object, "maximum")[0]), 2)
     return max_invest
 
 

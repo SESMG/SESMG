@@ -1,6 +1,6 @@
 streamlit
 xlsxwriter 
-oemof.solph<0.5.1 
+oemof.solph==0.5.2
 shapely>=2.0.1 
 feedinlib @ https://github.com/SESMG/feedinlib/archive/refs/heads/dev.zip 
 demandlib @ https://github.com/oemof/demandlib/archive/refs/heads/dev.zip
@@ -13,7 +13,7 @@ memory-profiler>=0.60.0
 openpyxl>=3.0.0 
 scikit-learn-extra>=0.2.0 
 pyutilib>=6.0.0
-oemof-network==0.5.0a5
+oemof-network==0.5.0
 oemof.thermal @ https://github.com/oemof/oemof-thermal/archive/refs/heads/dev.zip
 dhnx @ https://github.com/SESMG/DHNx/archive/refs/heads/dev_oemof_050_compatibility.zip 
 streamlit-aggrid>=0.3.0 

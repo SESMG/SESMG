@@ -136,6 +136,47 @@ def create_electricity_sink(building: pandas.Series, area: float, sheets: dict,
     )
 
 
+def create_share_sink_system(sheets, standard_parameters, sink_type, label, share_type, annual_demand):
+    """
+    
+    """
+    from .Bus import create_standard_parameter_bus
+    from .Link import create_link
+    
+    # create the bus to which the wood stove and the wood stove
+    # share sink will be attached
+    sheets = create_standard_parameter_bus(
+        label=label + "_" + share_type + "_heat_bus",
+        sheets=sheets,
+        standard_parameters=standard_parameters,
+        bus_type="building_heat_bus")
+    
+    # create the sink for the amount of heat which has to be
+    # produced by the wood stove
+    sheets = create_standard_parameter_sink(
+        sink_type=sink_type,
+        label=label + "_" + share_type + "_heat_demand",
+        sink_input=label + "_" + share_type + "_heat_bus",
+        annual_demand=annual_demand,
+        sheets=sheets,
+        standard_parameters=standard_parameters
+    )
+    
+    # connect the wood stove bus to the building heat bus by an
+    # directed link so that solubility is still ensured in the
+    # event of a possible shortfall due to the wood stove.
+    sheets = create_link(
+        label=label + "_" + share_type + "_heat_link",
+        sheets=sheets,
+        link_type="heat_share_link",
+        standard_parameters=standard_parameters,
+        bus_1=label + "_heat_bus",
+        bus_2=label + "_" + share_type + "_heat_bus"
+    )
+    
+    return sheets
+
+
 def create_heat_sink(building: pandas.Series, area: float, sheets: dict,
                      sinks_standard_param: pandas.DataFrame,
                      standard_parameters: pandas.ExcelFile) -> dict:
@@ -166,8 +207,10 @@ def create_heat_sink(building: pandas.Series, area: float, sheets: dict,
     """
     from .Link import create_link
     from .Bus import create_standard_parameter_bus
-    standard_param = standard_parameters.parse("2_1_heat")
+    # load the specific heat demands from standard parameter sheet
+    standard_param = standard_parameters.parse("2_1_heat", na_filter=False)
     standard_param.set_index("year of construction", inplace=True)
+    
     # year of construction: buildings older than 1918 are clustered in
     # <1918
     yoc = int(building["year of construction"])
@@ -176,101 +219,74 @@ def create_heat_sink(building: pandas.Series, area: float, sheets: dict,
     # define a variable for building type
     building_type = building["building type"]
     
-    # If an area-specific electricity requirement is given, e.g. from an
-    # energy certificate, use the else clause.
+    # define component label
+    sink_type = building_type + "_heat_sink"
+    
+    # If there is not an area-specific heat requirement given,
+    # e.g. from an energy certificate, use the else clause.
     if not building["heat demand"]:
         # if the investigated building is a residential building
         if building_type in ["SFB", "MFB"]:
             # units: buildings bigger than 12 units are clustered in > 12
-            units = str(int(building["units"])) if building["units"] < 12 \
-                else "> 12"
+            units = int(building["units"])
+            units = str(units) if units < 12 else "> 12"
             # specific demand per area
             specific_heat_demand = standard_param.loc[yoc][units + " unit(s)"]
         else:
             # specific demand per area
             specific_heat_demand = standard_param.loc[yoc][building_type]
-        NFA_GFA = \
-            sinks_standard_param.loc[
-                building["building type"] + "_heat_sink"][
-                "net_floor_area / area"]
-        demand_heat = specific_heat_demand * area * NFA_GFA
+        
+        # get the factor to correct the gross building area to the net
+        # living area
+        net_floor_area_p_area = \
+            sinks_standard_param.loc[sink_type]["net_floor_area / area"]
+        demand_heat = specific_heat_demand * area * net_floor_area_p_area
+        
+    # if there is an area-specific heat requirement given
     else:
         demand_heat = building["heat demand"] * area
         
     demand_heat_new = demand_heat
     
+    # if there is a wood stove share given by the user, reduce the
+    # building heat amount by the amount which has to be produced by
+    # the wood stove
     if building["wood stove share"] != "standard":
-        demand_heat_new = demand_heat \
-                          - (float(building["wood stove share"]) * demand_heat)
+        demand_heat_new -= (float(building["wood stove share"]) * demand_heat)
+    
+        sheets = create_share_sink_system(
+            sheets=sheets,
+            standard_parameters=standard_parameters,
+            sink_type=sink_type,
+            label=str(building["label"]),
+            share_type="wood_stove",
+            annual_demand=(float(building["wood stove share"]) * demand_heat))
         
-    elif building["solar thermal share"] != "standard":
-        demand_heat_new = \
-            demand_heat \
-            - (float(building["solar thermal share"]) * demand_heat)
-    elif building["solar thermal share"] != "standard" \
-            and building["wood stove share"] != "standard":
-        demand_heat_new = \
-            demand_heat \
-            - (float(building["solar thermal share"]) * demand_heat) \
-            - (float(building["wood stove share"]) * demand_heat)
-        
+    # if there is a solar thermal share given by the user, reduce the
+    # building heat amount by the amount which has to be produced by
+    # the solar thermal source
+    if building["solar thermal share"] != "standard":
+        demand_heat_new -= (float(building["solar thermal share"]) * demand_heat)
+
+        sheets = create_share_sink_system(
+            sheets=sheets,
+            standard_parameters=standard_parameters,
+            sink_type=sink_type,
+            label=str(building["label"]),
+            share_type="st",
+            annual_demand=(float(building["solar thermal share"]) * demand_heat))
+
+    # create the building heat sink whereby it is the decision of the
+    # solver which technology is producing the needed amount of heat
     sheets = create_standard_parameter_sink(
-        sink_type=building_type + "_heat_sink",
+        sink_type=sink_type,
         label=str(building["label"]) + "_heat_demand",
         sink_input=str(building["label"]) + "_heat_bus",
         annual_demand=demand_heat_new,
         sheets=sheets,
         standard_parameters=standard_parameters
     )
-    
-    if building["wood stove share"] != "standard":
-        sheets = create_standard_parameter_sink(
-            sink_type=building_type + "_heat_sink",
-            label=str(building["label"]) + "_wood_stove_heat_demand",
-            sink_input=str(building["label"]) + "_wood_stove_heat_bus",
-            annual_demand=float(building["wood stove share"]) * demand_heat,
-            sheets=sheets,
-            standard_parameters=standard_parameters
-        )
-        sheets = create_link(
-            label=str(building["label"]) + "_wood_stove_heat_link",
-            sheets=sheets,
-            link_type="heat_share_link",
-            standard_parameters=standard_parameters,
-            bus_1=str(building["label"]) + "_heat_bus",
-            bus_2=str(building["label"]) + "_wood_stove_heat_bus"
-        )
-        sheets = create_standard_parameter_bus(
-            label=str(building["label"]) + "_wood_stove_heat_bus",
-            sheets=sheets,
-            standard_parameters=standard_parameters,
-            bus_type="building_heat_bus"
-        )
-    
-    if building["solar thermal share"] != "standard":
-        sheets = create_standard_parameter_sink(
-            sink_type=building_type + "_heat_sink",
-            label=str(building["label"]) + "_st_heat_demand",
-            sink_input=str(building["label"]) + "_st_heat_bus",
-            annual_demand=float(building["solar thermal share"]) * demand_heat,
-            sheets=sheets,
-            standard_parameters=standard_parameters
-        )
-        sheets = create_link(
-            label=str(building["label"]) + "_st_heat_link",
-            sheets=sheets,
-            link_type="heat_share_link",
-            standard_parameters=standard_parameters,
-            bus_1=str(building["label"]) + "_heat_bus",
-            bus_2=str(building["label"]) + "_st_heat_bus"
-        )
-        sheets = create_standard_parameter_bus(
-            label=str(building["label"]) + "_st_heat_bus",
-            sheets=sheets,
-            standard_parameters=standard_parameters,
-            bus_type="building_heat_bus"
-        )
-        
+
     return sheets
     
 

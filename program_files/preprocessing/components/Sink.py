@@ -242,7 +242,7 @@ class Sinks:
                     label="{}-insulation".format(ins["label"]),
                     outputs={
                         self.busd[bus]: solph.flows.Flow(
-                            investment=investment,
+                            nominal_value=investment,
                             custom_attributes={"emission_factor": 0},
                             fix=(args["fix"] / args["fix"].max()),
                         )}))

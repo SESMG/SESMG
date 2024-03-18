@@ -224,7 +224,10 @@ def central_comp(central: pandas.DataFrame, true_bools: list, sheets: dict,
             else:
                 st_column = "no"
                 pv_column = "no"
-
+                
+            query = "label == '{}' & active == 1".format(pv["dh_connection"])
+            flow_temp = central.query(query)["flow temperature"].iloc[0]
+            
             sheets = Source.create_sources(
                 building={
                     "label": pv["label"],
@@ -236,10 +239,7 @@ def central_comp(central: pandas.DataFrame, true_bools: list, sheets: dict,
                     "latitude": pv["latitude"],
                     "longitude": pv["longitude"],
                     "roof area {}".format(1): pv["area"],
-                    "flow temperature": float(
-                        central.loc[(central["label"] == pv["dh_connection"])
-                                    & (central["active"] == 1)][
-                            "flow temperature"]),
+                    "flow temperature": float(flow_temp),
                     "solar thermal share": "standard"
                 },
                 clustering=False,

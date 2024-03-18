@@ -76,7 +76,8 @@ def read_standard_parameters(name: str, parameter_type: str, index: str,
                     of name
     """
     # get the param_type sheet from standard parameters
-    standard_param_df = standard_parameters.parse(parameter_type, na_filter=False)
+    standard_param_df = standard_parameters.parse(parameter_type,
+                                                  na_filter=False)
     # reset the dataframes index to the index variable set in args
     standard_param_df.set_index(index, inplace=True)
     if name in list(standard_param_df.index):
@@ -120,10 +121,10 @@ def create_standard_parameter_comp(
     # extracts the storage specific standard values from the
     # standard_parameters dataset
     standard_param, standard_keys = read_standard_parameters(
-        standard_parameter_info[0],
-        standard_parameter_info[1],
-        standard_parameter_info[2],
-        standard_parameters
+        name=standard_parameter_info[0],
+        parameter_type=standard_parameter_info[1],
+        index=standard_parameter_info[2],
+        standard_parameters=standard_parameters
     )
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
@@ -133,6 +134,35 @@ def create_standard_parameter_comp(
     return append_component(sheets,
                             standard_parameter_info[1][2:],
                             specific_param)
+
+
+def get_user_inserted_shortage_params(cost_column: str, emission_column: str,
+                                      building: pandas.Series):
+    """
+        Method to extract the building specific input for shortage \
+        costs or emissions.
+        
+        :param cost_column: str containing the cost column label
+        :type cost_column: str
+        :param emission_column: str containing the emission column label
+        :type emission_column: str
+        :param building: Series containing the us table input row
+        :type building: pandas.Series
+        
+        :return: - **costs** (float) - float containing the extracted \
+                    costs value
+                 - **emissions** (float) - float containing the \
+                    extracted costs value
+    """
+    # extract the cost value from the building Series
+    costs = building[cost_column] \
+        if building[cost_column] != "standard" else None
+    
+    # extract the emission value from the building Series
+    emissions = building[emission_column] \
+        if building[emission_column] != "standard" else None
+
+    return costs, emissions
 
 
 def create_heat_pump_buses_links(building: pandas.Series, gchps: dict,
@@ -171,13 +201,16 @@ def create_heat_pump_buses_links(building: pandas.Series, gchps: dict,
         gchp_heat_bus = building["parcel ID"][-9:] + "_heat_bus"
         gchp_electricity_bus = building["parcel ID"][-9:] + "_hp_elec_bus"
     
-    # if a heatpump is investable for the considered building
+    # if a heatpump is a possible technology for the considered building
     if gchp_bool or building["ashp"] not in ["No", "no", 0]:
-        shortage_cost = building["heatpump electricity cost"] \
-            if building["heatpump electricity cost"] != "standard" else None
-        shortage_emission = building["heatpump electricity emission"] \
-            if building["heatpump electricity emission"] != "standard" \
-            else None
+        # get shortage costs emissions if they are defined building
+        # specific within the upscaling table
+        shortage_cost, shortage_emission = get_user_inserted_shortage_params(
+                cost_column="heatpump electricity cost",
+                emission_column="heatpump electricity emission",
+                building=building
+        )
+        
         # building hp electricity bus
         sheets = Bus.create_standard_parameter_bus(
                 label=str(building["label"]) + "_hp_elec_bus",
@@ -187,6 +220,7 @@ def create_heat_pump_buses_links(building: pandas.Series, gchps: dict,
                 shortage_cost=shortage_cost,
                 shortage_emission=shortage_emission
         )
+        
         # electricity link from building electricity bus to hp
         # electricity bus
         sheets = Link.create_link(
@@ -267,7 +301,7 @@ def represents_int(entry: str) -> bool:
         return True
     
 
-def create_building_buses_links(
+def create_building_buses_and_links(
         building: pandas.Series, central_electricity_bus: bool, sheets: dict,
         standard_parameters: pandas.ExcelFile) -> dict:
     """
@@ -292,14 +326,22 @@ def create_building_buses_links(
             pandas.Dataframes that will represent the model \
             definition's Spreadsheets
     """
-    # run check rather the current building needs a pv bus
-    pv_bus = Bus.check_rather_building_needs_pv_bus(building=building)
+    # check if the current building needs a pv bus if yes create the
+    # pv bus and its links
+    if Bus.check_rather_building_needs_pv_bus(building=building):
+        sheets = Bus.create_pv_bus_and_links(
+            building=building,
+            sheets=sheets,
+            standard_parameters=standard_parameters,
+            central_electricity_bus=central_electricity_bus)
     
     # get building type specific electricity bus label
     bus = Bus.get_building_type_specific_electricity_bus_label(
         building=building)
     
-    sheets = Bus.create_building_electricity_bus_link(
+    # create the building electricity bus and connect it to the
+    # central electricity bus (if there is one)
+    sheets = Bus.create_building_electricity_bus_and_central_link(
         bus=bus,
         sheets=sheets,
         standard_parameters=standard_parameters,
@@ -319,13 +361,6 @@ def create_building_buses_links(
             standard_parameters=standard_parameters
         )
         
-    if pv_bus:
-        sheets = Source.create_pv_bus_links(
-            building=building,
-            sheets=sheets,
-            standard_parameters=standard_parameters,
-            central_electricity_bus=central_electricity_bus)
-
     return sheets
 
 
@@ -472,7 +507,8 @@ def copying_sheets(paths: list, standard_parameters: pandas.ExcelFile,
                     sheet_tbc,
                     parse_dates=["timestamp"]
                     if sheet_tbc in ["weather data", "time series"]
-                    else [],)
+                    else [],
+                    na_filter=False)
             if "4 - time series data" in us_input_sheets:
                 sheets["weather data"] = pandas.ExcelFile(paths[0]).parse(
                     "4 - time series data", parse_dates=["timestamp"]
@@ -490,6 +526,7 @@ def copying_sheets(paths: list, standard_parameters: pandas.ExcelFile,
                 parse_dates=["timestamp"]
                 if sheet_tbc in ["weather data", "time series"]
                 else [],
+                na_filter=False
             )
     return sheets
 
@@ -570,7 +607,8 @@ def urban_district_upscaling_pre_processing(
         standard_parameters=standard_parameters)
     
     for num, building in tool[tool["active"] == 1].iterrows():
-        sheets = create_building_buses_links(
+        # create all buses which a standardized building needs
+        sheets = create_building_buses_and_links(
             building=building,
             sheets=sheets,
             central_electricity_bus=central_electricity_network,

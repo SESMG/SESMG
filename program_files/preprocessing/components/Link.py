@@ -2,7 +2,7 @@
     Christian Klemm - christian.klemm@fh-muenster.de
 """
 from oemof.solph import Investment, Flow
-from oemof.solph.components.experimental import Link
+from oemof.solph.components import Link
 import logging
 import pandas
 
@@ -77,7 +77,7 @@ class Links:
             variable_costs=link["variable output costs"],
             custom_attributes={"emission_factor":
                                link["variable output constraint costs"]},
-            investment=Investment(
+            nominal_value=Investment(
                 ep_costs=ep_costs,
                 minimum=link["min. investment capacity"],
                 maximum=link["max. investment capacity"],
