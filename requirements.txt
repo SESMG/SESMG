@@ -3,7 +3,7 @@ xlsxwriter
 oemof.solph==0.5.2
 shapely>=2.0.1 
 feedinlib @ https://github.com/SESMG/feedinlib/archive/refs/heads/dev.zip 
-demandlib @ https://github.com/oemof/demandlib/archive/refs/heads/dev.zip
+demandlib @ https://github.com/SESMG/demandlib/archive/refs/heads/dev.zip
 open_fred-cli>=0.0.1
 geocoder>=1.38.0 
 sympy>=1.10.0 
