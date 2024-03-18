@@ -3,10 +3,12 @@
     Christian Klemm - christian.klemm@fh-muenster.de
     Janik Budde - janik.budde@fh-muenster.de
 """
+import datetime
+
 import xlsxwriter
 import pandas
 import logging
-from io import BytesIO
+from oemof.tools import logger
 
 import program_files.urban_district_upscaling.clustering as clustering_py
 from program_files.urban_district_upscaling.components import (
@@ -367,7 +369,7 @@ def create_building_buses_and_links(
 def load_input_data(plain_sheet: str, standard_parameter_path: str,
                     us_input_sheet: str
                     ) -> (dict, pandas.DataFrame, pandas.DataFrame,
-                          pandas.DataFrame, list, pandas.ExcelFile):
+                          pandas.DataFrame, pandas.ExcelFile):
     """
         This method is used to convert the three ExcelFiles necessary \
         for the upscaling tool into pandas structures and then return \
@@ -396,50 +398,42 @@ def load_input_data(plain_sheet: str, standard_parameter_path: str,
                   - **tool** (pandas.DataFrame) - DataFrame \
                         holding the US-Input sheets' building data and \
                          building investment data
-                  - **worksheets** (list) - list containing the model \
-                        definition's spreadsheets
                   - **standard_parameters** (pandas.ExcelFile) - \
                         pandas imported ExcelFile containing the \
                         non-building specific technology data
     """
     sheets = {}
-    columns = {}
-    # get keys from plain sheet
+    # copy plain sheet to the sheets dict which will be the result of
+    # the us tool to export a model definition
     plain_sheet = pandas.ExcelFile(plain_sheet)
-    # get columns from plain sheet
+    
     for sheet in plain_sheet.sheet_names:
-        if sheet not in ["weather data", "time series"]:
-            columns[sheet] = plain_sheet.parse(sheet).keys()
-
-    # append worksheets' names to the list of worksheets
-    worksheets = [column for column in columns.keys()]
-    # get spreadsheet units from plain sheet
-    for sheet in worksheets:
-        sheets.update({sheet: pandas.DataFrame(columns=(columns[sheet]))})
-        units_series = pandas.Series(
-            data={a: "x" for a in sheets[sheet].keys()})
-        sheets[sheet] = pandas.concat([sheets[sheet],
-                                       pandas.DataFrame([units_series])])
-    worksheets += ["weather data", "time series", "pipe types"]
-
-    # load standard parameters from standard parameter file
-    standard_parameters = pandas.ExcelFile(standard_parameter_path)
+        sheets.update({sheet: plain_sheet.parse(sheet)})
+        
     # import the sheet which is filled by the user
     us_input_sheet_pd = pandas.ExcelFile(us_input_sheet)
-
-    # get the input sheets
-    building_data = us_input_sheet_pd.parse("1 - building data")
-    building_inv_data = us_input_sheet_pd.parse("2 - building investment data")
-    building_data.set_index("label", inplace=True, drop=True)
-    building_inv_data.set_index("label", inplace=True, drop=True)
-    tool = building_data.join(building_inv_data, how="inner")
+    # create dict holding both building data sheets with index label
+    join = {}
+    bd_sheet = "1 - building data"
+    bd_inv_sheet = "2 - building investment data"
+    for sheet in [bd_sheet, bd_inv_sheet]:
+        join.update({sheet: us_input_sheet_pd.parse(sheet)})
+        join[sheet].set_index("label", inplace=True, drop=True)
+    # merge the two building data sheets
+    tool = join[bd_sheet].join(join[bd_inv_sheet], how="inner")
+    # return to numeric index
     tool.reset_index(inplace=True, drop=False)
+    # remove unit column
     tool = tool.drop(0)
+    # parse gchp areas
     parcel = us_input_sheet_pd.parse("2.1 - gchp areas")
-    central = us_input_sheet_pd.parse("3 - central investment data")
-    central = central.drop(0)
+    # parse central investment data and remove unit column
+    central = us_input_sheet_pd.parse("3 - central investment data").drop(0)
+    
+    # load standard parameters from standard parameter file
+    standard_parameters = pandas.ExcelFile(standard_parameter_path)
 
-    return sheets, central, parcel, tool, worksheets, standard_parameters
+    return sheets, central, parcel, tool, standard_parameters
 
 
 def get_central_comp_active_status(central: pandas.DataFrame, technology: str
@@ -564,10 +558,20 @@ def urban_district_upscaling_pre_processing(
     """
     from program_files.preprocessing.import_weather_data \
         import import_open_fred_weather_data
+    
+    from program_files.GUI_st.GUI_st_global_functions import set_result_path
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H:%M:%S")
+    # define log_file
+    logger.define_logging(logpath=set_result_path() + "/Upscaling_Tool",
+                          logfile=str(timestamp) + ".log",
+                          file_level=logging.INFO)
     logging.info("Creating model definition sheet...")
-    # loading typical model definition structure from plain sheet
-    sheets, central, parcel, tool, worksheets, standard_parameters = \
-        load_input_data(paths[3], paths[1], paths[0])
+    
+    # get all data needed for the us tool and its export
+    sheets, central, parcel, tool, standard_parameters = \
+        load_input_data(plain_sheet=paths[3],
+                        standard_parameter_path=paths[1],
+                        us_input_sheet=paths[0])
     
     sheets = copying_sheets(paths=paths,
                             standard_parameters=standard_parameters,
@@ -664,4 +668,4 @@ def urban_district_upscaling_pre_processing(
             clustering_dh=clustering_dh,
         )
 
-    return sheets, worksheets
+    return sheets

@@ -106,12 +106,14 @@ def us_application() -> None:
                 # get the model definition sheet as a dict and model definition
                 # worksheets as a list as return of the main urban district
                 # upscaling function
-                model_definition_sheets, model_definition_worksheets = \
+                model_definition_sheets = \
                     urban_district_upscaling_pre_processing(
                         paths=us_path_list,
                         open_fred_list=open_fred_list,
                         clustering=False,
                         clustering_dh=False)
+                
+                model_definition_worksheets = model_definition_sheets.keys()
 
             # raise streamlit error message when an input element is missing
             else:
@@ -125,7 +127,7 @@ def us_application() -> None:
             # define urban district upscaling model definition as session state
 
             st.session_state["state_model_definition_worksheets"] = \
-                model_definition_worksheets
+                list(model_definition_worksheets)
             # define result path as session state
             st.session_state["result_file_name"] = result_file_name
 
