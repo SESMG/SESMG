@@ -169,12 +169,21 @@ def create_timeseries_source(sheets: dict, label: str, output: str,
 
     # extracts the st source specific standard values from the
     # standard_parameters dataset
-    param, keys = read_standard_parameters("timeseries_source", "3_sources",
-                                           "source_type", standard_parameters)
+    param, keys = read_standard_parameters(
+        name="timeseries_source",
+        parameter_type="3_sources",
+        index="source_type",
+        standard_parameters=standard_parameters
+    )
+    
     for i in range(len(keys)):
-        source_dict[keys[i]] = param[keys[i]]
+        source_dict[keys[i]] = param.loc["timeseries_source", keys[i]]
 
-    return append_component(sheets, "sources", source_dict)
+    return append_component(
+        sheets=sheets,
+        sheet="sources",
+        comp_parameter=source_dict
+    )
 
 
 def create_competition_constraint(limit: float, label: str, roof_num: str,

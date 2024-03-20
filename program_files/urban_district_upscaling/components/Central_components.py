@@ -177,13 +177,12 @@ def create_central_pv_st_sources(central: pandas.DataFrame, sheets: dict,
                 if electricity_exchange:
                     # link from pv bus to central electricity bus
                     sheets = Link.create_link(
-                            label=row[
-                                      "label"] + "_pv_central_electricity_link",
-                            bus_1=row["label"] + "_pv_bus",
-                            bus_2="central_electricity_bus",
-                            link_type="central_pv_central_link",
-                            sheets=sheets,
-                            standard_parameters=standard_parameters
+                        label=row["label"] + "_pv_to_central_electricity_link",
+                        bus_1=row["label"] + "_pv_bus",
+                        bus_2="central_electricity_bus",
+                        link_type="central_pv_central_link",
+                        sheets=sheets,
+                        standard_parameters=standard_parameters
                     )
             
             # create electricity bus with shortage and its connection
@@ -201,12 +200,12 @@ def create_central_pv_st_sources(central: pandas.DataFrame, sheets: dict,
                 # considering shortage option for the solar thermal
                 # source
                 sheets = Link.create_link(
-                        label=row["label"] + "_central_electricity_link",
-                        bus_1="central_electricity_bus",
-                        bus_2=row["label"] + "_electricity_bus",
-                        link_type="building_central_building_link",
-                        sheets=sheets,
-                        standard_parameters=standard_parameters
+                    label=row["label"] + "_central_to_st_electricity_link",
+                    bus_1="central_electricity_bus",
+                    bus_2=row["label"] + "_electricity_bus",
+                    link_type="building_central_building_link",
+                    sheets=sheets,
+                    standard_parameters=standard_parameters
                 )
             
             # get the "boolean" state for pv and st corresponding to
@@ -321,6 +320,73 @@ def create_central_heat_bus_components(central: pandas.DataFrame,
     return sheets
 
 
+def create_central_timeseries_sources(central: pandas.DataFrame, sheets: dict,
+                                      standard_parameters: pandas.ExcelFile,
+                                      electricity_exchange: bool) -> dict:
+    """
+        In this method, the user activated central timeseries sources
+        their buses and links are created.
+        
+        :param central: pandas Dataframe holding the information from \
+            the US-Input file "central" sheet
+        :type central: pandas.Dataframe
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+        :param electricity_exchange: boolean indicating if the user \
+            has activate the exchange of electricity between buildings
+        :type electricity_exchange: dict
+        
+        :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
+    
+    """
+    from program_files.urban_district_upscaling.components import (Bus, Link,
+                                                                   Source)
+    # query active central timeseries sources
+    timeseries_sources = central.query(
+        "(technology == 'timeseries_source') and (active == 1)"
+    )
+    
+    if len(timeseries_sources) >= 1:
+        for _, source in timeseries_sources.iterrows():
+            # create output bus for the current considered timeseries
+            # source
+            sheets = Bus.create_standard_parameter_bus(
+                    label=source["label"] + "_electricity_bus",
+                    bus_type="central_timeseries_source_bus",
+                    sheets=sheets,
+                    standard_parameters=standard_parameters
+            )
+            
+            # if the user has activated the exchange of electricity
+            # between building add the link between the sources output
+            # and the central electricity bus
+            if electricity_exchange:
+                sheets = Link.create_link(
+                    label=source["label"] + "_central_electricity_link",
+                    bus_1=source["label"] + "_electricity_bus",
+                    bus_2="central_electricity_bus",
+                    link_type="central_timeseries_central_link",
+                    sheets=sheets,
+                    standard_parameters=standard_parameters
+                )
+                
+            # create the considered timeseries source
+            sheets = Source.create_timeseries_source(
+                sheets=sheets,
+                label=source["label"],
+                output=source["label"] + "_electricity_bus",
+                standard_parameters=standard_parameters
+            )
+    
+    return sheets
+
+
 def central_components(central: pandas.DataFrame, sheets: dict,
                        standard_parameters: pandas.ExcelFile
                        ) -> (dict, bool, bool):
@@ -385,6 +451,13 @@ def central_components(central: pandas.DataFrame, sheets: dict,
         standard_parameters=standard_parameters,
         exchange_buses={"electricity_exchange": electricity_exchange,
                         "naturalgas_exchange": p2g})
+    
+    sheets = create_central_timeseries_sources(
+        central=central,
+        sheets=sheets,
+        standard_parameters=standard_parameters,
+        electricity_exchange=electricity_exchange
+    )
 
     # central battery storage
     if get_central_comp_active_status(central=central, technology="battery"):
@@ -396,30 +469,6 @@ def central_components(central: pandas.DataFrame, sheets: dict,
             standard_parameters=standard_parameters
         )
 
-    if get_central_comp_active_status(central=central,
-                                      technology="timeseries_source"):
-        # house electricity bus
-        sheets = Bus.create_standard_parameter_bus(
-            label=("screw_turbine_" + "_electricity_bus"),
-            bus_type="screw_turbine_bus",
-            sheets=sheets,
-            standard_parameters=standard_parameters
-        )
-
-        if electricity_exchange:
-            # link from pv bus to central electricity bus
-            sheets = Link.create_link(
-                label="screw_turbine_" + "pv_central_electricity_link",
-                bus_1="screw_turbine_" + "_electricity_bus",
-                bus_2="central_electricity_bus",
-                link_type="building_pv_central_link",
-                sheets=sheets,
-                standard_parameters=standard_parameters
-            )
-        sheets = Source.create_timeseries_source(
-            sheets, "screw_turbine", "screw_turbine_" + "_electricity_bus",
-            standard_parameters
-        )
     return sheets, electricity_exchange, p2g
 
 
