@@ -4,8 +4,8 @@ For the SESMG, a number of examples can be found in `this directory <https://git
 
 Example 1: Simulation and optimization of a single family house
 ---------------------------------------------------------------
-The template of the model definition (.xlsx) for this exercise you can find `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v0.5.x-Examples/Task_1_template_model_definition.xlsx>`_. You can find the completed
-model definition with solutions `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v0.5.x-Examples/Task_1_solution_model_definition.xlsx>`_. This example is intended as an introduction and has an exercise
+The template of the model definition (.xlsx) for this exercise you can find `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_1_template_model_definition.xlsx>`_. You can find the completed
+model definition with solutions `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_1_solution_model_definition.xlsx>`_. This example is intended as an introduction and has an exercise
 character.
 
 
@@ -97,8 +97,8 @@ This diagram is an example. Your Pareto curve should look similar.
 
 Example 2: Simulation and optimization of an industrial company
 ---------------------------------------------------------------
-The template of the model definition (.xlsx) for this exercise you can find `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v0.5.x-Examples/Task_2_template_model_definition.xlsx>`_. You can find the completed
-model definition with solutions `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v0.5.x-Examples/Task_2_solution_model_definition.xlsx>`_. This example is intended as an introduction and has an exercise
+The template of the model definition (.xlsx) for this exercise you can find `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_2_template_model_definition.xlsx>`_. You can find the completed
+model definition with solutions `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_2_solution_model_definition.xlsx>`_. This example is intended as an introduction and has an exercise
 character.
 
 Example 2a: Simulation of an industrial company
@@ -207,10 +207,10 @@ Optimization task:
 
 .. note::
 
-	- You can find the normalised time series `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v0.5.x-Examples/Task_2_vehicle_fleet_normalised_load_response.xlsx>`_. Insert it into the worksheet "timeseries". The column must have the same name as your sink with the addition .fix
+	- You can find the normalised time series `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_2_vehicle_fleet_normalised_load_response.xlsx>`_. Insert it into the worksheet "timeseries". The column must have the same name as your sink with the addition .fix
 	- Since this is a normalized time series, the "nominal value" of the sink must be determined on the basis of the maximum possible charging capacity of the vehicle fleet
 
 Example 3: Regular example of the documentation
 -----------------------------------------------
-This example is the basis for the documentation and explanation of the `model definition <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#model-definition>`_. You can find the model definition `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v0.5.x-Examples/v0.5.0_model_definition_example.xlsx>`_.
+This example is the basis for the documentation and explanation of the `model definition <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#model-definition>`_. You can find the model definition `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/v1.0.0_model_definition_example.xlsx>`_.
 
