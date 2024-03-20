@@ -148,7 +148,7 @@ def get_user_inserted_shortage_params(cost_column: str, emission_column: str,
         :type cost_column: str
         :param emission_column: str containing the emission column label
         :type emission_column: str
-        :param building: Series containing the us table input row
+        :param building: Series containing the upscaling table input row
         :type building: pandas.Series
         
         :return: - **costs** (float) - float containing the extracted \
@@ -309,7 +309,7 @@ def create_building_buses_and_links(
     """
         In this method, all buses and links required for one building
         are created and attached to the "buses" and "links" dataframes
-        in the sheets dictionary.
+        in the sheets' dictionary.
         
         :param building: Series containing the building specific \
                 parameters
@@ -404,7 +404,7 @@ def load_input_data(plain_sheet: str, standard_parameter_path: str,
     """
     sheets = {}
     # copy plain sheet to the sheets dict which will be the result of
-    # the us tool to export a model definition
+    # the upscaling tool to export a model definition
     plain_sheet = pandas.ExcelFile(plain_sheet)
     
     for sheet in plain_sheet.sheet_names:
@@ -466,7 +466,7 @@ def copying_sheets(paths: list, standard_parameters: pandas.ExcelFile,
         transferred. For this purpose, the return data structure
         "sheets" is processed and then returned to the main method.
     
-        :param paths: path of the us input sheet file [0] \
+        :param paths: path of the upscaling input sheet file [0] \
                       path of the standard_parameter file [1] \
                       path to which the model definition should be \
                       created [2]\
@@ -483,45 +483,34 @@ def copying_sheets(paths: list, standard_parameters: pandas.ExcelFile,
             pandas.Dataframes that will represent the model \
             definition's Spreadsheets which was modified in this method
     """
-    us_input_sheets = pandas.ExcelFile(paths[0]).sheet_names
-    for sheet_tbc in [
-        "energysystem",
-        "weather data",
-        "time series",
-        "district heating",
-        "8_pipe_types"
-    ]:
-        if sheet_tbc not in us_input_sheets:
-            if sheet_tbc in standard_parameters.sheet_names:
-                if sheet_tbc == "8_pipe_types":
-                    sheet_name = "pipe types"
-                else:
-                    sheet_name = sheet_tbc
-                sheets[sheet_name] = standard_parameters.parse(
-                    sheet_tbc,
-                    parse_dates=["timestamp"]
-                    if sheet_tbc in ["weather data", "time series"]
-                    else [],
-                    na_filter=False)
-            if "4 - time series data" in us_input_sheets:
-                sheets["weather data"] = pandas.ExcelFile(paths[0]).parse(
-                    "4 - time series data", parse_dates=["timestamp"]
-                )
-                sheets["time series"] = pandas.ExcelFile(paths[0]).parse(
-                    "4 - time series data", parse_dates=["timestamp"]
-                )
-            if "3.1 - streets" in us_input_sheets:
-                sheets["district heating"] = pandas.ExcelFile(paths[0]).parse(
-                     "3.1 - streets"
-                )
+    # load the upscaling sheet names
+    us_input = pandas.ExcelFile(paths[0])
+    # list of sheets which will only be copied and not filled by the
+    # upscaling tool
+    switch_dict = {
+        "weather data": "4 - time series data",
+        "time series": "4 - time series data",
+        "energysystem": "energysystem",
+        "district heating": "3.1 - streets",
+        "pipe types": "8_pipe_types"
+    }
+    # iterate threw the dict keys to copy each sheet
+    for sheet_tbc in switch_dict.keys():
+        # if it's not a sheet from the upscaling sheet copy it from the
+        # standard parameter sheet
+        if switch_dict.get(sheet_tbc) not in us_input.sheet_names:
+            sheets[sheet_tbc] = standard_parameters.parse(
+                sheet_name=switch_dict.get(sheet_tbc),
+                na_filter=False)
+        # if it's a sheet from us sheet copy it from the upscaling sheet
         else:
-            sheets[sheet_tbc] = pandas.ExcelFile(paths[0]).parse(
-                sheet_tbc,
+            sheets[sheet_tbc] = us_input.parse(
+                sheet_name=switch_dict.get(sheet_tbc),
                 parse_dates=["timestamp"]
                 if sheet_tbc in ["weather data", "time series"]
                 else [],
-                na_filter=False
-            )
+                na_filter=False)
+
     return sheets
 
 
@@ -537,7 +526,7 @@ def urban_district_upscaling_pre_processing(
         status, and a spreadsheet which includes technology specific
         standard data (standard_parameter).
 
-        :param paths: path of the us input sheet file [0] \
+        :param paths: path of the upscaling input sheet file [0] \
                       path of the standard_parameter file [1] \
                       path to which the model definition should be \
                       created [2] \
@@ -567,12 +556,15 @@ def urban_district_upscaling_pre_processing(
                           file_level=logging.INFO)
     logging.info("Creating model definition sheet...")
     
-    # get all data needed for the us tool and its export
+    # get all data needed for the upscaling tool and its export
     sheets, central, parcel, tool, standard_parameters = \
         load_input_data(plain_sheet=paths[3],
                         standard_parameter_path=paths[1],
                         us_input_sheet=paths[0])
     
+    # copy the sheets which will not be filled by the upscaling tool
+    # and have to be filled by the users us sheet and standard
+    # parameter sheet input
     sheets = copying_sheets(paths=paths,
                             standard_parameters=standard_parameters,
                             sheets=sheets)
@@ -590,19 +582,13 @@ def urban_district_upscaling_pre_processing(
         for column in weather_data["weather data"].columns:
             sheets["weather data"][column] = \
                 weather_data["weather data"][column]
-    
-    # set variable for central heating / electricity if activated to
-    # decide rather a house can be connected to the central heat
-    # network / central electricity network or not
-    central_electricity_network = get_central_comp_active_status(
-        central, "electricity_exchange"
-    )
-
-    p2g_link = get_central_comp_active_status(central, "power_to_gas")
 
     # create central components
-    sheets = Central_components.central_comp(
-        central, ["Yes", "yes", 1], sheets, standard_parameters)
+    sheets, electricity_exchange, p2g = Central_components.central_components(
+        central=central,
+        sheets=sheets,
+        standard_parameters=standard_parameters
+    )
 
     gchps, sheets = Transformer.create_gchp(
         tool=tool,
@@ -615,7 +601,7 @@ def urban_district_upscaling_pre_processing(
         sheets = create_building_buses_and_links(
             building=building,
             sheets=sheets,
-            central_electricity_bus=central_electricity_network,
+            central_electricity_bus=electricity_exchange,
             standard_parameters=standard_parameters
         )
         sheets = create_heat_pump_buses_links(
@@ -646,7 +632,7 @@ def urban_district_upscaling_pre_processing(
         # create transformer
         sheets = Transformer.building_transformer(
             building=building,
-            p2g_link=p2g_link,
+            p2g_link=p2g,
             sheets=sheets,
             standard_parameters=standard_parameters
         )
@@ -664,7 +650,7 @@ def urban_district_upscaling_pre_processing(
             tool=tool,
             standard_parameters=standard_parameters,
             sheets=sheets,
-            central_electricity_network=central_electricity_network,
+            central_electricity_network=electricity_exchange,
             clustering_dh=clustering_dh,
         )
 
