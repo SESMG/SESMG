@@ -58,7 +58,7 @@ From the results of the simulation of the single-family house, it can be conclud
 Optimization task: 
 ^^^^^^^^^^^^^^^^^^
 - Adjusts the templates of the individual technologies in the model definition accordingly and supplements them in the system
-	- To find out how to start a optimazation, click `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#main-application>`_
+	- To find out how to start a optimization, click `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#main-application>`_
 
 .. attention:: 
 
