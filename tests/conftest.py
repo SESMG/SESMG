@@ -65,19 +65,19 @@ def compare_flow_attributes(flows, flows_test):
                        == invest_compare.fix_constraint_costs
                 
                 
-def comparison_of_flow_attributes(nodes, test_link_entry):
+def comparison_of_flow_attributes(nodes, test_nodes):
     """
     
     """
     # test if the two nodes labels are equal
-    assert nodes[0].label == test_link_entry[-1].label
+    assert nodes[0].label == test_nodes[-1].label
     # check if the variable costs and emission factors of the
     # inputs / outputs of the two nodes are equal
     for flows in [nodes[0].inputs, nodes[0].outputs]:
         if flows == nodes[0].inputs:
-            flows_test = test_link_entry[-1].inputs
+            flows_test = test_nodes[-1].inputs
         else:
-            flows_test = test_link_entry[-1].outputs
+            flows_test = test_nodes[-1].outputs
         assert len(flows) == len(flows_test)
         
         compare_flow_attributes(flows, flows_test)

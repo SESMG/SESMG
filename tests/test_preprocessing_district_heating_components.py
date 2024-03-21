@@ -269,7 +269,7 @@ def test_create_producer_connection():
 
     # Assertions
     assert len(result.nodes) == 1
-    assert type(result.nodes[0]) == solph.components.Transformer
+    assert type(result.nodes[0]) == solph.components.Converter
     assert str(result.nodes[0]) == "heat_input1_dh_source_link_exergy"
 
 
@@ -331,7 +331,7 @@ def test_connect_dh_to_system_exergy():
     
     # Assert the changes in the oemof_opti_model
     assert len(result.nodes) == 2
-    assert type(result.nodes[1]) == solph.components.Transformer
+    assert type(result.nodes[1]) == solph.components.Converter
     assert str(result.nodes[1]) == "dh_heat_house_station_Testhouse"
     
     # Assert the changes in the bus dictionary

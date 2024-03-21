@@ -419,7 +419,7 @@ def test_cluster_electricity_sinks_entries():
                   left=pandas.DataFrame.from_dict({
                     "label": ["test_cluster_electricity_bus"],
                     "bus_type": ["building_res_electricity_bus"],
-                    "district heating conn.": [float(0)]}),
+                    "district heating conn. (exergy)": [float(0)]}),
                   right=standard_parameters.parse("1_buses"),
                   on="bus_type").drop(columns=["bus_type"]),
         "links": pandas.merge(

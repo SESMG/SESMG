@@ -37,10 +37,8 @@ def test_directed_convex_link_entry():
         i.e. euros per kilowatt hour, and the expected emissions as
         grams of CO2 equivalent per kilowatt hour.
     """
-    from oemof.solph.buses import Bus
-    from oemof.solph import EnergySystem, Investment
-    from oemof.solph.flows import Flow
-    from oemof.solph.components.experimental import Link
+    from oemof.solph import Bus, EnergySystem, Investment, Flow
+    from oemof.solph.components import Link
     test_energy_system = EnergySystem()
     # add bus to test energy system
     input_bus = Bus(label="test_input_bus")
@@ -82,7 +80,7 @@ def test_directed_convex_link_entry():
     
     test_energy_system.add(link)
     
-    return test_energy_system.nodes
+    return list(test_energy_system.nodes)
 
 
 @pytest.fixture
@@ -94,10 +92,8 @@ def test_undirected_non_convex_link_entry():
         i.e. euros per kilowatt hour, and the expected emissions as
         grams of CO2 equivalent per kilowatt hour.
     """
-    from oemof.solph.buses import Bus
-    from oemof.solph import EnergySystem, Investment
-    from oemof.solph.flows import Flow
-    from oemof.solph.components.experimental import Link
+    from oemof.solph import EnergySystem, Investment, Flow, Bus
+    from oemof.solph.components import Link
     test_energy_system = EnergySystem()
     # add bus to test energy system
     input_bus = Bus(label="test_input_bus")
@@ -142,7 +138,7 @@ def test_undirected_non_convex_link_entry():
                             (output_bus, input_bus): 1})
 
     test_energy_system.add(link)
-    return test_energy_system.nodes
+    return list(test_energy_system.nodes)
 
 
 def test_get_flow(test_link_nodes_data,
@@ -235,8 +231,8 @@ def test_links(test_link_nodes_data,
     # check rather the links' parameter are assigned correctly
     comparison_of_flow_attributes(
         nodes=[nodes[2]],
-        test_link_entry=test_directed_convex_link_entry)
+        test_nodes=test_directed_convex_link_entry)
     
     comparison_of_flow_attributes(
         nodes=[nodes[3]],
-        test_link_entry=test_undirected_non_convex_link_entry)
+        test_nodes=test_undirected_non_convex_link_entry)
