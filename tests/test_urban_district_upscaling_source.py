@@ -408,7 +408,7 @@ def test_pv_bus_entry():
             left=pandas.DataFrame.from_dict(
                 {"label": ["test_cluster_pv_bus"],
                  "bus_type": ["building_pv_bus"],
-                 "district heating conn.": [float(0)]}),
+                 "district heating conn. (exergy)": [float(0)]}),
             right=buses,
             on="bus_type").drop(columns=["bus_type"])}
     

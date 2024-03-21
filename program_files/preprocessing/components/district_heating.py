@@ -336,7 +336,7 @@ def create_components(nodes_data: dict, label_5: str,
                         "network": network},
         num_ts=nodes_data["energysystem"]["periods"],
         start_date=start_date,
-        frequence=(str(frequency[0])).upper(),
+        frequence=str(frequency[0]),
         label_5=label_5,
         bidirectional_pipes=True,
     )

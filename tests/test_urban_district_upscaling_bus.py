@@ -19,7 +19,7 @@ def test_elec_bus_entry():
         left=pandas.DataFrame.from_dict({
             "label": ["test_bus"],
             "bus_type": ["building_res_electricity_bus"],
-            "district heating conn.": [float(0)]}),
+            "district heating conn. (exergy)": [float(0)]}),
         right=buses,
         on="bus_type").drop(columns=["bus_type"])}
 
@@ -33,7 +33,7 @@ def test_heat_bus_entry():
         left=pandas.DataFrame.from_dict({
             "label": ["test_bus1"],
             "bus_type": ["building_heat_bus"],
-            "district heating conn.": [1],
+            "district heating conn. (exergy)": [1],
             "lat": [10],
             "lon": [10]}),
         right=buses,
@@ -52,7 +52,6 @@ def test_create_standard_parameter_bus(test_elec_bus_entry,
         sheets={"buses": pandas.DataFrame()},
         standard_parameters=standard_parameters)
     
-    print(sheets["buses"]["active"])
     pandas.testing.assert_frame_equal(
         sheets["buses"].sort_index(axis=1),
         test_elec_bus_entry["buses"].sort_index(axis=1))
@@ -82,7 +81,7 @@ def cluster_electricity_bus_entry():
                     "bus_type": ["building_res_electricity_bus",
                                  "building_com_electricity_bus",
                                  "building_ind_electricity_bus"],
-                    "district heating conn.": [float(0)] * 3}),
+                    "district heating conn. (exergy)": [float(0)] * 3}),
                 right=buses,
                 on="bus_type").drop(columns=["bus_type"]),
             "links": pandas.merge(
@@ -109,7 +108,7 @@ def test_create_cluster_electricity_buses(cluster_electricity_bus_entry):
     sheets = create_cluster_electricity_buses(
         building=["test1", "test1", "SFB"],
         cluster="test1",
-        sheets={"buses": pandas.DataFrame(data={"label": ["dummy"], "active": [1], "shortage": [1], "excess": [1], "shortage costs": [0], "excess costs": [0], "shortage constraint costs": [0], "excess constraint costs": [0], "district heating conn.": [0]}),
+        sheets={"buses": pandas.DataFrame(data={"label": ["dummy"], "active": [1], "shortage": [1], "excess": [1], "shortage costs": [0], "excess costs": [0], "shortage constraint costs": [0], "excess constraint costs": [0], "district heating conn. (exergy)": [0]}),
                 "links": pandas.DataFrame(data={"label": ["dummy"], "active": [1], "bus1": ["dummy"], "bus2": ["dummy"], "(un)directed": ["dummy"], "variable output costs": [0], "variable output constraint costs": [0], "periodical constraint costs": [0], "periodical costs": [0], "non-convex investment": [0],
                                                 "fix investment costs": [0], "fix investment constraint costs": [0], "efficiency": [0], "max. investment capacity": [0], "min. investment capacity": [0], "existing capacity": [0]})},
         standard_parameters=standard_parameters)
@@ -153,7 +152,7 @@ def test_cluster_averaged_bus_entry():
             left=pandas.DataFrame.from_dict({
                 "label": ["test1_gas_bus"],
                 "bus_type": ["building_res_gas_bus"],
-                "district heating conn.": [float(0)]}),
+                "district heating conn. (exergy)": [float(0)]}),
             right=buses,
             on="bus_type").drop(columns=["bus_type"])}
     

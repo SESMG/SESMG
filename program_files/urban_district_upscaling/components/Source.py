@@ -86,7 +86,7 @@ def create_source(source_type: str, roof_num: str, building: pandas.Series,
     # thermal flat plates
     temp_inlet = (
         (building["flow temperature"]
-         - (2 * float(standard_param["Temperature Difference"])))
+         - (2 * float(standard_param["Temperature Difference"].iloc[0])))
         if source_type == "solar_thermal_collector" else 0)
 
     # technical parameters
@@ -117,7 +117,7 @@ def create_source(source_type: str, roof_num: str, building: pandas.Series,
         source_dict[keys[i]] = param.loc[source_type, keys[i]]
 
     source_dict["max. investment capacity"] = float(
-        param["Capacity per Area (kW/m2)"] * source_param[6]
+        param["Capacity per Area (kW/m2)"].iloc[0] * source_param[6]
     )
 
     return append_component(sheets, "sources", source_dict)
@@ -169,12 +169,21 @@ def create_timeseries_source(sheets: dict, label: str, output: str,
 
     # extracts the st source specific standard values from the
     # standard_parameters dataset
-    param, keys = read_standard_parameters("timeseries_source", "3_sources",
-                                           "source_type", standard_parameters)
+    param, keys = read_standard_parameters(
+        name="timeseries_source",
+        parameter_type="3_sources",
+        index="source_type",
+        standard_parameters=standard_parameters
+    )
+    
     for i in range(len(keys)):
-        source_dict[keys[i]] = param[keys[i]]
+        source_dict[keys[i]] = param.loc["timeseries_source", keys[i]]
 
-    return append_component(sheets, "sources", source_dict)
+    return append_component(
+        sheets=sheets,
+        sheet="sources",
+        comp_parameter=source_dict
+    )
 
 
 def create_competition_constraint(limit: float, label: str, roof_num: str,
@@ -220,9 +229,9 @@ def create_competition_constraint(limit: float, label: str, roof_num: str,
     # define individual values
     constraint_dict = {
         "component 1": label + "_" + str(roof_num) + "_pv_source",
-        "factor 1": float(1 / pv_param["Capacity per Area (kW/m2)"]),
+        "factor 1": float(1 / pv_param["Capacity per Area (kW/m2)"].iloc[0]),
         "component 2": label + "_" + str(roof_num) + "_solarthermal_source",
-        "factor 2": float(1 / st_param["Capacity per Area (kW/m2)"]),
+        "factor 2": float(1 / st_param["Capacity per Area (kW/m2)"].iloc[0]),
         "limit": limit,
         "active": 1,
     }
@@ -536,69 +545,6 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
                     building=param_dict,
                     sheets=sheets,
                     standard_parameters=standard_parameters)
-    return sheets
-
-
-def create_pv_bus_links(building: pandas.Series, sheets: dict,
-                        standard_parameters: pandas.ExcelFile,
-                        central_electricity_bus: bool) -> dict:
-    """
-        In this method, the PV bus of the considered building is
-        created and connected to the in-house electricity bus and, if
-        available, to the central electricity bus. The created
-        components are appended to the return data structure "sheets",
-        which represents the model definition at the end.
-    
-        :param building: Series containing the building specific \
-            parameters
-        :type building: pandas.Series
-        :param sheets: dictionary containing the pandas.Dataframes that\
-            will represent the model definition's Spreadsheets
-        :type sheets: dict
-        :param standard_parameters: pandas imported ExcelFile \
-            containing the non-building specific technology data
-        :type standard_parameters: pandas.ExcelFile
-        :param central_electricity_bus: boolean representing the \
-            user's decision rather a local electricity exchange is \
-            possible or not
-        :type central_electricity_bus: bool
-        
-         :return: - **sheets** (dict) - dictionary containing the \
-            pandas.Dataframes that will represent the model \
-            definition's Spreadsheets which was modified in this method
-    """
-    from program_files.urban_district_upscaling.components import Bus, Link
-    # create building pv bus
-    sheets = Bus.create_standard_parameter_bus(
-        label=str(building["label"]) + "_pv_bus",
-        bus_type="building_pv_bus",
-        sheets=sheets,
-        standard_parameters=standard_parameters
-    )
-
-    # create link from pv bus to building electricity bus
-    sheets = Link.create_link(
-        label=str(building["label"])
-        + "_pv_self_consumption_electricity_link",
-        bus_1=str(building["label"]) + "_pv_bus",
-        bus_2=str(building["label"]) + "_electricity_bus",
-        link_type="building_pv_building_link",
-        sheets=sheets,
-        standard_parameters=standard_parameters
-    )
-    
-    # create link from pv bus to central electricity bus if the
-    # central electricity exchange is enabled
-    if central_electricity_bus:
-        sheets = Link.create_link(
-            label=str(building["label"]) + "_pv_central_electricity_link",
-            bus_1=str(building["label"]) + "_pv_bus",
-            bus_2="central_electricity_bus",
-            link_type="building_pv_central_link",
-            sheets=sheets,
-            standard_parameters=standard_parameters
-        )
-    
     return sheets
 
 

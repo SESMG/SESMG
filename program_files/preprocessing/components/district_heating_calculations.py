@@ -245,7 +245,7 @@ def calc_heat_pipe_attributes(
             # get the component's pipe type data frame row
             pipe_row = pipe_types.loc[pipe_types["label_3"] == a.label.tag3]
             # if the pipe type is a linear one
-            if int(pipe_row["nonconvex"]) == 0:
+            if int(pipe_row["nonconvex"].iloc[0]) == 0:
                 # get the components periodical costs
                 ep_costs = getattr(
                     a.outputs[list(a.outputs.keys())[0]].investment, "ep_costs"
@@ -263,11 +263,12 @@ def calc_heat_pipe_attributes(
                     fix_costs = getattr(
                         a.outputs[list(a.outputs.keys())[0]].investment,
                         "offset"
-                    )
+                    )[0]
+                    
                     # calculate the length by dividing the pipes fix
                     # investment costs by the specific fix investment costs
                     # per meter
-                    length = fix_costs / float(pipe_row["fix_costs"])
+                    length = fix_costs / float(pipe_row["fix_costs"].iloc[0])
                 
                     # set the periodical constraint costs which are
                     # calculated by the multiplication of length and
@@ -275,7 +276,8 @@ def calc_heat_pipe_attributes(
                     setattr(
                         a.outputs[list(a.outputs.keys())[0]].investment,
                         "periodical_constraint_costs",
-                        length * float(pipe_row["periodical_constraint_costs"])
+                        length
+                        * float(pipe_row["periodical_constraint_costs"].iloc[0])
                     )
                     # set the fix investment constraint costs which are
                     # calculated by the multiplication of length and
@@ -283,7 +285,8 @@ def calc_heat_pipe_attributes(
                     setattr(
                             a.outputs[list(a.outputs.keys())[0]].investment,
                             "fix_constraint_costs",
-                            length * float(pipe_row["fix_constraint_costs"]),
+                            length
+                            * float(pipe_row["fix_constraint_costs"].iloc[0]),
                     )
             # since no variable emissions apply it is set to 0 for each
             # direction

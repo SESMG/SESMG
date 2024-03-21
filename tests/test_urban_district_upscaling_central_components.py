@@ -21,7 +21,7 @@ def test_create_central_heat_component():
 
 def test_central_comp():
     from program_files.urban_district_upscaling.components.Central_components \
-        import central_comp
+        import central_components
     pass
 
 
@@ -40,7 +40,7 @@ def test_create_power_to_gas_entry():
                 "bus_type": ["central_h2_bus",
                              "central_naturalgas_bus",
                              "central_h2_heat_bus"],
-                "district heating conn.": [float(0)] * 3}),
+                "district heating conn. (exergy)": [float(0)] * 3}),
             right=buses,
             on="bus_type").drop(columns=["bus_type"]),
         "links": pandas.merge(
@@ -96,7 +96,7 @@ def test_create_power_to_gas_system(test_create_power_to_gas_entry):
     sheets = Central_components.create_power_to_gas_system(
         label="test",
         output="test_output_bus",
-        sheets={"buses": pandas.DataFrame(data={"label": ["dummy"], "active": [1], "shortage": [1], "excess": [1], "shortage costs": [0], "excess costs": [0], "shortage constraint costs": [0], "excess constraint costs": [0], "district heating conn.": [0]}),
+        sheets={"buses": pandas.DataFrame(data={"label": ["dummy"], "active": [1], "shortage": [1], "excess": [1], "shortage costs": [0], "excess costs": [0], "shortage constraint costs": [0], "excess constraint costs": [0], "district heating conn. (exergy)": [0]}),
                 "links": pandas.DataFrame(),
                 "transformers": pandas.DataFrame(),
                 "storages": pandas.DataFrame(data={"label": ["dummy"], "active": [1], "U value": [1], "bus": ["dummy"], "min. investment capacity": [0], "max. investment capacity": [0], "existing capacity": [0], "periodical costs": [1], "periodical constraint costs": [1],
@@ -126,7 +126,7 @@ def test_central_heatpump_entry():
             left=pandas.DataFrame.from_dict({
                 "label": ["central_heatpump_electricity_bus"],
                 "bus_type": ["central_heatpump_electricity_bus"],
-                "district heating conn.": [float(0)]}),
+                "district heating conn. (exergy)": [float(0)]}),
             right=buses,
             on="bus_type").drop(columns=["bus_type"]),
         "links": pandas.merge(
@@ -163,7 +163,7 @@ def test_create_central_heatpump(test_central_heatpump_entry):
         create_bus=True,
         central_electricity_bus=True,
         output="test_output_bus",
-        sheets={"buses": pandas.DataFrame(data={"label": ["dummy"], "active": [1], "shortage": [1], "excess": [1], "shortage costs": [0], "excess costs": [0], "shortage constraint costs": [0], "excess constraint costs": [0], "district heating conn.": [0]}),
+        sheets={"buses": pandas.DataFrame(data={"label": ["dummy"], "active": [1], "shortage": [1], "excess": [1], "shortage costs": [0], "excess costs": [0], "shortage constraint costs": [0], "excess constraint costs": [0], "district heating conn. (exergy)": [0]}),
                 "links": pandas.DataFrame(),
                 "transformers": pandas.DataFrame()},
         area="100",
@@ -192,7 +192,7 @@ def test_central_heating_plant_entry():
             left=pandas.DataFrame.from_dict(
                 {"label": ["central_test_bus"],
                  "bus_type": ["central_heating_plant_naturalgas_bus"],
-                 "district heating conn.": [float(0)]}),
+                 "district heating conn. (exergy)": [float(0)]}),
             right=buses,
             on="bus_type").drop(columns=["bus_type"]),
         "transformers": pandas.merge(
@@ -253,7 +253,7 @@ def test_central_CHP_entry():
                                "central_test_elec_bus"],
                      "bus_type": ["central_chp_naturalgas_bus",
                                   "central_chp_naturalgas_electricity_bus"],
-                     "district heating conn.": [float(0)] * 2}),
+                     "district heating conn. (exergy)": [float(0)] * 2}),
                 right=buses,
                 on="bus_type").drop(columns=["bus_type"]),
         "transformers": pandas.merge(

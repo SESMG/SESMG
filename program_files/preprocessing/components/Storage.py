@@ -133,7 +133,7 @@ class Storages:
                 invest_relation_input_capacity=storage["input/capacity ratio"],
                 invest_relation_output_capacity=storage[
                     "output/capacity ratio"],
-                investment=Investment(
+                nominal_storage_capacity=Investment(
                     ep_costs=storage["periodical costs"],
                     existing=storage["existing capacity"],
                     minimum=storage["min. investment capacity"],

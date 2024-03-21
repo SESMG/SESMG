@@ -4,7 +4,7 @@
     Yannick Wittor - yw090223@fh-muenster.de
 """
 from feedinlib import powerplants, WindPowerPlant
-from oemof.solph.components import Source, Transformer
+from oemof.solph.components import Source, Converter
 from oemof.solph.buses import Bus
 from oemof.solph.flows import Flow
 from oemof.solph import Investment
@@ -121,7 +121,7 @@ class Sources:
                 label=source["label"],
                 outputs={
                     output: Flow(
-                        investment=Investment(
+                        nominal_value=Investment(
                             ep_costs=source["periodical costs"],
                             minimum=source["min. investment capacity"],
                             maximum=source["max. investment capacity"],
@@ -485,7 +485,7 @@ class Sources:
                                   variable_costs=[0, 0])
 
         self.nodes_sources.append(
-            Transformer(
+            Converter(
                 label=label + "_collector",
                 inputs={
                     self.busd[label + "_bus"]: Flow(

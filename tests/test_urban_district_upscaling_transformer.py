@@ -124,7 +124,7 @@ def test_create_gchp_entry():
                                    "st_parcel_heat_bus"],
                          "bus_type": ["building_hp_electricity_bus",
                                       "building_heat_bus"],
-                         "district heating conn.": [float(0)] * 2}),
+                         "district heating conn. (exergy)": [float(0)] * 2}),
                 right=buses,
                 on="bus_type"),
         "transformers": pandas.merge(

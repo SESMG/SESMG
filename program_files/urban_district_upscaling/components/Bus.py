@@ -63,10 +63,10 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets: dict,
     # defines rather a district heating connection is possible
     if coords is not None:
         bus_dict.update(
-            {"district heating conn.": coords[2],
+            {"district heating conn. (exergy)": coords[2],
              "lat": coords[0], "lon": coords[1]})
     else:
-        bus_dict.update({"district heating conn.": float(0)})
+        bus_dict.update({"district heating conn. (exergy)": float(0)})
     # If the user wants to map a shortage price that differs from the
     # standard parameter
     if shortage_cost is not None:
@@ -80,8 +80,8 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets: dict,
 def check_rather_building_needs_pv_bus(building: pandas.Series) -> bool:
     """
         If the currently considered building has a PV potential area,
-        the pv_bus variable is returned as True. If this is not the
-        case, the return value (pv_bus) is False.
+        the return value is true. If this is not the
+        case, the return value is False.
     
         :param building: pandas.Series containing the currently \
             investigated building's row from the US Input sheet.
@@ -91,20 +91,20 @@ def check_rather_building_needs_pv_bus(building: pandas.Series) -> bool:
             will be added to the model definition file or not.
     """
     from program_files import column_exists
-    # set pv bus status to true if the column pv <num> is "yes" or "1"
-    pv_bus = False
+    # current pv potential number
     roof_num = 1
     # iterate threw all roof areas to check rather there is a pv
     # potential
     while column_exists(building, str("roof area %1d" % roof_num)):
+        # if there is one pv column containing "true" entries
         if building["pv %1d" % roof_num] not in ["No", "no", "0"]:
-            pv_bus = True
+            return True
         roof_num += 1
-        
-    return pv_bus
+    # if there is no "true" pv potential found
+    return False
 
 
-def create_building_electricity_bus_link(
+def create_building_electricity_bus_and_central_link(
         bus: str, sheets: dict, building: pandas.Series,
         standard_parameters: pandas.ExcelFile,
         central_electricity_bus: bool) -> dict:
@@ -172,6 +172,68 @@ def create_building_electricity_bus_link(
     return sheets
 
 
+def create_pv_bus_and_links(building: pandas.Series, sheets: dict,
+                            standard_parameters: pandas.ExcelFile,
+                            central_electricity_bus: bool) -> dict:
+    """
+        In this method, the PV bus of the considered building is
+        created and connected to the in-house electricity bus and, if
+        available, to the central electricity bus. The created
+        components are appended to the return data structure "sheets",
+        which represents the model definition at the end.
+
+        :param building: Series containing the building specific \
+            parameters
+        :type building: pandas.Series
+        :param sheets: dictionary containing the pandas.Dataframes that\
+            will represent the model definition's Spreadsheets
+        :type sheets: dict
+        :param standard_parameters: pandas imported ExcelFile \
+            containing the non-building specific technology data
+        :type standard_parameters: pandas.ExcelFile
+        :param central_electricity_bus: boolean representing the \
+            user's decision rather a local electricity exchange is \
+            possible or not
+        :type central_electricity_bus: bool
+
+         :return: - **sheets** (dict) - dictionary containing the \
+            pandas.Dataframes that will represent the model \
+            definition's Spreadsheets which was modified in this method
+    """
+    from program_files.urban_district_upscaling.components import Bus, Link
+    # create building pv bus
+    sheets = Bus.create_standard_parameter_bus(
+            label=str(building["label"]) + "_pv_bus",
+            bus_type="building_pv_bus",
+            sheets=sheets,
+            standard_parameters=standard_parameters
+    )
+    
+    # create link from pv bus to building electricity bus
+    sheets = Link.create_link(
+            label=str(building["label"])
+                  + "_pv_self_consumption_electricity_link",
+            bus_1=str(building["label"]) + "_pv_bus",
+            bus_2=str(building["label"]) + "_electricity_bus",
+            link_type="building_pv_building_link",
+            sheets=sheets,
+            standard_parameters=standard_parameters
+    )
+    
+    # create link from pv bus to central electricity bus if the
+    # central electricity exchange is enabled
+    if central_electricity_bus:
+        sheets = Link.create_link(
+                label=str(building["label"]) + "_pv_central_electricity_link",
+                bus_1=str(building["label"]) + "_pv_bus",
+                bus_2="central_electricity_bus",
+                link_type="building_pv_central_link",
+                sheets=sheets,
+                standard_parameters=standard_parameters
+        )
+    
+    return sheets
+
 def get_building_type_specific_electricity_bus_label(building: pandas.Series
                                                      ) -> str:
     """
@@ -188,14 +250,12 @@ def get_building_type_specific_electricity_bus_label(building: pandas.Series
     # define the building electricity bus type based on the building
     # type
     if building["building type"] in ["SFB", "MFB", "0", 0]:
-        bus = "building_res_electricity_bus"
+        return "building_res_electricity_bus"
     elif building["building type"] == "IND":
-        bus = "building_ind_electricity_bus"
+        return "building_ind_electricity_bus"
     else:
-        bus = "building_com_electricity_bus"
+        return "building_com_electricity_bus"
     
-    return bus
-
 
 def create_cluster_electricity_buses(
         building: list, cluster: str, sheets: dict,

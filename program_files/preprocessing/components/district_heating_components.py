@@ -302,7 +302,7 @@ def create_connection_consumers_and_producers(
             "lon": float(comp["lon"]),
             "component_type": "Consumer" if is_consumer else "Producer",
             "active": 1,
-            **({"existing heathouse station": comp["exiting heathouse station"],
+            **({"existing heathouse station": comp["existing heathouse station"],
                 "P_heat_max": 1,
                 "input": comp["label"],
                 "label": comp["label"],
@@ -404,7 +404,7 @@ def create_producer_connection(
         
         # Add a Transformer component to the optimization model
         oemof_opti_model.nodes.append(
-            solph.components.Transformer(
+            solph.components.Converter(
                 label=transformer_label,
                 inputs={busd[producer["bus"]]: solph.Flow(
                         custom_attributes={"emission_factor": 0})},
@@ -470,19 +470,24 @@ def connect_dh_to_system_exergy(
         # Define inputs and outputs for the Transformer
         inputs = {oemof_opti_model.buses[label]: solph.Flow(
                   custom_attributes={"emission_factor": 0})}
+        # get heatstation row from pipe types sheet
+        heatstation = pipe_types.query("label_3 == 'dh_heatstation'")
+
+        # get heatstation periodical costs if existing heathouse station
+        # is not 1
+        ep_costs = (float(heatstation["capex_pipes"].iloc[0])
+                    if consumer["existing heathouse station"] == 0 else 0)
         
-        heatstation = pipe_types.loc[pipe_types["label_3"] == "dh_heatstation"]
-        ep_costs = (float(heatstation["capex_pipes"])
+        # get heatstation periodical emission if existing heathouse
+        # station is not 1
+        ep_emi = (float(heatstation["periodical_constraint_costs"].iloc[0])
                     if consumer["existing heathouse station"] == 0 else 0)
-        ep_emi = (float(heatstation["periodical_constraint_costs"])
-                    if consumer["existing heathouse station"] == 0 else 0)
+
         outputs = {
             busd[consumer["input"]]: solph.Flow(
-                    investment=solph.Investment(
+                    nominal_value=solph.Investment(
                             ep_costs=ep_costs,
-                            minimum=0,
                             maximum=999 * len(consumer["input"]),
-                            existing=0,
                             nonconvex=False,
                             custom_attributes={
                                 "fix_constraint_costs": 0,
@@ -492,12 +497,13 @@ def connect_dh_to_system_exergy(
             )}
         
         conversion_factors = {
-            (label, busd[consumer["input"]]): float(heatstation["efficiency"])
+            (label, busd[consumer["input"]]):
+                float(heatstation["efficiency"].iloc[0])
         }
         
         # Add a Transformer component to the OemofInvestOptimizationModel
         oemof_opti_model.nodes.append(
-                solph.components.Transformer(
+                solph.components.Converter(
                         label=("dh_heat_house_station_"
                                + consumer["label"].split("_")[0]),
                         inputs=inputs,
@@ -601,7 +607,7 @@ def connect_dh_to_system_anergy(
         
         # Add a Transformer component to the OemofInvestOptimizationModel
         oemof_opti_model.nodes.append(
-                solph.components.Transformer(
+                solph.components.Converter(
                         label=("dh_anergy_hp_"
                                + consumer["label"].split("_")[0]),
                         inputs=inputs,
@@ -616,7 +622,7 @@ def connect_dh_to_system_anergy(
 def create_link_between_dh_heat_bus_and_excess_shortage_bus(
         busd: dict, bus: pandas.Series,
         oemof_opti_model: optimization.OemofInvestOptimizationModel,
-        fork_label: heatpipe.Label) -> solph.components.experimental.Link:
+        fork_label: heatpipe.Label) -> solph.components.Link:
     """
         Create the link between the bus which enables the heat
         shortage for the district heating network and the fork of the
@@ -632,7 +638,7 @@ def create_link_between_dh_heat_bus_and_excess_shortage_bus(
             connected to the shortage bus
         :type fork_label: heatpipe.Label
 
-        :return: - **-** (solph.components.experimental.Link) - Link \
+        :return: - **-** (solph.components.Link) - Link \
             component which connects the shortage bus and the heat \
             network's fork
     """
@@ -641,7 +647,7 @@ def create_link_between_dh_heat_bus_and_excess_shortage_bus(
 
     # Create and return the Oemof solph link connecting the
     # excess/shortage bus with the thermal network fork
-    return solph.components.experimental.Link(
+    return solph.components.Link(
             label=("link-dhnx-" + bus["label"] + "-f{}".format(fork_id)),
             inputs={
                 oemof_opti_model.buses[fork_label]: solph.Flow(

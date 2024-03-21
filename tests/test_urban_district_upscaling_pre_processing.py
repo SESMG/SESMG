@@ -93,7 +93,7 @@ def test_hp_buses_entry():
                 {None: [0],
                  "label": ["test_hp_elec_bus"],
                  "bus_type": ["building_hp_electricity_bus"],
-                 "district heating conn.": [float(0)]}),
+                 "district heating conn. (exergy)": [float(0)]}),
             right=buses,
             on="bus_type").drop(columns=["bus_type"]),
         "links": pandas.merge(
@@ -136,7 +136,7 @@ def test_create_heat_pump_buses_links(test_hp_buses_entry):
     sheets = {"buses": pandas.DataFrame(),
               "links": pandas.DataFrame()}
     sheets = create_heat_pump_buses_links(
-        building=building,
+        building=pandas.Series(data=building),
         gchps={"st_parcel": "0"},
         sheets=sheets,
         standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
@@ -164,32 +164,32 @@ def test_building_buses_entry():
         "buses": pandas.merge(
             left=pandas.DataFrame.from_dict(
                 {None: [0, 0, 0],
-                 "label": ["test_electricity_bus",
-                           "test_heat_bus",
-                           "test_pv_bus"],
-                 "bus_type": ["building_res_electricity_bus",
-                              "building_heat_bus",
-                              "building_pv_bus"],
-                 "district heating conn.": [float(0)] * 3,
-                 "lat": [None, "0", None],
-                 "lon": [None, "0", None]}),
+                 "label": ["test_pv_bus",
+                           "test_electricity_bus",
+                           "test_heat_bus"],
+                 "bus_type": ["building_pv_bus",
+                              "building_res_electricity_bus",
+                              "building_heat_bus"],
+                 "district heating conn. (exergy)": [float(0)] * 3,
+                 "lat": [None, None, "0"],
+                 "lon": [None, None, "0"]}),
             right=buses,
             on="bus_type"),
         "links": pandas.merge(
             left=pandas.DataFrame.from_dict(
                 {None: [0, 0, 0],
-                 "label": ["test_central_electricity_link",
-                           "test_pv_self_consumption_electricity_link",
-                           "test_pv_central_electricity_link"],
-                 "bus1": ["central_electricity_bus",
+                 "label": ["test_pv_self_consumption_electricity_link",
+                           "test_pv_central_electricity_link",
+                           "test_central_electricity_link"],
+                 "bus1": ["test_pv_bus",
                           "test_pv_bus",
-                          "test_pv_bus"],
-                 "bus2": ["test_electricity_bus",
-                          "test_electricity_bus",
                           "central_electricity_bus"],
-                 "link_type": ["building_central_building_link",
-                               "building_pv_building_link",
-                               "building_pv_central_link"]}),
+                 "bus2": ["test_electricity_bus",
+                          "central_electricity_bus",
+                          "test_electricity_bus"],
+                 "link_type": ["building_pv_building_link",
+                               "building_pv_central_link",
+                               "building_central_building_link"]}),
             right=links,
             on="link_type")}
     
@@ -206,7 +206,7 @@ def test_create_building_buses(test_building_buses_entry):
     
     """
     from program_files.urban_district_upscaling.pre_processing \
-        import create_building_buses_links
+        import create_building_buses_and_links
     
     sheets = {"buses": pandas.DataFrame(), "links": pandas.DataFrame()}
     
@@ -224,8 +224,8 @@ def test_create_building_buses(test_building_buses_entry):
     }
     building.update({})
     
-    sheets = create_building_buses_links(
-        building=building,
+    sheets = create_building_buses_and_links(
+        building=pandas.Series(data=building),
         central_electricity_bus=True,
         sheets=sheets,
         standard_parameters=pandas.ExcelFile(os.path.dirname(__file__)
