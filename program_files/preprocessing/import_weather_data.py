@@ -69,6 +69,7 @@ def import_open_fred_weather_data(nodes_data: dict, lat: float, lon: float
     
     # log the city and country of the given coords
     geo_info = geocoder.osm([lat, lon], method='reverse')
+    print(geo_info)
     logging.info("\t The inserted Open Fred coordinates point on "
                  + geo_info.json['city'] + " in "
                  + geo_info.json['country'] + ".")
