@@ -49,9 +49,12 @@ Theses
 
 - Klemm, Christian (2020): "**Modelling and Optimization of Multi-Energy Systems in Mixed-Use Districts: An Exemplary Application**" (Master Thesis), Münster University of Applied Sciences. `Mail <mailto:christian.klemm\@fh-muenster.de>`_
 
+Posters
+-------------
+- Tockloth, Jan N.; Klemm, Christian; Becker, Gregor; Blankenstein, Benjamin & Vennemann, Peter (2024): "**Spreadsheet Energy System Model Generator (SESMG)**", *16. Steinfurter Bioenergiefachtagung*, `https://doi.org/10.25974/fhms-17820 <https://doi.org/10.25974/fhms-17820>`_.  
+
 Presentations
 -------------
-
 - Budde, Janik (2022): "**Spreadsheet Energy System Model Generator, SESMG**" (J. Budde), oemof user meeting (Flensburg, 18 – 20 MAY 2022), `Available here <https://oemof.org/wp-content/uploads/2022/05/2022-05-18_sesmg_janik_budde.pdf>`_.
 
 - Becker, Gregor (2022): "**district heating modeling tools**" (G. Becker), oemof user meeting (Flensburg, 18 – 20 MAY 2022), `Available here <https://oemof.org/wp-content/uploads/2022/06/2022-05-18_Vortrag_Flensburg_Gregor_Becker.pdf>`_.
