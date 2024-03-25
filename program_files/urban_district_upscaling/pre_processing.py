@@ -196,7 +196,7 @@ def create_heat_pump_buses_links(building: pandas.Series, gchps: dict,
     gchp_heat_bus = None
     gchp_electricity_bus = None
 
-    gchp = True if building["parcel ID"] not in [0, "0"] else False
+    gchp = True if building["gchp"] in [1, "1", "yes"] else False
 
     if gchp and building["parcel ID"][-9:] in gchps:
         gchp_bool = True

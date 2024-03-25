@@ -13,8 +13,10 @@ def test_set_esys_data():
     return_dict = import_weather_data.set_esys_data(
         nodes_data={
             "energysystem": pandas.DataFrame.from_dict({
-                "start date": ["", pandas.to_datetime("01.01.2012 00:00:00")],
-                "end date": ["", pandas.to_datetime("31.12.2012 23:00:00")]
+                "start date": ["", pandas.to_datetime("01.01.2012 00:00:00",
+                                                      dayfirst=True)],
+                "end date": ["", pandas.to_datetime("31.12.2012 23:00:00",
+                                                      dayfirst=True)]
             })
         },
         location=Point("3", "3"),
@@ -52,8 +54,10 @@ def test_import_open_fred_weather_data():
     return_nodes_data = import_weather_data.import_open_fred_weather_data(
         nodes_data={
             "energysystem": pandas.DataFrame.from_dict({
-                "start date": ["", pandas.to_datetime("01.01.2012 00:00:00")],
-                "end date": ["", pandas.to_datetime("30.12.2012 23:00:00")]
+                "start date": ["", pandas.to_datetime("01.01.2012 00:00:00",
+                                                      dayfirst=True)],
+                "end date": ["", pandas.to_datetime("30.12.2012 23:00:00",
+                                                    dayfirst=True)]
             }),
             "weather data": pandas.DataFrame.from_dict({
                 "pressure": [],

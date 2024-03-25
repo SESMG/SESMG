@@ -267,4 +267,4 @@ elif st.session_state['state_download'] is True:
     st.session_state["result_file_name"] = ""
     st.session_state['state_download'] = False
     # 
-    st.experimental_rerun()
+    st.rerun()

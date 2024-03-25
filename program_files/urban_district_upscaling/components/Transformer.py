@@ -127,10 +127,13 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
                                                    "building_pellet_bus"]
         }
         try:
-            transformer_type_list = switch_dict.get(transformer_type)
+            # get the transformer type specific input bus label and
+            # type
+            input_bus_list = switch_dict.get(transformer_type)
+            # create the transformer specific input bus
             sheets = Bus.create_standard_parameter_bus(
-                label=str(building_id) + transformer_type_list[0],
-                bus_type=transformer_type_list[1],
+                label=str(building_id) + input_bus_list[0],
+                bus_type=input_bus_list[1],
                 sheets=sheets,
                 standard_parameters=standard_parameters
             )
@@ -214,6 +217,7 @@ def building_transformer(building: dict, p2g_link: bool, sheets: dict,
             [building["building type"], "building_pelletheating_transformer"],
     }
     
+    print(building["wood stove share"])
     if building["wood stove share"] != "standard":
         technology_dict["building_woodstove_transformer"][2] = "wood_stove_heat"
     
