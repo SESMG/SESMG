@@ -169,7 +169,7 @@ Within this sheet, the sources of the energy system are defined. Technology spec
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the output of the source is connected to.
-- **inout**: Specifies which bus the input of the source is connected to (only needed for solar heat).
+- **input**: Specifies which bus the input of the source is connected to (only needed for solar heat).
 - **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "other", "solar_thermal_flat_plate", "concentrated_solar_power". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the `Time series sheet`_.
 - **sector**: This column is used to differentiate between an electricity, heat and cooling timeseries source for the result processing's energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling.
 
