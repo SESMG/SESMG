@@ -5,8 +5,7 @@ For the SESMG, a number of examples can be found in `this directory <https://git
 Example 1: Simulation and optimization of a single family house
 ---------------------------------------------------------------
 The template of the model definition (.xlsx) for this exercise you can find `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_1_template_model_definition.xlsx>`_. You can find the completed
-model definition with solutions `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_1_solution_model_definition.xlsx>`_. This example is intended as an introduction and has an exercise
-character.
+model definition with solutions `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_1_solution_model_definition.xlsx>`_ and the graphical solution for each task `here <https://github.com/SESMG/SESMG-Examples/tree/main/SESMG-v1.0.x-Examples>`_. Your graphical results can be found directly in the Result Processing page at the menu point Energy System Graph. This example is intended as an introduction and has an exercise character.
 
 
 Example 1a: Simulation of a single family house
@@ -40,6 +39,7 @@ Simulation task:
 - Simulate the given energy system
 	- To find out how to start a simulation, click `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#main-application>`_
 - Activate the given components via the column "active" as binary input. 0 = off, 1 = on
+- The graphical solution for task 1a can be found `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_1a_graphical_solution.png>`_.
 
 .. attention::
 
@@ -59,6 +59,7 @@ Optimization task:
 ^^^^^^^^^^^^^^^^^^
 - Adjusts the templates of the individual technologies in the model definition accordingly and supplements them in the system
 	- To find out how to start a optimization, click `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#main-application>`_
+- The graphical solution for task 1b can be found `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_1b_graphical_solution.png>`_.
 
 .. attention:: 
 
@@ -75,6 +76,7 @@ Pareto-optimization task:
 - Execute a Pareto optimization of the energy system
 - Calculate the cost and emission minimums, as well three other Pareto points
 - Select the points in such a way that they are as meaningful as possible.
+- The graphical solution for task 1c can be found `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_1c_graphical_solution.png>`_.
 
 .. attention:: 
 
@@ -98,8 +100,7 @@ This diagram is an example. Your Pareto curve should look similar.
 Example 2: Simulation and optimization of an industrial company
 ---------------------------------------------------------------
 The template of the model definition (.xlsx) for this exercise you can find `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_2_template_model_definition.xlsx>`_. You can find the completed
-model definition with solutions `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_2_solution_model_definition.xlsx>`_. This example is intended as an introduction and has an exercise
-character.
+model definition with solutions `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_2_solution_model_definition.xlsx>`_ and the graphical solution for each task `here <https://github.com/SESMG/SESMG-Examples/tree/main/SESMG-v1.0.x-Examples>`_. Your graphical results can be found directly in the Result Processing page at the menu point Energy System Graph. This example is intended as an introduction and has an exercise character.
 
 Example 2a: Simulation of an industrial company
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -125,6 +126,7 @@ Simulation task:
 - Simulate the given energy system
 	- To find out how to start a simulation, click `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#main-application>`_
 - Copy the sample components for operation and reconfigure them accordingly
+- The graphical solution for task 2a can be found `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_2a_graphical_solution.png>`_.
 
 .. note::
 
@@ -173,6 +175,7 @@ Optimization task:
 ^^^^^^^^^^^^^^^^^^
 - Optimise the industrial company with new parameters
 	- To find out how to start a optimization, click `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#main-application>`_
+- The graphical solution for task 2b can be found `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_2b_graphical_solution.png>`_.
 
 .. note::
 
@@ -189,6 +192,7 @@ Optimization task:
 ^^^^^^^^^^^^^^^^^^
 - Optimise the industrial company with new parameters
 - Search for a suitable model in the database and enter it in the same way in the table. The required data can be found in the subpackage "`windpowerlib <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_".
+- The graphical solution for task 2c can be found `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_2c_graphical_solution.png>`_.
 
 .. note::
 
@@ -204,6 +208,7 @@ Optimization task:
 ^^^^^^^^^^^^^^^^^^
 - Optimise the industrial company with new parameters
 - Create the vehicle fleet as another consumer (sink)
+- The graphical solution for task 2d can be found `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_2d_graphical_solution.png>`_.
 
 .. note::
 
