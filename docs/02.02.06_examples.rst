@@ -1,6 +1,6 @@
 Examples
 ==============
-For the SESMG, a number of examples can be found in `this directory <https://github.com/SESMG/SESMG-Examples>`_. Please make sure that the version indexed with the file/folder name matches your version of the SESMG. In the following, some examples are explained in more detail.
+For the SESMG, a number of examples can be found in `this directory <https://github.com/SESMG/SESMG-Examples>`_. Please make sure that the version indexed with the file/folder name matches your version of the SESMG. It is recommended to take a look at the mathematical graph theory before starting with the examples. Especially the terms sources, sinks, transformers, storages and buses should be understood. Further information can be found `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html>`_. In the following, some examples are explained in more detail.
 
 Example 1: Simulation and optimization of a single family house
 ---------------------------------------------------------------
