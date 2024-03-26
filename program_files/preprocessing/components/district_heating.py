@@ -6,8 +6,8 @@ import dhnx
 from dhnx.plotting import StaticMap
 from dhnx.network import ThermalNetwork
 import dhnx.optimization.optimization_models as optimization
-from program_files.preprocessing.components.district_heating_calculations \
-    import *
+import program_files.preprocessing.components.district_heating_calculations \
+    as dh_calculations
 from program_files.preprocessing.components.district_heating_clustering \
     import *
 import program_files.preprocessing.components.district_heating_components \
@@ -598,14 +598,24 @@ def district_heating(
             systems' nodes after the thermal network components were \
             added
     """
-    thermal_net = clear_thermal_net(dhnx.network.ThermalNetwork())
+    # clear the thermal net cache to make sure that there is no old
+    # data in the thermal_net variable
+    thermal_net = clear_thermal_net(thermal_net=dhnx.network.ThermalNetwork())
 
     # Check if saved calculations are distributed ("" no saved data)
+    # if there is no save data a new thermal network is build from
+    # scratch otherwise the old instance is reproduced in the else
+    # clause of this if condition
     if district_heating_path == "":
-        # Check if the model definition includes district heating
+        
+        # Check if the model definition includes at least one street
+        # section in the district heating sheet
         if len(nodes_data["district heating"]) != 0:
-            street_sections = convert_dh_street_sections_list(
-                nodes_data["district heating"].copy()
+            
+            # converts the street sections coordinates to the
+            # coordinate type used within the following algorithm
+            street_sections = dh_calculations.convert_street_sec_coordinates(
+                street_sec=nodes_data["district heating"].copy()
             )
 
             # Create pipes and connection points for building-streets

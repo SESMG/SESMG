@@ -14,8 +14,8 @@ transf_WGS84_GK = Transformer.from_crs("EPSG:4326", "EPSG:31466")
 transf_GK_WGS84 = Transformer.from_crs("EPSG:31466", "EPSG:4326")
 
 
-def convert_dh_street_sections_list(street_sec: pandas.DataFrame
-                                    ) -> pandas.DataFrame:
+def convert_street_sec_coordinates(street_sec: pandas.DataFrame
+                                   ) -> pandas.DataFrame:
     """
         Convert street sections Dataframe to Gaussian Kruger (GK)
         to reduce redundancy.
@@ -28,7 +28,7 @@ def convert_dh_street_sections_list(street_sec: pandas.DataFrame
     """
     # iterating threw the given street points and converting each active
     # one to EPSG31466
-    for num, street in street_sec[street_sec["active"] == 1].iterrows():
+    for num, street in street_sec.query("active == 1").iterrows():
         for i in ["1st", "2nd"]:
             (
                 street_sec.at[num, "lat. {} intersection".format(i)],
@@ -82,8 +82,7 @@ def calc_perpendicular_distance_line_point(p1: numpy.array, p2: numpy.array,
     """
     # check rather the third point is already converted or not
     if not converted:
-        transformer = Transformer.from_crs("EPSG:4326", "EPSG:31466")
-        (p3[0], p3[1]) = transformer.transform(p3[0], p3[1])
+        (p3[0], p3[1]) = transf_WGS84_GK.transform(p3[0], p3[1])
     house = numpy.array(p3)
     road_part_limit1 = numpy.array(p1)
     road_part_limit2 = numpy.array(p2)
@@ -114,14 +113,15 @@ def calc_perpendicular_distance_line_point(p1: numpy.array, p2: numpy.array,
         return []
 
 
-def get_nearest_perp_foot_point(building: dict, streets: pandas.DataFrame,
+def get_nearest_perp_foot_point(building: pandas.Series,
+                                streets: pandas.DataFrame,
                                 index: int, building_type: str) -> list:
     """
         Uses the calc_perpendicular_distance_line_point method and
         finds the shortest distance to a road from its results.
 
         :param building: coordinates of the building under investigation
-        :type building: dict
+        :type building: pandas.Series
         :param streets: Dataframe holding all street section of the
                         territory under investigation
         :type streets: pandas.Dataframe
@@ -133,32 +133,52 @@ def get_nearest_perp_foot_point(building: dict, streets: pandas.DataFrame,
                     of the perpendicular foot point
     """
     foot_points = []
+    # convert the coordinate type to gaussian kruger for perpendicular
+    # foot point calculation
     (lat, lon) = transf_WGS84_GK.transform(
         float(building["lat"]), float(building["lon"])
     )
-    for num, street in streets[streets["active"] == 1].iterrows():
+    
+    for _, street in streets.query("active == 1").iterrows():
         # calculation of perpendicular foot point if it is within the
-        # limits of the route
+        # limits of the route hereby p1 and p2 mark the considered
+        # street section and p3 the point which has to be connected to
+        # it
         perp_foot_point = calc_perpendicular_distance_line_point(
-            [street["lat. 1st intersection"], street["lon. 1st intersection"]],
-            [street["lat. 2nd intersection"], street["lon. 2nd intersection"]],
-            [lat, lon],
-            True,
+            p1=[street["lat. 1st intersection"],
+                street["lon. 1st intersection"]],
+            p2=[street["lat. 2nd intersection"],
+                street["lon. 2nd intersection"]],
+            p3=[lat, lon],
+            converted=True,
         )
+        # if a possible connection is found add it to the list of
+        # possible foot points and add the street section label to
+        # ensure clarity within later network analysis
         if perp_foot_point:
             foot_points.append(perp_foot_point + [street["label"]])
-    # check if more than one result was found
+            
+    # check if more than one possible connection point is found
     if len(foot_points) > 1:
         # iterate threw the results to find the nearest
         # point of the calculated points
         num = 0
+        # as long as num is within the list of foot points
         while num < len(foot_points) - 1:
+            # check if num has a smaller distance to the point to be
+            # connected or num + 1 has a smaller distance. Then drop
+            # the point with the higher distance from the list of
+            # possible connection points
             if foot_points[num][2] > foot_points[num + 1][2]:
                 foot_points.pop(num)
             else:
                 foot_points.pop(num + 1)
             num = 0
             continue
+    
+    # create the return structure by first crating a list containing
+    # the <building_type_index-fork> and then appending the calculated
+    # information of the closest connection point
     foot_point = [building_type + "-{}".format(str(index)) + "-fork"]
     foot_point.extend(foot_points[0])
     return foot_point
