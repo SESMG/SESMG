@@ -73,7 +73,7 @@ Code of Conduct can be found [here](https://github.com/SESMG/SESMG/blob/master/C
 #### Contact information 
 Münster University of Applied Sciences
 
-Christian Klemm - christian.klemm@fh-muenster.de
+Contact via [research group](https://fh.ms/esym).
 
 ### Acknowledgments
 
