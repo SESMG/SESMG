@@ -36,9 +36,9 @@ Simplification:
 
 Simulation task: 
 ^^^^^^^^^^^^^^^^
+- Activate the given components via the column "active" as binary input. 0 = off, 1 = on
 - Simulate the given energy system
 	- To find out how to start a simulation, click `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#main-application>`_
-- Activate the given components via the column "active" as binary input. 0 = off, 1 = on
 - The graphical solution for task 1a can be found `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_1a_graphical_solution.png>`_.
 
 .. attention::
@@ -123,9 +123,9 @@ Simplification:
 
 Simulation task: 
 ^^^^^^^^^^^^^^^^
+- Copy the sample components for operation and reconfigure them accordingly
 - Simulate the given energy system
 	- To find out how to start a simulation, click `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#main-application>`_
-- Copy the sample components for operation and reconfigure them accordingly
 - The graphical solution for task 2a can be found `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_2a_graphical_solution.png>`_.
 
 .. note::
@@ -180,8 +180,10 @@ Optimization task:
 .. note::
 
 	- Both units can be balanced and billed together
-	- The surplus electricity can be sold at a tariff of 0.0635 €/kWh
+	- Create a separate sink for each PV system
 	- One bus is sufficient for both PV systems
+	- A separate link is necessary to connect the PV system to the local electricity bus
+	- The surplus electricity can be sold at a tariff of 0.0635 €/kWh
 
 Example 2c: Optimization of an industrial company part II
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -199,6 +201,7 @@ Optimization task:
 	- The surplus electricity can be sold at a tariff of 0.057 €/kWh
 	- The wind turbine is designed (in this example) as a binary decision. This means that it is is either designed completely or not at all
 	- To do this, you must create the plant as a "non-convex investment". You activate this with 0 or 1 in the corresponding cell
+	- The costs are summarised in a periodic cost of 100 €/kW*a
 
 Example 2d: Optimization of an industrial company part III
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -213,7 +216,7 @@ Optimization task:
 .. note::
 
 	- You can find the normalised time series `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_2_vehicle_fleet_normalised_load_response.xlsx>`_. Insert it into the worksheet "timeseries". The column must have the same name as your sink with the addition .fix
-	- Since this is a normalized time series, the "nominal value" of the sink must be determined on the basis of the maximum possible charging capacity of the vehicle fleet
+	- Since this is a normalized time series, the "nominal value" of the sink must be determined on the basis of the maximum possible charging capacity of the vehicle fleet. To achieve this, create a single sink with a nominal value of 160 kW
 
 Example 3: Regular example of the documentation
 -----------------------------------------------
