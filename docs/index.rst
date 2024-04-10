@@ -4,7 +4,7 @@ The Spreadsheet Energy System Model Generator
 What is the SESMG?
 -------------------------
 
-The Spreadsheet Energy System Model Generator (SESMG) is a tool for modeling and optimizing energy systems with a focus on urban systems. The SESMG is easyily accessible as it comes with a browser-based graphical user interface, spreadsheets to provide data entry, and detailed documentation on how to use it. **Programming skills are not required** for the installation or application of the tool. The SESMG includes **advanced modeling features** such as the application of the **multi-energy system (MES)** approach, **multi-objective optimization**, model-based methods for **reducing computational requirements**, and **automated conceptualization and result processing** of urban energy systems with high spatial resolution. Due to its accessibility and the applied modeling methods, urban energy systems can be modeled and optimized with comparatively low effort. [#FN1]_
+The Spreadsheet Energy System Model Generator (SESMG) is a tool for modeling and optimizing energy systems with a focus on urban systems. The SESMG is easily accessible as it comes with a browser-based graphical user interface, spreadsheets to provide data entry, and detailed documentation on how to use it. **Programming skills are not required** for the installation or application of the tool. The SESMG includes **advanced modeling features** such as the application of the **multi-energy system (MES)** approach, **multi-objective optimization**, model-based methods for **reducing computational requirements**, and **automated conceptualization and result processing** of urban energy systems with high spatial resolution. Due to its accessibility and the applied modeling methods, urban energy systems can be modeled and optimized with comparatively low effort. [#FN1]_
 
 
 .. figure:: images/SESMG_principle.png
@@ -83,6 +83,7 @@ The manual section contains detailed instructions on how to install and apply th
 * :doc:`02.02.03_urban_district_upscaling`
 * :doc:`02.02.04_results`
 * :doc:`02.02.05_technical_data`
+* :doc:`02.02.06_examples`
 * :doc:`02.03.00_demo`
 * :doc:`02.04.00_additional_features`
 	
@@ -95,7 +96,7 @@ The manual section contains detailed instructions on how to install and apply th
 	02.01.00_installation
 	02.02.00_application
 	02.03.00_demo
-    02.04.00_additional_features
+	02.04.00_additional_features
 
 
 Troubleshooting
@@ -153,7 +154,7 @@ Further information related to the SESMG is listed here.
 	05.05.00_contact
 	05.06.00_contributors
 	05.07.00_acknowledgements
-	
+
 References
 -----------
 

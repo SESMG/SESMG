@@ -7,6 +7,8 @@ Your publication/thesis/project is missing? Contact us!
 
 Peer Review Papers
 ------------------
+- Klemm, Christian; Vennemann, Peter & Wiese, Frauke (2024): "**Potential-risk and no-regret options for urban energy system design — A sensitivity analysis**", *Sustainable Cities and Society*, 102, 105189, `https://doi.org/10.1016/j.scs.2024.105189 <https://doi.org/10.1016/j.scs.2024.105189>`_.
+
 - Klemm, Christian; Wiese, Frauke & Vennemann, Peter (2023): "**Model-based run-time and memory reduction for a mixed-use multi-energy system model with high spatial resolution**", *Applied Energy*, 334, 120574, `https://doi.org/10.1016/j.apenergy.2022.120574 <https://doi.org/10.1016/j.apenergy.2022.120574>`_.
 
 - Becker, Gregor; Klemm, Christian & Vennemann, Peter (2022): "**Open Source District Heating Modeling Tools—A Comparative Study**", *Energies*, 15(21), 8277, `https://doi.org/10.3390/en15218277 <https://doi.org/10.3390/en15218277>`_.
@@ -19,33 +21,46 @@ Peer Review Papers
 
 Conference Proceedings
 ----------------------
-- Budde, Janik; Klemm, Christian; Tockloth, Jan N.; Becker, Gregor & Vennemann, Peter (2023): "**Automatisierte Modellierung und Optimierung urbaner Energiesysteme**", *6. Regenerative Energietechnik Konferenz in Nordhausen 09. - 10. Februar 2023*, `available here (Page 150-159) <https://www.hs-nordhausen.de/fileadmin/Dateien/Forschung/2021/Tagungsband_RETCon_2023_Web.pdf>`_.
+- Tockloth, Jan N.; Klemm, Christian; Becker, Gregor; Blankenstein, Benjamin & Vennemann, Peter (2024): "**Der Spreadsheet Energy System Model Generator (SESMG): Ein Tool zur Optimierung urbaner Energiesysteme**", *16. Steinfurter Bioenergiefachtagung*, `available here (page 18-19) <https://doi.org/10.25974/fhms-17789>`_.
 
-- Klemm, Christian & Vennemann, Peter (2021): "**Modellierung und Optimierung urbaner Energiesysteme im Projekt R2Q**", *4. Regenerative Energietechnik Konferenz in Nordhausen 18. - 19. Februar 2021*, `available here (Page 177-188) <https://www.hs-nordhausen.de/fileadmin/daten/fb_ing/inret/PDFs/tagungsband_retcon21_web_aa3__1_.pdf>`_.
+- Budde, Janik; Klemm, Christian; Tockloth, Jan N.; Becker, Gregor & Vennemann, Peter (2023): "**Automatisierte Modellierung und Optimierung urbaner Energiesysteme**", *6. Regenerative Energietechnik Konferenz in Nordhausen 09. - 10. Februar 2023*, `available here (page 150-159) <https://www.hs-nordhausen.de/fileadmin/Dateien/Forschung/2021/Tagungsband_RETCon_2023_Web.pdf>`_.
+
+- Klemm, Christian & Vennemann, Peter (2021): "**Modellierung und Optimierung urbaner Energiesysteme im Projekt R2Q**", *4. Regenerative Energietechnik Konferenz in Nordhausen 18. - 19. Februar 2021*, `available here (page 177-188) <https://www.hs-nordhausen.de/fileadmin/daten/fb_ing/inret/PDFs/tagungsband_retcon21_web_aa3__1_.pdf>`_.
 
 Theses
 ------
-- Budde, Janik (2022): "**Leitfaden zur Modellierung von Energiesystemen**" (Master Thesis), Münster University of Applied Sciences.  `Mail <mailto:janik.budde\@fh-muenster.de>`_
+- Blankenstein, Benjamin (2024): "**Energiesystemmodellierung von Kasernen**" (Bachelor Thesis), Münster University of Applied Sciences. `https://doi.org/10.25974/fhms-17814 <https://doi.org/10.25974/fhms-17814>`_. `Mail <mailto:benjamin.blankenstein@fh-muenster.de>`_.
 
-- Petereit, Vincent (2022): "**Wirtschaftlichkeitsanalyse der Wasserstoffnutzung in Quartieren**" (Bachelor Thesis), Münster University of Applied Sciences. `Mail <mailto:vincent.petereit@fh-muenster.de>`_
+- Beine, Niels (2024): "**Modellierung energetischer Auswirkungen durch die Integration alternativer Antriebe in die Infrastruktur eines kommunalen Bauhofs**" (Bachelor Thesis), Münster University of Applied Sciences.  `Mail <mailto:niels.beine@fh-muenster.de>`_.
 
-- Brüggemann, Vincent (2022): "**Energiesystemmodellierung des Lämmerhofs Mannhagen**" (Bachelor Thesis), Münster University of Applied Sciences. `Mail <mailto:vb011388@fh-muenster.de>`_
+- Niederhöfer, Daniel (2024): "**Optimierung von Energiesystemmodellen mittels Monte-Carlo-Simulation**" (Master Thesis), Münster University of Applied Sciences.  `Mail <mailto:daniel@niederhoefer-nw.de>`_.
 
-- Budde, Janik (2022): "**Residential load profile tools - A review and comparison of applied tools**" (Project Thesis), Münster University of Applied Sciences.  `Mail <mailto:janik.budde\@fh-muenster.de>`_
+- Klemm, Christian (2023): "**Optimization of Sustainable Urban Energy Systems: Model Development and Application**" (PhD Thesis), Europa-Universität Flensburg. `Available here <https://www.zhb-flensburg.de/?id=55512>`_.
 
-- Becker, Gregor (2022): "**Bereitstellung von Open Source Software in der Energiewirtschaft - Ein Leitfaden**" (Bachelor Thesis), Münster University of Applied Sciences.  `Mail <mailto:gregor.becker\@fh-muenster.de>`_
+- Budde, Janik (2022): "**Leitfaden zur Modellierung von Energiesystemen**" (Master Thesis), Münster University of Applied Sciences.  `Mail <mailto:janik.budde\@fh-muenster.de>`_.
+
+- Petereit, Vincent (2022): "**Wirtschaftlichkeitsanalyse der Wasserstoffnutzung in Quartieren**" (Bachelor Thesis), Münster University of Applied Sciences. `Mail <mailto:vincent.petereit@fh-muenster.de>`_.
+
+- Brüggemann, Vincent (2022): "**Energiesystemmodellierung des Lämmerhofs Mannhagen**" (Bachelor Thesis), Münster University of Applied Sciences. `Mail <mailto:vb011388@fh-muenster.de>`_.
+
+- Budde, Janik (2022): "**Residential load profile tools - A review and comparison of applied tools**" (Project Thesis), Münster University of Applied Sciences.  `Mail <mailto:janik.budde\@fh-muenster.de>`_.
+
+- Becker, Gregor (2022): "**Bereitstellung von Open Source Software in der Energiewirtschaft - Ein Leitfaden**" (Bachelor Thesis), Münster University of Applied Sciences.  `Mail <mailto:gregor.becker\@fh-muenster.de>`_.
 
 - Kerkeling, Pascal (2021): "**Energetische Optimierung eines kleinen gemischten Quartiers**" (Bachelor Thesis), Münster University of Applied Sciences.
 
 - Sivabalasingam, Piriyanha (2021): "**Fortschreibung des Energiekonzeptes für ein Quartier mit Hilfe des Open Energy Modelling Frameworks**" (Master Thesis), Münster University of Applied Sciences.
 
-- Budde, Janik (2020): "**Wärmepumpen in Stadtquartieren - Untersuchung anhand eines Quartiers in Herne**" (Bachelor Thesis), Münster University of Applied Sciences.  `Mail <mailto:janik.budde\@fh-muenster.de>`_
+- Budde, Janik (2020): "**Wärmepumpen in Stadtquartieren - Untersuchung anhand eines Quartiers in Herne**" (Bachelor Thesis), Münster University of Applied Sciences.  `Mail <mailto:janik.budde\@fh-muenster.de>`_.
 
-- Klemm, Christian (2020): "**Modelling and Optimization of Multi-Energy Systems in Mixed-Use Districts: An Exemplary Application**" (Master Thesis), Münster University of Applied Sciences. `Mail <mailto:christian.klemm\@fh-muenster.de>`_
+- Klemm, Christian (2020): "**Modelling and Optimization of Multi-Energy Systems in Mixed-Use Districts: An Exemplary Application**" (Master Thesis), Münster University of Applied Sciences. `Mail <mailto:christian.klemm\@fh-muenster.de>`_.
+
+Posters
+-------------
+- Tockloth, Jan N.; Klemm, Christian; Becker, Gregor; Blankenstein, Benjamin & Vennemann, Peter (2024): "**Spreadsheet Energy System Model Generator (SESMG)**", *16. Steinfurter Bioenergiefachtagung*, `https://doi.org/10.25974/fhms-17820 <https://doi.org/10.25974/fhms-17820>`_.
 
 Presentations
 -------------
-
 - Budde, Janik (2022): "**Spreadsheet Energy System Model Generator, SESMG**" (J. Budde), oemof user meeting (Flensburg, 18 – 20 MAY 2022), `Available here <https://oemof.org/wp-content/uploads/2022/05/2022-05-18_sesmg_janik_budde.pdf>`_.
 
 - Becker, Gregor (2022): "**district heating modeling tools**" (G. Becker), oemof user meeting (Flensburg, 18 – 20 MAY 2022), `Available here <https://oemof.org/wp-content/uploads/2022/06/2022-05-18_Vortrag_Flensburg_Gregor_Becker.pdf>`_.

@@ -169,9 +169,9 @@ Within this sheet, the sources of the energy system are defined. Technology spec
 - **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
 - **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
 - **output**: Specifies which bus the output of the source is connected to.
-- **inout**: Specifies which bus the input of the source is connected to (only needed for solar heat).
+- **input**: Specifies which bus the input of the source is connected to (only needed for solar heat).
 - **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "other", "solar_thermal_flat_plate", "concentrated_solar_power". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the `Time series sheet`_.
-- **sector**: This column is used to differentiate between an electricity, heat and cooling timeseries source for the result processing's energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling.
+- **sector**: This column is used to differentiate between an electricity, heat and cooling timeseries source for the result processing energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling.
 
 Costs
 ^^^^^
@@ -298,7 +298,7 @@ The following parameters have to be entered:
 - **output**: Specifies bus to which the output of the transformer is forwarded to. For CHP Transformers it should be the electric output.
 - **output2**: Specifies the bus to which the output of the transformer is forwarded to, if there are several outputs. If there is no second output, the fill character "0" must be entered here.
 - **input2 / input**: Specifies the ratio of input2 to input (e. g. kWh/m³). Only required if "transformer type" is set to "GenericTwoInputTransformer". If there is no second input, the fill character "0" must be entered here.
-- **sector**: This column is used to differentiate the transformer types for the result processing's energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling, electric_heating.
+- **sector**: This column is used to differentiate the transformer types for the result processing energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling, electric_heating.
 - **technology**: The technology column represents the category for collecting the energy amounts for the energy amount diagrams. Attention: If at sector central_... is used, a leading "central_" will be added to the selected technology in the balancing.
 
 Costs
@@ -336,7 +336,7 @@ The following parameters are only required, if "transformer type" is set to "Com
 - **area** in (sqm): Open spaces for ground-coupled compression heat transformers (GC-CHT).
 - **length of the geoth. probe** in (m): Length of the vertical heat exchanger, only for GC-CHT.
 - **heat extraction** in (kW/(m*a)): Heat extraction for the heat exchanger referring to the location, only for GC-CHT.
-- **min. borehole area** in (sqm): Limited space due to the regeneation of the ground source, only for GC-CHT.
+- **min. borehole area** in (sqm): Limited space due to the regeneration of the ground source, only for GC-CHT.
 - **temp threshold icing**: Temperature below which icing occurs (see `oemof.thermal <https://oemof-thermal.readthedocs.io/en/latest/>`_). Only required if "mode" is set to "heat_pump".
 - **factor icing**: Factor to which the COP is reduced caused by icing (e.g. 0.8 if you have a reduction of 20%). (see `oemof.thermal <https://oemof-thermal.readthedocs.io/en/latest/>`_). Only required if "mode" is set to "heat_pump".
 
@@ -347,7 +347,7 @@ The following parameters are only required, if "transformer type" is set to "Abs
 - **name**: Defines the way of calculating the efficiency of the absorption heat transformer. Possible inputs are: "Rotartica", "Safarik", "Broad_01", "Broad_02", and "Kuehn". "Broad_02" refers to a double-effect absorption chiller model, whereas the other keys refer to single-effect absorption chiller models.
 - **temperature high** in (°C): Temperature of the heat source, that drives the absorption heat transformer.
 - **temperature low** in (°C): Output temperature which is needed for the cooling demand.
-- **electrical input conversion factor**: Specifies the relation of electricity consumption to energy input. Example: A value of 0,05 means, that the system comsumes 5 % of the input energy as electric energy.
+- **electrical input conversion factor**: Specifies the relation of electricity consumption to energy input. Example: A value of 0,05 means, that the system consumes 5 % of the input energy as electric energy.
 - **recooling temperature difference** in (°C): Defines the temperature difference between temperature source for recooling and recooling cycle.
 - **heat capacity of source**: Defines the heat capacity of the connected heat source e.g. extracted waste heat.
 
@@ -396,7 +396,7 @@ The following parameters have to be entered:
 - **label**: Unique designation of the storage. The following format is recommended: "ID_energy sector_storage".
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the storage shall be included to the model. 0 = inactive, 1 = active.
-- **storage type**: Defines whether the storage is a "Generic" or a "Stratified" sorage. These two inputs are possible.
+- **storage type**: Defines whether the storage is a "Generic" or a "Stratified" storage. These two inputs are possible.
 - **bus**: Specifies which bus the storage is connected to.
 - **input/capacity ratio** (invest): Indicates the performance with which the storage can be charged (see also  `here <https://oemof-solph.readthedocs.io/en/latest/usage.html#using-an-investment-object-with-the-genericstorage-component>`_).
 - **output/capacity ratio** (invest): Indicates the performance with which the storage can be discharged (see also  `here <https://oemof-solph.readthedocs.io/en/latest/usage.html#using-an-investment-object-with-the-genericstorage-component>`_).
@@ -405,7 +405,7 @@ The following parameters have to be entered:
 - **initial capacity**: Specifies how far the storage is loaded at time 0 of the simulation. Value must be between 0 and 1. The initial capacity value must be equal or higher than the 'capacity min' value.
 - **capacity min**: Specifies the minimum amount of storage that must be loaded at any given time. Value must be between 0 and 1.
 - **capacity max**: Specifies the maximum amount of storage that can be loaded at any given time. Value must be between 0 and 1.
-- **sector**: This column is used to differentiate between an electricity, heat and cooling storages for the result processing's energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling.
+- **sector**: This column is used to differentiate between an electricity, heat and cooling storages for the result processing energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling.
 
 Costs
 ^^^^^
@@ -465,8 +465,8 @@ to be entered:
 
 Costs
 ^^^^^
-- **variable output costs** in (CU/kWh): Specifies the efficiency of the first output. Values between 0 and 1 are allowed entries.
-- **variable output constraint costs** in (CU/kWh): Costs incurred per kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **variable output costs** in (CU/kWh): Costs incurred per kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **variable output constraint costs** in (CU/kWh): Constraint costs incurred per kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **existing capacity** in (kW): Already installed capacity of the link.
 - **min. investment capacity** in (kW): Minimum, in addition to existing capacity, installable capacity.
 - **max. investment capacity** in (kW): Maximum capacity to be installed.
@@ -561,7 +561,7 @@ data time system should be in conformity with the model’s time system, defined
 - **z0**: Roughness length of the environment in units m.
 - **ground_temp**: Constant ground temperature at 100 m depth.
 - **water_temp**: Varying water temperature of a river depending on the air temperature.
-- **groundwater_temp**: Constant temperatur of the ground water at 6 - 10 m depth in North Rhine-Westphalia.
+- **groundwater_temp**: Constant temperature of the ground water at 6 - 10 m depth in North Rhine-Westphalia.
 
 .. csv-table:: Exemplary input for weather data
    :header: timestamp,dhi,dirhi,pressure,temperature,windspeed,z0,ground_temp,water_temp,groundwater_temp

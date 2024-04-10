@@ -56,9 +56,10 @@ The difference is that you need to select a folder that you want to analyze.
 
 Results as Spreadsheets and Log-Files
 -------------------------------------
+
 The results of the modeling are stored in the SESMG result folder which is
-places by dafault in the /users/documents/SESMG/result direcotory. The directory
-is created by the SESMG application. You can change the direcotry when you are
+places by default in the /users/documents/SESMG/result directory. The directory
+is created by the SESMG application. You can change the directory when you are
 using the advanced installation by following the `note information in the installation
 description <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html#extended-installation>`_.
 

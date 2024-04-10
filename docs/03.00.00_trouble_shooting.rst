@@ -1,5 +1,6 @@
 Troubleshooting
 ***************
+
 During the installation or execution of the model generator, error messages
 and associated error messages may occur.
 
@@ -9,6 +10,7 @@ and associated error messages may occur.
     application which leads to problems opening the application itself.
     See Error I-009 below to check how to fix it or check the
     `MacOS installation instructions <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html#macos/>`_.
+
 
 Installation
 ============
@@ -39,7 +41,7 @@ Error I-003: py not found
 
    py not found
 
-**Possible Error Cause:** the path variable for the python version you are using was proabably not defined
+**Possible Error Cause:** the path variable for the python version you are using was probably not defined
 
 **Debugging:** Re-install your python-version and make sure to check the "Add pyton to PATH" option at the beginning of the installation
 
@@ -51,7 +53,7 @@ Error I-004: no developer tools installed (macOS > 12.2)
    Install the Command Line Tools:
       xcode-select --install
 
-**Possible Error Cause:** If you use macOS 12.2 or higher, you need to install the xcode developer tool. Also if you just updeted your macOS to the newer version.
+**Possible Error Cause:** If you use macOS 12.2 or higher, you need to install the xcode developer tool. Also if you just updated your macOS to the newer version.
 
 **Debugging:** Follow the instructions and run xcode-select --install in an additional terminal.
 
@@ -59,7 +61,7 @@ Error I-005: subprocess-exited-with-error
 -----------------------------------------
 **Error Message:** ::
 
-   Installation buid dependencies ... error
+   Installation build dependencies ... error
    error: subprocess-exited-with-error
    
    pip subprocess to install build dependencies did not run successfully.
@@ -84,11 +86,15 @@ Error I-006: Could not find a local HDF5 installation (macOS M1/M2)
 
 Error I-007: No module named streamlit I
 -------------------------------------------------------------------
+**Error Message:** ::
+
+   No module named streamlit
+
 **Possible Error Cause I:** This issue can occur at the first model run after installation, even if there was no error message. Maybe you typed in the wrong python version at the installation.
 
-**Debugging I:** You need to delete the folder and restart the installation with a 'freshly' unpacked .zip file (downloadable on Github). Make shure to type your installed python version in the major.minor format, which means to give 3.X if you have the version 3.X.YY.
+**Debugging I:** You need to delete the folder and restart the installation with a 'freshly' unpacked .zip file (downloadable on Github). Make sure to type your installed python version in the major.minor format, which means to give 3.X if you have the version 3.X.YY.
 
-**Possible Error Cause II:** The SESMG is compatible with a specific set of Python versions. The problem can occure if you are ursing an unsupported version. You can find a list of the supported Python versions in the  `installation instructions <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html#installation>`_.
+**Possible Error Cause II:** The SESMG is compatible with a specific set of Python versions. The problem can occur if you are using an unsupported version. You can find a list of the supported Python versions in the  `installation instructions <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html#installation>`_.
 
 **Debugging II:** You can install an additional Python version on your machine which is facing the SESMGs requirements. Afterwards you need to restart the installation process from scratch in a new folder.
 
@@ -96,11 +102,11 @@ Error I-008: No module named streamlit II
 -------------------------------------------------------------------
 **Error Message:** ::
 
-   \user\..\.streamlit is already excisting
+   \user\..\.streamlit is already existing
    ...
    Error: No matching distribution found for streamlit>=1.17.0
 
-**Possible Error Cause:** The SESMG, or especially the subpackage stramlit, is not compatible with the python version 3.9.7.   
+**Possible Error Cause:** The SESMG, or especially the subpackage streamlit, is not compatible with the python version 3.9.7.
 
 **Debugging:** Check if you have this version. If so, you need to install another version or update the version. 
 
@@ -108,9 +114,9 @@ Error I-009: The application does not start after double-clicking (MacOS)
 -------------------------------------------------------------------------
 
 **Possible Error Cause I:** Due to a bug in a subpackage it is not possible yet to
-open the SESMG as commum by double-clicking it on MacOS.
+open the SESMG as common by double-clicking it on MacOS.
 
-**Debugging I:** You need to use the terminal to open the application. Navitage
+**Debugging I:** You need to use the terminal to open the application. Navigate
 to the directory by using the command inputs (e. g. cd) or right-click the
 folder in which the application is placed (e. g. "desktop") and choose "new
 terminal at the folder". Type in the command ``open SESMG.app``.
@@ -129,6 +135,7 @@ Error I-010: Encountered error while trying to install future
 **Possible Error Cause:** Future package cannot be installed because pip is not upgraded.
 
 **Debugging:** Upgrade pip with: "py -3.X -m pip install --upgrade pip". Change 3.X to your python version.
+
 
 Modeling
 ========
@@ -198,7 +205,7 @@ Error M-005:  time module
 
 **Possible Error Cause:** You are using a Python version not compatible with oemof.
 
-**Debugging:** Use Pyhton 3.7.6
+**Debugging:** Use Python 3.7.6
 
 Error M-006: shapes
 -------------------
@@ -250,7 +257,7 @@ Error M-010: Variable Type Attribute
 
 **Possible Error Cause:** The cost value for an activated excess sink or shortage source was not correctly specified in the bus sheet
 
-**Debugging:** Make sure that all excess/sortage prices consist of real numbers. Also check for typos.
+**Debugging:** Make sure that all excess/shortage prices consist of real numbers. Also check for typos.
 
 Error M-011: Investment Flow
 ----------------------------
@@ -266,7 +273,7 @@ Error M-012: Key Error (Index)
 ------------------------------
 **Error Message** (example): ::
 
-   KeyError: 'Index \'(''<oemof.solph.network.source.Source: \'ID_phtovoltaic_electricity_source\'>' ''<oemof.solph.network.bus.Bus: \'ID_pv_bus\'>'' 0)\' is not valid for indexed component \'flow\''
+   KeyError: 'Index \'(''<oemof.solph.network.source.Source: \'ID_photovoltaic_electricity_source\'>' ''<oemof.solph.network.bus.Bus: \'ID_pv_bus\'>'' 0)\' is not valid for indexed component \'flow\''
 
 **Possible Error Cause I:** You probably named the busses incorrectly.
 
@@ -292,7 +299,7 @@ Error M-014: User Warning Condition Infeasible
 
    UserWarning: Optimization ended with status warning and termination condition infeasible
 
-**Possible Error Cause:** the model is not solvable - probably because not enough energy is inserted to sattisfy the energy demand
+**Possible Error Cause:** the model is not solvable - probably because not enough energy is inserted to satisfy the energy demand
 
 **Debugging:** make sure that the sources are able to insert enough energy to the system
 
@@ -352,7 +359,7 @@ Error M-020: Value Error Length Mismatch
 
    ValueError: Length mismatch: Expected axis has 1 elements; new values have 8760 elements Flow: ID_pv_to_ID_electricity_link-ID_pv_bus. This could be caused by NaN-values in your input data.
 
-**Possible Error Cause:** The model probably isn't solvable, because of wrong energybalance.
+**Possible Error Cause:** The model probably isn't solvable, because of wrong energy balance.
 
 **Debugging:** Activate necessary excesses sinks and shortages sources.
 
@@ -458,7 +465,7 @@ Error M-029: KeyError (variable)
 
 **Possible Error Cause:** There could be a a missing value in the model definition. Check the column with the name of the '*variable*'. The '*variable*'can have several values / names.
 
-**Debugging:** Make sure, that you have filled out the column and that the values are correct. Use the actual version of the model definition spreadsheed. 
+**Debugging:** Make sure, that you have filled out the column and that the values are correct. Use the actual version of the model definition spreadsheet.
 
 
 Error M-030: KeyError (Sector)
@@ -478,12 +485,26 @@ Error M-031: Existing capacity for non-convex investment decision
 -----------------------------------------------------------------
 **Error Message:** ::
 
-   AttributeError: Values for 'offset' and 'existing' are given in investement attributes. 
+   AttributeError: Values for 'offset' and 'existing' are given in investment attributes.
     These two options cannot be considered at the same time.
 
 **Possible Error Cause:** When non-convex investment decisions are selected, no existing capacities are allowed. 
 
-**Debugging:** Make sure no existing-capacities are given for components including non-convex decissions. If an existing capacity is required an additional component can be used for considering this capacity. 
+**Debugging:** Make sure no existing-capacities are given for components including non-convex decisions. If an existing capacity is required an additional component can be used for considering this capacity.
+
+
+
+Error M-032: Key Error (column)
+-----------------------
+**Error Message:** ::
+
+   KeyError: '*column name*'
+
+**Possible Error Cause:** When using older model definition sheets in newer versions of the SESMG, certain columns might be missing or incomplete. For example, if the column 'timezone' doesn't exist or remains empty, the stated error will occur.
+
+**Debugging:** Fill in the missing content to the corresponding column or add the column as it appears in the up-to-date model definition example.
+
+
 
 Warning W-001: Need to install ... / Cartopy ...
 -----------------------------------------------------------------
@@ -500,6 +521,7 @@ Warning W-001: Need to install ... / Cartopy ...
 **Possible Error Cause:** No error occurs.
 
 **Debugging:** You do not need to add any packages. The process will work perfectly without those packages, which where required by a submodule but not used by the SESMG. We skip the installation of those packages, to keep the installation as small as possible.
+
 
 Contributing to the troubleshooting
 ===================================
