@@ -301,8 +301,8 @@ def constraint_optimization_of_criterion_adherence_to_a_minval(
     # since these components can be used to reduce the final energy
     # demand by at least the value limit.
     for (inflow, outflow) in om.flows:
-        if hasattr(om.flows[inflow, outflow].investment, "constraint2"):
-            flows[(inflow, outflow)] = om.flows[inflow, outflow].investment
+        if hasattr(om.flows[(inflow, outflow)].investment, "constraint2"):
+            flows[(inflow, outflow)] = om.flows[(inflow, outflow)].investment
 
     # calculate the sum of the total flow reduction applied by the
     # investment in insulation measures
@@ -311,7 +311,7 @@ def constraint_optimization_of_criterion_adherence_to_a_minval(
         "limit_constraint2",
         po.Expression(
             expr=sum(
-                om.flow[inflow, outflow, t]
+                om.flow[(inflow, outflow, 0, t)]
                 * om.timeincrement[t]
                 * sequence(getattr(flows[inflow, outflow], "constraint2"))[t]
                 for (inflow, outflow) in flows

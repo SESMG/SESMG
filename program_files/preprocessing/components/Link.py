@@ -41,15 +41,18 @@ class Links:
     """
 
     @staticmethod
-    def get_flow(link: pandas.Series) -> Flow:
+    def get_flow(link: pandas.Series, nodes_data: dict) -> Flow:
         """
             The parameterization of the output flow of the link
             component has been outsourced to this static method.
             
             :param link: nodes data row of the link in creation
             :type link: pandas.Series
+            :param nodes_data: dict containing data from the excel \
+                model definition given by the user
+            :type nodes_data: dict
             
-            :returns: **-** (oemof.solph.custom.Flow) - oemof Flow \
+            :returns: **-** (oemof.solph.Flow) - oemof Flow \
                 object with the output's parameter given in the link \
                 parameter
         """
@@ -72,11 +75,20 @@ class Links:
         else:
             raise SystemError("Parameter (un)directed not filled correctly "
                               "for the component " + link["label"])
+        
+        # if the link is a timeseries link, the flow maximum is limited
+        # to the share value (0 - 1) given by the user's timeseries
+        # column for the links maximum has to be <label>.max
+        if link["timeseries"]:
+            max_share= nodes_data["timeseries"][link["label"] + ".max"]
+        else:
+            max_share = [1] * len(nodes_data["timeseries"])
 
         return Flow(
             variable_costs=link["variable output costs"],
             custom_attributes={"emission_factor":
                                link["variable output constraint costs"]},
+            max=max_share,
             nominal_value=Investment(
                 ep_costs=ep_costs,
                 minimum=link["min. investment capacity"],
@@ -109,8 +121,8 @@ class Links:
                         custom_attributes={"emission_factor": 0}),
                 },
                 outputs={
-                    self.busd[link["bus2"]]: self.get_flow(link),
-                    self.busd[link["bus1"]]: self.get_flow(link),
+                    self.busd[link["bus2"]]: self.get_flow(link, nodes_data),
+                    self.busd[link["bus1"]]: self.get_flow(link, nodes_data),
                 },
                 conversion_factors={
                     (self.busd[link["bus1"]], self.busd[link["bus2"]]): link[

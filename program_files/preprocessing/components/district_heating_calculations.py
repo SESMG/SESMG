@@ -269,10 +269,10 @@ def calc_heat_pipe_attributes(
                 # get the components periodical costs
                 ep_costs = getattr(
                     a.outputs[list(a.outputs.keys())[0]].investment, "ep_costs"
-                )
+                )[0]
                 # calculate the length by dividing the pipes periodical
                 # costs by the specific periodical costs per meter
-                length = ep_costs / float(pipe_row["capex_pipes"])
+                length = ep_costs / float(pipe_row["capex_pipes"].iloc[0])
 
             # if the pipe type is non convex
             else:

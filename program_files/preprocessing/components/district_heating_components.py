@@ -258,6 +258,8 @@ def create_connection_consumers_and_producers(
         :param is_consumer: boolean differentiating consumers and \
             producers
         :type is_consumer: bool
+        :param is_exergy:
+        :type is_exergy: bool
 
         :return: - **thermal_net** (ThermalNetwork) - DHNx \
             ThermalNetwork instance after attaching of the network's \
@@ -266,43 +268,43 @@ def create_connection_consumers_and_producers(
     """
     counter = 0
     
+    # differentiate the network type based on the is_exergy boolean
     net_type = "(exergy)" if is_exergy else "(anergy)"
+    
     # Filter relevant components based on their district heating conn.
     # entries
     if is_consumer:
-        dh_components = \
-            data[(data["active"] == 1)
-                 & (data["district heating conn. {}".format(net_type)] == 1)]
+        query = "(`district heating conn. {}` == 1)".format(net_type)
     else:
-        dh_components = \
-            data[(data["district heating conn. {}".format(net_type)]
-                  == "dh-system")
-                 & (data["active"] == 1)]
-    
-    for _, comp in dh_components.iterrows():
+        query = "(`district heating conn. {}` == 'dh-system')".format(net_type)
+
+    # iterate threw the active filtered network components
+    for _, comp in data.query(query + " and (active == 1)").iterrows():
         
         # calculate the perpendicular foot point
         foot_point = dh_calculations.get_nearest_perp_foot_point(
-                building=comp,
-                streets=road_sections,
-                index=counter,
-                building_type="consumers" if is_consumer else "producers"
+            building=comp,
+            streets=road_sections,
+            index=counter,
+            building_type="consumers" if is_consumer else "producers"
         )
         
-        comp_id = ("consumers-" + str(counter) if is_consumer
-                   else "producers-" + str(counter))
+        # get the first part of the components id based on the
+        # distinction between consumers and producers
+        comp_type = "consumers-" if is_consumer else "producers-"
         
         # Create dictionary which will be the new component's series
         # appended on the components dataframe
         # Entries within the **() are only appended in case of the
         # usage of this method for consumers creation process
         entry_dict = {
-            "id": comp_id,
+            "id": comp_type + str(counter),
             "lat": float(comp["lat"]),
             "lon": float(comp["lon"]),
             "component_type": "Consumer" if is_consumer else "Producer",
             "active": 1,
-            **({"existing heathouse station": comp["existing heathouse station"],
+            **({"existing heathouse station":
+                    comp["existing heathouse station"],
                 "P_heat_max": 1,
                 "input": comp["label"],
                 "label": comp["label"],
@@ -315,9 +317,9 @@ def create_connection_consumers_and_producers(
         
         # Add the calculated entry to the thermal network components
         thermal_net = district_heating.concat_on_thermal_net_components(
-                comp_type="consumers" if is_consumer else "producers",
-                new_dict=entry_dict,
-                thermal_net=thermal_net
+            comp_type="consumers" if is_consumer else "producers",
+            new_dict=entry_dict,
+            thermal_net=thermal_net
         )
         
         # Get the current length of the forks dataframe
