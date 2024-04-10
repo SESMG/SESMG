@@ -27,11 +27,10 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
- - OS: [e.g. iOS 13.5.1]
+ - OS: [e.g. MacOS 13.5.1]
  - Browser [e.g. chrome, safari]
- - SESMG-version [e.g. v0.5.0]
+ - SESMG-version [e.g. v1.0.0]
  - SESMG-installation process [e.g. application, extended, advanced (may check installation documentation to find out)]
- - Python-version [e.g. 3.9.13]
 
 **Additional context**
 Add any other context about the problem here.
