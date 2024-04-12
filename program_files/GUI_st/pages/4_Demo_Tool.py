@@ -293,13 +293,13 @@ def show_demo_run_results(mode: str) -> None:
     # which was replaced with the model run above
     df_summary = pd.read_csv(mainpath_rdf + r"/summary.csv")
 
-    # change dimension of the values to Mio.€/a and t/a
+    # change dimension of the values to Mio.Euro/a and t/a
     annual_costs = float(df_summary[mode_dict.get(mode)[0]] / 1000000)
 
     annual_emissions = float(df_summary[mode_dict.get(mode)[1]] / 1000000)
 
     # calculate relative change refered to the status quo
-    # costs in Mio.€/a
+    # costs in Mio.Euro/a
     stat_quo_costs = 13.68616781
     # emissions in t/a
     stat_quo_emissions = 17221.43690357
@@ -318,7 +318,7 @@ def show_demo_run_results(mode: str) -> None:
     # create metrics
     cost1, cost2 = st.columns(2)
     cost1.metric(
-        label="Annual Costs in Mil. €",
+        label="Annual Costs in Mil. Euro",
         value=round(annual_costs, 2),
         delta=rel_result_costs,
         delta_color="inverse")
@@ -331,7 +331,7 @@ def show_demo_run_results(mode: str) -> None:
     # define new row with new values
     new_row = pd.DataFrame(
         {
-            'Costs in million €/a': [annual_costs],
+            'Costs in million Euro/a': [annual_costs],
             'CO2-emissions in t/a': [annual_emissions],
             'Name': [input_values_dict["input_name"]]
         }
@@ -372,7 +372,7 @@ def show_demo_run_results_on_graph():
     # DataFrame with pareto points to draw the pareto curve
     pareto_points = pd.DataFrame(
         {
-            "Costs in million €/a": [
+            "Costs in million Euro/a": [
                 13.89603207,
                 11.35305948,
                 10.48224024,
@@ -404,7 +404,7 @@ def show_demo_run_results_on_graph():
     # DataFrame for the status quo
     status_quo_points = pd.DataFrame(
         {
-            'Costs in million €/a': [13.68616781],
+            'Costs in million Euro/a': [13.68616781],
             'CO2-emissions in t/a': [17221.43690357],
             'Name': ['Status Quo']
         }
@@ -420,10 +420,10 @@ def show_demo_run_results_on_graph():
 
     # create pareto point chart layer
     pareto_points_chart = alt.Chart(pareto_points).mark_line().encode(
-        x=alt.X('Costs in million €/a',
+        x=alt.X('Costs in million Euro/a',
                 scale=alt.Scale(
                     domain=(8.2,
-                            max(combined_df['Costs in million €/a']) * 1.05))),
+                            max(combined_df['Costs in million Euro/a']) * 1.05))),
         y=alt.Y('CO2-emissions in t/a',
                 scale=alt.Scale(
                     domain=(8000,
@@ -440,15 +440,15 @@ def show_demo_run_results_on_graph():
         dx=40, dy=0,
         align="center",
         color="blue").encode(
-        x=alt.X('Costs in million €/a',
+        x=alt.X('Costs in million Euro/a',
                 scale=alt.Scale(
                     domain=(8.2,
-                            max(combined_df['Costs in million €/a']) * 1.05))),
+                            max(combined_df['Costs in million Euro/a']) * 1.05))),
         y=alt.Y('CO2-emissions in t/a',
                 scale=alt.Scale(
                     domain=(8000,
                             max(combined_df['CO2-emissions in t/a']) * 1.05))),
-        tooltip=['Costs in million €/a', 'CO2-emissions in t/a', 'Name']
+        tooltip=['Costs in million Euro/a', 'CO2-emissions in t/a', 'Name']
     ).properties(
         width=1000,
         height=800
@@ -456,10 +456,10 @@ def show_demo_run_results_on_graph():
 
     # create additional point chart layer
     additional_points_chart = alt.Chart(additional_points).mark_circle().encode(
-        x=alt.X('Costs in million €/a',
+        x=alt.X('Costs in million Euro/a',
                 scale=alt.Scale(
                     domain=(8.2,
-                            max(combined_df['Costs in million €/a']) * 1.05))),
+                            max(combined_df['Costs in million Euro/a']) * 1.05))),
         y=alt.Y('CO2-emissions in t/a',
                 scale=alt.Scale(
                     domain=(8000,
@@ -578,7 +578,7 @@ if st.session_state["state_submitted_demo_run"] == "done":
     if os.path.exists(path_pareto_results) is False:
         # Create path_pareto_results file with header
         with open(path_pareto_results, 'w') as fp:
-            fp.write("Costs in million €/a,CO2-emissions in t/a,Name\n")  
+            fp.write("Costs in million Euro/a,CO2-emissions in t/a,Name\n")  
     # create demo model definition and start model run
     create_demo_model_definition()
     # show generated results
