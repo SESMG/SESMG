@@ -29,6 +29,8 @@ Conference Proceedings
 
 Theses
 ------
+- Koert, Franziska (2024): "**Coupling Energy System Modeling with Life Cycle Assessment**" (Bachelor Thesis), Münster University of Applied Sciences. `https://doi.org/10.25974/fhms-17880 <https://doi.org/10.25974/fhms-17880>`_. `Mail <mailto:franziska.koert@fh-muenster.de>`_.
+
 - Blankenstein, Benjamin (2024): "**Energiesystemmodellierung von Kasernen**" (Bachelor Thesis), Münster University of Applied Sciences. `https://doi.org/10.25974/fhms-17814 <https://doi.org/10.25974/fhms-17814>`_. `Mail <mailto:benjamin.blankenstein@fh-muenster.de>`_.
 
 - Beine, Niels (2024): "**Modellierung energetischer Auswirkungen durch die Integration alternativer Antriebe in die Infrastruktur eines kommunalen Bauhofs**" (Bachelor Thesis), Münster University of Applied Sciences.  `Mail <mailto:niels.beine@fh-muenster.de>`_.
