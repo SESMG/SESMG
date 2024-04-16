@@ -222,71 +222,99 @@ The following parameters need to be entered:
 
 Sources
 -------
-Within this sheet, the sources of the energy system are defined. Technology specific data (see 2nd line), must be filled in only if the respective technology is selected otherwise use 0. The following parameters have to be entered:
+Within this sheet, the sources of the energy system are defined. Technology specific data (see 2nd line), must be filled in only if the
+respective technology is selected otherwise use "0". The following parameters have to be entered:
 
-- **label**: Unique designation of the source. The following format is recommended: "ID_energy sector_source".
+- **label**: Unique designation of the source. The following format is recommended: "<ID>_<energy sector>_source". <ID> and <energy sector>
+  need to be replaced by the bus attributes.
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
-- **active**: Specifies whether the source shall be included to the model. 0 = inactive, 1 = active.
-- **fixed**: Indicates whether it is a fixed source or not. 0 = not fixed; 1 = fixed.
+- **active**: Specifies whether the source shall be included to the model. "0" = inactive, "1" = active.
+- **fixed**: Indicates whether it is a fixed source or not. "0" = not fixed; "1" = fixed.
 - **output**: Specifies which bus the output of the source is connected to.
 - **input**: Specifies which bus the input of the source is connected to (only needed for solar heat).
-- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "other", "solar_thermal_flat_plate", "concentrated_solar_power". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the `Time series sheet`_.
-- **sector**: This column is used to differentiate between an electricity, heat and cooling timeseries source for the result processing energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling.
+- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "other", "solar_thermal_flat_plate",
+  "concentrated_solar_power". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected,
+  a time series must be provided in the `Time series sheet`_.
+- **sector**: This column is used to differentiate between an electricity, heat and cooling source for the result processing energy amount
+  collection. Possible entries: "electricity", "heat", "cooling", "central_electricity", "central_heat", "central_cooling".
 
 Costs
 ^^^^^
 
-- **existing capacity** in (kW): Existing capacity of the source before possible investments.
+- **existing capacity** in (kW): Existing capacity of the source before possible investment.
 - **min. investment capacity** in (kW): Minimum capacity to be installed in case of an investment.
-- **max. investment capacity** in (kW): Maximum capacity that can be added in the case of an investment. If no investment is possible, enter the value "0" here.
+- **max. investment capacity** in (kW): Maximum capacity that can be added in the case of an investment. If no investment is possible,
+  enter the value "0" here.
 - **variable costs** in (CU/kWh): Defines the variable costs incurred for a kWh of energy drawn from the source.
-- **variable constraint costs** in (CU/kWh): Defines the variable costs incurred for a kWh of energy drawn from the source referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
-- **periodical costs** in (CU/(kW a)): Costs incurred per kW for investments within the time horizon. Periodical costs only apply for newly invested capacities but not for existing capacities.
-- **periodical constraint costs** in (CU/(kW a)): Costs incurred per kW for investments within the time horizon referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
-- **Non-Convex Investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html>`_.
-- **Fix Investment Costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs).
-- **Fix Investment Constraint Costs** in (CU/a): Fixed constraint costs of non-convex investments (in addition to the periodic costs)
+- **variable constraint costs** in (CU/kWh): Defines the variable costs incurred for a kWh of energy drawn from the source referring to the
+  constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **periodical costs** in (CU/(kW a)): Costs incurred per kW for investments within the time horizon. Periodical costs only apply for newly
+  invested capacities but not for existing capacities.
+- **periodical constraint costs** in (CU/(kW a)): Costs incurred per kW for investments within the time horizon referring to the constraint
+  limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **non-convex investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model
+  can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained
+  `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html>`_.
+- **fix investment costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs).
+- **fix investment constraint costs** in (CU/a): Fixed constraint costs of non-convex investments (in addition to the periodic costs)
 
 Wind
 ^^^^
 
-The following parameters need to be set for wind sources.
+The following parameters need to be set for wind power sources.
 
-The wind speed timeseries entered in the sheet "weather data" (measured at 10 m height)
+The wind speed timeseries entered in the `Weather data sheet`_ (measured at 10 m height)
 will get converted into wind speeds at specified hub height. With the specified turbine
 model an energy timeseries will then be calculated.
 
-- **Turbine Model**: Reference wind turbine model. Possible turbine types are listed in the `windpowerlib's database <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_. Write the value of the column "turbine_type" of the .csv in your spreadsheet.
-- **Hub Height**: Hub height of the wind turbine. Which hub heights are possible for the selected reference turbine can be viewed in the windpowerlib's database too.
+- **Turbine Model**: Reference wind turbine model. Possible turbine types are listed in the
+  `windpowerlib's database <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_.
+  Write the value of the column "turbine_type" of the .csv in your spreadsheet.
+- **Hub Height**: Hub height of the wind turbine. Which hub heights are possible for the selected reference turbine can be viewed in the
+  `windpowerlib's database <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_  too.
 
 PV
 ^^
 The following parameters need to be set for PV sources.
 
-- **Modul Model**: Module name, according to the database used (see `PVLIB database <https://github.com/pvlib/pvlib-python/blob/main/pvlib/data/sam-library-sandia-modules-2015-6-30.csv>`_). Possible Modul Models are presented `here <https://github.com/SESMG/SESMG/tree/master/docs/csv>`_.
-- **Inverter Model**: Inverter name, according to the database used. Possible Inverter Models are presented `here <https://github.com/SESMG/SESMG/tree/master/docs/csv>`_.
-- **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Use fill character "0" for other technologies.
-- **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). Use fill character "0" for other technologies.
-- **Albedo**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "0" for other technologies.
-- **Altitude**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
-- **Latitude**: Geographic latitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
-- **Longitude**: Geographic longitude (decimal number) of the photovoltaic module. Only required for photovoltaic sources, use fill character "0" for other technologies.
+- **Modul Model**: Module name, according to the database used (see
+  `PVLIB database <https://github.com/pvlib/pvlib-python/blob/main/pvlib/data/sam-library-sandia-modules-2015-6-30.csv>`_).
+  Possible Modul Models are presented `here <https://github.com/SESMG/SESMG/tree/master/docs/csv>`_.
+- **Inverter Model**: Inverter name, according to the database used. Possible Inverter Models are presented
+  `here <https://github.com/SESMG/SESMG/tree/master/docs/csv>`_.
+- **Azimuth**: Specifies the orientation of the PV module in degrees. Values between "0" and "360" are permissible ("0" = north, "90" = east,
+  "180" = south, "270" = west). Use fill character "0" for other technologies.
+- **Surface Tilt**: Specifies the inclination of the module in degrees ("0" = flat). Use fill character "0" for other technologies.
+- **Albedo**: Specifies the albedo value of the reflecting floor surface. Only required for photovoltaic sources, use fill character "0"
+  for other technologies.
+- **Altitude**: Height (above mean sea level) in meters of the photovoltaic module. Only required for photovoltaic sources, use fill
+  character "0" for other technologies.
+- **Latitude**: Geographic latitude (decimal number in WGS84) of the photovoltaic module. Only required for photovoltaic sources, use
+  fill character "0" for other technologies.
+- **Longitude**: Geographic longitude (decimal number in WGS84) of the photovoltaic module. Only required for photovoltaic sources, use
+  fill character "0" for other technologies.
 
 Concentrated Solar Power
 ^^^^^^^^^^^^^^^^^^^^^^^^
 The following parameters need to be set for concentrated solar power sources.
 
-- **Azimuth**: Specifies the orientation of the PV module in degrees. Values between 0 and 360 are permissible (0 = north, 90 = east, 180 = south, 270 = west). Use fill character "0" for other technologies.
-- **Surface Tilt**: Specifies the inclination of the module in degrees (0 = flat). Use fill character "0" for other technologies.
+- **Azimuth**: Specifies the orientation of the PV module in degrees. Values between "0" and "360" are permissible ("0" = north, "90" = east,
+  "180" = south, "270" = west). Use fill character "0" for other technologies.
+- **Surface Tilt**: Specifies the inclination of the module in degrees ("0" = flat). Use fill character "0" for other technologies.
 - **ETA 0**: Optical efficiency of the collector. Use fill character "0" for other technologies.
-- **A1**: Collector specific linear heat loss coefficient. Use fill character "0" for other technologies.
-- **A2**: Collector specific quadratic heat loss coefficient. Use fill character "0" for other technologies.
-- **C1**: Collector specific thermal loss parameter. Only required for concentrated solar power source, use fill character "0" for other technologies.
-- **C2**: Collector specific thermal loss parameter. Only required for concentrated solar power source, use fill character "0" for other technologies.
+- **A1** in (1/°): Collector specific linear heat loss coefficient. Use fill character "0" for other technologies.
+- **A2** in (1/°)\ :sup:`2`: Collector specific quadratic heat loss coefficient. Use fill character "0" for other technologies.
+- **C1** in (W/m\ :sup:`2` K): Collector specific thermal loss parameter. Only required for concentrated solar power source, use fill
+  character "0" for other technologies.
+- **C2** in (W/m\ :sup:`2` K\ :sup:`2`): Collector specific thermal loss parameter. Only required for concentrated solar power source, use fill character "0" for other
+  technologies.
 - **Temperature Inlet** in (°C): Inlet temperature of the solar heat collector module. Use fill character "0" for other technologies.
-- **Temperature Difference** in (°C): Temperature Difference between in- and outlet temperature of the solar heat collector module. Use fill character "0" for other technologies.
-- **Cleanliness**: Cleanliness of a parabolic through collector. Only required for Concentrated Solar Power source, use fill character "0" for other technologies.
-- **Electric Consumption**: Electric consumption of the collector system. Example: If value is set to 0,05, the electric consumption is 5 % of the energy output. Use fill character "0" for other technologies.
+- **Temperature Difference** in (°C): Temperature Difference between in- and outlet temperature of the solar heat collector module. Use
+  fill character "0" for other technologies.
+- **Cleanliness**: Cleanliness of a parabolic through collector. Only required for Concentrated Solar Power source, use fill character "0"
+  for other technologies.
+- **Electric Consumption**: Electric consumption of the collector system. Example: If value is set to "0,05", the electric consumption is 5 %
+  of the energy output. Use fill character "0" for other technologies.
 - **Peripheral Losses**: Heat loss coefficient for losses in the collector's peripheral system. Use fill character "0" for other technologies.
 
 **Exemplary values for concentrated_solar_power technology**:
