@@ -24,7 +24,8 @@ def test_link_nodes_data():
             "non-convex investment": [0, 1],
             "fix investment costs": [0, 60],
             "fix investment constraint costs": [0, 70],
-            "efficiency": [1] * 2
+            "efficiency": [1] * 2,
+            "timeseries": [0] * 2
             })}
 
 
@@ -160,7 +161,9 @@ def test_get_flow(test_link_nodes_data,
         # search for the data frame entry to be tested
         if link["label"] == "test_link2":
             # start the method to be tested
-            flow = Links.get_flow(link=link)
+            flow = Links.get_flow(link=link,
+                                  nodes_data={"links": links_df,
+                                              "timeseries": pandas.DataFrame()})
             # compare the oemof Flow's attributes
             compare_flow_attributes(
                 flows={Bus(label="test_output_bus"): flow},
@@ -225,7 +228,7 @@ def test_links(test_link_nodes_data,
     })}
     
     busd, nodes = Bus.buses(nd_buses=bus_data["buses"], nodes=[])
-    
+    test_link_nodes_data.update({"timeseries": pandas.DataFrame()})
     Link.Links(nodes_data=test_link_nodes_data, nodes=nodes, busd=busd)
     
     # check rather the links' parameter are assigned correctly

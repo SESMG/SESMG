@@ -36,6 +36,7 @@
     "udu_ti_coords_lon": "If the weather data download is enabled, specify the longitude of the area under study.",
     "udu_ti_coords_lat": "If the weather data download is enabled, specify the latitude of the area under study.",
     "udu_error_defintion": "Make sure to upload the upscaling sheet as well as the standard parameter sheet and define a name for your model definition.",
+    "udu_cb_clustering": "Choose if you want to enable the clustering of building by their cluster ID defined within the upscaling sheet.",
     "res_dd_result_folder": "Choose the an existing results folder which you want to open. The folder must be placed in the .../results/ directory of the SESMG application.",
     "res_b_load_results": "Loads existings results on click.",
     "res_dd_pareto_point": "Choose the pareto point which you want to see in the short result overview.",

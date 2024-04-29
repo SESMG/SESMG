@@ -1,68 +1,75 @@
 import pytest
 import pandas
+from tests.conftest import (import_standard_parameter_data,
+                            get_standard_parameter_data)
 from program_files.urban_district_upscaling.components import Bus
-import os
-
-# import standard parameter
-standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
-                                       + "/standard_parameters.xlsx")
-buses = standard_parameters.parse("1_buses")
-links = standard_parameters.parse("6_links")
 
 
 @pytest.fixture
-def test_elec_bus_entry():
+def test_electricity_bus_entry():
     """
-   
+        Create a Tests dict containing a DataFrame of a single standard
+        parameter electricity bus. Named: test_bus,
+        Profile: residential electricity bus
     """
     return {"buses": pandas.merge(
         left=pandas.DataFrame.from_dict({
             "label": ["test_bus"],
-            "bus_type": ["building_res_electricity_bus"],
+            "bus type": ["electricity bus residential decentral"],
             "district heating conn. (exergy)": [float(0)]}),
-        right=buses,
-        on="bus_type").drop(columns=["bus_type"])}
+        right=import_standard_parameter_data(label="1_buses"),
+        on="bus type").drop(columns=["bus type"])}
 
 
 @pytest.fixture
 def test_heat_bus_entry():
     """
-    
+        Create a Tests dict containing a DataFrame of a single standard
+        parameter heat bus. Named: test_bus1,
+        Profile: heat bus decentral
     """
     return {"buses": pandas.merge(
         left=pandas.DataFrame.from_dict({
             "label": ["test_bus1"],
-            "bus_type": ["building_heat_bus"],
+            "bus type": ["heat bus decentral"],
             "district heating conn. (exergy)": [1],
             "lat": [10],
             "lon": [10]}),
-        right=buses,
-        on="bus_type").drop(columns=["bus_type"])}
+        right=import_standard_parameter_data(label="1_buses"),
+        on="bus type").drop(columns=["bus type"])}
 
 
-def test_create_standard_parameter_bus(test_elec_bus_entry,
+def test_create_standard_parameter_bus(test_electricity_bus_entry,
                                        test_heat_bus_entry):
     """
-        Short description of the given TEST Suite
+        Create a standard parameter electricity and heat bus and
+        compare them with two manual created ones to ensure the
+        functionality of the creation process for standard parameter
+        buses.
     """
     # create a standard_parameter building res electricity bus
     sheets = Bus.create_standard_parameter_bus(
         label="test_bus",
-        bus_type="building_res_electricity_bus",
+        bus_type="electricity bus residential decentral",
         sheets={"buses": pandas.DataFrame()},
-        standard_parameters=standard_parameters)
+        standard_parameters=get_standard_parameter_data())
     
+    # compare the algorithm created dataframe and the manual created
+    # dataframe to ensure functionality
     pandas.testing.assert_frame_equal(
         sheets["buses"].sort_index(axis=1),
-        test_elec_bus_entry["buses"].sort_index(axis=1))
+        test_electricity_bus_entry["buses"].sort_index(axis=1))
     
     # add a building heat bus with dh connection
     sheets = Bus.create_standard_parameter_bus(
         label="test_bus1",
-        bus_type="building_heat_bus",
+        bus_type="heat bus decentral",
         sheets={"buses": pandas.DataFrame()},
-        standard_parameters=standard_parameters,
+        standard_parameters=get_standard_parameter_data(),
         coords=[10, 10, 1])
+    
+    # compare the algorithm created dataframe and the manual created
+    # dataframe to ensure functionality
     pandas.testing.assert_frame_equal(
         sheets["buses"].sort_index(axis=1),
         test_heat_bus_entry["buses"].sort_index(axis=1))
@@ -71,69 +78,69 @@ def test_create_standard_parameter_bus(test_elec_bus_entry,
 @pytest.fixture
 def cluster_electricity_bus_entry():
     """
-    
+        Dataset of clustered electricity busses of a cluster containing
+        all three types of buildings (residential, commercial and
+        industrial).
     """
     return {"buses": pandas.merge(
                 left=pandas.DataFrame.from_dict({
-                    "label": ["test1_res_electricity_bus",
-                              "test1_com_electricity_bus",
-                              "test1_ind_electricity_bus"],
-                    "bus_type": ["building_res_electricity_bus",
-                                 "building_com_electricity_bus",
-                                 "building_ind_electricity_bus"],
+                    "label": ["test1_residential_electricity_bus",
+                              "test1_commercial_electricity_bus",
+                              "test1_industrial_electricity_bus"],
+                    "bus type": ["electricity bus residential decentral",
+                                 "electricity bus commercial decentral",
+                                 "electricity bus industrial decentral"],
                     "district heating conn. (exergy)": [float(0)] * 3}),
-                right=buses,
-                on="bus_type").drop(columns=["bus_type"]),
+                right=import_standard_parameter_data(label="1_buses"),
+                on="bus type").drop(columns=["bus type"]),
             "links": pandas.merge(
                 left=pandas.DataFrame.from_dict({
-                    "label": ["test1_res_electricity_link",
-                              "test1_com_electricity_link",
-                              "test1_ind_electricity_link"],
+                    "label": ["test1_residential_electricity_link",
+                              "test1_commercial_electricity_link",
+                              "test1_industrial_electricity_link"],
                     "bus1": ["test1_electricity_bus"] * 3,
-                    "bus2": ["test1_res_electricity_bus",
-                             "test1_com_electricity_bus",
-                             "test1_ind_electricity_bus"],
-                    "link_type": ["cluster_electricity_link"] * 3}),
-                right=links,
-                on="link_type").drop(columns=["link_type"])}
+                    "bus2": ["test1_residential_electricity_bus",
+                             "test1_commercial_electricity_bus",
+                             "test1_industrial_electricity_bus"],
+                    "link type": ["electricity cluster link decentral"] * 3}),
+                right=import_standard_parameter_data(label="6_links"),
+                on="link type").drop(columns=["link type"])}
     
     
 def test_create_cluster_electricity_buses(cluster_electricity_bus_entry):
     """
-    
+        Call the creation process for the clusters electricity busses
+        and compare its result with the manual created data set to
+        validate the creation process functionality.
     """
     from program_files.urban_district_upscaling.components.Bus \
         import create_cluster_electricity_buses
         
     sheets = create_cluster_electricity_buses(
-        building=["test1", "test1", "SFB"],
+        building=["test1", "test1", "single family building"],
         cluster="test1",
-        sheets={"buses": pandas.DataFrame(data={"label": ["dummy"], "active": [1], "shortage": [1], "excess": [1], "shortage costs": [0], "excess costs": [0], "shortage constraint costs": [0], "excess constraint costs": [0], "district heating conn. (exergy)": [0]}),
-                "links": pandas.DataFrame(data={"label": ["dummy"], "active": [1], "bus1": ["dummy"], "bus2": ["dummy"], "(un)directed": ["dummy"], "variable output costs": [0], "variable output constraint costs": [0], "periodical constraint costs": [0], "periodical costs": [0], "non-convex investment": [0],
-                                                "fix investment costs": [0], "fix investment constraint costs": [0], "efficiency": [0], "max. investment capacity": [0], "min. investment capacity": [0], "existing capacity": [0]})},
-        standard_parameters=standard_parameters)
+        sheets={"buses": pandas.DataFrame(),
+                "links": pandas.DataFrame()},
+        standard_parameters=get_standard_parameter_data())
     
     sheets = create_cluster_electricity_buses(
-            building=["test1", "test1", "COM"],
+            building=["test1", "test1", "commercial food"],
             cluster="test1",
             sheets=sheets,
-            standard_parameters=standard_parameters)
+            standard_parameters=get_standard_parameter_data())
 
     sheets = create_cluster_electricity_buses(
-            building=["test1", "test1", "IND"],
+            building=["test1", "test1", "industrial"],
             cluster="test1",
             sheets=sheets,
-            standard_parameters=standard_parameters)
+            standard_parameters=get_standard_parameter_data())
     
     no_changes_sheets = create_cluster_electricity_buses(
         building=["test1", "test1", "_"],
         cluster="test1",
         sheets=sheets,
-        standard_parameters=standard_parameters)
+        standard_parameters=get_standard_parameter_data())
     
-    sheets["buses"] = sheets["buses"].query("label != 'dummy'")
-    sheets["links"] = sheets["links"].query("label != 'dummy'")
-
     for key in sheets.keys():
         cluster_electricity_bus_entry[key].set_index(
                 "label", inplace=True, drop=False)
@@ -147,18 +154,21 @@ def test_create_cluster_electricity_buses(cluster_electricity_bus_entry):
         
 @pytest.fixture
 def test_cluster_averaged_bus_entry():
-    
+    """
+        Create a data set of an averaged gas bus.
+    """
+    buses = import_standard_parameter_data(label="1_buses")
     sheets = {"buses": pandas.merge(
-            left=pandas.DataFrame.from_dict({
-                "label": ["test1_gas_bus"],
-                "bus_type": ["building_res_gas_bus"],
-                "district heating conn. (exergy)": [float(0)]}),
-            right=buses,
-            on="bus_type").drop(columns=["bus_type"])}
+        left=pandas.DataFrame.from_dict({
+            "label": ["test1_natural_gas_bus"],
+            "bus type": ["gas bus residential decentral"],
+            "district heating conn. (exergy)": [float(0)]}),
+        right=buses,
+        on="bus type").drop(columns=["bus type"])}
     
-    res_gas_bus = buses.loc[buses["bus_type"] == "building_res_gas_bus"]
-    com_gas_bus = buses.loc[buses["bus_type"] == "building_com_gas_bus"]
-    ind_gas_bus = buses.loc[buses["bus_type"] == "building_ind_gas_bus"]
+    res_gas_bus = buses.query("`bus type` == 'gas bus residential decentral'")
+    com_gas_bus = buses.query("`bus type` == 'gas bus commercial decentral'")
+    ind_gas_bus = buses.query("`bus type` == 'gas bus industrial decentral'")
     
     sheets["buses"].loc[0, "shortage costs"] = \
         (1/6) * float(res_gas_bus["shortage costs"]) \
@@ -174,14 +184,14 @@ def test_create_cluster_averaged_bus(test_cluster_averaged_bus_entry):
     """
     from program_files.urban_district_upscaling.components.Bus \
         import create_cluster_averaged_bus
-    sink_parameters = ["x", "x", "x", "x", 1, 2, 3]
+    sink_parameters = [0, 0, 0, "x", 1, 2, 3]
     
     sheets = create_cluster_averaged_bus(
         sink_parameters=sink_parameters,
         cluster="test1",
         fuel_type="gas",
         sheets={"buses": pandas.DataFrame()},
-        standard_parameters=standard_parameters)
+        standard_parameters=get_standard_parameter_data())
     
     test_cluster_averaged_bus_entry["buses"].set_index(
         "label", inplace=True, drop=False)

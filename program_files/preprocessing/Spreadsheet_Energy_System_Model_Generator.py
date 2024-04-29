@@ -59,7 +59,7 @@ def call_district_heating_creation(nodes_data: dict, nodes: list, busd: dict,
     if len(buses[~buses["district heating conn. (exergy)"].isin(["0", 0])]):
         # check if at least one pipe is meant to be used within an
         # exergy network
-        if len(pipe_types.query("anergy_or_exergy == 'exergy'")):
+        if len(pipe_types.query("`anergy or exergy` == 'exergy'")):
             # creates the thermal network components as defined in
             # the model definition file and adds them to the list
             # of components (nodes)
@@ -77,7 +77,7 @@ def call_district_heating_creation(nodes_data: dict, nodes: list, busd: dict,
     if len(buses[~buses["district heating conn. (anergy)"].isin(["0", 0])]):
         # check if at least one pipe is meant to be used within an
         # anergy network
-        if len(pipe_types.query("anergy_or_exergy == 'anergy'")):
+        if len(pipe_types.query("`anergy or exergy` == 'anergy'")):
             # creates the thermal network components as defined in the
             # model definition file and adds them to the list of
             # components (nodes)

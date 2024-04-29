@@ -264,7 +264,7 @@ def filter_pipe_types(pipe_types: pandas.DataFrame, label_5: str,
         :return: *-* (pandas.DataFrame) - Filtered DataFrame.
     """
     return pipe_types.loc[
-        (pipe_types["anergy_or_exergy"] == label_5)
+        (pipe_types["anergy or exergy"] == label_5)
         & (pipe_types[pipe_type] == 1)
         & (pipe_types["active"] == active)
     ]
@@ -296,7 +296,10 @@ def create_components(nodes_data: dict, label_5: str,
     date = str(nodes_data["energysystem"]["start date"].values[0])
     
     # Rename data columns to fit feedinlib requirements
-    name_dc = {"min. investment capacity": "cap_min",
+    name_dc = {"label": "label_3",
+               "loss factor": "l_factor",
+               "loss factor fix": "l_factor_fix",
+               "min. investment capacity": "cap_min",
                "max. investment capacity": "cap_max",
                "periodical costs": "capex_pipes",
                "fix investment costs": "fix_costs",
@@ -304,6 +307,7 @@ def create_components(nodes_data: dict, label_5: str,
                "fix investment constraint costs": "fix_constraint_costs"}
     nodes_data["pipe types"] = nodes_data["pipe types"].rename(columns=name_dc)
 
+    print(nodes_data["pipe types"].columns)
     # Common parameters for consumers and producers
     common_param = {"label_2": "heat", "active": 1, "excess": 0, "shortage": 0}
     
@@ -321,8 +325,8 @@ def create_components(nodes_data: dict, label_5: str,
 
     pipe_types = nodes_data["pipe types"]
     network = {
-        "pipes": filter_pipe_types(pipe_types, label_5, "distribution_pipe"),
-        "pipes_houses": filter_pipe_types(pipe_types, label_5, "building_pipe")
+        "pipes": filter_pipe_types(pipe_types, label_5, "distribution pipe"),
+        "pipes_houses": filter_pipe_types(pipe_types, label_5, "building pipe")
     }
 
     # Extract the day, month, and year for start_date

@@ -289,11 +289,11 @@ class Sources:
         # reads pv system parameters from parameter dictionary
         # nodes_data
         parameter_set = {
-            "azimuth": source["Azimuth"],
-            "tilt": source["Surface Tilt"],
-            "module_name": source["Modul Model"],
-            "inverter_name": source["Inverter Model"],
-            "albedo": source["Albedo"],
+            "azimuth": source["azimuth"],
+            "tilt": source["surface tilt"],
+            "module_name": source["modul model"],
+            "inverter_name": source["inverter model"],
+            "albedo": source["albedo"],
             "module_type": "glass_glass",
             "racking_model": "open_rack",
         }
@@ -309,7 +309,7 @@ class Sources:
         # calculates time series normed on 1 kW pv peak performance
         feedin = pv_module.feedin(
             weather=self.weather_data,
-            location=(source["Latitude"], source["Longitude"]),
+            location=(source["latitude"], source["longitude"]),
             scaling="peak_power",
         )
 
@@ -346,8 +346,8 @@ class Sources:
         # The turbine name must correspond to an entry in the turbine
         # data-base of the feedinlib. Unit of the hub height is m.
         turbine_data = {
-            "turbine_type": source["Turbine Model"],
-            "hub_height": float(source["Hub Height"]),
+            "turbine_type": source["turbine model"],
+            "hub_height": float(source["hub height"]),
         }
         # create windturbine
         wind_turbine = WindPowerPlant(**turbine_data)
@@ -426,15 +426,15 @@ class Sources:
         # irradiance on collector, efficiency and heat output
         if source["technology"] == "solar_thermal_flat_plate":
             precalc_res = flat_plate_precalc(
-                lat=source["Latitude"],
-                long=source["Longitude"],
-                collector_tilt=source["Surface Tilt"],
-                collector_azimuth=source["Azimuth"],
+                lat=source["latitude"],
+                long=source["longitude"],
+                collector_tilt=source["surface tilt"],
+                collector_azimuth=source["azimuth"],
                 eta_0=source["ETA 0"],
                 a_1=source["A1"],
                 a_2=source["A2"],
-                temp_collector_inlet=source["Temperature Inlet"],
-                delta_temp_n=source["Temperature Difference"],
+                temp_collector_inlet=source["temperature inlet"],
+                delta_temp_n=source["temperature difference"],
                 irradiance_global=(weather_data["ghi"]),
                 irradiance_diffuse=(weather_data["dhi"]),
                 temp_amb=weather_data["temperature"],
@@ -456,19 +456,19 @@ class Sources:
             # direct horizontal irradiance. Calculates total irradiance on
             # collector, efficiency and heat output
             precalc_res = csp_precalc(
-                lat=source["Latitude"],
-                long=source["Longitude"],
-                collector_tilt=source["Surface Tilt"],
-                collector_azimuth=source["Azimuth"],
-                cleanliness=source["Cleanliness"],
+                lat=source["latitude"],
+                long=source["longitude"],
+                collector_tilt=source["surface tilt"],
+                collector_azimuth=source["azimuth"],
+                cleanliness=source["cleanliness"],
                 a_1=source["A1"],
                 a_2=source["A2"],
                 eta_0=source["ETA 0"],
                 c_1=source["C1"],
                 c_2=source["C2"],
-                temp_collector_inlet=source["Temperature Inlet"],
-                temp_collector_outlet=source["Temperature Inlet"]
-                + source["Temperature Difference"],
+                temp_collector_inlet=source["temperature inlet"],
+                temp_collector_outlet=source["temperature inlet"]
+                + source["temperature difference"],
                 temp_amb=weather_data["temperature"],
                 E_dir_hor=dirhi
             )
@@ -499,10 +499,10 @@ class Sources:
                                        source["variable constraint costs"]})},
                 conversion_factors={
                     self.busd[label + "_bus"]: 1,
-                    self.busd[source["input"]]: source["Electric Consumption"]
-                    * (1 - source["Peripheral Losses"]),
+                    self.busd[source["input"]]: source["electric consumption"]
+                    * (1 - source["peripheral losses"]),
                     self.busd[source["output"]]:
-                        1 - source["Peripheral Losses"],
+                        1 - source["peripheral losses"],
                 },
             )
         )
@@ -513,7 +513,7 @@ class Sources:
             + source["label"]
             + ", Max Heat power output per year and m²: "
             "{:2.2f}".format(numpy.sum(collectors_heat
-                                       / source["Conversion Factor"]))
+                                       / source["conversion factor"]))
             + " kWh/(m²a), Irradiance on collector per year and m²: "
             "{:2.2f}".format(numpy.sum(irradiance)) + " kWh/(m²a)"
         )

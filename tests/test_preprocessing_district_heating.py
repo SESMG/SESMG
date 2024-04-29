@@ -331,20 +331,20 @@ def test_create_components():
             "periods": [8760]
         }),
         "pipe types": pandas.DataFrame({
-            "label_3": ["DNTest"],
+            "label": ["DNTest"],
             "min. investment capacity": [0],
             "max. investment capacity": [100],
             "periodical costs": [50],
             "fix investment costs": [500],
             "periodical constraint costs": [10],
             "fix investment constraint costs": [100],
-            "anergy_or_exergy": ["exergy"],
-            "distribution_pipe": [1],
-            "building_pipe": [1],
+            "anergy or exergy": ["exergy"],
+            "distribution pipe": [1],
+            "building pipe": [1],
             "active": [1],
             "nonconvex": [1],
-            "l_factor": [0],
-            "l_factor_fix": [0.1],
+            "loss factor": [0],
+            "loss factor fix": [0.1],
         })
     }
 

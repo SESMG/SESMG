@@ -198,10 +198,11 @@ def create_heat_pump_buses_links(building: pandas.Series, gchps: dict,
 
     gchp = True if building["gchp"] in [1, "1", "yes"] else False
 
-    if gchp and building["parcel ID"][-9:] in gchps:
+    if gchp and str(building["parcel ID"])[-9:] in gchps:
         gchp_bool = True
         gchp_heat_bus = building["parcel ID"][-9:] + "_heat_bus"
-        gchp_electricity_bus = building["parcel ID"][-9:] + "_hp_elec_bus"
+        gchp_electricity_bus = (building["parcel ID"][-9:]
+                                + "_heatpump_electricity_bus")
     
     # if a heatpump is a possible technology for the considered building
     if gchp_bool or building["ashp"] not in ["No", "no", 0]:
@@ -215,8 +216,8 @@ def create_heat_pump_buses_links(building: pandas.Series, gchps: dict,
         
         # building hp electricity bus
         sheets = Bus.create_standard_parameter_bus(
-                label=str(building["label"]) + "_hp_elec_bus",
-                bus_type="building_hp_electricity_bus",
+                label=str(building["label"]) + "_heatpump_electricity_bus",
+                bus_type="electricity bus heat pump decentral",
                 sheets=sheets,
                 standard_parameters=standard_parameters,
                 shortage_cost=shortage_cost,
@@ -226,10 +227,10 @@ def create_heat_pump_buses_links(building: pandas.Series, gchps: dict,
         # electricity link from building electricity bus to hp
         # electricity bus
         sheets = Link.create_link(
-                label=str(building["label"]) + "_building_hp_elec_link",
+                label=str(building["label"]) + "_heatpump_electricity_link",
                 bus_1=str(building["label"]) + "_electricity_bus",
-                bus_2=str(building["label"]) + "_hp_elec_bus",
-                link_type="building_hp_elec_link",
+                bus_2=str(building["label"]) + "_heatpump_electricity_bus",
+                link_type="electricity decentral link heat pump decentral",
                 sheets=sheets,
                 standard_parameters=standard_parameters
         )
@@ -238,10 +239,10 @@ def create_heat_pump_buses_links(building: pandas.Series, gchps: dict,
             # electricity link from building hp electricity bus to
             # parcel hp electricity bus
             sheets = Link.create_link(
-                label=str(building["label"]) + "_parcel_gchp_elec_link",
-                bus_1=str(building["label"]) + "_hp_elec_bus",
+                label=str(building["label"]) + "_parcel_gchp_electricity_link",
+                bus_1=str(building["label"]) + "_heatpump_electricity_bus",
                 bus_2=gchp_electricity_bus,
-                link_type="building_hp_elec_link",
+                link_type="electricity heat pump decentral link heat pump decentral",
                 sheets=sheets,
                 standard_parameters=standard_parameters
             )
@@ -250,7 +251,7 @@ def create_heat_pump_buses_links(building: pandas.Series, gchps: dict,
                 label=str(building["label"]) + "_parcel_gchp_heat_link",
                 bus_1=gchp_heat_bus,
                 bus_2=str(building["label"]) + "_heat_bus",
-                link_type="building_hp_heat_link",
+                link_type="heat heat pump decentral link decentral ",
                 sheets=sheets,
                 standard_parameters=standard_parameters
             )
@@ -354,7 +355,7 @@ def create_building_buses_and_links(
         # house heat bus
         sheets = Bus.create_standard_parameter_bus(
             label=str(building["label"]) + "_heat_bus",
-            bus_type="building_heat_bus",
+            bus_type="heat bus decentral",
             sheets=sheets,
             coords=[
                 building["latitude"],
@@ -492,7 +493,7 @@ def copying_sheets(paths: list, standard_parameters: pandas.ExcelFile,
         "time series": "4 - time series data",
         "energysystem": "energysystem",
         "district heating": "3.1 - streets",
-        "pipe types": "8_pipe_types"
+        "pipe types": "8_district_heat_network"
     }
     # iterate threw the dict keys to copy each sheet
     for sheet_tbc in switch_dict.keys():
@@ -644,7 +645,15 @@ def urban_district_upscaling_pre_processing(
 
         logging.info(str(building["label"])
                      + " subsystem added to model definition sheet.")
-
+    
+    for technology in ["transformers", "storages"]:
+        sheets[technology] = sheets[technology].drop(
+                columns=["{} type".format(technology[:-1])])
+        
+        sheets[technology] = sheets[technology].rename(
+                columns={"{} type.1".format(technology[:-1]):
+                         "{} type".format(technology[:-1])})
+        
     if clustering:
         sheets = clustering_py.clustering_method(
             tool=tool,

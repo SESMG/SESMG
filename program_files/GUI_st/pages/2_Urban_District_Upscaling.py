@@ -76,12 +76,17 @@ def us_application() -> None:
             GUI_udu_dict["input_cords_lat"] = st.text_input(
                     label="Latitude Coordinates",
                     help=GUI_helper["udu_ti_coords_lat"])
+            
+        # input standard parameter sheet
+        GUI_udu_dict["udu_cb_clustering"] = st.checkbox(
+                label="Clustering buildings of the same cluster ID",
+                help=GUI_helper["udu_cb_clustering"])
 
         # Submit button to start optimization.
         submitted_us_run = st.form_submit_button(
                 label="Start US Tool",
                 help=GUI_helper["udu_fs_start_US_tool"])
-
+        
         # Run program main function if start button is clicked
         if submitted_us_run:
             if input_us_sheet_path != "" \
@@ -110,7 +115,7 @@ def us_application() -> None:
                     urban_district_upscaling_pre_processing(
                         paths=us_path_list,
                         open_fred_list=open_fred_list,
-                        clustering=False,
+                        clustering=GUI_udu_dict["udu_cb_clustering"],
                         clustering_dh=False)
                 
                 model_definition_worksheets = model_definition_sheets.keys()

@@ -46,25 +46,26 @@ def create_standard_parameter_bus(label: str, bus_type: str, sheets: dict,
             definition's Spreadsheets which was modified in this method
     """
     from program_files import read_standard_parameters, append_component
-
+    
     # define individual values
     bus_dict = {"label": label}
     # extracts the bus specific standard values from the
     # standard_parameters dataset
     standard_param, standard_keys = read_standard_parameters(
-        name=bus_type,
-        parameter_type="1_buses",
-        index="bus_type",
-        standard_parameters=standard_parameters
+            name=bus_type,
+            parameter_type="1_buses",
+            index="bus type",
+            standard_parameters=standard_parameters
     )
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
-        bus_dict[standard_keys[i]] = standard_param.loc[bus_type, standard_keys[i]]
+        bus_dict[standard_keys[i]] = standard_param.loc[bus_type,
+                                                        standard_keys[i]]
     # defines rather a district heating connection is possible
     if coords is not None:
         bus_dict.update(
-            {"district heating conn. (exergy)": coords[2],
-             "lat": coords[0], "lon": coords[1]})
+                {"district heating conn. (exergy)": coords[2],
+                 "lat": coords[0], "lon": coords[1]})
     else:
         bus_dict.update({"district heating conn. (exergy)": float(0)})
     # If the user wants to map a shortage price that differs from the
@@ -102,6 +103,33 @@ def check_rather_building_needs_pv_bus(building: pandas.Series) -> bool:
         roof_num += 1
     # if there is no "true" pv potential found
     return False
+
+
+def calculate_average_shortage_costs(standard_parameters: pandas.ExcelFile,
+                                     sink_parameters: list,
+                                     total_annual_demand: float,
+                                     fuel_type: str,
+                                     electricity: bool):
+    """
+
+    """
+    bus = standard_parameters.parse(sheet_name="1_buses",
+                                    index_col="bus type",
+                                    na_filter=False)
+    residential_share = ((sink_parameters[0 if electricity else 4]
+                          / total_annual_demand)
+                         * bus.loc[fuel_type + " bus residential decentral"][
+                             "shortage costs"])
+    commercial_share = ((sink_parameters[1 if electricity else 5]
+                         / total_annual_demand)
+                        * bus.loc[fuel_type + " bus commercial decentral"][
+                            "shortage costs"])
+    industrial_share = ((sink_parameters[2 if electricity else 6]
+                         / total_annual_demand)
+                        * bus.loc[fuel_type + " bus industrial decentral"][
+                            "shortage costs"])
+    
+    return residential_share + commercial_share + industrial_share
 
 
 def create_building_electricity_bus_and_central_link(
@@ -150,25 +178,25 @@ def create_building_electricity_bus_and_central_link(
     if pv_bus or building["building type"] not in ["0", 0]:
         # create the building electricity bus
         sheets = create_standard_parameter_bus(
-            label=(str(building["label"]) + "_electricity_bus"),
-            bus_type=bus,
-            sheets=sheets,
-            standard_parameters=standard_parameters,
-            shortage_cost=shortage_cost,
-            shortage_emission=shortage_emission
+                label=(str(building["label"]) + "_electricity_bus"),
+                bus_type=bus,
+                sheets=sheets,
+                standard_parameters=standard_parameters,
+                shortage_cost=shortage_cost,
+                shortage_emission=shortage_emission
         )
         # create link from central electricity bus to building
         # electricity bus if the central electricity exchange is enabled
         if central_electricity_bus:
             sheets = Link.create_link(
-                label=str(building["label"]) + "_central_electricity_link",
-                bus_1="central_electricity_bus",
-                bus_2=str(building["label"]) + "_electricity_bus",
-                link_type="building_central_building_link",
-                sheets=sheets,
-                standard_parameters=standard_parameters
+                    label=str(building["label"]) + "_central_electricity_link",
+                    bus_1="central_electricity_bus",
+                    bus_2=str(building["label"]) + "_electricity_bus",
+                    link_type="electricity central link decentral",
+                    sheets=sheets,
+                    standard_parameters=standard_parameters
             )
-            
+    
     return sheets
 
 
@@ -200,11 +228,11 @@ def create_pv_bus_and_links(building: pandas.Series, sheets: dict,
             pandas.Dataframes that will represent the model \
             definition's Spreadsheets which was modified in this method
     """
-    from program_files.urban_district_upscaling.components import Bus, Link
+    from program_files.urban_district_upscaling.components import Link
     # create building pv bus
-    sheets = Bus.create_standard_parameter_bus(
+    sheets = create_standard_parameter_bus(
             label=str(building["label"]) + "_pv_bus",
-            bus_type="building_pv_bus",
+            bus_type="electricity bus photovoltaic decentral",
             sheets=sheets,
             standard_parameters=standard_parameters
     )
@@ -212,10 +240,10 @@ def create_pv_bus_and_links(building: pandas.Series, sheets: dict,
     # create link from pv bus to building electricity bus
     sheets = Link.create_link(
             label=str(building["label"])
-                  + "_pv_self_consumption_electricity_link",
+            + "_pv_self_consumption_electricity_link",
             bus_1=str(building["label"]) + "_pv_bus",
             bus_2=str(building["label"]) + "_electricity_bus",
-            link_type="building_pv_building_link",
+            link_type="electricity photovoltaic decentral link decentral",
             sheets=sheets,
             standard_parameters=standard_parameters
     )
@@ -227,12 +255,13 @@ def create_pv_bus_and_links(building: pandas.Series, sheets: dict,
                 label=str(building["label"]) + "_pv_central_electricity_link",
                 bus_1=str(building["label"]) + "_pv_bus",
                 bus_2="central_electricity_bus",
-                link_type="building_pv_central_link",
+                link_type="electricity photovoltaic decentral link central",
                 sheets=sheets,
                 standard_parameters=standard_parameters
         )
     
     return sheets
+
 
 def get_building_type_specific_electricity_bus_label(building: pandas.Series
                                                      ) -> str:
@@ -249,13 +278,14 @@ def get_building_type_specific_electricity_bus_label(building: pandas.Series
     """
     # define the building electricity bus type based on the building
     # type
-    if building["building type"] in ["SFB", "MFB", "0", 0]:
-        return "building_res_electricity_bus"
+    if building["building type"] in ["single family building",
+                                     "multi family building", "0", 0]:
+        return "electricity bus residential decentral"
     elif building["building type"] == "IND":
-        return "building_ind_electricity_bus"
+        return "electricity bus industrial decentral"
     else:
-        return "building_com_electricity_bus"
-    
+        return "electricity bus commercial decentral"
+
 
 def create_cluster_electricity_buses(
         building: list, cluster: str, sheets: dict,
@@ -281,46 +311,49 @@ def create_cluster_electricity_buses(
             definition's Spreadsheets which was modified in this method
     """
     from . import Link
-
+    if len(sheets["buses"]) > 0:
+        index_list = list(sheets["buses"]["label"])
+    else:
+        index_list = []
     # ELECTRICITY BUSES
     # get building type to specify bus type to be created
-    if building[2] in ["SFB", "MFB"] \
-            and str(cluster) + "_res_electricity_bus" \
-            not in list(sheets["buses"]["label"]):
-        bus_type = "_res_"
-    elif "COM" in building[2] and str(cluster) + "_com_electricity_bus" \
-            not in list(sheets["buses"]["label"]):
-        bus_type = "_com_"
-    elif "IND" in building[2] and str(cluster) + "_ind_electricity_bus" \
-            not in list(sheets["buses"]["label"]):
-        bus_type = "_ind_"
+    if (str(cluster) + "_residential_electricity_bus" not in index_list
+            and building[2] in ["single family building",
+                                "multi family building"]):
+        bus_type = "residential"
+    elif (str(cluster) + "_commercial_electricity_bus" not in index_list
+          and "commercial" in building[2]):
+        bus_type = "commercial"
+    elif (str(cluster) + "_industrial_electricity_bus" not in index_list
+          and "industrial" in building[2]):
+        bus_type = "industrial"
     else:
         bus_type = None
     # if the considered building type is in (RES, COM, IND)
     if bus_type:
         # create building type specific bus
         sheets = create_standard_parameter_bus(
-            label=str(cluster) + bus_type + "electricity_bus",
-            bus_type="building" + bus_type + "electricity_bus",
-            sheets=sheets,
-            standard_parameters=standard_parameters
+                label=str(cluster) + "_" + bus_type + "_electricity_bus",
+                bus_type="electricity bus " + bus_type + " decentral",
+                sheets=sheets,
+                standard_parameters=standard_parameters
         )
         # reset index to label to ensure further attachments
         sheets["buses"].set_index("label", inplace=True, drop=False)
-
+        
         # Creates a Bus connecting the cluster electricity bus with
         # the res electricity bus
         sheets = Link.create_link(
-            label=str(cluster) + bus_type + "electricity_link",
-            bus_1=str(cluster) + "_electricity_bus",
-            bus_2=str(cluster) + bus_type + "electricity_bus",
-            link_type="cluster_electricity_link",
-            sheets=sheets,
-            standard_parameters=standard_parameters)
+                label=str(cluster) + "_" + bus_type + "_electricity_link",
+                bus_1=str(cluster) + "_electricity_bus",
+                bus_2=str(cluster) + "_" + bus_type + "_electricity_bus",
+                link_type="electricity cluster link decentral",
+                sheets=sheets,
+                standard_parameters=standard_parameters)
         
         # reset index to label to ensure further attachments
         sheets["links"].set_index("label", inplace=True, drop=False)
-
+    
     return sheets
 
 
@@ -353,37 +386,36 @@ def create_cluster_averaged_bus(sink_parameters: list, cluster: str,
             pandas.Dataframes that will represent the model \
             definition's Spreadsheets which was modified in this method
     """
-    bus_parameters = standard_parameters.parse("1_buses", index_col="bus_type",
-                                               na_filter=False)
     type_dict = {
-        "hp_elec": ["hp_elec"] + 2 * ["hp_electricity"] + ["electricity"],
-        "gas": ["gas", "res_gas", "com_gas", "gas"]}
-    type1, type2, type3, type4 = type_dict.get(fuel_type)
-
-    # calculate cluster's total heat demand
-    total_annual_demand = \
-        sink_parameters[4] \
-        + sink_parameters[5] \
-        + sink_parameters[6]
+        "electricity": ["heatpump_electricity", "heat pump "],
+        "gas": ["natural_gas", "residential "],
+        "oil": ["oil", "residential "],
+        "pellet": ["pellet", ""]}
+    type1, type2 = type_dict.get(fuel_type)
     
-    # create standard_parameter gas bus
-    sheets = create_standard_parameter_bus(
-        label=str(cluster) + "_" + type1 + "_bus",
-        bus_type="building_" + type2 + "_bus",
-        sheets=sheets,
-        standard_parameters=standard_parameters)
+    # calculate cluster's total heat demand
+    total_annual_demand = sum(sink_parameters[4:7])
+    if str(cluster) + "_" + type1 + "_bus" not in sheets["buses"].index:
+        # create standard_parameter gas bus
+        sheets = create_standard_parameter_bus(
+                label=str(cluster) + "_" + type1 + "_bus",
+                bus_type=fuel_type + " bus " + type2 + "decentral",
+                sheets=sheets,
+                standard_parameters=standard_parameters)
     
     # reindex for further attachments
     sheets["buses"].set_index("label", inplace=True, drop=False)
     
-    # recalculate gas bus shortage costs building type weighted
-    costs_type = "shortage costs"
-    sheets["buses"].loc[(str(cluster) + "_" + type1 + "_bus"), costs_type] = (
-        (sink_parameters[4] / total_annual_demand)
-        * bus_parameters.loc["building_" + type2 + "_bus"][costs_type]
-        + (sink_parameters[5] / total_annual_demand)
-        * bus_parameters.loc["building_" + type3 + "_bus"][costs_type]
-        + (sink_parameters[6] / total_annual_demand)
-        * bus_parameters.loc["building_ind_" + type4 + "_bus"][costs_type]
-    )
+    if not fuel_type == "pellet":
+        # recalculate gas bus shortage costs building type weighted
+        costs_type = "shortage costs"
+        sheets["buses"].loc[(str(cluster) + "_" + type1 + "_bus"),
+                            costs_type] = (
+            calculate_average_shortage_costs(
+                    standard_parameters=standard_parameters,
+                    sink_parameters=sink_parameters,
+                    total_annual_demand=total_annual_demand,
+                    fuel_type=fuel_type,
+                    electricity=False
+            ))
     return sheets
