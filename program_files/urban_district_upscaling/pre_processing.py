@@ -8,6 +8,7 @@ import datetime
 import xlsxwriter
 import pandas
 import logging
+import os
 from oemof.tools import logger
 
 import program_files.urban_district_upscaling.clustering as clustering_py
@@ -205,7 +206,8 @@ def create_heat_pump_buses_links(building: pandas.Series, gchps: dict,
                                 + "_heatpump_electricity_bus")
     
     # if a heatpump is a possible technology for the considered building
-    if gchp_bool or building["ashp"] not in ["No", "no", 0]:
+    if (gchp_bool or building["ashp"] not in ["No", "no", 0]
+            or building["aahp"] not in ["No", "no", 0]):
         # get shortage costs emissions if they are defined building
         # specific within the upscaling table
         shortage_cost, shortage_emission = get_user_inserted_shortage_params(
@@ -550,9 +552,10 @@ def urban_district_upscaling_pre_processing(
         import import_open_fred_weather_data
     
     from program_files.GUI_st.GUI_st_global_functions import set_result_path
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H:%M:%S")
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H_%M_%S")
     # define log_file
-    logger.define_logging(logpath=set_result_path() + "/Upscaling_Tool",
+    logger.define_logging(logpath=os.path.join(set_result_path(),
+                                               "Upscaling_Tool"),
                           logfile=str(timestamp) + ".log",
                           file_level=logging.INFO)
     logging.info("Creating model definition sheet...")
