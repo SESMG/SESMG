@@ -244,47 +244,48 @@ def calc_heat_pipe_attributes(
         if str(type(a)) != "<class 'oemof.solph.buses._bus.Bus'>":
             # get the component's pipe type data frame row
             pipe_row = pipe_types.loc[pipe_types["label_3"] == a.label.tag3]
-            # if the pipe type is a linear one
-            if int(pipe_row["nonconvex"]) == 0:
-                # get the components periodical costs
-                ep_costs = getattr(
-                    a.outputs[list(a.outputs.keys())[0]].investment, "ep_costs"
-                )
-                # calculate the length by dividing the pipes periodical
-                # costs by the specific periodical costs per meter
-                length = ep_costs / float(pipe_row["capex_pipes"])
+            if int(pipe_row["existing"]) == 0:
+                # if the pipe type is a linear one
+                if int(pipe_row["nonconvex"]) == 0:
+                    # get the components periodical costs
+                    ep_costs = getattr(
+                        a.outputs[list(a.outputs.keys())[0]].investment, "ep_costs"
+                    )
+                    # calculate the length by dividing the pipes periodical
+                    # costs by the specific periodical costs per meter
+                    length = ep_costs / float(pipe_row["capex_pipes"])
 
-            # if the pipe type is non convex
-            else:
-                if hasattr(a.outputs[list(a.outputs.keys())[0]].investment,
+                # if the pipe type is non convex
+                else:
+                    if hasattr(a.outputs[list(a.outputs.keys())[0]].investment,
                            "offset"):
-                    
-                    # get the components fix investment costs
-                    fix_costs = getattr(
-                        a.outputs[list(a.outputs.keys())[0]].investment,
-                        "offset"
-                    )
-                    # calculate the length by dividing the pipes fix
-                    # investment costs by the specific fix investment costs
-                    # per meter
-                    length = fix_costs / float(pipe_row["fix_costs"])
-                
-                    # set the periodical constraint costs which are
-                    # calculated by the multiplication of length and
-                    # specific periodical emissions per meter
-                    setattr(
-                        a.outputs[list(a.outputs.keys())[0]].investment,
-                        "periodical_constraint_costs",
-                        length * float(pipe_row["periodical_constraint_costs"])
-                    )
-                    # set the fix investment constraint costs which are
-                    # calculated by the multiplication of length and
-                    # specific fix investment emissions per meter
-                    setattr(
+            
+                        # get the components fix investment costs
+                        fix_costs = getattr(
                             a.outputs[list(a.outputs.keys())[0]].investment,
-                            "fix_constraint_costs",
-                            length * float(pipe_row["fix_constraint_costs"]),
-                    )
+                            "offset"
+                        )
+                        # calculate the length by dividing the pipes fix
+                        # investment costs by the specific fix investment costs
+                        # per meter
+                        length = fix_costs / float(pipe_row["fix_costs"])
+        
+                # set the periodical constraint costs which are
+                # calculated by the multiplication of length and
+                # specific periodical emissions per meter
+                setattr(
+                    a.outputs[list(a.outputs.keys())[0]].investment,
+                    "periodical_constraint_costs",
+                    length * float(pipe_row["periodical_constraint_costs"])
+                )
+                # set the fix investment constraint costs which are
+                # calculated by the multiplication of length and
+                # specific fix investment emissions per meter
+                setattr(
+                    a.outputs[list(a.outputs.keys())[0]].investment,
+                    "fix_constraint_costs",
+                    length * float(pipe_row["fix_constraint_costs"]),
+                )
             # since no variable emissions apply it is set to 0 for each
             # direction
             setattr(a.inputs[list(a.inputs.keys())[0]],

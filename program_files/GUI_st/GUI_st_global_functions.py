@@ -381,7 +381,7 @@ def load_result_folder_list() -> list:
 
     # Define the path to the results folder within SESMG directory
     res_folder_path = os.path.expanduser(
-        os.path.join('~', 'documents', 'sesmg', 'results', '*'))
+        os.path.join('~', 'documents', 'SESMG', 'results', '*'))
 
     # read sub folders in the result folder directory
     existing_result_foldernames_list = [

@@ -412,7 +412,7 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
 
     # solving the linear problem using the given solver
     if solver == 'gurobi':
-        om.solve(solver=solver, cmdline_options={"threads": num_threads})
+        om.solve(solver=solver, cmdline_options={"threads": num_threads, "MIPGap": 0.01, "LogFile": "Log1.log", "Method": 2}, solve_kwargs={"tee": True})
     else:
         om.solve(solver=solver)
     logging.info("\t Memory Usage during processing: "
