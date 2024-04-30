@@ -307,7 +307,6 @@ def create_components(nodes_data: dict, label_5: str,
                "fix investment constraint costs": "fix_constraint_costs"}
     nodes_data["pipe types"] = nodes_data["pipe types"].rename(columns=name_dc)
 
-    print(nodes_data["pipe types"].columns)
     # Common parameters for consumers and producers
     common_param = {"label_2": "heat", "active": 1, "excess": 0, "shortage": 0}
     
