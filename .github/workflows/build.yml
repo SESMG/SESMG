@@ -22,11 +22,11 @@ jobs:
           sudo installer -pkg pythonInstaller.pkg -target /
       - name: Create Executable
         run: |
-          python3 -m venv .
+          python3.9 -m venv .
           . bin/activate
-          PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install git+https://github.com/pyinstaller/pyinstaller.git@develop
-          pip3 install twisted[tls] appnope requests certifi
-          pip3 install -r requirements.txt
+          PYINSTALLER_COMPILE_BOOTLOADER=1 bin/pip3 install git+https://github.com/pyinstaller/pyinstaller.git@develop
+          bin/pip3 install twisted[tls] appnope requests certifi
+          bin/pip3 install -r requirements.txt
           pyinstaller .github/deploy/SESMG_macos.spec
       - name: Prepare for deployment
         run: |
