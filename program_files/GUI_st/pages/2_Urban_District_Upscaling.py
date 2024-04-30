@@ -19,9 +19,12 @@ from program_files.GUI_st.GUI_st_global_functions \
 # settings the initial streamlit page settings
 st_settings_global()
 
+<<<<<<< HEAD
 # opening the input value dict, which will be saved as a json
 GUI_udu_dict = {}
 
+=======
+>>>>>>> master
 # Import GUI help comments from the comment json and save as an dict
 GUI_helper = import_GUI_input_values_json(
     os.path.dirname(os.path.dirname(__file__))
@@ -102,6 +105,7 @@ def us_application() -> None:
                         r"../../urban_district_upscaling/plain_scenario.xlsx")
                 ]
 
+<<<<<<< HEAD
                 open_fred_list = [
                     GUI_udu_dict["input_open_fred"],
                     GUI_udu_dict["input_cords_lon"],
@@ -112,6 +116,12 @@ def us_application() -> None:
                 # worksheets as a list as return of the main urban district
                 # upscaling function
                 model_definition_sheets = \
+=======
+                # get the model definition sheet as a dict and model definition
+                # worksheets as a list as return of the main urban district
+                # upscaling function
+                model_definition_sheets, model_definition_worksheets = \
+>>>>>>> master
                     urban_district_upscaling_pre_processing(
                         paths=us_path_list,
                         open_fred_list=open_fred_list,
@@ -132,7 +142,11 @@ def us_application() -> None:
             # define urban district upscaling model definition as session state
 
             st.session_state["state_model_definition_worksheets"] = \
+<<<<<<< HEAD
                 list(model_definition_worksheets)
+=======
+                model_definition_worksheets
+>>>>>>> master
             # define result path as session state
             st.session_state["result_file_name"] = result_file_name
 
@@ -272,4 +286,8 @@ elif st.session_state['state_download'] is True:
     st.session_state["result_file_name"] = ""
     st.session_state['state_download'] = False
     # 
+<<<<<<< HEAD
     st.rerun()
+=======
+    st.experimental_rerun()
+>>>>>>> master

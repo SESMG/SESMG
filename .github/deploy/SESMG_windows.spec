@@ -63,3 +63,4 @@ app = BUNDLE(
     icon='SESMG.ico',
     bundle_identifier=None,
 )
+

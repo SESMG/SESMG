@@ -36,4 +36,8 @@ def start_streamlit() -> None:
                                 "/program_files/GUI_st/1_Main_Application.py",
                                 '',
                                 [],
+<<<<<<< HEAD
                                 {})
+=======
+                                {})
+>>>>>>> master

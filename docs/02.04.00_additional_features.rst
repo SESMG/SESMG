@@ -1,14 +1,26 @@
 Additional Features
+<<<<<<< HEAD
 *******************
+=======
+*********
+>>>>>>> master
 
 There are additional features available that can be used with the SESMG, but are currently not represented in the GUI.
 
 SESMG-Data
+<<<<<<< HEAD
 ==========
 The program SESMG-Data automizes the Data-Processing for Energy System Models. The basis for this restructuring is a database that contains multiple .csv files and can
 be used automatically to create different outputs that are later needed in the automated modeling process of urban energy systems.
 The goal of the program is to implement a comprehensive database that minimizes the risk of errors by providing a centralized repository of information.
 Further information about installation and usage can be found in the README  `here <https://github.com/SESMG/SESMG-Data/blob/Merged_program/README.md>`_.
+=======
+===========
+The program SESMG-Data automizes the Data-Processing for Energy System Models. The basis for this restructuring is a database that contains multiple .csv files and can 
+be used automatically to create different outputs that are later needed in the automated modeling process of urban energy systems.
+The goal of the program is to implement a comprehensive database that minimizes the risk of errors by providing a centralized repository of information.
+Further information about installation and usage can be found in the README  `here <https://github.com/SESMG/SESMG-Data/blob/Merged_program/README.md>`_. 
+>>>>>>> master
 
 SESMG-LCA
 ===========
@@ -22,7 +34,11 @@ The LCA program is currently implemented in a specific branch of the SESMG, avai
 
 Results of the LCA application include the inventory results and the impact assessment results for the entire energy system. Moreover, results for the impact categories are differentiated by technologies, saved in the results folder for each run. Additionally, the environmental impacts are summarized for the different points of the Pareto front and also visualized in the GUI.
 
+<<<<<<< HEAD
 Reference Case
+=======
+Reference Case 
+>>>>>>> master
 ---------------
 The functionality of the tool can be checked, even without an openLCA application, by assessing the results of an exemplary reference case. Therefore, the released program also contains the needed files.
 

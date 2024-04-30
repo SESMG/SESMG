@@ -232,11 +232,16 @@ respective technology is selected otherwise use "0". The following parameters ha
 - **fixed**: Indicates whether it is a fixed source or not. "0" = not fixed; "1" = fixed.
 - **output**: Specifies which bus the output of the source is connected to.
 - **input**: Specifies which bus the input of the source is connected to (only needed for solar heat).
+<<<<<<< HEAD
 - **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "other", "solar_thermal_flat_plate",
   "concentrated_solar_power". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected,
   a time series must be provided in the `Time series sheet`_.
 - **sector**: This column is used to differentiate between an electricity, heat and cooling source for the result processing energy amount
   collection. Possible entries: "electricity", "heat", "cooling", "central_electricity", "central_heat", "central_cooling".
+=======
+- **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "other", "solar_thermal_flat_plate", "concentrated_solar_power". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected, a time series must be provided in the `Time series sheet`_.
+- **sector**: This column is used to differentiate between an electricity, heat and cooling timeseries source for the result processing's energy amount collection. Possible entries: electricity, heat, cooling, central_electricity, central_heat, central_cooling.
+>>>>>>> master
 
 Costs
 ^^^^^
@@ -606,7 +611,13 @@ to be entered:
 
 Costs
 ^^^^^
+<<<<<<< HEAD
 - **existing capacity** in (kW): Existing capacity of the link before possible investment.
+=======
+- **variable output costs** in (CU/kWh): Costs incurred per kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **variable output constraint costs** in (CU/kWh): Constraint costs incurred per kWh referring to the constraint limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **existing capacity** in (kW): Already installed capacity of the link.
+>>>>>>> master
 - **min. investment capacity** in (kW): Minimum, in addition to existing capacity, installable capacity.
 - **max. investment capacity** in (kW): Maximum capacity to be installed.
 - **variable output costs** in (CU/kWh): Indicates how many costs arise for transporting one kWh.

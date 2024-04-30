@@ -6,13 +6,15 @@
 """
 
 import os
-import glob
 import openpyxl
 import streamlit as st
 import pandas as pd
+<<<<<<< HEAD
 import altair as alt
 import numpy as np
 from datetime import datetime
+=======
+>>>>>>> master
 from PIL import Image
 from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
     import sesmg_main
@@ -20,7 +22,7 @@ from program_files.GUI_st.GUI_st_global_functions import \
     st_settings_global, read_markdown_document, import_GUI_input_values_json, \
     get_bundle_dir, create_result_directory, set_result_path
 
-# Import GUI help comments from the comment json and safe as a dict
+# Import GUI help comments from the comment json and save as a dict
 GUI_helper = import_GUI_input_values_json(
     os.path.dirname(os.path.dirname(__file__)) + "/GUI_st_help_comments.json")
 
@@ -38,11 +40,16 @@ mainpath_mf = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.dirname(__file__))))
 # define main path to SESMG program files folder
 mainpath_pf = os.path.join(mainpath_mf, "program_files")
+<<<<<<< HEAD
 # define main path to SESMG results/demo folder
 mainpath_rdf = os.path.join(set_result_path(), "demo")
 # define path to SESMG results/demo/demo_pareto_results.csv file
 path_pareto_results = os.path.join(mainpath_rdf, "demo_pareto_results.csv")
 
+=======
+# define the path to the result folder based on the GUI_settings.json
+mainpath_rdf = os.path.join(set_result_path(), 'demo')
+>>>>>>> master
 
 # setting initial session state for mdoel run
 if "state_submitted_demo_run" not in st.session_state:
@@ -271,7 +278,11 @@ def create_demo_model_definition() -> None:
     sheet["C5"] = input_values_dict["input_chp_sub_urban"]
     sheet["C6"] = input_values_dict["input_chp_rural"]
 
+<<<<<<< HEAD
     # safe motified xlsx file in the results/demo folder
+=======
+    # save motified xlsx file in the results/demo folder
+>>>>>>> master
     xfile.save(os.path.join(mainpath_rdf, "model_definition.xlsx"))
 
     # run sesmg DEMO version
@@ -502,12 +513,16 @@ def demo_start_page() -> None:
     """
 
     # import markdown text from GUI files
-    imported_markdown = read_markdown_document(
+    imported_markdown_dttext = read_markdown_document(
         document_path="docs/GUI_texts/demo_tool_text.md",
-        folder_path=f'{"docs/images/manual/DemoTool/*"}')
-
+        folder_path=f'{"docs/images/manual/DemoTool/*"}',
+        fixed_image_width=500)
     # show markdown text
+<<<<<<< HEAD
     st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
+=======
+    st.markdown(''.join(imported_markdown_dttext), unsafe_allow_html=True)
+>>>>>>> master
     # upload dh image
     image_path_system = str(get_bundle_dir()) \
         + "/docs/images/manual/DemoTool/demo_system_graph.png"
@@ -517,21 +532,24 @@ def demo_start_page() -> None:
     st.image(image_system, width=500)
 
     # import markdown tables from GUI files
-    imported_markdown = read_markdown_document(
+    imported_markdown_dttab = read_markdown_document(
         document_path="docs/GUI_texts/demo_tool_tables.md",
         folder_path=f'{"docs/images/manual/DemoTool/*"}')
-
     # show markdown text
-    st.markdown(''.join(imported_markdown), unsafe_allow_html=True)
-
+    st.markdown(''.join(imported_markdown_dttab), unsafe_allow_html=True)
     # upload dh image
     image_path_dh = str(get_bundle_dir()) \
+<<<<<<< HEAD
                     + "/docs/images/manual/DemoTool/district_heating_network" \
                       ".png"
+=======
+        + "/docs/images/manual/DemoTool/district_heating_network.png"
+>>>>>>> master
     # open image
     image_dh = Image.open(image_path_dh)
     # convert image to numpy array
     st.image(image_dh, width=500)
+<<<<<<< HEAD
 
 
 def reset_pareto_diagram_results():
@@ -546,6 +564,8 @@ def reset_pareto_diagram_results():
 
     # rerun the page
     st.experimental_rerun()
+=======
+>>>>>>> master
 
 
 def change_state_submitted_demo_run() -> None:
@@ -574,11 +594,14 @@ if st.session_state["state_submitted_demo_run"] == "done":
         create_result_directory()
         # Create the demo folder directory
         os.makedirs(mainpath_rdf)
+<<<<<<< HEAD
     # check if pareto result csv exists
     if os.path.exists(path_pareto_results) is False:
         # Create path_pareto_results file with header
         with open(path_pareto_results, 'w') as fp:
             fp.write("Costs in million Euro/a,CO2-emissions in t/a,Name\n")  
+=======
+>>>>>>> master
     # create demo model definition and start model run
     create_demo_model_definition()
     # show generated results

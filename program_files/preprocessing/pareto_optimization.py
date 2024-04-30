@@ -28,7 +28,7 @@ def create_model_definition_save_folder(model_definition, directory: str,
         it must be distinguished whether the model_definitions variable
         is a str or the object resulting from the GUI. After creation,
         the path of the newly created folder is returned.
-        
+
         :param model_definition: file path of the model definition to \
             be optimized
         :type model_definition: str / streamlit.UploadedFile
@@ -37,14 +37,14 @@ def create_model_definition_save_folder(model_definition, directory: str,
         :param limit: str which is appended on the model name to \
             identify the pareto runs
         :type limit: str
-        
+
         :return: - **save_path** (str) - path where the optimization \
             results of the pareto point will be stored
     """
     # extract the model_name from model_definition file path
-    if type(model_definition) == str:    
+    if type(model_definition) == str:
         model_name = model_definition.split("/")[-1][:-5]
-    else: 
+    else:
         model_name = model_definition.name.split("/")[-1][:-5]
     # append the limit on the model name if it's not an empty string
     if limit:
@@ -57,7 +57,7 @@ def create_model_definition_save_folder(model_definition, directory: str,
     os.mkdir(save_path)
     return save_path
 
-        
+
 def calc_constraint_limits(result_folders: dict, limits: list) -> dict:
     """
         This method reads out the emissions of the monetary-driven
@@ -70,26 +70,26 @@ def calc_constraint_limits(result_folders: dict, limits: list) -> dict:
         definition which is limited to 80% (equal or lower) of the
         emissions calculated for the monetary minimum model definition.
         Consequently, it is calculated as follows:
-        
+
         .. math::
             emissions_{mon} =
                 \mathrm{emissions~of~monetary~driven~minimum}
-            
+
             emissions_{emi} =
                 \mathrm{emissions~of~emission~driven~minimum}
-            
+
             \mathrm{interval~width} = emission_{mon} - emission_{min}
-        
+
             constraints[x] = emissions_{mon} - limits[x] *  \mathrm{interval~width}
 
         The list of limits is then returned as constraints.
-        
+
         :param result_folders: dictionary holding the result paths of \
             monetary and emission minimum
         :type result_folders: dict
         :param limits: list holding the pareto points to be optimized
         :type limits: list
-        
+
         :return: - **constraints** (dict) - dict of constraint limits \
             for the transformation points of the pareto optimization
     """
@@ -103,7 +103,7 @@ def calc_constraint_limits(result_folders: dict, limits: list) -> dict:
     result2 = pandas.read_csv(str(result_folders["1"][0]) + "/components.csv")
     constr_min_2 = float(sum(result2["variable costs/CU"])
                          + sum(result2["periodical costs/CU"]))
-    
+
     # divide solvable range in "limits" intervals
     for limit in limits:
         interval_width = float(constr_min_1 - constr_min_2)
@@ -123,7 +123,7 @@ def create_transformation_model_definitions(
         Pareto directory (directory) and the path is attached to the
         dictionary "files". This dictionary also represents the return
         value of the method.
-        
+
         :param constraints: list containing the maximum emissions \
             caused by the model definitions which will be created \
             within this method
@@ -137,7 +137,7 @@ def create_transformation_model_definitions(
         :param limits: list containing the percentages of reduction \
             defined within the GUI
         :type limits: list
-        
+
         :return: - **files** (dict) - dictionary holding the \
             combination of limit and path to the new created model \
             definition
@@ -177,7 +177,7 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict,
         to the second optimization criterion, after which the
         semi-optimal intermediate points are determined.  Finally, the
         CSV files are created for further result processing.
-        
+
         :param limits: list containing the percentages of reduction \
             defined within the GUI
         :type limits: list
@@ -187,7 +187,7 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict,
         :param GUI_main_dict: Dictionary which is passed to the method \
             by the GUI and contains the user's input. The dictionary \
             must contain the following attributes for this method:
-            
+
                 - pre_modeling
                 - num_threads
                 - time series params
@@ -201,26 +201,38 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict,
                 - investment boundaries
                 - investment boundaries factor
                 - pre model path
-            
+
         :type GUI_main_dict: dict
+<<<<<<< HEAD
         :param result_path: str which contains the result path which \
             is user specific
         :type result_path: str
         
+=======
+
+>>>>>>> master
         :return: - **directory** (str) - path where the pareto runs \
             were stored
     """
-    from program_files.GUI_st.GUI_st_global_functions import run_SESMG
+    from program_files.GUI_st.GUI_st_global_functions \
+        import run_SESMG, set_result_path
 
+<<<<<<< HEAD
     # create one directory to collect all runs
     directory = (result_path + "/"
                  + datetime.now().strftime("%Y-%m-%d--%H-%M-%S"))
+=======
+    # create one directory to collect all runs based on the result path given
+    # in the GUI_st_settings.json
+    directory = os.path.join(set_result_path(),
+                             datetime.now().strftime("%Y-%m-%d--%H-%M-%S"))
+>>>>>>> master
     os.mkdir(directory)
-    
+
     logging.info("Optimization of the following runs "
                  + str(limits)
                  + " started!")
-    
+
     # FIRST CRITERION
     result_folders = {"0": []}
     # TODO enable more than one model definition (districts)

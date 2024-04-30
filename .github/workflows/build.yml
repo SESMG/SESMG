@@ -1,8 +1,10 @@
 name: Build Executables
+
 on:
   push:
     branches:
       - master
+
 
 jobs:
   macos:
@@ -43,6 +45,7 @@ jobs:
     name: Build on linux
     runs-on: ubuntu-20.04
     needs: macos
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -138,6 +141,7 @@ jobs:
         run: |
           VERSION=$(python setup.py --version)
           echo "VERSION=v$VERSION" >> $GITHUB_ENV
+
       - name: Upload MAC binaries to release
         uses: svenstaro/upload-release-action@v2
         with:

@@ -518,8 +518,13 @@ def copying_sheets(paths: list, standard_parameters: pandas.ExcelFile,
 
 
 def urban_district_upscaling_pre_processing(
+<<<<<<< HEAD
     paths: list, open_fred_list: list, clustering: bool, clustering_dh: bool
 ) -> (dict, dict):
+=======
+    paths: list, clustering: bool, clustering_dh: bool
+) -> (dict, list):
+>>>>>>> master
     """
         The Urban District Upscaling Pre Processing method is used to
         systematically create a model definition for a few 10 to a few
@@ -544,10 +549,13 @@ def urban_district_upscaling_pre_processing(
         :param clustering_dh: boolean for decision rather the district \
             heating connection will be clustered cluster_id wise
         :type clustering_dh: bool
-        
-        :returns: - **processed_data** (bytes) - Bytes object which \
-            represents the downloadable model definition instance
+
+        :returns: - **sheets** (dict) - dictionary containing the created \
+                        model definition prepared to save as xlsx
+                  - **worksheets** (list) - list containing the sheet names \
+                        of the created model definition
     """
+<<<<<<< HEAD
     from program_files.preprocessing.import_weather_data \
         import import_open_fred_weather_data
     
@@ -586,6 +594,26 @@ def urban_district_upscaling_pre_processing(
         for column in weather_data["weather data"].columns:
             sheets["weather data"][column] = \
                 weather_data["weather data"][column]
+=======
+
+    logging.info("Creating model definition sheet...")
+    # loading typical model definition structure from plain sheet
+    sheets, central, parcel, tool, worksheets, standard_parameters = \
+        load_input_data(paths[3], paths[1], paths[0])
+
+    sheets = copying_sheets(paths=paths,
+                            standard_parameters=standard_parameters,
+                            sheets=sheets)
+
+    # set variable for central heating / electricity if activated to
+    # decide rather a house can be connected to the central heat
+    # network / central electricity network or not
+    central_electricity_network = get_central_comp_active_status(
+        central, "electricity_exchange"
+    )
+
+    p2g_link = get_central_comp_active_status(central, "power_to_gas")
+>>>>>>> master
 
     # create central components
     sheets, electricity_exchange, p2g = Central_components.central_components(
@@ -599,7 +627,7 @@ def urban_district_upscaling_pre_processing(
         parcels=parcel,
         sheets=sheets,
         standard_parameters=standard_parameters)
-    
+
     for num, building in tool[tool["active"] == 1].iterrows():
         # create all buses which a standardized building needs
         sheets = create_building_buses_and_links(
@@ -666,4 +694,8 @@ def urban_district_upscaling_pre_processing(
             clustering_dh=clustering_dh,
         )
 
+<<<<<<< HEAD
     return sheets
+=======
+    return sheets, worksheets
+>>>>>>> master

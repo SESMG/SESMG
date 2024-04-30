@@ -7,6 +7,10 @@
 [![Documentation Status](https://readthedocs.org/projects/spreadsheet-energy-system-model-generator/badge/?version=latest)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/?badge=latest)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.05519/status.svg)](https://doi.org/10.21105/joss.05519)
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 
 ## Software Description
 
@@ -28,16 +32,22 @@ Furthermore, the **SESMG** comes with important modeling methods, enabling holis
 ## Quick Start 
 [![Generic badge](https://img.shields.io/badge/content-how-green.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
-#### Please note: 
 A detailed description of the installation process for Windows, MacOS and Linux can be found in the [documentation (chapter installation)](
 https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html). 
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 
 ## SESMG Features & Releases 
 [![Generic badge](https://img.shields.io/badge/content-what/why-darkgreen.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
 ### Examples
+<<<<<<< HEAD
 Examples are stored in a separate GIT-Repository: https://github.com/SESMG/SESMG_Examples
+=======
+Examples are stored in a separate GIT-Repository: https://github.com/SESMG/SESMG-Examples
+>>>>>>> master
 
 ### Project status
 ✓ Draft (alpha, beta) State <br />
@@ -74,7 +84,7 @@ Code of Conduct can be found [here](https://github.com/SESMG/SESMG/blob/master/C
 #### Contact information 
 Münster University of Applied Sciences
 
-Christian Klemm - christian.klemm@fh-muenster.de
+Contact via [research group](https://fh.ms/esym).
 
 ### Acknowledgments
 
