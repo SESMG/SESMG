@@ -10,8 +10,8 @@ SPDX-License-Identifier: MIT
 import logging
 import os
 import graphviz
-from oemof.network.network import Bus, Sink, Source, Transformer
-from oemof.solph.components import GenericStorage
+from oemof.solph import Bus
+from oemof.solph.components import Sink, Source, Converter, GenericStorage
 from dhnx.optimization.oemof_heatpipe import HeatPipeline
 
 
@@ -59,6 +59,7 @@ class ESGraphRenderer:
         """
         self.busses = []
 
+        os.environ["PATH"] += os.pathsep + "C:\\Program Files (x86)\\Graphviz2.38\\bin"
         self.dot = graphviz.Digraph(format="png")
 
         if legend is True:
@@ -74,17 +75,16 @@ class ESGraphRenderer:
                 self.add_comp("Storage", "rectangle", True, self.c)
 
         switch_dict = {
-            "<class 'oemof.solph.network.sink.Sink'>": ["invtrapezium", False],
-            "<class 'oemof.solph.network.source.Source'>": ["trapezium", False],
-            "<class 'oemof.solph.network.transformer.Transformer'>": [
-                "rectangle",
-                False,
-            ],
-            "<class 'oemof.solph.components.generic_storage.GenericStorage'>": [
-                "rectangle",
-                True,
-            ],
-            "<class 'oemof.solph.custom.link.Link'>": ["rectangle", False],
+            "<class 'oemof.solph.components._sink.Sink'>": ["invtrapezium",
+                                                            False],
+            "<class 'oemof.solph.components._source.Source'>": ["trapezium",
+                                                                False],
+            "<class 'oemof.solph.components._converter.Converter'>": [
+                "rectangle", False],
+            "<class 'oemof.solph.components._generic_storage.GenericStorage'>": [
+                "rectangle", True],
+            "<class 'oemof.solph.components._link.Link'>": [
+                "rectangle", False],
         }
         # draw a node for each of the energy_system's component.
         # the shape depends on the component's type.

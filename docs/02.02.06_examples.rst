@@ -28,13 +28,13 @@ Simplification:
 ^^^^^^^^^^^^^^^
 - The PV system should be regarded as a new investment, as only a small portion of the depreciated to a small extent
 - Using the time series simplification "Slicing A" with 4 days (for hole example 1)
-   
+
 .. figure:: ../docs/images/manual/Examples/time_series_simplification.png
    :width: 20 %
    :alt: GUI
-   :align: center   
+   :align: center
 
-Simulation task: 
+Simulation task:
 ^^^^^^^^^^^^^^^^
 - Activate the given components via the column "active" as binary input. 0 = off, 1 = on
 - Simulate the given energy system
@@ -50,18 +50,18 @@ Example 1b: Cost optimization of the energy system
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 From the results of the simulation of the single-family house, it can be concluded that it makes sense to incorporate additional technologies in order to reduce the cost of energy supply. In this example, the following technologies are available:
 
-- Air source heat pump (ASHP) with max. 20 kW 
+- Air source heat pump (ASHP) with max. 20 kW
 - Ground source heat pump (GCHP) with max. 15 kW
 - Battery storage with max. 10 kWh
 - Thermal storage with max. 20 kWh
 
-Optimization task: 
+Optimization task:
 ^^^^^^^^^^^^^^^^^^
 - Adjusts the templates of the individual technologies in the model definition accordingly and supplements them in the system
 	- To find out how to start a optimization, click `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#main-application>`_
 - The graphical solution for task 1b can be found `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_1b_graphical_solution.png>`_.
 
-.. attention:: 
+.. attention::
 
 	- The electricity for a heat pump is purchased at a different price than the normal energy purchase. Therefore, two different buses are used.
 	- Simulation (Example 1a): Min. and max. investment capacity identical
@@ -71,14 +71,14 @@ Example 1c: Pareto optimization of a single family house
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The Müller family has heard that the emissions caused by energy systems can be significantly reduced by low additional costs.
 
-Pareto-optimization task: 
+Pareto-optimization task:
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 - Execute a Pareto optimization of the energy system
 - Calculate the cost and emission minimums, as well three other Pareto points
 - Select the points in such a way that they are as meaningful as possible.
 - The graphical solution for task 1c can be found `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_1c_graphical_solution.png>`_.
 
-.. attention:: 
+.. attention::
 
 	- 0 or 0 % represents the cost minimum, since 0 % of the possible emission reduction is exhausted
 	- 100 or 100 % represents the emission minimum, since 100 % of the possible emission reduction is utilized
@@ -86,16 +86,16 @@ Pareto-optimization task:
 .. figure:: ../docs/images/manual/Examples/pareto_optimization.png
    :width: 20 %
    :alt: GUI
-   :align: center 
+   :align: center
 
-Pareto diagram: 
+Pareto diagram:
 ^^^^^^^^^^^^^^^
 This diagram is an example. Your Pareto curve should look similar.
 
 .. figure:: ../docs/images/manual/Examples/pareto_diagram.png
    :width: 160 %
    :alt: GUI
-   :align: center 
+   :align: center
 
 Example 2: Simulation and optimization of an industrial company
 ---------------------------------------------------------------
@@ -121,7 +121,7 @@ Simplification:
 ^^^^^^^^^^^^^^^
 - Using the time series simplification "Slicing A" with 4 days (for hole example 2)
 
-Simulation task: 
+Simulation task:
 ^^^^^^^^^^^^^^^^
 - Copy the sample components for operation and reconfigure them accordingly
 - Simulate the given energy system
@@ -135,7 +135,7 @@ Simulation task:
 
 Example 2b: Optimization of an industrial company part I
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Schmiede GmbH has sufficient land available for regenerative power generation on its own premises. 
+Schmiede GmbH has sufficient land available for regenerative power generation on its own premises.
 
 Two hall roofs are available to install PV systems:
 
@@ -148,7 +148,7 @@ Hall 1 with Sloped Roof
 +-------------------------------------------+------------+
 | Azimuth                                   | 225°       |
 +-------------------------------------------+------------+
-| Surface tild                              | 35°        |
+| Surface tilt                              | 35°        |
 +-------------------------------------------+------------+
 | Roof Surface Reflectance (albedo)         | 0.20       |
 +-------------------------------------------+------------+
@@ -164,14 +164,14 @@ Hall 2 with Sloped Roof
 +-------------------------------------------+------------+
 | Azimuth                                   | 100°       |
 +-------------------------------------------+------------+
-| Surface tild                              | 27°        |
+| Surface tilt                              | 27°        |
 +-------------------------------------------+------------+
 | Roof Surface Reflectance (albedo)         | 0.18       |
 +-------------------------------------------+------------+
 | Max. Rated Power Output                   | 150 kW     |
 +-------------------------------------------+------------+
 
-Optimization task: 
+Optimization task:
 ^^^^^^^^^^^^^^^^^^
 - Optimise the industrial company with new parameters
 	- To find out how to start a optimization, click `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#main-application>`_
@@ -187,10 +187,10 @@ Optimization task:
 
 Example 2c: Optimization of an industrial company part II
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Next to the hall 1 of Schmiede GmbH there is a large open area. A wind turbine can be set up. 
+Next to the hall 1 of Schmiede GmbH there is a large open area. A wind turbine can be set up.
 A turbine from the manufacturer Vestas with a rotor diameter of 112 m and a hub height of 140 m was identified as principle suitable.
 
-Optimization task: 
+Optimization task:
 ^^^^^^^^^^^^^^^^^^
 - Optimise the industrial company with new parameters
 - Search for a suitable model in the database and enter it in the same way in the table. The required data can be found in the subpackage "`windpowerlib <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_".
@@ -207,7 +207,7 @@ Example 2d: Optimization of an industrial company part III
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The entire vehicle fleet of Schmiede GmbH is to be electrified within the next 5 years. This will not change the driving behavior. The resulting load profile was determined in a preliminary study. This is available in standardized form. Schmiede GmbH has 16 vehicles. The charging power is assumed to be 10 kW.
 
-Optimization task: 
+Optimization task:
 ^^^^^^^^^^^^^^^^^^
 - Optimise the industrial company with new parameters
 - Create the vehicle fleet as another consumer (sink)
@@ -221,4 +221,3 @@ Optimization task:
 Example 3: Regular example of the documentation
 -----------------------------------------------
 This example is the basis for the documentation and explanation of the `model definition <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#model-definition>`_. You can find the model definition `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/v1.0.0_model_definition_example.xlsx>`_.
-

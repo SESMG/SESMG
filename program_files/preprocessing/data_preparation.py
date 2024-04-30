@@ -155,7 +155,8 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str
     factor_dict = {"hours": 1, "days": 24, "weeks": 168}
     timesteps = factor_dict.get(period)
     variable_cost_factor = \
-        int(nodes_data['energysystem']['periods']) / (timesteps * clusters)
+        (int(nodes_data['energysystem']['periods'].iloc[0])
+         / (timesteps * clusters))
     # log the calculated variable cost factor
     logging.info('\t VARIABLE COST FACTOR')
     logging.info("\t " + str(variable_cost_factor))
@@ -168,8 +169,7 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str
                 nodes_data[sheet][column] *= variable_cost_factor
 
     # Adapting Demands
-    nodes_data['sinks']['annual demand'] = \
-        nodes_data['sinks']['annual demand'] / variable_cost_factor
+    nodes_data['sinks']['annual demand'] /= variable_cost_factor
 
     timedelta = str(clusters * timesteps - 1) + ' hours'
     nodes_data['energysystem']['end date'] = \
@@ -369,12 +369,12 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
     elif data_prep == 'slicing A':
         slicing.timeseries_slicing(n_days=int(days_per_cluster),
                                    nodes_data=nodes_data,
-                                   period=cluster_period),
+                                   period=cluster_period)
     # delete every n-th period
     elif data_prep == 'slicing B':
         slicing.timeseries_slicing2(n_days=int(days_per_cluster),
                                     nodes_data=nodes_data,
-                                    period=cluster_period),
+                                    period=cluster_period)
 
     # DOWNSAMPLING ALGORITHM
     # use every n-th period

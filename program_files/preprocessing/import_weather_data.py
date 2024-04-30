@@ -68,10 +68,10 @@ def import_open_fred_weather_data(nodes_data: dict, lat: float, lon: float
     location = Point(lon, lat)
     
     # log the city and country of the given coords
-    geo_info = geocoder.osm([lat, lon], method='reverse')
+    geo_info = geocoder.google([lat, lon], method='reverse')
     logging.info("\t The inserted Open Fred coordinates point on "
-                 + geo_info.json['city'] + " in "
-                 + geo_info.json['country'] + ".")
+                 + str(geo_info.city) + " in "
+                 + str(geo_info.country) + ".")
     
     # get windpowerlib relevant weather data from OPEN Fred
     wind_df = Weather(**set_esys_data(nodes_data, location, "windpowerlib"),

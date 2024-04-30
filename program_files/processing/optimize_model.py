@@ -4,6 +4,7 @@
 """
 
 # -*- coding: utf-8 -*-
+import pandas
 from oemof import solph
 from memory_profiler import memory_usage
 
@@ -29,7 +30,7 @@ def constraint_optimization_against_two_values(
             within the added constraints
     """
     import pyomo.environ as po
-    from oemof.solph.plumbing import sequence
+    from oemof.solph import sequence
     
     periodical_flows = {}
     nonconvex_flows = {}
@@ -65,7 +66,7 @@ def constraint_optimization_against_two_values(
         "invest_limit_periodical_constraints",
         po.Expression(
             expr=sum(
-                om.InvestmentFlow.invest[inflow, outflow]
+                om.InvestmentFlowBlock.invest[(inflow, outflow, 0)]
                 * getattr(periodical_flows[inflow, outflow],
                           "periodical_constraint_costs")
                 for (inflow, outflow) in periodical_flows
@@ -87,7 +88,7 @@ def constraint_optimization_against_two_values(
             expr=sum(
                 (getattr(nonconvex_flows[inflow, outflow],
                          "fix_constraint_costs")
-                 * om.InvestmentFlow.invest_status[inflow, outflow])
+                 * om.InvestmentFlowBlock.invest_status[(inflow, outflow, 0)])
                 for (inflow, outflow) in nonconvex_flows)
         ),
     )
@@ -104,7 +105,7 @@ def constraint_optimization_against_two_values(
         "integral_limit_variable_constraints",
         po.Expression(
             expr=sum(
-                om.flow[inflow, outflow, t]
+                om.flow[(inflow, outflow, 0, t)]
                 * om.timeincrement[t]
                 * sequence(getattr(variable_flows[inflow, outflow],
                                    "emission_factor"))[t]
@@ -140,7 +141,7 @@ def constraint_optimization_against_two_values(
             "invest_limit_storage",
             po.Expression(
                 expr=sum(
-                    om.GenericInvestmentStorageBlock.invest[num]
+                    om.GenericInvestmentStorageBlock.invest[(num, 0)]
                     * getattr(comp[num], "periodical_constraint_costs")
                     for num in comp
                 )
@@ -185,7 +186,8 @@ def constraint_optimization_against_two_values(
     return om
 
 
-def competition_constraint(om: solph.Model, nodes_data: dict,
+def competition_constraint(om: solph.Model,
+                           comp_constraints: pandas.DataFrame,
                            energy_system: solph.EnergySystem) -> solph.Model:
     """
         The outflow_competition method is used to optimise the sum of
@@ -196,9 +198,9 @@ def competition_constraint(om: solph.Model, nodes_data: dict,
         :param om: oemof solph model to which the constraints will be \
             added
         :type om: oemof.solph.Model
-        :param nodes_data:  dictionary containing all excel sheets of \
-            the spreadsheet
-        :type nodes_data: dict
+        :param comp_constraints:  pandas dataframe of the \
+            competition constraint sheet
+        :type comp_constraints: pandas.DataFrame
         :param energy_system: the oemof created energy_system \
             containing all created components
         :type energy_system: oemof.solph.energy_system
@@ -207,55 +209,69 @@ def competition_constraint(om: solph.Model, nodes_data: dict,
             within the newly added competition constraints
     """
     import pyomo.environ as po
+    
+    # Filter only the rows in comp_constraints where the "active" column
+    # is equal to 1
+    active_df = comp_constraints.loc[comp_constraints["active"] == 1]
 
-    for num, row in nodes_data["competition constraints"].iterrows():
-        if row["active"]:
-            flows = {}
-            # Create a list in which the limit value for each time step of
-            # the energy_system is defined, since the constraints are applied
-            # to the flow, and here the system is to be dimensioned for the
-            # time step with the maximum added space/energy requirement
-            # get the two outflows which are competitive
-            for inflow, outflow in om.flows:
-                if inflow == energy_system.groups[row["component 1"]]:
-                    # first output flow of the component is used to set up
-                    # the competition
-                    if outflow == (list(energy_system.groups[
-                                            row["component 1"]].outputs)[0]):
-                        setattr(om.flows[inflow, outflow],
-                                "competition_factor",
-                                row["factor 1"])
-                        flows[(inflow, outflow)] = om.flows[inflow, outflow]
-                elif inflow == energy_system.groups[row["component 2"]]:
-                    setattr(om.flows[inflow, outflow],
+    # Iterate over active competition constraints
+    for num, row in active_df.iterrows():
+    
+        # Dictionary to store relevant flows
+        flows = {}
+
+        # Create a dict of flows and their associated competition
+        # factors
+        index = 1
+        constr_name = ""
+        while "component {}".format(index) in row:
+            if row["component {}".format(index)] not in ["None", 0, "none"]:
+    
+                # Get the flow from the energy system
+                flow = energy_system.groups[row["component {}".format(index)]]
+
+                # Find the corresponding flow tuple in the solph model
+                flow_keys = list(om.flows.keys())
+                flow_tuple = next((
+                    tpl for tpl in flow_keys if tpl[0] == flow), None)
+
+                # If the flow tuple is found, set the competition factor
+                # and add the flow to the dictionary
+                if flow_tuple is not None:
+                    setattr(om.flows[flow_tuple],
                             "competition_factor",
-                            row["factor 2"])
-                    flows[(inflow, outflow)] = om.flows[inflow, outflow]
+                            row["factor {}".format(index)])
+                    flows[flow_tuple] = om.flows[flow_tuple[0], flow_tuple[1]]
+                    
+            constr_name += (row["component {}".format(index)] + "_")
+            index += 1
 
-            # rule which is used for the constraint
-            # rule : (outflow(comp1) * factor1 + outflow(comp2) * factor2)
-            # <= limit
+        # Define a rule for the competition constraint
+        # rule : sum(outflow(x) * factor x) <= (limit - existing)
+        def competition_rule(om):
+            competition_flow = sum(
+                om.InvestmentFlowBlock.invest[(inflow, outflow, 0)]
+                * om.flows[inflow, outflow].competition_factor
+                for (inflow, outflow) in flows
+            )
+            return competition_flow
 
-            def competition_rule(om):
-                competition_flow = sum(
-                    om.InvestmentFlow.invest[inflow, outflow]
-                    * om.flows[inflow, outflow].competition_factor
-                    for (inflow, outflow) in flows
-                )
-                limit = row["limit"]
-                limit = limit - (
-                    sum(om.flows[inflow, outflow].investment.existing
-                        for (inflow, outflow) in flows)
-                )
-                return limit >= competition_flow
+        # Add an expression to the solph model based on the competition
+        # rule
+        setattr(om, constr_name[:-1], po.Expression(expr=competition_rule))
 
-            setattr(
-                om,
-                row["component 1"] + "_" + row["component 2"]
-                + "competition_constraint",
-                po.Constraint(om.TIMESTEPS, expr=competition_rule),
+        # Calculate the constraint limit
+        limit = row["limit"] - (
+           sum(om.flows[inflow, outflow].investment.existing
+               for (inflow, outflow) in flows)
             )
 
+        # Add the competition constraint to the solph model
+        setattr(
+            om,
+            constr_name + "constraint",
+            po.Constraint(expr=(getattr(om, constr_name[:-1]) <= limit)))
+            
     return om
 
 
@@ -278,15 +294,15 @@ def constraint_optimization_of_criterion_adherence_to_a_minval(
             within the newly added constraints
     """
     import pyomo.environ as po
-    from oemof.solph.plumbing import sequence
+    from oemof.solph import sequence
 
     flows = {}
     # Search for all flows that contain the parameter constraint2,
     # since these components can be used to reduce the final energy
     # demand by at least the value limit.
     for (inflow, outflow) in om.flows:
-        if hasattr(om.flows[inflow, outflow].investment, "constraint2"):
-            flows[(inflow, outflow)] = om.flows[inflow, outflow].investment
+        if hasattr(om.flows[(inflow, outflow)].investment, "constraint2"):
+            flows[(inflow, outflow)] = om.flows[(inflow, outflow)].investment
 
     # calculate the sum of the total flow reduction applied by the
     # investment in insulation measures
@@ -295,7 +311,7 @@ def constraint_optimization_of_criterion_adherence_to_a_minval(
         "limit_constraint2",
         po.Expression(
             expr=sum(
-                om.flow[inflow, outflow, t]
+                om.flow[(inflow, outflow, 0, t)]
                 * om.timeincrement[t]
                 * sequence(getattr(flows[inflow, outflow], "constraint2"))[t]
                 for (inflow, outflow) in flows
@@ -340,6 +356,7 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
     # add nodes and flows to energy system
     logging.info("\t " + 56 * "*")
     logging.info("\t Create Energy System...")
+    
     # creation of a least cost model from the energy system
     om = solph.Model(energy_system)
     column_label = "constraint cost limit"
@@ -367,15 +384,16 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
 
     # limit for two given outflows e.g area_competition
     if "competition constraints" in nodes_data:
-        om = competition_constraint(om=om,
-                                    nodes_data=nodes_data,
-                                    energy_system=energy_system)
+        om = competition_constraint(
+            om=om,
+            comp_constraints=nodes_data["competition constraints"],
+            energy_system=energy_system)
 
     for num, row in nodes_data["links"].iterrows():
         for comp, outflow in om.flows.keys():
             # searching for the output-flows of the link labeled
             # z['label']
-            if isinstance(comp, solph.custom.Link) \
+            if isinstance(comp, solph.components.Link) \
                     and str(comp) == row["label"]:
                 # check if the link is undirected and ensure that the
                 # solver has to invest the same amount on both
@@ -384,8 +402,10 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
                     comp = energy_system.groups[row["label"]]
                     solph.constraints.equate_variables(
                         model=om,
-                        var1=om.InvestmentFlow.invest[comp, busd[row["bus1"]]],
-                        var2=om.InvestmentFlow.invest[comp, busd[row["bus2"]]],
+                        var1=om.InvestmentFlowBlock.invest[
+                            comp, busd[row["bus1"]]],
+                        var2=om.InvestmentFlowBlock.invest[
+                            comp, busd[row["bus2"]]],
                     )
     logging.info("\t " + 56 * "*")
     logging.info("\t " + "Starting Optimization with " + solver + "-Solver")

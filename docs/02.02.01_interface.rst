@@ -22,7 +22,7 @@ to reduce the computing time, since only limited computing resources are availab
 
 2. Preprocessing
 ----------------
-There are several ways to simplify the model. The method can be found here: ^
+There are several ways to simplify the model. The method can be found here:
 `Modeling Method <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.03.00_model_simplification.html>`_.
 In the following, only the application is briefly described.
 
@@ -31,7 +31,7 @@ Timeseries Simplificaton
 
 .. warning::
 
-	All time series simplifications can currently only be applied at an input time resolution of hours with 8760 time steps (i.e. one whole year). The algorithm described in the following sub-sections can be applied. Depending on the simplification applied, further adjustments to the energy systemarea automatically carried out.
+	All time series simplifications can currently only be applied at an input time resolution of hours with 8760 time steps (i.e. one whole year). The algorithm described in the following sub-sections can be applied. Depending on the simplification applied, further adjustments to the energy system area automatically carried out.
 
 Depending on which of the time series preparation algorithms described in the
 methods section is used, the following specifications must be made:
@@ -64,7 +64,7 @@ Pre-Modeling Settings
 ^^^^^^^^^^^^^^^^^^^^^
 * **Activate Pre-Modeling**: If activated, the modeling process is divided into a pre-model and a main-model run.
 * **Investment Boundaries Tightening**: Must be checked, if the investment boundaries in the main-model shall be tightened based on the pre-model results.
-* **Investment Tightening Faktor**: All investment limits of the main-model are limited to the investment decisions made in the pre-model run multiplied by this factor. If a originally defined investment boundary is lower than this value, the limit will not be changed.
+* **Investment Tightening Factor**: All investment limits of the main-model are limited to the investment decisions made in the pre-model run multiplied by this factor. If a originally defined investment boundary is lower than this value, the limit will not be changed.
 * **Time Series Simplification**: Timeseries simplification for the *pre-model* have to be set (see above for detailed description).
 
 

@@ -48,19 +48,19 @@ def import_model_definition(filepath: str, delete_units=True) -> dict:
         raise FileNotFoundError("Problem importing model definition file.")
     
     nodes_data = {
-        "buses": xls.parse("buses"),
-        "energysystem": xls.parse("energysystem"),
-        "sinks": xls.parse("sinks"),
-        "links": xls.parse("links"),
-        "sources": xls.parse("sources"),
-        "timeseries": xls.parse("time series", parse_dates=["timestamp"]),
-        "transformers": xls.parse("transformers"),
-        "storages": xls.parse("storages"),
-        "weather data": xls.parse("weather data", parse_dates=["timestamp"]),
-        "competition constraints": xls.parse("competition constraints"),
-        "insulation": xls.parse("insulation"),
-        "district heating": xls.parse("district heating"),
-        "pipe types": xls.parse("pipe types")
+        "buses": xls.parse("buses", na_filter=False),
+        "energysystem": xls.parse("energysystem", na_filter=False),
+        "sinks": xls.parse("sinks", na_filter=False),
+        "links": xls.parse("links", na_filter=False),
+        "sources": xls.parse("sources", na_filter=False),
+        "timeseries": xls.parse("time series", parse_dates=["timestamp"], na_filter=False),
+        "transformers": xls.parse("transformers", na_filter=False),
+        "storages": xls.parse("storages", na_filter=False),
+        "weather data": xls.parse("weather data", parse_dates=["timestamp"], na_filter=False),
+        "competition constraints": xls.parse("competition constraints", na_filter=False),
+        "insulation": xls.parse("insulation", na_filter=False),
+        "district heating": xls.parse("district heating", na_filter=False),
+        "pipe types": xls.parse("pipe types", na_filter=False)
     }
     if delete_units:
         # delete spreadsheet row within technology or units specific
@@ -84,7 +84,7 @@ def import_model_definition(filepath: str, delete_units=True) -> dict:
     return nodes_data
 
 
-def define_energy_system(nodes_data: dict) -> EnergySystem:
+def define_energy_system(nodes_data: dict) -> (EnergySystem, dict):
     """
         Creates an energy system with the parameters defined in the
         given .xlsx-file. The file has to contain a sheet called
@@ -100,8 +100,12 @@ def define_energy_system(nodes_data: dict) -> EnergySystem:
             definition file
         :type nodes_data: dict
         
-        :return: **esys** (oemof.solph.Energysystem) - oemof energy \
-            system
+        :return: - **esys** (oemof.solph.Energysystem) - oemof energy \
+                    system
+                 - **nodes_data** (dict) - dictionary containing data \
+                    from excel model definition file after the \
+                    timestamps of timeseries and weather data sheet \
+                    have been changed
     """
     # fix pyomo error while using the streamlit gui
     import pyutilib.subprocess.GlobalData
@@ -120,7 +124,7 @@ def define_energy_system(nodes_data: dict) -> EnergySystem:
                                        freq=temp_resolution)
     
     # initialisation of the energy system
-    esys = EnergySystem(timeindex=datetime_index)
+    esys = EnergySystem(timeindex=datetime_index, infer_last_interval=False)
     # setting the index column for time series and weather data
     for sheet in ["timeseries", "weather data"]:
         # defines a time series
@@ -141,4 +145,4 @@ def define_energy_system(nodes_data: dict) -> EnergySystem:
     )
     
     # returns oemof energy system as result of this function
-    return esys
+    return esys, nodes_data

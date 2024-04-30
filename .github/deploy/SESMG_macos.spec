@@ -5,14 +5,15 @@ import sys
 sys.setrecursionlimit(sys.getrecursionlimit()*5)
 
 datas = [('../../program_files','program_files'),
-	 ('../../docs', 'docs'),
+	     ('../../docs', 'docs'),
          ('../../README.md', '.'),
-	 ('../../Lib/python3.9/site-packages/typing_extensions.py', '.'),
-	 ('../../Lib/python3.9/site-packages/six.py', '.'),
-	 ('../../Lib/python3.9/site-packages/memory_profiler.py', '.'),
+	     ('../../Lib/python3.9/site-packages/typing_extensions.py', '.'),
+	     ('../../Lib/python3.9/site-packages/six.py', '.'),
+	     ('../../Lib/python3.9/site-packages/memory_profiler.py', '.'),
          ('../../Lib/python3.9/site-packages/decorator.py', '.'),
-	 ('../../Lib/python3.9/site-packages/decouple.py', '.'),
-	 ('../../.streamlit','.streamlit')]
+	     ('../../Lib/python3.9/site-packages/decouple.py', '.'),
+	     ('../../.streamlit','.streamlit')]
+
 datas += copy_metadata('streamlit')
 
 options = [ ('W ignore', None, 'OPTION') ]

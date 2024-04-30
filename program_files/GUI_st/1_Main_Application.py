@@ -601,7 +601,8 @@ if st.session_state["state_submitted_optimization"] == "done":
 
         # check rather the dependencies to be installed by the user are
         # installed
-        GUI_functions.check_for_dependencies(solver=GUI_main_dict["input_solver"])
+        GUI_functions.check_for_dependencies(
+                solver=GUI_main_dict["input_solver"])
 
         # save the GUI_main_dict as a chache for the next session
         GUI_functions.save_GUI_cache_dict(
@@ -614,7 +615,7 @@ if st.session_state["state_submitted_optimization"] == "done":
         # Starting the model run
         if len(GUI_main_dict["input_pareto_points"]) == 0:
 
-            # function to create the result pasths and store session state
+            # function to create the result paths and store session state
             create_result_paths()
 
             with st.spinner("Modeling in Progress..."):
@@ -631,18 +632,19 @@ if st.session_state["state_submitted_optimization"] == "done":
             # switch page after the model run completed
             nav_page(page_name="Result_Processing", timeout_secs=3)
 
-        # Starting a pareto modeul rum
+        # Starting a pareto model rum
         elif len(GUI_main_dict["input_pareto_points"]) != 0:
 
             with st.spinner("Modeling in Progress..."):
 
-                # run_pareto retuns res path
+                # run_pareto returns res path
                 GUI_main_dict["res_path"] = \
                     run_pareto(
-                        limits=[i / 100 for i in
+                        limits=[int(i) / 100 for i in
                                 GUI_main_dict["input_pareto_points"]],
                         model_definition=model_definition_input_file,
-                        GUI_main_dict=GUI_main_dict)
+                        GUI_main_dict=GUI_main_dict,
+                        result_path=GUI_functions.set_result_path())
 
                 # save path as session state for the result processing page
                 st.session_state["state_result_path"] = \

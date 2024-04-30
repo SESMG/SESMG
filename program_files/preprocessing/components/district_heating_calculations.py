@@ -14,8 +14,8 @@ transf_WGS84_GK = Transformer.from_crs("EPSG:4326", "EPSG:31466")
 transf_GK_WGS84 = Transformer.from_crs("EPSG:31466", "EPSG:4326")
 
 
-def convert_dh_street_sections_list(street_sec: pandas.DataFrame
-                                    ) -> pandas.DataFrame:
+def convert_street_sec_coordinates(street_sec: pandas.DataFrame
+                                   ) -> pandas.DataFrame:
     """
         Convert street sections Dataframe to Gaussian Kruger (GK)
         to reduce redundancy.
@@ -28,19 +28,15 @@ def convert_dh_street_sections_list(street_sec: pandas.DataFrame
     """
     # iterating threw the given street points and converting each active
     # one to EPSG31466
-    for num, street in street_sec[street_sec["active"] == 1].iterrows():
-        (
-            street_sec.at[num, "lat. 1st intersection"],
-            street_sec.at[num, "lon. 1st intersection"],
-        ) = transf_WGS84_GK.transform(
-            street["lat. 1st intersection"], street["lon. 1st intersection"]
-        )
-        (
-            street_sec.at[num, "lat. 2nd intersection"],
-            street_sec.at[num, "lon. 2nd intersection"],
-        ) = transf_WGS84_GK.transform(
-            street["lat. 2nd intersection"], street["lon. 2nd intersection"]
-        )
+    for num, street in street_sec.query("active == 1").iterrows():
+        for i in ["1st", "2nd"]:
+            (
+                street_sec.at[num, "lat. {} intersection".format(i)],
+                street_sec.at[num, "lon. {} intersection".format(i)],
+            ) = transf_WGS84_GK.transform(
+                street["lat. {} intersection".format(i)],
+                street["lon. {} intersection".format(i)]
+            )
     return street_sec
 
 
@@ -86,8 +82,7 @@ def calc_perpendicular_distance_line_point(p1: numpy.array, p2: numpy.array,
     """
     # check rather the third point is already converted or not
     if not converted:
-        transformer = Transformer.from_crs("EPSG:4326", "EPSG:31466")
-        (p3[0], p3[1]) = transformer.transform(p3[0], p3[1])
+        (p3[0], p3[1]) = transf_WGS84_GK.transform(p3[0], p3[1])
     house = numpy.array(p3)
     road_part_limit1 = numpy.array(p1)
     road_part_limit2 = numpy.array(p2)
@@ -118,14 +113,15 @@ def calc_perpendicular_distance_line_point(p1: numpy.array, p2: numpy.array,
         return []
 
 
-def get_nearest_perp_foot_point(building: dict, streets: pandas.DataFrame,
+def get_nearest_perp_foot_point(building: pandas.Series,
+                                streets: pandas.DataFrame,
                                 index: int, building_type: str) -> list:
     """
         Uses the calc_perpendicular_distance_line_point method and
         finds the shortest distance to a road from its results.
 
         :param building: coordinates of the building under investigation
-        :type building: dict
+        :type building: pandas.Series
         :param streets: Dataframe holding all street section of the
                         territory under investigation
         :type streets: pandas.Dataframe
@@ -137,32 +133,52 @@ def get_nearest_perp_foot_point(building: dict, streets: pandas.DataFrame,
                     of the perpendicular foot point
     """
     foot_points = []
+    # convert the coordinate type to gaussian kruger for perpendicular
+    # foot point calculation
     (lat, lon) = transf_WGS84_GK.transform(
         float(building["lat"]), float(building["lon"])
     )
-    for num, street in streets[streets["active"] == 1].iterrows():
+    
+    for _, street in streets.query("active == 1").iterrows():
         # calculation of perpendicular foot point if it is within the
-        # limits of the route
+        # limits of the route hereby p1 and p2 mark the considered
+        # street section and p3 the point which has to be connected to
+        # it
         perp_foot_point = calc_perpendicular_distance_line_point(
-            [street["lat. 1st intersection"], street["lon. 1st intersection"]],
-            [street["lat. 2nd intersection"], street["lon. 2nd intersection"]],
-            [lat, lon],
-            True,
+            p1=[street["lat. 1st intersection"],
+                street["lon. 1st intersection"]],
+            p2=[street["lat. 2nd intersection"],
+                street["lon. 2nd intersection"]],
+            p3=[lat, lon],
+            converted=True,
         )
+        # if a possible connection is found add it to the list of
+        # possible foot points and add the street section label to
+        # ensure clarity within later network analysis
         if perp_foot_point:
             foot_points.append(perp_foot_point + [street["label"]])
-    # check if more than one result was found
+            
+    # check if more than one possible connection point is found
     if len(foot_points) > 1:
         # iterate threw the results to find the nearest
         # point of the calculated points
         num = 0
+        # as long as num is within the list of foot points
         while num < len(foot_points) - 1:
+            # check if num has a smaller distance to the point to be
+            # connected or num + 1 has a smaller distance. Then drop
+            # the point with the higher distance from the list of
+            # possible connection points
             if foot_points[num][2] > foot_points[num + 1][2]:
                 foot_points.pop(num)
             else:
                 foot_points.pop(num + 1)
             num = 0
             continue
+    
+    # create the return structure by first crating a list containing
+    # the <building_type_index-fork> and then appending the calculated
+    # information of the closest connection point
     foot_point = [building_type + "-{}".format(str(index)) + "-fork"]
     foot_point.extend(foot_points[0])
     return foot_point
@@ -245,49 +261,58 @@ def calc_heat_pipe_attributes(
     # iterate threw all thermal network components
     for a in oemof_opti_model.nodes:
         # check rather the component is not a bus
-        if str(type(a)) != "<class 'oemof.solph.network.bus.Bus'>":
+        if str(type(a)) != "<class 'oemof.solph.buses._bus.Bus'>":
             # get the component's pipe type data frame row
             pipe_row = pipe_types.loc[pipe_types["label_3"] == a.label.tag3]
             # if the pipe type is a linear one
-            if int(pipe_row["nonconvex"]) == 0:
+            if int(pipe_row["nonconvex"].iloc[0]) == 0:
                 # get the components periodical costs
                 ep_costs = getattr(
                     a.outputs[list(a.outputs.keys())[0]].investment, "ep_costs"
-                )
+                )[0]
                 # calculate the length by dividing the pipes periodical
                 # costs by the specific periodical costs per meter
-                length = ep_costs / float(pipe_row["capex_pipes"])
+                length = ep_costs / float(pipe_row["capex_pipes"].iloc[0])
 
             # if the pipe type is non convex
             else:
-                # get the components fix investment costs
-                fix_costs = getattr(
-                    a.outputs[list(a.outputs.keys())[0]].investment, "offset"
-                )
-                # calculate the length by dividing the pipes fix
-                # investment costs by the specific fix investment costs
-                # per meter
-                length = fix_costs / float(pipe_row["fix_costs"])
+                if hasattr(a.outputs[list(a.outputs.keys())[0]].investment,
+                           "offset"):
+                    
+                    # get the components fix investment costs
+                    fix_costs = getattr(
+                        a.outputs[list(a.outputs.keys())[0]].investment,
+                        "offset"
+                    )[0]
+                    
+                    # calculate the length by dividing the pipes fix
+                    # investment costs by the specific fix investment costs
+                    # per meter
+                    length = fix_costs / float(pipe_row["fix_costs"].iloc[0])
                 
-            # set the periodical constraint costs which are
-            # calculated by the multiplication of length and
-            # specific periodical emissions per meter
-            setattr(
-                a.outputs[list(a.outputs.keys())[0]].investment,
-                "periodical_constraint_costs",
-                length * float(pipe_row["periodical_constraint_costs"])
-            )
-            # set the fix investment constraint costs which are
-            # calculated by the multiplication of length and
-            # specific fix investment emissions per meter
-            setattr(
-                    a.outputs[list(a.outputs.keys())[0]].investment,
-                    "fix_constraint_costs",
-                    length * float(pipe_row["fix_constraint_costs"]),
-            )
+                    # set the periodical constraint costs which are
+                    # calculated by the multiplication of length and
+                    # specific periodical emissions per meter
+                    setattr(
+                        a.outputs[list(a.outputs.keys())[0]].investment,
+                        "periodical_constraint_costs",
+                        length
+                        * float(pipe_row["periodical_constraint_costs"].iloc[0])
+                    )
+                    # set the fix investment constraint costs which are
+                    # calculated by the multiplication of length and
+                    # specific fix investment emissions per meter
+                    setattr(
+                            a.outputs[list(a.outputs.keys())[0]].investment,
+                            "fix_constraint_costs",
+                            length
+                            * float(pipe_row["fix_constraint_costs"].iloc[0]),
+                    )
             # since no variable emissions apply it is set to 0 for each
             # direction
-            setattr(a.inputs[list(a.inputs.keys())[0]], "emission_factor", 0)
-            setattr(a.outputs[list(a.outputs.keys())[0]], "emission_factor", 0)
+            setattr(a.inputs[list(a.inputs.keys())[0]],
+                    "emission_factor", 0)
+            setattr(a.outputs[list(a.outputs.keys())[0]],
+                    "emission_factor", 0)
     
     return oemof_opti_model

@@ -5,13 +5,13 @@ import sys
 sys.setrecursionlimit(sys.getrecursionlimit()*5)
 
 datas = [('../../program_files','program_files'),
-	 ('../../docs', 'docs'),
+	     ('../../docs', 'docs'),
          ('../../README.md', '.'),
-	 ('../../Lib/site-packages/typing_extensions.py', '.'),
-	 ('../../Lib/site-packages/six.py', '.'),
-	 ('../../Lib/site-packages/memory_profiler.py', '.'),
+	     ('../../Lib/site-packages/typing_extensions.py', '.'),
+	     ('../../Lib/site-packages/six.py', '.'),
+	     ('../../Lib/site-packages/memory_profiler.py', '.'),
          ('../../Lib/site-packages/decorator.py', '.'),
-	 ('../../Lib/site-packages/decouple.py', '.')]
+	     ('../../Lib/site-packages/decouple.py', '.')]
 datas += copy_metadata('streamlit')
 
 options = [ ('W ignore', None, 'OPTION') ]
@@ -63,3 +63,4 @@ app = BUNDLE(
     icon='SESMG.ico',
     bundle_identifier=None,
 )
+

@@ -3,9 +3,8 @@
     Gregor Becker - gregor.becker@fh-muenster.de
 """
 import oemof.solph as solph
-from oemof.network.network import Bus, Sink, Source
-from oemof.solph.custom import Link
-from oemof.solph.components import GenericStorage
+from oemof.solph.components import GenericStorage, Link, Sink, Source
+from oemof.solph import Bus
 from dhnx.optimization.oemof_heatpipe import HeatPipeline
 import pandas
 
@@ -81,6 +80,7 @@ def get_sequence(flow, component: dict, node, output_flow: bool,
             # search the created tuple in the components sequences
             if label != ():
                 return_list.append([component["sequences"][(label, "flow")]])
+                return_list[-1][0] = return_list[-1][0].dropna()
             # create an empty sequence (timesteps * 0) if the considered
             # tuple is empty
             else:
@@ -157,6 +157,7 @@ def get_investment(node, esys: solph.EnergySystem, results: dict,
     """
     # get the component from the energy system's variables
     component_node = esys.groups[str(node.label)]
+    
     # get the output bus which is depending on the component type since
     # the investment of storages is taken on storage content
     if comp_type != "storage" and comp_type != "clustered_dh":
@@ -168,10 +169,14 @@ def get_investment(node, esys: solph.EnergySystem, results: dict,
     # get the specified flows investment variable
     if not comp_type == "clustered_dh" \
             and "invest" in results[component_node, bus_node]["scalars"]:
-        return results[component_node, bus_node]["scalars"]["invest"]
+        return results[component_node, bus_node]["scalars"]["invest"] \
+            if results[component_node, bus_node]["scalars"]["invest"] \
+            > 0.000001 else 0
     elif comp_type == "clustered_dh" \
             and "invest" in results[bus_node, component_node]["scalars"]:
-        return results[bus_node, component_node]["scalars"]["invest"]
+        return results[bus_node, component_node]["scalars"]["invest"] \
+            if results[bus_node, component_node]["scalars"]["invest"] \
+            > 0.000001 else 0
     else:
         return 0
 
@@ -216,6 +221,9 @@ def calc_periodical_costs(node, investment: float, comp_type: str,
     if investment > 0:
         ep_costs = getattr(invest_object, attributes.get(cost_type)[0])
         offset = getattr(invest_object, attributes.get(cost_type)[1])
+        if cost_type == "costs":
+            ep_costs = ep_costs.default
+            offset = offset.default
 
     if comp_type == "link":
         return (investment * 2 * ep_costs) + 2 * offset
@@ -279,12 +287,13 @@ def get_comp_type(node) -> str:
     type_dict = {
         "<class 'dhnx.optimization_oemof_heatpipe.HeatPipeline'>": "dh",
         "<class 'dhnx.optimization.oemof_heatpipe.HeatPipeline'>": "dh",
-        "<class 'oemof.solph.network.sink.Sink'>": "sink",
-        "<class 'oemof.solph.network.source.Source'>": "source",
-        "<class 'oemof.solph.components.generic_storage.GenericStorage'>":
+        "<class 'oemof.solph.components._sink.Sink'>": "sink",
+        "<class 'oemof.solph.components._source.Source'>": "source",
+        "<class 'oemof.solph.components._generic_storage.GenericStorage'>":
             "storage",
-        "<class 'oemof.solph.custom.link.Link'>": "link",
-        "<class 'oemof.solph.network.transformer.Transformer'>": "transformer",
+        "<class 'oemof.solph.components.experimental._link.Link'>": "link",
+        "<class 'oemof.solph.components._transformer.Transformer'>":
+            "transformer",
     }
     return type_dict.get(str(type(node)))
 
@@ -348,7 +357,7 @@ def get_max_invest(comp_type: str, node) -> float:
     # check rather there is an opportunity to invest in the component (node)
     if hasattr(invest_object, "maximum"):
         # if yes return the maximum investment capacity
-        max_invest = round(getattr(invest_object, "maximum"), 2)
+        max_invest = round(float(getattr(invest_object, "maximum")[0]), 2)
     return max_invest
 
 
@@ -366,8 +375,15 @@ def change_heatpipelines_label(comp_label: str, result_path: str) -> str:
         :return: - **loc_label** (str) - string containig the easy \
             readable label for the list of components (loc)
     """
-    # get the energy system's pipes
-    pipes_esys = pandas.read_csv(result_path + "/pipes.csv", index_col="id")
+    if "exergy" in comp_label:
+        # get the energy system's pipes
+        pipes_esys = pandas.read_csv(result_path
+                                     + "/pipes_exergy.csv", index_col="id")
+    else:
+        # get the energy system's pipes
+        pipes_esys = pandas.read_csv(result_path
+                                     + "/pipes_anergy.csv", index_col="id")
+        
     # cut the "infrastructure_ from the pipes label
     loc_label = str(comp_label)[20:]
     # get the heatpipes nodes
@@ -507,7 +523,11 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
                 comp_dict[loc_label] += [0, 0]
                 total_demand += sum(flows[0])
             if isinstance(node, Source):
-                total_usage += sum(flows[2])
+                if (node.label in list(nodes_data["sources"]["label"]) or
+                        "shortage" in node.label):
+                    total_usage += sum(flows[2])
+            if isinstance(node, Sink) and "excess" in node.label:
+                total_usage -= sum(flows[0])
             # get the component's type for the loc
             comp_dict[loc_label].append(get_comp_type(node=node))
             

@@ -5,7 +5,7 @@
 
 @echo off
 set /p PYVERSION="Enter your Python Version here:"
-cd "%~dp0 "
+cd "%~p0 "
 cd ..
 py -%PYVERSION% -m venv venv
 
@@ -17,7 +17,7 @@ pipwin install gdal
 pipwin install fiona
 
 mkdir %userprofile%\.streamlit
-move ..\..\.streamlit\credentials.toml %userprofile%\.streamlit\credentials.toml
+move ..\.streamlit\credentials.toml %userprofile%\.streamlit\credentials.toml
 
 @echo #############################################
 @echo download and install required python packages

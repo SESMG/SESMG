@@ -8,7 +8,6 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.05519/status.svg)](https://doi.org/10.21105/joss.05519)
 
-
 ## Software Description
 
 The **SESMG** is an energy system model generator with the focus on the optimization of urban energy systems, which can, however, also be used for the modeling of other types of energy systems. The **SESMG** is based on the 'Open Energy Modelling Framework' (oemof) and comes, compared to other modeling tools with advantages regarding user-friendliness, as
@@ -37,6 +36,7 @@ https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01
 
 ### Examples
 Examples are stored in a separate GIT-Repository: https://github.com/SESMG/SESMG-Examples
+
 
 ### Project status
 ✓ Draft (alpha, beta) State <br />

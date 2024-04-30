@@ -10,21 +10,26 @@ def test_bus_entry():
         i.e. euros per kilowatt hour, and the expected emissions as
         grams of CO2 equivalent per kilowatt hour.
     """
-    from oemof.solph import EnergySystem, Bus, Sink, Flow, Source
+    from oemof.solph.components import Sink, Source
+    from oemof.solph import Flow, Bus, EnergySystem
     test_energy_system = EnergySystem()
     # add bus to test energy system
     bus = Bus(label="test_bus")
     test_energy_system.add(bus)
     # add excess sink to test energy system
     test_energy_system.add(Sink(label="test_bus_excess",
-                                inputs={bus: Flow(variable_costs=-0.35,
-                                                  emission_factor=-27)}))
+                                inputs={bus: Flow(
+                                    variable_costs=-0.35,
+                                    custom_attributes={"emission_factor": -27})
+                                }))
     # add shortage source to test energy system
-    test_energy_system.add(Source(label="test_bus_shortage",
-                                  outputs={bus: Flow(variable_costs=0.5,
-                                                     emission_factor=300)}))
+    test_energy_system.add(Source(
+        label="test_bus_shortage",
+        outputs={bus: Flow(
+            variable_costs=0.5,
+            custom_attributes={"emission_factor": 300})}))
 
-    return test_energy_system.nodes
+    return list(test_energy_system.nodes)
 
 
 def test_buses(test_bus_entry):
@@ -62,13 +67,15 @@ def test_buses(test_bus_entry):
     
     nodes = []
     
-    busd = Bus.buses(nodes_data=nodes_data, nodes=nodes)
+    busd, nodes = Bus.buses(nd_buses=nodes_data["buses"], nodes=nodes)
     
     for num in range(len(nodes)):
         # test if the two nodes labels are equal
         assert nodes[num].label == test_bus_entry[num].label
         # check if the variable costs and emission factors of the
         # inputs / outputs of the two nodes are equal
-        comparison_of_flow_attributes([nodes[num]], [test_bus_entry[num]])
-                
-        assert type(busd["test_bus"]) == type(test_bus_entry[0])
+        comparison_of_flow_attributes(
+            nodes=[nodes[num]],
+            test_nodes=[test_bus_entry[num]])
+            
+        assert isinstance(busd["test_bus"], type(test_bus_entry[0]))

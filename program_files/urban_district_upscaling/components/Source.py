@@ -8,7 +8,7 @@ import pandas
 
 def create_source(source_type: str, roof_num: str, building: pandas.Series,
                   sheets: dict, standard_parameters: pandas.ExcelFile,
-                  st_output=None, central=False, min_invest="0") -> dict:
+                  st_output=None, min_invest="0") -> dict:
     """
         In this method, the parameterization of a source component is
         performed. Then, the modifiable attributes are merged with
@@ -17,7 +17,7 @@ def create_source(source_type: str, roof_num: str, building: pandas.Series,
         structure "sheets" from which the model definition is created.
         
         :param source_type: define rather a photovoltaic or a \
-            solarthermal source has to be created
+            solar thermal source has to be created
         :type source_type: str
         :param roof_num: roof part number
         :type roof_num: str
@@ -33,9 +33,6 @@ def create_source(source_type: str, roof_num: str, building: pandas.Series,
         :param st_output: str containing the solar thermal output bus \
             which is used for the connection to district heating systems
         :type st_output: str
-        :param central: parameter which defines rather the source is a\
-            central source (True) or a decentral one (False)
-        :type central: bool
         :param min_invest: If there is already an existing plant, the \
             user can specify its capacity. This capacity value is \
             passed to the algorithm via min_invest and represents the \
@@ -47,7 +44,8 @@ def create_source(source_type: str, roof_num: str, building: pandas.Series,
             definition's Spreadsheets which was modified in this method
     """
     from program_files import append_component, read_standard_parameters
-
+    st_types = ["solar thermal system roof-mounted decentral",
+                "solar thermal system ground-mounted central"]
     # convert the building dict into a list
     source_param = [
         str(roof_num),
@@ -61,31 +59,39 @@ def create_source(source_type: str, roof_num: str, building: pandas.Series,
     
     # define the source's label, output bus, input bus
     switch_dict = {
-        "fixed photovoltaic source": [
+        "photovoltaic system roof-mounted decentral": [
             "_pv_source",
             "_pv_bus",
             0],
-        "solar_thermal_collector": [
+        "photovoltaic system ground-mounted central": [
+            "_pv_source",
+            "_pv_bus",
+            0],
+        "solar thermal system roof-mounted decentral": [
             "_solarthermal_source",
             "_heat_bus",
-            str(source_param[1]) + "_electricity_bus"]
+            str(source_param[1]) + "_electricity_bus"],
+        "solar thermal system ground-mounted central": [
+            "_solarthermal_source",
+            "_heat_bus",
+            str(source_param[1]) + "_electricity_bus"],
     }
     
+    if building["solar thermal share"] != "standard":
+        switch_dict["solar thermal system roof-mounted decentral"][1] = \
+            "_st_heat_bus"
+    
     # read the source specific standard parameters
-    standard_param = standard_parameters.parse("3_sources")
-    if not central:
-        standard_param = standard_param.loc[
-            standard_param["source_type"] == "solar_thermal_collector"]
-    else:
-        standard_param = standard_param.loc[
-            standard_param["source_type"] == "central_solar_thermal_collector"]
+    standard_param = standard_parameters.parse(sheet_name="3_sources",
+                                               na_filter=False)
+    standard_param = standard_param.query("`source type` == '{}'".format(
+            source_type))
     # calculate the inlet temperature which is necessary for solar
     # thermal flat plates
     temp_inlet = (
         (building["flow temperature"]
-         - (2 * float(standard_param["Temperature Difference"])))
-        if source_type == "solar_thermal_collector" else 0)
-
+         - (2 * float(standard_param["temperature difference"].iloc[0])))
+        if source_type in st_types else 0)
     # technical parameters
     source_dict = {
         "label": str(source_param[1])
@@ -95,26 +101,27 @@ def create_source(source_type: str, roof_num: str, building: pandas.Series,
         "output": str(source_param[1]) + switch_dict.get(source_type)[1]
         if not st_output
         else st_output,
-        "Azimuth": source_param[2],
-        "Surface Tilt": source_param[3],
-        "Latitude": source_param[4],
-        "Longitude": source_param[5],
+        "azimuth": source_param[2],
+        "surface tilt": source_param[3],
+        "latitude": source_param[4],
+        "longitude": source_param[5],
         "input": switch_dict.get(source_type)[2],
-        "Temperature Inlet": temp_inlet,
+        "temperature inlet": temp_inlet,
         "min. investment capacity": float(min_invest)
     }
-    if central:
-        source_type = "central_solar_thermal_collector"
 
     # extracts the st source specific standard values from the
     # standard_parameters dataset
-    param, keys = read_standard_parameters(source_type, "3_sources",
-                                           "source_type", standard_parameters)
+    param, keys = read_standard_parameters(
+        name=source_type,
+        parameter_type="3_sources",
+        index="source type",
+        standard_parameters=standard_parameters)
     for i in range(len(keys)):
-        source_dict[keys[i]] = param[keys[i]]
+        source_dict[keys[i]] = param.loc[source_type, keys[i]]
 
-    source_dict["max. investment capacity"] = (
-        param["Capacity per Area (kW/m2)"] * source_param[6]
+    source_dict["max. investment capacity"] = float(
+        param["capacity per area"].iloc[0] * source_param[6]
     )
 
     return append_component(sheets, "sources", source_dict)
@@ -157,25 +164,34 @@ def create_timeseries_source(sheets: dict, label: str, output: str,
         "existing capacity": 0,
         "min. investment capacity": 0,
         "output": output,
-        "Azimuth": 0,
-        "Surface Tilt": 0,
-        "Latitude": 0,
-        "Longitude": 0,
+        "azimuth": 0,
+        "surface tilt": 0,
+        "latitude": 0,
+        "longitude": 0,
         "input": 0,
     }
 
     # extracts the st source specific standard values from the
     # standard_parameters dataset
-    param, keys = read_standard_parameters("timeseries_source", "3_sources",
-                                           "source_type", standard_parameters)
+    param, keys = read_standard_parameters(
+        name="timeseries source",
+        parameter_type="3_sources",
+        index="source type",
+        standard_parameters=standard_parameters
+    )
+    
     for i in range(len(keys)):
-        source_dict[keys[i]] = param[keys[i]]
+        source_dict[keys[i]] = param.loc["timeseries source", keys[i]]
 
-    return append_component(sheets, "sources", source_dict)
+    return append_component(
+        sheets=sheets,
+        sheet="sources",
+        comp_parameter=source_dict
+    )
 
 
 def create_competition_constraint(limit: float, label: str, roof_num: str,
-                                  sheets: dict,
+                                  types: list, sheets: dict,
                                   standard_parameters: pandas.ExcelFile
                                   ) -> dict:
     """
@@ -192,6 +208,10 @@ def create_competition_constraint(limit: float, label: str, roof_num: str,
         :type label: str
         :param roof_num: roof part id
         :type roof_num: str
+        :param types: list containing component type labels. \
+            Necessary since the labels for (de)central components are \
+            different.
+        :type types: list
         :param sheets: dictionary containing the pandas.Dataframes that\
             will represent the model definition's Spreadsheets
         :type sheets: dict
@@ -207,24 +227,30 @@ def create_competition_constraint(limit: float, label: str, roof_num: str,
 
     # import the photovoltaic and solar thermal standard parameters
     pv_param, pv_keys = read_standard_parameters(
-        "fixed photovoltaic source", "3_sources", "source_type",
-        standard_parameters)
+        name=types[0],
+        parameter_type="3_sources",
+        index="source type",
+        standard_parameters=standard_parameters)
     
     st_param, st_keys = read_standard_parameters(
-        "solar_thermal_collector", "3_sources", "source_type",
-        standard_parameters)
+        name=types[1],
+        parameter_type="3_sources",
+        index="source type",
+        standard_parameters=standard_parameters)
     
     # define individual values
     constraint_dict = {
         "component 1": label + "_" + str(roof_num) + "_pv_source",
-        "factor 1": 1 / pv_param["Capacity per Area (kW/m2)"],
+        "factor 1": float(1 / pv_param["capacity per area"].iloc[0]),
         "component 2": label + "_" + str(roof_num) + "_solarthermal_source",
-        "factor 2": 1 / st_param["Capacity per Area (kW/m2)"],
+        "factor 2": float(1 / st_param["capacity per area"].iloc[0]),
         "limit": limit,
         "active": 1,
     }
 
-    return append_component(sheets, "competition constraints", constraint_dict)
+    return append_component(sheets=sheets,
+                            sheet="competition constraints",
+                            comp_parameter=constraint_dict)
 
 
 def create_sources(building: pandas.Series, clustering: bool, sheets: dict,
@@ -238,7 +264,7 @@ def create_sources(building: pandas.Series, clustering: bool, sheets: dict,
         :param building: Series containing the building specific \
             parameters
         :type building: pandas.Series
-        :param clustering: boolean which definies rather the resulting \
+        :param clustering: boolean which defines rather the resulting \
             energy system is spatially clustered or not
         :type clustering: bool
         :param sheets: dictionary containing the pandas.Dataframes that\
@@ -250,7 +276,7 @@ def create_sources(building: pandas.Series, clustering: bool, sheets: dict,
         :param st_output: str containing the solar thermal output bus \
             which is used for the connection to district heating systems
         :type st_output: str
-        :param central: parameter which definies rather the source is a\
+        :param central: parameter which defines rather the source is a\
             central source (True) or a decentral one (False)
         :type central: bool
         
@@ -260,6 +286,13 @@ def create_sources(building: pandas.Series, clustering: bool, sheets: dict,
     """
     from program_files.urban_district_upscaling.pre_processing \
         import column_exists, represents_int
+    
+    if central:
+        pv_type = "photovoltaic system ground-mounted central"
+        st_type = "solar thermal system ground-mounted central"
+    else:
+        pv_type = "photovoltaic system roof-mounted decentral"
+        st_type = "solar thermal system roof-mounted decentral"
     # create pv-sources and solar thermal-sources including area
     # competition
     roof_num = 1
@@ -275,7 +308,7 @@ def create_sources(building: pandas.Series, clustering: bool, sheets: dict,
                 min_invest = pv_column if represents_int(pv_column) else "0"
                 
                 sheets = create_source(
-                    source_type="fixed photovoltaic source",
+                    source_type=pv_type,
                     roof_num=str(roof_num),
                     building=building,
                     sheets=sheets,
@@ -288,15 +321,14 @@ def create_sources(building: pandas.Series, clustering: bool, sheets: dict,
                 # if the user inserted an entry deviating yes in the pv
                 # column it has to be the min invest value
                 min_invest = st_column if represents_int(st_column) else "0"
-                
+
                 sheets = create_source(
-                    source_type="solar_thermal_collector",
+                    source_type=st_type,
                     roof_num=str(roof_num),
                     building=building,
                     sheets=sheets,
                     st_output=st_output,
                     standard_parameters=standard_parameters,
-                    central=central,
                     min_invest=min_invest
                 )
     
@@ -304,6 +336,7 @@ def create_sources(building: pandas.Series, clustering: bool, sheets: dict,
                     sheets = create_competition_constraint(
                         roof_num=str(roof_num),
                         label=building["label"],
+                        types=[pv_type, st_type],
                         sheets=sheets,
                         limit=building["roof area %1d" % roof_num],
                         standard_parameters=standard_parameters
@@ -349,13 +382,13 @@ def cluster_sources_information(source: pandas.Series, source_param: dict,
         2: source["periodical costs"],
         3: source["periodical constraint costs"],
         4: source["variable costs"],
-        5: source["Albedo"],
-        6: source["Altitude"],
-        7: source["Azimuth"],
-        8: source["Surface Tilt"],
-        9: source["Latitude"],
-        10: source["Longitude"],
-        11: source["Temperature Inlet"]
+        5: source["albedo"],
+        6: source["altitude"],
+        7: source["azimuth"],
+        8: source["surface tilt"],
+        9: source["latitude"],
+        10: source["longitude"],
+        11: source["temperature inlet"]
     }
     for num in param_dict:
         source_param[source_type + "_{}".format(azimuth_type)][num] \
@@ -396,8 +429,8 @@ def sources_clustering(source_param: dict, building: list,
     """
     for index, source in sheets_clustering["sources"].iterrows():
         # collecting information for bundled photovoltaic systems
-        if source["technology"] in [
-                "photovoltaic", "solar_thermal_flat_plate"]:
+        if (source["technology"] in
+                ["photovoltaic", "solar_thermal_flat_plate"]):
             # check the azimuth type for clustering in 8 cardinal
             # directions
             dir_dict = {
@@ -411,7 +444,7 @@ def sources_clustering(source_param: dict, building: list,
             }
             azimuth_type = None
             for dire in dir_dict:
-                if dir_dict[dire][0] <= source["Azimuth"] < dir_dict[dire][1]:
+                if dir_dict[dire][0] <= source["azimuth"] < dir_dict[dire][1]:
                     azimuth_type = dire
 
             azimuth_type = "south" if azimuth_type is None else azimuth_type
@@ -459,17 +492,19 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
 
     # Define PV Standard-Parameters
     pv_standard_param, pv_standard_keys = read_standard_parameters(
-        name="fixed photovoltaic source",
+        name="photovoltaic system roof-mounted decentral",
         parameter_type="3_sources",
-        index="source_type",
+        index="source type",
         standard_parameters=standard_parameters)
     st_standard_param, st_standard_keys = read_standard_parameters(
-        name="solar_thermal_collector",
+        name="solar thermal system roof-mounted decentral",
         parameter_type="3_sources",
-        index="source_type",
+        index="source type",
         standard_parameters=standard_parameters)
     
     bus_created = False
+    # iterate threw the 8 azimuths considered for the clustering of
+    # the energy system sources
     for azimuth in [
         "north_000",
         "north_east_045",
@@ -481,38 +516,59 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
         "north_west_315",
     ]:
         for pv_st in ["pv", "st"]:
+            # list from sources parameters for the currently considered
+            # cardinal orientation
+            list_source_parameters = (
+                source_param)[pv_st + "_{}".format(azimuth[:-4])]
             # if the counter for the considered cardinal orientation is
             # not 0
-            if source_param[pv_st + "_{}".format(azimuth[:-4])][0] > 0:
-                # type dependent parameter
+            if list_source_parameters[0] > 0:
+                # source type dependent parameter e.g. row of the
+                # standard parameters or the standard parameter type
                 type_param = {
-                    "pv": [pv_standard_param, "fixed photovoltaic source"],
-                    "st": [st_standard_param, "solar_thermal_collector"],
+                    "pv": [pv_standard_param,
+                           "photovoltaic system roof-mounted decentral"],
+                    "st": [st_standard_param,
+                           "solar thermal system roof-mounted decentral"],
                 }
+                
+                area = (list_source_parameters[1]
+                        / pandas.DataFrame(type_param.get(pv_st)[0])[
+                            "capacity per area"].iloc[0])
                 param_dict = {
                     "label": cluster,
                     "azimuth {}".format(azimuth[:-4]): int(azimuth[-3:]),
-                    "roof area {}".format(azimuth[:-4]):
-                        source_param[pv_st + "_{}".format(azimuth[:-4])][1]
-                        / type_param.get(pv_st)[0]["Capacity per Area (kW/m2)"]
+                    "roof area {}".format(azimuth[:-4]): area,
+                    "solar thermal share": "standard"
                 }
-
+                
+                # create the pv export bus if it is not yet created and
+                # the currently considered source is a photovoltaic
+                # source
                 if not bus_created and pv_st == "pv":
                     sheets = Bus.create_standard_parameter_bus(
                         label=str(cluster) + "_pv_bus",
-                        bus_type="building_pv_bus",
+                        bus_type="electricity bus photovoltaic decentral",
                         sheets=sheets,
                         standard_parameters=standard_parameters
                     )
                     bus_created = True
+                    
+                # if the currently considered source is a photovoltaic
+                # source and there is a potential solar thermal source
+                # on the same roof create a competition constraint for
+                # the considered roof area
                 if pv_st == "pv" \
                         and source_param["st_{}".format(azimuth[:-4])][0] > 0:
                     sheets = create_competition_constraint(
-                        limit=param_dict["roof area {}".format(azimuth[:-4])],
+                        limit=float(param_dict["roof area {}".format(
+                                azimuth[:-4])]),
                         label=cluster,
                         roof_num=azimuth[:-4],
                         sheets=sheets,
-                        standard_parameters=standard_parameters
+                        standard_parameters=standard_parameters,
+                        types=["photovoltaic system roof-mounted decentral",
+                               "solar thermal system roof-mounted decentral"]
                     )
                     
                 # dict defining param location in sources information list
@@ -529,72 +585,9 @@ def create_cluster_sources(source_param: dict, cluster: str, sheets: dict,
                 sheets = create_source(
                     source_type=type_param.get(pv_st)[1],
                     roof_num=azimuth[:-4],
-                    building=param_dict,
+                    building=pandas.Series(data=param_dict),
                     sheets=sheets,
                     standard_parameters=standard_parameters)
-    return sheets
-
-
-def create_pv_bus_links(building: pandas.Series, sheets: dict,
-                        standard_parameters: pandas.ExcelFile,
-                        central_electricity_bus: bool) -> dict:
-    """
-        In this method, the PV bus of the considered building is
-        created and connected to the in-house electricity bus and, if
-        available, to the central electricity bus. The created
-        components are appended to the return data structure "sheets",
-        which represents the model definition at the end.
-    
-        :param building: Series containing the building specific \
-            parameters
-        :type building: pandas.Series
-        :param sheets: dictionary containing the pandas.Dataframes that\
-            will represent the model definition's Spreadsheets
-        :type sheets: dict
-        :param standard_parameters: pandas imported ExcelFile \
-            containing the non-building specific technology data
-        :type standard_parameters: pandas.ExcelFile
-        :param central_electricity_bus: boolean representing the \
-            user's decision rather a local electricity exchange is \
-            possible or not
-        :type central_electricity_bus: bool
-        
-         :return: - **sheets** (dict) - dictionary containing the \
-            pandas.Dataframes that will represent the model \
-            definition's Spreadsheets which was modified in this method
-    """
-    from program_files.urban_district_upscaling.components import Bus, Link
-    # create building pv bus
-    sheets = Bus.create_standard_parameter_bus(
-        label=str(building["label"]) + "_pv_bus",
-        bus_type="building_pv_bus",
-        sheets=sheets,
-        standard_parameters=standard_parameters
-    )
-
-    # create link from pv bus to building electricity bus
-    sheets = Link.create_link(
-        label=str(building["label"])
-        + "_pv_self_consumption_electricity_link",
-        bus_1=str(building["label"]) + "_pv_bus",
-        bus_2=str(building["label"]) + "_electricity_bus",
-        link_type="building_pv_building_link",
-        sheets=sheets,
-        standard_parameters=standard_parameters
-    )
-    
-    # create link from pv bus to central electricity bus if the
-    # central electricity exchange is enabled
-    if central_electricity_bus:
-        sheets = Link.create_link(
-            label=str(building["label"]) + "_pv_central_electricity_link",
-            bus_1=str(building["label"]) + "_pv_bus",
-            bus_2="central_electricity_bus",
-            link_type="building_pv_central_link",
-            sheets=sheets,
-            standard_parameters=standard_parameters
-        )
-    
     return sheets
 
 
@@ -628,7 +621,7 @@ def update_sources_in_output(building: pandas.Series, sheets_clustering: dict,
     for num, source in sheets_clustering["sources"].iterrows():
         buses = {
             "heat": ["output", "_heat_bus"],
-            "elec": ["input", "_electricity_bus"],
+            "electricity": ["input", "_electricity_bus"],
         }
         for bus in buses:
             # if the building's label and the bus_type is within the
@@ -638,7 +631,7 @@ def update_sources_in_output(building: pandas.Series, sheets_clustering: dict,
                     and bus in str(source[buses[bus][0]]):
                 sheets["sources"][buses[bus][0]] = \
                     sheets["sources"][buses[bus][0]].replace(
-                        [str(building[0]) + buses[bus][1],
-                         str(cluster) + buses[bus][1]]
+                        to_replace=str(building[0]) + buses[bus][1],
+                        value=str(cluster) + buses[bus][1]
                 )
     return sheets

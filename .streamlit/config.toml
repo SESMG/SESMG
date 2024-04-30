@@ -7,6 +7,7 @@
 
 # If you'd like to turn off this warning, set this to True.
 
+
 # Default: false
 disableWatchdogWarning = false
 
@@ -24,6 +25,7 @@ disableWidgetStateDuplicationWarning = false
 
 # Default: true
 showWarningOnDirectExecution = true
+
 
 # DataFrame serialization.
 
@@ -54,6 +56,7 @@ level = "info"
 messageFormat = "%(asctime)s %(message)s"
 
 [client]
+
 
 # Whether to enable st.cache. This does not affect st.cache_data or
 # st.cache_resource.
@@ -104,6 +107,7 @@ toolbarMode = "auto"
 
 # Default: true
 magicEnabled = true
+
 
 # Install a Python tracer to allow you to stop or pause your script at
 # any point and introspect it. As a side-effect, this slows down your
@@ -304,6 +308,7 @@ serverPort = 8501
 token = ""
 
 [deprecation]
+
 
 # Set to false to disable the deprecation warning for the file uploader
 # encoding.

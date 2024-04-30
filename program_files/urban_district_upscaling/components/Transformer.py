@@ -5,34 +5,57 @@
 """
 import pandas
 
-technology_dict = {
-    "building_gchp_transformer":
-        ["gchp", "hp_elec", "heat", "None"],
-    "building_ashp_transformer":
-        ["ashp", "hp_elec", "heat", "None"],
-    "building_gasheating_transformer":
-        ["gasheating", "gas", "heat", "None"],
-    "building_oilheating_transformer":
-        ["oilheating", "oil", "heat", "None"],
-    "building_electricheating_transformer":
-        ["electricheating", "electricity", "heat", "None"],
-    "building_woodstove_transformer":
-        ["wood_stove", "wood", "heat", "None"]
-}
+
+def get_technology_dict(fuel_type: str, label: str, output: str,
+                        de_centralized: str, transformer_type: str,
+                        category: str):
+    """
+    
+    """
+    # update the global data structure which contains the components
+    # label, output buses and input bus
+    fuel_type_wo_gaps = fuel_type.replace(" ", "_")
+    
+    return {
+        "combined heat and power " + fuel_type + "central":
+            [label + "_chp", label + "_" + fuel_type_wo_gaps,
+             label + "_electricity", output],
+        category + " heating " + fuel_type + de_centralized:
+            [label + "_" + fuel_type_wo_gaps + "heating_plant",
+             label + "_" + fuel_type_wo_gaps, output, "None"],
+        category + " heating " + de_centralized:
+            [label + "_" + transformer_type.split(" ")[0] + "_heating_plant",
+             label + "_" + fuel_type, output, "None"],
+        "heat pump " + fuel_type + de_centralized:
+            [label + "_" + fuel_type_wo_gaps + "heatpump",
+             label + "_heatpump_electricity_", output, "None"],
+        "central_biomass_transformer":
+            ["biomass", "biomass", output, "None"],
+        "electrolysis central":
+            [label + "_electrolysis", de_centralized + "_electricity_",
+             de_centralized + "_hydrogen", "None"],
+        "methanization central":
+            [label + "_methanization", de_centralized + "_hydrogen_",
+             de_centralized + "_natural_gas", "None"],
+        "fuel cell central":
+            [label + "_fuelcell", de_centralized + "_hydrogen_",
+             de_centralized + "_electricity", output],
+        "woodstove decentral":
+            [label + "_woodstove", label + "_wood_", output, "None"]
+    }
 
 
-def create_transformer(building_id: str, transformer_type: str, sheets: dict,
+def create_transformer(label: str, transformer_type: str, sheets: dict,
                        standard_parameters: pandas.ExcelFile,
-                       flow_temp: str, building_type=None,
-                       area="0", label="None", specific="None",
-                       output="None", min_invest="0") -> dict:
+                       de_centralized: str, flow_temp: str, category="",
+                       building_type=None, area="0",
+                       fuel_type="None", output="None", min_invest="0",
+                       length_geoth_probe="0", heat_extraction="0") -> dict:
     """
         Sets the specific parameters for a transformer component,
         creates them and appends them to the return data structure
         "sheets" afterwards.
         
-        :param building_id: building label
-        :type building_id: str
         :param transformer_type: string containing the type of \
             transformer which has to be created
         :type transformer_type: str
@@ -54,9 +77,9 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
             well as central transformer components the label specifies \
             the first part of the components label.
         :type label: str
-        :param specific: with the help of the specific attribute the \
+        :param fuel_type: with the help of the fuel_type attribute the \
             transformer's fuel type is chosen
-        :type specific: str
+        :type fuel_type: str
         :param output: within the output attribute a transformer \
             individual output bus label can be set. This attribute \
             does not have to be filled for each transformer type which \
@@ -66,6 +89,12 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
             existing transformer it's capacity is the min investment \
             value of the transformer to be created
         :type min_invest: str
+        :param len_geoth_probe: length of the vertical heat exchanger \
+            relevant for GCHPs
+        :type len_geoth_probe: str
+        :param heat_extraction: heat extraction for the heat exchanger \
+            referring to the location
+        :type heat_extraction: str
         
         :return: - **sheets** (dict) - dictionary containing the \
             pandas.Dataframes that will represent the model \
@@ -73,80 +102,78 @@ def create_transformer(building_id: str, transformer_type: str, sheets: dict,
     """
     from program_files import create_standard_parameter_comp
     from program_files import Bus
-
-    # update the global data structure which contains the components
-    # label, output buses and input bus
-    technology_dict.update(
-        {
-            "central_" + specific + "_chp":
-                [label + "_chp", label, label + "_elec", output],
-            "central_" + specific + "_heating_plant_transformer":
-                [label + "_heating_plant", label, output, "None"],
-            "central_" + specific + "_transformer":
-                [label + "_heatpump", "heatpump_electricity", output, "None"],
-            "central_biomass_transformer":
-                ["biomass", "biomass", output, "None"],
-            "central_electrolysis_transformer":
-                [label + "_electrolysis", "electricity", "h2", "None"],
-            "central_methanization_transformer":
-                [label + "_methanization", "h2", "naturalgas", "None"],
-            "central_fuelcell_transformer":
-                [label + "_fuelcell", "h2", "electricity", output],
-        }
-    )
+    
+    transformer_type = transformer_type + de_centralized
+    
+    technology_dict = get_technology_dict(fuel_type=fuel_type,
+                                          label=label,
+                                          output=output,
+                                          de_centralized=de_centralized,
+                                          transformer_type=transformer_type,
+                                          category=category)
+    input_bus = technology_dict.get(transformer_type)[1] + "bus"
     
     # differentiate the building type due to different shortage costs
     if building_type is not None:
-        if building_type in ["SFB", "MFB", "0"]:
-            bus = "building_res_gas_bus"
-            oil_bus = "building_res_oil_bus"
+        if building_type in ["single family building",
+                             "multi family building", "0"]:
+            electricity_bus = "electricity bus residential decentral"
+            gas_bus = "gas bus residential decentral"
+            oil_bus = "oil bus residential decentral"
         elif building_type == "IND":
-            bus = "building_ind_gas_bus"
-            oil_bus = "building_ind_oil_bus"
+            electricity_bus = "electricity bus industrial decentral"
+            gas_bus = "gas bus industrial decentral"
+            oil_bus = "oil bus industrial decentral"
         else:
-            bus = "building_com_gas_bus"
-            oil_bus = "building_com_oil_bus"
+            electricity_bus = "electricity bus commercial decentral"
+            gas_bus = "gas bus commercial decentral"
+            oil_bus = "oil bus commercial decentral"
             
-        if transformer_type == "building_gasheating_transformer":
-            sheets = Bus.create_standard_parameter_bus(
-                label=str(building_id) + "_gas_bus", bus_type=bus,
-                sheets=sheets, standard_parameters=standard_parameters
-            )
-        if transformer_type == "building_oilheating_transformer":
-            sheets = Bus.create_standard_parameter_bus(
-                label=str(building_id) + "_oil_bus", bus_type=oil_bus,
-                sheets=sheets, standard_parameters=standard_parameters
-            )
-        if transformer_type == "building_woodstove_transformer":
-            sheets = Bus.create_standard_parameter_bus(
-                label=str(building_id) + "_wood_bus",
-                bus_type="building_wood_bus",
-                sheets=sheets, standard_parameters=standard_parameters
-            )
-
+        switch_dict = {
+            "electric heating decentral": ["_electricity_bus", electricity_bus],
+            "gas heating natural gas decentral": ["_natural_gas_bus", gas_bus],
+            "oil heating decentral": ["_oil_bus", oil_bus],
+            "woodstove decentral": ["_wood_bus", "wood bus decentral"],
+            "biomass heating pellet decentral": ["_pellet_bus", "pellet bus decentral"]
+        }
+        try:
+            # get the transformer type specific input bus label and
+            # type
+            input_bus_list = switch_dict.get(transformer_type)
+            # create the transformer specific input bus
+            if (len(sheets["buses"]) == 0
+                    or str(label) + input_bus_list[0] not in
+                    list(sheets["buses"]["label"])):
+                sheets = Bus.create_standard_parameter_bus(
+                    label=str(label) + input_bus_list[0],
+                    bus_type=input_bus_list[1],
+                    sheets=sheets,
+                    standard_parameters=standard_parameters
+                )
+            input_bus = str(label) + input_bus_list[0]
+        except ValueError:
+            pass
+        
     if not technology_dict.get(transformer_type)[2] == output:
-        output1 = str(building_id) + "_" \
-                  + technology_dict.get(transformer_type)[2] + "_bus"
+        output1 = technology_dict.get(transformer_type)[2] + "_bus"
     else:
         output1 = output
 
     return create_standard_parameter_comp(
         specific_param={
-            "label": building_id
-            + "_"
-            + technology_dict.get(transformer_type)[0]
+            "label": technology_dict.get(transformer_type)[0]
             + "_transformer",
-            "input": building_id
-            + "_"
-            + technology_dict.get(transformer_type)[1] + "_bus",
+            "input": input_bus,
             "output": output1,
             "output2": technology_dict.get(transformer_type)[3],
             "area": float(area),
             "temperature high": flow_temp,
-            "min. investment capacity": float(min_invest)
+            "min. investment capacity": float(min_invest),
+            "length of the geoth. probe": float(length_geoth_probe),
+            "heat extraction": float(heat_extraction)
         },
         standard_parameter_info=[transformer_type, "4_transformers",
-                                 "transformer_type"],
+                                 "transformer type"],
         sheets=sheets,
         standard_parameters=standard_parameters
     )
@@ -183,20 +210,34 @@ def building_transformer(building: dict, p2g_link: bool, sheets: dict,
         import represents_int
     
     build_transformer_dict = {
+        # 0: building type, 1: transformer type, 2: fuel type, 3: category
         "ashp":
-            [None, "building_ashp_transformer"],
+            [None, "heat pump", "air source ", ""],
+        "aahp":
+            [None, "heat pump", "air to air ", ""],
         "gas heating":
-            [building["building type"], "building_gasheating_transformer"],
+            [building["building type"], "gas heating", "natural gas ", "gas"],
         "electric heating":
-            [None, "building_electricheating_transformer"],
+            [building["building type"], "electric heating", "", "electric"],
         "oil heating":
-            [building["building type"], "building_oilheating_transformer"],
+            [building["building type"], "oil heating", "", "oil"],
         "wood stove":
-            [building["building type"], "building_woodstove_transformer"]
+            [building["building type"], "woodstove", "", ""],
+        "pellet heating":
+            [building["building type"], "biomass heating", "pellet ", "biomass"],
     }
     
     for transformer in build_transformer_dict:
-        # creates air source heat-pumps
+        
+        # change output bus if the heat share of the wood stove is
+        # defined
+        if (transformer == "wood stove"
+                and building["wood stove share"] != "standard"):
+            output = building["label"] + "_wood_stove_heat_bus"
+        else:
+            output = building["label"] + "_heat_bus"
+            
+        # check if the current transformer is activated
         if building[transformer] not in ["no", "No", "0"]:
             # Check if the user has inserted a min investment value
             # or a boolean yes
@@ -204,24 +245,35 @@ def building_transformer(building: dict, p2g_link: bool, sheets: dict,
                 min_invest = building[transformer]
             else:
                 min_invest = "0"
+            
+            # get the transformer type specific list of attributes
+            transformer_list = build_transformer_dict[transformer]
+                
             sheets = create_transformer(
-                building_id=building["label"],
-                building_type=build_transformer_dict[transformer][0],
-                transformer_type=build_transformer_dict[transformer][1],
+                label=building["label"],
+                building_type=transformer_list[0],
+                transformer_type=transformer_list[1] + " " + transformer_list[2],
                 sheets=sheets,
                 standard_parameters=standard_parameters,
                 flow_temp=building["flow temperature"],
-                min_invest=min_invest
+                min_invest=min_invest,
+                de_centralized="decentral",
+                fuel_type=transformer_list[2],
+                category=transformer_list[3],
+                output=output
             )
+            
             if transformer == "gas heating" and p2g_link:
-                sheets = Link.create_link(
-                    label=building["label"] + "_central_naturalgas_link",
-                    bus_1="central_naturalgas_bus",
-                    bus_2=building["label"] + "_gas_bus",
-                    link_type="central_naturalgas_building_link",
-                    sheets=sheets,
-                    standard_parameters=standard_parameters
-                )
+                if (building["label"] + "_central_natural_gas_link"
+                        not in list(sheets["links"]["label"])):
+                    sheets = Link.create_link(
+                        label=building["label"] + "_central_natural_gas_link",
+                        bus_1="central_natural_gas_bus",
+                        bus_2=building["label"] + "_natural_gas_bus",
+                        link_type="natural gas central link decentral",
+                        sheets=sheets,
+                        standard_parameters=standard_parameters
+                    )
     return sheets
 
 
@@ -264,30 +316,43 @@ def create_gchp(tool: pandas.DataFrame, parcels: pandas.DataFrame,
             & (tool["parcel ID"] == parcel["ID parcel"])
             ]
         if not build_parcel.empty:
-            gchps.update({parcel["ID parcel"][-9:]: parcel["gchp area (m²)"]})
+            gchps.update({parcel["ID parcel"][-9:]: [
+                parcel["gchp area (m²)"],
+                parcel["length of the geoth. probe (m)"],
+                parcel["heat extraction"]]})
     # create gchp relevant components
     for gchp in gchps:
         # TODO What supply temperature do we use here, do we have to
         #  average that of the buildings?
         sheets = create_transformer(
-                building_id=gchp,
-                area=gchps[gchp],
-                transformer_type="building_gchp_transformer",
-                sheets=sheets,
-                standard_parameters=standard_parameters,
-                flow_temp="60"
+            area=gchps[gchp][0],
+            transformer_type="heat pump ground-coupled ",
+            sheets=sheets,
+            standard_parameters=standard_parameters,
+            flow_temp="60",
+            length_geoth_probe=gchps[gchp][1],
+            heat_extraction=gchps[gchp][2],
+            de_centralized="decentral",
+            fuel_type="ground-coupled ",
+            output=gchp + "_heat_bus",
+            label=gchp
         )
+        
+        # create the electricity bus for the electric consumption of the
+        # heat pump
         sheets = Bus.create_standard_parameter_bus(
-                label=gchp + "_hp_elec_bus",
-                bus_type="building_hp_electricity_bus",
-                sheets=sheets,
-                standard_parameters=standard_parameters
+            label=gchp + "_heatpump_electricity_bus",
+            bus_type="electricity bus heat pump decentral",
+            sheets=sheets,
+            standard_parameters=standard_parameters
         )
+        
+        # create the heat bus for the thermal output of the heat pump
         sheets = Bus.create_standard_parameter_bus(
-                label=gchp + "_heat_bus",
-                bus_type="building_heat_bus",
-                sheets=sheets,
-                standard_parameters=standard_parameters
+            label=gchp + "_heat_bus",
+            bus_type="heat bus heat pump decentral",
+            sheets=sheets,
+            standard_parameters=standard_parameters
         )
     return gchps, sheets
 
@@ -324,18 +389,17 @@ def cluster_transformer_information(transformer: pandas.DataFrame,
     param_dict = {
         0: 1,
         1: transformer["efficiency"],
-        3: transformer["periodical costs"],
-        4: transformer["variable output constraint costs"],
+        2: transformer["periodical costs"],
+        3: transformer["variable output constraint costs"],
+        4: transformer["area"],
+        5: transformer["length of the geoth. probe"],
+        6: transformer["heat extraction"],
+        7: transformer["temperature high"]
     }
     for num in param_dict:
         # counter
-        cluster_parameters[technology][num] += param_dict[num]
+        cluster_parameters[technology][num] += float(param_dict[num])
 
-    if technology in ["ashp", "gchp"]:
-        cluster_parameters[technology][2] += transformer["efficiency2"]
-
-    if technology == "gchp":
-        cluster_parameters[technology][5] += transformer["area"]
     # remove the considered transformer from transformer sheet
     sheets["transformers"] = \
         sheets["transformers"].drop(index=transformer["label"])
@@ -349,8 +413,8 @@ def transformer_clustering(building: list, sheets: dict,
                            ) -> (dict, dict):
     """
         Main method to collect the information about the transformer
-        (gasheating, ashp, gchp, electric heating), which are located
-        in the considered cluster.
+        (gasheating, ashp, gchp, electric heating, air-to-air
+        heatpumps), which are located in the considered cluster.
 
         :param building: list containing the building information from \
             the US-Input sheet
@@ -374,29 +438,30 @@ def transformer_clustering(building: list, sheets: dict,
     """
     for index, transformer in sheets_clustering["transformers"].iterrows():
         label = transformer["label"]
-        technologies = ["gasheating", "electricheating", "ashp"]
+        technologies = cluster_parameters.keys()
         
         # collect gasheating transformer information
         if str(building[0]) in label and label in sheets["transformers"].index:
-            if label.split("_")[1] in technologies:
-                cluster_parameters, sheets = cluster_transformer_information(
-                    transformer=transformer,
-                    cluster_parameters=cluster_parameters,
-                    technology=label.split("_")[1],
-                    sheets=sheets)
+            for technology in technologies:
+                if technology in label:
+                    cluster_parameters, sheets = (
+                        cluster_transformer_information(
+                            transformer=transformer,
+                            cluster_parameters=cluster_parameters,
+                            technology=technology,
+                            sheets=sheets))
                 
         # if parcel label != 0
-        if str(building[1]) != "0":
+        if str(building[1]) not in ["0", 0, "None"]:
             # collect gchp data
-            if (
-                str(building[1])[-9:] in transformer["label"]
-                and "gchp" in transformer["label"]
+            if (str(building[1]) in transformer["label"]
+                and "ground-coupled_heatpump" in transformer["label"]
                 and transformer["label"] in sheets["transformers"].index
             ):
                 cluster_parameters, sheets = cluster_transformer_information(
                     transformer=transformer,
                     cluster_parameters=cluster_parameters,
-                    technology="gchp",
+                    technology="ground-coupled_heatpump",
                     sheets=sheets)
                 sheets["buses"].set_index("label", inplace=True, drop=False)
                 
@@ -442,51 +507,73 @@ def create_cluster_transformer(technology: str, cluster_parameters: dict,
     
     # dictionary holding the technology transformer type combination for
     # importing the standard_parameters
-    type_dict = {"gasheating": "building_gasheating_transformer",
-                 "electricheating": "building_electricheating_transformer",
-                 "ashp": "building_ashp_transformer",
-                 "gchp": "building_gchp_transformer"}
+    type_dict = {
+        "natural_gas_heating":
+            ["gas heating natural gas decentral", "natural gas ", "gas"],
+         "electric_heating":
+             ["electric heating decentral", "electricity_", "electric"],
+         "air_source_heatpump":
+             ["heat pump air source decentral", "air source ", ""],
+         "ground-coupled_heatpump":
+             ["heat pump ground-coupled decentral", "ground-coupled ", ""],
+         "air_to_air_heatpump":
+             ["heat pump air to air decentral", "air to air ", ""],
+         "oil_heating":
+             ["oil heating decentral", "oil_", "oil"],
+         "pellet_heating":
+             ["biomass heating pellet decentral", "pellet ", "biomass"]}
     
+    technology_dict = get_technology_dict(
+        fuel_type=type_dict.get(technology)[1],
+        label=cluster,
+        output=cluster + "_heat_bus",
+        de_centralized="decentral",
+        transformer_type=type_dict.get(technology)[0],
+        category=type_dict.get(technology)[2])
+
     # since the first entry of each technology list is the occurrence
     # a variable is defined
     counter = cluster_parameters[technology][0]
     
     standard_param, keys = read_standard_parameters(
-        name=type_dict.get(technology),
+        name=type_dict.get(technology)[0],
         parameter_type="4_transformers",
-        index="transformer_type",
+        index="transformer type",
         standard_parameters=standard_parameters
     )
     
+    technology_list = technology_dict.get(type_dict.get(technology)[0])
     specific_dict = {
-        "label": cluster + technology_dict.get(type_dict.get(technology))[0],
-        "input": cluster + technology_dict.get(type_dict.get(technology))[1],
-        "output": cluster + technology_dict.get(type_dict.get(technology))[2],
+        "label": technology_list[0],
+        "input": technology_list[1] + "bus",
+        "output": technology_list[2],
         "output2": "None",
+        "min. investment capacity": 0
     }
     # insert standard parameters in the components dataset (dict)
     for i in range(len(keys)):
-        specific_dict[keys[i]] = standard_param[keys[i]]
+        specific_dict[keys[i]] = standard_param[keys[i]].iloc[0]
     
     # averaging the transformer parameter
     entries_dict = {"efficiency": 1,
-                    "periodical costs": 3,
-                    "variable output constraint costs": 4}
+                    "periodical costs": 2,
+                    "variable output constraint costs": 3,
+                    "area": 4,
+                    "length of the geoth. probe": 5,
+                    "heat extraction": 6,
+                    "temperature high": 7}
     
     for i in entries_dict:
         specific_dict.update({
             i: cluster_parameters[technology][entries_dict.get(i)] / counter})
-    
+        
     specific_dict.update({
-        "max. investment capacity": standard_param["max. investment capacity"]
-        * counter,
-        "area": cluster_parameters["gchp"][5]
-        if technology == "gchp" else "None"})
-
-    if technology in ["ashp", "gchp"]:
-        specific_dict["efficiency2"] = \
-            cluster_parameters[technology][2] / counter
-
+        "max. investment capacity":
+            standard_param["max. investment capacity"].iloc[0] * counter,
+        })
+    
+    specific_dict["transformer type"] = specific_dict["transformer type.1"]
+    del (specific_dict["transformer type.1"])
     # produce a pandas series out of the dict above due to
     # easier appending
     return append_component(sheets, "transformers", specific_dict)

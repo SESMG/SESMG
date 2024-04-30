@@ -5,21 +5,22 @@
 """
 import pandas
 
-storage_dict = {
-    "battery": ["_battery_storage", "_battery_storage", "_electricity_bus"],
-    "thermal": ["_thermal_storage", "_thermal_storage", "_heat_bus"],
-    "h2_storage": ["_h2_storage", "_h2_storage", "_h2_bus"],
-    "naturalgas_storage": [
-        "_naturalgas_storage",
-        "_naturalgas_storage",
-        "_naturalgas_bus",
-    ],
-}
 
+def get_storage_dict(de_centralized: str) -> dict:
+    return {
+        "battery storage " + de_centralized:
+            ["_battery_storage", "_electricity_bus"],
+        "thermal storage " + de_centralized:
+            ["_thermal_storage", "_heat_bus"],
+        "hydrogen storage steel cylinder " + de_centralized:
+            ["_hydrogen_storage", "_hydrogen_bus"],
+        "natural gas storage steel cylinder " + de_centralized:
+            ["_naturalgas_storage", "_natural_gas_bus"]
+    }
 
 def create_storage(
     building_id: str, storage_type: str, de_centralized: str, sheets: dict,
-    standard_parameters: pandas.ExcelFile, bus=None, min_invest="0"
+    standard_parameters: pandas.ExcelFile, min_invest="0"
 ) -> dict:
     """
         Sets the specific parameters for a storage, and creates them
@@ -40,10 +41,6 @@ def create_storage(
         :param standard_parameters: pandas imported ExcelFile \
             containing the non-building specific technology data
         :type standard_parameters: pandas.ExcelFile
-        :param bus: string which contains a bus label which is \
-            necessary if the storage should not be connected to the \
-            standardized bus
-        :type bus: str
         :param min_invest: if the user's input contains an already \
             existing storage it's capacity is the min investment \
             value of the storage to be created
@@ -54,19 +51,21 @@ def create_storage(
             definition's Spreadsheets which was modified in this method
     """
     from program_files import create_standard_parameter_comp
-
+    
+    storage_dict = get_storage_dict(de_centralized=de_centralized)
+    
+    storage_type = storage_type + " " + de_centralized
+    
     return create_standard_parameter_comp(
         specific_param={
-            "label": str(building_id) + storage_dict.get(storage_type)[1],
-            "bus": str(building_id) + storage_dict.get(storage_type)[2]
-            if bus is None
-            else bus,
+            "label": str(building_id) + storage_dict.get(storage_type)[0],
+            "bus": str(building_id) + storage_dict.get(storage_type)[1],
             "min. investment capacity": float(min_invest)
         },
         standard_parameter_info=[
-            de_centralized + storage_dict.get(storage_type)[0],
+            storage_type,
             "5_storages",
-            "storage_type",
+            "storage type",
         ],
         sheets=sheets,
         standard_parameters=standard_parameters
@@ -96,11 +95,9 @@ def building_storages(building: dict, sheets: dict,
     """
     from program_files.urban_district_upscaling.pre_processing \
         import represents_int
-    build_storage_dict = {
-        "battery storage": "battery", "thermal storage": "thermal"
-    }
+    build_storage_list = ["battery storage", "thermal storage"]
     
-    for storage in build_storage_dict:
+    for storage in build_storage_list:
         if building[storage] not in ["no", "No", "0"]:
             # Check if the user has inserted a min investment value
             # or a boolean yes
@@ -111,8 +108,8 @@ def building_storages(building: dict, sheets: dict,
             sheets = create_storage(
                 building_id=building["label"],
                 sheets=sheets,
-                storage_type=build_storage_dict[storage],
-                de_centralized="building",
+                storage_type=storage,
+                de_centralized="decentral",
                 standard_parameters=standard_parameters,
                 min_invest=min_invest
             )
@@ -140,7 +137,7 @@ def storage_clustering(building: list, sheets_clustering: dict,
             will represent the model definition's Spreadsheets
         :type sheets: dict
     """
-    for index, storage in sheets_clustering["storages"].iterrows():
+    for _, storage in sheets_clustering["storages"].iterrows():
         label = storage["label"]
         # collect battery information
         if str(building[0]) in label and label in sheets["storages"].index:
@@ -183,6 +180,10 @@ def cluster_storage_information(storage: pandas.Series,
                         model definition's Spreadsheets which was \
                         modified in this method
     """
+    if storage_type == "battery":
+        storage_type = "battery storage decentral"
+    else:
+        storage_type = "thermal storage decentral"
     # counter
     storage_parameter[storage_type][0] += 1
     # max invest
@@ -231,27 +232,34 @@ def create_cluster_storage(storage_type: str, cluster: str,
         read_standard_parameters,
     )
     specific_dict = {}
+    
+    storage_dict = get_storage_dict(de_centralized="decentral")
     # load the storage standard parameter
     standard_param, standard_keys = read_standard_parameters(
-            name="building" + storage_dict.get(storage_type)[0],
-            parameter_type="5_storages",
-            index="storage_type",
-            standard_parameters=standard_parameters)
+        name=storage_type,
+        parameter_type="5_storages",
+        index="storage type",
+        standard_parameters=standard_parameters)
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
-        specific_dict[standard_keys[i]] = standard_param[standard_keys[i]]
+        specific_dict[standard_keys[i]] = (
+            standard_param.loc)[storage_type, standard_keys[i]]
         
     counter = storage_parameter[storage_type][0]
     # define the storage specific parameter
     specific_dict.update({
         "label": str(cluster) + storage_dict.get(storage_type)[0],
-        "bus": str(cluster) + storage_dict.get(storage_type)[2],
+        "bus": str(cluster) + storage_dict.get(storage_type)[1],
         "periodical costs": storage_parameter[storage_type][2] / counter,
         "periodical constraint costs": storage_parameter[storage_type][3]
                                        / counter,
         "max. investment capacity": storage_parameter[storage_type][1],
-        "variable output costs": storage_parameter[storage_type][4] / counter
+        "variable output costs": storage_parameter[storage_type][4] / counter,
+        "min. investment capacity": 0
     })
+    
+    specific_dict["storage type"] = specific_dict["storage type.1"]
+    del(specific_dict["storage type.1"])
     
     # produce a pandas series out of the dict above due to easier
     # appending

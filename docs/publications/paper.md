@@ -70,4 +70,3 @@ The SESMG comes with a [detailed documentation](https://spreadsheet-energy-syste
 The authors would like to thank the oemof user and developer community for the development of oemof and for discussions regarding the development of the SESMG. We would also like to thank all contributing users for their development work, bug reports, bug fixes, and helpful discussions. This research has been conducted within the R2Q project, funded by the German Federal Ministry of Education and Research (BMBF), grant number 033W102A.
 
 # References
-

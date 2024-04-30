@@ -1,5 +1,10 @@
 name: Build Executables
-on: push
+
+on:
+  push:
+    branches:
+      - master
+
 
 jobs:
   macos:
@@ -18,7 +23,7 @@ jobs:
           . bin/activate
           PYINSTALLER_COMPILE_BOOTLOADER=1 pip3 install git+https://github.com/pyinstaller/pyinstaller.git@develop
           pip3 install twisted[tls] appnope requests certifi
-          pip3 install -r requirements.txt  
+          pip3 install -r requirements.txt
           pyinstaller .github/deploy/SESMG_macos.spec
       - name: Prepare for deployment
         run: |
@@ -35,11 +40,12 @@ jobs:
         with:
           name: SESMG.dmg
           path: dist/SESMG.dmg
-          
+
   linux:
     name: Build on linux
     runs-on: ubuntu-20.04
-    needs: macos 
+    needs: macos
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -53,12 +59,12 @@ jobs:
           pip3 install virtualenv
           python3 -m virtualenv .
           . bin/activate
-          sudo apt-get update 
+          sudo apt-get update
           sudo apt-get install libc6
           pip3 install --upgrade setuptools
           pip3 install pyinstaller
           pip3 install twisted[tls] appnope requests certifi
-          pip3 install -r requirements.txt  
+          pip3 install -r requirements.txt
           pyinstaller .github/deploy/SESMG_linux.spec
       - name: Prepare for deployment
         run: |
@@ -78,7 +84,7 @@ jobs:
         with:
           name: SESMG.deb
           path: dist/SESMG.deb
-  
+
   windows:
       name: Build on windows
       runs-on: windows-latest
@@ -90,7 +96,7 @@ jobs:
           uses: actions/setup-python@v4
           with:
             python-version: '3.9.13'
-            
+
         - name: Add msbuild to PATH
           uses: microsoft/setup-msbuild@v1.1
 
@@ -101,16 +107,16 @@ jobs:
             Scripts/pip3 install --upgrade setuptools
             Scripts/pip3 install pyinstaller
             Scripts/pip3 install twisted[tls] appnope requests certifi
-            Scripts/pip3 install -r requirements.txt  
+            Scripts/pip3 install -r requirements.txt
             Scripts/pyinstaller .github/deploy/SESMG_windows.spec
-            
+
         - name: Upload Artifact
           uses: actions/upload-artifact@v2
           with:
             name: SESMG.exe
             path: |
               dist/SESMG.exe
-            
+
   deploy:
     name: Push builds
     runs-on: ubuntu-20.04
@@ -130,8 +136,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: SESMG.exe
-      
-      - name: GET VERSION 
+
+      - name: GET VERSION
         run: |
           VERSION=$(python setup.py --version)
           echo "VERSION=v$VERSION" >> $GITHUB_ENV
@@ -160,5 +166,3 @@ jobs:
           asset_name: SESMG.exe
           tag: SESMG_beta
           overwrite: true
-
- 

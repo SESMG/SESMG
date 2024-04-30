@@ -120,21 +120,21 @@ def short_result_summary_system(result_path_summary) -> None:
     # add the energy system costs
     cost1, cost2, cost3, cost4 = st.columns(4)
     cost1.metric(label=summary_headers[3], value="{:,.2f}".format(float(round(
-        df_summary[summary_headers[3]], 1))))
+        df_summary[summary_headers[3]].iloc[0], 1))))
     cost2.metric(label=summary_headers[4], value="{:,.2f}".format(float(round(
-        df_summary[summary_headers[4]], 1))))
+        df_summary[summary_headers[4]].iloc[0], 1))))
     cost3.metric(label=summary_headers[5], value="{:,.2f}".format(float(round(
-        df_summary[summary_headers[5]], 1))))
+        df_summary[summary_headers[5]].iloc[0], 1))))
     cost4.metric(label=summary_headers[6], value="{:,.2f}".format(float(round(
-        df_summary[summary_headers[6]], 1))))
+        df_summary[summary_headers[6]].iloc[0], 1))))
 
     # Display and import simulated energy values from summary dataframe
     # adding two blank rows
     ener1, ener2, ener3, ener4 = st.columns(4)
     ener1.metric(label=summary_headers[7], value="{:,.2f}".format(float(round(
-        df_summary[summary_headers[7]], 1))))
+        df_summary[summary_headers[7]].iloc[0], 1))))
     ener2.metric(label=summary_headers[8], value="{:,.2f}".format(float(round(
-        df_summary[summary_headers[8]], 1))))
+        df_summary[summary_headers[8]].iloc[0], 1))))
 
 
 def short_result_simplifications(result_GUI_settings_dict: dict) -> None:

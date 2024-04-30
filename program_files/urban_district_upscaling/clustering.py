@@ -42,44 +42,48 @@ def clustering_transformers(sheets: dict, sink_parameters: list,
             definition's Spreadsheets which was modified in this method
     """
     # check rather the cluster's heat demand is > 0
-    if (sink_parameters[4] + sink_parameters[5] + sink_parameters[6]) != 0:
-        for technology in ["gasheating", "electricheating", "ashp", "gchp"]:
-            # create res or com gasheating
+    if sum(sink_parameters[4:7]) != 0:
+        for technology in transformer_parameters.keys():
+            # create res or com gas heating
             if transformer_parameters[technology][0] > 0:
+                fuels = {"natural_gas_heating": "gas",
+                         "oil_heating": "oil",
+                         "pellet_heating": "pellet"}
                 # create cluster gas bus with building type weighted
                 # shortage costs
-                if technology == "gasheating":
+                if technology in fuels.keys():
                     sheets = Bus.create_cluster_averaged_bus(
                         sink_parameters=sink_parameters,
                         cluster=cluster,
-                        fuel_type="gas",
+                        fuel_type=fuels.get(technology),
                         sheets=sheets,
                         standard_parameters=standard_parameters
                     )
                 # create cluster hp electricity bus with building type \
                 # weighted shortage costs
-                elif technology in ["ashp", "gchp"] \
-                        and str(cluster) + "_gchp_building_link" not \
-                        in list(sheets["links"]["label"]):
+                elif ((str(cluster) + "_heatpump_building_link"
+                      not in list(sheets["links"]["label"]))
+                      and technology in ["air_source_heatpump",
+                                         "ground-coupled_heatpump"]):
                     # create hp building type averaged price
                     sheets = Bus.create_cluster_averaged_bus(
                         sink_parameters=sink_parameters,
                         cluster=cluster,
-                        fuel_type="hp_elec",
+                        fuel_type="electricity",
                         sheets=sheets,
                         standard_parameters=standard_parameters
                     )
                     # electricity link from building electricity bus to hp
                     # electricity bus
                     sheets = Link.create_link(
-                        label=str(cluster) + "_gchp_building_link",
+                        label=str(cluster) + "_heatpump_building_link",
                         bus_1=str(cluster) + "_electricity_bus",
-                        bus_2=str(cluster) + "_hp_elec_bus",
-                        link_type="building_hp_elec_link",
+                        bus_2=str(cluster) + "_heatpump_electricity_bus",
+                        link_type="electricity decentral link heat pump decentral",
                         sheets=sheets,
                         standard_parameters=standard_parameters
                     )
-                # create cluster's gasheating system
+                # create cluster's heating systems system
                 sheets = Transformer.create_cluster_transformer(
                     technology=technology,
                     cluster_parameters=transformer_parameters,
@@ -144,7 +148,7 @@ def create_cluster_heat_bus(transformer_parameters: dict, clustering_dh: bool,
         if str(cluster) + "_heat_bus" not in sheets["buses"]["label"]:
             sheets = Bus.create_standard_parameter_bus(
                 label=str(cluster) + "_heat_bus",
-                bus_type="building_heat_bus",
+                bus_type="heat bus decentral",
                 sheets=sheets,
                 coords=[
                     (sum(lats) / len(lats)) if len(lats) > 0 else 0,
@@ -226,40 +230,41 @@ def clustering_information(building: list, sheets: dict, source_param: dict,
     )
 
 
-def remove_buses(sheets: dict, sheets_clustering: dict) -> dict:
+def remove_buses(sheets: dict, sheets_clustering: dict,
+                 building_labels: list) -> dict:
     """
-        remove not longer used buses
+        remove no longer used buses
         
             1. building specific gas bus
             2. building specific electricity bus
             3. building specific heat pump electricity bus
             4. building specific pv bus
+            5. building specific oil bus
+            6. building specific pellet bus
             
         :param sheets: dictionary containing the pandas DataFrames \
             containing the energy system's data
         :type sheets: dict
         :param sheets_clustering:
         :type sheets_clustering: dict
+        :param building_labels: list containing the energy system \
+            buildings labels to identify the buses to be deleted
+        :type building_labels: list
         
         :return: - **sheets** (dict) - updated dictionary without the \
             not used buses
     """
     sheets["buses"].set_index("label", inplace=True, drop=False)
-    for num, bus in sheets_clustering["buses"].iterrows():
-        type_dict = {
-            0: ["gas", "central"],
-            1: ["electricity", "central"],
-            2: ["hp_elec", "swhp_elec"],
-            3: ["pv_bus", "~"],
-        }
-        for bus_type in type_dict:
-            if type_dict[bus_type][0] in bus["label"] \
-                    and type_dict[bus_type][1] not in bus["label"]:
-                sheets["buses"] = sheets["buses"].drop(index=bus["label"])
+    for _, bus in sheets_clustering["buses"].iterrows():
+        for bus_type in ["gas", "electricity", "pv_bus", "oil", "pellet"]:
+            if bus_type in bus["label"]:
+                if bus["label"].split("_")[0] in building_labels:
+                    sheets["buses"] = sheets["buses"].drop(
+                            index=bus["label"])
     return sheets
 
 
-def get_dict_building_cluster(tool: pandas.DataFrame) -> dict:
+def get_dict_building_cluster(tool: pandas.DataFrame) -> (dict, list):
     """
         Method which creates a dictionary holding the Cluster ID and \
         it's buildings and returns it to the main method
@@ -274,13 +279,15 @@ def get_dict_building_cluster(tool: pandas.DataFrame) -> dict:
     # create a dictionary holding the combination of cluster ID the included
     # building labels and its parcels
     cluster_ids = {}
-    for num, building in tool[tool["active"].isin(true_bools)].iterrows():
+    building_labels = []
+    for _, building in tool.query("active in {}".format(true_bools)).iterrows():
         # collected building information
         building_info = [
             building["label"],
-            building["parcel ID"],
-            str(building["building type"])[0:3],
+            str(building["parcel ID"]),
+            str(building["building type"]),
         ]
+        building_labels.append(building["label"])
         # if cluster id already in dict
         if str(building["cluster ID"]) in cluster_ids:
             cluster_ids[str(building["cluster ID"])].append(building_info)
@@ -288,12 +295,12 @@ def get_dict_building_cluster(tool: pandas.DataFrame) -> dict:
         else:
             cluster_ids.update({str(building["cluster ID"]): [building_info]})
     # return dictionary to main method
-    return cluster_ids
+    return cluster_ids, building_labels
 
 
 def collect_building_information(cluster_ids: dict, cluster: str, sheets: dict,
                                  standard_parameters: pandas.ExcelFile,
-                                 sheets_clustering: dict
+                                 sheets_clustering: dict, building_labels: list
                                  ) -> (dict, list, dict, dict, dict):
     """
         In this method, the building specific assets are collected
@@ -316,6 +323,9 @@ def collect_building_information(cluster_ids: dict, cluster: str, sheets: dict,
         :param sheets_clustering: copy of the model definition created \
             within the pre_processing.py
         :type sheets_clustering: dict
+        :param building_labels: list containing the building labels of \
+            the energy system to be clustered
+        :type building_labels: list
         
         :returns: - **sheets** (dict) - dictionary containing the \
                         pandas.Dataframes that will represent the \
@@ -337,18 +347,22 @@ def collect_building_information(cluster_ids: dict, cluster: str, sheets: dict,
     #  electricity_res_sink, electricity_com_sink, electricity_ind_sink]
     sink_parameters = [0, 0, 0, [], 0, 0, 0, [], [], [], []]
     # transformer_parameter technology:
-    # [counter, efficiency, efficiency2, periodical_costs,
-    #  variable_constraint_costs]
+    # [counter, efficiency, periodical_costs, variable_constraint_costs,
+    # area, length of geoth. probe, heat extraction, temperature high]
     transformer_parameters = {
-        "gasheating": [0, 0, "x", 0, 0],
-        "electricheating": [0, 0, "x", 0, 0],
-        "ashp": [0, 0, 0, 0, 0],
-        "gchp": [0, 0, 0, 0, 0, 0],
+        "natural_gas_heating": [0, 0, 0, 0, 0, 0, 0, 0],
+        "electric_heating": [0, 0, 0, 0, 0, 0, 0, 0],
+        "air_source_heatpump": [0, 0, 0, 0, 0, 0, 0, 0],
+        "ground-coupled_heatpump": [0, 0, 0, 0, 0, 0, 0, 0],
+        "air_to_air_heatpump": [0, 0, 0, 0, 0, 0, 0, 0],
+        "oil_heating": [0, 0, 0, 0, 0, 0, 0, 0],
+        "pellet_heating": [0, 0, 0, 0, 0, 0, 0, 0]
     }
     # storage param technology:
     # [counter, maxinvest, periodical costs,
     #  periodical constraint costs, variable output costs]
-    storage_parameters = {"battery": [0] * 5, "thermal": [0] * 5}
+    storage_parameters = {"battery storage decentral": [0] * 5,
+                          "thermal storage decentral": [0] * 5}
 
     # storage param technology: [counter, maxinvest, periodical costs,
     # periodical constraint costs, variable costs, Albedo,
@@ -372,21 +386,21 @@ def collect_building_information(cluster_ids: dict, cluster: str, sheets: dict,
         "st_north_west": [0] * 12,
     }
     
-    # remove the not longer used links
+    # remove the no longer used links
     sheets = Link.delete_non_used_links(
         sheets_clustering=sheets_clustering,
-        cluster_ids=cluster_ids,
+        building_labels=building_labels,
         sheets=sheets)
     
     for building in cluster_ids:
-        for index, sink in sheets_clustering["sinks"].iterrows():
+        for _, sink in sheets_clustering["sinks"].iterrows():
             # collecting information for sinks
             sink_parameters = Sink.sink_clustering(
                 building=building,
                 sink=sink,
                 sink_parameters=sink_parameters)
 
-        # create cluster elec buses
+        # create cluster electricity buses
         sheets = Bus.create_cluster_electricity_buses(
             building=building,
             cluster=cluster,
@@ -413,7 +427,7 @@ def collect_building_information(cluster_ids: dict, cluster: str, sheets: dict,
             standard_parameters=standard_parameters,
             sink_parameters=sink_parameters)
             
-        if transformer_parameters["gasheating"][0] > 0:
+        if transformer_parameters["natural_gas_heating"][0] > 0:
             sheets = Link.add_cluster_naturalgas_bus_links(
                 sheets=sheets,
                 cluster=cluster,
@@ -504,7 +518,7 @@ def create_cluster_components(
         cluster=cluster,
         sheets=sheets,
         standard_parameters=standard_parameters)
-    for i in ["battery", "thermal"]:
+    for i in ["battery storage decentral", "thermal storage decentral"]:
         # STORAGES
         if storage_parameters[i][0] > 0:
             # create cluster's battery
@@ -558,7 +572,7 @@ def clustering_method(tool: pandas.DataFrame, sheets: dict,
     """
     # create a dictionary holding the combination of cluster ID and it's
     # buildings
-    cluster_ids = get_dict_building_cluster(tool=tool)
+    cluster_ids, building_labels = get_dict_building_cluster(tool=tool)
     sheets_clustering = {}
     # local copy of status of model definition's components
     for sheet in list(sheets.keys()):
@@ -566,7 +580,10 @@ def clustering_method(tool: pandas.DataFrame, sheets: dict,
         sheet_edited.reset_index(drop=True, inplace=True)
         sheet_edited = sheet_edited.drop(index=0)
         sheets_clustering.update({sheet: sheet_edited})
-    sheets = remove_buses(sheets=sheets, sheets_clustering=sheets_clustering)
+    # remove all buses no longer used after clustering the buildings
+    # of the same cluster ID
+    sheets = remove_buses(sheets=sheets, sheets_clustering=sheets_clustering,
+                          building_labels=building_labels)
     
     for cluster in cluster_ids:
         # reset all indices to delete the right rows in pandas dataframe
@@ -584,7 +601,8 @@ def clustering_method(tool: pandas.DataFrame, sheets: dict,
                     cluster=cluster,
                     sheets=sheets,
                     standard_parameters=standard_parameters,
-                    sheets_clustering=sheets_clustering)
+                    sheets_clustering=sheets_clustering,
+                    building_labels=building_labels)
 
             sheets = create_cluster_components(
                 standard_parameters=standard_parameters,
@@ -597,16 +615,19 @@ def clustering_method(tool: pandas.DataFrame, sheets: dict,
                 storage_parameters=storage_parameters,
                 clustering_dh=clustering_dh,
             )
-
+            
             # if building and gchp parcel are in the same cluster create
             # a link between them
             for i in sink_parameters[3]:
                 sheets = Link.create_link(
-                    label=str(i[0]) + "_" + str(i[1]) + "_heat_building_link",
+                    label=str(i[1]) + "_heat_building_link",
                     bus_1=str(cluster) + "_heat_bus",
                     bus_2=str(i[1]),
-                    link_type="building_hp_elec_link",
+                    link_type="heat heat pump decentral link decentral ",
                     sheets=sheets,
                     standard_parameters=standard_parameters)
-
+    
+    for sheet in sheets:
+        sheets[sheet][None] = [0] * len(sheets[sheet])
+        sheets[sheet] = sheets[sheet].set_index(None)
     return sheets

@@ -168,7 +168,8 @@ def create_transformation_model_definitions(
     return files
 
 
-def run_pareto(limits: list, model_definition, GUI_main_dict: dict) -> str:
+def run_pareto(limits: list, model_definition, GUI_main_dict: dict,
+               result_path: str) -> str:
     """
         This method represents the main function of Pareto
         optimization. For this purpose, the model is first run
@@ -202,17 +203,19 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict) -> str:
                 - pre model path
 
         :type GUI_main_dict: dict
-
+        :param result_path: str which contains the result path which \
+            is user specific
+        :type result_path: str
+        
         :return: - **directory** (str) - path where the pareto runs \
             were stored
     """
     from program_files.GUI_st.GUI_st_global_functions \
         import run_SESMG, set_result_path
 
-    # create one directory to collect all runs based on the result path given
-    # in the GUI_st_settings.json
-    directory = os.path.join(set_result_path(),
-                             datetime.now().strftime("%Y-%m-%d--%H-%M-%S"))
+    # create one directory to collect all runs
+    directory = (result_path + "/"
+                 + datetime.now().strftime("%Y-%m-%d--%H-%M-%S"))
     os.mkdir(directory)
 
     logging.info("Optimization of the following runs "

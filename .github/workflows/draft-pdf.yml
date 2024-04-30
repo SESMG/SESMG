@@ -2,8 +2,7 @@ on:
   push:
     branches:
       - master
-      - issue-193
-      
+
 jobs:
   paper:
     runs-on: ubuntu-latest

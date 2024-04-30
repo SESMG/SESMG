@@ -3,10 +3,13 @@
     Christian Klemm - christian.klemm@fh-muenster.de
     Janik Budde - janik.budde@fh-muenster.de
 """
+import datetime
+
 import xlsxwriter
 import pandas
 import logging
-from io import BytesIO
+import os
+from oemof.tools import logger
 
 import program_files.urban_district_upscaling.clustering as clustering_py
 from program_files.urban_district_upscaling.components import (
@@ -76,12 +79,13 @@ def read_standard_parameters(name: str, parameter_type: str, index: str,
                     of name
     """
     # get the param_type sheet from standard parameters
-    standard_param_df = standard_parameters.parse(parameter_type)
+    standard_param_df = standard_parameters.parse(parameter_type,
+                                                  na_filter=False)
     # reset the dataframes index to the index variable set in args
     standard_param_df.set_index(index, inplace=True)
     if name in list(standard_param_df.index):
         # locate the row labeled name
-        standard_param = standard_param_df.loc[name]
+        standard_param = standard_param_df.loc[[name]]
         # get the keys of the located row
         standard_keys = standard_param.keys().tolist()
         # return parameters and keys
@@ -120,18 +124,48 @@ def create_standard_parameter_comp(
     # extracts the storage specific standard values from the
     # standard_parameters dataset
     standard_param, standard_keys = read_standard_parameters(
-        standard_parameter_info[0],
-        standard_parameter_info[1],
-        standard_parameter_info[2],
-        standard_parameters
+        name=standard_parameter_info[0],
+        parameter_type=standard_parameter_info[1],
+        index=standard_parameter_info[2],
+        standard_parameters=standard_parameters
     )
     # insert standard parameters in the components dataset (dict)
     for i in range(len(standard_keys)):
-        specific_param[standard_keys[i]] = standard_param[standard_keys[i]]
+        specific_param[standard_keys[i]] = standard_param.loc[
+            standard_parameter_info[0], standard_keys[i]]
     # appends the new created component to storages sheet
     return append_component(sheets,
                             standard_parameter_info[1][2:],
                             specific_param)
+
+
+def get_user_inserted_shortage_params(cost_column: str, emission_column: str,
+                                      building: pandas.Series):
+    """
+        Method to extract the building specific input for shortage \
+        costs or emissions.
+        
+        :param cost_column: str containing the cost column label
+        :type cost_column: str
+        :param emission_column: str containing the emission column label
+        :type emission_column: str
+        :param building: Series containing the upscaling table input row
+        :type building: pandas.Series
+        
+        :return: - **costs** (float) - float containing the extracted \
+                    costs value
+                 - **emissions** (float) - float containing the \
+                    extracted costs value
+    """
+    # extract the cost value from the building Series
+    costs = building[cost_column] \
+        if building[cost_column] != "standard" else None
+    
+    # extract the emission value from the building Series
+    emissions = building[emission_column] \
+        if building[emission_column] != "standard" else None
+
+    return costs, emissions
 
 
 def create_heat_pump_buses_links(building: pandas.Series, gchps: dict,
@@ -163,29 +197,42 @@ def create_heat_pump_buses_links(building: pandas.Series, gchps: dict,
     gchp_heat_bus = None
     gchp_electricity_bus = None
 
-    gchp = True if building["parcel ID"] not in [0, "0"] else False
+    gchp = True if building["gchp"] in [1, "1", "yes"] else False
 
-    if gchp and building["parcel ID"][-9:] in gchps:
+    if gchp and str(building["parcel ID"])[-9:] in gchps:
         gchp_bool = True
         gchp_heat_bus = building["parcel ID"][-9:] + "_heat_bus"
-        gchp_electricity_bus = building["parcel ID"][-9:] + "_hp_elec_bus"
+        gchp_electricity_bus = (building["parcel ID"][-9:]
+                                + "_heatpump_electricity_bus")
     
-    # if a heatpump is investable for the considered building
-    if gchp_bool or building["ashp"] not in ["No", "no", 0]:
+    # if a heatpump is a possible technology for the considered building
+    if (gchp_bool or building["ashp"] not in ["No", "no", 0]
+            or building["aahp"] not in ["No", "no", 0]):
+        # get shortage costs emissions if they are defined building
+        # specific within the upscaling table
+        shortage_cost, shortage_emission = get_user_inserted_shortage_params(
+                cost_column="heatpump electricity cost",
+                emission_column="heatpump electricity emission",
+                building=building
+        )
+        
         # building hp electricity bus
         sheets = Bus.create_standard_parameter_bus(
-                label=str(building["label"]) + "_hp_elec_bus",
-                bus_type="building_hp_electricity_bus",
+                label=str(building["label"]) + "_heatpump_electricity_bus",
+                bus_type="electricity bus heat pump decentral",
                 sheets=sheets,
-                standard_parameters=standard_parameters
+                standard_parameters=standard_parameters,
+                shortage_cost=shortage_cost,
+                shortage_emission=shortage_emission
         )
+        
         # electricity link from building electricity bus to hp
         # electricity bus
         sheets = Link.create_link(
-                label=str(building["label"]) + "_building_hp_elec_link",
+                label=str(building["label"]) + "_heatpump_electricity_link",
                 bus_1=str(building["label"]) + "_electricity_bus",
-                bus_2=str(building["label"]) + "_hp_elec_bus",
-                link_type="building_hp_elec_link",
+                bus_2=str(building["label"]) + "_heatpump_electricity_bus",
+                link_type="electricity decentral link heat pump decentral",
                 sheets=sheets,
                 standard_parameters=standard_parameters
         )
@@ -194,10 +241,10 @@ def create_heat_pump_buses_links(building: pandas.Series, gchps: dict,
             # electricity link from building hp electricity bus to
             # parcel hp electricity bus
             sheets = Link.create_link(
-                label=str(building["label"]) + "_parcel_gchp_elec_link",
-                bus_1=str(building["label"]) + "_hp_elec_bus",
+                label=str(building["label"]) + "_parcel_gchp_electricity_link",
+                bus_1=str(building["label"]) + "_heatpump_electricity_bus",
                 bus_2=gchp_electricity_bus,
-                link_type="building_hp_elec_link",
+                link_type="electricity heat pump decentral link heat pump decentral",
                 sheets=sheets,
                 standard_parameters=standard_parameters
             )
@@ -206,7 +253,7 @@ def create_heat_pump_buses_links(building: pandas.Series, gchps: dict,
                 label=str(building["label"]) + "_parcel_gchp_heat_link",
                 bus_1=gchp_heat_bus,
                 bus_2=str(building["label"]) + "_heat_bus",
-                link_type="building_hp_heat_link",
+                link_type="heat heat pump decentral link decentral ",
                 sheets=sheets,
                 standard_parameters=standard_parameters
             )
@@ -259,13 +306,13 @@ def represents_int(entry: str) -> bool:
         return True
     
 
-def create_building_buses_links(
+def create_building_buses_and_links(
         building: pandas.Series, central_electricity_bus: bool, sheets: dict,
         standard_parameters: pandas.ExcelFile) -> dict:
     """
         In this method, all buses and links required for one building
         are created and attached to the "buses" and "links" dataframes
-        in the sheets dictionary.
+        in the sheets' dictionary.
         
         :param building: Series containing the building specific \
                 parameters
@@ -284,14 +331,22 @@ def create_building_buses_links(
             pandas.Dataframes that will represent the model \
             definition's Spreadsheets
     """
-    # run check rather the current building needs a pv bus
-    pv_bus = Bus.check_rather_building_needs_pv_bus(building=building)
+    # check if the current building needs a pv bus if yes create the
+    # pv bus and its links
+    if Bus.check_rather_building_needs_pv_bus(building=building):
+        sheets = Bus.create_pv_bus_and_links(
+            building=building,
+            sheets=sheets,
+            standard_parameters=standard_parameters,
+            central_electricity_bus=central_electricity_bus)
     
     # get building type specific electricity bus label
     bus = Bus.get_building_type_specific_electricity_bus_label(
         building=building)
     
-    sheets = Bus.create_building_electricity_bus_link(
+    # create the building electricity bus and connect it to the
+    # central electricity bus (if there is one)
+    sheets = Bus.create_building_electricity_bus_and_central_link(
         bus=bus,
         sheets=sheets,
         standard_parameters=standard_parameters,
@@ -302,7 +357,7 @@ def create_building_buses_links(
         # house heat bus
         sheets = Bus.create_standard_parameter_bus(
             label=str(building["label"]) + "_heat_bus",
-            bus_type="building_heat_bus",
+            bus_type="heat bus decentral",
             sheets=sheets,
             coords=[
                 building["latitude"],
@@ -311,20 +366,13 @@ def create_building_buses_links(
             standard_parameters=standard_parameters
         )
         
-    if pv_bus:
-        sheets = Source.create_pv_bus_links(
-            building=building,
-            sheets=sheets,
-            standard_parameters=standard_parameters,
-            central_electricity_bus=central_electricity_bus)
-
     return sheets
 
 
 def load_input_data(plain_sheet: str, standard_parameter_path: str,
                     us_input_sheet: str
                     ) -> (dict, pandas.DataFrame, pandas.DataFrame,
-                          pandas.DataFrame, list, pandas.ExcelFile):
+                          pandas.DataFrame, pandas.ExcelFile):
     """
         This method is used to convert the three ExcelFiles necessary \
         for the upscaling tool into pandas structures and then return \
@@ -353,50 +401,42 @@ def load_input_data(plain_sheet: str, standard_parameter_path: str,
                   - **tool** (pandas.DataFrame) - DataFrame \
                         holding the US-Input sheets' building data and \
                          building investment data
-                  - **worksheets** (list) - list containing the model \
-                        definition's spreadsheets
                   - **standard_parameters** (pandas.ExcelFile) - \
                         pandas imported ExcelFile containing the \
                         non-building specific technology data
     """
     sheets = {}
-    columns = {}
-    # get keys from plain sheet
+    # copy plain sheet to the sheets dict which will be the result of
+    # the upscaling tool to export a model definition
     plain_sheet = pandas.ExcelFile(plain_sheet)
-    # get columns from plain sheet
+    
     for sheet in plain_sheet.sheet_names:
-        if sheet not in ["weather data", "time series"]:
-            columns[sheet] = plain_sheet.parse(sheet).keys()
-
-    # append worksheets' names to the list of worksheets
-    worksheets = [column for column in columns.keys()]
-    # get spreadsheet units from plain sheet
-    for sheet in worksheets:
-        sheets.update({sheet: pandas.DataFrame(columns=(columns[sheet]))})
-        units_series = pandas.Series(
-            data={a: "x" for a in sheets[sheet].keys()})
-        sheets[sheet] = pandas.concat([sheets[sheet],
-                                       pandas.DataFrame([units_series])])
-    worksheets += ["weather data", "time series", "pipe types"]
-
-    # load standard parameters from standard parameter file
-    standard_parameters = pandas.ExcelFile(standard_parameter_path)
+        sheets.update({sheet: plain_sheet.parse(sheet)})
+        
     # import the sheet which is filled by the user
     us_input_sheet_pd = pandas.ExcelFile(us_input_sheet)
-
-    # get the input sheets
-    building_data = us_input_sheet_pd.parse("1 - building data")
-    building_inv_data = us_input_sheet_pd.parse("2 - building investment data")
-    building_data.set_index("label", inplace=True, drop=True)
-    building_inv_data.set_index("label", inplace=True, drop=True)
-    tool = building_data.join(building_inv_data, how="inner")
+    # create dict holding both building data sheets with index label
+    join = {}
+    bd_sheet = "1 - building data"
+    bd_inv_sheet = "2 - building investment data"
+    for sheet in [bd_sheet, bd_inv_sheet]:
+        join.update({sheet: us_input_sheet_pd.parse(sheet)})
+        join[sheet].set_index("label", inplace=True, drop=True)
+    # merge the two building data sheets
+    tool = join[bd_sheet].join(join[bd_inv_sheet], how="inner")
+    # return to numeric index
     tool.reset_index(inplace=True, drop=False)
+    # remove unit column
     tool = tool.drop(0)
+    # parse gchp areas
     parcel = us_input_sheet_pd.parse("2.1 - gchp areas")
-    central = us_input_sheet_pd.parse("3 - central investment data")
-    central = central.drop(0)
+    # parse central investment data and remove unit column
+    central = us_input_sheet_pd.parse("3 - central investment data").drop(0)
+    
+    # load standard parameters from standard parameter file
+    standard_parameters = pandas.ExcelFile(standard_parameter_path)
 
-    return sheets, central, parcel, tool, worksheets, standard_parameters
+    return sheets, central, parcel, tool, standard_parameters
 
 
 def get_central_comp_active_status(central: pandas.DataFrame, technology: str
@@ -429,7 +469,7 @@ def copying_sheets(paths: list, standard_parameters: pandas.ExcelFile,
         transferred. For this purpose, the return data structure
         "sheets" is processed and then returned to the main method.
     
-        :param paths: path of the us input sheet file [0] \
+        :param paths: path of the upscaling input sheet file [0] \
                       path of the standard_parameter file [1] \
                       path to which the model definition should be \
                       created [2]\
@@ -446,49 +486,40 @@ def copying_sheets(paths: list, standard_parameters: pandas.ExcelFile,
             pandas.Dataframes that will represent the model \
             definition's Spreadsheets which was modified in this method
     """
-    us_input_sheets = pandas.ExcelFile(paths[0]).sheet_names
-    for sheet_tbc in [
-        "energysystem",
-        "weather data",
-        "time series",
-        "district heating",
-        "8_pipe_types"
-    ]:
-        if sheet_tbc not in us_input_sheets:
-            if sheet_tbc in standard_parameters.sheet_names:
-                if sheet_tbc == "8_pipe_types":
-                    sheet_name = "pipe types"
-                else:
-                    sheet_name = sheet_tbc
-                sheets[sheet_name] = standard_parameters.parse(
-                    sheet_tbc,
-                    parse_dates=["timestamp"]
-                    if sheet_tbc in ["weather data", "time series"]
-                    else [],)
-            if "4 - time series data" in us_input_sheets:
-                sheets["weather data"] = pandas.ExcelFile(paths[0]).parse(
-                    "4 - time series data", parse_dates=["timestamp"]
-                )
-                sheets["time series"] = pandas.ExcelFile(paths[0]).parse(
-                    "4 - time series data", parse_dates=["timestamp"]
-                )
-            if "3.1 - streets" in us_input_sheets:
-                sheets["district heating"] = pandas.ExcelFile(paths[0]).parse(
-                     "3.1 - streets"
-                )
+    # load the upscaling sheet names
+    us_input = pandas.ExcelFile(paths[0])
+    # list of sheets which will only be copied and not filled by the
+    # upscaling tool
+    switch_dict = {
+        "weather data": "4 - time series data",
+        "time series": "4 - time series data",
+        "energysystem": "energysystem",
+        "district heating": "3.1 - streets",
+        "pipe types": "8_district_heat_network"
+    }
+    # iterate threw the dict keys to copy each sheet
+    for sheet_tbc in switch_dict.keys():
+        # if it's not a sheet from the upscaling sheet copy it from the
+        # standard parameter sheet
+        if switch_dict.get(sheet_tbc) not in us_input.sheet_names:
+            sheets[sheet_tbc] = standard_parameters.parse(
+                sheet_name=switch_dict.get(sheet_tbc),
+                na_filter=False)
+        # if it's a sheet from us sheet copy it from the upscaling sheet
         else:
-            sheets[sheet_tbc] = pandas.ExcelFile(paths[0]).parse(
-                sheet_tbc,
+            sheets[sheet_tbc] = us_input.parse(
+                sheet_name=switch_dict.get(sheet_tbc),
                 parse_dates=["timestamp"]
                 if sheet_tbc in ["weather data", "time series"]
                 else [],
-            )
+                na_filter=False)
+
     return sheets
 
 
 def urban_district_upscaling_pre_processing(
-    paths: list, clustering: bool, clustering_dh: bool
-) -> (dict, list):
+    paths: list, open_fred_list: list, clustering: bool, clustering_dh: bool
+) -> (dict, dict):
     """
         The Urban District Upscaling Pre Processing method is used to
         systematically create a model definition for a few 10 to a few
@@ -498,12 +529,15 @@ def urban_district_upscaling_pre_processing(
         status, and a spreadsheet which includes technology specific
         standard data (standard_parameter).
 
-        :param paths: path of the us input sheet file [0] \
+        :param paths: path of the upscaling input sheet file [0] \
                       path of the standard_parameter file [1] \
                       path to which the model definition should be \
                       created [2] \
                       path to plain sheet file (holding structure) [3]
         :type paths: list
+        :param open_fred_list: boolean whether to download open fred \
+            data [0], longitude of the area under investigation [1], \
+            latitude of the area under investigation [2]
         :param clustering: boolean for decision rather the buildings \
             are clustered spatially
         :type clustering: bool
@@ -516,28 +550,51 @@ def urban_district_upscaling_pre_processing(
                   - **worksheets** (list) - list containing the sheet names \
                         of the created model definition
     """
-
+    from program_files.preprocessing.import_weather_data \
+        import import_open_fred_weather_data
+    
+    from program_files.GUI_st.GUI_st_global_functions import set_result_path
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H_%M_%S")
+    # define log_file
+    logger.define_logging(logpath=os.path.join(set_result_path(),
+                                               "Upscaling_Tool"),
+                          logfile=str(timestamp) + ".log",
+                          file_level=logging.INFO)
     logging.info("Creating model definition sheet...")
-    # loading typical model definition structure from plain sheet
-    sheets, central, parcel, tool, worksheets, standard_parameters = \
-        load_input_data(paths[3], paths[1], paths[0])
-
+    
+    # get all data needed for the upscaling tool and its export
+    sheets, central, parcel, tool, standard_parameters = \
+        load_input_data(plain_sheet=paths[3],
+                        standard_parameter_path=paths[1],
+                        us_input_sheet=paths[0])
+    
+    # copy the sheets which will not be filled by the upscaling tool
+    # and have to be filled by the users us sheet and standard
+    # parameter sheet input
     sheets = copying_sheets(paths=paths,
                             standard_parameters=standard_parameters,
                             sheets=sheets)
-
-    # set variable for central heating / electricity if activated to
-    # decide rather a house can be connected to the central heat
-    # network / central electricity network or not
-    central_electricity_network = get_central_comp_active_status(
-        central, "electricity_exchange"
-    )
-
-    p2g_link = get_central_comp_active_status(central, "power_to_gas")
+    
+    # download the weather data from open energy platform if enabled
+    if open_fred_list[0]:
+        weather_data = import_open_fred_weather_data(
+            nodes_data={
+                "weather data": pandas.DataFrame(),
+                "energysystem": standard_parameters.parse("energysystem")},
+            lon=open_fred_list[1],
+            lat=open_fred_list[2]
+        )
+        
+        for column in weather_data["weather data"].columns:
+            sheets["weather data"][column] = \
+                weather_data["weather data"][column]
 
     # create central components
-    sheets = Central_components.central_comp(
-        central, ["Yes", "yes", 1], sheets, standard_parameters)
+    sheets, electricity_exchange, p2g = Central_components.central_components(
+        central=central,
+        sheets=sheets,
+        standard_parameters=standard_parameters
+    )
 
     gchps, sheets = Transformer.create_gchp(
         tool=tool,
@@ -546,10 +603,11 @@ def urban_district_upscaling_pre_processing(
         standard_parameters=standard_parameters)
 
     for num, building in tool[tool["active"] == 1].iterrows():
-        sheets = create_building_buses_links(
+        # create all buses which a standardized building needs
+        sheets = create_building_buses_and_links(
             building=building,
             sheets=sheets,
-            central_electricity_bus=central_electricity_network,
+            central_electricity_bus=electricity_exchange,
             standard_parameters=standard_parameters
         )
         sheets = create_heat_pump_buses_links(
@@ -580,7 +638,7 @@ def urban_district_upscaling_pre_processing(
         # create transformer
         sheets = Transformer.building_transformer(
             building=building,
-            p2g_link=p2g_link,
+            p2g_link=p2g,
             sheets=sheets,
             standard_parameters=standard_parameters
         )
@@ -592,14 +650,22 @@ def urban_district_upscaling_pre_processing(
 
         logging.info(str(building["label"])
                      + " subsystem added to model definition sheet.")
-
+    
+    for technology in ["transformers", "storages"]:
+        sheets[technology] = sheets[technology].drop(
+                columns=["{} type".format(technology[:-1])])
+        
+        sheets[technology] = sheets[technology].rename(
+                columns={"{} type.1".format(technology[:-1]):
+                         "{} type".format(technology[:-1])})
+        
     if clustering:
         sheets = clustering_py.clustering_method(
             tool=tool,
             standard_parameters=standard_parameters,
             sheets=sheets,
-            central_electricity_network=central_electricity_network,
+            central_electricity_network=electricity_exchange,
             clustering_dh=clustering_dh,
         )
 
-    return sheets, worksheets
+    return sheets

@@ -19,6 +19,9 @@ from program_files.GUI_st.GUI_st_global_functions \
 # settings the initial streamlit page settings
 st_settings_global()
 
+# opening the input value dict, which will be saved as a json
+GUI_udu_dict = {}
+
 # Import GUI help comments from the comment json and save as an dict
 GUI_helper = import_GUI_input_values_json(
     os.path.dirname(os.path.dirname(__file__))
@@ -57,11 +60,33 @@ def us_application() -> None:
             st.text_input(label="Type in your model definition file name.",
                           help=GUI_helper["udu_ti_model_def_name"])
 
+        with st.expander(label="Open Fred Weather Data"):
+    
+            # input if open fres weather data should be added
+            GUI_udu_dict["input_open_fred"] = st.checkbox(
+                    label="Download Open Fred Weather Data",
+                    help=GUI_helper["udu_cb_weather_data"])
+    
+            # coordinate input for weather data download
+            # longitude coordinates
+            GUI_udu_dict["input_cords_lon"] = st.text_input(
+                    label="Longitude Coordinates",
+                    help=GUI_helper["udu_ti_coords_lon"])
+            # latitude coordinates
+            GUI_udu_dict["input_cords_lat"] = st.text_input(
+                    label="Latitude Coordinates",
+                    help=GUI_helper["udu_ti_coords_lat"])
+            
+        # input standard parameter sheet
+        GUI_udu_dict["udu_cb_clustering"] = st.checkbox(
+                label="Clustering buildings of the same cluster ID",
+                help=GUI_helper["udu_cb_clustering"])
+
         # Submit button to start optimization.
         submitted_us_run = st.form_submit_button(
                 label="Start US Tool",
                 help=GUI_helper["udu_fs_start_US_tool"])
-
+        
         # Run program main function if start button is clicked
         if submitted_us_run:
             if input_us_sheet_path != "" \
@@ -77,14 +102,23 @@ def us_application() -> None:
                         r"../../urban_district_upscaling/plain_scenario.xlsx")
                 ]
 
+                open_fred_list = [
+                    GUI_udu_dict["input_open_fred"],
+                    GUI_udu_dict["input_cords_lon"],
+                    GUI_udu_dict["input_cords_lat"]
+                ]
+
                 # get the model definition sheet as a dict and model definition
                 # worksheets as a list as return of the main urban district
                 # upscaling function
-                model_definition_sheets, model_definition_worksheets = \
+                model_definition_sheets = \
                     urban_district_upscaling_pre_processing(
                         paths=us_path_list,
-                        clustering=False,
+                        open_fred_list=open_fred_list,
+                        clustering=GUI_udu_dict["udu_cb_clustering"],
                         clustering_dh=False)
+                
+                model_definition_worksheets = model_definition_sheets.keys()
 
             # raise streamlit error message when an input element is missing
             else:
@@ -98,7 +132,7 @@ def us_application() -> None:
             # define urban district upscaling model definition as session state
 
             st.session_state["state_model_definition_worksheets"] = \
-                model_definition_worksheets
+                list(model_definition_worksheets)
             # define result path as session state
             st.session_state["result_file_name"] = result_file_name
 
@@ -238,4 +272,4 @@ elif st.session_state['state_download'] is True:
     st.session_state["result_file_name"] = ""
     st.session_state['state_download'] = False
     # 
-    st.experimental_rerun()
+    st.rerun()

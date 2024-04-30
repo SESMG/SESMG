@@ -32,11 +32,11 @@ energy system model. With the help of the SESMG-internal upscaling tool, all
 system components required for modeling the energy system are automatically
 created and defined. Thus, users do not need to define the associated nodes and
 edges of the energy system technologies as input data (see
-`Struture of Energy Systems <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html>`_) [1].
+`Structure of Energy Systems <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html>`_) [1].
 The application is described here:  `Application Urban District Upscaling <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#urban-district-upscaling>`_.
 
-The process diagram of the SESMG inluding the US-Tool is shown below. Two model
-simplifications can be made in the upcaling sheet. Firstly, spatial sub-models
+The process diagram of the SESMG including the US-Tool is shown below. Two model
+simplifications can be made in the upscaling sheet. Firstly, spatial sub-models
 can be formed by deactivating certain buildings. Concrete examples would be a
 preliminary study with, for example, five buildings or if a neighborhood with
 900 buildings is divided into three sub-models with 300 buildings each. The

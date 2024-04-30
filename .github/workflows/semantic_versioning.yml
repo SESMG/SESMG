@@ -27,6 +27,12 @@ jobs:
           current_release=$(python3 setup.py --version)
           echo "CURRENT_RELEASE=v$current_release" >> $GITHUB_ENV
 
+      - name: get current version
+          id: before_release_version
+          run: |
+            current_release=$(python3 setup.py --version)
+            echo "CURRENT_RELEASE=v$current_release" >> $GITHUB_ENV
+
       - name: Python Semantic Release
         uses: relekang/python-semantic-release@master
         with:
@@ -211,6 +217,3 @@ jobs:
           asset_name: SESMG.exe
           tag: ${{ env.VERSION }}
           overwrite: true
-
- 
-

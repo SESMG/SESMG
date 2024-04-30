@@ -15,7 +15,7 @@ allows shorter runtimes, but may lead to a reduction in the quality of the resul
 
 .. warning::
 
-	All time series simplifications can currently only be applied at an input time resolution of hours with 8760 time steps (i.e. one whole year). The algorithm described in the following sub-sections can be applied. Depending on the simplification applied, further adjustments to the energy systemarea automatically carried out.
+	All time series simplifications can currently only be applied at an input time resolution of hours with 8760 time steps (i.e. one whole year). The algorithm described in the following sub-sections can be applied. Depending on the simplification applied, further adjustments to the energy system area automatically carried out.
 
 **Adjustment of time series of non-divisible length:**
 "For a time series' adjustments, the simplification factor should ideally be divisible

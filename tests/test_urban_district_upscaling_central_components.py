@@ -1,16 +1,9 @@
 import pytest
 import pandas
-import os
+from tests.conftest import (import_standard_parameter_data,
+                            get_standard_parameter_data)
 from program_files.urban_district_upscaling.components \
     import Central_components
-
-# import standard parameter
-standard_parameters = pandas.ExcelFile(os.path.dirname(__file__)
-                                       + "/standard_parameters.xlsx")
-buses = standard_parameters.parse("1_buses")
-transformers = standard_parameters.parse("4_transformers")
-storages = standard_parameters.parse("5_storages")
-links = standard_parameters.parse("6_links")
 
 
 def test_create_central_heat_component():
@@ -21,88 +14,103 @@ def test_create_central_heat_component():
 
 def test_central_comp():
     from program_files.urban_district_upscaling.components.Central_components \
-        import central_comp
+        import central_components
     pass
 
 
 @pytest.fixture
 def test_create_power_to_gas_entry():
     """
-    
+        Create a dataset of power to gas components to validate the
+        functionality of its creation process.
     """
     return {
         "buses": pandas.merge(
             left=pandas.DataFrame.from_dict({
                 None: [0, 0, 0],
-                "label": ["central_h2_bus",
-                          "central_naturalgas_bus",
-                          "central_test_heat_bus"],
-                "bus_type": ["central_h2_bus",
-                             "central_naturalgas_bus",
-                             "central_h2_heat_bus"],
-                "district heating conn.": [float(0)] * 3}),
-            right=buses,
-            on="bus_type").drop(columns=["bus_type"]),
+                "label": ["central_natural_gas_bus",
+                          "central_hydrogen_bus",
+                          "central_hydrogen_heat_bus"],
+                "bus type": ["natural gas bus central",
+                             "hydrogen bus central",
+                             "heat bus fuel cell central"],
+                "district heating conn. (exergy)": [float(0)] * 3}),
+            right=import_standard_parameter_data(label="1_buses"),
+            on="bus type").drop(columns=["bus type"]),
         "links": pandas.merge(
             left=pandas.DataFrame.from_dict({
-                "label": ["central_test_heat_link"],
-                "link_type": ["central_h2_heat_link"],
-                "bus1": ["central_test_heat_bus"],
-                "bus2": ["test_output_bus"]}),
-            right=links,
-            on="link_type").drop(columns=["link_type"]),
+                None: [0],
+                "label": ["central_hydrogen_heat_link"],
+                "link type": ["heat fuel cell central link central"],
+                "bus1": ["central_hydrogen_heat_bus"],
+                "bus2": ["central_heat_input_bus"]}),
+            right=import_standard_parameter_data(label="6_links"),
+            on="link type").drop(columns=["link type"]),
         "transformers": pandas.merge(
             left=pandas.DataFrame.from_dict({
                 None: [0, 0, 0],
-                "label": ["central_test_electrolysis_transformer",
-                          "central_test_methanization_transformer",
-                          "central_test_fuelcell_transformer"],
-                "transformer_type": ["central_electrolysis_transformer",
-                                     "central_methanization_transformer",
-                                     "central_fuelcell_transformer"],
+                "label": ["central_hydrogen_electrolysis_transformer",
+                          "central_hydrogen_methanization_transformer",
+                          "central_hydrogen_fuelcell_transformer"],
+                "transformer type": ["electrolysis central",
+                                     "methanization central",
+                                     "fuel cell central"],
                 "input": ["central_electricity_bus",
-                          "central_h2_bus",
-                          "central_h2_bus"],
-                "output": ["central_h2_bus",
-                           "central_naturalgas_bus",
+                          "central_hydrogen_bus",
+                          "central_hydrogen_bus"],
+                "output": ["central_hydrogen_bus",
+                           "central_natural_gas_bus",
                            "central_electricity_bus"],
                 "output2": ["None",
                             "None",
-                            "central_test_heat_bus"],
+                            "central_hydrogen_heat_bus"],
                 "area": [float(0)] * 3,
-                "temperature high": ["0"]* 3}),
-            right=transformers,
-            on="transformer_type").drop(columns=["transformer_type"]),
+                "length of the geoth. probe": [float(0)] * 3,
+                "heat extraction": [float(0)] * 3,
+                "temperature high": ["0"] * 3,
+                "min. investment capacity": [float(0)] * 3}),
+            right=import_standard_parameter_data(label="4_transformers"),
+            on="transformer type").drop(columns=["transformer type"]),
         "storages": pandas.merge(
             left=pandas.DataFrame.from_dict({
                 None: [0, 0],
-                "label": ["central_h2_storage",
+                "label": ["central_hydrogen_storage",
                           "central_naturalgas_storage"],
-                "storage_type": ["central_h2_storage",
-                                 "central_naturalgas_storage"],
-                "bus": ["central_h2_bus",
-                        "central_naturalgas_bus"]}),
-            right=storages,
-            on="storage_type").drop(columns=["storage_type"])
+                "storage type": ["hydrogen storage steel cylinder central",
+                                 "natural gas storage steel cylinder central"],
+                "bus": ["central_hydrogen_bus",
+                        "central_natural_gas_bus"],
+                "min. investment capacity": [float(0)] * 2}),
+            right=import_standard_parameter_data(label="5_storages"),
+            on="storage type").drop(columns=["storage type"])
     }
 
 
 def test_create_power_to_gas_system(test_create_power_to_gas_entry):
     """
-    
+        Create a standard parameter central power to gas system and
+        compare it to a manual created one to ensure the
+        functionality of the creation process for standard parameter
+        power to gas systems.
     """
     sheets = Central_components.create_power_to_gas_system(
         label="test",
-        output="test_output_bus",
-        sheets={"buses": pandas.DataFrame(columns=["label"]),
+        output="central_heat_input_bus",
+        sheets={"buses": pandas.DataFrame(),
                 "links": pandas.DataFrame(),
                 "transformers": pandas.DataFrame(),
-                "storages": pandas.DataFrame(columns=["label"])},
-        standard_parameters=standard_parameters)
+                "storages": pandas.DataFrame()},
+        standard_parameters=get_standard_parameter_data())
     
+    # since there are not only numeric values within these two
+    # standard parameter columns dtypes have to be changed from object
+    # to int
+    for i in ["heat source", "mode"]:
+        test_create_power_to_gas_entry["transformers"][i] \
+            = test_create_power_to_gas_entry["transformers"][i].astype(int)
+
     for key in sheets.keys():
-        if len(test_create_power_to_gas_entry[key]) > 1:
-            test_create_power_to_gas_entry[key].set_index(None, inplace=True)
+        test_create_power_to_gas_entry[key].set_index(None, inplace=True)
         pandas.testing.assert_frame_equal(
             sheets[key].sort_index(axis=1),
             test_create_power_to_gas_entry[key].sort_index(axis=1))
@@ -111,54 +119,63 @@ def test_create_power_to_gas_system(test_create_power_to_gas_entry):
 @pytest.fixture
 def test_central_heatpump_entry():
     """
-    
+        Create a dataset of central heat pump components to validate
+        the functionality of its creation process.
     """
     return {
         "buses": pandas.merge(
             left=pandas.DataFrame.from_dict({
                 "label": ["central_heatpump_electricity_bus"],
-                "bus_type": ["central_heatpump_electricity_bus"],
-                "district heating conn.": [float(0)]}),
-            right=buses,
-            on="bus_type").drop(columns=["bus_type"]),
+                "bus type": ["electricity bus heat pump central"],
+                "district heating conn. (exergy)": [float(0)]}),
+            right=import_standard_parameter_data(label="1_buses"),
+            on="bus type").drop(columns=["bus type"]),
         "links": pandas.merge(
             left=pandas.DataFrame.from_dict({
                 "label": ["central_heatpump_electricity_link"],
-                "link_type": ["building_central_building_link"],
+                "link type": ["electricity central link heat pump central "],
                 "bus1": ["central_electricity_bus"],
                 "bus2": ["central_heatpump_electricity_bus"]}),
-            right=links,
-            on="link_type").drop(columns=["link_type"]),
+            right=import_standard_parameter_data(label="6_links"),
+            on="link type").drop(columns=["link type"]),
         "transformers": pandas.merge(
             left=pandas.DataFrame.from_dict({
-                "label": ["central_test_heatpump_transformer"],
-                "transformer_type": ["central_gchp_transformer"],
+                "label": ["central_ground-coupled_heatpump_transformer"],
+                "transformer type": ["heat pump ground-coupled central"],
                 "input": ["central_heatpump_electricity_bus"],
                 "output": ["test_output_bus"],
                 "output2": ["None"],
                 "area": [100.0],
-                "temperature high": ["60"]}),
-            right=transformers,
-            on="transformer_type").drop(columns=["transformer_type"]),
+                "length of the geoth. probe": [100.0],
+                "heat extraction": [0.0328],
+                "temperature high": ["60"],
+                "min. investment capacity": [float(0)]}),
+            right=import_standard_parameter_data(label="4_transformers"),
+            on="transformer type").drop(columns=["transformer type"]),
     }
 
 
 def test_create_central_heatpump(test_central_heatpump_entry):
     """
-    
+        Create a standard parameter central heat pump system and
+        compare it to a manual created one to ensure the
+        functionality of the creation process for standard parameter
+        power to gas systems.
     """
     sheets = Central_components.create_central_heatpump(
-        label="test",
-        specification="gchp",
+        label="central",
+        specification="ground-coupled ",
         create_bus=True,
         central_electricity_bus=True,
         output="test_output_bus",
-        sheets={"buses": pandas.DataFrame(columns=["label"]),
+        sheets={"buses": pandas.DataFrame(),
                 "links": pandas.DataFrame(),
                 "transformers": pandas.DataFrame()},
-        area="100",
-        standard_parameters=standard_parameters,
-        flow_temp="60"
+        standard_parameters=get_standard_parameter_data(),
+        args={"area": "100",
+              "length_geoth_probe": "100",
+              "flow_temp": "60",
+              "heat_extraction": "0.0328"}
     )
     
     for key in sheets.keys():
@@ -170,52 +187,66 @@ def test_create_central_heatpump(test_central_heatpump_entry):
 @pytest.fixture
 def test_central_heating_plant_entry():
     """
-    
+        Create a dataset of central natural gas heating components to
+        validate the functionality of its creation process.
     """
     return {
         "buses": pandas.merge(
             left=pandas.DataFrame.from_dict(
-                {"label": ["central_test_bus"],
-                 "bus_type": ["central_heating_plant_naturalgas_bus"],
-                 "district heating conn.": [float(0)]}),
-            right=buses,
-            on="bus_type").drop(columns=["bus_type"]),
+                {"label": ["central_test_natural_gas_bus"],
+                 "bus type": ["natural gas bus central"],
+                 "district heating conn. (exergy)": [float(0)]}),
+            right=import_standard_parameter_data(label="1_buses"),
+            on="bus type").drop(columns=["bus type"]),
         "transformers": pandas.merge(
-            left=pandas.DataFrame.from_dict(
-                {"label": ["central_test_heating_plant_transformer"],
-                 "transformer_type": [
-                     "central_naturalgas_heating_plant_transformer"],
-                 "input": ["central_test_bus"],
-                 "output": ["test_output_bus"],
-                 "output2": ["None"],
-                 "area": [float(0)],
-                 "temperature high": "0"}),
-            right=transformers,
-            on="transformer_type").drop(columns=["transformer_type"]),
+            left=pandas.DataFrame.from_dict({
+                "label": ["central_test_natural_gas_heating_plant_transformer"],
+                "transformer type": ["gas heating natural gas central"],
+                "input": ["central_test_natural_gas_bus"],
+                "output": ["central_heat_input_bus"],
+                "output2": ["None"],
+                "area": [float(0)],
+                "length of the geoth. probe": [float(0)],
+                "heat extraction": [float(0)],
+                "temperature high": ["0"],
+                "min. investment capacity": [float(0)]}),
+            right=import_standard_parameter_data(label="4_transformers"),
+            on="transformer type").drop(columns=["transformer type"]),
         "links": pandas.merge(
             left=pandas.DataFrame.from_dict(
-                {"label": ["heating_plant_test_link"],
-                 "link_type": ["central_naturalgas_building_link"],
-                 "bus1": ["central_naturalgas_bus"],
-                 "bus2": ["central_test_bus"]}),
-            right=links,
-            on="link_type").drop(columns=["link_type"])}
+                {"label": ["central_heating_plant_test_link"],
+                 "link type": ["natural gas central link decentral"],
+                 "bus1": ["central_natural_gas_bus"],
+                 "bus2": ["central_test_natural_gas_bus"]}),
+            right=import_standard_parameter_data(label="6_links"),
+            on="link type").drop(columns=["link type"])}
     
 
 def test_create_central_heating_transformer(test_central_heating_plant_entry):
     """
-    
+        Create a standard parameter central natural gas heating system
+        and compare it to a manual created one to ensure the
+        functionality of the creation process for standard parameter
+        power to gas systems.
     """
     # start method to be tested
     sheets = Central_components.create_central_heating_transformer(
         label="test",
-        fuel_type="naturalgas",
-        output="test_output_bus",
+        fuel_type="natural gas",
+        output="central_heat_input_bus",
         central_fuel_bus=True,
         sheets={"buses": pandas.DataFrame(),
                 "transformers": pandas.DataFrame(),
                 "links": pandas.DataFrame()},
-        standard_parameters=standard_parameters)
+        standard_parameters=get_standard_parameter_data())
+    
+    # since there are not only numeric values within these two
+    # standard parameter columns dtypes have to be changed from object
+    # to int
+    for i in ["heat source", "mode"]:
+        test_central_heating_plant_entry["transformers"][i] \
+            = test_central_heating_plant_entry["transformers"][i].astype(int)
+        
     # assert rather the two dataframes are equal
     for key in sheets.keys():
         pandas.testing.assert_frame_equal(
@@ -226,62 +257,76 @@ def test_create_central_heating_transformer(test_central_heating_plant_entry):
 @pytest.fixture
 def test_central_CHP_entry():
     """
-   
+        Create a dataset of central natural gas combined heat and
+        power system components to validate the functionality of its
+        creation process.
     """
     return {
         "buses": pandas.merge(
-                left=pandas.DataFrame.from_dict(
-                    {None: [0, 0],
-                     "label": ["central_test_bus",
-                               "central_test_elec_bus"],
-                     "bus_type": ["central_chp_naturalgas_bus",
-                                  "central_chp_naturalgas_electricity_bus"],
-                     "district heating conn.": [float(0)] * 2}),
-                right=buses,
-                on="bus_type").drop(columns=["bus_type"]),
+            left=pandas.DataFrame.from_dict(
+                {None: [0, 0],
+                 "label": ["central_test_natural_gas_bus",
+                           "central_test_electricity_bus"],
+                 "bus type": ["natural gas bus combined heat and power central",
+                              "electricity bus combined heat and power natural gas central"],
+                 "district heating conn. (exergy)": [float(0)] * 2}),
+            right=import_standard_parameter_data(label="1_buses"),
+            on="bus type").drop(columns=["bus type"]),
         "transformers": pandas.merge(
-                left=pandas.DataFrame.from_dict(
-                    {"label": ["central_test_chp_transformer"],
-                     "transformer_type": ["central_naturalgas_chp"],
-                     "input": ["central_test_bus"],
-                     "output": ["central_test_elec_bus"],
-                     "output2": ["test_output_bus"],
-                     "area": [float(0)],
-                     "temperature high": "0"}),
-                right=transformers,
-                on="transformer_type").drop(columns=["transformer_type"]),
-        # TODO Only the purchase of centralized electricity is subject
-        #  to charges, not the feed-in, is that correct?
+            left=pandas.DataFrame.from_dict(
+                {"label": ["central_test_chp_transformer"],
+                 "transformer type": ["combined heat and power natural gas central"],
+                 "input": ["central_test_natural_gas_bus"],
+                 "output": ["central_test_electricity_bus"],
+                 "output2": ["central_heat_input_bus"],
+                 "area": [float(0)],
+                 "length of the geoth. probe": [float(0)],
+                 "heat extraction": [float(0)],
+                 "temperature high": ["0"],
+                 "min. investment capacity": [float(0)]}),
+            right=import_standard_parameter_data(label="4_transformers"),
+            on="transformer type").drop(columns=["transformer type"]),
         "links": pandas.merge(
-                left=pandas.DataFrame.from_dict(
-                    {None: [0, 0],
-                     "label": ["central_test_elec_central_link",
-                               "central_test_naturalgas_link"],
-                     "link_type": ["central_chp_elec_central_link",
-                                   "central_naturalgas_chp_link"],
-                     "bus1": ["central_test_elec_bus",
-                              "central_naturalgas_bus"],
-                     "bus2": ["central_electricity_bus",
-                              "central_test_bus"]}),
-                right=links,
-                on="link_type").drop(columns=["link_type"])}
+            left=pandas.DataFrame.from_dict(
+                {None: [0, 0],
+                 "label": ["central_test_electricity_central_link",
+                           "central_test_natural_gas_link"],
+                 "link type": ["electricity combined heat and power natural gas central link central",
+                               "natural gas central link combined heat and power central"],
+                 "bus1": ["central_test_electricity_bus",
+                          "central_natural_gas_bus"],
+                 "bus2": ["central_electricity_bus",
+                          "central_test_natural_gas_bus"]}),
+            right=import_standard_parameter_data(label="6_links"),
+            on="link type").drop(columns=["link type"])}
 
 
 def test_create_central_chp(test_central_CHP_entry):
     """
-    
+        Create a standard parameter central natural gas combined heat
+        and power system and compare it to a manual created one to
+        ensure the functionality of the creation process for standard
+        parameter power to gas systems.
     """
     # start method to be tested
     sheets = Central_components.create_central_chp(
-            label="test",
-            fuel_type="naturalgas",
-            output="test_output_bus",
-            central_elec_bus=True,
-            central_fuel_bus=True,
-            sheets={"buses": pandas.DataFrame(),
-                    "transformers": pandas.DataFrame(),
-                    "links": pandas.DataFrame()},
-            standard_parameters=standard_parameters)
+        label="test",
+        fuel_type="natural gas",
+        output="central_heat_input_bus",
+        central_electricity_bus=True,
+        central_fuel_bus=True,
+        sheets={"buses": pandas.DataFrame(),
+                "transformers": pandas.DataFrame(),
+                "links": pandas.DataFrame()},
+        standard_parameters=get_standard_parameter_data())
+    
+    # since there are not only numeric values within these two
+    # standard parameter columns dtypes have to be changed from object
+    # to int
+    for i in ["heat source", "mode"]:
+        test_central_CHP_entry["transformers"][i] \
+            = test_central_CHP_entry["transformers"][i].astype(int)
+        
     # assert rather the two dataframes are equal
     for key in sheets.keys():
         if len(sheets[key]) > 1:
