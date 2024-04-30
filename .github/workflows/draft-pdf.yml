@@ -2,12 +2,7 @@ on:
   push:
     branches:
       - master
-<<<<<<< HEAD
 
-=======
-      - issue-193
-      
->>>>>>> master
 jobs:
   paper:
     runs-on: ubuntu-latest

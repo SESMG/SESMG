@@ -59,6 +59,7 @@ class ESGraphRenderer:
         """
         self.busses = []
 
+        os.environ["PATH"] += os.pathsep + "C:\\Program Files (x86)\\Graphviz2.38\\bin"
         self.dot = graphviz.Digraph(format="png")
 
         if legend is True:

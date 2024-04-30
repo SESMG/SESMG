@@ -1,20 +1,6 @@
 Installation
 ************
 
-<<<<<<< HEAD
-There are two possible ways to install the SESMG application. It can chosen
-between the installation as an independent **application**, which is appropriate
-for common users, and an installation for advanced users or developers. We
-recommend the installation as an independent application for the beginning.
-You can easily switch later on.
-
-We recommend the **extended installation** which will create the SESMG with its
-folder structure on your machine allowing you to work on it or adjust settings.
-You can follow the `extended installation instructions <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html#extended-installation>`_
-below. If you have programming experience and want to set your own virtual
-environment (e. g. allowing the usage of Anaconda environments) you can follow
-`advanced installation instructions <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html#advanced-installation>`_.
-=======
 There are two possible ways to install the SESMG application. It can chosen 
 between the installation as an independent **application**, which is appropriate 
 for common users, and an installation for advanced users or developers. We 
@@ -27,8 +13,6 @@ You can follow the `extended installation instructions <https://spreadsheet-ener
 below. If you have programming experience and want to set your own virtual 
 environment (e. g. allowing the usage of Anaconda enviroments) you can follow 
 `advanced installation instructions <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html#advanced-installation>`_. 
->>>>>>> master
-
 
 
 SESMG as Application
@@ -37,12 +21,9 @@ SESMG as Application
 Windows
 -------
 
-<<<<<<< HEAD
+
 1. Installing Graphviz
 You can download Graphviz here: `Graphviz download <https://graphviz.org/download/>`_.
-=======
-1. Installing Graphiz
-You kann download Graphiz here: `Graphiz download <https://graphviz.org/download/>`_. 
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_4.png
    :width: 40 %
@@ -50,76 +31,13 @@ You kann download Graphiz here: `Graphiz download <https://graphviz.org/download
 
 .. note:: 
 
-	Make sure to select "Add Graphiz to system path for all users" at the 
-	beginning of the installation, otherwise you can use the default settings.
-
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_5.png
-   :width: 40 %
-   :align: center
-
-
-2. Installing a solver
-
-2a. The free and open-source CBC-solver is recommended for new users and users which are not facing any run-time issues. To use the solver, download the most recent Coin-or-OptimizationSuite-version for your operating system: `Coin-or-OptimizationSuite for windows <https://www.coin-or.org/download/binary/OptimizationSuite/>`_. Alternatively you can uses the `direct download link 		  <https://www.coin-or.org/download/binary/OptimizationSuite/COIN-OR-1.8.0-win32-msvc12.exe>`_. Restart your computer after succesfully installing the solver.
-
-2b. The gurobi-solver may be used as an **alternative** to the CBC-solver. Be 
-aware, that the gurobi-solver is not open-source and a license is required. 
-However, the gurobi-solver may be faster for certain types of optimization problems, 
-especially for those containing binary decisions. The installation procedure of 
-the gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_. Restart your computer after succesfully installing the solver. 
-
-.. note:: 
-
-	Make sure to restart your computer before proceeding with the next steps.
-
-
-
-3. Installing the SESMG application
-The latest released SESMG version can be accessed here: `SESMG releases on Github <https://github.com/SESMG/SESMG/releases/latest/>`_. 
-Download the SESMG.exe, unzip it, and place it in a directory of your choice. Open the SESMG application by running SESMG.exe. The starting process usually takes a few minutes.
-
-.. tip::
-
-	With the first use you may have to confirm in windows-defender or other protection software that the SESMG is trustworthy. 
-	The exact warning message may differ depending on the system language and anti-virus software.
-
-
-.. tip::
-
-	While the SESMG is starting, a message like "the website is not available" may appear. Wait a moment and press "reload". If necessary, repeat this step. 
-	The exact warning message may differ depending on the system language and applied browser.
-
-	
-.. note:: 
-
-	The application will create a SESMG directory when starting the first model 
-	run. By default it will be created in the /user/documents/ directory as 
-	/SESMG.
-
-
-
-MacOS
------
-
-1. Installing Graphiz
-You kann download Graphiz here: `Graphiz download <https://graphviz.org/download/>`_
->>>>>>> master
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_4.png
-   :width: 40 %
-   :align: center
-
-.. note::
-
-<<<<<<< HEAD
 	Make sure to select "Add Graphviz to system path for all users" at the
 	beginning of the installation, otherwise you can use the default settings.
 
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_5.png
    :width: 40 %
-=======
+
 2. Installing a solver
 You can download the free and open-source CBC-solver here: `cbc solver for MacOS <https://www.coin-or.org/download/binary/Cbc/>`_. 
 Alternatively you can use Homebrew to install the CBC-solver by following `the instructions from Brew <https://formulae.brew.sh/formula/cbc/>`_.
@@ -345,7 +263,6 @@ Enter your python version.
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_9.png
    :width: 40 %
->>>>>>> master
    :align: center
 
 .. note:: 
@@ -368,8 +285,6 @@ the gurobi-solver is described in detail `here <https://www.gurobi.com/documenta
 .. note::
 
 	Make sure to restart your computer before proceeding with the next steps.
-
-<<<<<<< HEAD
 
 
 3. Installing the SESMG application
@@ -394,7 +309,6 @@ Download the SESMG.exe, unzip it, and place it in a directory of your choice. Op
 	run. By default it will be created in the /user/documents/ directory as
 	/SESMG.
 
-=======
 .. figure:: images/manual/Installation/sesmg_installation_ms_10.png
    :width: 40 %
    :align: center
@@ -413,62 +327,19 @@ Download the SESMG.exe, unzip it, and place it in a directory of your choice. Op
 	directory. You can change the directory by adding the preferred path to the 
 	GUI_st_settings.json. Make sure that each subdirectory is defined as its own 
 	list entry by following the given layout.
->>>>>>> master
 
 
 MacOS
 -----
 
-<<<<<<< HEAD
 1. Installing Graphviz
 You can download Graphviz here: `Graphviz download <https://graphviz.org/download/>`_
 
 .. figure:: images/manual/Installation/sesmg_installation_ms_4.png
-=======
-.. note:: 
-
-	We recommended installing the SESMG as an admin or user with admin rights.
-
-1. Installing Python (3.7, 3.8 or 3.9) 
-
-Go to the `Python download page for macOS <https://www.python.org/downloads/macos/>`_ 
-and download an installer.
-
-.. note:: 
-
-	Make sure to use the installer referring to your chip (Intel-only or 
-	universal2) version (e.g. "macOS 64-bit universal2 installer" for mac 
-	with Apple M1 / M2). You can check the kind of buil in chip by opening the 
-	"About this Mac" option behind the apple icon in the above left corner.
-	
-.. note:: 
-
-	The SESMG is not compatible with the python version 3.9.7, due to a 
-	confliciting bug in this version to the subpackage streamlit. You need to 
-	install another pyhton version or update to another python version e. g. 
-	3.9.13, which is widely tested.
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_1.png
-   :width: 40 %
-   :align: center
-   
-Execute the installer on your computer.
-
-.. note:: 
-
-	Make sure to select "Add python to PATH" at the beginning of the Python installation.
-	
-2. Downloading the SESMG
-Download the Spreadsheet Energy System Model Generator from `GitHub <https://github.com/SESMG/SESMG>`_ 
-as .zip folder and extract the .zip folder into any directory on the computer.
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_3.png
->>>>>>> master
    :width: 40 %
    :align: center
 
 
-<<<<<<< HEAD
 2. Installing a solver
 You can download the free and open-source CBC-solver here: `cbc solver for MacOS <https://www.coin-or.org/download/binary/Cbc/>`_.
 Alternatively you can use Homebrew to install the CBC-solver by following `the instructions from Brew <https://formulae.brew.sh/formula/cbc/>`_.
@@ -486,35 +357,9 @@ Download the SESMG.dmg, open it and place the application in a directory of
 your choice. You can change the directory afterwards.
 
 .. figure:: images/manual/Installation/sesmg_installation_mac_5_dmg.png
-=======
-	If your device does not have homebrew installed, install it by typing 
-	``/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`` 
-	in your terminal.
-	
-.. note:: 
-
-	Homebrew requires Xcode command line tools for macOS. Check if you already 
-	have it installed by using ``xcode-select --help``. If no error occures it 
-	is already installed. Otherwise run ``xcode-select --install`` in your terminal.
-	
-.. note:: 
-
-	For Apple CPU M1/M2: Make sure to follow the instrutions while installing 
-	homebrew. If there is a message to run two lines of code: do so and run them 
-	separately in your terminal. Look for: ``(echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> /Users/YOURUSERNAME/.zprofile`` 
-	and eval ``$(/opt/homebrew/bin/brew shellenv)`` with your username. Do 
-	not run those lines if not requested.
-	
-3. Installing the SESMG 
-Excecute the "MacOS_installation.command" file and enter your python version
-to the terminal.
-
-.. figure:: images/manual/Installation/sesmg_installation_mac_1.png
->>>>>>> master
    :width: 40 %
    :align: center
 
-<<<<<<< HEAD
 Due to a bug in a subpackage it is not possible yet to open the SESMG as common
 by double-clicking it. You need to use the terminal to open the application.
 Navigate to the directory by using the command inputs (e. g. cd) or right-click
@@ -528,14 +373,10 @@ the folder in which the application is placed (e. g. "desktop") and choose
 .. note::
 
 	You have to confirm the file run in your mac's security settings to be able
-=======
-	You have to confirm the file run in your mac's security settings to be able 
->>>>>>> master
 	to run it. Confirm with 'Open Anyway'.
 
 .. figure:: images/manual/Installation/sesmg_installation_mac_3.png
    :width: 40 %
-<<<<<<< HEAD
    :align: center
 
 Be aware that it can take several minutes and will be running without any
@@ -925,104 +766,10 @@ Installing
 
 ``$ sudo apt-get install coinor-cbc``
 
-=======
-   :align: center
-
-.. note:: 
-
-	Please type in your python version in the major.minor format, which means to 
-	give 3.X if you have the version 3.X.YY. E.g. 3.9 if you have the python 
-	version 3.9.13. 
-   
-.. figure:: images/manual/Installation/sesmg_installation_mac_2.png
-   :width: 40 %
-   :align: center
-
-.. note:: 
-
-	There appears a warning after the installation process about the packages 
-	osmx and cartopy. The installation was successful, the SESMG will run normally 
-	and you can ignore this warning. Also see `warning-001 troubeshooting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/03.00.00_trouble_shooting.html#warning-w-001-need-to-install-cartopy>`_.
-
-.. note::
-
-	During this step, the CBC-solver was automatically installed. The 
-	gurobi-solver may be used as **alternative** to the cbc solver. Be 
-	aware, that the gurobi-solver is not open-source and a license is required. 
-	However, the gurobi-solver may be faster for certain types of optimization problems, 
-	especially for those containing binary decisions. The installation procedure 
-	of the gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_.  
-
-4. Have fun with the SESMG.
-The Spreadsheet Energy System Model Generator has been installed. 
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_10.png
-   :width: 40 %
-   :align: center
-
-.. note::
-
-	When running the SESMG for the first time using the Run_SESMG_for_macos.command 
-	file you may need to confirm again, as described above, in the security settings.
-
-.. note:: 
-
-	The application will create a SESMG directory when starting the first 
-	model run. By default it will be created in the /user/documents/ directory 
-	as /SESMG. You can change the folder structure by adjusting the 
-	GUI_st_settings.json file which you will find in the /program_files/GUI_st/ 
-	directory. You can change the directory by adding the preferred path to the 
-	GUI_st_settings.json. Make sure that each subdirectory is defined as its own 
-	list entry by following the given layout.
-
-
-Linux 
------
-
-1. Installing Python (3.7, 3.8 or 3.9)
-
-- go to `<https://phoenixnap.com/kb/how-to-install-python-3-ubuntu/>`_
-
-Check your version with ``$ python3 --version``.
-
-.. note:: 
-
-	The SESMG is not compatible with the python version 3.9.7, due to a 
-	confliciting bug in this version to the subpackage streamlit. You need to 
-	install another pyhton version or update to another python version e. g. 
-	3.9.13, which is widely tested.
-	 
-2. Downloading the SESMG
-Download the Spreadsheet Energy System Model Generator from `GitHub <https://github.com/SESMG/SESMG>`_ 
-as .zip folder and extract the .zip folder into any directory on the computer.
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_3.png
-   :width: 40 %
-   :align: center
-   
-.. note::
-	
-	If no packages have ever been installed on the computer using apt-get, 
-	``sudo apt-get update`` must be executed first.
-
-3. Install pip: 
-Installing
-``$ sudo apt-get install python3-pip``
-	
-4. Installing Graphviz:
-
-``$ sudo apt-get install graphviz``
-	
-5. Installing the CBC-solver: 
-
-``$ sudo apt-get install coinor-cbc``
-
->>>>>>> master
 6. Installing the libpq-dev to avoid a psycopg2 error:
 
 ``$ sudo apt-get install libpq-dev``
 
-<<<<<<< HEAD
 The gurobi-solver may be used as **alternative** to the CBC-solver. Be aware,
 that the gurobi-solver is not open-source and a license is required. However,
 the gurobi-solver may be faster for certain types of optimization problems,
@@ -1031,16 +778,6 @@ the gurobi-solver is described in detail `here <https://www.gurobi.com/documenta
 
 7. Installing the SESMG
 Execute the "Linux_installation.sh" file. By first navigating to the path of
-=======
-The gurobi-solver may be used as **alternative** to the CBC-solver. Be aware, 
-that the gurobi-solver is not open-source and a license is required. However, 
-the gurobi-solver may be faster for certain types of optimization problems, 
-especially for those containing binary decisions. The installation procedure of 
-the gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_.  
-	
-7. Installing the SESMG
-Execute the "Linux_installation.sh" file. By first navigating to the path of 
->>>>>>> master
 the SESMG directory and then running the following:
 
 ``$ sudo sh Linux_installation.sh``
@@ -1049,7 +786,6 @@ Enter your Python version.
 
 .. note::
 
-<<<<<<< HEAD
 	Please type in your Python version in the major.minor format, which means
 	to give 3.X if you have the version 3.X.YY. E.g. 3.9 if you have the Python
 	version 3.9.13.
@@ -1080,43 +816,10 @@ Advanced
 -----
 
 1. Download the SESMG by using ``git clone https://github.com/SESMG/SESMG.git``
-=======
-	Please type in your python version in the major.minor format, which means 
-	to give 3.X if you have the version 3.X.YY. E.g. 3.9 if you have the python 
-	version 3.9.13. 
-
-.. note:: 
-
-	There appears a warning after the installation process about the packages 
-	osmx and cartopy. The installation was successful, the SESMG will run 
-	normally and you can ignore this warning. Also see 
-	`warning-001 troubeshooting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/03.00.00_trouble_shooting.html#warning-w-001-need-to-install-cartopy>`_.
-
-8. Running the SESMG 
-The Spreadsheet Energy System Model Generator has been installed. Open 
-``localhost:8501`` in a browser.
-
-.. note:: 
-
-	The application will create a SESMG directory when starting the first 
-	model run. By default it will be created in the /user/documents/ directory 
-	as /SESMG. You can change the folder structure by adjusting the 
-	GUI_st_settings.json file which you will find in the /program_files/GUI_st/ 
-	directory. You can change the directory by adding the preferred path to the 
-	GUI_st_settings.json. Make sure that each subdirectory is defined as its own 
-	list entry by following the given layout.
-
-
-Advanced 
------
-
-1. Download the SESMG by using ``git clone https://github.com/SESMG/SESMG.git`` 
->>>>>>> master
 OR by downloading it manually from the `SESMG Github repository <https://github.com/SESMG/SESMG/>`_.
 
 2. Create a virtual environment of your choice for the SESMG folder
 
-<<<<<<< HEAD
 3. Install the following packages within the virtual environment: coincbc,
 graphviz, geos (MacOS only), postgresql (MacOS only), fiona (Windows only),
 gdal (Windows, only)
@@ -1130,26 +833,10 @@ gdal (Windows, only)
     the gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_.
 
 4. Use ``pip install -r requirements.txt`` to install the required sub-packages
-=======
-3. Install the following packages within the virual environment: coincbc, 
-graphviz, geos (MacOS only), postgresql (MacOS only), fiona (Windows only), 
-gdal (Windows, only)
-
-.. note::
-    
-    The gurobi-solver may be used as **alternative** to the CBC-solver. Be aware, 
-    that the gurobi-solver is not open-source and a license is required. However, 
-    the gurobi-solver may be faster for certain types of optimization problems, 
-    especially for those containing binary decisions. The installation procedure of 
-    the gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_.  
-
-4. Use ``pip install -r requirements.txt`` to install the required sub-packages 
->>>>>>> master
 in the virtual environment
 
 5. Start the SESMG by executing start_script.py
 
-<<<<<<< HEAD
 .. note::
 
 	The application will create a SESMG directory when starting the first
@@ -1158,14 +845,4 @@ in the virtual environment
 	GUI_st_settings.json file which you will find in the /program_files/GUI_st/
 	directory. You can change the directory by adding the preferred path to the
 	GUI_st_settings.json. Make sure that each subdirectory is defined as its own
-=======
-.. note:: 
-
-	The application will create a SESMG directory when starting the first 
-	model run. By default it will be created in the /user/documents/ directory 
-	as /SESMG. You can change the folder structure by adjusting the 
-	GUI_st_settings.json file which you will find in the /program_files/GUI_st/ 
-	directory. You can change the directory by adding the preferred path to the 
-	GUI_st_settings.json. Make sure that each subdirectory is defined as its own 
->>>>>>> master
 	list entry by following the given layout.

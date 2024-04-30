@@ -601,12 +601,8 @@ if st.session_state["state_submitted_optimization"] == "done":
 
         # check rather the dependencies to be installed by the user are
         # installed
-<<<<<<< HEAD
         GUI_functions.check_for_dependencies(
                 solver=GUI_main_dict["input_solver"])
-=======
-        GUI_functions.check_for_dependencies(solver=GUI_main_dict["input_solver"])
->>>>>>> master
 
         # save the GUI_main_dict as a chache for the next session
         GUI_functions.save_GUI_cache_dict(

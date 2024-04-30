@@ -381,11 +381,7 @@ def load_result_folder_list() -> list:
 
     # Define the path to the results folder within SESMG directory
     res_folder_path = os.path.expanduser(
-<<<<<<< HEAD
         os.path.join(set_result_path(), '*'))
-=======
-        os.path.join('~', 'documents', 'sesmg', 'results', '*'))
->>>>>>> master
 
     # read sub folders in the result folder directory
     existing_result_foldernames_list = [
@@ -434,11 +430,7 @@ def check_for_dependencies(solver: str):
         Checks rather Graphviz, CBC or gurobi are installed.
 
         :param solver: name of the solver chosen in the GUI sidebar
-<<<<<<< HEAD
         :type solver: str
-=======
-        :type document_path: str
->>>>>>> master
     """
 
     # check for graphviz dpendencies

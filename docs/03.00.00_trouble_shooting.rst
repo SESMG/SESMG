@@ -1,7 +1,6 @@
 Troubleshooting
 ***************
 
-<<<<<<< HEAD
 During the installation or execution of the model generator, error messages
 and associated error messages may occur.
 
@@ -10,16 +9,6 @@ and associated error messages may occur.
     There is a know issue for MacOS users which are using the SESMG as an
     application which leads to problems opening the application itself.
     See Error I-009 below to check how to fix it or check the
-=======
-During the installation or execution of the model generator, error messages 
-and associated error messages may occur. 
-
-
-.. warning:: 
-    There is a know issue for MacOS users which are using the SESMG as an 
-    application which leads to problems opening the application itself. 
-    See Error I-009 below to check how to fix it or check the 
->>>>>>> master
     `MacOS installation instructions <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html#macos/>`_.
 
 
@@ -101,19 +90,11 @@ Error I-007: No module named streamlit I
 
    No module named streamlit
 
-<<<<<<< HEAD
 **Possible Error Cause I:** This issue can occur at the first model run after installation, even if there was no error message. Maybe you typed in the wrong python version at the installation.
 
 **Debugging I:** You need to delete the folder and restart the installation with a 'freshly' unpacked .zip file (downloadable on Github). Make sure to type your installed python version in the major.minor format, which means to give 3.X if you have the version 3.X.YY.
 
 **Possible Error Cause II:** The SESMG is compatible with a specific set of Python versions. The problem can occur if you are using an unsupported version. You can find a list of the supported Python versions in the  `installation instructions <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html#installation>`_.
-=======
-**Possible Error Cause I:** This issue can occur at the first model run after installation, even if there was no error message. Maybe you typed in the wrong python version at the installation.  
-
-**Debugging I:** You need to delete the folder and restart the installation with a 'freshly' unpacked .zip file (downloadable on Github). Make shure to type your installed python version in the major.minor format, which means to give 3.X if you have the version 3.X.YY.
-
-**Possible Error Cause II:** The SESMG is compatible with a specific set of Python versions. The problem can occure if you are ursing an unsupported version. You can find a list of the supported Python versions in the  `installation instructions <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html#installation>`_.   
->>>>>>> master
 
 **Debugging II:** You can install an additional Python version on your machine which is facing the SESMGs requirements. Afterwards you need to restart the installation process from scratch in a new folder.
 
@@ -132,7 +113,6 @@ Error I-008: No module named streamlit II
 Error I-009: The application does not start after double-clicking (MacOS)
 -------------------------------------------------------------------------
 
-<<<<<<< HEAD
 **Possible Error Cause I:** Due to a bug in a subpackage it is not possible yet to
 open the SESMG as common by double-clicking it on MacOS.
 
@@ -147,33 +127,12 @@ kill all processes after closing the application on MacOS.
 **Debugging II:** To kill all processes you need to use your taskmanager and stop
 the "SESMG"-processes manually. Make sure to kill it after each session.
 Otherwise you will not be able to reopen it by using the way described
-=======
-**Possible Error Cause I:** Due to a bug in a subpackage it is not possible yet to 
-open the SESMG as commum by double-clicking it on MacOS. 
-    
-**Debugging I:** You need to use the terminal to open the application. Navitage 
-to the directory by using the command inputs (e. g. cd) or right-click the 
-folder in which the application is placed (e. g. "desktop") and choose "new 
-terminal at the folder". Type in the command ``open SESMG.app``.
-
-**Possible Error Cause II:** Due to a bug in a subpackage the SESMG does not 
-kill all processes after closing the application on MacOS.
-    
-**Debugging II:** To kill all processes you need to use your taskmanager and stop 
-the "SESMG"-processes manually. Make sure to kill it after each session. 
-Otherwise you will not be able to reopen it by using the way described 
->>>>>>> master
 above. We are working on it!
 
 Error I-010: Encountered error while trying to install future
 -------------------------------------------------------------------------
 
 **Possible Error Cause:** Future package cannot be installed because pip is not upgraded.
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> master
 **Debugging:** Upgrade pip with: "py -3.X -m pip install --upgrade pip". Change 3.X to your python version.
 
 

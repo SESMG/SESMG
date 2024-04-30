@@ -31,11 +31,7 @@ Timeseries Simplificaton
 
 .. warning::
 
-<<<<<<< HEAD
 	All time series simplifications can currently only be applied at an input time resolution of hours with 8760 time steps (i.e. one whole year). The algorithm described in the following sub-sections can be applied. Depending on the simplification applied, further adjustments to the energy system area automatically carried out.
-=======
-	All time series simplifications can currently only be applied at an input time resolution of hours with 8760 time steps (i.e. one whole year). The algorithm described in the following sub-sections can be applied. Depending on the simplification applied, further adjustments to the energy systemarea automatically carried out.
->>>>>>> master
 
 Depending on which of the time series preparation algorithms described in the
 methods section is used, the following specifications must be made:

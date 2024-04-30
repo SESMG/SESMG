@@ -1,5 +1,4 @@
 #!/bin/bash
-<<<<<<< HEAD
 function exists_in_list() {
 	# mask the user given inputs
     LIST=$1
@@ -18,8 +17,6 @@ function exists_in_list() {
     return 1
 }
 
-=======
->>>>>>> master
 echo --------------------------------
 echo Building the Virtual Enviroment
 echo File path: "$(dirname "$0")"
@@ -30,7 +27,6 @@ cd ..
 echo "Enter your Python Version here:"
 read PYVERSION
 
-<<<<<<< HEAD
 list_of_allowed_versions="3.8,3.9,3.10,3.11"
 
 if exists_in_list "$list_of_allowed_versions" "," $PYVERSION; then
@@ -40,8 +36,6 @@ else
 	exit 1 
 fi
 
-=======
->>>>>>> master
 python$PYVERSION -m venv venv
 source venv/bin/activate
 

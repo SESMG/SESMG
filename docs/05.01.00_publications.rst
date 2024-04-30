@@ -7,11 +7,7 @@ Your publication/thesis/project is missing? Contact us!
 
 Peer Review Papers
 ------------------
-<<<<<<< HEAD
 - Klemm, Christian; Vennemann, Peter & Wiese, Frauke (2024): "**Potential-risk and no-regret options for urban energy system design — A sensitivity analysis**", *Sustainable Cities and Society*, 102, 105189, `https://doi.org/10.1016/j.scs.2024.105189 <https://doi.org/10.1016/j.scs.2024.105189>`_.
-=======
-- Klemm, Christian; Vennemann, Peter & Wiese, Frauke (2024): "**Potential-risk and no-regret options for urban energy system design — A sensitivity analysis**", *Sustainable Cities and Society*, 102, 105189, `https://doi.org/10.1016/j.scs.2024.105189 <https://doi.org/10.1016/j.scs.2024.105189>`_. 
->>>>>>> master
 
 - Klemm, Christian; Wiese, Frauke & Vennemann, Peter (2023): "**Model-based run-time and memory reduction for a mixed-use multi-energy system model with high spatial resolution**", *Applied Energy*, 334, 120574, `https://doi.org/10.1016/j.apenergy.2022.120574 <https://doi.org/10.1016/j.apenergy.2022.120574>`_.
 
