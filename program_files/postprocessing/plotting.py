@@ -128,7 +128,7 @@ def get_pv_st_dir(c_dict: dict, value: float, comp_type: str,
     }
     not_north = False
     for dire in dir_dict:
-        if not dir_dict[dire][0] <= comp["Azimuth"] < dir_dict[dire][1]:
+        if not dir_dict[dire][0] <= comp["azimuth"] < dir_dict[dire][1]:
             pass
         else:
             c_dict = add_value_to_amounts_dict(label=comp_type + dire,
