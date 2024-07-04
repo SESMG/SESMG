@@ -15,459 +15,8 @@ environment (e. g. allowing the usage of Anaconda enviroments) you can follow
 `advanced installation instructions <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html#advanced-installation>`_. 
 
 
-SESMG as Application
-====================
-
-Windows
--------
-
-
-1. Installing Graphviz
-You can download Graphviz here: `Graphviz download <https://graphviz.org/download/>`_.
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_4.png
-   :width: 40 %
-   :align: center
-
-.. note:: 
-
-	Make sure to select "Add Graphviz to system path for all users" at the
-	beginning of the installation, otherwise you can use the default settings.
-
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_5.png
-   :width: 40 %
-
-2. Installing a solver
-You can download the free and open-source CBC-solver here: `cbc solver for MacOS <https://www.coin-or.org/download/binary/Cbc/>`_. 
-Alternatively you can use Homebrew to install the CBC-solver by following `the instructions from Brew <https://formulae.brew.sh/formula/cbc/>`_.
-
-The gurobi-solver may be used as an **alternative** to the CBC-solver. Be 
-aware, that the gurobi-solver is not open-source and a license is required. 
-However, the gurobi-solver may be faster for certain types of optimization problems, 
-especially for those containing binary decisions. The installation procedure 
-of the gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_.  
-
-
-3. Installing the SESMG application
-You will find the latest released SESMG version here: `SESMG releases on Github <https://github.com/SESMG/SESMG/releases/latest/>`_. 
-Download the SESMG.dmg, open it and place the application in a directory of 
-your choice. You can change the directory afterwards. 
-
-.. figure:: images/manual/Installation/sesmg_installation_mac_5_dmg.png
-   :width: 40 %
-   :align: center
-
-Due to a bug in a subpackage it is not possible yet to open the SESMG as commum 
-by double-clicking it. You need to use the terminal to open the application. 
-Navitage to the directory by using the command inputs (e. g. cd) or right-click 
-the folder in which the application is placed (e. g. "desktop") and choose 
-"new terminal at the folder". Type in the command ``open SESMG.app``.
-
-.. figure:: images/manual/Installation/sesmg_installation_mac_6_openapp.png
-   :width: 40 %
-   :align: center
-   
-.. note:: 
-
-	You have to confirm the file run in your mac's security settings to be able 
-	to run it. Confirm with 'Open Anyway'.
-
-.. figure:: images/manual/Installation/sesmg_installation_mac_3.png
-   :width: 40 %
-   :align: center
-
-Be aware that it can take several minutes and will be running withouth any 
-loading or progress screen. Check your taskmanager to be sure the process 
-startet by looking for SESMG.
-
-.. warning::
-
-    A known issue for macOS is that the programm does not close when you close 
-    the app. To kill all processes you need to use your taskmanager and stop 
-    the "SESMG"-processes manually. Make sure to kill it after each session. 
-    Otherwise you will not be able to reopen it by using the way described 
-    above. 
-    The problem is caused by a subpackage. We are working on a better 
-    solution! 
-
-.. note:: 
-
-	The application will create a SESMG directory when starting the first 
-	model run. By default it will be created in the /user/documents/ directory 
-	as /SESMG.
-
-
-
-Linux
------
-
-1. Installing Graphviz:
-
-.. note::
-	
-	If no packages have ever been installed on the computer using apt-get, 
-	``sudo apt-get update`` must be executed first.
-
-``$ sudo apt-get install graphviz``
-	
-2. Installing the CBC-solver: 
-
-``$ sudo apt-get install coinor-cbc``
-
-The gurobi-solver may be used as **alternative** to the CBC-solver. Be aware, 
-that the gurobi-solver is not open-source and a license is required. However, 
-the gurobi-solver may be faster for certain types of optimization problems, especially 
-for those containing binary decisions. The installation procedure of the 
-gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_.  
-
-3. Installing the SESMG application
-You will find the latest released SESMG version here: `SESMG releases on Github <https://github.com/SESMG/SESMG/releases/latest/>`_. 
-Download the SESMG.deb and place it in a directory of your choice. You can 
-change the directory afterwards. Open the SESMG application by running the 
-executable file as commum. Be aware that it can take several minutes and will 
-be running withouth any loading or progress screen. Check your taskmanager to 
-be sure the process startet by looking for SESMG.
-
-.. note:: 
-
-	The application will create a SESMG directory when starting the first 
-	model run. By default it will be created in the /user/documents/ directory 
-	as /SESMG.
-
-4. Defining the SESMG system rights 
-
-Use the following two commands in your terminal after installing the SESMG.
-
-``sudo apt install -y libfontconfig1-dev libfreetype6-dev libx11-dev``
-
-``sudo apt install -y libx11-xcb-dev libxext-dev libxfixes-dev``
-
-``sudo apt install -y libxi-dev libxrender-dev libxkbcommon-dev``
-
-``sudo apt install -y libxkbcommon-x11-dev libatspi2.0-dev libopengl0`` 
-
-``sudo apt install -y '^libxcb.*-dev' libgl1 libegl1 libdbus-glib-1-2``
-
-``sudo chmod -R 755 /opt/SESMG``
-
-.. warning::
-
-    A known issue for linux is that the programm does not close when you close 
-    the app. To kill all processes you need to use your taskmanager and stop 
-    the "SESMG"-processes manually. Make sure to kill it after each session. 
-    Otherwise you will not be able to reopen it by using the way described 
-    above. 
-    The problem is caused by a subpackage. We are working on a better 
-    solution! 
-
-
 Extended Installation
 =====================
-
-
-
-Windows
------
-
-1. Installing Python (3.7, 3.8 or 3.9)
-Windows users can find the versions here: `Python download page for windows <https://www.python.org/downloads/windows/>`_
-
-.. note:: 
-
-	Make sure to use the installer referring to your windows version (e.g. 
-	"Windows x86-64 executable installer" for windows 64-bit version). You can 
-	check the build in bit version following `these steps <https://support.microsoft.com/en-us/windows/32-bit-and-64-bit-windows-frequently-asked-questions-c6ca9541-8dce-4d48-0415-94a3faa2e13d>`_.
-	
-.. note:: 
-
-	The SESMG is not compatible with the python version 3.9.7, due to a 
-	confliciting bug in this version to the subpackage streamlit. You need 
-	do install another pyhton version or update to another python version e. g. 
-	3.9.13, which is widely tested.
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_1.png
-   :width: 40 %
-   :align: center
-   
-.. note:: 
-
-	Make sure to select "Add python to PATH" at the beginning of the Python installation.
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_2.png
-   :width: 40 %
-   :align: center
-
-2. Downloading the SESMG
-Download the Spreadsheet Energy System Model Generator from `GitHub <https://github.com/SESMG/SESMG>`_ 
-as .zip folder and extract the .zip folder into any directory on the computer.
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_3.png
-   :width: 40 %
-   :align: center
-
-3. Installing Graphiz here: `Graphiz download <https://graphviz.org/download/>`_
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_4.png
-   :width: 40 %
-   :align: center
-
-.. note:: 
-
-	Make sure to select "Add Graphiz to system path for all users" at the 
-	beginning of the installation, otherwise you can use the default settings.
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_5.png
-   :width: 40 %
-   :align: center
-   
-
-4. Installing the CBC-solver here: `CBC-solver for windows <https://www.coin-or.org/download/binary/Cbc/>`_. 
-Alternatively you can uses the `direct download link <https://www.coin-or.org/download/binary/Cbc/Cbc-2.10-win64-msvc16-mdd.zip>`_
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_6.png
-   :width: 40 %
-   :align: center
-   
-.. note:: 
-
-	Extract the .zip file and copy the CBC-solver (go to the bin-folder and 
-	use the cbc.exe) into the SESMG directory.
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_7.png
-   :width: 40 %
-   :align: center
-   
-The gurobi-solver may be used as **alternative** to the CBC-solver. Be aware, 
-that the gurobi-solver is not open-source and a license is required. However, 
-the gurobi-solver may be faster for certain types of optimization problems, especially 
-for those containing binary decisions. The installation procedure of the 
-gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_.  
-
-5. Installing the SESMG
-Execute the windows_installation.cmd and add your python version (this may take 
-several minutes).
-
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_8.png
-   :width: 40 %
-   :align: center
-
-Enter your python version.
-
-.. note:: 
-
-	Please type in your python version in the major.minor format, which means 
-	to give 3.X if you have the version 3.X.YY. E.g. 3.9 if you have the python 
-	version 3.9.13. 
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_9.png
-   :width: 40 %
-   :align: center
-
-.. note:: 
-
-	There appears a warning after the installation process about the packages 
-	osmx and cartopy. The installation was successful, the SESMG will run 
-	normally and you can ignore this warning. Also see 
-	`warning-001 troubeshooting <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/03.00.00_trouble_shooting.html#warning-w-001-need-to-install-cartopy>`_.
-
-2. Installing a solver
-
-2a. The free and open-source CBC-solver is recommended for new users and users which are not facing any run-time issues. To use the solver, download the most recent Coin-or-OptimizationSuite-version for your operating system: `Coin-or-OptimizationSuite for windows <https://www.coin-or.org/download/binary/OptimizationSuite/>`_. Alternatively you can uses the `direct download link 		  <https://www.coin-or.org/download/binary/OptimizationSuite/COIN-OR-1.8.0-win32-msvc12.exe>`_. Restart your computer after successfully installing the solver.
-
-2b. The gurobi-solver may be used as an **alternative** to the CBC-solver. Be
-aware, that the gurobi-solver is not open-source and a license is required.
-However, the gurobi-solver may be faster for certain types of optimization problems,
-especially for those containing binary decisions. The installation procedure of
-the gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_. Restart your computer after successfully installing the solver.
-
-.. note::
-
-	Make sure to restart your computer before proceeding with the next steps.
-
-
-3. Installing the SESMG application
-The latest released SESMG version can be accessed here: `SESMG releases on Github <https://github.com/SESMG/SESMG/releases/latest/>`_.
-Download the SESMG.exe, unzip it, and place it in a directory of your choice. Open the SESMG application by running SESMG.exe. The starting process usually takes a few minutes.
-
-.. tip::
-
-	With the first use you may have to confirm in windows-defender or other protection software that the SESMG is trustworthy.
-	The exact warning message may differ depending on the system language and anti-virus software.
-
-
-.. tip::
-
-	While the SESMG is starting, a message like "the website is not available" may appear. Wait a moment and press "reload". If necessary, repeat this step.
-	The exact warning message may differ depending on the system language and applied browser.
-
-
-.. note::
-
-	The application will create a SESMG directory when starting the first model
-	run. By default it will be created in the /user/documents/ directory as
-	/SESMG.
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_10.png
-   :width: 40 %
-   :align: center
-
-.. note:: 
-
-	If you receive a "Your computer has been protected by Windows" error 
-	message, click "More Information," and then "Run Anyway".
-	
-.. note:: 
-
-	The application will create a SESMG directory when starting the first 
-	model run. By default it will be created in the /user/documents/ directory 
-	as /SESMG. You can change the folder structure by adjusting the 
-	GUI_st_settings.json file which you will find in the /program_files/GUI_st/ 
-	directory. You can change the directory by adding the preferred path to the 
-	GUI_st_settings.json. Make sure that each subdirectory is defined as its own 
-	list entry by following the given layout.
-
-
-MacOS
------
-
-1. Installing Graphviz
-You can download Graphviz here: `Graphviz download <https://graphviz.org/download/>`_
-
-.. figure:: images/manual/Installation/sesmg_installation_ms_4.png
-   :width: 40 %
-   :align: center
-
-
-2. Installing a solver
-You can download the free and open-source CBC-solver here: `cbc solver for MacOS <https://www.coin-or.org/download/binary/Cbc/>`_.
-Alternatively you can use Homebrew to install the CBC-solver by following `the instructions from Brew <https://formulae.brew.sh/formula/cbc/>`_.
-
-The gurobi-solver may be used as an **alternative** to the CBC-solver. Be
-aware, that the gurobi-solver is not open-source and a license is required.
-However, the gurobi-solver may be faster for certain types of optimization problems,
-especially for those containing binary decisions. The installation procedure
-of the gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_.
-
-
-3. Installing the SESMG application
-You will find the latest released SESMG version here: `SESMG releases on Github <https://github.com/SESMG/SESMG/releases/latest/>`_.
-Download the SESMG.dmg, open it and place the application in a directory of
-your choice. You can change the directory afterwards.
-
-.. figure:: images/manual/Installation/sesmg_installation_mac_5_dmg.png
-   :width: 40 %
-   :align: center
-
-Due to a bug in a subpackage it is not possible yet to open the SESMG as common
-by double-clicking it. You need to use the terminal to open the application.
-Navigate to the directory by using the command inputs (e. g. cd) or right-click
-the folder in which the application is placed (e. g. "desktop") and choose
-"new terminal at the folder". Type in the command ``open SESMG.app``.
-
-.. figure:: images/manual/Installation/sesmg_installation_mac_6_openapp.png
-   :width: 40 %
-   :align: center
-
-.. note::
-
-	You have to confirm the file run in your mac's security settings to be able
-	to run it. Confirm with 'Open Anyway'.
-
-.. figure:: images/manual/Installation/sesmg_installation_mac_3.png
-   :width: 40 %
-   :align: center
-
-Be aware that it can take several minutes and will be running without any
-loading or progress screen. Check your taskmanager to be sure the process
-started by looking for SESMG.
-
-.. warning::
-
-    A known issue for macOS is that the program does not close when you close
-    the app. To kill all processes you need to use your taskmanager and stop
-    the "SESMG"-processes manually. Make sure to kill it after each session.
-    Otherwise you will not be able to reopen it by using the way described
-    above.
-    The problem is caused by a subpackage. We are working on a better
-    solution!
-
-.. note::
-
-	The application will create a SESMG directory when starting the first
-	model run. By default it will be created in the /user/documents/ directory
-	as /SESMG.
-
-
-
-Linux
------
-
-1. Installing Graphviz:
-
-.. note::
-
-	If no packages have ever been installed on the computer using apt-get,
-	``sudo apt-get update`` must be executed first.
-
-``$ sudo apt-get install graphviz``
-
-2. Installing the CBC-solver:
-
-``$ sudo apt-get install coinor-cbc``
-
-The gurobi-solver may be used as **alternative** to the CBC-solver. Be aware,
-that the gurobi-solver is not open-source and a license is required. However,
-the gurobi-solver may be faster for certain types of optimization problems, especially
-for those containing binary decisions. The installation procedure of the
-gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_.
-
-3. Installing the SESMG application
-You will find the latest released SESMG version here: `SESMG releases on Github <https://github.com/SESMG/SESMG/releases/latest/>`_.
-Download the SESMG.deb and place it in a directory of your choice. You can
-change the directory afterwards. Open the SESMG application by running the
-executable file as common. Be aware that it can take several minutes and will
-be running without any loading or progress screen. Check your taskmanager to
-be sure the process started by looking for SESMG.
-
-.. note::
-
-	The application will create a SESMG directory when starting the first
-	model run. By default it will be created in the /user/documents/ directory
-	as /SESMG.
-
-4. Defining the SESMG system rights
-
-Use the following two commands in your terminal after installing the SESMG.
-
-``sudo apt install -y libfontconfig1-dev libfreetype6-dev libx11-dev``
-
-``sudo apt install -y libx11-xcb-dev libxext-dev libxfixes-dev``
-
-``sudo apt install -y libxi-dev libxrender-dev libxkbcommon-dev``
-
-``sudo apt install -y libxkbcommon-x11-dev libatspi2.0-dev libopengl0``
-
-``sudo apt install -y '^libxcb.*-dev' libgl1 libegl1 libdbus-glib-1-2``
-
-``sudo chmod -R 755 /opt/SESMG``
-
-.. warning::
-
-    A known issue for linux is that the program does not close when you close
-    the app. To kill all processes you need to use your taskmanager and stop
-    the "SESMG"-processes manually. Make sure to kill it after each session.
-    Otherwise you will not be able to reopen it by using the way described
-    above.
-    The problem is caused by a subpackage. We are working on a better
-    solution!
-
-
-Extended Installation
-=====================
-
-
 
 Windows
 -----
@@ -846,3 +395,155 @@ in the virtual environment
 	directory. You can change the directory by adding the preferred path to the
 	GUI_st_settings.json. Make sure that each subdirectory is defined as its own
 	list entry by following the given layout.
+
+
+SESMG as Application
+====================
+
+.. warning::
+	The SESMG as Application only work for the SESMG version v1.0.0. If you 
+	want to use the recent version you need to follow the extended 
+	installation instructions.
+
+Windows
+-------
+
+
+1. Installing Graphviz
+You can download Graphviz here: `Graphviz download <https://graphviz.org/download/>`_.
+
+.. figure:: images/manual/Installation/sesmg_installation_ms_4.png
+   :width: 40 %
+   :align: center
+
+.. note:: 
+
+	Make sure to select "Add Graphviz to system path for all users" at the
+	beginning of the installation, otherwise you can use the default settings.
+
+
+.. figure:: images/manual/Installation/sesmg_installation_ms_5.png
+   :width: 40 %
+
+2. Installing a solver
+You can download the free and open-source CBC-solver here: `cbc solver for MacOS <https://www.coin-or.org/download/binary/Cbc/>`_. 
+Alternatively you can use Homebrew to install the CBC-solver by following `the instructions from Brew <https://formulae.brew.sh/formula/cbc/>`_.
+
+The gurobi-solver may be used as an **alternative** to the CBC-solver. Be 
+aware, that the gurobi-solver is not open-source and a license is required. 
+However, the gurobi-solver may be faster for certain types of optimization problems, 
+especially for those containing binary decisions. The installation procedure 
+of the gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_.  
+
+
+3. Installing the SESMG application
+You will find the latest released SESMG version here: `SESMG releases on Github <https://github.com/SESMG/SESMG/releases/latest/>`_. 
+Download the SESMG.dmg, open it and place the application in a directory of 
+your choice. You can change the directory afterwards. 
+
+.. figure:: images/manual/Installation/sesmg_installation_mac_5_dmg.png
+   :width: 40 %
+   :align: center
+
+Due to a bug in a subpackage it is not possible yet to open the SESMG as commum 
+by double-clicking it. You need to use the terminal to open the application. 
+Navitage to the directory by using the command inputs (e. g. cd) or right-click 
+the folder in which the application is placed (e. g. "desktop") and choose 
+"new terminal at the folder". Type in the command ``open SESMG.app``.
+
+.. figure:: images/manual/Installation/sesmg_installation_mac_6_openapp.png
+   :width: 40 %
+   :align: center
+   
+.. note:: 
+
+	You have to confirm the file run in your mac's security settings to be able 
+	to run it. Confirm with 'Open Anyway'.
+
+.. figure:: images/manual/Installation/sesmg_installation_mac_3.png
+   :width: 40 %
+   :align: center
+
+Be aware that it can take several minutes and will be running withouth any 
+loading or progress screen. Check your taskmanager to be sure the process 
+startet by looking for SESMG.
+
+.. warning::
+
+    A known issue for macOS is that the programm does not close when you close 
+    the app. To kill all processes you need to use your taskmanager and stop 
+    the "SESMG"-processes manually. Make sure to kill it after each session. 
+    Otherwise you will not be able to reopen it by using the way described 
+    above. 
+    The problem is caused by a subpackage. We are working on a better 
+    solution! 
+
+.. note:: 
+
+	The application will create a SESMG directory when starting the first 
+	model run. By default it will be created in the /user/documents/ directory 
+	as /SESMG.
+
+
+
+Linux
+-----
+
+1. Installing Graphviz:
+
+.. note::
+	
+	If no packages have ever been installed on the computer using apt-get, 
+	``sudo apt-get update`` must be executed first.
+
+``$ sudo apt-get install graphviz``
+	
+2. Installing the CBC-solver: 
+
+``$ sudo apt-get install coinor-cbc``
+
+The gurobi-solver may be used as **alternative** to the CBC-solver. Be aware, 
+that the gurobi-solver is not open-source and a license is required. However, 
+the gurobi-solver may be faster for certain types of optimization problems, especially 
+for those containing binary decisions. The installation procedure of the 
+gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_.  
+
+3. Installing the SESMG application
+You will find the latest released SESMG version here: `SESMG releases on Github <https://github.com/SESMG/SESMG/releases/latest/>`_. 
+Download the SESMG.deb and place it in a directory of your choice. You can 
+change the directory afterwards. Open the SESMG application by running the 
+executable file as commum. Be aware that it can take several minutes and will 
+be running withouth any loading or progress screen. Check your taskmanager to 
+be sure the process startet by looking for SESMG.
+
+.. note:: 
+
+	The application will create a SESMG directory when starting the first 
+	model run. By default it will be created in the /user/documents/ directory 
+	as /SESMG.
+
+4. Defining the SESMG system rights 
+
+Use the following two commands in your terminal after installing the SESMG.
+
+``sudo apt install -y libfontconfig1-dev libfreetype6-dev libx11-dev``
+
+``sudo apt install -y libx11-xcb-dev libxext-dev libxfixes-dev``
+
+``sudo apt install -y libxi-dev libxrender-dev libxkbcommon-dev``
+
+``sudo apt install -y libxkbcommon-x11-dev libatspi2.0-dev libopengl0`` 
+
+``sudo apt install -y '^libxcb.*-dev' libgl1 libegl1 libdbus-glib-1-2``
+
+``sudo chmod -R 755 /opt/SESMG``
+
+.. warning::
+
+    A known issue for linux is that the programm does not close when you close 
+    the app. To kill all processes you need to use your taskmanager and stop 
+    the "SESMG"-processes manually. Make sure to kill it after each session. 
+    Otherwise you will not be able to reopen it by using the way described 
+    above. 
+    The problem is caused by a subpackage. We are working on a better 
+    solution! 
