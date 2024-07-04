@@ -535,6 +535,18 @@ Error M-032: Key Error (column)
 
 
 
+Error M-033: Demo Tools ValueError: Costs in million Euro/a
+-----------------------
+**Error Message:** ::
+
+   ValueError: Costs in million Euro/a encoding field is specified without a type; the type cannot be inferred because it does not match any column in the data.
+
+**Possible Error Cause:** You have results of an older version of the SESMG in your result folder, which will not be replaced automaticly by the newer version.
+
+**Debugging:** Go to your result folder and delete the demo tool folder. You will find it (on default) via documents/SESMG/results/demo
+
+
+
 Warning W-001: Need to install ... / Cartopy ...
 -----------------------------------------------------------------
 **Warning Message:** ::
