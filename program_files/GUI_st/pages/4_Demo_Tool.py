@@ -471,9 +471,9 @@ def show_demo_run_results_on_graph():
 
     # write subheader, combine all chart layer and show the combinded chart
     st.subheader("Your solution on pareto graph:")
-    st.altair_chart(additional_points_chart
-                    + pareto_points_chart
-                    + status_quo_points_chart,
+    st.altair_chart(altair_chart=additional_points_chart
+                    +pareto_points_chart
+                    +status_quo_points_chart,
                     theme="streamlit",
                     use_container_width=True)
 
@@ -501,7 +501,7 @@ def demo_start_page() -> None:
     """
 
     # import markdown text from GUI files
-    imported_markdown_dttext = read_markdown_document(
+    imported_markdown = read_markdown_document(
         document_path="docs/GUI_texts/demo_tool_text.md",
         folder_path=f'{"docs/images/manual/DemoTool/*"}',
         fixed_image_width=500)
