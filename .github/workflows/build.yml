@@ -18,6 +18,7 @@ jobs:
           brew install hdf5
           brew install postgresql
           brew install geos
+          brew install netcdf
           curl https://www.python.org/ftp/python/3.9.13/python-3.9.13-macosx10.9.pkg --output pythonInstaller.pkg
           sudo installer -pkg pythonInstaller.pkg -target /
       - name: Create Executable
