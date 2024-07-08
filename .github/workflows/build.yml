@@ -27,7 +27,6 @@ jobs:
           . bin/activate
           PYINSTALLER_COMPILE_BOOTLOADER=1 bin/pip3 install git+https://github.com/pyinstaller/pyinstaller.git@develop
           bin/pip3 install --upgrade pip
-          bin/pip3 install setuptools<58.0.0
           bin/pip3 install twisted[tls] appnope requests certifi
           bin/pip3 install -r requirements.txt
           pyinstaller .github/deploy/SESMG_macos.spec
