@@ -19,7 +19,6 @@ jobs:
           brew install postgresql
           brew install geos
           brew install gdal 
-          brew install netcdf
           curl https://www.python.org/ftp/python/3.9.13/python-3.9.13-macosx10.9.pkg --output pythonInstaller.pkg
           sudo installer -pkg pythonInstaller.pkg -target /
       - name: Create Executable
@@ -27,6 +26,8 @@ jobs:
           python3.9 -m venv .
           . bin/activate
           PYINSTALLER_COMPILE_BOOTLOADER=1 bin/pip3 install git+https://github.com/pyinstaller/pyinstaller.git@develop
+          bin/pip3 install --upgrade pip
+          bin/pip3 install --upgrade setuptools
           bin/pip3 install twisted[tls] appnope requests certifi
           bin/pip3 install -r requirements.txt
           pyinstaller .github/deploy/SESMG_macos.spec
