@@ -29,16 +29,16 @@ echo --------------------------------
 chmod a+rwx "$(pwd)"
 pip3 install virtualenv
 
-echo "Enter yout Python Version here: "
+echo "Enter yout Python version here: "
 read PYVERSION
 
 
 list_of_allowed_versions="3.8,3.9,3.10,3.11"
 
 if exists_in_list "$list_of_allowed_versions" "," $PYVERSION; then
-    echo "Version Input allowed, installation will continue."
+    echo "Version input allowed. Installation will continue."
 else
-    echo "Input not in the list of allowed Versions restart the installation with an allowed version." 1>&2 
+    echo "Input not in the list of allowed versions restart the installation with an allowed version." 1>&2 
 	exit 1 
 fi
 
@@ -48,7 +48,7 @@ virtualenv -p /usr/bin/python$PYVERSION venv
 . venv/bin/activate
 
 echo ---------------------------------------------
-echo download and install required python packages
+echo Download and install required python packages
 echo ---------------------------------------------
 
 pip3 install -r ./requirements.txt
