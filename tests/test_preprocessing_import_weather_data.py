@@ -40,8 +40,10 @@ def test_import_open_fred_weather_data():
         here is Düsseldorf Airport.
     """
     test_nodes_data = pandas.read_excel(
-        os.path.dirname(os.path.dirname(__file__))
-        + "/model_definition_example.xlsx",
+        os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "template_examples",
+            "model_definition_example.xlsx"),
         "weather data",
         parse_dates=["timestamp"])
     test_nodes_data = test_nodes_data.drop(columns=["timestamp",
