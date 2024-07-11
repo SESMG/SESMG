@@ -426,6 +426,65 @@ You can download Graphviz here: `Graphviz download <https://graphviz.org/downloa
    :width: 40 %
 
 2. Installing a solver
+
+2a. The free and open-source CBC-solver is recommended for new users and users which are not facing any run-time issues. To use the solver, download the most recent Coin-or-OptimizationSuite-version for your operating system: `Coin-or-OptimizationSuite for windows <https://www.coin-or.org/download/binary/OptimizationSuite/>`_. Alternatively you can uses the `direct download link 		  <https://www.coin-or.org/download/binary/OptimizationSuite/COIN-OR-1.8.0-win32-msvc12.exe>`_. Restart your computer after succesfully installing the solver.
+
+2b. The gurobi-solver may be used as an **alternative** to the CBC-solver. Be 
+aware, that the gurobi-solver is not open-source and a license is required. 
+However, the gurobi-solver may be faster for certain types of optimization problems, 
+especially for those containing binary decisions. The installation procedure of 
+the gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_. Restart your computer after succesfully installing the solver. 
+
+.. note:: 
+
+	Make sure to restart your computer before proceeding with the next steps.
+
+
+
+3. Installing the SESMG application
+The latest released SESMG version can be accessed here: `SESMG releases on Github <https://github.com/SESMG/SESMG/releases/latest/>`_. 
+Download the SESMG.exe, unzip it, and place it in a directory of your choice. Open the SESMG application by running SESMG.exe. The starting process usually takes a few minutes.
+
+.. tip::
+
+	With the first use you may have to confirm in windows-defender or other protection software that the SESMG is trustworthy. 
+	The exact warning message may differ depending on the system language and anti-virus software.
+
+
+.. tip::
+
+	While the SESMG is starting, a message like "the website is not available" may appear. Wait a moment and press "reload". If necessary, repeat this step. 
+	The exact warning message may differ depending on the system language and applied browser.
+
+	
+.. note:: 
+
+	The application will create a SESMG directory when starting the first model 
+	run. By default it will be created in the /user/documents/ directory as 
+	/SESMG.
+
+
+
+MacOS
+-----
+
+1. Installing Graphiz
+You kann download Graphiz here: `Graphiz download <https://graphviz.org/download/>`_
+
+.. figure:: images/manual/Installation/sesmg_installation_ms_4.png
+   :width: 40 %
+   :align: center
+
+.. note::
+
+	Make sure to select "Add Graphviz to system path for all users" at the
+	beginning of the installation, otherwise you can use the default settings.
+
+
+.. figure:: images/manual/Installation/sesmg_installation_ms_5.png
+   :width: 40 %
+
+2. Installing a solver
 You can download the free and open-source CBC-solver here: `cbc solver for MacOS <https://www.coin-or.org/download/binary/Cbc/>`_. 
 Alternatively you can use Homebrew to install the CBC-solver by following `the instructions from Brew <https://formulae.brew.sh/formula/cbc/>`_.
 
