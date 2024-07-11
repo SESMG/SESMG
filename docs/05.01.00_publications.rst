@@ -59,11 +59,7 @@ Theses
 
 Posters
 -------------
-<<<<<<< HEAD
 - Tockloth, Jan N.; Klemm, Christian; Becker, Gregor; Blankenstein, Benjamin & Vennemann, Peter (2024): "**Spreadsheet Energy System Model Generator (SESMG)**", *16. Steinfurter Bioenergiefachtagung*, `https://doi.org/10.25974/fhms-17820 <https://doi.org/10.25974/fhms-17820>`_.
-=======
-- Tockloth, Jan N.; Klemm, Christian; Becker, Gregor; Blankenstein, Benjamin & Vennemann, Peter (2024): "**Spreadsheet Energy System Model Generator (SESMG)**", *16. Steinfurter Bioenergiefachtagung*, `https://doi.org/10.25974/fhms-17820 <https://doi.org/10.25974/fhms-17820>`_.  
->>>>>>> master
 
 Presentations
 -------------
@@ -82,6 +78,7 @@ Energy system structure and parameters
 
 Projects
 --------
+- `FutureBEEing <https://www.overijssel.nl/onderwerpen/omgeving/wonen-en-woningmarkt/futurebeeing/futurebeeing-auf-deutsch>`_, FH Münster (2024-2027)
 
 - `RessourcenPlan im Quartier (R2Q) <http://fh-muenster.de/r2q>`_, FH Münster (2019 - 2022)
 
