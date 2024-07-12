@@ -448,9 +448,13 @@ District Heating
 ================
 Different from the previously mentioned points, District Heating is not a component,
 but a piped heat supply option, elaborated on the basis of the oemof package DHNx.
-Within the district heating approach, a heat producer is connected to the consumers' heat sink
-via a link, heat pipes (lossy transformers) and the district heating
-house station.
+A distinction is made between exergy and anergy heat networks. These two networks differ primarily in their 
+operating temperatures, which are significantly lower for anergy networks. For this reason, the pipes are not insulated, 
+as the network is operated at approximately the same temperature as the ground.
+
+Within the district heating approach, a heat producer is connected to the consumers heat sink
+via a link, heat pipes (lossy transformers) and the district heating house station. In the case of the anergy network, 
+the dirstrict heat house station corresponds to a heat pump and a heat exchanger that extracts the heat from the anergy network.
 
 .. figure:: ../docs/images/structure_of_energy_system/district_heating.png
    :width: 50 %
@@ -461,7 +465,8 @@ house station.
 
 Insulation
 ==========
-Thermal insulation represents a possibility to reduce the heat demand of a respective building. For this purpose, an investment decision is used to calculate a U-value and temperature difference dependent saving, which is substracted from the sinks.
+Thermal insulation represents a possibility to reduce the heat demand of a respective building. For this purpose, 
+an investment decision is used to calculate a U-value and temperature difference dependent saving, which is substracted from the sinks.
 
 Investment
 ==========
