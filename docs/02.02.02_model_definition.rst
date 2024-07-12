@@ -745,3 +745,56 @@ data time system should be in conformity with the model’s time system, defined
    2012-01-01 10:00:00,11.87,0.00,11.87,100560.02,11.63,5.79,0.49,13.7,15.44,13.06,90,15
    ...,...,...,...,...,...,...,...,...,...,...
 
+.. _`Pipe types sheet`:
+
+Pipe Types
+------------
+
+Two different components are listed in this table. The first defines the different pipe types available to the energy system
+for the construction of heating networks and second the components which are the connection between the houses and the heat networks. 
+These are the "dh_heatstation" for the exergy heat network and the " anergy_heat_pump" for the anergy heat network. 
+
+- **label**: Unique designation of the pipe types. The following format is recommended for the pipes: "<DN>-<diameter of pipe>".
+- **active**: Specifies whether the pipe type shall be included to the model. "0" = inactive, "1" = active.
+- **nonconvex**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model
+  can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained
+  `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html>`_.
+- **loss factor**: Proportional loss factor for the component.
+- **loss factor fix**: Fixed loss factor for the component.
+- **min. investment capacity** in (kW): Minimum capacity to be installed in case of an investment.
+- **max. investment capacity** in (kW): Maximum capacity that can be added in the case of an investment. If no investment is possible,
+  enter the value "0" here.
+- **periodical costs** in (CU/(kW a)): Costs incurred per kW for investments within the time horizon. Periodical costs only apply for newly
+  invested capacities but not for existing capacities.
+- **fix investment costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs).
+- **periodical constraint costs** in (CU/(kW a)): Costs incurred per kW for investments within the time horizon referring to the constraint
+  limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
+- **fix investment constraint costs** in (CU/a): Fixed constraint costs of non-convex investments (in addition to the periodic constraint
+  costs).
+- **anergy or exergy**: Specifies whether the pipe type is part of the anergy or exergy network. Fill in "exergy" for a pipe for an exergy network and "anergy" for a pipe of an anergy network.
+- **distribution pipe**: Specifies whether the pipe type can be used as a distribution pipe. Fill in "1" if the pipe type can be used and "0" if it cannot.
+- **building pipe**: Specifies whether the pipe type can be used as a building pipe. Fill in "1" if the pipe type can be used and "0" if it cannot.
+- **efficiency**: Specifies the efficiency of the first output. Values between "0" and "1" are allowed entries. This value is only relevant for the "dh_heatstation" and the "anergy_heat_pump". A "0" can be inserted for the pipe types.
+
+ .. csv-table:: Exemplary input for pipe types
+   :header: label,active,nonconvex,loss factor,loss factor fix,min. investment capacity,max. investment capacity,periodical costs,fix investment costs,periodical constraint costs,fix investment constraint costs,anergy or exergy,distribution pipe,building pipe,efficiency
+
+   DN-20,0,1,0,0.010667,0,24.42,0,64,204,0,exergy,1,1,0
+   DN-25,0,1,0,0.012667,0,43.95,0,65,244,0,exergy,1,1,0
+   DN-32,0,1,0,0.015333,0,83.44,0,69,304,0,exergy,1,1,0
+   DN-40,0,1,0,0.017333,0,147.99,0,72,376,0,exergy,1,1,0
+   DN-50,0,1,0,0.019333,0,261.12,0,81,471.999847,0,exergy,1,1,0
+   DN-65,0,1,0,0.022,0,506.3,0,88,629,0.00001,exergy,0,1,0
+   DN-80,0,1,0,0.023333,0,851.92,0,101,800.999977,0.00001,exergy,1,0,0
+   DN-100,0,1,0,0.026,0,1490,0,125,1056,0,exergy,1,1,0
+   DN-125,0,1,0,0.028,0,2580,0,150,1412,0,exergy,1,1,0
+   DN-150,0,1,0,0.029333,0,4050,0,181,1812,0,exergy,1,1,0
+   DN-200,0,1,0,0.032,0,8220,0,215,2742,0,exergy,1,1,0
+   DN-250,0,1,0,0.034,0,14210,0,288,3844,0,exergy,1,1,0
+   Diameter65L,1,0,0.000022,0,0,9999,0.087724,0,0.627025,0,exergy,1,1,0
+   clustered_consumer_link,1,0,0,0,0,0,0.156558276,0,0.9122902,0,0,0,0,0.02898939
+   dh_heatstation,1,0,0,0,0,0,85,0,0.000001,0,0,0,0,0.98
+   anergy_heat_pump,1,0,0,0,0,0,1,0,1,0,0,0,0,1
+
+
+
