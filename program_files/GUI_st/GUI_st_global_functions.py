@@ -614,10 +614,13 @@ def set_internal_directory_path() -> str:
     return res_internal_directory_path
 
 
-def create_result_directory() -> None:
+def create_result_directory(tail="") -> None:
     """
     Create a result directory and a SESMG folder in the user's documents
     directory for storing JSON files and results.
+
+    :param tail: name of an additional folder in the result directory
+    :type tail: str
 
     This function creates a directory structure to store JSON files and
     results. It imports settings from 'GUI_st_settings.json' to determine the
@@ -627,7 +630,7 @@ def create_result_directory() -> None:
     """
 
     # Define the path to the result directory
-    result_directory_path = set_result_path()
+    result_directory_path = os.path.join(set_result_path(), tail)
 
     # Check if the results directory exists inside and create it if necessary
     if os.path.exists(result_directory_path) is False:

@@ -37,6 +37,22 @@ if "state_download" not in st.session_state:
     st.session_state['state_download'] = False
 
 
+def us_application_create_folder() -> None:
+    """
+        Create the Upscaling_Tool folder in the result directory if needed.
+    """
+
+    # set the result path based on the gui_st_settings.json
+    res_folder_path = os.path.join(set_result_path(),
+                                   'Upscaling_Tool')
+
+    # Check if the results folder path exists
+    if os.path.exists(res_folder_path) is False:
+        # If not, create the us result directory using a separate function
+        create_result_directory(tail="Upscaling_Tool")
+
+
+
 def us_application() -> None:
     """
         Definition of the sidebar elements for the urban district
@@ -92,6 +108,10 @@ def us_application() -> None:
             if input_us_sheet_path != "" \
                     and input_standard_parameter_path != "" \
                     and result_file_name != "":
+                
+                # create us result folder if needed
+                us_application_create_folder()  
+
                 # strings replace due to variables defined above
                 us_path_list = [
                     input_us_sheet_path,
@@ -137,23 +157,6 @@ def us_application() -> None:
             st.session_state["result_file_name"] = result_file_name
 
 
-def us_application_create_folder() -> None:
-    """
-        Creating download button for the created model definition.
-    """
-
-    # set the result path based on the gui_st_settings.json
-    res_folder_path = os.path.join(set_result_path(),
-                                   'Upscaling_Tool')
-
-    # Check if the results folder path exists
-    if os.path.exists(res_folder_path) is False:
-        # If not, create the result directory using a separate function
-        create_result_directory()
-        # Add upscaling folder if necessary
-        os.makedirs(res_folder_path)
-
-
 def us_application_start_download() -> None:
     """
     Initiates the process to start downloading an Excel file.
@@ -164,16 +167,16 @@ def us_application_start_download() -> None:
     the data to the file.
     """
 
-    # set the result path based on the gui_st_settings.json
-    res_folder_path = os.path.join(set_result_path(),
-                                   'Upscaling_Tool')
+    # # set the result path based on the gui_st_settings.json
+    # res_folder_path = os.path.join(set_result_path(),
+    #                                'Upscaling_Tool')
 
-    # Check if the results folder path exists
-    if os.path.exists(res_folder_path) is False:
-        # If not, create the result directory using a separate function
-        create_result_directory()
-        # Add upscaling folder if necessary
-        os.makedirs(res_folder_path)
+    # # Check if the results folder path exists
+    # if os.path.exists(res_folder_path) is False:
+    #     # If not, create the result directory using a separate function
+    #     create_result_directory()
+    #     # Add upscaling folder if necessary
+    #     os.makedirs(res_folder_path)
 
     # defining the the path including file name
     st.session_state['state_file_path'] = res_folder_path \
@@ -256,6 +259,8 @@ if st.session_state["state_model_definition_sheets"] == "" and \
         st.session_state['state_download'] is False:
     # run start page
     standard_page()
+    st.write(os.path.exists(os.path.join(set_result_path(),
+                                   'Upscaling_Tool')))
 
 # running preprocessing page if tool ran
 elif st.session_state["state_model_definition_sheets"] != "" and \
