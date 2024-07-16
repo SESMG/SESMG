@@ -497,7 +497,7 @@ def check_for_dependencies(solver: str):
         # search for cbc on win
         else:
             # check if SESMG main directory exists and create it
-            cbc_directory_path = set_parenting_sesmg_path()
+            cbc_directory_path = set_parenting_sesmg_result_path()
             # define path to the cbc.exe in the SESMG main directory
             cbc_path_str = os.path.join(cbc_directory_path, 'cbc.exe')
 
@@ -541,7 +541,7 @@ def check_for_dependencies(solver: str):
                           GitHub.")
 
 
-def set_parenting_sesmg_path() -> str:
+def set_parenting_sesmg_result_path() -> str:
     """
     Set the path for storing SESMG files and the results based on settings.
 
@@ -584,7 +584,7 @@ def set_result_path() -> str:
     """
 
     # get folder path
-    res_parenting_folder_path = set_parenting_sesmg_path()
+    res_parenting_folder_path = set_parenting_sesmg_result_path()
     # create the result folder based on the SESMG main directory
     res_folder_path = os.path.join(res_parenting_folder_path, 'results')
 
@@ -606,7 +606,7 @@ def set_internal_directory_path() -> str:
     """
 
     # get folder path
-    res_parenting_folder_path = set_parenting_sesmg_path()
+    res_parenting_folder_path = set_parenting_sesmg_result_path()
     # create the result folder based on the SESMG main directory
     res_internal_directory_path = \
         os.path.join(res_parenting_folder_path, '.app')
