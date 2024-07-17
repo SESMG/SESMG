@@ -165,7 +165,7 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
     
     # creates bus objects, excess sinks, and shortage sources as defined
     # in the model definition file buses sheet
-    busd, nodes = Bus.buses(nd_buses=nodes_data["buses"], nodes=[])
+    busd, nodes = Bus.buses(nd_buses=nodes_data["buses"], timeseries=nodes_data["timeseries"], nodes=[])
     
     busd, nodes = call_district_heating_creation(
         nodes_data=nodes_data,
