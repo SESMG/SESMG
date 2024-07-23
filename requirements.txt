@@ -1,5 +1,4 @@
 setuptools>70.0.0
-numpy<2.0
 streamlit
 xlsxwriter 
 oemof.solph==0.5.2
