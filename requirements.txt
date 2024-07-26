@@ -1,4 +1,4 @@
-setuptools<58.0.0
+setuptools>70.0.0
 numpy<2.0
 streamlit
 xlsxwriter 
