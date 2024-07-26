@@ -94,12 +94,16 @@ Within this sheet, the buses of the energy system are defined. The following par
 - **active**: Specifies whether the bus shall be included to the model. "0" = inactive, "1" = active.
 - **excess**: Specifies whether to generate an excess sink, which consumes excess energy. "0" = no excess sink will be generated;
   "1" = excess sink will be generated.
-- **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits or not. "0" = no shortage
-  source will be generated; "1" = shortage source will be generated.
-- **excess costs** in (CU/kWh): Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was
-  deactivated, the fill character "0" is used.
-- **shortage costs** in (CU/kWh): Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage
-  source was deactivated, the fill character "0" is used.
+- **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits or not. "0" = no shortage source will be generated; 
+  "1" = shortage source will be generated.
+- **excess costs** in (CU/kWh): Assigns a price per kWh to the release of energy to the excess sink. 
+  This can be specified either as a fixed price or as a time-dependent price series. If a price series is used,
+  "timeseries" must be entered and must be provided in the `Time series sheet`_.
+  If the excess sink was deactivated, the fill character "0" is used.
+- **shortage costs** in (CU/kWh): Assigns a price per kWh to the purchase of energy from the shortage source.  
+  This can be specified either as a fixed price or as a time-dependent price series. If a price series is used,
+  "timeseries" must be entered and must be provided in the `Time series sheet`_.
+  If the shortage source was deactivated, the fill character "0" is used.
 - **excess constraint costs** in (CU/kWh): Assigns a price per kWh to the release of energy to the excess sink referring to
   the constraint limit set in the `Energysystem sheet`_. If the excess sink was deactivated or constraints are not considered,
   the fill character "0" is used.
@@ -523,7 +527,8 @@ The following parameters have to be entered:
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the storage shall be included to the model. "0" = inactive, "1" = active.
 - **storage type**: Defines whether the storage is a "Generic" or a "Stratified" storage. These two inputs are possible.
-- **bus**: Specifies which bus the storage is connected to.
+- **input**: Specifies the input of the storage. If the storage has only one connection, the same bus can be provided for input and output.
+- **output**: Specifies the output of the storage. If the storage has only one connection, the same bus can be provided for input and output.
 - **input/capacity ratio** (invest): Indicates the performance with which the storage can be charged
   (see also  `here <https://oemof-solph.readthedocs.io/en/latest/usage.html#using-an-investment-object-with-the-genericstorage-component>`_).
 - **output/capacity ratio** (invest): Indicates the performance with which the storage can be discharged
@@ -678,9 +683,11 @@ to be entered:
 Time Series
 -----------
 
-Within this sheet, time series of components of which no automatically created time series exist, are stored. More 
-specifically, these are sinks to which the property "load profile" have been assigned as "timeseries" and sources 
-with the "technology" property "timeseries". The following parameters have to be entered:
+Within this sheet, time series and time-dependent price series, are stored. Time series are specified for components for which no automatically generated time series exist. 
+These can be sinks to which the property “ load profile” has been assigned as "time series" and sources with the “ technology” property “time series”. 
+Time-dependent price series are specified for buses with excess sinks or shortage sources where each period has a different price. 
+These can be buses to which the property "excess costs" or "shortage costs" has been assigned as "timeseries".
+The following parameters must be entered:
 
 - **timestamp**: Points in time to which the stored time series are related. Should be within the time horizon defined in the sheet "timesystem".
 - **timeseries**: Time series of a sink or a source  which has been assigned the property "timeseries" under the attribute "load profile" or
@@ -689,22 +696,25 @@ with the "technology" property "timeseries". The following parameters have to be
   "componentID.fix" if the component enters the power system as a fixed component or it requires two columns in the format "componentID.min"
   and "componentID.max" if it is an unfixed component. The columns "componentID.min/.max" define the range that the solver can use for its
   optimization.
-
+- **price series**: Price Series of a bus with excess sink or shortage source which has been assigned the property "timeseries" under 
+  the attribute "excess costs" or "shortage costs".
+  In the header line, the name must be entered in the format "componentID.excess" for buses with excess sinks and "componentID.shortage" for buses with shortage sources.
+  It is possible for a bus to have time-dependent price series in both a excess sink and a shortage source.
  
  
 .. csv-table:: Exemplary input for time series sheet
-   :header: timestamp,residential_electricity_demand.actual_value,fixed_timeseries_electricty_source.fix, unfixed_timeseries_electricty_source.min,unfixed_timeseries_electricty_source.max,fixed_timeseries_electricity_sink.fix,unfixed_timeseries_electricity_sink.min,unfixed_timeseries_electricity_sink.max,fixed_timeseries_cooling_demand_sink.fix
+   :header: timestamp,residential_electricity_demand.actual_value,fixed_timeseries_electricty_source.fix, unfixed_timeseries_electricty_source.min,unfixed_timeseries_electricty_source.max,fixed_timeseries_electricity_sink.fix,unfixed_timeseries_electricity_sink.min,unfixed_timeseries_electricity_sink.max,fixed_timeseries_cooling_demand_sink.fix,bus.excess,bus.shortage
 
-   2012-01-01 00:00:00,0.559061982,0.000000,0.000000,1.000000,0.000000,0.000000,1.000000,100
-   2012-01-01 01:00:00,0.533606486,0.041667,0.000000,0.500000,0.041667,0.000000,0.500000,100
-   2012-01-01 02:00:00,0.506058757,0.083333,0.000000,0.333333,0.083333,0.000000,0.333333,100
-   2012-01-01 03:00:00,0.504140877,0.125000,0.000000,0.250000,0.125000,0.000000,0.250000,100
-   2012-01-01 04:00:00,0.507104873,0.166667,0.000000,0.200000,0.166667,0.000000,0.200000,100
-   2012-01-01 05:00:00,0.511376515,0.208333,0.000000,0.166667,0.208333,0.000000,0.166667,100
-   2012-01-01 06:00:00,0.541801064,0.250000,0.000000,0.142857,0.250000,0.000000,0.142857,100
-   2012-01-01 07:00:00,0.569261616,0.291667,0.000000,0.125000,0.291667,0.000000,0.125000,100
-   2012-01-01 08:00:00,0.602998867,0.333333,0.000000,0.111111,0.333333,0.000000,0.111111,100
-   2012-01-01 09:00:00,0.629064598,0.375000,0.000000,0.100000,0.375000,0.000000,0.100000,100
+   2012-01-01 00:00:00,0.559061982,0.000000,0.000000,1.000000,0.000000,0.000000,1.000000,100,-0.1156,0.1156
+   2012-01-01 01:00:00,0.533606486,0.041667,0.000000,0.500000,0.041667,0.000000,0.500000,100,-0.1034,0.1034
+   2012-01-01 02:00:00,0.506058757,0.083333,0.000000,0.333333,0.083333,0.000000,0.333333,100,-0.09656,0.09656
+   2012-01-01 03:00:00,0.504140877,0.125000,0.000000,0.250000,0.125000,0.000000,0.250000,100,-0.09764,0.09764
+   2012-01-01 04:00:00,0.507104873,0.166667,0.000000,0.200000,0.166667,0.000000,0.200000,100,-0.09611,0.09611
+   2012-01-01 05:00:00,0.511376515,0.208333,0.000000,0.166667,0.208333,0.000000,0.166667,100,-0.10769,0.10769
+   2012-01-01 06:00:00,0.541801064,0.250000,0.000000,0.142857,0.250000,0.000000,0.142857,100,-0.12675,0.12675
+   2012-01-01 07:00:00,0.569261616,0.291667,0.000000,0.125000,0.291667,0.000000,0.125000,100,-0.13897,0.13897
+   2012-01-01 08:00:00,0.602998867,0.333333,0.000000,0.111111,0.333333,0.000000,0.111111,100,-0.13341,0.13341
+   2012-01-01 09:00:00,0.629064598,0.375000,0.000000,0.100000,0.375000,0.000000,0.100000,100,-0.12631,0.12631
 
 .. _`Weather data sheet`:
 
