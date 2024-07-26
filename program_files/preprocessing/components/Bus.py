@@ -10,7 +10,7 @@ from oemof.solph.buses import Bus
 from oemof.solph.flows import Flow
 
 
-def buses(nd_buses: pandas.DataFrame, nodes: list) -> (dict, list):
+def buses(nd_buses: pandas.DataFrame, timeseries: pandas.DataFrame, nodes: list) -> (dict, list):
     """
         Creates bus objects with the parameters given in 'nodes_data'
         and adds them to the list of components 'nodes'.
@@ -48,11 +48,20 @@ def buses(nd_buses: pandas.DataFrame, nodes: list) -> (dict, list):
         if bus["excess"]:
             # creates the oemof-sink object and
             # directly adds it to the list of components "nodes"
-            inputs = {
-                busd[bus["label"]]: Flow(
-                    variable_costs=bus["excess costs"],
-                    custom_attributes={"emission_factor":
-                                       bus["excess constraint costs"]},
+            if bus["excess costs"] == "timeseries":
+                inputs = {
+                    busd[bus["label"]]: Flow(
+                        variable_costs=timeseries[bus["label"] + ".excess"],
+                        custom_attributes={"emission_factor": bus["excess constraint costs"]},
+                        )
+                    }
+
+            else:
+                inputs = {
+                    busd[bus["label"]]: Flow(
+                        variable_costs=bus["excess costs"],
+                        custom_attributes={"emission_factor":
+                                           bus["excess constraint costs"]},
                 )
             }
             nodes.append(Sink(label=bus["label"] + "_excess", inputs=inputs))
@@ -62,11 +71,20 @@ def buses(nd_buses: pandas.DataFrame, nodes: list) -> (dict, list):
         if bus["shortage"]:
             # creates the oemof-source object and
             # directly adds it to the list of components "nodes"
-            outputs = {
-                busd[bus["label"]]: Flow(
-                    variable_costs=bus["shortage costs"],
-                    custom_attributes={"emission_factor":
-                                       bus["shortage constraint costs"]},
+            if bus["shortage costs"] == "timeseries":
+                outputs = {
+                    busd[bus["label"]]: Flow(
+                        variable_costs=timeseries[bus["label"] + ".shortage"],
+                        custom_attributes={"emission_factor": bus["shortage constraint costs"]},
+                    )
+                }
+                
+            else:
+                outputs = {
+                    busd[bus["label"]]: Flow(
+                        variable_costs=bus["shortage costs"],
+                        custom_attributes={"emission_factor":
+                                           bus["shortage constraint costs"]}, 
                 )
             }
             nodes.append(Source(label=bus["label"] + "_shortage",
