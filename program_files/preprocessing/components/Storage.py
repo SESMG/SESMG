@@ -19,7 +19,8 @@ class Storages:
     
                 - label
                 - active
-                - bus
+                - input
+                - output
                 - storage type
                 - existing capacity
                 - min. investment capacity
@@ -67,7 +68,8 @@ class Storages:
     
                     - label
                     - active
-                    - bus
+                    - input
+                    - output
                     - storage type
                     - existing capacity
                     - min. investment capacity
@@ -107,7 +109,7 @@ class Storages:
             GenericStorage(
                 label=storage["label"],
                 inputs={
-                    self.busd[storage["bus"]]: Flow(
+                    self.busd[storage["input"]]: Flow(
                         variable_costs=storage["variable input costs"],
                         custom_attributes={
                             "emission_factor":
@@ -115,7 +117,7 @@ class Storages:
                     )
                 },
                 outputs={
-                    self.busd[storage["bus"]]: Flow(
+                    self.busd[storage["output"]]: Flow(
                         variable_costs=storage["variable output costs"],
                         custom_attributes={
                             "emission_factor":
