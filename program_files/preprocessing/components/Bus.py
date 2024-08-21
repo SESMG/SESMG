@@ -46,13 +46,22 @@ def buses(nd_buses: pandas.DataFrame, timeseries: pandas.DataFrame, nodes: list)
         # Create an sink for every bus, which is marked with
         # "excess"
         if bus["excess"]:
-            # creates the oemof-sink object and
-            # directly adds it to the list of components "nodes"
+            # creates the oemof-sink object and directly adds it to the list of components "nodes"
+            # check if the excess costs are related to a timeseries
             if bus["excess costs"] == "timeseries":
                 inputs = {
                     busd[bus["label"]]: Flow(
                         variable_costs=timeseries[bus["label"] + ".excess"],
                         custom_attributes={"emission_factor": bus["excess constraint costs"]},
+                        )
+                    }
+
+            # check if the excess constraint costs are related to a timeseries (for the second optimization criterion)
+            elif bus["excess constraint costs"] == "timeseries":
+                inputs = {
+                    busd[bus["label"]]: Flow(
+                        variable_costs=bus["excess costs"],
+                        custom_attributes={"emission_factor": timeseries[bus["label"] + ".excess"]},
                         )
                     }
 
@@ -69,8 +78,8 @@ def buses(nd_buses: pandas.DataFrame, timeseries: pandas.DataFrame, nodes: list)
         # Create a source for every bus, which is marked with
         # "shortage"
         if bus["shortage"]:
-            # creates the oemof-source object and
-            # directly adds it to the list of components "nodes"
+            # creates the oemof-source object and directly adds it to the list of components "nodes"
+            # check if the shortage costs are related to a timeseries
             if bus["shortage costs"] == "timeseries":
                 outputs = {
                     busd[bus["label"]]: Flow(
@@ -78,7 +87,16 @@ def buses(nd_buses: pandas.DataFrame, timeseries: pandas.DataFrame, nodes: list)
                         custom_attributes={"emission_factor": bus["shortage constraint costs"]},
                     )
                 }
-                
+
+            # check if the shortage constraint costs are related to a timeseries (for the second optimization criterion)
+            elif bus["shortage constraint costs"] == "timeseries":
+                outputs = {
+                    busd[bus["label"]]: Flow(
+                        variable_costs=bus["shortage costs"],
+                        custom_attributes={"emission_factor": timeseries[bus["label"] + ".shortage"]},
+                        )
+                    }
+
             else:
                 outputs = {
                     busd[bus["label"]]: Flow(
