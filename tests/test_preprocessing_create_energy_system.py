@@ -48,11 +48,12 @@ def test_define_energy_system(test_nodes_data_entry):
     test_time_index = pandas.date_range(
         start=test_nodes_data_entry["energysystem"].loc[0, "start date"],
         end=test_nodes_data_entry["energysystem"].loc[0, "end date"],
-        freq=test_nodes_data_entry["energysystem"].loc[0,
-                                                       "temporal resolution"])
+        freq=test_nodes_data_entry["energysystem"].loc[0, 
+                                                       "temporal resolution"],
+        tz=test_nodes_data_entry["energysystem"].loc[0, "timezone"])
     
     test_timestamp = pandas.to_datetime("01.01.2012 01:00:00 +0100")
-    
+
     assert (esys.timeindex == test_time_index).all()
     assert nodes_data["timeseries"].index == test_timestamp
     assert nodes_data["weather data"].index == test_timestamp
