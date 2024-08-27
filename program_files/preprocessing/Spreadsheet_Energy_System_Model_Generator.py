@@ -138,8 +138,6 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
     """
     # sets number of threads for numpy
     os.environ['NUMEXPR_NUM_THREADS'] = str(num_threads)
-    # defines a logging file
-    logger.define_logging(logpath=result_path)
     # imports data from the excel file and returns it as a dictionary
     nodes_data = create_energy_system.import_model_definition(
             filepath=model_definition_file)
