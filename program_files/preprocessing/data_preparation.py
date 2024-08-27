@@ -166,7 +166,16 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str
         for column in nodes_data[sheet].columns:
             if (sheet == "buses" and "costs" in column) \
                     or ("variable" in column):
-                nodes_data[sheet][column] *= variable_cost_factor
+
+                # Iterate over each value in the column
+                for index, value in nodes_data[sheet][column].items():
+                    # Try to convert the value to a numeric type
+                    numeric_value = pandas.to_numeric(value, errors='coerce')
+
+                    # Check if the value is numeric
+                    if not pandas.isna(numeric_value):
+                        # Multiply only if the value is numeric
+                        nodes_data[sheet].at[index, column] = numeric_value * variable_cost_factor
 
     # Adapting Demands
     nodes_data['sinks']['annual demand'] /= variable_cost_factor

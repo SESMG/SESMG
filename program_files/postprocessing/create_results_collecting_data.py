@@ -254,21 +254,36 @@ def calc_variable_costs(node, comp_dict: list, attr: str) -> float:
         "inputs": [node.inputs, comp_dict[0], comp_dict[1]],
         "outputs": [node.outputs, comp_dict[2], comp_dict[3]],
     }
+
     for flow_type in type_dict:
         for i in range(0, 2):
-            # if the sum of the flow stored in comp_dict 0 to 3 is more
-            # than 0 the sum is multiplied with the for this input/output
-            # defined costs factor which is searched by the method getattr
+
             if sum(type_dict[flow_type][i + 1]) > 0:
-                costs += sum(
-                    type_dict[flow_type][i + 1]
-                    * getattr(
-                        type_dict[flow_type][0][
-                            list(type_dict[flow_type][0].keys())[i]
-                        ],
-                        attr,
-                    )
+                # if the sum of the flow stored in comp_dict 0 to 3 is more
+                # than 0 the sum is multiplied with the for this input/output
+                # defined costs factor which is searched by the method getattr
+                attribute_value = getattr(
+                    type_dict[flow_type][0][list(type_dict[flow_type][0].keys())[i]],
+                    attr
                 )
+
+                # Check if 'attribute_value' is a series (timeseries)
+                if isinstance(attribute_value, pandas.Series):
+                    # Multiply each element and sum them up
+                    multiplied_series = type_dict[flow_type][i + 1] * attribute_value
+                    costs += multiplied_series.sum()
+
+                else:
+                    # If the 'attribute_value' is a single value sum it up directly
+                    costs += sum(
+                        type_dict[flow_type][i + 1]
+                        * getattr(
+                            type_dict[flow_type][0][
+                                list(type_dict[flow_type][0].keys())[i]
+                            ],
+                            attr,
+                        )
+                    )
 
     return costs
 

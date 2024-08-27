@@ -121,9 +121,10 @@ def define_energy_system(nodes_data: dict) -> (EnergySystem, dict):
     # creates time index
     datetime_index = pandas.date_range(start=start_date,
                                        end=end_date,
-                                       freq=temp_resolution)
+                                       freq=temp_resolution,
+                                       tz=timezone)
     
-    # initialisation of the energy system
+    # initialisation of the energy system   
     esys = EnergySystem(timeindex=datetime_index, infer_last_interval=False)
     # setting the index column for time series and weather data
     for sheet in ["timeseries", "weather data"]:
@@ -133,7 +134,7 @@ def define_energy_system(nodes_data: dict) -> (EnergySystem, dict):
             pandas.to_datetime(nodes_data[sheet].index.values, utc=True)
         nodes_data[sheet].index = \
             pandas.to_datetime(nodes_data[sheet].index).tz_convert(timezone)
-    
+            
     # returns logging info
     logging.info(
             "Date time index successfully defined:\n start date:          "
