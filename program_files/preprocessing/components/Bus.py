@@ -19,6 +19,10 @@ def buses(nd_buses: pandas.DataFrame, timeseries: pandas.DataFrame, nodes: list)
             worksheet "buses" of the previously implemented model \
             definition.
         :type nd_buses: pandas.DataFrame
+        :param timeseries: pandas.DataFrame, which represents the \
+            worksheet "timeseries" of the previously implemented model \
+            definition.
+        :type timeseries: pandas.DataFrame
         :param nodes: list of components created before (can be empty)
         :type nodes: list
 
@@ -43,11 +47,11 @@ def buses(nd_buses: pandas.DataFrame, timeseries: pandas.DataFrame, nodes: list)
         # returns logging info
         logging.info("\t Bus created: " + bus["label"])
 
-        # Create an sink for every bus, which is marked with
+        # Create a sink for every bus, which is marked with
         # "excess"
         if bus["excess"]:
             # creates the oemof-sink object and directly adds it to the list of components "nodes"
-            # check if the excess costs are related to a timeseries
+            # check if the excess costs are related to a timeseries and add the right timeseries for the excess costs
             if bus["excess costs"] == "timeseries":
                 inputs = {
                     busd[bus["label"]]: Flow(
