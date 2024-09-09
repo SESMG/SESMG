@@ -590,7 +590,7 @@ def create_result_paths() -> str:
         GUI_main_dict["premodeling_res_path"]
 
     # set path for logging
-    GUI_main_dict["res_path"] = logging_path
+    logging_path = GUI_main_dict["res_path"]
 
     return logging_path
 
