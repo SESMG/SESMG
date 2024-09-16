@@ -65,13 +65,25 @@ description <https://spreadsheet-energy-system-model-generator.readthedocs.io/en
 
 The results are saved in two formats:
 - as summarizing log files
-- as detailed xlsx-files.
+- as detailed csv-files.
 
-The log-file gives an overview of which components are created and which of the
-investment options should be implemented.
-In addition, it is indicated which costs for the supply of the energy system are
-incurred in the optimized case.
-For each implemented bus, an xlsx-file is created in which incoming and outgoing
-energy flows are specified for each time step of the model are.
+- The **components.csv** file provides an overview of the technologies included in the model. The columns show the energy quantities, the power to be installed, the costs and the emissions.
+
+.. csv-table:: Exemplary result of electricity shortage of the components.csv
+   :header: ID,type,input 1/kWh,input 2/kWh,output 1/kWh,output 2/kWh,capacity/kW,variable costs/CU,periodical costs/CU,investment/kW,max. invest./kW,constraints/CU
+
+   ID_electricity_bus_shortage,source,0,0,52.91,0,0.93,1158.78,0,0,0,1830873.62
+
+- The **results.csv** file presents the values for the specified analysis period for each timestep. It is generated for all oemof-components.
+- The **summary.csv** file contains the summary of the results, which can also be found in the output interface.
+.. csv-table:: Exemplary result of the summary.csv 
+   :header: Start Date,End Date,Resolution,Total System Costs,Total Constraint Costs,Total Variable Costs,Total Periodical Costs,Total Energy Demand,Total Energy Usage
+
+   01.01.2012,05.01.2012 23:00,h,4295.21,5481898.26,2736.69,1558.52,861.77,209.21
+- The **consumers_exergy** and **consumers_anergy** files contain the consumers that are connected to the exergy or anergy network.
+- The **producers_exergy** and **producers_anergy** files contain the producers that are connected to the exergy or anergy network.
+- The files **pipes_exergy** and **pipes_anergy** contain the pipe sections of the energy and anergy network. The length of the pipes is included, as well the information which forks are connected.
+- The files **forks_exergy** and **forks_anergy** contain information abourt the coordinates of the forks of the networks. Forks are the junctions of the heat networks.
+
 
 
