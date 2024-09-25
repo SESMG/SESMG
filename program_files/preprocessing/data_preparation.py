@@ -415,4 +415,5 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
         nodes_data['timeseries'].to_excel(writer, sheet_name='time series')
         nodes_data['energysystem'].to_excel(writer, sheet_name='energysystem')
         nodes_data['sinks'].to_excel(writer, sheet_name='sinks')
+        nodes_data['buses'].to_excel(writer, sheet_name='buses')
         writer.close()
