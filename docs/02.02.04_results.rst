@@ -64,8 +64,8 @@ using the advanced installation by following the `note information in the instal
 description <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html#extended-installation>`_.
 
 The results are saved in two formats:
-- as summarizing log files
-- as detailed xlsx-files and csv-files.
+ - as summarizing log files
+ - as detailed xlsx-files and csv-files.
 
 The log-file gives an overview of which components are created and which of the
 investment options should be implemented. The other files are explained in the following chapters.
@@ -84,7 +84,8 @@ The components.csv file provides detailed information about all components withi
    ID_electricity_bus_shortage,source,0,0,52.91,0,0.93,1158.78,0,0,0,1830873.62
 
 This file includes key parameters such as energy flows, capacities, costs, investments, and constraints. Below is a description
-of each column in the file:
+of each column in the file.
+
 - input 1/kWh and input 2/kWh: These columns represent the energy flows entering the component during the analyzed time
   period (if a timeseries simplification is selected this column contains only the summed up energy flows for the
   selected time frame).
@@ -92,12 +93,12 @@ of each column in the file:
   period (if a timeseries simplification is selected this column contains only the summed up energy flows for the
   selected time frame). If multiple outputs exist the order follows the description of the flows in the model definition.
 - capacity/kW:
-  - For non-storage components: This represents the maximum energy throughput, which is typically either the highest
-    energy output or the highest energy input, measured in kilowatts (kW) for a one-hour period (see results.csv). This
-    capacity can be either thermal or electrical, depending on the output 1 of the component. For most
-    components this value is identical with the investment (exception for photovoltaic and solar thermal system).
-  - For storage components: The capacity is represented in kilowatt-hours (kWh) instead of kilowatts (kW). This value
-    indicates the total energy storage capacity of the component.
+	 - For non-storage components: This represents the maximum energy throughput, which is typically either the highest
+	   energy output or the highest energy input, measured in kilowatts (kW) for a one-hour period (see results.csv). This
+	   capacity can be either thermal or electrical, depending on the output 1 of the component. For most
+	   components this value is identical with the investment (exception for photovoltaic and solar thermal system).
+	 - For storage components: The capacity is represented in kilowatt-hours (kWh) instead of kilowatts (kW). This value
+	   indicates the total energy storage capacity of the component.
 - variable costs/CU and periodical costs/CU: These costs are expressed in Cost Units (CU) and are calculated for a
   one-year period. If a time series simplification is applied, these costs are scaled up for the whole year.
 - investment/kW: The investment corresponds to the actual usable power or the nominal power of the technology in kW.
