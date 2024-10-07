@@ -69,6 +69,7 @@ The results are saved in two formats:
 
 The log-file gives an overview of which components are created and which of the
 investment options should be implemented. The other files are explained in the following chapters.
+If you need more specified results, feel free to contact us as we have experience with different result summaries.
 
 
 1. Results for a single-criteria optimization
