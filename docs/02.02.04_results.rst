@@ -155,6 +155,7 @@ If district heating is included in the optimization options additional result fi
 - The **producers_exergy** and **producers_anergy** files contain the producers that are connected to the exergy or anergy network.
 - The files **pipes_exergy** and **pipes_anergy** contain the pipe sections of the energy and anergy network. The length of the pipes is included, as well the information which forks are connected.
 - The files **forks_exergy** and **forks_anergy** contain information abourt the coordinates of the forks of the networks. Forks are the junctions of the heat networks.
+- The file **district_heating.jpeg** provides a 2D view of the designed heating network. You can see the distribution network, the house connection pipes, the forks, consumers and producers.
 
 
 3. Multi-criteria optimization
