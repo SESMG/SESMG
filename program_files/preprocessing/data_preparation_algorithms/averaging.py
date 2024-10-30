@@ -8,8 +8,8 @@ from program_files.preprocessing.data_preparation \
 
 
 def mean_adapt_timeseries_weatherdata(
-        clusters: int, cluster_labels: list, period: str, nodes_data: dict
-) -> None:
+        clusters: int, cluster_labels: list, period: str, nodes_data: dict):
+
     """
         Using this method, the mean values of the clusters are formed
         and then cost values as well as time series and weather data
@@ -24,6 +24,9 @@ def mean_adapt_timeseries_weatherdata(
         :type period: str
         :param nodes_data: dictionary holding the user' model \
             model definition spreadsheet
+            
+        :return: - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+                        can be used to scale the results up for a year
     """
     weather_data = nodes_data["weather data"]
     # Apply the Clusters to the entire weather_dataset
@@ -40,7 +43,7 @@ def mean_adapt_timeseries_weatherdata(
     nodes_data['weather data'] = prep_weather_data
 
     # Adapts Other Parameters (despite weather data) of the energy system
-    variable_costs_date_adaption(nodes_data=nodes_data,
+    variable_cost_factor = variable_costs_date_adaption(nodes_data=nodes_data,
                                  clusters=clusters,
                                  period=period)
 
@@ -49,9 +52,11 @@ def mean_adapt_timeseries_weatherdata(
                         cluster_labels=cluster_labels,
                         period=period)
 
+    return variable_cost_factor
+
 
 def timeseries_averaging(cluster_period: str, days_per_cluster: int,
-                         nodes_data: dict, period: str) -> None:
+                         nodes_data: dict, period: str):
     """
         Averages the values of the time series, how many values are
         averaged is defined by the variable clusters.
@@ -70,6 +75,9 @@ def timeseries_averaging(cluster_period: str, days_per_cluster: int,
         
         :raise: - **ValueError** - Error raised if the chosen period \
             is not supported
+
+        :return: - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+                    can be used to scale the results up for a year
     """
     # create a local copy of the weather data sheet
     weather_data = nodes_data['weather data']
@@ -103,8 +111,10 @@ def timeseries_averaging(cluster_period: str, days_per_cluster: int,
         for k in range(periods % clusters):
             cluster_labels.append(clusters - 1)
     cluster_labels = numpy.array(cluster_labels)
-    
-    mean_adapt_timeseries_weatherdata(clusters=clusters,
+
+    variable_cost_factor = mean_adapt_timeseries_weatherdata(clusters=clusters,
                                       cluster_labels=cluster_labels,
                                       period=period,
                                       nodes_data=nodes_data)
+
+    return variable_cost_factor
