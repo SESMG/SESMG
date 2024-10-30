@@ -444,7 +444,7 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
     # dictionary containing energy system components data
     # label: [flow input1, flow input2, flow output1, flow output2,
     # capacity, investment, periodical costs, max. investment, variable
-    # costs, constraint costs, component type]
+    # costs, constraint costs, component type, uuid]
     comp_dict = {}
     for node in esys.nodes:
         if not isinstance(node, Bus):
