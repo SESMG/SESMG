@@ -31,5 +31,6 @@
     "input_solver": "cbc",
     "input_solver_index": 0,
     "input_xlsx_results": false,
-    "input_console_results": false
+    "input_console_results": false,
+    "input_lca_results": false
 }
