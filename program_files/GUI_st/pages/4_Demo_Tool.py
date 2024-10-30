@@ -218,7 +218,8 @@ def execute_sesmg_demo(demo_file: str, demo_results: str, mode: str) -> None:
         console_results=False,
         solver=input_values_dict["solver_select"],
         cluster_dh=False,
-        district_heating_path=""
+        district_heating_path="",
+        lca_results=False
     )
 
     # reset st.session_state["state_submitted_demo_run"] to stop rerun
