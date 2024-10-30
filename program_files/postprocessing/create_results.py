@@ -253,6 +253,9 @@ class Results:
             ],
         )
 
+        # export the list of components for further result calculation
+        self.components_list = loc
+
         # Dataframes are exported as csv for further processing
         loc.to_csv(result_path + "/components.csv", index=False)
 
