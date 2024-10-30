@@ -50,7 +50,7 @@ def st_settings_global() -> None:
 
 def import_GUI_input_values_json(json_file_path: str) -> dict:
     """
-        Function to import GUI settings from am existing json file and
+        Function to import GUI settings from an existing json file and
         save it as a dict.
 
         :param json_file_path: file name to the underlying json with \
@@ -217,7 +217,8 @@ def run_SESMG(GUI_main_dict: dict,
             console_results=GUI_main_dict["input_console_results"],
             solver=GUI_main_dict["input_solver"],
             district_heating_path=GUI_main_dict["input_dh_folder"],
-            cluster_dh=GUI_main_dict["input_cluster_dh"])
+            cluster_dh=GUI_main_dict["input_cluster_dh"],
+            lca_results=GUI_main_dict["input_lca_results"])
 
     # If pre-modeling is activated a second run will be carried out
     else:
@@ -554,7 +555,7 @@ def set_parenting_sesmg_result_path() -> str:
                     directory
     """
 
-    # defineing path to GUI_st_settings.json
+    # defining path to GUI_st_settings.json
     settings_json_path = os.path.dirname(__file__) \
         + "/GUI_st_settings.json"
     # import json
