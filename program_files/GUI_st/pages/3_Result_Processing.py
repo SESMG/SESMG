@@ -120,13 +120,13 @@ def short_result_summary_system(result_path_summary) -> None:
     # add the energy system costs
     cost1, cost2, cost3, cost4 = st.columns(4)
     cost1.metric(label=summary_headers[3], value="{:,.2f}".format(float(round(
-        df_summary[summary_headers[3]].iloc[0], 1))))
+        df_summary[summary_headers[3]], 1))))
     cost2.metric(label=summary_headers[4], value="{:,.2f}".format(float(round(
-        df_summary[summary_headers[4]].iloc[0], 1))))
+        df_summary[summary_headers[4]], 1))))
     cost3.metric(label=summary_headers[5], value="{:,.2f}".format(float(round(
-        df_summary[summary_headers[5]].iloc[0], 1))))
+        df_summary[summary_headers[5]], 1))))
     cost4.metric(label=summary_headers[6], value="{:,.2f}".format(float(round(
-        df_summary[summary_headers[6]].iloc[0], 1))))
+        df_summary[summary_headers[6]], 1))))
 
     # Display and import simulated energy values from summary dataframe
     # adding two blank rows
@@ -282,6 +282,49 @@ def create_energy_amounts_diagram(result_path_amounts: str) -> None:
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
+def create_impact_amount_diagram(result_path_impacts: str, sheet_name_impact: str) -> None:
+    """
+        Function to create impact amount diagram in streamlit
+
+        :param result_path_impacts: path to a result .xlsx file with the amounts of the impact categories
+        :type result_path_impacts: str
+        :param sheet_name_impact: current sheet that is used to create the amount diagram
+        :type sheet_name_impact: str
+
+    """
+
+    # loading result.csv as a dataframe
+    amounts_df = pd.read_excel(result_path_impacts, sheet_name=sheet_name_impact)
+    amounts_df = amounts_df.loc[:, (amounts_df != 0).any(axis=0)]
+
+    # creating column headers to select
+    list_headers = list(amounts_df.columns.values)
+
+    # read units
+    # todo read directly from the lca result files
+    unit_df_path = result_path_impacts.replace("/impact_amounts.xlsx", "/impact_units.csv")
+
+    # Lese die CSV-Datei in ein Dictionary ein
+    unit_dict = {}
+    with open(unit_df_path, mode='r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        for row in csv_reader:
+            key, value = row
+            unit_dict[key] = value
+
+    # add unit for the diagram
+    category = sheet_name_impact
+    unit = unit_dict.get(category, "")
+    y_axis = f"{category} ({unit})"
+
+    # create plotly chart
+    fig = px.area(amounts_df, x="reductionco2", y=list_headers).update_layout(
+        xaxis_title="Reduced GHG emissions in percentage of the \
+                maximum potential reduction (%)",
+        yaxis_title=y_axis)
+    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+
+
 def show_energy_amounts(result_path_heat_amounts: str,
                         result_path_elec_amounts: str) -> None:
     """
@@ -356,6 +399,33 @@ def short_result_graph(result_path_graph: str) -> None:
     with st.expander("Show the structure of the modeled energy system"):
         es_graph = Image.open(result_path_graph, "r")
         st.image(es_graph)
+
+
+def show_impact_categories(result_path_climate_change: str) -> None:
+    """
+        Function to create impact amounts.
+
+        :param result_path_climate_change: path to a result .xlsx file
+        :type result_path_climate_change: str
+    Returns
+    -------
+
+    """
+    # Header
+    st.subheader("Life Cycle Impact Assessment")
+
+    # define right file
+    excel_file = pd.ExcelFile(result_path_climate_change)
+
+    # Get a list of sheet names from the Excel file
+    sheet_name_impact_category = excel_file.sheet_names
+
+    tabs_and_sheets = list(zip(st.tabs(sheet_name_impact_category), sheet_name_impact_category))
+
+    for tab, sheet in tabs_and_sheets:
+        with tab:
+            st.header(sheet)
+            create_impact_amount_diagram(result_path_impacts=result_path_climate_change, sheet_name_impact=sheet)
 
 
 # starting page functions
@@ -436,6 +506,22 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         + "/heat_amounts.csv",
         result_path_elec_amounts=st.session_state["state_result_path"]
         + "/elec_amounts.csv")
+
+    # check if GUI settings dict is in result folder
+    if os.path.join(st.session_state["state_result_path"],
+                    "GUI_st_run_settings.json") \
+            in glob.glob(st.session_state["state_result_path"] + "/*"):
+        # import json as in a dict
+        GUI_run_settings_dict = import_GUI_input_values_json(
+            json_file_path=os.path.join(
+                st.session_state["state_result_path"],
+                "GUI_st_run_settings.json"))
+
+        # add lca visualization if additional lca calculation was active
+        if GUI_run_settings_dict["input_lca_results"]:
+            # show impact categories
+            show_impact_categories(result_path_climate_change=st.session_state["state_result_path"]
+                                      + "/impact_amounts.xlsx")
 
     # open short results for the chosen pareto point incl. header
     st.subheader("Short Results for Pareto Point: " +
