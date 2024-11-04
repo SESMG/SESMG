@@ -16,6 +16,7 @@ from program_files.postprocessing.plotting_heat_amounts \
     import collect_heat_amounts
 from program_files.preprocessing.create_energy_system \
     import import_model_definition
+from program_files.postprocessing.calculate_lca_results import collect_impact_categories
 
 
 def create_model_definition_save_folder(model_definition, directory: str,
@@ -293,6 +294,19 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict,
                          nodes_data=import_model_definition(model_definition),
                          result_path=os.path.dirname(save_path),
                          sink_known=sink_types)
+
+    # create lca csv file
+    if GUI_main_dict["input_lca_results"]:
+
+        impact_dfs = {}
+        for folder in result_folders:
+            impact_dfs.update(
+                {folder: pandas.read_excel(result_folders[folder][0] + "/lca_results.xlsx", sheet_name="components")}
+            )
+
+        # collect_impact_categories
+        collect_impact_categories(dataframes=impact_dfs,
+                                  result_path=os.path.dirname(save_path))
     
     return directory
 
