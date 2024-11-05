@@ -22,3 +22,5 @@ streamlit-aggrid>=0.3.0
 dash>=2.4.0
 pytest
 pyside6
+olca_ipc
+olca_schema
