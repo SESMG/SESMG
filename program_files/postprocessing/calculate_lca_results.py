@@ -329,6 +329,7 @@ def calculate_results(lca_dict) -> (dict, dict):
                 # ReCiPe Midpoint H
                 # TODO add the impact assessment method as an option in the gui
                 # impact_method=o.Ref(id="1f08b96a-0d3c-4e9e-88bf-09f2239f95e1"),
+                # this was the impact method for the old ProBas Version!
                 impact_method=o.Ref(id="0b556ec9-bd2a-4209-93bd-abe4916a86dd"),
                 # assumption: linear correlation with the output value
                 amount=output_value,
@@ -356,17 +357,21 @@ def calculate_results(lca_dict) -> (dict, dict):
             for i in impact_categories:
                 impact_category_name = i.impact_category.name
 
-                # Create a tuple for the specific impact category and the sum
-                impact_tuple = (impact_category_name, component_id)
-                sum_tuple = (impact_category_name, "sum")
+                # adapted the categories to the new ProBas Impact Assessment
+                impact_category_name = re.sub(r"\s*\(.*?\)", "", impact_category_name).strip()
+                if "KEV" not in impact_category_name and "KRA" not in impact_category_name:
 
-                # Ensure the tuples exist in the dictionary with default values
-                environmental_impacts.setdefault(impact_tuple, {"amount": 0, "unit": i.impact_category.ref_unit})
-                environmental_impacts.setdefault(sum_tuple, {"amount": 0, "unit": i.impact_category.ref_unit})
+                    # Create a tuple for the specific impact category and the sum
+                    impact_tuple = (impact_category_name, component_id)
+                    sum_tuple = (impact_category_name, "sum")
 
-                # Update the amounts for the specific impact category and the sum
-                environmental_impacts[impact_tuple]["amount"] += i.amount
-                environmental_impacts[sum_tuple]["amount"] += i.amount
+                    # Ensure the tuples exist in the dictionary with default values
+                    environmental_impacts.setdefault(impact_tuple, {"amount": 0, "unit": i.impact_category.ref_unit})
+                    environmental_impacts.setdefault(sum_tuple, {"amount": 0, "unit": i.impact_category.ref_unit})
+
+                    # Update the amounts for the specific impact category and the sum
+                    environmental_impacts[impact_tuple]["amount"] += i.amount
+                    environmental_impacts[sum_tuple]["amount"] += i.amount
 
             # dispose results
             result.dispose
@@ -551,7 +556,7 @@ def collect_impact_categories(dataframes: dict, result_path: str) -> None:
                     impact_amounts_dict[key_with_category] = [("reductionco2", 100 * float(key))]
                 impact_amounts_dict[key_with_category].append((row["component_id"], row["value"]))
 
-    # Speichere unit_dict als CSV-Datei im result_path
+    # save unit_dict as csv file in the result_path
     unit_dict_file_path = result_path + "/impact_units.csv"
     with open(unit_dict_file_path, "w", newline="") as unit_dict_file:
         writer = csv.writer(unit_dict_file)
@@ -588,8 +593,4 @@ def collect_impact_categories(dataframes: dict, result_path: str) -> None:
     with pd.ExcelWriter(result_path + "/impact_amounts.xlsx", engine='xlsxwriter') as writer:
         # save each category in a separate sheet
         for category, results in category_dfs.items():
-            # TODO das muss auch angepasst werden jetzt!
-            if category not in ("Ozone depletion", "Ionising radiation", "Agricultural land occupation",
-                                    "Urban land occupation", "Natural land transformation"):
-  
-                results.to_excel(writer, sheet_name=category, index=False, header=False)
+            results.to_excel(writer, sheet_name=category, index=False, header=False)
