@@ -1,24 +1,25 @@
 setuptools>70.0.0
 numpy<2.0
-streamlit
-xlsxwriter 
+Pyarrow==17.0
+streamlit==1.36.0
+xlsxwriter==3.2.0
 oemof.solph==0.5.2
-shapely>=2.0.1 
+shapely==2.0.5 
 feedinlib @ https://github.com/SESMG/feedinlib/archive/refs/heads/dev.zip 
 demandlib @ https://github.com/SESMG/demandlib/archive/refs/heads/dev.zip
-open_fred-cli>=0.0.1
-geocoder>=1.38.0 
-sympy>=1.10.0 
-richardsonpy>=0.2.0 
-graphviz>=0.20 
-memory-profiler>=0.60.0 
-openpyxl>=3.0.0 
-scikit-learn-extra>=0.2.0 
-pyutilib>=6.0.0
+open_fred-cli==0.0.1
+geocoder==1.38.1 
+sympy==1.13.0 
+richardsonpy==0.2.1 
+graphviz==0.20.3 
+memory-profiler==0.61.0 
+openpyxl==3.1.5 
+scikit-learn-extra==0.3.0 
+pyutilib==6.0.0
 oemof-network==0.5.0
-oemof.thermal @ https://github.com/oemof/oemof-thermal/archive/refs/heads/dev.zip
+oemof.thermal @ https://github.com/oemof/oemof-thermal/archive/refs/tags/v0.0.6.dev2.zip
 dhnx @ https://github.com/SESMG/DHNx/archive/refs/heads/dev_oemof_network_050_compatibility.zip 
-streamlit-aggrid>=0.3.0 
-dash>=2.4.0
-pytest
+streamlit-aggrid==1.0.5 
+dash==2.17.1
+pytest==8.3.2
 pyside6
