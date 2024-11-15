@@ -168,8 +168,8 @@ def us_application_start_download() -> None:
     """
 
     # # set the result path based on the gui_st_settings.json
-    # res_folder_path = os.path.join(set_result_path(),
-    #                                'Upscaling_Tool')
+    res_folder_path = os.path.join(set_result_path(),
+                                   'Upscaling_Tool')
 
     # # Check if the results folder path exists
     # if os.path.exists(res_folder_path) is False:
