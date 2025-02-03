@@ -172,11 +172,11 @@ def us_application_start_download() -> None:
                                    'Upscaling_Tool')
 
     # # Check if the results folder path exists
-    # if os.path.exists(res_folder_path) is False:
-    #     # If not, create the result directory using a separate function
-    #     create_result_directory()
-    #     # Add upscaling folder if necessary
-    #     os.makedirs(res_folder_path)
+    if os.path.exists(res_folder_path) is False:
+        # If not, create the result directory using a separate function
+        create_result_directory()
+        # Add upscaling folder if necessary
+        os.makedirs(res_folder_path)
 
     # defining the the path including file name
     st.session_state['state_file_path'] = res_folder_path \
