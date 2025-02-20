@@ -112,20 +112,21 @@ def dt_input_sidebar() -> dict:
                      "rural"],
             help=GUI_helper["demo_sb_heat_network_chp"])
 
-        input_chp = st.number_input(
-            label="Design of a CHP",
-            min_value=0,
-            max_value=20000,
-            step=1,
-            help=GUI_helper["demo_sb_heat_network_chp"]
-        )
+    # TODO : discuss if this shall be removed 
+        # input_chp = st.number_input(
+        #     label="Design of a CHP",
+        #     min_value=0,
+        #     max_value=20000,
+        #     step=1,
+        #     help=GUI_helper["demo_sb_heat_network_chp"]
+        # )
 
-        if input_chp < 5000:
-            st.write("The CHP has a small capacity.")
-        elif input_chp < 15000:
-            st.write("The CHP has a medium capacity.")
-        else:
-            st.write("The CHP has a high capacity.")
+        # if input_chp < 5000:
+        #     st.write("The CHP has a small capacity.")
+        # elif input_chp < 15000:
+        #     st.write("The CHP has a medium capacity.")
+        # else:
+        #     st.write("The CHP has a high capacity.")
 
         if input_dh == "No District Heating Network":
             # If there is no district heating network, set all values 
@@ -254,11 +255,11 @@ def create_demo_model_definition() -> None:
     sheet["O5"] = input_values_dict["input_dcts"]
     # GCHP
     sheet = xfile["transformers"]
-    sheet["L7"] = input_values_dict["input_gchp"]
     sheet["M7"] = input_values_dict["input_gchp"]
+    sheet["N7"] = input_values_dict["input_gchp"]
     # ASHP
-    sheet["L8"] = input_values_dict["input_ashp"]
     sheet["M8"] = input_values_dict["input_ashp"]
+    sheet["N8"] = input_values_dict["input_ashp"]
 
     # DISTRICT HEATING AND CHP
     sheet = xfile["links"]
