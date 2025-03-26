@@ -404,7 +404,9 @@ The following parameters have to be entered:
   electrical output bus must be used here.
 - **output2**: Specifies the bus to which the secondary output of the transformer is forwarded to. If there is no second output, the fill character
   "0" must be entered here.
-- **input2 / input**: Specifies the ratio of input2 to input (e.g. kWh/m\ :sup:`3`). Only required if "transformer type" is set to
+- **input2 / input**: Specifies the ratio of input2 to input (e.g. kWh/m\ :sup:`3`). The ratio is further used to calculate to factors for the input flows.
+  If a transformer uses two inputs of the same types with different amounts this can also be considered with the ratio (e.g. 60% biogas and 40% naturalgas
+  can be translated to a ratio of 0,6/0,4=1,25). Only required if "transformer type" is set to
   "GenericTwoInputTransformer". If there is no second input, the fill character "0" must be entered here.
 - **sector**: This column is used to differentiate the transformer types for the result processing energy amount collection. Possible entries:
   "electricity", "heat", "cooling", "central_electricity", "central_heat", "central_cooling", "electric_heating".
