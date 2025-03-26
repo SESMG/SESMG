@@ -317,13 +317,14 @@ class Transformers:
                 self.busd[transformer["output2"]]: transformer["efficiency2"]
             })
 
-        # use a two conversion factors for each input
-        if (two_input
-                and transformer["input factor"] not in ["None", "none", 0]
-                and transformer["input2 factor"] not in ["None", "none", 0]):
+        # calculate the two input factors
+        if two_input and transformer["input2 / input"] not in ["None", "none", 0]:
+            input_factor = 1 / (1 + transformer["input2 / input"])
+            input2_factor = 1 - input_factor
+            # update the conversion factors
             new_entries = {
-                self.busd[transformer["input"]]: transformer["input factor"],
-                self.busd[transformer["input2"]]: transformer["input2 factor"],
+                self.busd[transformer["input"]]: input_factor,
+                self.busd[transformer["input2"]]: input2_factor,
             }
             conversion_factors = {**new_entries, **conversion_factors}
 
