@@ -339,6 +339,8 @@ is simulated under consideration of statistic rules. The mean value of a large-e
 number of profiles should, again, result in the standard load profile. However, if calculations
 are continued using the individual values before averaging – as in the above
 calculation of costs – different values are obtained than when calculating with SLPs.
+Different stochastic load profiles are created with the same input values. The calculation is based on the 
+annual energy demand and the number of occupants.
 
 Transformers
 ============

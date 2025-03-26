@@ -275,6 +275,8 @@ def slp_sink_adaption(nodes_data: dict) -> None:
 
         elif j["load profile"] == "timeseries":
             pass
+        elif j["load profile"] == "richardson":
+            pass
         else:
             raise ValueError('Invalid Load Profile for ' + str(j["label"]))
 
