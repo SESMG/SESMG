@@ -67,7 +67,7 @@ a predefined limit.
 For example, an area competition. If you do not want to use this spreadsheet,
 it simply remains empty. To use this spreadsheet, the following values must be filled in:
 
-- **label**: Unique designation of the competition constraint.
+- **label**: Unique designation of the competition constraint. Also for competition constraints that are not activated. 
 - **comment**: Space for an individual comment.
 - **active**: Specifies whether the competition constraint shall be included to the model. "0" = inactive, "1" = active.
 - **component <number>**: Label of the component that lays claim to the parameter which size set as the limit. Attention:
@@ -88,7 +88,7 @@ Buses
 
 Within this sheet, the buses of the energy system are defined. The following parameters need to be entered:
 
-- **label**: Unique designation of the bus. The following format is recommended: "<ID>_<energy sector>_bus". <ID> and <energy sector>
+- **label**: Unique designation of the bus. Also for buses that are not activated. The following format is recommended: "<ID>_<energy sector>_bus". <ID> and <energy sector>
   need to be replaced by the bus attributes.
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the bus shall be included to the model. "0" = inactive, "1" = active.
@@ -167,7 +167,7 @@ District Heating
 Within this sheet, the road network structure of the energy system is defined.
 The following parameters need to be entered:
 
-- **label**: Unique designation of the street section, e.g. the street section name.
+- **label**: Unique designation of the street section, e.g. the street section name. Also for streets that are not activated. 
 - **comment**: Space for an individual comment.
 - **active**: Specifies whether the street section shall be included to the model. "0" = inactive, "1" = active.
 - **lat. 1st intersection**: Latitude (WGS84) of the first point of the given street part.
@@ -187,7 +187,7 @@ Sinks
 Within this sheet, the sinks of the energy system are defined.
 The following parameters need to be entered:
 
-- **label**: Unique designation of the sink. The following format is recommended: "<ID>_<energy sector>_sink". <ID> and
+- **label**: Unique designation of the sink. Also for sinks that are not activated. The following format is recommended: "<ID>_<energy sector>_sink". <ID> and
   <energy sector> need to be replaced by the sink attributes.
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the sink shall be included to the model. "0" = inactive, "1" = active.
@@ -232,7 +232,7 @@ Sources
 Within this sheet, the sources of the energy system are defined. Technology specific data (see 2nd line), must be filled in only if the
 respective technology is selected otherwise use "0". The following parameters have to be entered:
 
-- **label**: Unique designation of the source. The following format is recommended: "<ID>_<energy sector>_source". <ID> and <energy sector>
+- **label**: Unique designation of the source. Also for sources that are not activated. The following format is recommended: "<ID>_<energy sector>_source". <ID> and <energy sector>
   need to be replaced by the bus attributes.
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the source shall be included to the model. "0" = inactive, "1" = active.
@@ -388,7 +388,7 @@ Within this sheet, the transformers of the energy system are defined.
 The following parameters have to be entered:
 
 
-- **label**: Unique designation of the transformer. The following format is recommended: "<ID>_<energy sector>_transformer". <ID> and <energy sector>
+- **label**: Unique designation of the transformer. Also for transformers that are not activated. The following format is recommended: "<ID>_<energy sector>_transformer". <ID> and <energy sector>
   need to be replaced by the transformer attributes.
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the transformer shall be included to the model. "0" = inactive, "1" = active.
@@ -527,7 +527,7 @@ Storages
 Within this sheet, the storages of the energy system are defined.
 The following parameters have to be entered:
 
-- **label**: Unique designation of the storage. The following format is recommended: "<ID>_<energy sector>_storage". <ID> and <energy sector>
+- **label**: Unique designation of the storage. Also for storages that are not activated. The following format is recommended: "<ID>_<energy sector>_storage". <ID> and <energy sector>
   need to be replaced by the storage attributes.
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the storage shall be included to the model. "0" = inactive, "1" = active.
@@ -603,7 +603,7 @@ Links
 Within this sheet, the links of the energy system are defined. The following parameters have 
 to be entered:
 
-- **label**: Unique designation of the link. The following format is recommended: "<ID>_<energy sector>_link". <ID> and <energy sector>
+- **label**: Unique designation of the link. Also for links that are not activated. The following format is recommended: "<ID>_<energy sector>_link". <ID> and <energy sector>
   need to be replaced by the link attributes.
 - **comment**: Space for an individual comment, e.g. an indication of  which measure this component belongs to.
 - **active**: Specifies whether the link shall be included to the model. "0" = inactive, "1" = active.
@@ -658,7 +658,7 @@ Insulation
 Within this sheet, the energy system insulation options are defined. The following parameters have
 to be entered:
 
-- **label**: Unique designation of the insulation. The following format is recommended: "<ID>_<sink_label>_<insulation_type>". <ID>, <sink_label>
+- **label**: Unique designation of the insulation. Also for insulations that are not activated. The following format is recommended: "<ID>_<sink_label>_<insulation_type>". <ID>, <sink_label>
   and <insulation_type> need to be replaced by the insulation attributes.
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the insulation shall be included to the model. "0" = inactive, "1" = active.
@@ -769,7 +769,7 @@ Two different components are listed in this table. The first defines the differe
 for the construction of heating networks and second the components which are the connection between the houses and the heat networks. 
 These are the "dh_heatstation" for the exergy heat network and the " anergy_heat_pump" for the anergy heat network. 
 
-- **label**: Unique designation of the pipe types. The following format is recommended for the pipes: "<DN>-<diameter of pipe>".
+- **label**: Unique designation of the pipe types. Also for pipe types that are not activated. The following format is recommended for the pipes: "<DN>-<diameter of pipe>".
 - **active**: Specifies whether the pipe type shall be included to the model. "0" = inactive, "1" = active.
 - **nonconvex**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model
   can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained
