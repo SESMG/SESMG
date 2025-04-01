@@ -492,7 +492,6 @@ Error M-031: Existing capacity for non-convex investment decision
 **Debugging:** Make sure no existing-capacities are given for components including non-convex decisions. If an existing capacity is required an additional component can be used for considering this capacity.
 
 
-
 Error M-032: Key Error (column)
 -----------------------
 **Error Message:** ::
@@ -502,6 +501,28 @@ Error M-032: Key Error (column)
 **Possible Error Cause:** When using older model definition sheets in newer versions of the SESMG, certain columns might be missing or incomplete. For example, if the column 'timezone' doesn't exist or remains empty, the stated error will occur.
 
 **Debugging:** Fill in the missing content to the corresponding column or add the column as it appears in the up-to-date model definition example.
+
+
+Error M-033: Demo Tools ValueError: Costs in million Euro/a
+-----------------------
+**Error Message:** ::
+
+   ValueError: Costs in million Euro/a encoding field is specified without a type; the type cannot be inferred because it does not match any column in the data.
+
+**Possible Error Cause:** You have results of an older version of the SESMG in your result folder, which will not be replaced automaticly by the newer version.
+
+**Debugging:** Go to your result folder and delete the demo tool folder. You will find it (on default) via documents/SESMG/results/demo
+
+
+Error M-034: ValueError (same label)
+-----------------------
+**Error Message:** ::
+
+   ValueError: cannot insert {column}, already exists
+
+**Possible Error Cause:** The same label is used twice. Can also occur if one of the coponents is not activated.
+
+**Debugging:** Use of unique labels, even for components that are not activated.
 
 
 
@@ -520,48 +541,6 @@ Warning W-001: Need to install ... / Cartopy ...
 **Possible Error Cause:** No error occurs.
 
 **Debugging:** You do not need to add any packages. The process will work perfectly without those packages, which where required by a submodule but not used by the SESMG. We skip the installation of those packages, to keep the installation as small as possible.
-
-
-
-Error M-032: Key Error (column)
------------------------
-**Error Message:** ::
-
-   KeyError: '*column name*'
-
-**Possible Error Cause:** When using older model definition sheets in newer versions of the SESMG, certain columns might be missing or incomplete. For example, if the column 'timezone' doesn't exist or remains empty, the stated error will occur.
-
-**Debugging:** Fill in the missing content to the corresponding column or add the column as it appears in the up-to-date model definition example.
-
-
-
-Error M-033: Demo Tools ValueError: Costs in million Euro/a
------------------------
-**Error Message:** ::
-
-   ValueError: Costs in million Euro/a encoding field is specified without a type; the type cannot be inferred because it does not match any column in the data.
-
-**Possible Error Cause:** You have results of an older version of the SESMG in your result folder, which will not be replaced automaticly by the newer version.
-
-**Debugging:** Go to your result folder and delete the demo tool folder. You will find it (on default) via documents/SESMG/results/demo
-
-
-
-Warning W-001: Need to install ... / Cartopy ...
------------------------------------------------------------------
-**Warning Message:** ::
-
-  You can now view your Streamlit app in your browser.
-
-  Local URL: http://localhost:8502
-  Network URL: http://xxx.xxxx.x.xxx:8502
-          
-  Need to install osmnx to download from osm.
-  INFO:root:Cartopy is not installed. Background maps will not be drawn.
-
-**Possible Error Cause:** No error occurs. 
-
-**Debugging:** You do not need to add any packages. The process will work perfectly without those packages, which where required by a submodule but not used by the SESMG. We skip the installation of those packages, to keep the installation as small as possible. 
 
 
 Contributing to the troubleshooting
