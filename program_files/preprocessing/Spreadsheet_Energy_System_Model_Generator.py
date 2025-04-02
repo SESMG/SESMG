@@ -12,7 +12,8 @@
     Gregor Becker - gregor.becker@fh-muenster.de
 """
 import logging
-from oemof.tools import logger
+# removed for now, as oemof-logs will no longer be used for the time being
+# from oemof.tools import logger
 import os
 from threading import *
 from program_files.preprocessing import (create_energy_system,
