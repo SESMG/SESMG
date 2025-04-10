@@ -400,8 +400,8 @@ The following parameters have to be entered:
 - **input**: Specifies the bus from which the input to the transformer comes from.
 - **input2**: Specifies the bus from which the secondary input of the transformer comes from. Only required if "transformer type" is set to
   "GenericTwoInputTransformer". If there is no second input, the fill character "0" must be entered here.
-- **output**: Specifies bus to which the output of the transformer is forwarded to. If cost for electrical capacity is used for the CHP unit, the
-  electrical output bus must be used here.
+- **output**: Specifies bus to which the output of the transformer is forwarded to. If the sector "central_heat" is
+  selected for a CHP the   electrical output bus must be used here. If the sector "central_electricity" is selected for a CHP the heat output bus must be used here.
 - **output2**: Specifies the bus to which the secondary output of the transformer is forwarded to. If there is no second output, the fill character
   "0" must be entered here.
 - **input2 / input**: Specifies the ratio of input2 to input (e.g. kWh/m\ :sup:`3`). The ratio is further used to calculate to factors for the input flows.

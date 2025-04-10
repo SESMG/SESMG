@@ -277,45 +277,54 @@ def generic_transformer_electricity_amounts(components_df: pandas.DataFrame,
     
     for num, transformer in df_gen_transformer.iterrows():
         central = "" if "central" not in transformer["sector"] else "central_"
-        value = get_value(transformer["label"], "output 1/kWh", dataframe)
-        excess = get_value(
-            components_df.loc[components_df["label"] == transformer["label"]]
-            ["output"].values[0] + "_excess",
-            "input 1/kWh",
-            dataframe)
-        if transformer["sector"] == "electricity" \
-                and transformer["output2"] == "None":
+
+        # values if the first output is an electricity output (one output "electricity", "central_electricity" OR
+        # two outputs and "heat" in sector)
+        if (transformer["sector"] == "electricity" and transformer["output2"] == "None") or \
+            ("heat" in transformer["sector"] and transformer["output2"] != "None"):
+
+            value = get_value(transformer["label"], "output 1/kWh", dataframe)
+            excess = get_value(
+                components_df.loc[components_df["label"] == transformer["label"]]
+                ["output"].values[0] + "_excess",
+                "input 1/kWh",
+                dataframe)
+
+            # update dictionaries
             amounts_dict = add_value_to_amounts_dict(
                     label=central + transformer["technology"],
                     value_am=value,
                     amounts_dict=amounts_dict)
-
             amounts_dict = add_value_to_amounts_dict(
                     label=central + transformer["technology"] + "_excess",
                     value_am=excess,
                     amounts_dict=amounts_dict)
-            
-        elif "heat" in transformer["sector"] \
-                and transformer["output2"] != "None":
-            value2 = get_value(transformer["label"], "output 1/kWh", dataframe)
-            excess2 = get_value(components_df.loc[components_df["label"]
+
+        # values for two outputs and "central_electricity" (second output is electricity)
+        elif "electricity" in transformer["sector"] and transformer["output2"] != "None":
+
+            value = get_value(transformer["label"], "output 2/kWh", dataframe)
+            excess = get_value(components_df.loc[components_df["label"]
                                                   == transformer["label"]]
-                                ["output"].values[0] + "_excess",
+                                ["output2"].values[0] + "_excess",
                                 "input 1/kWh",
                                 dataframe)
-            
-            amounts_dict = add_value_to_amounts_dict(
-                    label=central + transformer["technology"],
-                    value_am=value2,
-                    amounts_dict=amounts_dict)
 
+            # update dictionaries
             amounts_dict = add_value_to_amounts_dict(
-                    label=central + transformer["technology"] + "_excess",
-                    value_am=excess2,
-                    amounts_dict=amounts_dict)
+                label=central + transformer["technology"],
+                value_am=value,
+                amounts_dict=amounts_dict)
+            amounts_dict = add_value_to_amounts_dict(
+                label=central + transformer["technology"] + "_excess",
+                value_am=excess,
+                amounts_dict=amounts_dict)
+
+        # values for electric_heating
         elif transformer["sector"] == "electric_heat":
             value = get_value(transformer["label"], "input 1/kWh", dataframe)
-    
+
+            # update dictionaries
             amounts_dict = add_value_to_amounts_dict(
                     label=central + transformer["technology"],
                     value_am=value,
