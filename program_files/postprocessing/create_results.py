@@ -14,65 +14,45 @@ from program_files.postprocessing.create_results_prepare_data \
     import prepare_data
 
 
-def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str
-         ) -> None:
+def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str) -> None:
     """
-        Returns model results as xlsx-files.
-        Saves the in- and outgoing flows of every bus of a given,
-        optimized energy system as .xlsx file
+    Returns model results as xlsx-files.
+    Saves the in- and outgoing flows of every bus of a given,
+    optimized energy system as .xlsx file
 
-        :param nodes_data: dictionary containing data from excel \
-            model definition file
-        :type nodes_data: dict
-        :param optimization_model: optimized energy system
-        :type optimization_model: oemof.solph.model
-        :param filepath: path, where the results will be stored
-        :type filepath: str
+    :param nodes_data: dictionary containing data from excel
+        model definition file
+    :type nodes_data: dict
+    :param optimization_model: optimized energy system
+    :type optimization_model: oemof.solph.model
+    :param filepath: path, where the results will be stored
+    :type filepath: str
     """
     results = solph.processing.results(optimization_model)
 
-    # Writes a spreadsheet containing the input and output flows into
-    # every bus of the energy system for every timestep of the
-    # timesystem
     for i, b in nodes_data["buses"].iterrows():
         if b["active"]:
-            file_path = os.path.join(filepath, "results_"
-                                     + b["label"] + ".xlsx")
+            file_path = os.path.join(filepath, "results_" + b["label"] + ".xlsx")
+            
             node_results = solph.views.node(results, b["label"])
             df = node_results["sequences"]
-            df.head(2)
-            with pd.ExcelWriter(file_path) as writer:  # doctest: +SKIP
-                df.to_excel(writer, sheet_name=b["label"])
-            # returns logging info
-            logging.info("   " + "Results saved as xlsx for " + b["label"])
-    # Bus xlsx-files for district heating busses
-    results_copy = results.copy()
-    components = []
-    # iterate threw result keys to find district heating buses
-    for i in results.keys():
-        if "tag1=" not in str(i):
-            results_copy.pop(i)
-    # determine only the district heating buses from result_copy
-    for i in results_copy.keys():
-        if i[0] not in components and i[0] is not None:
-            if "bus" in str(i[0]) and "dh_source_link" not in str(i[0]):
-                components.append(i[0])
-        if i[1] not in components and i[1] is not None:
-            if "bus" in str(i[1]) and "dh_source_link" not in str(i[1]):
-                components.append(i[1])
-    for component in components:
-        # renaming label for better file names
-        label = str(component).replace("infrastructure_heat_bus", "dh")
-        label = label.replace("consumers_heat_bus", "dh")
-        label = label.replace("producers_heat_bus", "dh")
-        file_path = os.path.join(filepath, "results_" + str(label) + ".xlsx")
-        node_results = solph.views.node(results, str(component))
-        df = node_results["sequences"]
-        df.head(2)
-        with pd.ExcelWriter(file_path) as writer:  # doctest: +SKIP
-            df.to_excel(writer, sheet_name=label)
-        # returns logging info
-        logging.info("\t Results saved as xlsx for " + str(label))
+
+            with pd.ExcelWriter(file_path) as writer:
+                df = df.copy()
+
+                # Remove time zone from the index if it exists
+                if df.index.tz is not None:
+                    df.index = df.index.tz_localize(None)
+
+                # Remove column time zone (just in case)
+                for col in df.columns:
+                    if pd.api.types.is_datetime64_any_dtype(df[col]):
+                        try:
+                            df[col] = df[col].dt.tz_localize(None)
+                        except Exception:
+                            pass
+
+                df.to_excel(writer, sheet_name="Sheet1")
 
 
 def charts(nodes_data: dict, optimization_model: solph.Model,
