@@ -40,19 +40,21 @@ def st_heat_amount(components_df: pandas.DataFrame, pv_st: str,
     df_pv_or_st = components_df[(components_df.isin([str(pv_st)])).any(axis=1)]
     # iterate threw the resulting dataframe
     for num, comp in df_pv_or_st.iterrows():
+        central = "" if "central" not in comp["sector"] else "central_"
+
         # append the found component output to the total ST production
         value_am = get_value(label=comp["label"],
                              column="output 1/kWh",
                              dataframe=dataframe)
         # add the value to amounts dict
-        amounts_dict = add_value_to_amounts_dict(label=label,
+        amounts_dict = add_value_to_amounts_dict(label=central + label,
                                                  value_am=value_am,
                                                  amounts_dict=amounts_dict)
         # within the get_pv_st_dir method the cardinal orientation
         # distinction is made
         amounts_dict = get_pv_st_dir(c_dict=amounts_dict,
                                      value=value_am,
-                                     comp_type=label,
+                                     comp_type=central + label,
                                      comp=comp)
     return amounts_dict
 
@@ -96,7 +98,7 @@ def sink_heat_amounts(components_df: pandas.DataFrame, sink_known: dict,
             # get the sinks input flow value
             value = get_value(sink["label"], "input 1/kWh", dataframe)
             # append the heat demand on the amounts dict
-            amounts_dict = add_value_to_amounts_dict(label="Heat Demand",
+            amounts_dict = add_value_to_amounts_dict(label="heat_demand",
                                                      value_am=value,
                                                      amounts_dict=amounts_dict)
     return amounts_dict
@@ -219,6 +221,9 @@ def generic_transformer_heat_amounts(components_df: pandas.DataFrame,
     df_gen_transformer = components_df[
         (components_df.isin(["GenericTransformer"])).any(axis=1)
     ]
+
+    # Possible entries: “electricity”, “heat”, “cooling”, “central_electricity”, “central_heat”, “central_cooling”,
+    # “electric_heating”.
     for num, transformer in df_gen_transformer.iterrows():
         central = "" if "central" not in transformer["sector"] else "central_"
 
@@ -227,42 +232,22 @@ def generic_transformer_heat_amounts(components_df: pandas.DataFrame,
         if (transformer["output2"] == "None" and "heat" in transformer["sector"]) \
                 or ("electricity" in transformer["sector"] and transformer["output2"] != "None"):
             value = get_value(transformer["label"], "output 1/kWh", dataframe)
-            excess = get_value(
-                components_df.loc[components_df["label"] == transformer["label"]]
-                ["output"].values[0] + "_excess",
-                "input 1/kWh",
-                dataframe)
 
-            # update dictionaries
+            # update dictionary
             amounts_dict = add_value_to_amounts_dict(
                 label=central + transformer["technology"],
                 value_am=value,
-                amounts_dict=amounts_dict
-            )
-            amounts_dict = add_value_to_amounts_dict(
-                label=central + transformer["technology"] + "_excess",
-                value_am=excess,
                 amounts_dict=amounts_dict
             )
 
         # values for two outputs and "central_heat" or "electric_heating" (second output is heat)
         elif "heat" in transformer["sector"]:
             value = get_value(transformer["label"], "output 2/kWh", dataframe)
-            excess = get_value(
-                components_df.loc[components_df["label"] == transformer["label"]]
-                ["output2"].values[0] + "_excess",
-                "input 1/kWh",
-                dataframe)
 
-            # update dictionaries
+            # update dictionary
             amounts_dict = add_value_to_amounts_dict(
                 label=central + transformer["technology"],
                 value_am=value,
-                amounts_dict=amounts_dict
-            )
-            amounts_dict = add_value_to_amounts_dict(
-                label=central + transformer["technology"] + "_excess",
-                value_am=excess,
                 amounts_dict=amounts_dict
             )
 
@@ -309,6 +294,41 @@ def insulation_heat_amounts(components_df: pandas.DataFrame,
                     value_am=((cap_insulation * value_sink) / cap_sink),
                     amounts_dict=amounts_dict)
     
+    return amounts_dict
+
+def get_heat_excess(components_df: pandas.DataFrame,
+                    dataframe: pandas.DataFrame,
+                    amounts_dict: dict):
+    """
+        Collecting the energy systems' heat excess bus.
+
+        :param components_df: DataFrame containing all components of \
+            the studied energy system
+        :type components_df: pandas.DataFrame
+        :param dataframe: dataframe holding the energy systems' result \
+            flows
+        :type dataframe: pandas.DataFrame
+        :param amounts_dict: dictionary holding the already collected \
+            flow values of the studied energy system
+        :type amounts_dict: dict
+
+        :return: - **amounts_dict** (dict) - dictionary holding the \
+            energy systems' flow amounts which was expanded within \
+            this method by new heat excess values
+    """
+    from program_files.postprocessing.plotting import get_value, \
+        add_value_to_amounts_dict
+    # get the energy system's shortage buses
+    df_buses = components_df[(components_df["excess"] == 1)]
+    # append the excess heat amount on elec amounts dict
+    for num, comp in df_buses.iterrows():
+        if "heat" in comp["sector"]:
+            value = get_value(comp["label"] + "_excess", "input 1/kWh",
+                              dataframe)
+            amounts_dict = add_value_to_amounts_dict(label="heat_bus_excess",
+                                                     value_am=value,
+                                                     amounts_dict=amounts_dict)
+
     return amounts_dict
 
 
@@ -427,7 +447,13 @@ def collect_heat_amounts(dataframes: dict, nodes_data: dict,
                 dataframe=dataframe,
                 amounts_dict=heat_amounts_dict
         )
-        
+
+        heat_amounts_dict = get_heat_excess(
+            components_df=components_df,
+            dataframe=dataframe,
+            amounts_dict=heat_amounts_dict
+        )
+
         heat_amounts_dict = dh_heat_amounts(dataframe=dataframe,
                                             amounts_dict=heat_amounts_dict)
         

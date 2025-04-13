@@ -48,13 +48,7 @@ def pv_electricity_amount(components_df: pandas.DataFrame, pv_st: str,
                                      value=value_am,
                                      comp_type="PV",
                                      comp=comp)
-        # calculate the pv excess
-        value = get_value(label=str(comp["output"]) + "_excess",
-                          column="input 1/kWh",
-                          dataframe=dataframe)
-        amounts_dict = add_value_to_amounts_dict(label="PV_excess",
-                                                 value_am=value,
-                                                 amounts_dict=amounts_dict)
+
     return amounts_dict
 
 
@@ -178,13 +172,17 @@ def get_st_electricity_amounts(components_df: pandas.DataFrame,
     df_st = components_df[
         (components_df.isin([str("solar_thermal_flat_plate")])).any(axis=1)
     ]
+
     # append the electric consumption of the solar thermal flat
-    # plates on the elecricity amount dict
+    # plates on the electricity amount dict
     for num, comp in df_st.iterrows():
+        central = "" if "central" not in comp["sector"] else "central_"
+
         input1 = get_value(comp["label"], "input 1/kWh", dataframe)
         input2 = get_value(comp["label"], "input 2/kWh", dataframe)
+        # TODO fix the input selection
         value = input1 if input1 < input2 else input2
-        amounts_dict = add_value_to_amounts_dict(label="ST_electricity",
+        amounts_dict = add_value_to_amounts_dict(label= central + "ST_electricity",
                                                  value_am=value,
                                                  amounts_dict=amounts_dict)
     
@@ -233,7 +231,7 @@ def sink_electricity_amounts(components_df: pandas.DataFrame, sink_known: dict,
             value = get_value(sink["label"], "input 1/kWh", dataframe)
             # append the heat demand on the amounts dict
             amounts_dict = add_value_to_amounts_dict(
-                label="Electricity Demand",
+                label="electricity_demand",
                 value_am=value,
                 amounts_dict=amounts_dict)
     return amounts_dict
@@ -274,7 +272,7 @@ def generic_transformer_electricity_amounts(components_df: pandas.DataFrame,
     df_gen_transformer = components_df[
         (components_df.isin(["GenericTransformer"])).any(axis=1)
     ]
-    
+
     for num, transformer in df_gen_transformer.iterrows():
         central = "" if "central" not in transformer["sector"] else "central_"
 
@@ -284,41 +282,24 @@ def generic_transformer_electricity_amounts(components_df: pandas.DataFrame,
             ("heat" in transformer["sector"] and transformer["output2"] != "None"):
 
             value = get_value(transformer["label"], "output 1/kWh", dataframe)
-            excess = get_value(
-                components_df.loc[components_df["label"] == transformer["label"]]
-                ["output"].values[0] + "_excess",
-                "input 1/kWh",
-                dataframe)
 
-            # update dictionaries
+            # update dictionary
             amounts_dict = add_value_to_amounts_dict(
                     label=central + transformer["technology"],
                     value_am=value,
                     amounts_dict=amounts_dict)
-            amounts_dict = add_value_to_amounts_dict(
-                    label=central + transformer["technology"] + "_excess",
-                    value_am=excess,
-                    amounts_dict=amounts_dict)
+
 
         # values for two outputs and "central_electricity" (second output is electricity)
         elif "electricity" in transformer["sector"] and transformer["output2"] != "None":
-
             value = get_value(transformer["label"], "output 2/kWh", dataframe)
-            excess = get_value(components_df.loc[components_df["label"]
-                                                  == transformer["label"]]
-                                ["output2"].values[0] + "_excess",
-                                "input 1/kWh",
-                                dataframe)
 
-            # update dictionaries
+            # update dictionary
             amounts_dict = add_value_to_amounts_dict(
                 label=central + transformer["technology"],
                 value_am=value,
                 amounts_dict=amounts_dict)
-            amounts_dict = add_value_to_amounts_dict(
-                label=central + transformer["technology"] + "_excess",
-                value_am=excess,
-                amounts_dict=amounts_dict)
+
 
         # values for electric_heating
         elif transformer["sector"] == "electric_heat":
@@ -451,6 +432,44 @@ def get_grid_import(components_df: pandas.DataFrame,
     return amounts_dict
 
 
+def get_electricity_excess(components_df: pandas.DataFrame,
+                    dataframe: pandas.DataFrame,
+                    amounts_dict: dict):
+    """
+        Collecting the energy systems' electricity excess bus.
+
+        :param components_df: DataFrame containing all components of \
+            the studied energy system
+        :type components_df: pandas.DataFrame
+        :param dataframe: dataframe holding the energy systems' result \
+            flows
+        :type dataframe: pandas.DataFrame
+        :param amounts_dict: dictionary holding the already collected \
+            flow values of the studied energy system
+        :type amounts_dict: dict
+
+        :return: - **amounts_dict** (dict) - dictionary holding the \
+            energy systems' flow amounts which was expanded within \
+            this method by new electricity excess values
+    """
+    from program_files.postprocessing.plotting import get_value, \
+        add_value_to_amounts_dict
+    # get the energy system's shortage buses
+    df_buses = components_df[(components_df["excess"] == 1)]
+    # append the excess electricity amount on elec amounts dict
+    for num, comp in df_buses.iterrows():
+        if "electricity" in comp["sector"]:
+            value = get_value(comp["label"] + "_excess", "input 1/kWh",
+                              dataframe)
+            amounts_dict = add_value_to_amounts_dict(label="electricity_bus_excess",
+                                                     value_am=value,
+                                                     amounts_dict=amounts_dict)
+
+    return amounts_dict
+
+
+
+
 def collect_electricity_amounts(
         dataframes: dict, nodes_data: dict, result_path: str,
         sink_known: dict) -> None:
@@ -543,7 +562,11 @@ def collect_electricity_amounts(
         elec_amounts_dict = get_grid_import(components_df=components_df,
                                             dataframe=dataframe,
                                             amounts_dict=elec_amounts_dict)
-        
+
+        elec_amounts_dict = get_electricity_excess(components_df=components_df,
+                                            dataframe=dataframe,
+                                            amounts_dict=elec_amounts_dict)
+
         # iterate threw the elec amounts dict and append the summed
         # entries on the elec amounts pandas dataframe
         elec_amounts = dict_to_dataframe(elec_amounts_dict, elec_amounts)
