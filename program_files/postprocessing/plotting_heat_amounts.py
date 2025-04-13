@@ -325,7 +325,7 @@ def get_heat_excess(components_df: pandas.DataFrame,
         if "heat" in comp["sector"]:
             value = get_value(comp["label"] + "_excess", "input 1/kWh",
                               dataframe)
-            amounts_dict = add_value_to_amounts_dict(label="heat_bus_excess",
+            amounts_dict = add_value_to_amounts_dict(label="heat_bus_excess  (" + comp["label"] + ")",
                                                      value_am=value,
                                                      amounts_dict=amounts_dict)
 

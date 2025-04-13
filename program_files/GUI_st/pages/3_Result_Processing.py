@@ -297,6 +297,10 @@ def show_energy_amounts(result_path_heat_amounts: str,
     # Header
     st.subheader("Energy Amount Diagrams")
 
+    # display warning/explanation for the energy amounts
+    st.warning("These graphs show both the import and export of energy, as well as consumption and generation. "
+               "Therefore, to analyze individual energy amounts, filtering is necessary.")
+
     with st.subheader("Energy Amounts"):
         tab1, tab2 = st.tabs(["Heat Amounts", "Electricity Amounts"])
         # create heat amount diagram
