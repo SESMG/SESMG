@@ -136,8 +136,7 @@ def short_result_summary_system(result_path_summary) -> None:
     ener2.metric(label=summary_headers[8], value="{:,.2f}".format(float(round(
         df_summary[summary_headers[8]].iloc[0], 1))))
 
-
-def short_result_simplifications(result_GUI_settings_dict: dict) -> None:
+def short_result_simplifications(result_GUI_settings_dict: dict, result_path_summary) -> None:
     """
         Function to display model simplification settings in addition
         to the timeseries information.
@@ -163,6 +162,20 @@ def short_result_simplifications(result_GUI_settings_dict: dict) -> None:
     simp4.metric(
         label="Cluster Season",
         value=result_GUI_settings_dict["input_timeseries_season"])
+
+    # Import summary.csv and create dataframe
+    df_summary = pd.read_csv(result_path_summary)
+    # Create list with headers
+    summary_headers = list(df_summary)
+
+    # Display variable cost factor
+    factor1, factor2, factor3, factor4 = st.columns(4)
+    factor1.metric(label=summary_headers[9], value="{:,.2f}".format(float(round(
+        df_summary[summary_headers[9]].iloc[0], 1))))
+
+    # Display warning
+    st.warning("Note: When a simplification method is used, costs, energy demand and usage are scaled up to represent "
+               "a full year, by multiplication with the variable cost factor.")
 
 
 def short_result_premodelling(result_GUI_settings_dict: dict) -> None:
@@ -403,7 +416,8 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
             # show time series simplification settings
             short_result_simplifications(
-                result_GUI_settings_dict=GUI_run_settings_dict)
+                result_GUI_settings_dict=GUI_run_settings_dict,
+                result_path_summary=st.session_state["state_result_path"]+ "/summary.csv")
         if GUI_run_settings_dict["input_activate_premodeling"]:
             # show time series simplification settings
             short_result_premodelling(

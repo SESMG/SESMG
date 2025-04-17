@@ -5,7 +5,7 @@ from program_files.preprocessing.data_preparation \
     import variable_costs_date_adaption
 
 
-def timeseries_downsampling(nodes_data: dict, n_timesteps: int) -> None:
+def timeseries_downsampling(nodes_data: dict, n_timesteps: int) -> str:
     """
         uses every n-th period of timeseries and weather data
 
@@ -13,6 +13,9 @@ def timeseries_downsampling(nodes_data: dict, n_timesteps: int) -> None:
         :type nodes_data: dict
         :param n_timesteps: defines which period is chosen
         :type n_timesteps: int
+
+        :return: - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+                     can be used to scale the results up for a year
 
     """
     end_date = nodes_data['energysystem']['end date'].copy()
@@ -26,7 +29,7 @@ def timeseries_downsampling(nodes_data: dict, n_timesteps: int) -> None:
     nodes_data['energysystem']['temporal resolution'] = \
         str(n_timesteps) + nodes_data['energysystem']['temporal resolution']
     
-    variable_costs_date_adaption(nodes_data=nodes_data,
+    variable_cost_factor = variable_costs_date_adaption(nodes_data=nodes_data,
                                  clusters=int(nodes_data['energysystem']
                                               ['periods'] / n_timesteps),
                                  period="hours")
@@ -35,8 +38,10 @@ def timeseries_downsampling(nodes_data: dict, n_timesteps: int) -> None:
     nodes_data['energysystem']['periods'] = periods
     nodes_data['energysystem']['end date'] = end_date
 
+    return variable_cost_factor
 
-def timeseries_downsampling2(nodes_data: dict, n_timesteps: int) -> None:
+
+def timeseries_downsampling2(nodes_data: dict, n_timesteps: int) -> str:
     """
         cuts every n-th period of timeseries and weather data
 
@@ -44,6 +49,9 @@ def timeseries_downsampling2(nodes_data: dict, n_timesteps: int) -> None:
         :type nodes_data: dict
         :param n_timesteps: defines which period is cut
         :type n_timesteps: int
+
+        :return: - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+                     can be used to scale the results up for a year
     """
     
     prep_timeseries = nodes_data['timeseries'].copy()
@@ -67,6 +75,8 @@ def timeseries_downsampling2(nodes_data: dict, n_timesteps: int) -> None:
     nodes_data['weather data'] = prep_weather_data
     nodes_data['timeseries'] = prep_timeseries
     # adapt the variable cost parameter
-    variable_costs_date_adaption(nodes_data=nodes_data,
+    variable_cost_factor = variable_costs_date_adaption(nodes_data=nodes_data,
                                  clusters=int(len(prep_timeseries)),
                                  period="hours")
+
+    return variable_cost_factor

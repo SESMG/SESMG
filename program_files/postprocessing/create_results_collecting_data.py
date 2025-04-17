@@ -427,7 +427,7 @@ def change_heatpipelines_label(comp_label: str, result_path: str) -> str:
 
 
 def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
-                 result_path: str) -> (dict, float, float):
+                 result_path: str, variable_cost_factor: str) -> (dict, float, float):
     """
         main method of the algorithm used to collect the data which is
         necessary to create the results presentation
@@ -445,6 +445,9 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
         :param result_path: str holding the algorithms result path used
             for the energy system's pipes data
         :type result_path: str
+        :param variable_cost_factor: factor that considers the data_preparation_algorithms,
+            can be used to scale the results up for a year
+        :type variable_cost_factor: str
         
         :return: - **comp_dict** (dict) - dictionary containing the \
                     result parameters of all of the energy system's \
@@ -536,14 +539,17 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
                 comp_dict[loc_label].append(constraint_costs)
             else:
                 comp_dict[loc_label] += [0, 0]
-                total_demand += sum(flows[0])
+                # consider var_cost_factor for the total demand
+                total_demand += sum(flows[0]) * variable_cost_factor
             if isinstance(node, Source):
                 if (node.label in list(nodes_data["sources"]["label"]) or
                         "shortage" in node.label):
-                    total_usage += sum(flows[2])
+                    # consider var_cost_factor for the total usage
+                    total_usage += sum(flows[2]) * variable_cost_factor
             if isinstance(node, Sink) and "excess" in node.label:
-                total_usage -= sum(flows[0])
+                # consider var_cost_factor for the total usage
+                total_usage -= sum(flows[0]) * variable_cost_factor
             # get the component's type for the loc
             comp_dict[loc_label].append(get_comp_type(node=node))
-            
+
     return comp_dict, total_demand, total_usage

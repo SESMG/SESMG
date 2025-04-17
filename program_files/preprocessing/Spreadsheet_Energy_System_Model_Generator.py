@@ -150,7 +150,7 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
                 nodes_data=nodes_data)
     
     # Timeseries Preprocessing
-    data_preparation.timeseries_preparation(
+    variable_cost_factor = data_preparation.timeseries_preparation(
             timeseries_prep_param=timeseries_prep,
             nodes_data=nodes_data,
             result_path=result_path)
@@ -228,7 +228,7 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
     # creates the data used for the results presentation in the GUI
     create_results.Results(
             nodes_data=nodes_data, optimization_model=om, energy_system=esys,
-            result_path=result_path, console_log=console_results,
+            result_path=result_path, variable_cost_factor=variable_cost_factor, console_log=console_results,
             cluster_dh=cluster_dh)
     
     logging.info('\t ' + 56 * '-')
