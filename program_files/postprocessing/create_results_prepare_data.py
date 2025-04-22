@@ -22,7 +22,7 @@ copt = [
 
 
 def add_component_to_loc(label: str, comp_dict: list,
-                         df_list_of_components: pandas.DataFrame,
+                         df_list_of_components: pandas.DataFrame, variable_cost_factor: str,
                          maxinvest="---") -> pandas.DataFrame:
     """
         adds the given component with it's parameters to list of
@@ -37,6 +37,9 @@ def add_component_to_loc(label: str, comp_dict: list,
         :param df_list_of_components: DataFrame containing the list of \
             components which will be the components.csv afterwards
         :type df_list_of_components: pandas.DataFrame
+        :param variable_cost_factor: factor that considers the data_preparation_algorithms,
+            can be used to scale the results up for a year
+        :type variable_cost_factor: str
         :param maxinvest: str holding the maximum possible investment
         :type maxinvest: str
         
@@ -57,10 +60,10 @@ def add_component_to_loc(label: str, comp_dict: list,
                     [
                         label,
                         comp_dict[10],
-                        round(sum(comp_dict[0]), 2),
-                        round(sum(comp_dict[1]), 2),
-                        round(sum(comp_dict[2]), 2),
-                        round(sum(comp_dict[3]), 2),
+                        round(sum(comp_dict[0]) * variable_cost_factor, 2),
+                        round(sum(comp_dict[1]) * variable_cost_factor, 2),
+                        round(sum(comp_dict[2]) * variable_cost_factor, 2),
+                        round(sum(comp_dict[3]) * variable_cost_factor, 2),
                         round(capacity, 2),
                         round(comp_dict[8], 2),
                         round(comp_dict[6], 2),
@@ -129,7 +132,7 @@ def append_flows(label: str, comp_dict: list,
 
 
 def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
-                df_list_of_components: pandas.DataFrame
+                df_list_of_components: pandas.DataFrame, variable_cost_factor: str,
                 ) -> (pandas.DataFrame, float, float, float, pandas.DataFrame):
     """
         In this method, on the one hand, the components as well as
@@ -149,6 +152,9 @@ def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
         :param df_list_of_components: DataFrame containing the list of \
             components which will be the components.csv afterwards
         :type df_list_of_components: pandas.DataFrame
+        :param variable_cost_factor: factor that considers the data_preparation_algorithms,
+            can be used to scale the results up for a year
+        :type variable_cost_factor: str
         
         :return: - **df_list_of_components** (pandas.DataFrame) - \
                     DataFrame containing the list of components which \
@@ -195,7 +201,7 @@ def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
     )
 
 
-def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict
+def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict, variable_cost_factor: str,
                  ) -> (pandas.DataFrame, float, float, float, pandas.DataFrame,
                        float):
     """
@@ -212,6 +218,9 @@ def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict
         :param nodes_data: dictionary containing data from excel \
                 model definition file
         :type nodes_data: dict
+        :param variable_cost_factor: factor that considers the data_preparation_algorithms,
+            can be used to scale the results up for a year
+        :type variable_cost_factor: str
         
         :return: - **df_list_of_components** (pandas.DataFrame) - \
                     DataFrame containing the list of components which \
@@ -262,7 +271,8 @@ def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict
         df_result_table,
     ) = prepare_loc(comp_dict=comp_dict,
                     df_result_table=df_result_table,
-                    df_list_of_components=df_list_of_components)
+                    df_list_of_components=df_list_of_components,
+                    variable_cost_factor=variable_cost_factor)
     return (
         df_list_of_components,
         total_periodical_costs,

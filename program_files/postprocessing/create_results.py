@@ -143,6 +143,9 @@ class Results:
         :type energy_system: oemof.solph.Energysystem
         :param result_path: Path where the results are saved.
         :type result_path: str
+        :param variable_cost_factor: factor that considers the data_preparation_algorithms,
+            can be used to scale the results up for a year
+        :type variable_cost_factor: str
         :param console_log: boolean which decides rather the results \
             will be logged in the console or not
         :type console_log: bool
@@ -163,6 +166,7 @@ class Results:
         optimization_model: solph.Model,
         energy_system: solph.EnergySystem,
         result_path: str,
+        variable_cost_factor: str,
         console_log: bool,
         cluster_dh: bool,
     ):
@@ -182,7 +186,8 @@ class Results:
             nodes_data=nodes_data,
             results=self.results,
             esys=self.esys,
-            result_path=result_path
+            result_path=result_path,
+            variable_cost_factor=variable_cost_factor
         )
 
         (
@@ -194,7 +199,8 @@ class Results:
             total_demand,
         ) = prepare_data(comp_dict=comp_dict,
                          total_demand=total_demand,
-                         nodes_data=nodes_data)
+                         nodes_data=nodes_data,
+                         variable_cost_factor=variable_cost_factor)
         
         # SUMMARY
         meta_results = solph.processing.meta_results(optimization_model)
@@ -218,6 +224,7 @@ class Results:
                     round(total_periodical_costs, 2),
                     round(total_demand, 2),
                     round(total_usage, 2),
+                    variable_cost_factor,
                 ]
             ],
             columns=[
@@ -230,6 +237,7 @@ class Results:
                 "Total Periodical Costs",
                 "Total Energy Demand",
                 "Total Energy Usage",
+                "Variable Cost Factor"
             ],
         )
 
