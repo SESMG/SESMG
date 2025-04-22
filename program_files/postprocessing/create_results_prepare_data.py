@@ -131,7 +131,6 @@ def append_flows(label: str, comp_dict: list,
     return df_result_table
 
 
-# TODO -> hier var. cost factor berücksichtigen
 def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
                 df_list_of_components: pandas.DataFrame, variable_cost_factor: str,
                 ) -> (pandas.DataFrame, float, float, float, pandas.DataFrame):
