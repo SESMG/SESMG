@@ -475,7 +475,8 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
             # show time series simplification settings
             short_result_simplifications(
-                result_GUI_settings_dict=GUI_run_settings_dict)
+                result_GUI_settings_dict=GUI_run_settings_dict,
+                result_path_summary=st.session_state["state_pareto_result_path"]+ "/summary.csv")
         if GUI_run_settings_dict["input_activate_premodeling"]:
             # show time series simplification settings
             short_result_premodelling(
