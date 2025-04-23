@@ -131,6 +131,49 @@ def append_flows(label: str, comp_dict: list,
     return df_result_table
 
 
+def create_flow_info_dict(comp_dict: dict) -> pandas.DataFrame:
+    """
+    Creates a DataFrame with flow information for each component.
+
+    Extracts up to two input and two output flow connections from a component dictionary.
+    Each flow is represented as a tuple of buses (source, target). The result includes
+    the component name and the identified flows.
+
+    :param comp_dict: Dictionary with component names as keys and flow data as values.
+    :type comp_dict: list
+
+    :return: - **flow_info_df** (pandas.DataFrame): A table with columns for component name and up to four flow tuples.
+    """
+
+    # New dictionary to store the flow information
+    flow_info_dict = {}
+
+    # Loop through the comp_dict and extract the relevant flow data
+    for comp_name, comp_data in comp_dict.items():
+
+        # Extract the first 4 elements directly as inputs and outputs
+        inputs = [item.name[0] for i, item in enumerate(comp_data[:2]) if hasattr(item, 'name') and isinstance(item.name, tuple)]
+        outputs = [item.name[0] for i, item in enumerate(comp_data[2:4]) if hasattr(item, 'name') and isinstance(item.name, tuple)]
+
+        # Ensure that we have no more than 2 inputs and 2 outputs
+        flow_info_dict[comp_name] = {
+            'Flow Input 1': inputs[0] if len(inputs) > 0 else None,
+            'Flow Input 2': inputs[1] if len(inputs) > 1 else None,
+            'Flow Output 1': outputs[0] if len(outputs) > 0 else None,
+            'Flow Output 2': outputs[1] if len(outputs) > 1 else None,
+        }
+
+    # Convert the dictionary into a pandas DataFrame
+    flow_info_df = pandas.DataFrame.from_dict(flow_info_dict, orient='index')
+
+    # Move index to column for Excel export
+    flow_info_df.reset_index(inplace=True)
+    flow_info_df.rename(columns={'index': 'Component'}, inplace=True)
+
+    return flow_info_df
+
+
+
 def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
                 df_list_of_components: pandas.DataFrame, variable_cost_factor: str,
                 ) -> (pandas.DataFrame, float, float, float, pandas.DataFrame):
@@ -273,6 +316,10 @@ def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict, variabl
                     df_result_table=df_result_table,
                     df_list_of_components=df_list_of_components,
                     variable_cost_factor=variable_cost_factor)
+
+    # create additional dict with information about the input and output flows
+    flow_info_df = create_flow_info_dict(comp_dict=comp_dict)
+
     return (
         df_list_of_components,
         total_periodical_costs,
@@ -280,4 +327,5 @@ def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict, variabl
         total_constraint_costs,
         df_result_table,
         total_demand,
+        flow_info_df
     )

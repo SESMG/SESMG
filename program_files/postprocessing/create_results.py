@@ -217,6 +217,7 @@ class Results:
             total_constraint_costs,
             df_result_table,
             total_demand,
+            flow_info_df,
         ) = prepare_data(comp_dict=comp_dict,
                          total_demand=total_demand,
                          nodes_data=nodes_data,
@@ -268,5 +269,7 @@ class Results:
         df_result_table.to_csv(result_path + "/results.csv")
 
         df_summary.to_csv(result_path + "/summary.csv", index=False)
+
+        flow_info_df.to_csv(result_path + "/flow_information.csv", index=False)
 
         logging.info("   " + "Successfully prepared results...")
