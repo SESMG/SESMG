@@ -131,7 +131,7 @@ def append_flows(label: str, comp_dict: list,
     return df_result_table
 
 
-def create_flow_info_dict(comp_dict: dict) -> pandas.DataFrame:
+def create_flow_info_dict(comp_dict: list) -> pandas.DataFrame:
     """
     Creates a DataFrame with flow information for each component.
 
@@ -139,7 +139,7 @@ def create_flow_info_dict(comp_dict: dict) -> pandas.DataFrame:
     Each flow is represented as a tuple of buses (source, target). The result includes
     the component name and the identified flows.
 
-    :param comp_dict: Dictionary with component names as keys and flow data as values.
+    :param comp_dict: List with component names as keys and flow data as values.
     :type comp_dict: list
 
     :return: - **flow_info_df** (pandas.DataFrame): A table with columns for component name and up to four flow tuples.
