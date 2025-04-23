@@ -370,7 +370,6 @@ def least_cost_model(energy_system: solph.EnergySystem, num_threads: int,
             om = constraint_optimization_against_two_values(om=om,
                                                             limit=limit,
                                                             storages=True)
-            print("contraint optimization against two values worked")
 
         else:
             om = constraint_optimization_against_two_values(om=om,
