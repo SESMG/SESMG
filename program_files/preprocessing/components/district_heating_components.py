@@ -329,7 +329,7 @@ def create_connection_consumers_and_producers(
         fork_label = foot_point[0][10:-5] if is_consumer else forks_len
         
         # Determine the label based on the is_consumer flag
-        label = comp["label"].split("_")[0] if is_consumer else comp["label"]
+        label = comp["label"]
         
         # Determine the pipe label based on the is_consumer flag
         if is_consumer:
@@ -507,7 +507,7 @@ def connect_dh_to_system_exergy(
         oemof_opti_model.nodes.append(
                 solph.components.Converter(
                         label=("dh_heat_house_station_"
-                               + consumer["label"].split("_")[0]),
+                               + consumer["label"]),
                         inputs=inputs,
                         outputs=outputs,
                         conversion_factors=conversion_factors
@@ -611,7 +611,7 @@ def connect_dh_to_system_anergy(
         oemof_opti_model.nodes.append(
                 solph.components.Converter(
                         label=("dh_anergy_hp_"
-                               + consumer["label"].split("_")[0]),
+                               + consumer["label"]),
                         inputs=inputs,
                         outputs=outputs,
                         conversion_factors=conversion_factors
