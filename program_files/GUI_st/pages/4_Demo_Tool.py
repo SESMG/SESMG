@@ -3,6 +3,7 @@
     Gregor Becker - gregor.becker@fh-muenster.de
     Christian Klemm - christian.klemm@fh-muenster.de
     Benjamin Blankenstein - bb917322@fh-muenster.de
+    Oscar Quiroga - oscar.quiroga@fh-muenster.de
 """
 
 import os
