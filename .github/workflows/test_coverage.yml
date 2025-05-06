@@ -18,7 +18,12 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Install system dependencies
-      run: sudo apt-get update && sudo apt-get install -y libboost-all-dev
+      run: sudo apt-get update && sudo apt-get install -y libboost-all-dev build-essential cmake
+
+    - name: Prepare CoolProp data
+      run: |
+        mkdir -p ~/.CoolProp
+        wget -O ~/.CoolProp/all_fluids.json.z https://raw.githubusercontent.com/CoolProp/CoolProp/master/all_fluids.json.z
 
     - name: Install dependencies
       run: |
