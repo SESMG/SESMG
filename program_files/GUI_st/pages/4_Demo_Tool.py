@@ -47,8 +47,29 @@ path_pareto_results_advanced = os.path.join(mainpath_rdf, "demo_pareto_results_a
 if "state_submitted_demo_run" not in st.session_state:
     st.session_state["state_submitted_demo_run"] = "not done"
 
+# Mapping of input keys to JSON help keys
+help_map = {
+    "input_name": "input_name",
+    "input_pv": "input_pv",
+    "input_st": "input_st",
+    "input_ashp": "input_ashp",
+    "input_gchp": "input_gchp",
+    "input_battery": "input_battery",
+    "input_dcts": "input_dcts",
+    "input_chp": "input_chp",
+    "solver_select": "solver_select",
+    "input_optimization": "input_optimization"
+    # Add more mappings here as needed
+}
+
+# Safe way to retrieve help text
+def get_help(key):
+    help_key = help_map.get(key)
+    return GUI_helper.get(help_key, None)
+
 
 def dt_input_sidebar() -> dict:
+
     """
         Creating the demo tool input values in the sidebar.
 
@@ -81,28 +102,32 @@ def dt_input_sidebar() -> dict:
                 label="Photovoltaic in kW",
                 min_value=0,
                 max_value=10000,
-                step=1)
+                step=1,
+                help=get_help("input_pv"))
             
             # input value for solar thermal
             input_values_dict["input_st"] = st.number_input(
                 label="Solar Thermal in kW",
                 min_value=0,
                 max_value=27700,
-                step=1)
+                step=1,
+                help=get_help("input_st"))
             
             # input value for air source heat pump
             input_values_dict["input_ashp"] = st.number_input(
                 label="Air source heat pump in kW",
                 min_value=0,
                 max_value=5000,
-                step=1)
+                step=1,
+                help=get_help("input_ashp"))
             
             # input value for ground coupled heat pump
             input_values_dict["input_gchp"] = st.number_input(
                 label="Ground coupled heat pump in kW",
                 min_value=0,
                 max_value=5000,
-                step=1)
+                step=1,
+                help=get_help("input_gchp"))
             
             # input value for central thermal storage
             input_values_dict["input_battery"] = st.number_input(
@@ -110,7 +135,7 @@ def dt_input_sidebar() -> dict:
                 min_value=0,
                 max_value=10000,
                 step=1,
-                help=GUI_helper["demo_ni_kw_kwh"])
+                help=get_help("input_battery"))
             
             # input value for decentral thermal storage
             input_values_dict["input_dcts"] = st.number_input(
@@ -118,7 +143,7 @@ def dt_input_sidebar() -> dict:
                 min_value=0,
                 max_value=10000,
                 step=1,
-                help=GUI_helper["demo_ni_kw_kwh"])
+                help=get_help("input_dcts"))
             
             # selectbox for the scize of the District Heating Network
             input_dh = st.selectbox(
@@ -132,8 +157,7 @@ def dt_input_sidebar() -> dict:
                 min_value=0,
                 max_value=20000,
                 step=1,
-                help=GUI_helper["demo_sb_heat_network_chp"]
-            )
+                help=get_help("input_chp"))
             
             if input_values_dict["input_chp"] < 5000:
                 st.write("The CHP has a small capacity.")
@@ -189,12 +213,13 @@ def dt_input_sidebar() -> dict:
             input_values_dict["solver_select"] = st.selectbox(
                 label="Optimization Solver",
                 options=("cbc", "gurobi"),
-                help=GUI_helper["main_sb_solver"])
+                help=get_help("solver_select"))
             
             # create slider to choose the optimization criterion
             input_values_dict["input_criterion"] = st.select_slider(
                 label="Optimization Criterion",
-                options=("monetary", "emissions"))
+                options=("monetary", "emissions"),
+                help=get_help("input_optimization"))
             
         else:
 
@@ -205,32 +230,32 @@ def dt_input_sidebar() -> dict:
             
             # Value for photovoltaics
             pv_options = {"0%": 0, "25%": 0.25, "50%": 0.5, "75%": 0.75, "100%": 1.0}
-            selected_pv = st.select_slider("Photovoltaic in kW", options=list(pv_options.keys()))
+            selected_pv = st.select_slider("Photovoltaic in kW", options=list(pv_options.keys()),help=get_help("input_pv"))
             input_values_dict["input_pv"] = int(pv_options[selected_pv] * 10000)
 
             # Value for solar thermal
             sth_options = {"0%": 0, "25%": 0.25, "50%": 0.5, "75%": 0.75, "100%": 1.0}
-            selected_sth = st.select_slider("Solar Thermal in kW", options=list(sth_options.keys()))
+            selected_sth = st.select_slider("Solar Thermal in kW", options=list(sth_options.keys()),help=get_help("input_st"))
             input_values_dict["input_st"] = int(sth_options[selected_sth] * 27700)
 
             # Value for air source heat pump
             ashp_options = {"0%": 0, "25%": 0.25, "50%": 0.5, "75%": 0.75, "100%": 1.0}
-            selected_ashp = st.select_slider("Air source heat pump in kW", options=list(ashp_options.keys()))
+            selected_ashp = st.select_slider("Air source heat pump in kW", options=list(ashp_options.keys()),help=get_help("input_ashp"))
             input_values_dict["input_ashp"] = int(ashp_options[selected_ashp] * 5000)
 
             # Value for ground coupled heat pump
             gchp_options = {"0%": 0, "25%": 0.25, "50%": 0.5, "75%": 0.75, "100%": 1.0}
-            selected_gchp = st.select_slider("Ground coupled heat pump in kW", options=list(gchp_options.keys()))
+            selected_gchp = st.select_slider("Ground coupled heat pump in kW", options=list(gchp_options.keys()),help=get_help("input_gchp"))
             input_values_dict["input_gchp"] = int(gchp_options[selected_gchp] * 5000)
 
             # Value for central thermal storage
             battery_options = {"0%": 0, "25%": 0.25, "50%": 0.5, "75%": 0.75, "100%": 1.0}
-            selected_battery = st.select_slider("Battery in kWh", options=list(battery_options.keys()),help=GUI_helper["demo_ni_kw_kwh"])
+            selected_battery = st.select_slider("Battery in kWh", options=list(battery_options.keys()),help=get_help("input_battery"))
             input_values_dict["input_battery"] = int(battery_options[selected_battery] * 10000)
 
             # Value for decentral thermal storage
             dcts_options = {"0%": 0, "25%": 0.25, "50%": 0.5, "75%": 0.75, "100%": 1.0}
-            selected_dcts = st.select_slider("Thermal Storage (decentral) in kWh", options=list(dcts_options.keys()),help=GUI_helper["demo_ni_kw_kwh"])
+            selected_dcts = st.select_slider("Thermal Storage (decentral) in kWh", options=list(dcts_options.keys()),help=get_help("input_dcts"))
             input_values_dict["input_dcts"] = int(dcts_options[selected_dcts] * 10000)
 
             # Selectbox for the size of the District Heating Network
@@ -289,12 +314,13 @@ def dt_input_sidebar() -> dict:
             input_values_dict["solver_select"] = st.selectbox(
                 label="Optimization Solver",
                 options=("cbc", "gurobi"),
-                help=GUI_helper["main_sb_solver"])
+                help=get_help("solver_select"))
             
             # create slider to choose the optimization criterion
             input_values_dict["input_criterion"] = st.select_slider(
                 label="Optimization Criterion",
-                options=("monetary", "emissions"))
+                options=("monetary", "emissions"),
+                help=get_help("input_optimization"))
         
         # button to run the demotool
         st.form_submit_button(label="Start Simulation",
@@ -512,12 +538,7 @@ excel_path = os.path.join(mainpath_pf,
                           "demo_tool", 
                           "v1.1.0_demo_model_definition", 
                           "Ergebnistabelle_Demo-tool.xlsx")
-
-if "mode" not in st.session_state:
-    st.session_state["mode"] = "simplified"
-
-sheet_name = "Advanced" if st.session_state["mode"] == "advanced" else "Simplified"
-df = pd.read_excel(excel_path, sheet_name=sheet_name, engine='openpyxl')
+df = pd.read_excel(excel_path, engine='openpyxl')
 
 # Function to apply style to the table
 def style_table(df):
@@ -560,67 +581,85 @@ def show_demo_run_results_on_graph():
     if st.session_state["mode"] == "simplified":
         pareto_points = pd.DataFrame({
             "Costs in million Euro/a": [
-                
-                14.84965879,
-                11.36219969,
-                10.49242158,
-                9.82633129,
-                9.47211045,
-                9.21268251,
-                8.95338016,
-                8.70061534,
-                8.52056137,
-                8.40543934,
-                8.34177349
-                
+                13.89549383, 
+                12.56013776, 
+                11.91894652, 
+                11.3499508, 
+                10.87207637,
+                10.48015488, 
+                10.12417196, 
+                9.81144029, 
+                9.59650753, 
+                9.45681218,
+                9.3275912, 
+                9.19859782, 
+                9.06960445, 
+                8.94061108, 
+                8.8116177,
+                8.68858617, 
+                8.58751772, 
+                8.50769999, 
+                8.44293867, 
+                8.3931325,
+                8.35503916, 
+                8.32996238
             ],
             'CO2-emissions in t/a': [
-                
-                8217.178228,
-                8520.493237,
-                8823.808246,
-                9127.123254,
-                9430.438263,
-                9733.753272,
-                10037.06828,
-                10340.38329,
-                10643.6983,
-                10947.01331,
-                11250.32832
-                
+                8210.772581, 
+                8300.155956, 
+                8362.449986, 
+                8513.338036, 
+                8664.226086,
+                8815.114135, 
+                8966.002185, 
+                9116.890234, 
+                9267.778284, 
+                9418.666334,
+                9569.554383, 
+                9720.442433, 
+                9871.330482, 
+                10022.21853, 
+                10173.10658,
+                10323.99463, 
+                10474.88268, 
+                10625.77073, 
+                10776.65878, 
+                10927.54683,
+                11078.43488, 
+                11229.32293
             ]
         })
     elif st.session_state["mode"] == "advanced":
         pareto_points = pd.DataFrame({
             "Costs in million Euro/a": [
-                
-                14.60873912,
-                11.34823489,
-                10.46993672,
-                9.79986603,
-                9.45790208,
-                9.19522371,
-                8.93261686,
-                8.67940889,
-                8.50624428,
-                8.39463832,
-                8.33103728
-                
+                13.89549383,
+                13.21783787,
+                11.99551678, 
+                10.74532013, 
+                10.25169493, 
+                9.82225764, 
+                9.57504883,
+                9.41326585, 
+                9.25148414, 
+                9.08970045, 
+                8.92793397, 
+                8.83689952,
+                8.79384666
             ],
             'CO2-emissions in t/a':[
-                
-                8217.178228,
-                8524.358615,
-                8831.539002,
-                9138.71939,
-                9445.899777,
-                9753.080164,
-                10060.26055,
-                10367.44094,
-                10674.62133,
-                10981.80171,
-                11288.9821
-                
+                8210.772581,
+                8356.12793537,
+                8840.34851861,
+                9500.36881876, 
+                9766.69002624, 
+                10055.84923162,
+                10245.08943589, 
+                10384.32964154, 
+                10523.56984699, 
+                10712.81005318,
+                10902.05026001, 
+                11091.29046663, 
+                11280.53066925
             ]
         })
     else:
@@ -760,7 +799,7 @@ def demo_start_page() -> None:
 
 
 def reset_pareto_diagram_results():
-    # Seleccionar el archivo correcto según el modo
+    # Select the correct file according to the mode
     if st.session_state["mode"] == "simplified":
         path_pareto_results = path_pareto_results_simplified
     else:
@@ -768,13 +807,13 @@ def reset_pareto_diagram_results():
     # read csv
     additional_points = pd.read_csv(path_pareto_results)
 
-    # Verificar si el archivo existe antes de intentar modificarlo
+    # Verify if the file exists before attempting to modify it
     if os.path.exists(path):
-        # Borrar los datos sin eliminar el archivo
+        # Delete data without deleting the file
         empty_df = pd.DataFrame(columns=["Costs in million Euro/a", "CO2-emissions in t/a", "Name"])
         empty_df.to_csv(path_pareto_results, index=False)
 
-    # Recargar la página para reflejar los cambios
+    # Reload page to reflect the changes
     st.experimental_rerun()
 
 
