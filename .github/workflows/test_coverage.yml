@@ -11,10 +11,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
+    - name: Install system dependencies
+      run: sudo apt-get update && sudo apt-get install -y libboost-all-dev
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -22,23 +27,22 @@ jobs:
         pip install pytest
         pip install -r requirements.txt
         pip install scrutinizer-ocular
+
     - name: Test with coverage
       run: coverage run -m pytest tests
+
     - name: Codecov
-      # You may pin to the exact commit or the version.
-      # uses: codecov/codecov-action@81cd2dc8148241f03f5839d295e000b8f761e378
       uses: codecov/codecov-action@v3.1.0
       with:
         token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-    #- name: Coveralls Python
-    #  # You may pin to the exact commit or the version.
-    #  # uses: AndreMiras/coveralls-python-action@f5fd5c309b39d01599fb92c72d4f7409ea78aec9
-    #  uses: AndreMiras/coveralls-python-action@v20201129
+
+    # - name: Coveralls Python
+    #   uses: AndreMiras/coveralls-python-action@v20201129
+
     - name: Code Climate Coverage Action
       uses: paambaati/codeclimate-action@v3.0.0
       env:
-          CC_TEST_REPORTER_ID: c38d5cc724ab734c45fc13b40613d17b2bbaab370d2dfd9e1ef4696b14ca6362
-    #- name: action-scrutinizer
-    #  run: ocular 
+        CC_TEST_REPORTER_ID: c38d5cc724ab734c45fc13b40613d17b2bbaab370d2dfd9e1ef4696b14ca6362
 
-  
+    # - name: action-scrutinizer
+    #   run: ocular

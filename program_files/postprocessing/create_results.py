@@ -1,6 +1,7 @@
 """
     Christian Klemm - christian.klemm@fh-muenster.de
     Gregor Becker - gregor.becker@fh-muenster.de
+    Oscar Quiroga - oscar.quiroga@fh-muenster.de
 """
 
 import logging
@@ -35,7 +36,13 @@ def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str) -> No
             file_path = os.path.join(filepath, "results_" + b["label"] + ".xlsx")
             
             node_results = solph.views.node(results, b["label"])
+            
+            if "sequences" not in node_results:
+                logging.warning(f"No sequence results found for bus '{b['label']}', skipping.")
+                continue
+            
             df = node_results["sequences"]
+            
 
             with pd.ExcelWriter(file_path) as writer:
                 df = df.copy()

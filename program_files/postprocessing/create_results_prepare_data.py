@@ -1,6 +1,7 @@
 """
     Christian Klemm - christian.klemm@fh-muenster.de
     Gregor Becker - gregor.becker@fh-muenster.de
+    Oscar Quiroga - oscar.quiroga@fh-muenster.de
 """
 import pandas
 
@@ -228,6 +229,7 @@ def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
         df_list_of_components = add_component_to_loc(
             label=label,
             comp_dict=comp_dict[label],
+            variable_cost_factor=variable_cost_factor,
             df_list_of_components=df_list_of_components,
             maxinvest=comp_dict[label][7],
         )

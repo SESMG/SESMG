@@ -41,7 +41,17 @@
     "res_b_load_results": "Loads existings results on click.",
     "res_dd_pareto_point": "Choose the pareto point which you want to see in the short result overview.",
     "demo_ni_kw_kwh": "kW is a unit of power, while kWh is a unit of energy. kW describes the rate at which energy is being used or generated, while kWh describes the total amount of energy consumed or produced over time.",
-    "demo_sb_heat_network_chp": "A heat network and a CHP unit can only be built in combination in the Demo Tool. This is because it would not make sense to build a CHP or a heating network individually."
+    "demo_sb_heat_network_chp": "A heat network and a CHP unit can only be built in combination in the Demo Tool. This is because it would not make sense to build a CHP or a heating network individually.",
+    "input_name": "Enter a name for the simulation scenario to help identify it in results and logs.",
+    "input_pv": "Photovoltaic systems utilise solar energy by converting the sun's radiation into electrical energy.",
+    "input_st": "Solar thermal systems utilise solar energy by converting the sun's radiation into heat.",
+    "input_ashp": "Air source heat pumps extract heat from the outside air for use in indoor heating.",
+    "input_gchp": "Ground-coupled heat pumps use geothermal energy to provide indoor heating.",
+    "input_battery": "Battery storage systems store electrical energy for later use.",
+    "input_dcts": "Decentralized thermal storage balances local heating and cooling demands.",
+    "input_chp": "Combined Heat and Power (CHP) units generate both electricity and useful heat.",
+    "solver_select": "Choose the optimization solver. CBC is open-source; Gurobi is faster and suited for academic or licensed use.",
+    "input_optimization": "Select whether to optimize for lowest total system cost or lowest greenhouse gas emissions."
 }
 
 
