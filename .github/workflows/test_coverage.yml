@@ -23,7 +23,7 @@ jobs:
     - name: Prepare CoolProp data
       run: |
         mkdir -p ~/.CoolProp
-        https://raw.githubusercontent.com/CoolProp/CoolProp/master/all_fluids.json.z || echo "File not found. Skipping this step."
+        wget -O ~/.CoolProp/all_fluids.json.z https://raw.githubusercontent.com/CoolProp/CoolProp/master/all_fluids.json.z || echo "File not found. Skipping this step."
 
     - name: Install dependencies
       run: |
