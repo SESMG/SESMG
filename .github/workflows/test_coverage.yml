@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8, 3.9, 3.10, 3.11]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]  # fixed: removed invalid '3.10.x'
 
     steps:
     - uses: actions/checkout@v1
@@ -31,15 +31,15 @@ jobs:
         pip install coverage
         pip install pytest
         pip install -r requirements.txt
-
         # Install CoolProp manually only on supported Python versions
-        PYTHON_VERSION=${{ matrix.python-version }}
-        if [[ "$PYTHON_VERSION" == "3.8" || "$PYTHON_VERSION" == "3.9" || "$PYTHON_VERSION" == "3.10" ]]; then
-          pip install CoolProp==6.4.1
-        else
-          echo "CoolProp is not compatible with Python $PYTHON_VERSION. Skipping installation."
-        fi
-
+        case "${{ matrix.python-version }}" in
+          "3.8"|"3.9"|"3.10")
+            pip install CoolProp==6.4.1
+            ;;
+          *)
+            echo "CoolProp is not compatible with Python ${{ matrix.python-version }}. Skipping installation."
+            ;;
+        esac
         pip install scrutinizer-ocular
 
     - name: Test with coverage
