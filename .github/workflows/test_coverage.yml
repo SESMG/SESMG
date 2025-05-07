@@ -1,6 +1,6 @@
 name: Test coverage
 
-on: push
+on: [push, pull_request]
 
 jobs:
   build:
@@ -33,7 +33,6 @@ jobs:
         pip install -r requirements.txt
         pip install scrutinizer-ocular
 
-    # Install CoolProp manually from source
     - name: Clone CoolProp with submodules
       run: git clone --recurse-submodules https://github.com/CoolProp/CoolProp.git
 
@@ -57,15 +56,9 @@ jobs:
     - name: Codecov
       uses: codecov/codecov-action@v3.1.0
       with:
-        token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-
-    # - name: Coveralls Python
-    #   uses: AndreMiras/coveralls-python-action@v20201129
+        token: ${{ secrets.CODECOV_TOKEN }}
 
     - name: Code Climate Coverage Action
       uses: paambaati/codeclimate-action@v3.0.0
       env:
         CC_TEST_REPORTER_ID: c38d5cc724ab734c45fc13b40613d17b2bbaab370d2dfd9e1ef4696b14ca6362
-
-    # - name: action-scrutinizer
-    #   run: ocular
