@@ -23,7 +23,7 @@ jobs:
     - name: Prepare CoolProp data
       run: |
         mkdir -p ~/.CoolProp
-        wget -O ~/.CoolProp/all_fluids.json.z https://raw.githubusercontent.com/CoolProp/CoolProp/master/all_fluids.json.z || echo "File not found. Skipping this step."
+        wget -O ~/.CoolProp/all_fluids.json.z https://raw.githubusercontent.com/CoolProp/CoolProp/master/all_fluids.json.z || echo "File not found. Skipping download."
 
     - name: Install dependencies
       run: |
@@ -37,12 +37,14 @@ jobs:
     - name: Clone CoolProp with submodules
       run: git clone --recurse-submodules https://github.com/CoolProp/CoolProp.git
 
-    # ↓↓↓ CORRECCIÓN ADICIONAL ↓↓↓
-    - name: Copy all_fluids.json.z to CoolProp/dev
+    - name: Copy all_fluids.json.z to CoolProp/dev if it exists
       run: |
         mkdir -p CoolProp/dev
-        cp ~/.CoolProp/all_fluids.json.z CoolProp/dev/ || echo "Could not copy all_fluids.json.z"
-    # ↑↑↑ FIN DE LA CORRECCIÓN ↑↑↑
+        if [ -f ~/.CoolProp/all_fluids.json.z ]; then
+          cp ~/.CoolProp/all_fluids.json.z CoolProp/dev/
+        else
+          echo "Warning: all_fluids.json.z not found. Proceeding without it."
+        fi
 
     - name: Build and install CoolProp from source
       run: |
