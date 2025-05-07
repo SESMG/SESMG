@@ -1,6 +1,6 @@
 name: Test coverage
 
-on: [push, pull_request]
+on: push
 
 jobs:
   build:
@@ -20,45 +20,21 @@ jobs:
     - name: Install system dependencies
       run: sudo apt-get update && sudo apt-get install -y libboost-all-dev build-essential cmake
 
-    - name: Prepare CoolProp data
-      run: |
-        mkdir -p ~/.CoolProp
-        wget -O ~/.CoolProp/all_fluids.json.z https://raw.githubusercontent.com/CoolProp/CoolProp/master/all_fluids.json.z || echo "File not found. Skipping download."
-
-    - name: Install dependencies
+    - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install coverage
-        pip install pytest
         pip install -r requirements.txt
-        pip install scrutinizer-ocular
-
-    - name: Clone CoolProp with submodules
-      run: git clone --recurse-submodules https://github.com/CoolProp/CoolProp.git
-
-    - name: Copy all_fluids.json.z to CoolProp/dev if it exists
-      run: |
-        mkdir -p CoolProp/dev
-        if [ -f ~/.CoolProp/all_fluids.json.z ]; then
-          cp ~/.CoolProp/all_fluids.json.z CoolProp/dev/
-        else
-          echo "Warning: all_fluids.json.z not found. Proceeding without it."
-        fi
-
-    - name: Build and install CoolProp from source
-      run: |
-        cd CoolProp
-        pip install .
+        pip install coverage scrutinizer-ocular
 
     - name: Test with coverage
       run: coverage run -m pytest tests
 
-    - name: Codecov
+    - name: Upload to Codecov
       uses: codecov/codecov-action@v3.1.0
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+        token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
 
-    - name: Code Climate Coverage Action
+    - name: Upload to Code Climate
       uses: paambaati/codeclimate-action@v3.0.0
       env:
-        CC_TEST_REPORTER_ID: c38d5cc724ab734c45fc13b40613d17b2bbaab370d2dfd9e1ef4696b14ca6362
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
