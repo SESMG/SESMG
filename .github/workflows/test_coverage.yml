@@ -37,6 +37,13 @@ jobs:
     - name: Clone CoolProp with submodules
       run: git clone --recurse-submodules https://github.com/CoolProp/CoolProp.git
 
+    # ↓↓↓ CORRECCIÓN ADICIONAL ↓↓↓
+    - name: Copy all_fluids.json.z to CoolProp/dev
+      run: |
+        mkdir -p CoolProp/dev
+        cp ~/.CoolProp/all_fluids.json.z CoolProp/dev/ || echo "Could not copy all_fluids.json.z"
+    # ↑↑↑ FIN DE LA CORRECCIÓN ↑↑↑
+
     - name: Build and install CoolProp from source
       run: |
         cd CoolProp
