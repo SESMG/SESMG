@@ -231,7 +231,7 @@ def calc_periodical_costs(node, investment: float, comp_type: str,
         return investment * ep_costs + offset
 
 
-def calc_variable_costs(node, comp_dict: list, attr: str) -> float:
+def calc_variable_costs(node, comp_dict: list, attr: str, variable_cost_factor: str) -> float:
     """
         method to calculate the component's variable costs for the
         first optimization criterion (attr = variable costs) or the
@@ -250,6 +250,7 @@ def calc_variable_costs(node, comp_dict: list, attr: str) -> float:
                     variable costs or emissions
     """
     costs = 0
+    costs_before_factor = 0
     type_dict = {
         "inputs": [node.inputs, comp_dict[0], comp_dict[1]],
         "outputs": [node.outputs, comp_dict[2], comp_dict[3]],
@@ -271,7 +272,9 @@ def calc_variable_costs(node, comp_dict: list, attr: str) -> float:
                 if isinstance(attribute_value, pandas.Series):
                     # Multiply each element and sum them up
                     multiplied_series = type_dict[flow_type][i + 1] * attribute_value
-                    costs += multiplied_series.sum()
+                    # consider variable cost factor
+                    costs_before_factor += multiplied_series.sum()
+                    costs = costs_before_factor * variable_cost_factor
 
                 else:
                     # If the 'attribute_value' is a single value sum it up directly
@@ -517,14 +520,14 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
                 # criterion
                 variable_costs = calc_variable_costs(
                     node=node, comp_dict=comp_dict[loc_label],
-                    attr="variable_costs"
+                    attr="variable_costs", variable_cost_factor=variable_cost_factor
                 )
                 comp_dict[loc_label].append(variable_costs)
                 # calculate the variable costs of the second optimization
                 # criterion
                 constraint_costs = calc_variable_costs(
                     node=node, comp_dict=comp_dict[loc_label],
-                    attr="emission_factor"
+                    attr="emission_factor", variable_cost_factor=variable_cost_factor
                 )
                 # if there is an investment in the node under investigation
                 # calculate the periodical costs of the second optimization
