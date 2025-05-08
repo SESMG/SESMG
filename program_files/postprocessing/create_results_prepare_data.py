@@ -23,7 +23,7 @@ copt = [
 
 
 def add_component_to_loc(label: str, comp_dict: list,
-                         df_list_of_components: pandas.DataFrame, variable_cost_factor: str,
+                         df_list_of_components: pandas.DataFrame, variable_cost_factor: float,
                          maxinvest="---") -> pandas.DataFrame:
     """
         adds the given component with it's parameters to list of
@@ -40,7 +40,7 @@ def add_component_to_loc(label: str, comp_dict: list,
         :type df_list_of_components: pandas.DataFrame
         :param variable_cost_factor: factor that considers the data_preparation_algorithms,
             can be used to scale the results up for a year
-        :type variable_cost_factor: str
+        :type variable_cost_factor: float
         :param maxinvest: str holding the maximum possible investment
         :type maxinvest: str
         
@@ -176,7 +176,7 @@ def create_flow_info_dict(comp_dict: list) -> pandas.DataFrame:
 
 
 def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
-                df_list_of_components: pandas.DataFrame, variable_cost_factor: str,
+                df_list_of_components: pandas.DataFrame, variable_cost_factor: float,
                 ) -> (pandas.DataFrame, float, float, float, pandas.DataFrame):
     """
         In this method, on the one hand, the components as well as
@@ -198,7 +198,7 @@ def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
         :type df_list_of_components: pandas.DataFrame
         :param variable_cost_factor: factor that considers the data_preparation_algorithms,
             can be used to scale the results up for a year
-        :type variable_cost_factor: str
+        :type variable_cost_factor: float
         
         :return: - **df_list_of_components** (pandas.DataFrame) - \
                     DataFrame containing the list of components which \
@@ -246,7 +246,7 @@ def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
     )
 
 
-def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict, variable_cost_factor: str,
+def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict, variable_cost_factor: float,
                  ) -> (pandas.DataFrame, float, float, float, pandas.DataFrame,
                        float):
     """
@@ -265,7 +265,7 @@ def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict, variabl
         :type nodes_data: dict
         :param variable_cost_factor: factor that considers the data_preparation_algorithms,
             can be used to scale the results up for a year
-        :type variable_cost_factor: str
+        :type variable_cost_factor: float
         
         :return: - **df_list_of_components** (pandas.DataFrame) - \
                     DataFrame containing the list of components which \

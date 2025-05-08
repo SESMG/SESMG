@@ -231,7 +231,7 @@ def calc_periodical_costs(node, investment: float, comp_type: str,
         return investment * ep_costs + offset
 
 
-def calc_variable_costs(node, comp_dict: list, attr: str, variable_cost_factor: str) -> float:
+def calc_variable_costs(node, comp_dict: list, attr: str, variable_cost_factor: float) -> float:
     """
         method to calculate the component's variable costs for the
         first optimization criterion (attr = variable costs) or the
@@ -430,7 +430,7 @@ def change_heatpipelines_label(comp_label: str, result_path: str) -> str:
 
 
 def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
-                 result_path: str, variable_cost_factor: str) -> (dict, float, float):
+                 result_path: str, variable_cost_factor: float) -> (dict, float, float):
     """
         main method of the algorithm used to collect the data which is
         necessary to create the results presentation
@@ -450,7 +450,7 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
         :type result_path: str
         :param variable_cost_factor: factor that considers the data_preparation_algorithms,
             can be used to scale the results up for a year
-        :type variable_cost_factor: str
+        :type variable_cost_factor: float
         
         :return: - **comp_dict** (dict) - dictionary containing the \
                     result parameters of all of the energy system's \

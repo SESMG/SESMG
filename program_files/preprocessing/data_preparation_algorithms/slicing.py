@@ -9,7 +9,7 @@ from program_files.preprocessing.data_preparation \
 
 def adaption_energy_system_parameter(prep_weather_data: pandas.DataFrame,
                                      nodes_data: dict, period: str,
-                                     weather_data: pandas.DataFrame) -> str:
+                                     weather_data: pandas.DataFrame) -> float:
     """
         Within this method the adaption clusters are calculated and the
         energy system parameters are adapted afterwards.
@@ -29,7 +29,7 @@ def adaption_energy_system_parameter(prep_weather_data: pandas.DataFrame,
         :raise: - **ValueError** - Error raised if the chosen period \
             is not supported
 
-        :return: - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+        :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
     """
     # Rename columns of the new weather_dataset
@@ -155,7 +155,7 @@ def data_set_slicing2(n_days: int, data_set: pandas.DataFrame, period: str
     return prep_data_set
 
 
-def timeseries_slicing(n_days: int, nodes_data: dict, period: str) -> str:
+def timeseries_slicing(n_days: int, nodes_data: dict, period: str) -> float:
     """
         uses every n-th period of the given data_set and cuts the rest
         out of the data_set
@@ -167,7 +167,7 @@ def timeseries_slicing(n_days: int, nodes_data: dict, period: str) -> str:
         :param period: defines rather hours, days or weeks were selected
         :type period: str
 
-        :return: - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+        :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
     """
     
@@ -193,7 +193,7 @@ def timeseries_slicing(n_days: int, nodes_data: dict, period: str) -> str:
     return variable_cost_factor
 
 
-def timeseries_slicing2(n_days: int, nodes_data: dict, period: str) -> str:
+def timeseries_slicing2(n_days: int, nodes_data: dict, period: str) -> float:
     """
         cuts out every nth period from the given data_set and leaves the
         remaining periods for further consideration
@@ -205,7 +205,7 @@ def timeseries_slicing2(n_days: int, nodes_data: dict, period: str) -> str:
         :param period: defines rather hours, days or weeks were selected
         :type period: str
 
-        :return: - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+        :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
     """
     weather_data = nodes_data['weather data']

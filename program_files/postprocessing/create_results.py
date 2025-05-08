@@ -152,7 +152,7 @@ class Results:
         :type result_path: str
         :param variable_cost_factor: factor that considers the data_preparation_algorithms,
             can be used to scale the results up for a year
-        :type variable_cost_factor: str
+        :type variable_cost_factor: float
         :param console_log: boolean which decides rather the results \
             will be logged in the console or not
         :type console_log: bool
@@ -173,7 +173,7 @@ class Results:
         optimization_model: solph.Model,
         energy_system: solph.EnergySystem,
         result_path: str,
-        variable_cost_factor: str,
+        variable_cost_factor: float,
         console_log: bool,
         cluster_dh: bool,
     ):

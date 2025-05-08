@@ -121,7 +121,7 @@ def k_medoids_timeseries_adaption(nodes_data: dict, clusters: int,
 
 
 def k_means_algorithm(cluster_period: int, days_per_cluster: int,
-                      criterion: str, nodes_data: dict, period: str) -> str:
+                      criterion: str, nodes_data: dict, period: str) -> float:
     """
         identifies k-cluster periods based on the k-means algorithm
         based on a given criteria. Based on the selected periods, for
@@ -151,7 +151,7 @@ def k_means_algorithm(cluster_period: int, days_per_cluster: int,
         :raise: - **ValueError** - Error raised if the chosen period \
             is not supported
 
-        :return: - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+        :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
     """
     if cluster_period == 'days':
@@ -201,7 +201,7 @@ def k_means_algorithm(cluster_period: int, days_per_cluster: int,
     
     
 def k_medoids_algorithm(cluster_period: int, days_per_cluster: int,
-                        criterion: str, nodes_data: dict, period: str) -> str:
+                        criterion: str, nodes_data: dict, period: str) -> float:
     """
         identifies k-cluster periods based on the k-medoids algorithm
         based on a given criteria. Based on the selected periods, for
@@ -231,7 +231,7 @@ def k_medoids_algorithm(cluster_period: int, days_per_cluster: int,
         :raise: - **ValueError** - Error raised if the chosen period \
             is not supported
 
-        :return: - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+        :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
     """
     if cluster_period == 'days':
@@ -262,9 +262,9 @@ def k_medoids_algorithm(cluster_period: int, days_per_cluster: int,
     nodes_data['timeseries'] = weather_data
 
     # Adapts Other Parameters (despite weather data) of the energy system
-    variable_cost_facotr = variable_costs_date_adaption(nodes_data, clusters, period)
+    variable_cost_factor = variable_costs_date_adaption(nodes_data, clusters, period)
 
     k_medoids_timeseries_adaption(nodes_data, clusters,
                                   cluster_labels, period)
 
-    return variable_cost_facotr
+    return variable_cost_factor

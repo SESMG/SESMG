@@ -5,7 +5,7 @@ from program_files.preprocessing.data_preparation \
     import variable_costs_date_adaption
 
 
-def timeseries_downsampling(nodes_data: dict, n_timesteps: int) -> str:
+def timeseries_downsampling(nodes_data: dict, n_timesteps: int) -> float:
     """
         uses every n-th period of timeseries and weather data
 
@@ -14,7 +14,7 @@ def timeseries_downsampling(nodes_data: dict, n_timesteps: int) -> str:
         :param n_timesteps: defines which period is chosen
         :type n_timesteps: int
 
-        :return: - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+        :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
 
     """
@@ -41,7 +41,7 @@ def timeseries_downsampling(nodes_data: dict, n_timesteps: int) -> str:
     return variable_cost_factor
 
 
-def timeseries_downsampling2(nodes_data: dict, n_timesteps: int) -> str:
+def timeseries_downsampling2(nodes_data: dict, n_timesteps: int) -> float:
     """
         cuts every n-th period of timeseries and weather data
 
@@ -50,7 +50,7 @@ def timeseries_downsampling2(nodes_data: dict, n_timesteps: int) -> str:
         :param n_timesteps: defines which period is cut
         :type n_timesteps: int
 
-        :return: - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+        :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
     """
     

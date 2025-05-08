@@ -9,7 +9,7 @@ from program_files.preprocessing.data_preparation \
 
 def mean_adapt_timeseries_weatherdata(
         clusters: int, cluster_labels: list, period: str, nodes_data: dict
-) -> str:
+) -> float:
     """
         Using this method, the mean values of the clusters are formed
         and then cost values as well as time series and weather data
@@ -24,7 +24,7 @@ def mean_adapt_timeseries_weatherdata(
         :type period: str
         :param nodes_data: dictionary holding the user' model \
             model definition spreadsheet
-        :return: - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+        :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                          can be used to scale the results up for a year
     """
     weather_data = nodes_data["weather data"]
@@ -55,7 +55,7 @@ def mean_adapt_timeseries_weatherdata(
 
 
 def timeseries_averaging(cluster_period: str, days_per_cluster: int,
-                         nodes_data: dict, period: str) -> str:
+                         nodes_data: dict, period: str) -> float:
     """
         Averages the values of the time series, how many values are
         averaged is defined by the variable clusters.
@@ -75,7 +75,7 @@ def timeseries_averaging(cluster_period: str, days_per_cluster: int,
         :raise: - **ValueError** - Error raised if the chosen period \
             is not supported
 
-        :return: - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+        :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
     """
     # create a local copy of the weather data sheet

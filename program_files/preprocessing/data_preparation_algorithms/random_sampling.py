@@ -60,7 +60,7 @@ def create_new_random_data_set(random_integers: list,
 
 
 def random_sampling(nodes_data: dict, period: str, number_of_samples: int
-                    ) -> str:
+                    ) -> float:
     """
         In the Random Sampling method, the time series and weather data
         Dataframes are truncated to the time horizon selected by the
@@ -79,7 +79,7 @@ def random_sampling(nodes_data: dict, period: str, number_of_samples: int
         :raise: - **ValueError** - Error raised if the chosen period \
             is not supported
 
-        :return: - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+        :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
     """
     # create two local copies of the nodes data weather data sheet

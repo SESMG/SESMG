@@ -10,7 +10,7 @@ from program_files.preprocessing.data_preparation \
 
 
 def hierarchical_selection(nodes_data: dict, scheme: str, period: str,
-                           seasons: int) -> str:
+                           seasons: int) -> float:
     """
         Algorithm for the hierarchical selection of representative time
         periods of a weather data set. In this embodiment, the following
@@ -37,7 +37,7 @@ def hierarchical_selection(nodes_data: dict, scheme: str, period: str,
         :return: - **nodes_data** (dict): modified SESMG-nodes data, \
                     containing weather data, energy system parameters \
                     and timeseries
-                  - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+                  - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
     """
     
