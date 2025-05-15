@@ -4,6 +4,7 @@
     Oscar Quiroga - oscar.quiroga@fh-muenster.de
 """
 import pandas
+from typing import Tuple
 
 # columns_of_plotly_table
 copt = [
@@ -177,7 +178,7 @@ def create_flow_info_dict(comp_dict: list) -> pandas.DataFrame:
 
 def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
                 df_list_of_components: pandas.DataFrame, variable_cost_factor: float,
-                ) -> (pandas.DataFrame, float, float, float, pandas.DataFrame):
+                ) -> Tuple[pandas.DataFrame, float, float, float, pandas.DataFrame]:
     """
         In this method, on the one hand, the components as well as
         their flows are added to the list of components (loc) and to
@@ -247,8 +248,7 @@ def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
 
 
 def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict, variable_cost_factor: float,
-                 ) -> (pandas.DataFrame, float, float, float, pandas.DataFrame,
-                       float):
+                 ) -> Tuple[pandas.DataFrame, float, float, float, pandas.DataFrame, float]:
     """
         This method is the main method of data preparation for
         subsequent export and/or display in the GUI of the energy

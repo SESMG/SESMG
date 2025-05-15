@@ -533,13 +533,6 @@ def save_additional_points(additional_points):
 # Define the main path
 mainpath_pf = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
-# Load the Excel file from the specified path
-excel_path = os.path.join(mainpath_pf, 
-                          "demo_tool", 
-                          "v1.1.0_demo_model_definition", 
-                          "Ergebnistabelle_Demo-tool.xlsx")
-df = pd.read_excel(excel_path, engine='openpyxl')
-
 # Function to apply style to the table
 def style_table(df):
     # Convert DataFrame to HTML
@@ -816,6 +809,24 @@ def reset_pareto_diagram_results():
     # Reload page to reflect the changes
     st.experimental_rerun()
 
+def load_pareto_table_by_mode():
+    sheet_name = "Simplified" if st.session_state.get("mode") == "simplified" else "Advanced"
+    
+    excel_path = os.path.join(mainpath_pf, 
+                              "demo_tool", 
+                              "v1.1.0_demo_model_definition", 
+                              "Ergebnistabelle_Demo-tool.xlsx")
+
+    try:
+        xl = pd.ExcelFile(excel_path, engine='openpyxl')
+        if sheet_name in xl.sheet_names:
+            return xl.parse(sheet_name)
+        else:
+            st.error(f"La hoja '{sheet_name}' no existe en el archivo Excel.")
+            return pd.DataFrame()
+    except Exception as e:
+        st.error(f"No se pudo leer el archivo Excel: {e}")
+        return pd.DataFrame()
 
 def change_state_submitted_demo_run() -> None:
     """
@@ -885,5 +896,6 @@ st.sidebar.button("Ideal data for pareto graph", on_click=toggle_pareto_table)
 # Display the table if the button was pressed
 if st.session_state["show_pareto_table"]:
     st.subheader("Table with ideal data for the pareto graph")
+    df = load_pareto_table_by_mode()
     styled_html = style_table(df)
     st.write(styled_html, unsafe_allow_html=True)

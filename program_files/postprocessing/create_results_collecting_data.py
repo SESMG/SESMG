@@ -5,7 +5,9 @@
 import oemof.solph as solph
 from oemof.solph.components import GenericStorage, Link, Sink, Source
 from oemof.solph import Bus
+from typing import Tuple
 from dhnx.optimization.oemof_heatpipe import HeatPipeline
+import numpy as np
 import pandas
 
 
@@ -231,7 +233,7 @@ def calc_periodical_costs(node, investment: float, comp_type: str,
         return investment * ep_costs + offset
 
 
-def calc_variable_costs(node, comp_dict: list, attr: str, variable_cost_factor: float) -> float:
+def calc_variable_costs(node, comp_dict: list, attr: str) -> float:
     """
         method to calculate the component's variable costs for the
         first optimization criterion (attr = variable costs) or the
@@ -250,7 +252,6 @@ def calc_variable_costs(node, comp_dict: list, attr: str, variable_cost_factor: 
                     variable costs or emissions
     """
     costs = 0
-    costs_before_factor = 0
     type_dict = {
         "inputs": [node.inputs, comp_dict[0], comp_dict[1]],
         "outputs": [node.outputs, comp_dict[2], comp_dict[3]],
@@ -259,7 +260,7 @@ def calc_variable_costs(node, comp_dict: list, attr: str, variable_cost_factor: 
     for flow_type in type_dict:
         for i in range(0, 2):
 
-            if sum(type_dict[flow_type][i + 1]) > 0:
+            if np.sum(type_dict[flow_type][i + 1]) > 0:
                 # if the sum of the flow stored in comp_dict 0 to 3 is more
                 # than 0 the sum is multiplied with the for this input/output
                 # defined costs factor which is searched by the method getattr
@@ -272,9 +273,7 @@ def calc_variable_costs(node, comp_dict: list, attr: str, variable_cost_factor: 
                 if isinstance(attribute_value, pandas.Series):
                     # Multiply each element and sum them up
                     multiplied_series = type_dict[flow_type][i + 1] * attribute_value
-                    # consider variable cost factor
-                    costs_before_factor += multiplied_series.sum()
-                    costs = costs_before_factor * variable_cost_factor
+                    costs += multiplied_series.sum()
 
                 else:
                     # If the 'attribute_value' is a single value sum it up directly
@@ -430,7 +429,7 @@ def change_heatpipelines_label(comp_label: str, result_path: str) -> str:
 
 
 def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
-                 result_path: str, variable_cost_factor: float) -> (dict, float, float):
+                 result_path: str, variable_cost_factor: str) -> Tuple[dict, float, float]:
     """
         main method of the algorithm used to collect the data which is
         necessary to create the results presentation
@@ -450,7 +449,7 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
         :type result_path: str
         :param variable_cost_factor: factor that considers the data_preparation_algorithms,
             can be used to scale the results up for a year
-        :type variable_cost_factor: float
+        :type variable_cost_factor: str
         
         :return: - **comp_dict** (dict) - dictionary containing the \
                     result parameters of all of the energy system's \
@@ -520,14 +519,14 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
                 # criterion
                 variable_costs = calc_variable_costs(
                     node=node, comp_dict=comp_dict[loc_label],
-                    attr="variable_costs", variable_cost_factor=variable_cost_factor
+                    attr="variable_costs"
                 )
                 comp_dict[loc_label].append(variable_costs)
                 # calculate the variable costs of the second optimization
                 # criterion
                 constraint_costs = calc_variable_costs(
                     node=node, comp_dict=comp_dict[loc_label],
-                    attr="emission_factor", variable_cost_factor=variable_cost_factor
+                    attr="emission_factor"
                 )
                 # if there is an investment in the node under investigation
                 # calculate the periodical costs of the second optimization
