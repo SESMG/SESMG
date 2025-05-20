@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"] 
+        python-version: ["3.8", "3.9", "3.10"]
 
     steps:
     - uses: actions/checkout@v1
@@ -26,8 +26,11 @@ jobs:
         pip install -r requirements.txt
         pip install coverage scrutinizer-ocular
 
-    - name: Test with coverage
+    - name: Run tests with coverage
       run: coverage run -m pytest tests
+
+    - name: Generate coverage report
+      run: coverage xml -o coverage.xml
 
     - name: Upload to Codecov
       uses: codecov/codecov-action@v3.1.0
@@ -35,6 +38,9 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
 
     - name: Upload to Code Climate
+      if: ${{ secrets.CC_TEST_REPORTER_ID != '' }}
       uses: paambaati/codeclimate-action@v3.0.0
+      with:
+        coverageCommand: coverage xml -o coverage.xml
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
