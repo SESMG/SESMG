@@ -36,8 +36,7 @@ https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01
 [![Generic badge](https://img.shields.io/badge/content-what/why-darkgreen.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
 ### Examples
-Examples are stored in a separate GIT-Repository: https://github.com/SESMG/SESMG-Examples
-
+Examples are stored in a separate GIT-Repository [here](https://github.com/SESMG/SESMG-Examples).
 
 ### Project status
 ✓ Draft (alpha, beta) State <br />
@@ -51,11 +50,8 @@ Examples are stored in a separate GIT-Repository: https://github.com/SESMG/SESMG
 ## Detailed Documentation! 
 [![Generic badge](https://img.shields.io/badge/content-references-orange.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
-The [documentation](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/),
-which includes detailed instructions for **installation** and **use**, **troubleshooting** 
-and much more, can be accessed via the following link:
-
-https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
+The documentation which includes detailed instructions for **installation** and **use**, **troubleshooting** 
+and much more can be found [here](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/).
 
 ## Questions? 
 [![Generic badge](https://img.shields.io/badge/content-who-yellow.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
