@@ -233,7 +233,7 @@ def calc_periodical_costs(node, investment: float, comp_type: str,
         return investment * ep_costs + offset
 
 
-def calc_variable_costs(node, comp_dict: list, attr: str) -> float:
+def calc_variable_costs(node, comp_dict: list, attr: str, variable_cost_factor: float) -> float:
     """
         method to calculate the component's variable costs for the
         first optimization criterion (attr = variable costs) or the
@@ -247,11 +247,17 @@ def calc_variable_costs(node, comp_dict: list, attr: str) -> float:
         :param attr: str defining the cost factor's name to get the \
             attribute from the component's data
         :type attr: str
+        :param variable_cost_factor: factor that considers the data_preparation_algorithms,
+            can be used to scale the results up for a year
+        :type variable_cost_factor: float
         
         :return: - **costs** (float) - float holding the calculated \
                     variable costs or emissions
     """
-    costs = 0
+
+    costs_timeseries = 0.0
+    costs_scalar = 0.0
+
     type_dict = {
         "inputs": [node.inputs, comp_dict[0], comp_dict[1]],
         "outputs": [node.outputs, comp_dict[2], comp_dict[3]],
@@ -271,13 +277,17 @@ def calc_variable_costs(node, comp_dict: list, attr: str) -> float:
 
                 # Check if 'attribute_value' is a series (timeseries)
                 if isinstance(attribute_value, pandas.Series):
+
+                    # Remove last value of the attribute values, as the results contain one value less
+                    attribute_value = attribute_value.iloc[:-1]
+
                     # Multiply each element and sum them up
                     multiplied_series = type_dict[flow_type][i + 1] * attribute_value
-                    costs += multiplied_series.sum()
+                    costs_timeseries += multiplied_series.sum()
 
                 else:
                     # If the 'attribute_value' is a single value sum it up directly
-                    costs += sum(
+                     costs_scalar += sum(
                         type_dict[flow_type][i + 1]
                         * getattr(
                             type_dict[flow_type][0][
@@ -286,6 +296,8 @@ def calc_variable_costs(node, comp_dict: list, attr: str) -> float:
                             attr,
                         )
                     )
+
+    costs = costs_timeseries * variable_cost_factor + costs_scalar
 
     return costs
 
@@ -429,7 +441,7 @@ def change_heatpipelines_label(comp_label: str, result_path: str) -> str:
 
 
 def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
-                 result_path: str, variable_cost_factor: str) -> Tuple[dict, float, float]:
+                 result_path: str, variable_cost_factor: float) -> Tuple[dict, float, float]:
     """
         main method of the algorithm used to collect the data which is
         necessary to create the results presentation
@@ -449,7 +461,7 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
         :type result_path: str
         :param variable_cost_factor: factor that considers the data_preparation_algorithms,
             can be used to scale the results up for a year
-        :type variable_cost_factor: str
+        :type variable_cost_factor: float
         
         :return: - **comp_dict** (dict) - dictionary containing the \
                     result parameters of all of the energy system's \
@@ -519,14 +531,14 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
                 # criterion
                 variable_costs = calc_variable_costs(
                     node=node, comp_dict=comp_dict[loc_label],
-                    attr="variable_costs"
+                    attr="variable_costs", variable_cost_factor=variable_cost_factor
                 )
                 comp_dict[loc_label].append(variable_costs)
                 # calculate the variable costs of the second optimization
                 # criterion
                 constraint_costs = calc_variable_costs(
                     node=node, comp_dict=comp_dict[loc_label],
-                    attr="emission_factor"
+                    attr="emission_factor", variable_cost_factor=variable_cost_factor
                 )
                 # if there is an investment in the node under investigation
                 # calculate the periodical costs of the second optimization

@@ -139,7 +139,7 @@ def append_timeseries_to_weatherdata_sheet(nodes_data: dict
 
 
 def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str
-                                 ) -> str:
+                                 ) -> float:
     """
         To be able to work with the adapted weather data set some
         parameters from nodes_data must be changed.
@@ -152,7 +152,7 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str
         :param period: defines rather hours, days or weeks were selected
         :type period: str
 
-        :return: - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+        :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
     """
     factor_dict = {"hours": 1, "days": 24, "weeks": 168}
@@ -326,7 +326,7 @@ def timeseries_adaption(nodes_data: dict, clusters: int,
 
 
 def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
-                           result_path: str) -> str:
+                           result_path: str) -> float:
     """
         Evaluates the passed parameters for timeseries preparation and
         starts the corresponding simplification/clustering algorithm.
@@ -342,7 +342,7 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
             file will be stored after timeseries adaption
         :type result_path: str
 
-        :return: - **variable_cost_factor** (str) - factor that considers the data_preparation_algorithms,
+        :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
     """
     from program_files.preprocessing.data_preparation_algorithms \
