@@ -29,7 +29,7 @@ echo --------------------------------
 chmod a+rwx "$(pwd)"
 pip3 install virtualenv
 
-echo "Enter yout Python version here: "
+echo "Enter your Python version here: "
 read PYVERSION
 
 

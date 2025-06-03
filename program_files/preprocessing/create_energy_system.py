@@ -115,14 +115,14 @@ def define_energy_system(nodes_data: dict) -> (EnergySystem, dict):
     row = next(nodes_data["energysystem"].iterrows())[1]
     temp_resolution = row["temporal resolution"]
     timezone = row["timezone"]
-    start_date = row["start date"]
-    end_date = row["end date"]
+    start_date = pandas.to_datetime(row["start date"]).tz_localize(timezone)
+    end_date = pandas.to_datetime(row["end date"]).tz_localize(timezone)
     
     # creates time index
     datetime_index = pandas.date_range(start=start_date,
                                        end=end_date,
-                                       freq=temp_resolution,
-                                       tz=timezone)
+                                       freq=temp_resolution)
+
     
     # initialisation of the energy system   
     esys = EnergySystem(timeindex=datetime_index, infer_last_interval=False)
@@ -131,9 +131,9 @@ def define_energy_system(nodes_data: dict) -> (EnergySystem, dict):
         # defines a time series
         nodes_data[sheet].set_index("timestamp", inplace=True)
         nodes_data[sheet].index = \
-            pandas.to_datetime(nodes_data[sheet].index.values, utc=True)
+            pandas.to_datetime(nodes_data[sheet].index.values) #, utc=True)
         nodes_data[sheet].index = \
-            pandas.to_datetime(nodes_data[sheet].index).tz_convert(timezone)
+            pandas.to_datetime(nodes_data[sheet].index).tz_localize(timezone)
             
     # returns logging info
     logging.info(
