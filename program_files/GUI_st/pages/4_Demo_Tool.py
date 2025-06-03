@@ -555,6 +555,42 @@ def style_table(df):
     
     return html
 
+def get_named_pareto_points():
+    df = load_pareto_table_by_mode()
+
+    point_map = {
+        "Minimum cost": "MC",
+        "Minimum emission": "ME",
+        "1. Pareto point": "P1",
+        "3. Pareto point": "P3",
+        "5. Pareto point": "P5",
+        "7. Pareto point": "P7",
+        "9. Pareto point": "P9"
+    }
+
+    named_points = []
+
+    for label, short in point_map.items():
+        row = df[df.iloc[:, 0].astype(str).str.strip().str.lower() == label.lower()]
+        if not row.empty:
+            try:
+                # Cost is second to last column, Emissions is last
+                cost_raw = row.iloc[0, -2]
+                emissions_raw = row.iloc[0, -1]
+
+                cost = float(str(cost_raw).replace(",", ".")) / 1_000_000
+                emissions = float(str(emissions_raw).replace(",", "."))
+
+                named_points.append({
+                    "Costs in million Euro/a": cost,
+                    "CO2-emissions in t/a": emissions,
+                    "Name": short
+                })
+            except Exception as e:
+                st.warning(f"Error parsing row '{label}': {e}")
+
+    return pd.DataFrame(named_points)
+
 # Show Graph
 def show_demo_run_results_on_graph():
     
@@ -645,9 +681,23 @@ def show_demo_run_results_on_graph():
         }
     )
 
+    # Get predefined points (MC, ME, P1, ..., P9)
+    fixed_points = get_named_pareto_points()
+
+    # chart layer for fixed named points
+    fixed_points_chart = alt.Chart(fixed_points).mark_point(
+    filled=True, size=100, color="black").encode(
+    x='Costs in million Euro/a',
+    y='CO2-emissions in t/a',
+    tooltip=['Name', 'Costs in million Euro/a', 'CO2-emissions in t/a']) + alt.Chart(fixed_points).mark_text(
+    align='left', dx=10, dy=-5, fontSize=12).encode(
+    x='Costs in million Euro/a',
+    y='CO2-emissions in t/a',
+    text='Name')
+
     # add a new result line to the result data frame
     combined_df = pd.concat(
-        [additional_points, status_quo_points],
+        [additional_points, status_quo_points, fixed_points],
         ignore_index=True)
 
     # create pareto point chart layer
@@ -707,15 +757,19 @@ def show_demo_run_results_on_graph():
     
     if additional_points.empty:
         st.altair_chart(pareto_points_chart 
-                        + status_quo_points_chart, 
-                        theme="streamlit", 
-                        use_container_width=True)
+        + status_quo_points_chart 
+        + fixed_points_chart,
+        theme="streamlit", 
+        use_container_width=True)
+        
     else:
-        st.altair_chart(additional_points_chart 
-                        + pareto_points_chart 
-                        + status_quo_points_chart, 
-                        theme="streamlit", 
-                        use_container_width=True)
+        st.altair_chart(
+            additional_points_chart 
+            + pareto_points_chart 
+            + status_quo_points_chart
+            + fixed_points_chart,
+            theme="streamlit", 
+            use_container_width=True)
 
     # Text input for file name
     pareto_result_file_name = st.sidebar.text_input(label='Name for the result file')
@@ -798,7 +852,9 @@ def load_pareto_table_by_mode():
     try:
         xl = pd.ExcelFile(excel_path, engine='openpyxl')
         if sheet_name in xl.sheet_names:
-            return xl.parse(sheet_name)
+            df = xl.parse(sheet_name)
+            df = df.replace(r'^\s*$', pd.NA, regex=True).dropna(how="all")
+            return df
         else:
             st.error(f"La hoja '{sheet_name}' no existe en el archivo Excel.")
             return pd.DataFrame()
