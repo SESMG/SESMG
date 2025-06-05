@@ -131,10 +131,9 @@ def define_energy_system(nodes_data: dict) -> (EnergySystem, dict):
         # defines a time series
         nodes_data[sheet].set_index("timestamp", inplace=True)
         nodes_data[sheet].index = \
-            pandas.to_datetime(nodes_data[sheet].index.values) #, utc=True)
+            pandas.to_datetime(nodes_data[sheet].index.values, utc=True)
         nodes_data[sheet].index = \
-            pandas.to_datetime(nodes_data[sheet].index).tz_localize(timezone)
-            
+            pandas.to_datetime(nodes_data[sheet].index).tz_convert(timezone)
     # returns logging info
     logging.info(
             "Date time index successfully defined:\n start date:          "
