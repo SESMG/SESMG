@@ -142,7 +142,7 @@ def define_energy_system(nodes_data: dict) -> (EnergySystem, dict):
         nodes_data[sheet].set_index("timestamp", inplace=True)
         # convert timezones to utc time
         nodes_data[sheet].index = pandas.to_datetime(nodes_data[sheet].index)
-        nodes_data[sheet].index = nodes_data[sheet].index.tz_localize(timezone)
+        nodes_data[sheet].index = nodes_data[sheet].index.tz_localize(timezone, ambiguous="infer")
         nodes_data[sheet].index = nodes_data[sheet].index.tz_convert("utc")
     # returns logging info
     logging.info(
