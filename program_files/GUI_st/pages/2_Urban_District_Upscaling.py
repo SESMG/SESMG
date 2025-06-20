@@ -40,6 +40,8 @@ if "state_download" not in st.session_state:
 def us_application_create_folder() -> None:
     """
         Create the Upscaling_Tool folder in the result directory if needed.
+
+        :returns: - **res_folder_path** (str) - path to the us-tool result directory.
     """
 
     # set the result path based on the gui_st_settings.json
@@ -51,6 +53,7 @@ def us_application_create_folder() -> None:
         # If not, create the us result directory using a separate function
         create_result_directory(tail="Upscaling_Tool")
 
+    return res_folder_path
 
 
 def us_application() -> None:
@@ -167,16 +170,10 @@ def us_application_start_download() -> None:
     the data to the file.
     """
 
-    # # set the result path based on the gui_st_settings.json
-    # res_folder_path = os.path.join(set_result_path(),
-    #                                'Upscaling_Tool')
-
-    # # Check if the results folder path exists
-    # if os.path.exists(res_folder_path) is False:
-    #     # If not, create the result directory using a separate function
-    #     create_result_directory()
-    #     # Add upscaling folder if necessary
-    #     os.makedirs(res_folder_path)
+    # set the result path based on the gui_st_settings.json and 
+    # create directory if needed.
+    res_folder_path = us_application_create_folder()
+    
 
     # defining the the path including file name
     st.session_state['state_file_path'] = res_folder_path \
@@ -259,8 +256,9 @@ if st.session_state["state_model_definition_sheets"] == "" and \
         st.session_state['state_download'] is False:
     # run start page
     standard_page()
-    st.write(os.path.exists(os.path.join(set_result_path(),
-                                   'Upscaling_Tool')))
+    #st.write(os.path.exists(os.path.join(set_result_path(),'Upscaling_Tool')))
+    if not os.path.exists(os.path.join(set_result_path(), 'Upscaling_Tool')):
+        st.warning("Upscaling_Tool folder not found.")
 
 # running preprocessing page if tool ran
 elif st.session_state["state_model_definition_sheets"] != "" and \
