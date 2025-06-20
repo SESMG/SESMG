@@ -115,8 +115,18 @@ def define_energy_system(nodes_data: dict) -> (EnergySystem, dict):
     row = next(nodes_data["energysystem"].iterrows())[1]
     temp_resolution = row["temporal resolution"]
     timezone = row["timezone"]
-    start_date = pandas.to_datetime(row["start date"]).tz_localize(timezone)
-    end_date = pandas.to_datetime(row["end date"]).tz_localize(timezone)
+
+    # parse start/end
+    start_date_naive = pandas.to_datetime(row["start date"])
+    end_date_naive = pandas.to_datetime(row["end date"])
+
+    # localize start and end date
+    start_date_local = start_date_naive.tz_localize(timezone)
+    end_date_local = end_date_naive.tz_localize(timezone)
+
+    # convert to time utc
+    start_date = start_date_local.tz_convert("UTC")
+    end_date = end_date_local.tz_convert("UTC")
     
     # creates time index
     datetime_index = pandas.date_range(start=start_date,
@@ -130,10 +140,10 @@ def define_energy_system(nodes_data: dict) -> (EnergySystem, dict):
     for sheet in ["timeseries", "weather data"]:
         # defines a time series
         nodes_data[sheet].set_index("timestamp", inplace=True)
-        nodes_data[sheet].index = \
-            pandas.to_datetime(nodes_data[sheet].index.values, utc=True)
-        nodes_data[sheet].index = \
-            pandas.to_datetime(nodes_data[sheet].index).tz_convert(timezone)
+        # convert timezones to utc time
+        nodes_data[sheet].index = pandas.to_datetime(nodes_data[sheet].index)
+        nodes_data[sheet].index = nodes_data[sheet].index.tz_localize(timezone, ambiguous="infer")
+        nodes_data[sheet].index = nodes_data[sheet].index.tz_convert("utc")
     # returns logging info
     logging.info(
             "Date time index successfully defined:\n start date:          "

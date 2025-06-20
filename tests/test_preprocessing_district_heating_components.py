@@ -332,7 +332,9 @@ def test_connect_dh_to_system_exergy():
     # Assert the changes in the oemof_opti_model
     assert len(result.nodes) == 2
     assert type(result.nodes[1]) == solph.components.Converter
-    assert str(result.nodes[1]) == "dh_heat_house_station_Testhouse_heat_bus"
+    
+    assert str(result.nodes[1]) == \
+        "dh_heat_house_station_Testhouse_heat_bus"
     
     # Assert the changes in the bus dictionary
     assert len(updated_busd) == 2

@@ -28,9 +28,7 @@ def test_calc_variable_costs_scalar():
         np.array([20.0, 0.0])        # only output2 active
     ]
 
-    variable_cost_factor = 20.0     # irrelevant
-
-    result = calc_variable_costs(node, comp_dict, "variable_costs", variable_cost_factor=variable_cost_factor)
+    result = calc_variable_costs(node, comp_dict, "variable_costs")
     expected = 10.0 * 0.1 + 20.0 * 0.2 # = 1.0 + 4.0 = 5.0
 
     assert isinstance(result, float)
@@ -64,13 +62,11 @@ def test_calc_variable_costs_timeseries():
         np.array([2.0] * 23),   # only output2 active
          ]
 
-    variable_cost_factor = 20
-
-    result = calc_variable_costs(node, comp_dict, "variable_costs", variable_cost_factor=variable_cost_factor)
+    result = calc_variable_costs(node, comp_dict, "variable_costs")
     expected = (
                        np.sum(cost_series_input1.iloc[:-1] * 1.0) +
                        np.sum(cost_series_output2.iloc[:-1] * 2.0)
-               ) * variable_cost_factor
+               )
     assert isinstance(result, float)
     assert result == pytest.approx(expected, rel=1e-6)
 
@@ -79,7 +75,6 @@ def test_calc_variable_costs_timeseries_is_one_year_with_factor():
 
     date_range = pd.date_range(start="2022-01-01", periods=8760, freq="H")
     attr_value = 0.1
-    variable_cost_factor = 5.0
 
     cost_series = pd.Series([attr_value] * len(date_range), index=date_range)
 
@@ -99,10 +94,10 @@ def test_calc_variable_costs_timeseries_is_one_year_with_factor():
         np.array([0.0] * (len(date_range) - 1)),
     ]
 
-    result = calc_variable_costs(node, comp_dict, "variable_costs", variable_cost_factor)
+    result = calc_variable_costs(node, comp_dict, "variable_costs")
 
     # expected hours = result divided by costs
-    single_step_cost = attr_value * variable_cost_factor
+    single_step_cost = attr_value
     hours_equivalent = result / single_step_cost
 
     # tolerance 12 hours

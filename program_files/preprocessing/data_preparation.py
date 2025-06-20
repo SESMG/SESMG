@@ -183,6 +183,15 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str
     # Adapting Demands
     nodes_data['sinks']['annual demand'] /= variable_cost_factor
 
+    # Adapting time series
+    # get columns with "excess" oder "shortage"
+    cols_to_scale = [col for col in nodes_data['timeseries'].columns if ('excess' in col or 'shortage' in col)]
+    # proof type
+    nodes_data['timeseries'][cols_to_scale] = nodes_data['timeseries'][cols_to_scale].astype(np.float64)
+    # multiply with variable cost factor
+    nodes_data['timeseries'][cols_to_scale] *= variable_cost_factor
+
+
     timedelta = str(clusters * timesteps - 1) + ' hours'
     nodes_data['energysystem']['end date'] = \
         nodes_data['energysystem']['start date'] \

@@ -233,7 +233,7 @@ def calc_periodical_costs(node, investment: float, comp_type: str,
         return investment * ep_costs + offset
 
 
-def calc_variable_costs(node, comp_dict: list, attr: str, variable_cost_factor: float) -> float:
+def calc_variable_costs(node, comp_dict: list, attr: str) -> float:
     """
         method to calculate the component's variable costs for the
         first optimization criterion (attr = variable costs) or the
@@ -247,9 +247,6 @@ def calc_variable_costs(node, comp_dict: list, attr: str, variable_cost_factor: 
         :param attr: str defining the cost factor's name to get the \
             attribute from the component's data
         :type attr: str
-        :param variable_cost_factor: factor that considers the data_preparation_algorithms,
-            can be used to scale the results up for a year
-        :type variable_cost_factor: float
         
         :return: - **costs** (float) - float holding the calculated \
                     variable costs or emissions
@@ -297,7 +294,7 @@ def calc_variable_costs(node, comp_dict: list, attr: str, variable_cost_factor: 
                         )
                     )
 
-    costs = costs_timeseries * variable_cost_factor + costs_scalar
+    costs = costs_timeseries + costs_scalar
 
     return costs
 
@@ -531,15 +528,13 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
                 # criterion
                 variable_costs = calc_variable_costs(
                     node=node, comp_dict=comp_dict[loc_label],
-                    attr="variable_costs", variable_cost_factor=variable_cost_factor
-                )
+                    attr="variable_costs")
                 comp_dict[loc_label].append(variable_costs)
                 # calculate the variable costs of the second optimization
                 # criterion
                 constraint_costs = calc_variable_costs(
                     node=node, comp_dict=comp_dict[loc_label],
-                    attr="emission_factor", variable_cost_factor=variable_cost_factor
-                )
+                    attr="emission_factor")
                 # if there is an investment in the node under investigation
                 # calculate the periodical costs of the second optimization
                 # criterion
