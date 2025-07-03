@@ -499,15 +499,25 @@ def check_for_dependencies(solver: str):
             # check if SESMG main directory exists and create it
             cbc_directory_path = set_parenting_sesmg_result_path()
             # define path to the cbc.exe in the SESMG main directory
+            cbc_path_str = os.path.join(os.path.dirname(__file__), "..", "..", "cbc.exe")
+            
+            if not os.path.exists(cbc_path_str):
+                raise ImportError(f"CBC solver not found at expected path: {cbc_path_str}. "
+                                  "Please ensure cbc.exe is placed in the project root."
+                                  )
+            else:
+                cbc_bool = True
+                os.environ["PATH"] += os.pathsep + os.path.dirname(cbc_path_str)
+
             cbc_path_str = os.path.join(cbc_directory_path, 'cbc.exe')
 
-            if not os.path.exists(cbc_path_str):
-                raise ImportError("The cbc solver can not be found. Make sure \
-                                  to follow the instalaltion instructions.")
-            else:
+            #if not os.path.exists(cbc_path_str):
+                #raise ImportError("The cbc solver can not be found. Make sure \
+                                  #to follow the instalaltion instructions.")
+            #else:
                 # Set a boolean flag indicating that CBC solver is available.
-                cbc_bool = True
-                os.environ["PATH"] += os.pathsep + cbc_path_str
+                #cbc_bool = True
+                #os.environ["PATH"] += os.pathsep + cbc_path_str
                 
     # check is solver is gurobi
     elif solver == "gurobi":
