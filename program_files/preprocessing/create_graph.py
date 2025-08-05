@@ -97,8 +97,7 @@ class ESGraphRenderer:
             elif isinstance(nd, Bus) and "infrastructure" in nd.label:
                 pass
             elif isinstance(nd, HeatPipeline):
-                if "dh-network" not in str(self.dot):
-                    self.dot.node("dh-network", "dh-network", shape="hexagon")
+                continue
             else:
                 self.add_comp(
                     str(nd.label),
@@ -106,6 +105,28 @@ class ESGraphRenderer:
                     switch_dict.get(str(type(nd)), "Invalid component")[1],
                     self.dot,
                 )
+        # Searching Pipelines with label containing 'exergy' or 'anergy'
+        exergy_present = any(
+            isinstance(nd, HeatPipeline) and 'exergy' in str(nd.label).lower()
+            for nd in energy_system.nodes
+        )
+        anergy_present = any(
+            isinstance(nd, HeatPipeline) and 'anergy' in str(nd.label).lower()
+            for nd in energy_system.nodes
+        )
+        if exergy_present and anergy_present:
+            net_labels = ['dh-network-exergy', 'dh-network-anergy']
+
+        elif exergy_present or anergy_present:
+            # only one or anyone -> generc label
+            net_labels = ['dh-network'] 
+        else:
+            net_labels = []
+        # Adding one node only if there is no heat pipeline
+        for net in net_labels:
+            if net not in str(self.dot):
+                self.dot.node(net, net, shape='hexagon')
+
         # draw the edges between the nodes based on each bus inputs/outputs
         for bus in self.busses:
             for component in bus.inputs:
@@ -141,13 +162,27 @@ class ESGraphRenderer:
         """
         a_label = linebreaks(str(a.label))
         b_label = linebreaks(str(b.label))
-        if isinstance(b, HeatPipeline):
-            self.dot.edge(a_label, "dh-network")
-        elif isinstance(a, HeatPipeline):
-            self.dot.edge("dh-network", b_label)
-        elif isinstance(a, HeatPipeline) and isinstance(b, HeatPipeline):
-            pass
-        else:
+        
+        # If one is a Heatpipeline, we connect it to the network
+        if isinstance(a, HeatPipeline) or isinstance(b, HeatPipeline):
+            # We chose the pipeline based on the label
+            pipeline = b if isinstance(b, HeatPipeline) else a
+            plc_label = str(pipeline.label).lower()
+            if 'exergy' in plc_label:
+                net = 'dh-network-exergy'
+            elif 'anergy' in plc_label:
+                net = 'dh-network-anergy'
+            else:
+                net = 'dh-network'
+            
+            # Now we check if the other is a pipeline or not
+            if isinstance(b, HeatPipeline):
+                self.dot.edge(a_label, net)
+            else:
+                self.dot.edge(net, b_label)
+
+        # If both are not Heatpipelines, we connect them normally
+        elif not (isinstance(a, HeatPipeline) and isinstance(b, HeatPipeline)):
             self.dot.edge(a_label, b_label)
 
     def render(self, filepath, show):

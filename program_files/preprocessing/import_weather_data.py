@@ -1,7 +1,10 @@
 """
     Gregor Becker - gregor.becker@fh-muenster.de
+    Oscar Quiroga - oscar.quiroga@fh-muenster.de
 """
 from shapely.geometry import Point
+from timezonefinder import TimezoneFinder
+from pytz import timezone
 from feedinlib.open_FRED import Weather, defaultdb
 from datetime import timedelta
 import geocoder
@@ -64,28 +67,51 @@ def import_open_fred_weather_data(nodes_data: dict, lat: float, lon: float
         :return: - **nodes_data** (dict) - modified model definition \
             data
     """
-    # location of area under investigation
-    location = Point(lon, lat)
+    # Validate Latitude and Longitude
+    try:
+        lonf = float(lon)
+        latf = float(lat)
+    except (TypeError, ValueError):
+        logging.warning(
+            f"Skipping weather import: invalid coordinates lat={lat!r}, lon={lon!r}"
+        )
+        return nodes_data
+    location = Point(lonf, latf)
+    # Detect timezone based on coordinates
+    tf = TimezoneFinder()
+    tz = timezone(tf.timezone_at(lng=lonf, lat=latf) or "UTC")
     
     # log the city and country of the given coords
-    geo_info = geocoder.google([lat, lon], method='reverse')
+    geo_info = geocoder.google([latf, lonf], method='reverse')
     logging.info("\t The inserted Open Fred coordinates point on "
                  + str(geo_info.city) + " in "
-                 + str(geo_info.country) + ".")
-    
+                 + str(geo_info.country) + "."
+                 )
     # get windpowerlib relevant weather data from OPEN Fred
     wind_df = Weather(**set_esys_data(nodes_data, location, "windpowerlib"),
                       **defaultdb()).df(location=location, lib="windpowerlib")
-    # meaning the half hour values
+    # Be sure the index is timezone-aware
+    if wind_df.index.tz is None:
+        wind_df.index = wind_df.index.tz_localize("UTC")
+    
+    # Convert to the specified timezone
+    wind_df = wind_df.tz_convert(tz)
+    
+    # resample wind data
     wind_df = wind_df.resample("1h").mean()
     wind_df.reset_index(drop=True, inplace=True)
+    nodes_data["weather_wind"] = wind_df
 
-    # get pv system weather data from OPEN Fred
+    # PV data
+    # Use the same Location and Timezone as for wind data
     pv_df = Weather(**set_esys_data(nodes_data, location, "pvlib"),
                     **defaultdb()).df(location=location, lib="pvlib")
-    # resample pv system data from quarter-hourly to hourly resolution
+    if pv_df.index.tz is None:
+        pv_df.index = pv_df.index.tz_localize("UTC")
+    pv_df = pv_df.tz_convert(tz)
     pv_df = pv_df.resample("1h").mean()
     pv_df.reset_index(drop=True, inplace=True)
+    nodes_data["weather_pv"] = pv_df
     
     # create weather data sheet
     data = {
@@ -97,7 +123,9 @@ def import_open_fred_weather_data(nodes_data: dict, lat: float, lon: float
         "ghi": pv_df["ghi"],
         "temperature": pv_df["temp_air"],
     }
+
     for label in data:
         nodes_data["weather data"][label] = data[label].copy()
     # return nodes data with the new weather data sheet
+
     return nodes_data

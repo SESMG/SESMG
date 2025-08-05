@@ -1,7 +1,9 @@
 """
     Christian Klemm - christian.klemm@fh-muenster.de
+    Oscar Quiroga - oscar.quiroga@fh-muenster.de
 """
 import pandas
+from typing import Tuple
 import logging
 
 
@@ -28,7 +30,7 @@ def update_component_investment_decisions(
         components: pandas.DataFrame, model_definition_path: str,
         model_definition_type_name: str, result_type_name: str,
         investment_boundary_factor: int, investment_boundaries=True
-) -> (pandas.DataFrame, list):
+) -> Tuple[pandas.DataFrame, list]:
     """
         Adapts investment decision depending on the results of a \
         pre-model and returns new dataset plus list of deactivated \
@@ -215,9 +217,14 @@ def update_component_model_definition_sheet(
     if model_definition_sheet_name in sheets:
         # adding an empty row at the top of the dataframe (replacing the
         # unit row in the original model definition file)
-        updated_data = pandas.DataFrame(
-            [[0 for x in range(len(updated_data.columns))]],
-            columns=updated_data.columns).append(updated_data)
+        new_row_df = pandas.DataFrame(
+            [[0 for _ in range(len(updated_data.columns))]],
+            columns=updated_data.columns
+            )
+        updated_data = pandas.concat(
+            [new_row_df, updated_data],
+            ignore_index=True
+        )
 
     writer = pandas.ExcelWriter(updated_model_definition_path,
                                 engine="openpyxl",
@@ -318,6 +325,30 @@ def bus_technical_pre_selection(components_xlsx: pandas.DataFrame,
 
     """
     bus_xlsx = components_xlsx
+
+    # Detect if there is a column for exergy and anergy
+    ex_col = "district heating conn. (exergy)"
+    an_col = "district heating conn. (anergy)"
+    
+    if ex_col in bus_xlsx.columns:
+        ex_numeric = pandas.to_numeric(bus_xlsx[ex_col], errors='coerce').fillna(0).astype(int)
+        has_exergy = bool(ex_numeric.any())
+    else:
+        has_exergy = False
+        
+    if an_col in bus_xlsx.columns:
+        an_numeric = pandas.to_numeric(bus_xlsx[an_col], errors='coerce').fillna(0).astype(int)
+        has_anergy = bool(an_numeric.any())
+    else:
+        has_anergy = False
+
+    # If there is no exergy or anergy column, we create a generic column
+    if not (has_exergy and has_anergy):
+        bus_xlsx["district heating conn."] = (
+            bus_xlsx.get(ex_col, 0).fillna(0).astype(int)
+            | bus_xlsx.get(an_col,  0).fillna(0).astype(int)
+        )
+
     no_invest_list = ['0.0', '0', '0.00', '---', '-0', '-0.0', '-0.00']
     # creates list of heating buses for which an investment has been
     # carried out
@@ -342,21 +373,33 @@ def bus_technical_pre_selection(components_xlsx: pandas.DataFrame,
     logging.info("WARNING: IF THE ORIGINAL BUS NAME CONTAINED THE STRING "
                  "'_Diameter_' THIS ANALYSIS IS NOT VALID!")
 
-    # deactivate those bus connections for which no investment has been
-    # carried out
+    # Unic mode or Dual mode
+    # We prepare the modes to iterate over
+    modes = []
+    if has_exergy and has_anergy:
+        modes = [
+            ("exergy", ex_col),
+            ("anergy", an_col)
+        ]
+    elif has_exergy:
+        modes = [("exergy", ex_col)]
+    elif has_anergy:
+        modes = [("anergy", an_col)]
+
+    # iterate each bus and each active mode
     for num, dh_bus in bus_xlsx.iterrows():
         label = str(dh_bus['label'])
-        if str(dh_bus['district heating conn.']) not in no_invest_list:
-            if label not in dh_investment_list \
-                    and label[0:9] not in dh_investment_list \
-                    and label.split('_')[0] not in dh_investment_list:
-                #if dh_bus['district heating conn.'] == "dh-system":
-                #    bus_xlsx.at[num, 'active'] = 0
-                bus_xlsx.at[num, 'district heating conn.'] = 0
-                
-            elif len(dh_investment_list) < 2:
-                bus_xlsx.at[num, 'district heating conn.'] = 0
-
+        for mode,col in modes:
+            # Only if the bus is active in the current mode
+            if dh_bus.get(col, 0) == 1 and str(dh_bus.get(col)) not in no_invest_list:
+                # If there is no investment in the bus, we deactivate it
+                if label not in dh_investment_list \
+                   and label[:9] not in dh_investment_list \
+                   and label.split('_')[0] not in dh_investment_list:
+                    bus_xlsx.at[num, col] = 0
+                # If there were <2 investments in total, we also deactivate
+                elif len(dh_investment_list) < 2:
+                    bus_xlsx.at[num, col] = 0
 
 def insulation_technical_pre_selection(components_xlsx: pandas.DataFrame,
                                        result_components: pandas.DataFrame
