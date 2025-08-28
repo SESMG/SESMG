@@ -2,6 +2,7 @@
     Christian Klemm - christian.klemm@fh-muenster.de
     Gregor Becker - gregor.becker@fh-muenster.de
     Yannick Wittor - yw090223@fh-muenster.de
+    Oscar Quiroga - oscar.quiroga@fh-muenster.de
 """
 from feedinlib import powerplants, WindPowerPlant
 from oemof.solph.components import Source, Converter
@@ -10,6 +11,17 @@ from oemof.solph.flows import Flow
 from oemof.solph import Investment
 import logging
 import pandas
+
+# --- Optional pvlib imports for CEC module support ---
+try:
+    import pvlib
+    from pvlib.pvsystem import retrieve_sam, PVSystem
+    from pvlib.modelchain import ModelChain
+    from pvlib.temperature import TEMPERATURE_MODEL_PARAMETERS
+except Exception:
+    pvlib = None
+    retrieve_sam = PVSystem = ModelChain = None
+    TEMPERATURE_MODEL_PARAMETERS = {}
 
 
 class Sources:
@@ -286,6 +298,82 @@ class Sources:
                     
             :type source: pandas.Series
         """
+        # Try CEC module path first (pvlib 0.13+), fallback to feedinlib/Sandia
+        module_name = str(source["modul model"]).strip()
+        inverter_name = str(source["inverter model"]).strip()
+
+        use_cec = False
+        if retrieve_sam is not None:
+            try:
+                cec_modules = retrieve_sam("CECMod")
+                if module_name in cec_modules:
+                    cec_inverters = retrieve_sam("CECInverter")
+                    if inverter_name in cec_inverters:
+                        use_cec = True
+                        module_params = cec_modules[module_name]
+                        inverter_params = cec_inverters[inverter_name]
+            except Exception:
+                use_cec = False
+
+        if use_cec:
+            try:
+                # Temperature model consistent with existing settings
+                tmp = TEMPERATURE_MODEL_PARAMETERS.get("sapm", {})
+                temp_params = tmp.get("open_rack_glass_glass") or tmp.get("open_rack_glass_polymer")
+
+                system = PVSystem(
+                    surface_tilt=float(source["surface tilt"]),
+                    surface_azimuth=float(source["azimuth"]),
+                    albedo=float(source["albedo"]),
+                    module_parameters=module_params,
+                    inverter_parameters=inverter_params,
+                    temperature_model_parameters=temp_params,
+                )
+
+                # Build location & weather
+                lat = float(source["latitude"])
+                lon = float(source["longitude"])
+                location = pvlib.location.Location(lat, lon)
+
+                weather = self.weather_data.copy()
+                # Align expected weather column names
+                rename_map = {
+                    "temperature": "temp_air",
+                    "temp": "temp_air",
+                    "windspeed": "wind_speed",
+                    "wind": "wind_speed",
+                }
+                cols_to_rename = {k: v for k, v in rename_map.items() if k in weather.columns and v not in weather.columns}
+                if cols_to_rename:
+                    weather = weather.rename(columns=cols_to_rename)
+
+                mc = ModelChain(
+                    system,
+                    location,
+                    dc_model="cec",
+                    ac_model="sandia",
+                    aoi_model="physical",
+                    spectral_model="no_loss",
+                    transposition_model="perez",
+                )
+                mc.run_model(weather)
+
+                # Normalize AC power to per-unit (1.0 @ Pmp STC)
+                # CEC uses V_mp_ref / I_mp_ref; Sandia uses Vmpo / Impo
+                v_stc = float(module_params.get("V_mp_ref", module_params.get("Vmpo")))
+                i_stc = float(module_params.get("I_mp_ref", module_params.get("Impo")))
+                pmp_stc = v_stc * i_stc
+                feedin = (mc.results.ac / pmp_stc).fillna(0)
+                feedin[feedin < 0] = 0
+                feedin[feedin > 1] = 1
+
+                self.create_feedin_source(feedin=feedin, source=source)
+                logging.info("\t Photovoltaic Source created (CEC path): " + source["label"])
+                return
+            except Exception as e:
+                logging.warning(f"CEC path failed ({e}); falling back to Sandia pipeline.")
+
+        # --- Original Sandia/feedinlib path (unchanged) ---
         # reads pv system parameters from parameter dictionary
         # nodes_data
         parameter_set = {
@@ -304,7 +392,7 @@ class Sources:
         # changes names of data columns,
         # so it fits the needs of the feedinlib
         name_dc = {"temperature": "temp_air", "windspeed": "v_wind"}
-        self.weather_data.rename(columns=name_dc)
+        self.weather_data = self.weather_data.rename(columns=name_dc)
 
         # calculates time series normed on 1 kW pv peak performance
         feedin = pv_module.feedin(
@@ -321,6 +409,7 @@ class Sources:
         feedin[feedin > 1] = 1
 
         self.create_feedin_source(feedin=feedin, source=source)
+        logging.info("\t Photovoltaic Source created (Sandia fallback): " + source["label"])
 
     def windpower_source(self, source: pandas.Series) -> None:
         """
