@@ -10,11 +10,13 @@
     
     Christian Klemm - christian.klemm@fh-muenster.de
     Gregor Becker - gregor.becker@fh-muenster.de
+    Oscar Quiroga - oscar.quiroga@fh-muenster.de
 """
 import logging
 # removed for now, as oemof-logs will no longer be used for the time being
 # from oemof.tools import logger
 import os
+from typing import Tuple
 from threading import *
 from program_files.preprocessing import (create_energy_system,
                                          data_preparation,
@@ -31,7 +33,7 @@ from program_files.preprocessing.pre_model_analysis import \
 def call_district_heating_creation(nodes_data: dict, nodes: list, busd: dict,
                                    district_heating_path: str,
                                    result_path: str, cluster_dh: bool
-                                   ) -> (dict, list):
+                                   ) -> Tuple[dict, list]:
     """
     
         :param nodes_data:
@@ -54,17 +56,21 @@ def call_district_heating_creation(nodes_data: dict, nodes: list, busd: dict,
     buses = nodes_data["buses"]
     # get only the active pipe types
     pipe_types = nodes_data["pipe types"].query("active == 1")
-    
-    # check if at least one bus can possibly be connected to the
-    # exergy heating net
-    if len(buses[~buses["district heating conn. (exergy)"].isin(["0", 0])]):
-        # check if at least one pipe is meant to be used within an
-        # exergy network
-        if len(pipe_types.query("`anergy or exergy` == 'exergy'")):
-            # creates the thermal network components as defined in
-            # the model definition file and adds them to the list
-            # of components (nodes)
-            nodes, busd = district_heating.district_heating(
+
+    # Detect both systems
+    has_exergy = (
+        len(buses[~buses["district heating conn. (exergy)"].isin(["0", 0])]) > 0
+        and len(pipe_types.query("`anergy or exergy` == 'exergy'")) > 0
+    )
+    has_anergy = (
+        len(buses[~buses["district heating conn. (anergy)"].isin(["0", 0])]) > 0
+        and len(pipe_types.query("`anergy or exergy` == 'anergy'")) > 0
+    )
+
+    # If both systems exist
+    if has_exergy and has_anergy:
+        # Exergy
+        nodes, busd = district_heating.district_heating(
                 nodes_data=nodes_data,
                 nodes=nodes, busd=busd,
                 district_heating_path=district_heating_path,
@@ -72,17 +78,8 @@ def call_district_heating_creation(nodes_data: dict, nodes: list, busd: dict,
                 cluster_dh=cluster_dh,
                 is_exergy=True
             )
-            
-    # check if at least one bus can possibly be connected to the
-    # anergy heating net
-    if len(buses[~buses["district heating conn. (anergy)"].isin(["0", 0])]):
-        # check if at least one pipe is meant to be used within an
-        # anergy network
-        if len(pipe_types.query("`anergy or exergy` == 'anergy'")):
-            # creates the thermal network components as defined in the
-            # model definition file and adds them to the list of
-            # components (nodes)
-            nodes, busd = district_heating.district_heating(
+        # Anergy
+        nodes, busd = district_heating.district_heating(
                 nodes_data=nodes_data,
                 nodes=nodes,
                 busd=busd,
@@ -91,7 +88,34 @@ def call_district_heating_creation(nodes_data: dict, nodes: list, busd: dict,
                 cluster_dh=cluster_dh,
                 is_exergy=False
             )
-            
+    # check if at least one bus can possibly be connected to the
+    # exergy heating net
+    elif has_exergy:
+        # creates the thermal network components as defined in
+        # the model definition file and adds them to the list
+        # of components (nodes)
+        nodes, busd = district_heating.district_heating(
+                nodes_data=nodes_data,
+                nodes=nodes, busd=busd,
+                district_heating_path=district_heating_path,
+                result_path=result_path,
+                cluster_dh=cluster_dh,
+                is_exergy=True
+            )
+    elif has_anergy:
+        # creates the thermal network components as defined in the
+        # model definition file and adds them to the list of
+        # components (nodes)
+        nodes, busd = district_heating.district_heating(
+                nodes_data=nodes_data,
+                nodes=nodes,
+                busd=busd,
+                district_heating_path=district_heating_path,
+                result_path=result_path,
+                cluster_dh=cluster_dh,
+                is_exergy=False
+            )
+
     return busd, nodes
 
 

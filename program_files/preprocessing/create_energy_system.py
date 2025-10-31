@@ -155,4 +155,11 @@ def define_energy_system(nodes_data: dict) -> (EnergySystem, dict):
     )
     
     # returns oemof energy system as result of this function
+
+    print("TYPE:")
+
+    print(type(esys))
+
+    print(esys)
+
     return esys, nodes_data
