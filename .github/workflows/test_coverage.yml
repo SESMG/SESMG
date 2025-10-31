@@ -38,7 +38,8 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }} # Optional for public repos
 
-    - name: Upload to Code Climate
-      uses: paambaati/codeclimate-action@v3.0.0
-      env:
-        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+    - name: Upload to Code Climate / qlty
+      uses: qltysh/qlty-action/coverage@v2
+      with:
+        token: {{secrets.QLTY_COVERAGE_TOKEN}}
+        files: reports/lcov.info
