@@ -41,5 +41,5 @@ jobs:
     - name: Upload to Code Climate / qlty
       uses: qltysh/qlty-action/coverage@v2
       with:
-        token: {{secrets.QLTY_COVERAGE_TOKEN}}
+        token: ${{secrets.QLTY_COVERAGE_TOKEN}}
         files: reports/lcov.info
