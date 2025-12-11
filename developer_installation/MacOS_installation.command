@@ -47,6 +47,10 @@ brew install cbc
 brew install geos
 brew install graphviz
 brew install postgresql
+brew install hdf5
+brew install netcfd
+brew install gdl
+
 
 venv/bin/pip3 install -r requirements.txt
 
