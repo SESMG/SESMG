@@ -4,7 +4,6 @@
 from shapely.geometry import Point
 from feedinlib.open_FRED import Weather, defaultdb
 from datetime import timedelta
-import geocoder
 import logging
 
 
@@ -69,12 +68,6 @@ def import_open_fred_weather_data(nodes_data: dict, lat: float, lon: float
 
     # location of area under investigation
     location = Point(lon, lat)
-
-    # log the city and country of the given coords
-    # geo_info = geocoder.google([lat, lon], method='reverse')
-    # logging.info("\t The inserted Open Fred coordinates point on "
-    #             + str(geo_info.city) + " in "
-    #             + str(geo_info.country) + ".")
 
     # get windpowerlib relevant weather data from OPEN Fred
     wind_df = Weather(**set_esys_data(nodes_data, location, "windpowerlib"),
