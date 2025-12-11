@@ -6,7 +6,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set "list_of_allowed_versions=3.8,3.9,3.10,3.11"
+set "list_of_allowed_versions=3.9,3.10,3.11"
 set /p PYVERSION="Enter your Python Version here:"
 
 set "found=0"

@@ -33,7 +33,7 @@ echo "Enter your Python version here: "
 read PYVERSION
 
 
-list_of_allowed_versions="3.8,3.9,3.10,3.11"
+list_of_allowed_versions="3.9,3.10,3.11"
 
 if exists_in_list "$list_of_allowed_versions" "," $PYVERSION; then
     echo "Version input allowed. Installation will continue."
