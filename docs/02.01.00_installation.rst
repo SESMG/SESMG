@@ -21,7 +21,7 @@ Extended Installation
 Windows
 -----
 
-1. Installing Python (3.8, 3.9, 3.10 or 3.11)
+1. Installing Python (3.9, 3.10 or 3.11)
 Windows users can find the versions here: `Python download page for windows <https://www.python.org/downloads/windows/>`_
 
 .. note::
@@ -152,7 +152,7 @@ MacOS
 
 	We recommended installing the SESMG as an admin or user with admin rights.
 
-1. Installing Python (3.8, 3.9, 3.10 or 3.11)
+1. Installing Python (3.9, 3.10 or 3.11)
 
 Go to the `Python download page for macOS <https://www.python.org/downloads/macos/>`_
 and download an installer.
@@ -277,7 +277,7 @@ The Spreadsheet Energy System Model Generator has been installed.
 Linux
 -----
 
-1. Installing Python (3.8, 3.9, 3.10 or 3.11)
+1. Installing Python (3.9, 3.10 or 3.11)
 
 - go to `<https://phoenixnap.com/kb/how-to-install-python-3-ubuntu/>`_
 
