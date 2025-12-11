@@ -8,7 +8,6 @@ shapely==2.0.5
 feedinlib @ https://github.com/SESMG/feedinlib/archive/refs/heads/dev.zip 
 demandlib @ https://github.com/SESMG/demandlib/archive/refs/heads/dev.zip
 open_fred-cli==0.0.1
-geocoder==1.38.1 
 sympy==1.13.0 
 richardsonpy==0.2.1 
 graphviz==0.20.3 
