@@ -525,6 +525,17 @@ Error M-034: ValueError (same label)
 **Debugging:** Use of unique labels, even for components that are not activated.
 
 
+Error M-035: No module named 'program_files.GUI_st'
+-----------------------
+**Error Message:** ::
+
+   import program_files.GUI_st.GUI_st_global_functions as GUI_functions
+   ModuleNotFoundError: No module named 'program_files.GUI_st'
+
+**Possible Error Cause:** You installed the SESMG in the Downloads directory or somewhere else with limited rights to access files interally.
+
+**Debugging:** Move the whole SESMG installation to another directory.
+
 
 Warning W-001: Need to install ... / Cartopy ...
 -----------------------------------------------------------------
