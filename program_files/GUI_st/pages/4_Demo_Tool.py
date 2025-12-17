@@ -2,7 +2,7 @@
     Jan N. Tockloth - jan.tockloth@fh-muenster.de
     Gregor Becker - gregor.becker@fh-muenster.de
     Christian Klemm - christian.klemm@fh-muenster.de
-    Benjamin Blankenstein - bb917322@fh-muenster.de
+    Benjamin Blankenstein - benjamin.blankenstein@fh-muenster.de
     Oscar Quiroga - oscar.quiroga@fh-muenster.de
 """
 
@@ -355,7 +355,8 @@ def execute_sesmg_demo(demo_file: str, demo_results: str, mode: str) -> None:
         model_definition_file=demo_file,
         result_path=demo_results,
         num_threads=1,
-        timeseries_prep=["None", "None", "None", "None", 0],
+        timeseries_prep=["slicing A", "4", "None", "days", 0],
+        # timeseries_prep=["None", "None", "None", "None", 0],
         graph=False,
         criterion_switch=criterion_switch,
         xlsx_results=False,
@@ -459,9 +460,9 @@ def show_demo_run_results(mode: str) -> None:
 
     # calculate relative change refered to the status quo
     # costs in Mio.Euro/a
-    stat_quo_costs = 13.68616781
+    stat_quo_costs = 13.61684450
     # emissions in t/a
-    stat_quo_emissions = 17221.43690357
+    stat_quo_emissions = 17177.84374780
     # relative values as str
     rel_result_costs = \
         str(round((annual_costs-stat_quo_costs) / stat_quo_costs * 100, 2)) \
@@ -610,63 +611,60 @@ def show_demo_run_results_on_graph():
     if st.session_state["mode"] == "simplified":
         pareto_points = pd.DataFrame({
             "Costs in million Euro/a": [
-                13.90633301,
-                12.21098631,
-                11.36219969,
-                10.49242158,
-                9.82633129,
-                9.47211045,
-                9.21268251,
-                8.95338016,
-                8.70061534,
-                8.52056137,
-                8.40543934,
-                8.34177349
+                13.83457067,
+                11.23034118,
+                10.38012202,
+                9.70299708,
+                9.30243609,
+                9.05718707,
+                8.81421314,
+                8.57128538,
+                8.35829138,
+                8.22717083,
+                8.16954368
+
             ],
             'CO2-emissions in t/a': [
-                8216.383143,
-                8396.56901,
-                8520.493237,
-                8823.808246,
-                9127.123254,
-                9430.438263,
-                9733.753272,
-                10037.06828,
-                10340.38329,
-                10643.6983,
-                10947.01331,
-                11250.32832
+                8228.280691,
+                8513.397873,
+                8797.61296,
+                9081.828048,
+                9366.043135,
+                9650.258222,
+                9934.473309,
+                10218.6884,
+                10502.90348,
+                10787.11857,
+                11071.33366
             ]
         })
     elif st.session_state["mode"] == "advanced":
         pareto_points = pd.DataFrame({
             "Costs in million Euro/a": [
-                13.90633301,
-                12.21098631,
-                11.34823489,
-                10.46993672,
-                9.79986603,
-                9.45790208,
-                9.19522371,
-                8.93261686,
-                8.67940889,
-                8.50624428,
-                8.39463832,
-                8.33103728
+                13.83457067,
+                11.20222739,
+                10.35390994,
+                9.67091701,
+                9.26286046,
+                9.01489089,
+                8.76768741,
+                8.52168984,
+                8.32918132,
+                8.21501444,
+                8.15942628
             ],
             'CO2-emissions in t/a':[
-                8216.383143,
-                8396.56901,
-                8524.358615,
-                8831.539002,
-                9138.71939,
-                9445.899777,
-                9753.080164,
-                10060.26055,
-                10367.44094,
-                10674.62133,
-                10981.80171,
-                11288.9821
+                8228.280691,
+                8518.345322,
+                8807.507858,
+                9096.670393,
+                9385.832929,
+                9674.995465,
+                9964.158001,
+                10253.32054,
+                10542.48307,
+                10831.64561,
+                11120.80814
             ]
         })
     else:
@@ -675,8 +673,8 @@ def show_demo_run_results_on_graph():
     # DataFrame for the status quo
     status_quo_points = pd.DataFrame(
         {
-            'Costs in million Euro/a': [13.68616781],
-            'CO2-emissions in t/a': [17221.43690357],
+            'Costs in million Euro/a': [13.61684450],
+            'CO2-emissions in t/a': [17177.84374780],
             'Name': ['Status Quo']
         }
     )
