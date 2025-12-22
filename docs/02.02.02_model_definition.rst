@@ -260,7 +260,7 @@ Costs
   limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **non-convex investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model
   can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained
-  `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html>`_.
+  `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html#investment>`_.
 - **fix investment costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs).
 - **fix investment constraint costs** in (CU/a): Fixed constraint costs of non-convex investments (in addition to the periodic constraint
   costs).
