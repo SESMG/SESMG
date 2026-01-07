@@ -35,8 +35,7 @@ defined. The following parameters have to be entered:
   "h" (hours), "min" (minutes), "s" (seconds), "ms" (milliseconds). Attention: Make sure to write in lower case letters.
 - **timezone**: By specifying the timezone, energy systems with correct time series (e.g. relevant for the correct balancing
   of the PV yield) can be modeled anywhere in the world. For this purpose, the pandas timezone string (e.g. Europe/Berlin) is
-  inserted into the column. Then the weather data, which are available in the weather data sheet in UTC form, are corrected to
-  the considered location.
+  inserted into the column. Then the start and end date, weather data and timeseries data which can be corrected to the UTC form for calculation.
 - **periods**: Number of periods within the time horizon (one year with hourly resolution equals 8760 periods). Attention: Number
   of periods has to equal length of `Time series sheet`_ and `Weather data sheet`_.
 - **cost limit** in (CU): Value in order to set a limit for the whole energysystem, e.g. monetary costs. Set this field to "None"
@@ -67,7 +66,7 @@ a predefined limit.
 For example, an area competition. If you do not want to use this spreadsheet,
 it simply remains empty. To use this spreadsheet, the following values must be filled in:
 
-- **label**: Unique designation of the competition constraint.
+- **label**: Unique designation of the competition constraint. Also for competition constraints that are not activated. 
 - **comment**: Space for an individual comment.
 - **active**: Specifies whether the competition constraint shall be included to the model. "0" = inactive, "1" = active.
 - **component <number>**: Label of the component that lays claim to the parameter which size set as the limit. Attention:
@@ -88,18 +87,22 @@ Buses
 
 Within this sheet, the buses of the energy system are defined. The following parameters need to be entered:
 
-- **label**: Unique designation of the bus. The following format is recommended: "<ID>_<energy sector>_bus". <ID> and <energy sector>
+- **label**: Unique designation of the bus. Also for buses that are not activated. The following format is recommended: "<ID>_<energy sector>_bus". <ID> and <energy sector>
   need to be replaced by the bus attributes.
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the bus shall be included to the model. "0" = inactive, "1" = active.
 - **excess**: Specifies whether to generate an excess sink, which consumes excess energy. "0" = no excess sink will be generated;
   "1" = excess sink will be generated.
-- **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits or not. "0" = no shortage
-  source will be generated; "1" = shortage source will be generated.
-- **excess costs** in (CU/kWh): Assigns a price per kWh to the release of energy to the excess sink. If the excess sink was
-  deactivated, the fill character "0" is used.
-- **shortage costs** in (CU/kWh): Assigns a price per kWh to the purchase of energy from the shortage source. If the shortage
-  source was deactivated, the fill character "0" is used.
+- **shortage**: Specifies whether to generate a shortage source that can compensate energy deficits or not. "0" = no shortage source will be generated; 
+  "1" = shortage source will be generated.
+- **excess costs** in (CU/kWh): Assigns a price per kWh to the release of energy to the excess sink. 
+  This can be specified either as a fixed price or as a time-dependent price series. If a price series is used,
+  "timeseries" must be entered and must be provided in the `Time series sheet`_.
+  If the excess sink was deactivated, the fill character "0" is used.
+- **shortage costs** in (CU/kWh): Assigns a price per kWh to the purchase of energy from the shortage source.  
+  This can be specified either as a fixed price or as a time-dependent price series. If a price series is used,
+  "timeseries" must be entered and must be provided in the `Time series sheet`_.
+  If the shortage source was deactivated, the fill character "0" is used.
 - **excess constraint costs** in (CU/kWh): Assigns a price per kWh to the release of energy to the excess sink referring to
   the constraint limit set in the `Energysystem sheet`_. If the excess sink was deactivated or constraints are not considered,
   the fill character "0" is used.
@@ -163,7 +166,7 @@ District Heating
 Within this sheet, the road network structure of the energy system is defined.
 The following parameters need to be entered:
 
-- **label**: Unique designation of the street section, e.g. the street section name.
+- **label**: Unique designation of the street section, e.g. the street section name. Also for streets that are not activated. 
 - **comment**: Space for an individual comment.
 - **active**: Specifies whether the street section shall be included to the model. "0" = inactive, "1" = active.
 - **lat. 1st intersection**: Latitude (WGS84) of the first point of the given street part.
@@ -183,7 +186,7 @@ Sinks
 Within this sheet, the sinks of the energy system are defined.
 The following parameters need to be entered:
 
-- **label**: Unique designation of the sink. The following format is recommended: "<ID>_<energy sector>_sink". <ID> and
+- **label**: Unique designation of the sink. Also for sinks that are not activated. The following format is recommended: "<ID>_<energy sector>_sink". <ID> and
   <energy sector> need to be replaced by the sink attributes.
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the sink shall be included to the model. "0" = inactive, "1" = active.
@@ -228,7 +231,7 @@ Sources
 Within this sheet, the sources of the energy system are defined. Technology specific data (see 2nd line), must be filled in only if the
 respective technology is selected otherwise use "0". The following parameters have to be entered:
 
-- **label**: Unique designation of the source. The following format is recommended: "<ID>_<energy sector>_source". <ID> and <energy sector>
+- **label**: Unique designation of the source. Also for sources that are not activated. The following format is recommended: "<ID>_<energy sector>_source". <ID> and <energy sector>
   need to be replaced by the bus attributes.
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the source shall be included to the model. "0" = inactive, "1" = active.
@@ -257,7 +260,7 @@ Costs
   limit set in the "energysystem" sheet. If not considering constraints fill character "0" is used.
 - **non-convex investment**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model
   can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained
-  `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html>`_.
+  `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/01.01.00_structure_of_energy_systems.html#investment>`_.
 - **fix investment costs** in (CU/a): Fixed costs of non-convex investments (in addition to the periodic costs).
 - **fix investment constraint costs** in (CU/a): Fixed constraint costs of non-convex investments (in addition to the periodic constraint
   costs).
@@ -384,7 +387,7 @@ Within this sheet, the transformers of the energy system are defined.
 The following parameters have to be entered:
 
 
-- **label**: Unique designation of the transformer. The following format is recommended: "<ID>_<energy sector>_transformer". <ID> and <energy sector>
+- **label**: Unique designation of the transformer. Also for transformers that are not activated. The following format is recommended: "<ID>_<energy sector>_transformer". <ID> and <energy sector>
   need to be replaced by the transformer attributes.
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the transformer shall be included to the model. "0" = inactive, "1" = active.
@@ -396,11 +399,13 @@ The following parameters have to be entered:
 - **input**: Specifies the bus from which the input to the transformer comes from.
 - **input2**: Specifies the bus from which the secondary input of the transformer comes from. Only required if "transformer type" is set to
   "GenericTwoInputTransformer". If there is no second input, the fill character "0" must be entered here.
-- **output**: Specifies bus to which the output of the transformer is forwarded to. If cost for electrical capacity is used for the CHP unit, the
-  electrical output bus must be used here.
+- **output**: Specifies bus to which the output of the transformer is forwarded to. If the sector "central_heat" is
+  selected for a CHP the   electrical output bus must be used here. If the sector "central_electricity" is selected for a CHP the heat output bus must be used here.
 - **output2**: Specifies the bus to which the secondary output of the transformer is forwarded to. If there is no second output, the fill character
   "0" must be entered here.
-- **input2 / input**: Specifies the ratio of input2 to input (e.g. kWh/m\ :sup:`3`). Only required if "transformer type" is set to
+- **input2 / input**: Specifies the ratio of input2 to input (e.g. kWh/m\ :sup:`3`). The ratio is further used to calculate to factors for the input flows.
+  If a transformer uses two inputs of the same types with different amounts this can also be considered with the ratio (e.g. 60% biogas and 40% naturalgas
+  can be translated to a ratio of 0,6/0,4=1,25). Only required if "transformer type" is set to
   "GenericTwoInputTransformer". If there is no second input, the fill character "0" must be entered here.
 - **sector**: This column is used to differentiate the transformer types for the result processing energy amount collection. Possible entries:
   "electricity", "heat", "cooling", "central_electricity", "central_heat", "central_cooling", "electric_heating".
@@ -521,12 +526,13 @@ Storages
 Within this sheet, the storages of the energy system are defined.
 The following parameters have to be entered:
 
-- **label**: Unique designation of the storage. The following format is recommended: "<ID>_<energy sector>_storage". <ID> and <energy sector>
+- **label**: Unique designation of the storage. Also for storages that are not activated. The following format is recommended: "<ID>_<energy sector>_storage". <ID> and <energy sector>
   need to be replaced by the storage attributes.
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the storage shall be included to the model. "0" = inactive, "1" = active.
 - **storage type**: Defines whether the storage is a "Generic" or a "Stratified" storage. These two inputs are possible.
-- **bus**: Specifies which bus the storage is connected to.
+- **input**: Specifies the input of the storage. If the storage has only one connection, the same bus can be provided for input and output.
+- **output**: Specifies the output of the storage. If the storage has only one connection, the same bus can be provided for input and output.
 - **input/capacity ratio** (invest): Indicates the performance with which the storage can be charged
   (see also  `here <https://oemof-solph.readthedocs.io/en/latest/usage.html#using-an-investment-object-with-the-genericstorage-component>`_).
 - **output/capacity ratio** (invest): Indicates the performance with which the storage can be discharged
@@ -596,7 +602,7 @@ Links
 Within this sheet, the links of the energy system are defined. The following parameters have 
 to be entered:
 
-- **label**: Unique designation of the link. The following format is recommended: "<ID>_<energy sector>_link". <ID> and <energy sector>
+- **label**: Unique designation of the link. Also for links that are not activated. The following format is recommended: "<ID>_<energy sector>_link". <ID> and <energy sector>
   need to be replaced by the link attributes.
 - **comment**: Space for an individual comment, e.g. an indication of  which measure this component belongs to.
 - **active**: Specifies whether the link shall be included to the model. "0" = inactive, "1" = active.
@@ -651,7 +657,7 @@ Insulation
 Within this sheet, the energy system insulation options are defined. The following parameters have
 to be entered:
 
-- **label**: Unique designation of the insulation. The following format is recommended: "<ID>_<sink_label>_<insulation_type>". <ID>, <sink_label>
+- **label**: Unique designation of the insulation. Also for insulations that are not activated. The following format is recommended: "<ID>_<sink_label>_<insulation_type>". <ID>, <sink_label>
   and <insulation_type> need to be replaced by the insulation attributes.
 - **comment**: Space for an individual comment, e.g. an indication of which measure this component belongs to.
 - **active**: Specifies whether the insulation shall be included to the model. "0" = inactive, "1" = active.
@@ -681,33 +687,43 @@ to be entered:
 Time Series
 -----------
 
-Within this sheet, time series of components of which no automatically created time series exist, are stored. More 
-specifically, these are sinks to which the property "load profile" have been assigned as "timeseries" and sources 
-with the "technology" property "timeseries". The following parameters have to be entered:
+Within this sheet, time series and time-dependent price series, are stored. Time series are specified for components for which no automatically generated time series exist. 
+These can be sinks to which the property “load profile” has been assigned as "time series" and sources with the “technology” property “time series”.
+Time-dependent price series are specified for buses with excess sinks or shortage sources where each period has a different price. 
+These can be buses to which the property "excess costs" or "shortage costs" has been assigned as "timeseries".
+The following parameters must be entered:
 
-- **timestamp**: Points in time to which the stored time series are related. Should be within the time horizon defined in the sheet "timesystem".
+- **timestamp**: Points in time to which the stored time series are related. The timestamps in the time series refer to local time, allowing the
+  use of real measured data. On the days of the time change, specifically March 28 and October 28, there are special cases. On March 28, the clock
+  is set forward from 2:00 AM to 3:00 AM, which means the hour between 2:00 and 2:59 AM does not exist in local time and is therefore missing in the data.
+  On October 28, the clock is set back from 3:00 AM to 2:00 AM, causing the hour between 2:00 and 2:59 AM to occur twice (for the example of 2012).
+  This results in a duplicated     time span in the data for that hour. These effects arise from switching between daylight saving time and standard time.
+  When working with local times, these missing or repeated hours must be taken into account to ensure data consistency. .
 - **timeseries**: Time series of a sink or a source  which has been assigned the property "timeseries" under the attribute "load profile" or
   "technology. Time series contain a value between 0 and 1 for each point in time, which indicates the proportion of installed capacity
   accounted for by the capacity produced at that point in time. In the header line, the name must rather be entered in the format
   "componentID.fix" if the component enters the power system as a fixed component or it requires two columns in the format "componentID.min"
   and "componentID.max" if it is an unfixed component. The columns "componentID.min/.max" define the range that the solver can use for its
   optimization.
-
+- **price series**: Price Series of a bus with excess sink or shortage source which has been assigned the property "timeseries" under 
+  the attribute "excess costs" or "shortage costs".
+  In the header line, the name must be entered in the format "componentID.excess" for buses with excess sinks and "componentID.shortage" for buses with shortage sources.
+  It is possible for a bus to have time-dependent price series in both a excess sink and a shortage source.
  
  
 .. csv-table:: Exemplary input for time series sheet
-   :header: timestamp,residential_electricity_demand.actual_value,fixed_timeseries_electricty_source.fix, unfixed_timeseries_electricty_source.min,unfixed_timeseries_electricty_source.max,fixed_timeseries_electricity_sink.fix,unfixed_timeseries_electricity_sink.min,unfixed_timeseries_electricity_sink.max,fixed_timeseries_cooling_demand_sink.fix
+   :header: timestamp,residential_electricity_demand.actual_value,fixed_timeseries_electricty_source.fix, unfixed_timeseries_electricty_source.min,unfixed_timeseries_electricty_source.max,fixed_timeseries_electricity_sink.fix,unfixed_timeseries_electricity_sink.min,unfixed_timeseries_electricity_sink.max,fixed_timeseries_cooling_demand_sink.fix,bus.excess,bus.shortage
 
-   2012-01-01 00:00:00,0.559061982,0.000000,0.000000,1.000000,0.000000,0.000000,1.000000,100
-   2012-01-01 01:00:00,0.533606486,0.041667,0.000000,0.500000,0.041667,0.000000,0.500000,100
-   2012-01-01 02:00:00,0.506058757,0.083333,0.000000,0.333333,0.083333,0.000000,0.333333,100
-   2012-01-01 03:00:00,0.504140877,0.125000,0.000000,0.250000,0.125000,0.000000,0.250000,100
-   2012-01-01 04:00:00,0.507104873,0.166667,0.000000,0.200000,0.166667,0.000000,0.200000,100
-   2012-01-01 05:00:00,0.511376515,0.208333,0.000000,0.166667,0.208333,0.000000,0.166667,100
-   2012-01-01 06:00:00,0.541801064,0.250000,0.000000,0.142857,0.250000,0.000000,0.142857,100
-   2012-01-01 07:00:00,0.569261616,0.291667,0.000000,0.125000,0.291667,0.000000,0.125000,100
-   2012-01-01 08:00:00,0.602998867,0.333333,0.000000,0.111111,0.333333,0.000000,0.111111,100
-   2012-01-01 09:00:00,0.629064598,0.375000,0.000000,0.100000,0.375000,0.000000,0.100000,100
+   2012-01-01 00:00:00,0.559061982,0.000000,0.000000,1.000000,0.000000,0.000000,1.000000,100,-0.1156,0.1156
+   2012-01-01 01:00:00,0.533606486,0.041667,0.000000,0.500000,0.041667,0.000000,0.500000,100,-0.1034,0.1034
+   2012-01-01 02:00:00,0.506058757,0.083333,0.000000,0.333333,0.083333,0.000000,0.333333,100,-0.09656,0.09656
+   2012-01-01 03:00:00,0.504140877,0.125000,0.000000,0.250000,0.125000,0.000000,0.250000,100,-0.09764,0.09764
+   2012-01-01 04:00:00,0.507104873,0.166667,0.000000,0.200000,0.166667,0.000000,0.200000,100,-0.09611,0.09611
+   2012-01-01 05:00:00,0.511376515,0.208333,0.000000,0.166667,0.208333,0.000000,0.166667,100,-0.10769,0.10769
+   2012-01-01 06:00:00,0.541801064,0.250000,0.000000,0.142857,0.250000,0.000000,0.142857,100,-0.12675,0.12675
+   2012-01-01 07:00:00,0.569261616,0.291667,0.000000,0.125000,0.291667,0.000000,0.125000,100,-0.13897,0.13897
+   2012-01-01 08:00:00,0.602998867,0.333333,0.000000,0.111111,0.333333,0.000000,0.111111,100,-0.13341,0.13341
+   2012-01-01 09:00:00,0.629064598,0.375000,0.000000,0.100000,0.375000,0.000000,0.100000,100,-0.12631,0.12631
 
 .. _`Weather data sheet`:
 
@@ -757,7 +773,7 @@ Two different components are listed in this table. The first defines the differe
 for the construction of heating networks and second the components which are the connection between the houses and the heat networks. 
 These are the "dh_heatstation" for the exergy heat network and the " anergy_heat_pump" for the anergy heat network. 
 
-- **label**: Unique designation of the pipe types. The following format is recommended for the pipes: "<DN>-<diameter of pipe>".
+- **label**: Unique designation of the pipe types. Also for pipe types that are not activated. The following format is recommended for the pipes: "<DN>-<diameter of pipe>".
 - **active**: Specifies whether the pipe type shall be included to the model. "0" = inactive, "1" = active.
 - **nonconvex**: Specifies whether the investment capacity should be defined as a mixed-integer variable, i.e. whether the model
   can decide whether NOTHING OR THE INVESTMENT should be implemented. Explained

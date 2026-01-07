@@ -139,7 +139,7 @@ def append_timeseries_to_weatherdata_sheet(nodes_data: dict
 
 
 def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str
-                                 ) -> None:
+                                 ) -> float:
     """
         To be able to work with the adapted weather data set some
         parameters from nodes_data must be changed.
@@ -151,6 +151,9 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str
         :type clusters: int
         :param period: defines rather hours, days or weeks were selected
         :type period: str
+
+        :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
+                     can be used to scale the results up for a year
     """
     factor_dict = {"hours": 1, "days": 24, "weeks": 168}
     timesteps = factor_dict.get(period)
@@ -166,16 +169,36 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str
         for column in nodes_data[sheet].columns:
             if (sheet == "buses" and "costs" in column) \
                     or ("variable" in column):
-                nodes_data[sheet][column] *= variable_cost_factor
+
+                # Iterate over each value in the column
+                for index, value in nodes_data[sheet][column].items():
+                    # Try to convert the value to a numeric type
+                    numeric_value = pandas.to_numeric(value, errors='coerce')
+
+                    # Check if the value is numeric
+                    if not pandas.isna(numeric_value):
+                        # Multiply only if the value is numeric
+                        nodes_data[sheet].at[index, column] = numeric_value * variable_cost_factor
 
     # Adapting Demands
     nodes_data['sinks']['annual demand'] /= variable_cost_factor
+
+    # Adapting time series
+    # get columns with "excess" oder "shortage"
+    cols_to_scale = [col for col in nodes_data['timeseries'].columns if ('excess' in col or 'shortage' in col)]
+    # proof type
+    nodes_data['timeseries'][cols_to_scale] = nodes_data['timeseries'][cols_to_scale].astype(np.float64)
+    # multiply with variable cost factor
+    nodes_data['timeseries'][cols_to_scale] *= variable_cost_factor
+
 
     timedelta = str(clusters * timesteps - 1) + ' hours'
     nodes_data['energysystem']['end date'] = \
         nodes_data['energysystem']['start date'] \
         + pandas.Timedelta(timedelta)
     nodes_data['energysystem']['periods'] = (timesteps * clusters)
+
+    return variable_cost_factor
 
 
 def slp_sink_adaption(nodes_data: dict) -> None:
@@ -266,6 +289,8 @@ def slp_sink_adaption(nodes_data: dict) -> None:
 
         elif j["load profile"] == "timeseries":
             pass
+        elif j["load profile"] == "richardson":
+            pass
         else:
             raise ValueError('Invalid Load Profile for ' + str(j["label"]))
 
@@ -310,7 +335,7 @@ def timeseries_adaption(nodes_data: dict, clusters: int,
 
 
 def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
-                           result_path: str) -> None:
+                           result_path: str) -> float:
     """
         Evaluates the passed parameters for timeseries preparation and
         starts the corresponding simplification/clustering algorithm.
@@ -325,6 +350,9 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
         :param result_path: path where the modified model definition \
             file will be stored after timeseries adaption
         :type result_path: str
+
+        :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
+                     can be used to scale the results up for a year
     """
     from program_files.preprocessing.data_preparation_algorithms \
         import slicing, downsampling, averaging, heuristic_selection, \
@@ -340,10 +368,11 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
     if data_prep != 'none':
         # Adapting Standard Load Profile-Sinks
         slp_sink_adaption(nodes_data=nodes_data)
+        variable_cost_factor = 1
 
     # K-MEANS ALGORITHM
     if data_prep == 'k_means':
-        k_means_medoids.k_means_algorithm(cluster_period=cluster_period,
+        variable_cost_factor = k_means_medoids.k_means_algorithm(cluster_period=cluster_period,
                                           days_per_cluster=days_per_cluster,
                                           criterion=cluster_criterion,
                                           nodes_data=nodes_data,
@@ -351,7 +380,7 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
 
     # K-MEDOIDS ALGORITHM
     elif data_prep == 'k_medoids':
-        k_means_medoids.k_medoids_algorithm(cluster_period=cluster_period,
+        variable_cost_factor = k_means_medoids.k_medoids_algorithm(cluster_period=cluster_period,
                                             days_per_cluster=days_per_cluster,
                                             criterion=cluster_criterion,
                                             nodes_data=nodes_data,
@@ -359,7 +388,7 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
 
     # AVERAGING ALGORITHM
     elif data_prep == 'averaging':
-        averaging.timeseries_averaging(cluster_period=cluster_period,
+        variable_cost_factor = averaging.timeseries_averaging(cluster_period=cluster_period,
                                        days_per_cluster=days_per_cluster,
                                        nodes_data=nodes_data,
                                        period=cluster_period)
@@ -367,34 +396,34 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
     # SLICING ALGORITHM
     # use every n-th period
     elif data_prep == 'slicing A':
-        slicing.timeseries_slicing(n_days=int(days_per_cluster),
+        variable_cost_factor = slicing.timeseries_slicing(n_days=int(days_per_cluster),
                                    nodes_data=nodes_data,
                                    period=cluster_period)
     # delete every n-th period
     elif data_prep == 'slicing B':
-        slicing.timeseries_slicing2(n_days=int(days_per_cluster),
+        variable_cost_factor = slicing.timeseries_slicing2(n_days=int(days_per_cluster),
                                     nodes_data=nodes_data,
                                     period=cluster_period)
 
     # DOWNSAMPLING ALGORITHM
     # use every n-th period
     elif data_prep == 'downsampling A':
-        downsampling.timeseries_downsampling(nodes_data=nodes_data,
+        variable_cost_factor = downsampling.timeseries_downsampling(nodes_data=nodes_data,
                                              n_timesteps=int(n_timesteps))
     # delete every n-th period
     elif data_prep == 'downsampling B':
-        downsampling.timeseries_downsampling2(nodes_data=nodes_data,
+        variable_cost_factor = downsampling.timeseries_downsampling2(nodes_data=nodes_data,
                                               n_timesteps=int(n_timesteps))
 
     # HEURISTIC SELECTION ALGORITHM
     elif data_prep == 'heuristic selection':
-        heuristic_selection.hierarchical_selection(nodes_data=nodes_data,
+        variable_cost_factor = heuristic_selection.hierarchical_selection(nodes_data=nodes_data,
                                                    scheme=int(n_timesteps),
                                                    period=cluster_period,
                                                    seasons=cluster_seasons)
 
     elif data_prep == 'random sampling':
-        random_sampling.random_sampling(nodes_data=nodes_data,
+        variable_cost_factor = random_sampling.random_sampling(nodes_data=nodes_data,
                                         period=cluster_period,
                                         number_of_samples=int(n_timesteps))
 
@@ -406,4 +435,10 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
         nodes_data['timeseries'].to_excel(writer, sheet_name='time series')
         nodes_data['energysystem'].to_excel(writer, sheet_name='energysystem')
         nodes_data['sinks'].to_excel(writer, sheet_name='sinks')
+        nodes_data['buses'].to_excel(writer, sheet_name='buses')
         writer.close()
+
+    return variable_cost_factor
+
+
+

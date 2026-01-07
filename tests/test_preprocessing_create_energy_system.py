@@ -44,15 +44,25 @@ def test_define_energy_system(test_nodes_data_entry):
         import define_energy_system
     
     esys, nodes_data = define_energy_system(test_nodes_data_entry)
-    
-    test_time_index = pandas.date_range(
-        start=test_nodes_data_entry["energysystem"].loc[0, "start date"],
-        end=test_nodes_data_entry["energysystem"].loc[0, "end date"],
-        freq=test_nodes_data_entry["energysystem"].loc[0,
-                                                       "temporal resolution"])
-    
-    test_timestamp = pandas.to_datetime("01.01.2012 01:00:00 +0100")
-    
-    assert (esys.timeindex == test_time_index).all()
-    assert nodes_data["timeseries"].index == test_timestamp
-    assert nodes_data["weather data"].index == test_timestamp
+
+    start_local = pandas.to_datetime(test_nodes_data_entry["energysystem"].loc[0, "start date"])
+    end_local = pandas.to_datetime(test_nodes_data_entry["energysystem"].loc[0, "end date"])
+    timezone = test_nodes_data_entry["energysystem"].loc[0, "timezone"]
+
+    # convert to utc
+    start_utc = start_local.tz_localize(timezone).tz_convert("UTC")
+    end_utc = end_local.tz_localize(timezone).tz_convert("UTC")
+
+    # expected utc timestamp
+    expected_time_index = pandas.date_range(
+        start=start_utc,
+        end=end_utc,
+        freq=test_nodes_data_entry["energysystem"].loc[0, "temporal resolution"]
+    )
+
+    # expected time stamp
+    expected_timestamp = pandas.to_datetime("2012-01-01 00:00:00").tz_localize("Europe/Berlin").tz_convert("UTC")
+
+    assert (esys.timeindex == expected_time_index).all()
+    assert nodes_data["timeseries"].index[0] == expected_timestamp
+    assert nodes_data["weather data"].index[0] == expected_timestamp

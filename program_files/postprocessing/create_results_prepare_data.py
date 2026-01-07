@@ -1,8 +1,10 @@
 """
     Christian Klemm - christian.klemm@fh-muenster.de
     Gregor Becker - gregor.becker@fh-muenster.de
+    Oscar Quiroga - oscar.quiroga@fh-muenster.de
 """
 import pandas
+from typing import Tuple
 
 # columns_of_plotly_table
 copt = [
@@ -22,7 +24,7 @@ copt = [
 
 
 def add_component_to_loc(label: str, comp_dict: list,
-                         df_list_of_components: pandas.DataFrame,
+                         df_list_of_components: pandas.DataFrame, variable_cost_factor: float,
                          maxinvest="---") -> pandas.DataFrame:
     """
         adds the given component with it's parameters to list of
@@ -37,6 +39,9 @@ def add_component_to_loc(label: str, comp_dict: list,
         :param df_list_of_components: DataFrame containing the list of \
             components which will be the components.csv afterwards
         :type df_list_of_components: pandas.DataFrame
+        :param variable_cost_factor: factor that considers the data_preparation_algorithms,
+            can be used to scale the results up for a year
+        :type variable_cost_factor: float
         :param maxinvest: str holding the maximum possible investment
         :type maxinvest: str
         
@@ -57,10 +62,10 @@ def add_component_to_loc(label: str, comp_dict: list,
                     [
                         label,
                         comp_dict[10],
-                        round(sum(comp_dict[0]), 2),
-                        round(sum(comp_dict[1]), 2),
-                        round(sum(comp_dict[2]), 2),
-                        round(sum(comp_dict[3]), 2),
+                        round(sum(comp_dict[0]) * variable_cost_factor, 2),
+                        round(sum(comp_dict[1]) * variable_cost_factor, 2),
+                        round(sum(comp_dict[2]) * variable_cost_factor, 2),
+                        round(sum(comp_dict[3]) * variable_cost_factor, 2),
                         round(capacity, 2),
                         round(comp_dict[8], 2),
                         round(comp_dict[6], 2),
@@ -128,9 +133,52 @@ def append_flows(label: str, comp_dict: list,
     return df_result_table
 
 
+def create_flow_info_dict(comp_dict: list) -> pandas.DataFrame:
+    """
+    Creates a DataFrame with flow information for each component.
+
+    Extracts up to two input and two output flow connections from a component dictionary.
+    Each flow is represented as a tuple of buses (source, target). The result includes
+    the component name and the identified flows.
+
+    :param comp_dict: List with component names as keys and flow data as values.
+    :type comp_dict: list
+
+    :return: - **flow_info_df** (pandas.DataFrame): A table with columns for component name and up to four flow tuples.
+    """
+
+    # New dictionary to store the flow information
+    flow_info_dict = {}
+
+    # Loop through the comp_dict and extract the relevant flow data
+    for comp_name, comp_data in comp_dict.items():
+
+        # Extract the first 4 elements directly as inputs and outputs
+        inputs = [item.name[0] for i, item in enumerate(comp_data[:2]) if hasattr(item, 'name') and isinstance(item.name, tuple)]
+        outputs = [item.name[0] for i, item in enumerate(comp_data[2:4]) if hasattr(item, 'name') and isinstance(item.name, tuple)]
+
+        # Ensure that we have no more than 2 inputs and 2 outputs
+        flow_info_dict[comp_name] = {
+            'Flow Input 1': inputs[0] if len(inputs) > 0 else None,
+            'Flow Input 2': inputs[1] if len(inputs) > 1 else None,
+            'Flow Output 1': outputs[0] if len(outputs) > 0 else None,
+            'Flow Output 2': outputs[1] if len(outputs) > 1 else None,
+        }
+
+    # Convert the dictionary into a pandas DataFrame
+    flow_info_df = pandas.DataFrame.from_dict(flow_info_dict, orient='index')
+
+    # Move index to column for Excel export
+    flow_info_df.reset_index(inplace=True)
+    flow_info_df.rename(columns={'index': 'Component'}, inplace=True)
+
+    return flow_info_df
+
+
+
 def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
-                df_list_of_components: pandas.DataFrame
-                ) -> (pandas.DataFrame, float, float, float, pandas.DataFrame):
+                df_list_of_components: pandas.DataFrame, variable_cost_factor: float,
+                ) -> Tuple[pandas.DataFrame, float, float, float, pandas.DataFrame]:
     """
         In this method, on the one hand, the components as well as
         their flows are added to the list of components (loc) and to
@@ -149,6 +197,9 @@ def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
         :param df_list_of_components: DataFrame containing the list of \
             components which will be the components.csv afterwards
         :type df_list_of_components: pandas.DataFrame
+        :param variable_cost_factor: factor that considers the data_preparation_algorithms,
+            can be used to scale the results up for a year
+        :type variable_cost_factor: float
         
         :return: - **df_list_of_components** (pandas.DataFrame) - \
                     DataFrame containing the list of components which \
@@ -179,6 +230,7 @@ def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
         df_list_of_components = add_component_to_loc(
             label=label,
             comp_dict=comp_dict[label],
+            variable_cost_factor=variable_cost_factor,
             df_list_of_components=df_list_of_components,
             maxinvest=comp_dict[label][7],
         )
@@ -195,9 +247,8 @@ def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
     )
 
 
-def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict
-                 ) -> (pandas.DataFrame, float, float, float, pandas.DataFrame,
-                       float):
+def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict, variable_cost_factor: float,
+                 ) -> Tuple[pandas.DataFrame, float, float, float, pandas.DataFrame, float]:
     """
         This method is the main method of data preparation for
         subsequent export and/or display in the GUI of the energy
@@ -212,6 +263,9 @@ def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict
         :param nodes_data: dictionary containing data from excel \
                 model definition file
         :type nodes_data: dict
+        :param variable_cost_factor: factor that considers the data_preparation_algorithms,
+            can be used to scale the results up for a year
+        :type variable_cost_factor: float
         
         :return: - **df_list_of_components** (pandas.DataFrame) - \
                     DataFrame containing the list of components which \
@@ -262,7 +316,12 @@ def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict
         df_result_table,
     ) = prepare_loc(comp_dict=comp_dict,
                     df_result_table=df_result_table,
-                    df_list_of_components=df_list_of_components)
+                    df_list_of_components=df_list_of_components,
+                    variable_cost_factor=variable_cost_factor)
+
+    # create additional dict with information about the input and output flows
+    flow_info_df = create_flow_info_dict(comp_dict=comp_dict)
+
     return (
         df_list_of_components,
         total_periodical_costs,
@@ -270,4 +329,5 @@ def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict
         total_constraint_costs,
         df_result_table,
         total_demand,
+        flow_info_df
     )

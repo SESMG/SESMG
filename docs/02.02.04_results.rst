@@ -147,6 +147,13 @@ The summary.csv contains the most important summarized results for the entire op
   meet the demand. Additionally, excess energy (Excess) is subtracted from Total Usage to reflect the actual
   energy consumption (This value is not summed of for the entire year if a timeseries simplification is selected).
 
+1e. flow_information.cvs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The flow_information.csv file provides a detailed description of all flows listed in both the components.csv and the
+result table displayed in the GUI. It contains the name of each flow associated with each component, making it possible
+to distinguish between the different inputs and outputs (columns: Flow Input 1, Flow Input 2, Flow Output 1, Flow Output 2).
+For example, it becomes clear which input of a heat pump is associated with electricity.
+
 2. Results for a Single-criteria optimization with district heating
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 If district heating is included in the optimization options additional result files are created.

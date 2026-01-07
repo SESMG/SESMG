@@ -256,8 +256,9 @@ if st.session_state["state_model_definition_sheets"] == "" and \
         st.session_state['state_download'] is False:
     # run start page
     standard_page()
-    st.write(os.path.exists(os.path.join(set_result_path(),
-                                   'Upscaling_Tool')))
+    #st.write(os.path.exists(os.path.join(set_result_path(),'Upscaling_Tool')))
+    if not os.path.exists(os.path.join(set_result_path(), 'Upscaling_Tool')):
+        st.warning("Upscaling_Tool folder not found.")
 
 # running preprocessing page if tool ran
 elif st.session_state["state_model_definition_sheets"] != "" and \

@@ -2,6 +2,7 @@
     Christian Klemm - christian.klemm@fh-muenster.de
     Gregor Becker - gregor.becker@fh-muenster.de
     Janik Budde - janik.budde@fh-muenster.de
+    Oscar Quiroga - oscar.quiroga@fh-muenster.de
 """
 import pandas
 
@@ -347,6 +348,8 @@ def create_central_timeseries_sources(central: pandas.DataFrame, sheets: dict,
     """
     from program_files.urban_district_upscaling.components import (Bus, Link,
                                                                    Source)
+    from program_files.urban_district_upscaling.pre_processing import read_standard_parameters
+
     # query active central timeseries sources
     timeseries_sources = central.query(
         "(technology == 'timeseries_source') and (active == 1)"
@@ -354,6 +357,16 @@ def create_central_timeseries_sources(central: pandas.DataFrame, sheets: dict,
     
     if len(timeseries_sources) >= 1:
         for _, source in timeseries_sources.iterrows():
+            # check if standard parameters for this component exist
+            param, keys = read_standard_parameters(
+                name="timeseries source",
+                parameter_type="3_sources",
+                index="source type",
+                standard_parameters=standard_parameters
+            )
+            if param is None:
+                continue  # skip this source if parameters are missing
+
             # create output bus for the current considered timeseries
             # source
             sheets = Bus.create_standard_parameter_bus(

@@ -110,4 +110,5 @@ potentially irrelevant investment decisions are identified and removed from the 
 ("technical pre-selection", see [1]). Optionally, the investment boundaries for the investment
 decisions remaining in the model can be adjusted with the freely selectable
 _investment_boundary_factor_ ("tightening of technical boundaries", see [1]). The pre-run and main
-run are automatically executed one after the other.
+run are automatically executed one after the other. 
+Pre-Modeling does not currently work for modelling heating networks.

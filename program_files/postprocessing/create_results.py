@@ -1,6 +1,7 @@
 """
     Christian Klemm - christian.klemm@fh-muenster.de
     Gregor Becker - gregor.becker@fh-muenster.de
+    Oscar Quiroga - oscar.quiroga@fh-muenster.de
 """
 
 import logging
@@ -14,65 +15,51 @@ from program_files.postprocessing.create_results_prepare_data \
     import prepare_data
 
 
-def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str
-         ) -> None:
+def xlsx(nodes_data: dict, optimization_model: solph.Model, filepath: str) -> None:
     """
-        Returns model results as xlsx-files.
-        Saves the in- and outgoing flows of every bus of a given,
-        optimized energy system as .xlsx file
+    Returns model results as xlsx-files.
+    Saves the in- and outgoing flows of every bus of a given,
+    optimized energy system as .xlsx file
 
-        :param nodes_data: dictionary containing data from excel \
-            model definition file
-        :type nodes_data: dict
-        :param optimization_model: optimized energy system
-        :type optimization_model: oemof.solph.model
-        :param filepath: path, where the results will be stored
-        :type filepath: str
+    :param nodes_data: dictionary containing data from excel
+        model definition file
+    :type nodes_data: dict
+    :param optimization_model: optimized energy system
+    :type optimization_model: oemof.solph.model
+    :param filepath: path, where the results will be stored
+    :type filepath: str
     """
     results = solph.processing.results(optimization_model)
 
-    # Writes a spreadsheet containing the input and output flows into
-    # every bus of the energy system for every timestep of the
-    # timesystem
     for i, b in nodes_data["buses"].iterrows():
         if b["active"]:
-            file_path = os.path.join(filepath, "results_"
-                                     + b["label"] + ".xlsx")
+            file_path = os.path.join(filepath, "results_" + b["label"] + ".xlsx")
+            
             node_results = solph.views.node(results, b["label"])
+            
+            if "sequences" not in node_results:
+                logging.warning(f"No sequence results found for bus '{b['label']}', skipping.")
+                continue
+            
             df = node_results["sequences"]
-            df.head(2)
-            with pd.ExcelWriter(file_path) as writer:  # doctest: +SKIP
-                df.to_excel(writer, sheet_name=b["label"])
-            # returns logging info
-            logging.info("   " + "Results saved as xlsx for " + b["label"])
-    # Bus xlsx-files for district heating busses
-    results_copy = results.copy()
-    components = []
-    # iterate threw result keys to find district heating buses
-    for i in results.keys():
-        if "tag1=" not in str(i):
-            results_copy.pop(i)
-    # determine only the district heating buses from result_copy
-    for i in results_copy.keys():
-        if i[0] not in components and i[0] is not None:
-            if "bus" in str(i[0]) and "dh_source_link" not in str(i[0]):
-                components.append(i[0])
-        if i[1] not in components and i[1] is not None:
-            if "bus" in str(i[1]) and "dh_source_link" not in str(i[1]):
-                components.append(i[1])
-    for component in components:
-        # renaming label for better file names
-        label = str(component).replace("infrastructure_heat_bus", "dh")
-        label = label.replace("consumers_heat_bus", "dh")
-        label = label.replace("producers_heat_bus", "dh")
-        file_path = os.path.join(filepath, "results_" + str(label) + ".xlsx")
-        node_results = solph.views.node(results, str(component))
-        df = node_results["sequences"]
-        df.head(2)
-        with pd.ExcelWriter(file_path) as writer:  # doctest: +SKIP
-            df.to_excel(writer, sheet_name=label)
-        # returns logging info
-        logging.info("\t Results saved as xlsx for " + str(label))
+            
+
+            with pd.ExcelWriter(file_path) as writer:
+                df = df.copy()
+
+                # Remove time zone from the index if it exists
+                if df.index.tz is not None:
+                    df.index = df.index.tz_localize(None)
+
+                # Remove column time zone (just in case)
+                for col in df.columns:
+                    if pd.api.types.is_datetime64_any_dtype(df[col]):
+                        try:
+                            df[col] = df[col].dt.tz_localize(None)
+                        except Exception:
+                            pass
+
+                df.to_excel(writer, sheet_name="Sheet1")
 
 
 def charts(nodes_data: dict, optimization_model: solph.Model,
@@ -163,6 +150,9 @@ class Results:
         :type energy_system: oemof.solph.Energysystem
         :param result_path: Path where the results are saved.
         :type result_path: str
+        :param variable_cost_factor: factor that considers the data_preparation_algorithms,
+            can be used to scale the results up for a year
+        :type variable_cost_factor: float
         :param console_log: boolean which decides rather the results \
             will be logged in the console or not
         :type console_log: bool
@@ -183,6 +173,7 @@ class Results:
         optimization_model: solph.Model,
         energy_system: solph.EnergySystem,
         result_path: str,
+        variable_cost_factor: float,
         console_log: bool,
         cluster_dh: bool,
     ):
@@ -202,7 +193,8 @@ class Results:
             nodes_data=nodes_data,
             results=self.results,
             esys=self.esys,
-            result_path=result_path
+            result_path=result_path,
+            variable_cost_factor=variable_cost_factor
         )
 
         (
@@ -212,9 +204,11 @@ class Results:
             total_constraint_costs,
             df_result_table,
             total_demand,
+            flow_info_df,
         ) = prepare_data(comp_dict=comp_dict,
                          total_demand=total_demand,
-                         nodes_data=nodes_data)
+                         nodes_data=nodes_data,
+                         variable_cost_factor=variable_cost_factor)
         
         # SUMMARY
         meta_results = solph.processing.meta_results(optimization_model)
@@ -238,6 +232,7 @@ class Results:
                     round(total_periodical_costs, 2),
                     round(total_demand, 2),
                     round(total_usage, 2),
+                    variable_cost_factor,
                 ]
             ],
             columns=[
@@ -250,6 +245,7 @@ class Results:
                 "Total Periodical Costs",
                 "Total Energy Demand",
                 "Total Energy Usage",
+                "Variable Cost Factor"
             ],
         )
 
@@ -260,5 +256,7 @@ class Results:
         df_result_table.to_csv(result_path + "/results.csv")
 
         df_summary.to_csv(result_path + "/summary.csv", index=False)
+
+        flow_info_df.to_csv(result_path + "/flow_information.csv", index=False)
 
         logging.info("   " + "Successfully prepared results...")

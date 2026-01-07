@@ -227,7 +227,10 @@ def test_links(test_link_nodes_data,
         "shortage constraint costs": [0] * 2
     })}
     
-    busd, nodes = Bus.buses(nd_buses=bus_data["buses"], nodes=[])
+    busd, nodes = Bus.buses(nd_buses=bus_data["buses"],
+                            timeseries=[],
+                            nodes=[])
+    
     test_link_nodes_data.update({"timeseries": pandas.DataFrame()})
     Link.Links(nodes_data=test_link_nodes_data, nodes=nodes, busd=busd)
     

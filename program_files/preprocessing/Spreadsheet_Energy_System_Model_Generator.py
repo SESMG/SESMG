@@ -10,10 +10,13 @@
     
     Christian Klemm - christian.klemm@fh-muenster.de
     Gregor Becker - gregor.becker@fh-muenster.de
+    Oscar Quiroga - oscar.quiroga@fh-muenster.de
 """
 import logging
-from oemof.tools import logger
+# removed for now, as oemof-logs will no longer be used for the time being
+# from oemof.tools import logger
 import os
+from typing import Tuple
 from threading import *
 from program_files.preprocessing import (create_energy_system,
                                          data_preparation,
@@ -30,7 +33,7 @@ from program_files.preprocessing.pre_model_analysis import \
 def call_district_heating_creation(nodes_data: dict, nodes: list, busd: dict,
                                    district_heating_path: str,
                                    result_path: str, cluster_dh: bool
-                                   ) -> (dict, list):
+                                   ) -> Tuple[dict, list]:
     """
     
         :param nodes_data:
@@ -53,17 +56,21 @@ def call_district_heating_creation(nodes_data: dict, nodes: list, busd: dict,
     buses = nodes_data["buses"]
     # get only the active pipe types
     pipe_types = nodes_data["pipe types"].query("active == 1")
-    
-    # check if at least one bus can possibly be connected to the
-    # exergy heating net
-    if len(buses[~buses["district heating conn. (exergy)"].isin(["0", 0])]):
-        # check if at least one pipe is meant to be used within an
-        # exergy network
-        if len(pipe_types.query("`anergy or exergy` == 'exergy'")):
-            # creates the thermal network components as defined in
-            # the model definition file and adds them to the list
-            # of components (nodes)
-            nodes, busd = district_heating.district_heating(
+
+    # Detect both systems
+    has_exergy = (
+        len(buses[~buses["district heating conn. (exergy)"].isin(["0", 0])]) > 0
+        and len(pipe_types.query("`anergy or exergy` == 'exergy'")) > 0
+    )
+    has_anergy = (
+        len(buses[~buses["district heating conn. (anergy)"].isin(["0", 0])]) > 0
+        and len(pipe_types.query("`anergy or exergy` == 'anergy'")) > 0
+    )
+
+    # If both systems exist
+    if has_exergy and has_anergy:
+        # Exergy
+        nodes, busd = district_heating.district_heating(
                 nodes_data=nodes_data,
                 nodes=nodes, busd=busd,
                 district_heating_path=district_heating_path,
@@ -71,17 +78,8 @@ def call_district_heating_creation(nodes_data: dict, nodes: list, busd: dict,
                 cluster_dh=cluster_dh,
                 is_exergy=True
             )
-            
-    # check if at least one bus can possibly be connected to the
-    # anergy heating net
-    if len(buses[~buses["district heating conn. (anergy)"].isin(["0", 0])]):
-        # check if at least one pipe is meant to be used within an
-        # anergy network
-        if len(pipe_types.query("`anergy or exergy` == 'anergy'")):
-            # creates the thermal network components as defined in the
-            # model definition file and adds them to the list of
-            # components (nodes)
-            nodes, busd = district_heating.district_heating(
+        # Anergy
+        nodes, busd = district_heating.district_heating(
                 nodes_data=nodes_data,
                 nodes=nodes,
                 busd=busd,
@@ -90,7 +88,34 @@ def call_district_heating_creation(nodes_data: dict, nodes: list, busd: dict,
                 cluster_dh=cluster_dh,
                 is_exergy=False
             )
-            
+    # check if at least one bus can possibly be connected to the
+    # exergy heating net
+    elif has_exergy:
+        # creates the thermal network components as defined in
+        # the model definition file and adds them to the list
+        # of components (nodes)
+        nodes, busd = district_heating.district_heating(
+                nodes_data=nodes_data,
+                nodes=nodes, busd=busd,
+                district_heating_path=district_heating_path,
+                result_path=result_path,
+                cluster_dh=cluster_dh,
+                is_exergy=True
+            )
+    elif has_anergy:
+        # creates the thermal network components as defined in the
+        # model definition file and adds them to the list of
+        # components (nodes)
+        nodes, busd = district_heating.district_heating(
+                nodes_data=nodes_data,
+                nodes=nodes,
+                busd=busd,
+                district_heating_path=district_heating_path,
+                result_path=result_path,
+                cluster_dh=cluster_dh,
+                is_exergy=False
+            )
+
     return busd, nodes
 
 
@@ -138,8 +163,6 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
     """
     # sets number of threads for numpy
     os.environ['NUMEXPR_NUM_THREADS'] = str(num_threads)
-    # defines a logging file
-    logger.define_logging(logpath=result_path)
     # imports data from the excel file and returns it as a dictionary
     nodes_data = create_energy_system.import_model_definition(
             filepath=model_definition_file)
@@ -151,7 +174,7 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
                 nodes_data=nodes_data)
     
     # Timeseries Preprocessing
-    data_preparation.timeseries_preparation(
+    variable_cost_factor = data_preparation.timeseries_preparation(
             timeseries_prep_param=timeseries_prep,
             nodes_data=nodes_data,
             result_path=result_path)
@@ -165,7 +188,7 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
     
     # creates bus objects, excess sinks, and shortage sources as defined
     # in the model definition file buses sheet
-    busd, nodes = Bus.buses(nd_buses=nodes_data["buses"], nodes=[])
+    busd, nodes = Bus.buses(nd_buses=nodes_data["buses"], timeseries=nodes_data["timeseries"], nodes=[])
     
     busd, nodes = call_district_heating_creation(
         nodes_data=nodes_data,
@@ -229,7 +252,7 @@ def sesmg_main(model_definition_file: str, result_path: str, num_threads: int,
     # creates the data used for the results presentation in the GUI
     create_results.Results(
             nodes_data=nodes_data, optimization_model=om, energy_system=esys,
-            result_path=result_path, console_log=console_results,
+            result_path=result_path, variable_cost_factor=variable_cost_factor, console_log=console_results,
             cluster_dh=cluster_dh)
     
     logging.info('\t ' + 56 * '-')

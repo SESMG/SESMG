@@ -2,6 +2,7 @@
     Gregor Becker - gregor.becker@fh-muenster.de
     Christian Klemm - christian.klemm@fh-muenster.de
     Janik Budde - janik.budde@fh-muenster.de
+    Oscar Quiroga - oscar.quiroga@fh-muenster.de
 """
 import datetime
 
@@ -91,7 +92,8 @@ def read_standard_parameters(name: str, parameter_type: str, index: str,
         # return parameters and keys
         return standard_param, standard_keys
     else:
-        raise ValueError("The component type " + name + " does not exist.")
+        print(f"[Warning] Component type '{name}' not found in standard parameters. Skipping.")
+        return None, None
 
 
 def create_standard_parameter_comp(

@@ -4,7 +4,6 @@
 from shapely.geometry import Point
 from feedinlib.open_FRED import Weather, defaultdb
 from datetime import timedelta
-import geocoder
 import logging
 
 
@@ -12,7 +11,7 @@ def set_esys_data(nodes_data: dict, location: Point, variables: str) -> dict:
     """
         Create the dictionary which is used to download the weather data
         form the OpenEnergyPlatform Database.
-        
+
         :param nodes_data: dictionary containing the model definition \
             data
         :type nodes_data: dict
@@ -22,9 +21,11 @@ def set_esys_data(nodes_data: dict, location: Point, variables: str) -> dict:
         :param variables: str which differentiates between \
             windpowerlib and pvlib download
         :type variables: str
-        
+
         :return: - **-** (dict) - dictionary containing the data \
             necessary for the OpenEnergyPlatform Database download
+
+
     """
     # since the last day is not included within the Download, the
     # energy systems end date is increased by one day
@@ -50,7 +51,7 @@ def import_open_fred_weather_data(nodes_data: dict, lat: float, lon: float
         the weather data structure of the model definition.
         The modified model definition (nodes data) is then returned to
         the main algorithm.
-        
+
         :param nodes_data: dictionary containing the model definition's\
              data
         :type nodes_data: dict
@@ -60,19 +61,14 @@ def import_open_fred_weather_data(nodes_data: dict, lat: float, lon: float
         :param lon: longitude of the investigated location in WGS84 \
             coordinates
         :type lon: float
-        
+
         :return: - **nodes_data** (dict) - modified model definition \
             data
     """
+
     # location of area under investigation
     location = Point(lon, lat)
-    
-    # log the city and country of the given coords
-    geo_info = geocoder.google([lat, lon], method='reverse')
-    logging.info("\t The inserted Open Fred coordinates point on "
-                 + str(geo_info.city) + " in "
-                 + str(geo_info.country) + ".")
-    
+
     # get windpowerlib relevant weather data from OPEN Fred
     wind_df = Weather(**set_esys_data(nodes_data, location, "windpowerlib"),
                       **defaultdb()).df(location=location, lib="windpowerlib")
@@ -86,7 +82,7 @@ def import_open_fred_weather_data(nodes_data: dict, lat: float, lon: float
     # resample pv system data from quarter-hourly to hourly resolution
     pv_df = pv_df.resample("1h").mean()
     pv_df.reset_index(drop=True, inplace=True)
-    
+
     # create weather data sheet
     data = {
         "pressure": wind_df["pressure"],

@@ -316,14 +316,18 @@ class Transformers:
             conversion_factors.update({
                 self.busd[transformer["output2"]]: transformer["efficiency2"]
             })
-    
-        # Update conversion factors with the input2-to-input conversion
-        # factor if it exists
-        conversion_factors.update(
-                **({self.busd[transformer["input2"]]: transformer[
-                    "input2 / input"]} if two_input else {})
-        )
-    
+
+        # calculate the two input factors
+        if two_input and transformer["input2 / input"] not in ["None", "none", 0]:
+            input_factor = 1 / (1 + transformer["input2 / input"])
+            input2_factor = 1 - input_factor
+            # update the conversion factors
+            new_entries = {
+                self.busd[transformer["input"]]: input_factor,
+                self.busd[transformer["input2"]]: input2_factor,
+            }
+            conversion_factors = {**new_entries, **conversion_factors}
+
         # Inputs for the transformer **() is only appended if the
         # considered transformer has two inputs
         inputs = {"inputs": {

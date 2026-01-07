@@ -55,6 +55,7 @@ def create_model_definition_save_folder(model_definition, directory: str,
     save_path = str(directory + "/" + model_name + timestamp)
     # make directory for created save path and return it
     os.mkdir(save_path)
+
     return save_path
 
 
@@ -216,7 +217,7 @@ def run_pareto(limits: list, model_definition, GUI_main_dict: dict,
     # create one directory to collect all runs
     directory = (result_path + "/"
                  + datetime.now().strftime("%Y-%m-%d--%H-%M-%S"))
-    os.mkdir(directory)
+    #os.mkdir(directory)
 
     logging.info("Optimization of the following runs "
                  + str(limits)

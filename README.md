@@ -3,8 +3,8 @@
 [![Generic badge](https://img.shields.io/badge/content-how-green.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/5ab50cca9d852028f3df/maintainability)](https://codeclimate.com/github/SESMG/SESMG/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/5ab50cca9d852028f3df/test_coverage)](https://codeclimate.com/github/SESMG/SESMG/test_coverage)
+[![Maintainability](https://qlty.sh/gh/SESMG/projects/SESMG/maintainability.svg)](https://qlty.sh/gh/SESMG/projects/SESMG)
+[![Test Coverage](https://qlty.sh/gh/SESMG/projects/SESMG/coverage.svg)](https://qlty.sh/gh/SESMG/projects/SESMG)
 [![Documentation Status](https://readthedocs.org/projects/spreadsheet-energy-system-model-generator/badge/?version=latest)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/?badge=latest)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.05519/status.svg)](https://doi.org/10.21105/joss.05519)
@@ -36,8 +36,7 @@ https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01
 [![Generic badge](https://img.shields.io/badge/content-what/why-darkgreen.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
 ### Examples
-Examples are stored in a separate GIT-Repository: https://github.com/SESMG/SESMG-Examples
-
+Examples are stored in a separate GIT-Repository [here](https://github.com/SESMG/SESMG-Examples).
 
 ### Project status
 ✓ Draft (alpha, beta) State <br />
@@ -51,11 +50,8 @@ Examples are stored in a separate GIT-Repository: https://github.com/SESMG/SESMG
 ## Detailed Documentation! 
 [![Generic badge](https://img.shields.io/badge/content-references-orange.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
-The [documentation](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/),
-which includes detailed instructions for **installation** and **use**, **troubleshooting** 
-and much more, can be accessed via the following link:
-
-https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/
+The documentation which includes detailed instructions for **installation** and **use**, **troubleshooting** 
+and much more can be found [here](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/).
 
 ## Questions? 
 [![Generic badge](https://img.shields.io/badge/content-who-yellow.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)

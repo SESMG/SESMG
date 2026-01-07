@@ -5,7 +5,9 @@
 import oemof.solph as solph
 from oemof.solph.components import GenericStorage, Link, Sink, Source
 from oemof.solph import Bus
+from typing import Tuple
 from dhnx.optimization.oemof_heatpipe import HeatPipeline
+import numpy as np
 import pandas
 
 
@@ -249,26 +251,50 @@ def calc_variable_costs(node, comp_dict: list, attr: str) -> float:
         :return: - **costs** (float) - float holding the calculated \
                     variable costs or emissions
     """
-    costs = 0
+
+    costs_timeseries = 0.0
+    costs_scalar = 0.0
+
     type_dict = {
         "inputs": [node.inputs, comp_dict[0], comp_dict[1]],
         "outputs": [node.outputs, comp_dict[2], comp_dict[3]],
     }
+
     for flow_type in type_dict:
         for i in range(0, 2):
-            # if the sum of the flow stored in comp_dict 0 to 3 is more
-            # than 0 the sum is multiplied with the for this input/output
-            # defined costs factor which is searched by the method getattr
-            if sum(type_dict[flow_type][i + 1]) > 0:
-                costs += sum(
-                    type_dict[flow_type][i + 1]
-                    * getattr(
-                        type_dict[flow_type][0][
-                            list(type_dict[flow_type][0].keys())[i]
-                        ],
-                        attr,
-                    )
+
+            if np.sum(type_dict[flow_type][i + 1]) > 0:
+                # if the sum of the flow stored in comp_dict 0 to 3 is more
+                # than 0 the sum is multiplied with the for this input/output
+                # defined costs factor which is searched by the method getattr
+                attribute_value = getattr(
+                    type_dict[flow_type][0][list(type_dict[flow_type][0].keys())[i]],
+                    attr
                 )
+
+                # Check if 'attribute_value' is a series (timeseries)
+                if isinstance(attribute_value, pandas.Series):
+
+                    # Remove last value of the attribute values, as the results contain one value less
+                    attribute_value = attribute_value.iloc[:-1]
+
+                    # Multiply each element and sum them up
+                    multiplied_series = type_dict[flow_type][i + 1] * attribute_value
+                    costs_timeseries += multiplied_series.sum()
+
+                else:
+                    # If the 'attribute_value' is a single value sum it up directly
+                     costs_scalar += sum(
+                        type_dict[flow_type][i + 1]
+                        * getattr(
+                            type_dict[flow_type][0][
+                                list(type_dict[flow_type][0].keys())[i]
+                            ],
+                            attr,
+                        )
+                    )
+
+    costs = costs_timeseries + costs_scalar
 
     return costs
 
@@ -412,7 +438,7 @@ def change_heatpipelines_label(comp_label: str, result_path: str) -> str:
 
 
 def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
-                 result_path: str) -> (dict, float, float):
+                 result_path: str, variable_cost_factor: float) -> Tuple[dict, float, float]:
     """
         main method of the algorithm used to collect the data which is
         necessary to create the results presentation
@@ -430,6 +456,9 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
         :param result_path: str holding the algorithms result path used
             for the energy system's pipes data
         :type result_path: str
+        :param variable_cost_factor: factor that considers the data_preparation_algorithms,
+            can be used to scale the results up for a year
+        :type variable_cost_factor: float
         
         :return: - **comp_dict** (dict) - dictionary containing the \
                     result parameters of all of the energy system's \
@@ -499,15 +528,13 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
                 # criterion
                 variable_costs = calc_variable_costs(
                     node=node, comp_dict=comp_dict[loc_label],
-                    attr="variable_costs"
-                )
+                    attr="variable_costs")
                 comp_dict[loc_label].append(variable_costs)
                 # calculate the variable costs of the second optimization
                 # criterion
                 constraint_costs = calc_variable_costs(
                     node=node, comp_dict=comp_dict[loc_label],
-                    attr="emission_factor"
-                )
+                    attr="emission_factor")
                 # if there is an investment in the node under investigation
                 # calculate the periodical costs of the second optimization
                 # criterion
@@ -521,14 +548,17 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
                 comp_dict[loc_label].append(constraint_costs)
             else:
                 comp_dict[loc_label] += [0, 0]
-                total_demand += sum(flows[0])
+                # consider var_cost_factor for the total demand
+                total_demand += sum(flows[0]) * variable_cost_factor
             if isinstance(node, Source):
                 if (node.label in list(nodes_data["sources"]["label"]) or
                         "shortage" in node.label):
-                    total_usage += sum(flows[2])
+                    # consider var_cost_factor for the total usage
+                    total_usage += sum(flows[2]) * variable_cost_factor
             if isinstance(node, Sink) and "excess" in node.label:
-                total_usage -= sum(flows[0])
+                # consider var_cost_factor for the total usage
+                total_usage -= sum(flows[0]) * variable_cost_factor
             # get the component's type for the loc
             comp_dict[loc_label].append(get_comp_type(node=node))
-            
+
     return comp_dict, total_demand, total_usage

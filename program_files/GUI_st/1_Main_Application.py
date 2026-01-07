@@ -8,6 +8,7 @@ import os
 from datetime import datetime
 from streamlit.components.v1 import html
 import streamlit as st
+import logging
 
 # Setting new system path to be able to refer to parent directories
 parent = os.path.abspath('..')
@@ -36,6 +37,45 @@ settings_cache_dict_reload = \
 # Import GUI help comments from the comment json and save as a dict
 GUI_helper = GUI_functions.import_GUI_input_values_json(
     os.path.dirname(__file__) + "/GUI_st_help_comments.json")
+
+
+def initial_config() -> None:
+    """
+        Function to initiate a global logger.
+    """
+    # configurate logger
+    logging.basicConfig(level=logging.INFO, handlers=[logging.StreamHandler()])
+
+
+def configure_logger(logging_path) -> None:
+    """
+        Function that configures the global logger.
+        :param logging_path: string containing the path where the log file needs to be saved.
+        :type logging_path: str
+    """
+    # get logger
+    logger = logging.getLogger()
+
+    # remove any Handlers
+    if logger.hasHandlers():
+        logger.handlers.clear()
+
+    # create the right path
+    log_file = os.path.join(logging_path, "log.txt")
+
+    # initiate FileHandler for logging in a file
+    file_handler = logging.FileHandler(log_file)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+
+    # initiate StreamHandler for logging in the console
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
+    # Set Logging-Level
+    logger.setLevel(logging.INFO)
 
 
 def nav_page(page_name, timeout_secs=3) -> None:
@@ -520,9 +560,11 @@ def main_clear_cache_sidebar() -> None:
         st.experimental_rerun()
 
 
-def create_result_paths() -> None:
+def create_result_paths() -> str:
     """
         Create result paths and result folder. Set session.states
+
+        :return: - **logging_path** (str)
     """
     # set the result path based on the gui_st_settings.json
     res_folder_path = GUI_functions.set_result_path()
@@ -546,6 +588,11 @@ def create_result_paths() -> None:
     st.session_state["state_result_path"] = GUI_main_dict["res_path"]
     st.session_state["state_premodeling_res_path"] = \
         GUI_main_dict["premodeling_res_path"]
+
+    # set path for logging
+    logging_path = GUI_main_dict["res_path"]
+
+    return logging_path
 
 
 def save_run_settings() -> None:
@@ -579,6 +626,9 @@ def change_state_submitted_clear_cache() -> None:
     st.session_state["state_submitted_clear_cache"] = "done"
     st.session_state["state_submitted_optimization"] = "not done"
 
+
+# configurate global logger
+initial_config()
 
 # staring sidebar elements as standing elements
 model_definition_input_file = main_input_sidebar()
@@ -616,7 +666,13 @@ if st.session_state["state_submitted_optimization"] == "done":
         if len(GUI_main_dict["input_pareto_points"]) == 0:
 
             # function to create the result paths and store session state
-            create_result_paths()
+            logging_path = create_result_paths()
+
+            # configurate logger
+            configure_logger(logging_path)
+
+            # Ensure logging is working by logging a test message
+            logging.info("\t Logging has been set up successfully.")
 
             with st.spinner("Modeling in Progress..."):
 
@@ -632,10 +688,19 @@ if st.session_state["state_submitted_optimization"] == "done":
             # switch page after the model run completed
             nav_page(page_name="Result_Processing", timeout_secs=3)
 
-        # Starting a pareto model rum
+        # Starting a pareto model run
         elif len(GUI_main_dict["input_pareto_points"]) != 0:
 
             with st.spinner("Modeling in Progress..."):
+
+                # create one directory to collect all runs
+                result_path = GUI_functions.set_result_path()
+                logging_path = (result_path + "/"
+                             + datetime.now().strftime("%Y-%m-%d--%H-%M-%S"))
+                os.mkdir(logging_path)
+
+                # configurate logger
+                configure_logger(logging_path)
 
                 # run_pareto returns res path
                 GUI_main_dict["res_path"] = \
@@ -655,3 +720,4 @@ if st.session_state["state_submitted_optimization"] == "done":
 
             # switch page after the model run completed
             nav_page(page_name="Result_Processing", timeout_secs=3)
+

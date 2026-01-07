@@ -209,6 +209,66 @@ Optimization task:
 	- You can find the normalised time series `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_2_vehicle_fleet_normalised_load_response.xlsx>`_. Insert it into the worksheet "timeseries". The column must have the same name as your sink with the addition .fix
 	- Since this is a normalized time series, the "nominal value" of the sink must be determined on the basis of the maximum possible charging capacity of the vehicle fleet. To achieve this, create a single sink with a nominal value of 160 kW
 
-Example 3: Regular example of the documentation
+
+Example 3: Simple example of a heating network
+-----------------------------------------------
+This example shows the implementation of a exergy heating network. Three houses are considered and connected to the heating network. Electricity supply technologies were neglected in this case to reduce complexity. A decentralised geothermal heat pump was added for each house as an investment alternative to the heating network. The heating network consists of two pipe sections. 
+This example only illustrates the basic structure for implementing a heating network, but can be expanded as required with additional pipe sections, technologies and the number of houses to be connected. You will find the "model_definition_example_heat_network.xlsx" in the `directory <https://github.com/SESMG/SESMG-Examples/tree/main/SESMG-v1.1.x-Examples>`_ for version v.1.1 of the SESMG.
+
+The following table shows how the buses must be set up to implement a heating network. In "district heating conn. (exergy)", a “1” is entered to connect the bus to the heating network. The longitude and latitude of the house connection station are entered in the "lat" and "lon" columns.
+At the same time a bus (here: "district_heat_bus") is created, representing the district heat station of the heating network. In "district heating conn. (exergy)" a "dh-system" is entered and in the columns "lat" and "lon" the coordinates of the district heating station are entered. The district heat station is the point at which the central heat supply technologies feed into the heating network.
+The house connection points and the district heating station  are automatically connected to the distribution pipe by the shortest route.
+
+.. csv-table:: Exemplary input for the buses sheet 
+   :header: label,comment,active,excess,shortage,excess costs,shortage costs,excess constraint costs,shortage constraint costs,district heating conn. (exergy),lat,lon,existing heathouse station,district heating conn. (anergy),flow temperature,electricity bus,sector
+
+   ,,,,,(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh),,(°),(°),,,(°C),,
+   ID_heat_bus_1,"",1,0,0,0,0,0,0,1,50.05,7.05,0,0,60,ID_hp_electricity_bus_1,heat
+   ID_heat_bus_2,"",1,0,0,0,0,0,0,1,49.6,7,0,0,60,ID_hp_electricity_bus_2,heat
+   ID_heat_bus_3,"",1,0,0,0,0,0,0,1,49.8,7.1,0,0,60,ID_hp_electricity_bus_3,heat
+   district_heat_bus,"",1,0,0,0,0,0,0,dh-system,50,7,0,0,0,0,central_heat
+
+The following table shows how a road network is mapped as the basis for the distribution system of a heating network. For this purpose, the road sections are mapped via the starting point and the end point of the road. The coordinates are entered in the columns "lat. 1st intersection", "lat. 2nd intersection", "lon. 1st intersection", "lon. 2nd intersection". The end point of the 1st intersection forms the start point of the 2nd intersection.
+
+.. csv-table:: Exemplary input for district heating
+   :header: label,comment,lat. 1st intersection,lat. 2nd intersection,lon. 1st intersection,lon. 2nd intersection,active
+
+   ,,,x,x,x,x
+   ID_street1,"",49.30000,50.30000,6.80000,7.30000,1
+   ID_street2,"",50.30000,50.00000,7.30000,7.40000,1
+
+The following table shows how the pipes used in the model are mapped for the heating network. In the "active" column, pipes with "1" are included in the model and pipes with "0" are not included in the model. 
+
+.. csv-table:: Exemplary input for pipe types
+   :header: label,active,nonconvex,loss factor,loss factor fix,min. investment capacity,max. investment capacity,periodical costs,fix investment costs,periodical constraint costs,fix investment constraint costs,anergy or exergy,distribution pipe,building pipe,efficiency
+
+   ,,,,,,,,,,,,,,
+   DN-200,0,1,0,0.032,0,8220,0,114,4112,0,exergy,1,1,0
+   DN-250,1,1,0,0.034,0,14210,0,152,0,5765,exergy,1,1,0
+
+The heating network is displayed as a .jpeg in the results. The heating network shown in the example is illustrated in the following figure.
+
+.. figure:: ../docs/images/manual/Examples/model_definition_example_heat_network.jpeg
+   :width: 50 %
+   :alt: Bus_Graph
+   :align: center
+
+Adjustments for an anergy heating network:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Anergy heating networks and Exergy heating networks differ in the temperature level. In Anergy heating networks, the temperature level is so low that a water-to-water heat pump is installed in the connected buildings to raise the temperature level. The cost of the heat pump is included in the cost of the house connection station of the Anergy heating network. Due to the low temperature level, uninsulated rather than insulated pipes are used in contrast to the Exergy heating network.
+There are only a few adjustments that need to be made in order to consider an Anergy heating network. The pipes for an Anergy heating network have to be defined in the "pipe types" sheet. In addition, the sheet "buses" is adapted in the same way as for the Exergy heating network. For this purpose, in the "district heating conn. (anergy)" column, enter a "1" if the bus is to be connected to the Anergy heating network and "dh-system" if the district heating station is to be defined.
+
+.. csv-table:: Exemplary input for bus connections
+   :header: label,comment,active,excess,shortage,excess costs,shortage costs,excess constraint costs,shortage constraint costs,district heating conn. (exergy),lat,lon,existing heathouse station,district heating conn. (anergy),flow temperature,electricity bus,sector
+
+   ,,,,,(CU/kWh),(CU/kWh),(CU/kWh),(CU/kWh),,(°),(°),,,(°C),,
+   ID_heat_bus_1,"",1,0,0,0,0,0,0,0,50.05,7.05,0,1,60,ID_hp_electricity_bus_1,heat
+   ID_heat_bus_2,"",1,0,0,0,0,0,0,0,49.6,7,0,1,60,ID_hp_electricity_bus_2,heat
+   ID_heat_bus_3,"",1,0,0,0,0,0,0,0,49.8,7.1,0,1,60,ID_hp_electricity_bus_3,heat
+   district_heat_bus,"",1,0,0,0,0,0,0,0,50,7,0,dh-system,0,0,central_heat
+
+
+Example 4: Regular example of the documentation
 -----------------------------------------------
 This example is the basis for the documentation and explanation of the `model definition <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#model-definition>`_. You can find the "v1.x_model_definition_example.xlsx" in the `directory <https://github.com/SESMG/SESMG-Examples>`_ of your version of the SESMG.
