@@ -2,9 +2,7 @@
 [![Generic badge](https://img.shields.io/badge/content-what/why-darkgreen.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 [![Generic badge](https://img.shields.io/badge/content-how-green.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
-
-[![Maintainability](https://qlty.sh/gh/SESMG/projects/SESMG/maintainability.svg)](https://qlty.sh/gh/SESMG/projects/SESMG)
-[![Test Coverage](https://qlty.sh/gh/SESMG/projects/SESMG/coverage.svg)](https://qlty.sh/gh/SESMG/projects/SESMG)
+[![Test Coverage](https://codecov.io/gh/SESMG/SESMG/branch/master/graph/badge.svg?token=70AHZEB2IN)](https://codecov.io/gh/SESMG/SESMG)
 [![Documentation Status](https://readthedocs.org/projects/spreadsheet-energy-system-model-generator/badge/?version=latest)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/?badge=latest)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.05519/status.svg)](https://doi.org/10.21105/joss.05519)
