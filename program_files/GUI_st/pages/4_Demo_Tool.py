@@ -928,6 +928,9 @@ st.sidebar.button("Ideal data for pareto graph", on_click=toggle_pareto_table)
 # Display the table if the button was pressed
 if st.session_state["show_pareto_table"]:
     st.subheader("Table with ideal data for the pareto graph")
+    st.warning("Note: Pareto Points P1 to P9 can not be fully reached on the pareto graph due to calculation settings, "
+               "which is causing another solution for the operation optimization although the investment is the same. "
+               "The energy systems in general can e.g. be operated more cost or emission efficient.")
     df = load_pareto_table_by_mode()
     styled_html = style_table(df)
     st.write(styled_html, unsafe_allow_html=True)
