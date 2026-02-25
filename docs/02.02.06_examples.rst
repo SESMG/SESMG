@@ -206,14 +206,14 @@ Optimization task:
 
 .. note::
 
-	- You can find the normalised time series `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.0.x-Examples/Task_2_vehicle_fleet_normalised_load_response.xlsx>`_. Insert it into the worksheet "timeseries". The column must have the same name as your sink with the addition .fix
+	- You can find the normalised time series `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.2.x-Examples/Task_2_vehicle_fleet_normalised_load_response.xlsx>`_. Insert it into the worksheet "timeseries". The column must have the same name as your sink with the addition .fix
 	- Since this is a normalized time series, the "nominal value" of the sink must be determined on the basis of the maximum possible charging capacity of the vehicle fleet. To achieve this, create a single sink with a nominal value of 160 kW
 
 
 Example 3: Simple example of a heating network
 -----------------------------------------------
 This example shows the implementation of a exergy heating network. Three houses are considered and connected to the heating network. Electricity supply technologies were neglected in this case to reduce complexity. A decentralised geothermal heat pump was added for each house as an investment alternative to the heating network. The heating network consists of two pipe sections. 
-This example only illustrates the basic structure for implementing a heating network, but can be expanded as required with additional pipe sections, technologies and the number of houses to be connected. You will find the "model_definition_example_heat_network.xlsx" in the `directory <https://github.com/SESMG/SESMG-Examples/tree/main/SESMG-v1.1.x-Examples>`_ for version v.1.1 of the SESMG.
+This example only illustrates the basic structure for implementing a heating network, but can be expanded as required with additional pipe sections, technologies and the number of houses to be connected. You will find the "model_definition_example_heat_network.xlsx" in the `this directory <https://github.com/SESMG/SESMG-Examples>`_ of your version of the SESMG.
 
 The following table shows how the buses must be set up to implement a heating network. In "district heating conn. (exergy)", a “1” is entered to connect the bus to the heating network. The longitude and latitude of the house connection station are entered in the "lat" and "lon" columns.
 At the same time a bus (here: "district_heat_bus") is created, representing the district heat station of the heating network. In "district heating conn. (exergy)" a "dh-system" is entered and in the columns "lat" and "lon" the coordinates of the district heating station are entered. The district heat station is the point at which the central heat supply technologies feed into the heating network.
