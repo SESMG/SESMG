@@ -13,7 +13,7 @@ from PIL import Image
 
 from program_files.GUI_st.GUI_st_global_functions import \
     import_GUI_input_values_json, st_settings_global, read_markdown_document, \
-    load_result_folder_list, set_result_path
+    load_result_folder_list, set_result_path, show_error_with_link, show_error_graph
 
 
 def result_processing_sidebar() -> None:
@@ -375,125 +375,140 @@ def short_result_graph(result_path_graph: str) -> None:
         st.image(es_graph)
 
 
-# starting page functions
-# initialize global page settings
-st_settings_global()
+try:
+    # starting page functions
+    # initialize global page settings
+    st_settings_global()
 
-# initialize session state  if no result paths are defined on main page
-if "state_result_path" not in st.session_state:
-    st.session_state["state_result_path"] = "not set"
+    # initialize session state  if no result paths are defined on main page
+    if "state_result_path" not in st.session_state:
+        st.session_state["state_result_path"] = "not set"
 
-# start sidebar functions
-result_processing_sidebar()
+    # start sidebar functions
+    result_processing_sidebar()
 
-# show introduction page if no result paths are not set
-if st.session_state["state_result_path"] == "not set":
-    doc = read_markdown_document(
-        document_path="docs/GUI_texts/results.md",
-        folder_path=f'{"docs/images/manual/Results/*"}')
+    # show introduction page if no result paths are not set
+    if st.session_state["state_result_path"] == "not set":
+        doc = read_markdown_document(
+            document_path="docs/GUI_texts/results.md",
+            folder_path=f'{"docs/images/manual/Results/*"}')
+
+        st.markdown(''.join(doc), unsafe_allow_html=True)
+
+    # check if components.csv is in the result folder. Loading result page \
+    # elements for a non-pareto run if so.
+    elif os.path.join(st.session_state["state_result_path"], "components.csv") \
+            in glob.glob(st.session_state["state_result_path"] + "/*"):
+
+        # show short result summaries time series information
+        short_result_summary_time(
+            result_path_summary=st.session_state["state_result_path"]
+            + "/summary.csv")
+
+        # check if GUI settings dict is in result folder
+        if os.path.join(st.session_state["state_result_path"],
+                        "GUI_st_run_settings.json") \
+                in glob.glob(st.session_state["state_result_path"] + "/*"):
+            # import json as in a dict
+            GUI_run_settings_dict = import_GUI_input_values_json(
+                json_file_path=st.session_state["state_result_path"]
+                + "/GUI_st_run_settings.json")
+            # display some GUI settings if pre-modelling was active
+            if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
+                # show time series simplification settings
+                short_result_simplifications(
+                    result_GUI_settings_dict=GUI_run_settings_dict,
+                    result_path_summary=st.session_state["state_result_path"]+ "/summary.csv")
+            if GUI_run_settings_dict["input_activate_premodeling"]:
+                # show time series simplification settings
+                short_result_premodelling(
+                    result_GUI_settings_dict=GUI_run_settings_dict)
+        # show short result summaries key values
+        short_result_summary_system(
+            result_path_summary=st.session_state["state_result_path"]
+            + "/summary.csv")
+
+        # show energy system graph
+        short_result_graph(
+            result_path_graph=st.session_state["state_result_path"]
+            + "/graph.gv.png")
+        # show components table
+        short_result_table(
+            result_path_components=st.session_state["state_result_path"]
+            + "/components.csv")
+        # show interactive result diagram
+        short_result_interactive_dia(
+            result_path_results=st.session_state["state_result_path"]
+            + "/results.csv")
+
+    # check if components.csv is in the result folder. Loading result page \
+    # elements for a pareto run if not.
+    elif os.path.join(st.session_state["state_result_path"], "components.csv") \
+            not in glob.glob(st.session_state["state_result_path"] + "/*"):
+        # show building specific results
+        show_pareto(
+            result_path_pareto=os.path.join(st.session_state["state_result_path"],
+                                            "pareto.csv"))
+        # show heat amount diagram
+        show_energy_amounts(
+            result_path_heat_amounts=st.session_state["state_result_path"]
+            + "/heat_amounts.csv",
+            result_path_elec_amounts=st.session_state["state_result_path"]
+            + "/elec_amounts.csv")
+
+        # open short results for the chosen pareto point incl. header
+        st.subheader("Short Results for Pareto Point: " +
+                     st.session_state["state_pareto_point_chosen"])
+        # show short result summaries time series informations
+        short_result_summary_time(
+            result_path_summary=st.session_state["state_pareto_result_path"]
+            + "/summary.csv")
+        # check if GUI settings dict is in result folder
+        if os.path.join(st.session_state["state_result_path"],
+                        "GUI_st_run_settings.json") \
+                in glob.glob(st.session_state["state_result_path"] + "/*"):
+            # import json as in a dict
+            GUI_run_settings_dict = import_GUI_input_values_json(
+                json_file_path=os.path.join(
+                    st.session_state["state_result_path"],
+                    "GUI_st_run_settings.json"))
+            # display some GUI settings if pre-modelling was active
+            if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
+                # show time series simplification settings
+                short_result_simplifications(
+                    result_GUI_settings_dict=GUI_run_settings_dict,
+                    result_path_summary=st.session_state["state_pareto_result_path"]+ "/summary.csv")
+            if GUI_run_settings_dict["input_activate_premodeling"]:
+                # show time series simplification settings
+                short_result_premodelling(
+                    result_GUI_settings_dict=GUI_run_settings_dict)
+        # show short result summaries key values
+        short_result_summary_system(
+            result_path_summary=st.session_state["state_pareto_result_path"]
+            + "/summary.csv")
+        # show components table
+        short_result_table(
+            result_path_components=st.session_state["state_pareto_result_path"]
+            + "/components.csv")
+        # show interactive result diagram
+        short_result_interactive_dia(
+            result_path_results=st.session_state["state_pareto_result_path"]
+            + "/results.csv")
+        # show energy system graph
+        short_result_graph(
+            result_path_graph=st.session_state["state_pareto_result_path"]
+            + "/graph.gv.png")
+
+# catch exceptions during result processing and display help information
+except Exception as e:
+    # show a message with a link to the troubleshooting documentation
+    show_error_with_link()
+
+    # visualize the graph if the path is available to help diagnose loading errors
+    # the function handles the recursive search for the graph file internally
+    if "state_result_path" in st.session_state:
+        show_error_graph(base_path=st.session_state["state_result_path"])
+
+    # display the technical exception and traceback for debugging
+    st.exception(e)
     
-    st.markdown(''.join(doc), unsafe_allow_html=True)
-
-# check if components.csv is in the result folder. Loading result page \
-# elements for a non-pareto run if so.
-elif os.path.join(st.session_state["state_result_path"], "components.csv") \
-        in glob.glob(st.session_state["state_result_path"] + "/*"):
-
-    # show short result summaries time series information
-    short_result_summary_time(
-        result_path_summary=st.session_state["state_result_path"]
-        + "/summary.csv")
-
-    # check if GUI settings dict is in result folder
-    if os.path.join(st.session_state["state_result_path"],
-                    "GUI_st_run_settings.json") \
-            in glob.glob(st.session_state["state_result_path"] + "/*"):
-        # import json as in a dict
-        GUI_run_settings_dict = import_GUI_input_values_json(
-            json_file_path=st.session_state["state_result_path"]
-            + "/GUI_st_run_settings.json")
-        # display some GUI settings if pre-modelling was active
-        if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
-            # show time series simplification settings
-            short_result_simplifications(
-                result_GUI_settings_dict=GUI_run_settings_dict,
-                result_path_summary=st.session_state["state_result_path"]+ "/summary.csv")
-        if GUI_run_settings_dict["input_activate_premodeling"]:
-            # show time series simplification settings
-            short_result_premodelling(
-                result_GUI_settings_dict=GUI_run_settings_dict)
-    # show short result summaries key values
-    short_result_summary_system(
-        result_path_summary=st.session_state["state_result_path"]
-        + "/summary.csv")
-
-    # show energy system graph
-    short_result_graph(
-        result_path_graph=st.session_state["state_result_path"]
-        + "/graph.gv.png")
-    # show components table
-    short_result_table(
-        result_path_components=st.session_state["state_result_path"]
-        + "/components.csv")
-    # show interactive result diagram
-    short_result_interactive_dia(
-        result_path_results=st.session_state["state_result_path"]
-        + "/results.csv")
-
-# check if components.csv is in the result folder. Loading result page \
-# elements for a pareto run if not.
-elif os.path.join(st.session_state["state_result_path"], "components.csv") \
-        not in glob.glob(st.session_state["state_result_path"] + "/*"):
-    # show building specific results
-    show_pareto(
-        result_path_pareto=os.path.join(st.session_state["state_result_path"],
-                                        "pareto.csv"))
-    # show heat amount diagram
-    show_energy_amounts(
-        result_path_heat_amounts=st.session_state["state_result_path"]
-        + "/heat_amounts.csv",
-        result_path_elec_amounts=st.session_state["state_result_path"]
-        + "/elec_amounts.csv")
-
-    # open short results for the chosen pareto point incl. header
-    st.subheader("Short Results for Pareto Point: " +
-                 st.session_state["state_pareto_point_chosen"])
-    # show short result summaries time series informations
-    short_result_summary_time(
-        result_path_summary=st.session_state["state_pareto_result_path"]
-        + "/summary.csv")
-    # check if GUI settings dict is in result folder
-    if os.path.join(st.session_state["state_result_path"],
-                    "GUI_st_run_settings.json") \
-            in glob.glob(st.session_state["state_result_path"] + "/*"):
-        # import json as in a dict
-        GUI_run_settings_dict = import_GUI_input_values_json(
-            json_file_path=os.path.join(
-                st.session_state["state_result_path"],
-                "GUI_st_run_settings.json"))
-        # display some GUI settings if pre-modelling was active
-        if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
-            # show time series simplification settings
-            short_result_simplifications(
-                result_GUI_settings_dict=GUI_run_settings_dict,
-                result_path_summary=st.session_state["state_pareto_result_path"]+ "/summary.csv")
-        if GUI_run_settings_dict["input_activate_premodeling"]:
-            # show time series simplification settings
-            short_result_premodelling(
-                result_GUI_settings_dict=GUI_run_settings_dict)
-    # show short result summaries key values
-    short_result_summary_system(
-        result_path_summary=st.session_state["state_pareto_result_path"]
-        + "/summary.csv")
-    # show components table
-    short_result_table(
-        result_path_components=st.session_state["state_pareto_result_path"]
-        + "/components.csv")
-    # show interactive result diagram
-    short_result_interactive_dia(
-        result_path_results=st.session_state["state_pareto_result_path"]
-        + "/results.csv")
-    # show energy system graph
-    short_result_graph(
-        result_path_graph=st.session_state["state_pareto_result_path"]
-        + "/graph.gv.png")
