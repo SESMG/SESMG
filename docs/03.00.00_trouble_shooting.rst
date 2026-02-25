@@ -537,6 +537,19 @@ Error M-035: No module named 'program_files.GUI_st'
 **Debugging:** Move the whole SESMG installation to another directory.
 
 
+Error M-036: Unsupported operand (timeseries simplification)
+-----------------------
+**Error Message:** ::
+
+    preprocessing\data_preparation.py", line 39, in extract_single_periods
+        for i in range(0, int(len(cluster_df) / timesteps)):
+    TypeError: unsupported operand type(s) for /: 'int' and 'NoneType'
+
+**Possible Error Cause:** Possibly you didn't choose a period at preprocessing timeseries simplification (hours, days or weeks).
+
+**Debugging:** Make sure to fill out what is required: `Timeseries simplification <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.02.00_application.html#timeseries-simplificaton>`_ .
+
+
 Warning W-001: Need to install ... / Cartopy ...
 -----------------------------------------------------------------
 **Warning Message:** ::
