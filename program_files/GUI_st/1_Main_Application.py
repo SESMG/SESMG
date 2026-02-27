@@ -9,6 +9,7 @@ from datetime import datetime
 from streamlit.components.v1 import html
 import streamlit as st
 import logging
+import traceback
 
 # Setting new system path to be able to refer to parent directories
 parent = os.path.abspath('..')
@@ -627,6 +628,34 @@ def change_state_submitted_clear_cache() -> None:
     st.session_state["state_submitted_optimization"] = "not done"
 
 
+def log_error_to_file(logging_path: str, exception_obj: Exception) -> None:
+    """
+        Function to create a crash report file in the result directory.
+
+        :param logging_path: path to the current logging/result directory
+        :type logging_path: str
+        :param exception_obj: the exception caught in the try-except block
+        :type exception_obj: Exception
+    """
+    try:
+        # check if path is valid and exists on the drive
+        if logging_path and os.path.exists(logging_path):
+            file_path = os.path.join(logging_path, "crash_report.txt")
+
+            # writing the error details and traceback to the file
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write("--- CRASH REPORT ---\n")
+                f.write(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write(f"Exception Type: {type(exception_obj).__name__}\n")
+                f.write(f"Message: {str(exception_obj)}\n")
+                f.write("-" * 20 + "\n")
+                f.write(traceback.format_exc())
+
+    except Exception as secondary_error:
+        # print error to console if writing the file fails
+        print(f"Failed to write crash report: {secondary_error}")
+
+
 try:
     # configurate global logger
     initial_config()
@@ -700,6 +729,10 @@ try:
                                  + datetime.now().strftime("%Y-%m-%d--%H-%M-%S"))
                     os.mkdir(logging_path)
 
+                    # store result path in session state immediately to ensure
+                    # correct error handling if the simulation crashes
+                    st.session_state["state_result_path"] = logging_path
+
                     # configurate logger
                     configure_logger(logging_path)
 
@@ -724,6 +757,16 @@ try:
 
 # catch exceptions during the model run and display error information
 except Exception as e:
+    # log the error to the global logger/console
+    logging.error("Error during execution!", exc_info=True)
+
+    # check if logging_path was already initialized before the crash
+    if 'logging_path' in locals():
+        # call the function to save the error report in the result folder
+        log_error_to_file(
+            logging_path=logging_path,
+            exception_obj=e)
+
     # show a message with a link to the troubleshooting documentation
     GUI_functions.show_error_with_link()
 

@@ -53,37 +53,48 @@ def result_processing_sidebar() -> None:
                 os.path.join(set_result_path(),
                              existing_result_folder)
 
-        if st.session_state["state_result_path"] != "not set" and \
-                os.path.join(st.session_state["state_result_path"],
-                             "components.csv") \
-                not in glob.glob(st.session_state["state_result_path"] + "/*"):
-            # header
-            st.header("Pareto Results")
+            # check if the result path is set
+            if st.session_state["state_result_path"] != "not set":
 
-            # read out sub folders of pareto list
-            existing_result_foldernames_list = next(
-                os.walk(st.session_state["state_result_path"]))[1]
-            # split folder names and save pareto point positions in a list
-            pareto_points_list = [directory.split(
-                "_")[-2] for directory in existing_result_foldernames_list]
+                # paths for checking the run type
+                components_csv = os.path.join(st.session_state["state_result_path"], "components.csv")
+                pareto_csv = os.path.join(st.session_state["state_result_path"], "pareto.csv")
 
-            # create dict with pareto point positions and folder names
-            pareto_folder_dict = dict(
-                zip(pareto_points_list, existing_result_foldernames_list))
-            # sort pareto point list
-            pareto_points_list.sort()
-            # create select box to choose the pareto point you want to see
-            # show results for
-            pareto_point_chosen = st.selectbox(
-                label="Choose the pareto point",
-                options=pareto_points_list,
-                help=GUI_helper["res_dd_pareto_point"])
+                # 1. CASE: Standard Run (components.csv exists)
+                if os.path.exists(components_csv):
+                    # Standard display - no extra sidebar selection needed
+                    pass
 
-            # create session_state to initialize the pareto result overviews
-            st.session_state["state_pareto_point_chosen"] = pareto_point_chosen
-            st.session_state["state_pareto_result_path"] = \
-                os.path.join(st.session_state["state_result_path"],
-                             pareto_folder_dict[pareto_point_chosen])
+                    # 2. CASE: Pareto Run (pareto.csv exists)
+                elif os.path.exists(pareto_csv):
+
+                    # header
+                    st.header("Pareto Results")
+
+                    # read out sub folders of pareto list
+                    existing_result_foldernames_list = next(
+                        os.walk(st.session_state["state_result_path"]))[1]
+                    # split folder names and save pareto point positions in a list
+                    pareto_points_list = [directory.split(
+                        "_")[-2] for directory in existing_result_foldernames_list]
+
+                    # create dict with pareto point positions and folder names
+                    pareto_folder_dict = dict(
+                        zip(pareto_points_list, existing_result_foldernames_list))
+                    # sort pareto point list
+                    pareto_points_list.sort()
+                    # create select box to choose the pareto point you want to see
+                    # show results for
+                    pareto_point_chosen = st.selectbox(
+                        label="Choose the pareto point",
+                        options=pareto_points_list,
+                        help=GUI_helper["res_dd_pareto_point"])
+
+                    # create session_state to initialize the pareto result overviews
+                    st.session_state["state_pareto_point_chosen"] = pareto_point_chosen
+                    st.session_state["state_pareto_result_path"] = \
+                        os.path.join(st.session_state["state_result_path"],
+                                     pareto_folder_dict[pareto_point_chosen])
 
 
 def short_result_summary_time(result_path_summary) -> None:
@@ -387,6 +398,33 @@ try:
     # start sidebar functions
     result_processing_sidebar()
 
+    # check for crash report in the result folder
+    if st.session_state["state_result_path"] != "not set":
+        # define path to the potential crash report file
+        crash_report_path = os.path.join(
+            st.session_state["state_result_path"], "crash_report.txt")
+
+        # display error information if a crash report exists
+        if os.path.exists(crash_report_path):
+            # show a message with a link to the troubleshooting documentation
+            show_error_with_link()
+
+            # header for the error message
+            st.error("### Error detected during Simulation")
+
+            # visualize the energy system graph to help identify the crash reason
+            show_error_graph(base_path=st.session_state["state_result_path"])
+
+            # display the technical exception and traceback from the file
+            with st.expander("View Detailed Crash Report / Traceback",
+                             expanded=True):
+                with open(crash_report_path, "r", encoding="utf-8") as f:
+                    crash_content = f.read()
+                st.code(crash_content, language="text")
+
+            # stop the script execution to prevent further loading errors
+            st.stop()
+
     # show introduction page if no result paths are not set
     if st.session_state["state_result_path"] == "not set":
         doc = read_markdown_document(
@@ -504,11 +542,16 @@ except Exception as e:
     # show a message with a link to the troubleshooting documentation
     show_error_with_link()
 
-    # visualize the graph if the path is available to help diagnose loading errors
-    # the function handles the recursive search for the graph file internally
-    if "state_result_path" in st.session_state:
+    # check the status of the result path to provide specific feedback
+    if st.session_state.get("state_result_path") is None or \
+            st.session_state.get("state_result_path") == "not set":
+        # error message if the path was not initialized
+        st.error("The result path was not initialized. The simulation "
+                 "likely crashed at a very early stage.")
+
+    else:
+        # visualize the graph if the path is available
         show_error_graph(base_path=st.session_state["state_result_path"])
 
     # display the technical exception and traceback for debugging
     st.exception(e)
-    
