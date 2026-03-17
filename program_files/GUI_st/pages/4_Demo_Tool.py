@@ -19,10 +19,7 @@ from program_files.preprocessing.Spreadsheet_Energy_System_Model_Generator \
 from program_files.GUI_st.GUI_st_global_functions import \
     st_settings_global, read_markdown_document, import_GUI_input_values_json, \
     get_bundle_dir, create_result_directory, set_result_path
-
-# Import GUI help comments from the comment json and save as a dict
-GUI_helper = import_GUI_input_values_json(
-    os.path.dirname(os.path.dirname(__file__)) + "/GUI_st_help_comments.json")
+import program_files.GUI_st.i18n as i18n
 
 # creating global model run mode dict
 mode_dict = {
@@ -65,7 +62,7 @@ help_map = {
 # Safe way to retrieve help text
 def get_help(key):
     help_key = help_map.get(key)
-    return GUI_helper.get(help_key, None)
+    return i18n.t(help_key)
 
 
 def dt_input_sidebar() -> dict:
@@ -78,28 +75,34 @@ def dt_input_sidebar() -> dict:
     """
 
     #Select the mode to use in the Demo Tool
-    st.sidebar.write("Select Mode:")
+    st.sidebar.write(i18n.t("demo_select_mode"))
     if "mode" not in st.session_state:
         st.session_state["mode"] = "simplified"
-    if st.sidebar.button("Advanced Mode"):
+    if st.sidebar.button(i18n.t("demo_adv_mode")):
         st.session_state["mode"] = "advanced"
-    if st.sidebar.button("Simplified Mode"):
+    if st.sidebar.button(i18n.t("demo_simp_mode")):
         st.session_state["mode"] = "simplified"
 
     input_values_dict = {}
 
-    with st.sidebar.form("Simulation input"):
+    with st.sidebar.form(i18n.t("demo_sim_input")):
+
+        # Labels for selections
+        no_dh_label = i18n.t("demo_no_dh")
+        urban_label = i18n.t("demo_urban")
+        suburban_label = i18n.t("demo_suburban")
+        rural_label = i18n.t("demo_rural")
 
         if st.session_state["mode"] == "advanced":
             
             # input value for model run name
             input_values_dict["input_name"] = st.text_input(
-                label="Name",
+                label=i18n.t("demo_name"),
                 value="")
             
             # input value for photovoltaics
             input_values_dict["input_pv"] = st.number_input(
-                label="Photovoltaic in kW",
+                label=i18n.t("demo_pv_label"),
                 min_value=0,
                 max_value=10000,
                 step=1,
@@ -107,7 +110,7 @@ def dt_input_sidebar() -> dict:
             
             # input value for solar thermal
             input_values_dict["input_st"] = st.number_input(
-                label="Solar Thermal in kW",
+                label=i18n.t("demo_st_label"),
                 min_value=0,
                 max_value=27700,
                 step=1,
@@ -115,7 +118,7 @@ def dt_input_sidebar() -> dict:
             
             # input value for air source heat pump
             input_values_dict["input_ashp"] = st.number_input(
-                label="Air source heat pump in kW",
+                label=i18n.t("demo_ashp_label"),
                 min_value=0,
                 max_value=5000,
                 step=1,
@@ -123,7 +126,7 @@ def dt_input_sidebar() -> dict:
             
             # input value for ground coupled heat pump
             input_values_dict["input_gchp"] = st.number_input(
-                label="Ground coupled heat pump in kW",
+                label=i18n.t("demo_gchp_label"),
                 min_value=0,
                 max_value=5000,
                 step=1,
@@ -131,42 +134,33 @@ def dt_input_sidebar() -> dict:
             
             # input value for central thermal storage
             input_values_dict["input_battery"] = st.number_input(
-                label="Battery in kWh",
+                label=i18n.t("demo_battery_label"),
                 min_value=0,
                 max_value=10000,
                 step=1,
                 help=get_help("input_battery"))
             
-            # input value for decentral thermal storage
-            input_values_dict["input_dcts"] = st.number_input(
-                label="Thermal Storage (decentral) in kWh",
-                min_value=0,
-                max_value=10000,
-                step=1,
-                help=get_help("input_dcts"))
-            
             # selectbox for the scize of the District Heating Network
             input_dh = st.selectbox(
-                label="District Heating Network",
-                options=["No District Heating Network", "urban", "sub-urban",
-                         "rural"],
-                help=GUI_helper["demo_sb_heat_network_chp"])
+                label=i18n.t("demo_dh_label"),
+                options=[no_dh_label, urban_label, suburban_label, rural_label],
+                help=i18n.t("demo_sb_heat_network_chp"))
             
             input_values_dict["input_chp"] = st.number_input(
-                label="Design of a CHP",
+                label=i18n.t("demo_chp_label"),
                 min_value=0,
                 max_value=20000,
                 step=1,
                 help=get_help("input_chp"))
             
             if input_values_dict["input_chp"] < 5000:
-                st.write("The CHP has a small capacity.")
+                st.write(i18n.t("demo_chp_small"))
             elif input_values_dict["input_chp"] < 15000:
-                st.write("The CHP has a medium capacity.")
+                st.write(i18n.t("demo_chp_medium"))
             else:
-                st.write("The CHP has a high capacity.")
+                st.write(i18n.t("demo_chp_high"))
                 
-            if input_dh == "No District Heating Network":
+            if input_dh == no_dh_label:
                 # If there is no district heating network, set all values 
                 # to 0
                 input_values_dict["input_chp_urban"] = 0
@@ -177,7 +171,7 @@ def dt_input_sidebar() -> dict:
                 input_values_dict["input_dh_rural"] = 0
                 input_values_dict["input_chp_a"] = 1
                 
-            elif input_dh == "urban":
+            elif input_dh == urban_label:
                 # If the district heating type is urban, set the 
                 # corresponding values to 1
                 input_values_dict["input_chp_urban"] = 0
@@ -188,7 +182,7 @@ def dt_input_sidebar() -> dict:
                 input_values_dict["input_dh_rural"] = 0
                 input_values_dict["input_chp_a"] = 1
                 
-            elif input_dh == "sub-urban":
+            elif input_dh == suburban_label:
                 # If the district heating type is sub-urban, set the 
                 # corresponding values to 1
                 input_values_dict["input_chp_urban"] = 0
@@ -199,7 +193,7 @@ def dt_input_sidebar() -> dict:
                 input_values_dict["input_dh_rural"] = 0
                 input_values_dict["input_chp_a"] = 1
                 
-            elif input_dh == "rural":
+            elif input_dh == rural_label:
                 # If the district heating type is rural, set all values to 1
                 input_values_dict["input_chp_urban"] = 0
                 input_values_dict["input_dh_urban"] = 1
@@ -211,13 +205,13 @@ def dt_input_sidebar() -> dict:
                 
             # selectbox to choose solver
             input_values_dict["solver_select"] = st.selectbox(
-                label="Optimization Solver",
+                label=i18n.t("demo_opt_solver"),
                 options=("cbc", "gurobi"),
                 help=get_help("solver_select"))
             
             # create slider to choose the optimization criterion
             input_values_dict["input_criterion"] = st.select_slider(
-                label="Optimization Criterion",
+                label=i18n.t("demo_opt_criterion"),
                 options=("monetary", "emissions"),
                 help=get_help("input_optimization"))
             
@@ -225,49 +219,48 @@ def dt_input_sidebar() -> dict:
 
             # input value for model run name
             input_values_dict["input_name"] = st.text_input(
-                label="Name",
+                label=i18n.t("demo_name"),
                 value="")
             
             # Value for photovoltaics
             pv_options = {"0%": 0, "25%": 0.25, "50%": 0.5, "75%": 0.75, "100%": 1.0}
-            selected_pv = st.select_slider("Photovoltaic in kW", options=list(pv_options.keys()),help=get_help("input_pv"))
+            selected_pv = st.select_slider(i18n.t("demo_pv_label"), options=list(pv_options.keys()),help=get_help("input_pv"))
             input_values_dict["input_pv"] = int(pv_options[selected_pv] * 10000)
 
             # Value for solar thermal
             sth_options = {"0%": 0, "25%": 0.25, "50%": 0.5, "75%": 0.75, "100%": 1.0}
-            selected_sth = st.select_slider("Solar Thermal in kW", options=list(sth_options.keys()),help=get_help("input_st"))
+            selected_sth = st.select_slider(i18n.t("demo_st_label"), options=list(sth_options.keys()),help=get_help("input_st"))
             input_values_dict["input_st"] = int(sth_options[selected_sth] * 27700)
 
             # Value for air source heat pump
             ashp_options = {"0%": 0, "25%": 0.25, "50%": 0.5, "75%": 0.75, "100%": 1.0}
-            selected_ashp = st.select_slider("Air source heat pump in kW", options=list(ashp_options.keys()),help=get_help("input_ashp"))
+            selected_ashp = st.select_slider(i18n.t("demo_ashp_label"), options=list(ashp_options.keys()),help=get_help("input_ashp"))
             input_values_dict["input_ashp"] = int(ashp_options[selected_ashp] * 5000)
 
             # Value for ground coupled heat pump
             gchp_options = {"0%": 0, "25%": 0.25, "50%": 0.5, "75%": 0.75, "100%": 1.0}
-            selected_gchp = st.select_slider("Ground coupled heat pump in kW", options=list(gchp_options.keys()),help=get_help("input_gchp"))
+            selected_gchp = st.select_slider(i18n.t("demo_gchp_label"), options=list(gchp_options.keys()),help=get_help("input_gchp"))
             input_values_dict["input_gchp"] = int(gchp_options[selected_gchp] * 5000)
 
             # Value for central thermal storage
             battery_options = {"0%": 0, "25%": 0.25, "50%": 0.5, "75%": 0.75, "100%": 1.0}
-            selected_battery = st.select_slider("Battery in kWh", options=list(battery_options.keys()),help=get_help("input_battery"))
+            selected_battery = st.select_slider(i18n.t("demo_battery_label"), options=list(battery_options.keys()),help=get_help("input_battery"))
             input_values_dict["input_battery"] = int(battery_options[selected_battery] * 10000)
 
             # Value for decentral thermal storage
             dcts_options = {"0%": 0, "25%": 0.25, "50%": 0.5, "75%": 0.75, "100%": 1.0}
-            selected_dcts = st.select_slider("Thermal Storage (decentral) in kWh", options=list(dcts_options.keys()),help=get_help("input_dcts"))
+            selected_dcts = st.select_slider(i18n.t("demo_dcts_label"), options=list(dcts_options.keys()),help=get_help("input_dcts"))
             input_values_dict["input_dcts"] = int(dcts_options[selected_dcts] * 10000)
 
             # Selectbox for the size of the District Heating Network
             input_dh = st.selectbox(
-                label="District Heating Network",
-                options=["No District Heating Network", "urban", "sub-urban",
-                         "rural"],
-                help=GUI_helper["demo_sb_heat_network_chp"])
+                label=i18n.t("demo_dh_label"),
+                options=[no_dh_label, urban_label, suburban_label, rural_label],
+                help=i18n.t("demo_sb_heat_network_chp"))
             
             input_values_dict["input_chp"]=0
                 
-            if input_dh == "No District Heating Network":
+            if input_dh == no_dh_label:
                 # If there is no district heating network, set all values 
                 # to 0
                 input_values_dict["input_chp_urban"] = 0
@@ -278,7 +271,7 @@ def dt_input_sidebar() -> dict:
                 input_values_dict["input_dh_rural"] = 0
                 input_values_dict["input_chp_a"] = 0
                 
-            elif input_dh == "urban":
+            elif input_dh == urban_label:
                 # If the district heating type is urban, set the 
                 # corresponding values to 1
                 input_values_dict["input_chp_urban"] = 1
@@ -289,7 +282,7 @@ def dt_input_sidebar() -> dict:
                 input_values_dict["input_dh_rural"] = 0
                 input_values_dict["input_chp_a"] = 0
                 
-            elif input_dh == "sub-urban":
+            elif input_dh == suburban_label:
                 # If the district heating type is sub-urban, set the 
                 # corresponding values to 1
                 input_values_dict["input_chp_urban"] = 1
@@ -300,7 +293,7 @@ def dt_input_sidebar() -> dict:
                 input_values_dict["input_dh_rural"] = 0
                 input_values_dict["input_chp_a"] = 0
                 
-            elif input_dh == "rural":
+            elif input_dh == rural_label:
                 # If the district heating type is rural, set all values to 1
                 input_values_dict["input_chp_urban"] = 1
                 input_values_dict["input_dh_urban"] = 1
@@ -312,18 +305,18 @@ def dt_input_sidebar() -> dict:
                 
             # selectbox to choose solver
             input_values_dict["solver_select"] = st.selectbox(
-                label="Optimization Solver",
+                label=i18n.t("demo_opt_solver"),
                 options=("cbc", "gurobi"),
                 help=get_help("solver_select"))
             
             # create slider to choose the optimization criterion
             input_values_dict["input_criterion"] = st.select_slider(
-                label="Optimization Criterion",
+                label=i18n.t("demo_opt_criterion"),
                 options=("monetary", "emissions"),
                 help=get_help("input_optimization"))
         
         # button to run the demotool
-        st.form_submit_button(label="Start Simulation",
+        st.form_submit_button(label=i18n.t("demo_start_btn"),
                               on_click=change_state_submitted_demo_run)
 
         if st.form_submit_button:
@@ -474,16 +467,16 @@ def show_demo_run_results(mode: str) -> None:
         + " %"
 
     # Display and import simulated cost values from summary dataframe
-    st.subheader("Your solution:")
+    st.subheader(i18n.t("demo_solution_header"))
     # create metrics
     cost1, cost2 = st.columns(2)
     cost1.metric(
-        label="Annual Costs in Mil. Euro",
+        label=i18n.t("demo_annual_costs"),
         value=round(annual_costs, 2),
         delta=rel_result_costs,
         delta_color="inverse")
     cost2.metric(
-        label="Annual Costs in t",
+        label=i18n.t("demo_annual_emissions"),
         value=round(annual_emissions, 2),
         delta=rel_result_emissions,
         delta_color="inverse")
@@ -491,9 +484,9 @@ def show_demo_run_results(mode: str) -> None:
     # define new row with new values
     new_row = pd.DataFrame(
         {
-            'Costs in million Euro/a': [annual_costs],
-            'CO2-emissions in t/a': [annual_emissions],
-            'Name': [input_values_dict["input_name"]]
+            i18n.t("demo_costs_unit"): [annual_costs],
+            i18n.t("demo_emissions_unit"): [annual_emissions],
+            i18n.t("demo_name"): [input_values_dict["input_name"]]
         }
     )
 
@@ -603,9 +596,9 @@ def show_demo_run_results_on_graph():
 
     # Cargar solo si el archivo existe
     if os.path.exists(path_pareto_results):
-        additional_points = pd.read_csv(path)
+        additional_points = pd.read_csv(path_pareto_results)
     else:
-        additional_points = pd.DataFrame(columns=["Costs in million Euro/a", "CO2-emissions in t/a", "Name"])
+        additional_points = pd.DataFrame(columns=[i18n.t("demo_costs_unit"), i18n.t("demo_emissions_unit"), i18n.t("demo_name")])
 
     # Define datasets for each mode
     if st.session_state["mode"] == "simplified":
@@ -751,7 +744,7 @@ def show_demo_run_results_on_graph():
     ).interactive()
 
     # write subheader, combine all chart layer and show the combinded chart
-    st.subheader("Your solution on pareto graph:")
+    st.subheader(i18n.t("demo_graph_header"))
     
     if additional_points.empty:
         st.altair_chart(pareto_points_chart 
@@ -770,10 +763,10 @@ def show_demo_run_results_on_graph():
             use_container_width=True)
 
     # Text input for file name
-    pareto_result_file_name = st.sidebar.text_input(label='Name for the result file')
+    pareto_result_file_name = st.sidebar.text_input(label=i18n.t("demo_result_filename"))
     
     # Button to safe a seperate result file
-    if st.sidebar.button("Save a seperate file for the pareto results"):
+    if st.sidebar.button(i18n.t("demo_save_seperate")):
         # create timestamp
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         # safe the file with the given name and a timestamp as csv 
@@ -783,7 +776,7 @@ def show_demo_run_results_on_graph():
                          + '.csv'), 
                          index=False)
         # raise success message
-        st.success("The result file was safed at {}!".format(mainpath_rdf))
+        st.success(i18n.t("demo_save_success", path=mainpath_rdf))
 
 def demo_start_page() -> None:
     """

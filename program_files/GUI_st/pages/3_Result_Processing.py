@@ -14,6 +14,7 @@ from PIL import Image
 from program_files.GUI_st.GUI_st_global_functions import \
     import_GUI_input_values_json, st_settings_global, read_markdown_document, \
     load_result_folder_list, set_result_path
+import program_files.GUI_st.i18n as i18n
 
 
 def result_processing_sidebar() -> None:
@@ -21,14 +22,9 @@ def result_processing_sidebar() -> None:
         Function to create the sidebar.
     """
 
-    # Import GUI help comments from the comment json and save as an dict
-    GUI_helper = import_GUI_input_values_json(
-        os.path.dirname(os.path.dirname(__file__))
-        + "/GUI_st_help_comments.json")
-
     # create sidebar
     with st.sidebar:
-        st.header("Result Overview")
+        st.header(i18n.t("res_overview"))
 
         # read sub folders in the result folder directory
         existing_result_foldernames_list = load_result_folder_list()
@@ -36,13 +32,13 @@ def result_processing_sidebar() -> None:
         # create select box with the folder names which are in the
         # results folder
         existing_result_folder = st.selectbox(
-            label="Choose the result folder",
+            label=i18n.t("res_choose_folder"),
             options=existing_result_foldernames_list,
-            help=GUI_helper["res_dd_result_folder"])
+            help=i18n.t("res_dd_result_folder"))
 
         # check box if user wants to reload existing results
-        run_existing_results = st.button(label="Load Existing Results",
-                                         help=GUI_helper["res_b_load_results"])
+        run_existing_results = st.button(label=i18n.t("res_load_results"),
+                                         help=i18n.t("res_b_load_results"))
 
         if run_existing_results:
             # set session state with full folder path to the result folder
@@ -58,7 +54,7 @@ def result_processing_sidebar() -> None:
                              "components.csv") \
                 not in glob.glob(st.session_state["state_result_path"] + "/*"):
             # header
-            st.header("Pareto Results")
+            st.header(i18n.t("res_pareto_results"))
 
             # read out sub folders of pareto list
             existing_result_foldernames_list = next(
@@ -75,9 +71,9 @@ def result_processing_sidebar() -> None:
             # create select box to choose the pareto point you want to see
             # show results for
             pareto_point_chosen = st.selectbox(
-                label="Choose the pareto point",
+                label=i18n.t("res_choose_pareto"),
                 options=pareto_points_list,
-                help=GUI_helper["res_dd_pareto_point"])
+                help=i18n.t("res_dd_pareto_point"))
 
             # create session_state to initialize the pareto result overviews
             st.session_state["state_pareto_point_chosen"] = pareto_point_chosen
@@ -93,15 +89,15 @@ def short_result_summary_time(result_path_summary) -> None:
         :param result_path_summary: path to a result summary.csv file
         :type result_path_summary: str
     """
-    st.subheader("Result Overview")
+    st.subheader(i18n.t("res_overview"))
     # Import summary.csv and create dataframe
     df_summary = pd.read_csv(result_path_summary)
     # Display and import time series values
-    # adding two blank rows
+    # adds two blank rows
     time1, time2, time3, time4 = st.columns(4)
-    time1.metric(label="Start Date", value=str(df_summary.iloc[0, 0]))
-    time2.metric(label="End Date", value=str(df_summary.iloc[0, 1]))
-    time3.metric(label="Temporal Resolution",
+    time1.metric(label=i18n.t("res_start_date"), value=str(df_summary.iloc[0, 0]))
+    time2.metric(label=i18n.t("res_end_date"), value=str(df_summary.iloc[0, 1]))
+    time3.metric(label=i18n.t("res_temp_resolution"),
                  value=str(df_summary['Resolution'][0]))
 
 
@@ -146,21 +142,21 @@ def short_result_simplifications(result_GUI_settings_dict: dict, result_path_sum
         :type result_GUI_settings_dict: dict
     """
     alg1, alg2 = st.columns(2)
-    alg1.metric(label="Simplification Algorithm",
+    alg1.metric(label=i18n.t("res_simp_algorithm"),
                 value=result_GUI_settings_dict["input_timeseries_algorithm"])
     # create 5 columns. one for each simplification input field
     simp1, simp2, simp3, simp4 = st.columns(4)
     simp1.metric(
-        label="Simplification Index",
+        label=i18n.t("res_simp_index"),
         value=result_GUI_settings_dict["input_timeseries_cluster_index"])
     simp2.metric(
-        label="Cluster Criterion",
+        label=i18n.t("cluster_criterion"),
         value=result_GUI_settings_dict["input_timeseries_criterion"])
     simp3.metric(
-        label="Simplification Period",
+        label=i18n.t("res_simp_period"),
         value=result_GUI_settings_dict["input_timeseries_period"])
     simp4.metric(
-        label="Cluster Season",
+        label=i18n.t("res_cluster_season"),
         value=result_GUI_settings_dict["input_timeseries_season"])
 
     # Import summary.csv and create dataframe
@@ -174,8 +170,7 @@ def short_result_simplifications(result_GUI_settings_dict: dict, result_path_sum
         df_summary[summary_headers[9]].iloc[0], 1))))
 
     # Display warning
-    st.warning("Note: When a simplification method is used, costs, energy demand and usage are scaled up to represent "
-               "a full year, by multiplication with the variable cost factor.")
+    st.warning(i18n.t("res_simp_warning"))
 
 
 def short_result_premodelling(result_GUI_settings_dict: dict) -> None:
@@ -192,14 +187,14 @@ def short_result_premodelling(result_GUI_settings_dict: dict) -> None:
     # adding one optional for tightening factor and one blank
     pre1, pre2, pre3, pre4 = st.columns(4)
     pre1.metric(
-        label="Premodelling Active",
+        label=i18n.t("res_prem_active"),
         value=result_GUI_settings_dict["input_activate_premodeling"])
     pre2.metric(
-        label="Investment Bounderies",
+        label=i18n.t("res_invest_boundaries"),
         value=result_GUI_settings_dict["input_premodeling_invest_boundaries"])
     if result_GUI_settings_dict["input_premodeling_invest_boundaries"]:
         pre3.metric(
-            label="Tightening Factor",
+            label=i18n.t("res_tightening_factor"),
             value=result_GUI_settings_dict
             ["input_premodeling_tightening_factor"])
 
@@ -213,7 +208,7 @@ def short_result_table(result_path_components: str) -> None:
         :type result_path_components: str
     """
     # Header
-    st.subheader("Result Table")
+    st.subheader(i18n.t("res_table_header"))
     # Import components.csv and create dataframe
     df_components = pd.read_csv(result_path_components)
     # CSS to inject contained in a string
@@ -252,7 +247,7 @@ def short_result_interactive_dia(result_path_results: str) -> None:
         :type result_path_results: str
     """
     # Header
-    st.subheader("Interactive Results")
+    st.subheader(i18n.t("res_interactive_results"))
     # loading result.csv as a dataframe
     result_df = pd.read_csv(result_path_results)
     # creating column headers to select
@@ -260,7 +255,7 @@ def short_result_interactive_dia(result_path_results: str) -> None:
     # column headers without date
     list_headers = column_headers_result[1:]
     # selecting headers
-    select_headers = st.multiselect("Select a bus:", list_headers)
+    select_headers = st.multiselect(i18n.t("res_select_bus"), list_headers)
     # filtered dataframe
     filtered_df = result_df[select_headers]
     # plotting
@@ -308,14 +303,13 @@ def show_energy_amounts(result_path_heat_amounts: str,
         :type result_path_elec_amounts: str
     """
     # Header
-    st.subheader("Energy Amount Diagrams")
+    st.subheader(i18n.t("res_energy_amount_diagrams"))
 
     # display warning/explanation for the energy amounts
-    st.warning("These graphs show both the import and export of energy, as well as consumption and generation. "
-               "Therefore, to analyze individual energy amounts, filtering is necessary.")
+    st.warning(i18n.t("res_energy_warning"))
 
     with st.subheader("Energy Amounts"):
-        tab1, tab2 = st.tabs(["Heat Amounts", "Electricity Amounts"])
+        tab1, tab2 = st.tabs([i18n.t("res_heat_amounts"), i18n.t("res_elec_amounts")])
         # create heat amount diagram
         with tab1:
             create_energy_amounts_diagram(
@@ -326,11 +320,7 @@ def show_energy_amounts(result_path_heat_amounts: str,
                 result_path_amounts=result_path_elec_amounts)
 
     # comment that diagrams are not always valid / can be wrong
-    st.write("Info: The energy amount diagrams are only valid if the model \
-             definition created with the Urban Upscaling Tool. \
-             Otherwise there is no guarantee that there are no components \
-             missing in the diagrams. Note that only components considered \
-             during the optimization are shown as option for vizualization.")
+    st.write(i18n.t("res_energy_info"))
 
 
 def show_pareto(result_path_pareto: str) -> None:
@@ -352,8 +342,8 @@ def show_pareto(result_path_pareto: str) -> None:
                   y="emissions",
                   markers=True,
                   hover_data=["costs", "emissions"],
-                  labels={"costs": "costs (EUR / a)",
-                          "emissions": "emissions (g CO<sub>2</sub> / a)"}
+                  labels={"costs": i18n.t("res_costs_label"),
+                          "emissions": i18n.t("res_emissions_label")}
                   )
     fig.update_traces(textposition="top right")
     st.plotly_chart(fig, theme="streamlit", use_container_width=True)
@@ -368,9 +358,9 @@ def short_result_graph(result_path_graph: str) -> None:
         :type result_path_graph: str
     """
     # Header
-    st.subheader("Energy System Graph")
+    st.subheader(i18n.t("res_es_graph"))
     # Importing and printing the energy system graph
-    with st.expander("Show the structure of the modeled energy system"):
+    with st.expander(i18n.t("res_show_structure")):
         es_graph = Image.open(result_path_graph, "r")
         st.image(es_graph)
 
@@ -456,8 +446,7 @@ elif os.path.join(st.session_state["state_result_path"], "components.csv") \
         + "/elec_amounts.csv")
 
     # open short results for the chosen pareto point incl. header
-    st.subheader("Short Results for Pareto Point: " +
-                 st.session_state["state_pareto_point_chosen"])
+    st.subheader(i18n.t("res_short_results_pareto", point=st.session_state["state_pareto_point_chosen"]))
     # show short result summaries time series informations
     short_result_summary_time(
         result_path_summary=st.session_state["state_pareto_result_path"]

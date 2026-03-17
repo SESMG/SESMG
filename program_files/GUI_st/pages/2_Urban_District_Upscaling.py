@@ -14,6 +14,7 @@ from program_files.urban_district_upscaling.pre_processing \
 from program_files.GUI_st.GUI_st_global_functions \
     import st_settings_global, import_GUI_input_values_json, \
     read_markdown_document, create_result_directory, set_result_path
+import program_files.GUI_st.i18n as i18n
 
 
 # settings the initial streamlit page settings
@@ -21,11 +22,6 @@ st_settings_global()
 
 # opening the input value dict, which will be saved as a json
 GUI_udu_dict = {}
-
-# Import GUI help comments from the comment json and save as an dict
-GUI_helper = import_GUI_input_values_json(
-    os.path.dirname(os.path.dirname(__file__))
-    + "/GUI_st_help_comments.json")
 
 
 # initialize session_states
@@ -66,45 +62,45 @@ def us_application() -> None:
 
         # input us sheet
         input_us_sheet_path = st.file_uploader(
-            label="Import your upscaling sheet:",
-            help=GUI_helper["udu_fu_us_sheet"])
+            label=i18n.t("udu_import_us_sheet"),
+            help=i18n.t("udu_fu_us_sheet"))
 
         # input standard parameter sheet
         input_standard_parameter_path = st.file_uploader(
-            label="Import your standard parameter sheet:",
-            help=GUI_helper["udu_fu_sp_sheet"])
+            label=i18n.t("udu_import_sp_sheet"),
+            help=i18n.t("udu_fu_sp_sheet"))
 
         # text input to define the file name
         result_file_name = \
-            st.text_input(label="Type in your model definition file name.",
-                          help=GUI_helper["udu_ti_model_def_name"])
+            st.text_input(label=i18n.t("udu_ti_model_def_filename"),
+                          help=i18n.t("udu_ti_model_def_name"))
 
-        with st.expander(label="Open Fred Weather Data"):
+        with st.expander(label=i18n.t("udu_open_fred_header")):
     
             # input if open fres weather data should be added
             GUI_udu_dict["input_open_fred"] = st.checkbox(
-                    label="Download Open Fred Weather Data",
-                    help=GUI_helper["udu_cb_weather_data"])
+                    label=i18n.t("udu_download_open_fred"),
+                    help=i18n.t("udu_cb_weather_data"))
     
             # coordinate input for weather data download
             # longitude coordinates
             GUI_udu_dict["input_cords_lon"] = st.text_input(
-                    label="Longitude Coordinates",
-                    help=GUI_helper["udu_ti_coords_lon"])
+                    label=i18n.t("udu_coords_lon"),
+                    help=i18n.t("udu_ti_coords_lon"))
             # latitude coordinates
             GUI_udu_dict["input_cords_lat"] = st.text_input(
-                    label="Latitude Coordinates",
-                    help=GUI_helper["udu_ti_coords_lat"])
+                    label=i18n.t("udu_coords_lat"),
+                    help=i18n.t("udu_ti_coords_lat"))
             
         # input standard parameter sheet
         GUI_udu_dict["udu_cb_clustering"] = st.checkbox(
-                label="Clustering buildings of the same cluster ID",
-                help=GUI_helper["udu_cb_clustering"])
+                label=i18n.t("udu_clustering_label"),
+                help=i18n.t("udu_cb_clustering"))
 
         # Submit button to start optimization.
         submitted_us_run = st.form_submit_button(
-                label="Start US Tool",
-                help=GUI_helper["udu_fs_start_US_tool"])
+                label=i18n.t("udu_start_btn"),
+                help=i18n.t("udu_fs_start_US_tool"))
         
         # Run program main function if start button is clicked
         if submitted_us_run:
@@ -146,7 +142,7 @@ def us_application() -> None:
             # raise streamlit error message when an input element is missing
             else:
 
-                st.error(body=GUI_helper["udu_error_defintion"],
+                st.error(body=i18n.t("udu_error_defintion"),
                          icon="🚨")
 
             # define urban district upscaling model definition as session state
@@ -205,8 +201,8 @@ def us_application_create_download_button() -> None:
     
     # Update session_state when button is clicked
     st.session_state['state_download'] = \
-        st.sidebar.button(label="Save your model definition",
-                          help=GUI_helper["udu_b_save_file"])
+        st.sidebar.button(label=i18n.t("udu_save_btn"),
+                          help=i18n.t("udu_b_save_file"))
 
 
 def standard_page() -> None:
@@ -232,7 +228,7 @@ def udu_preprocessing_page() -> None:
     """
 
     # define header
-    st.header("Model defintion")
+    st.header(i18n.t("udu_model_def_header"))
 
     # create model defnition table
     tabs = st.session_state["state_model_definition_worksheets"].copy()
@@ -258,7 +254,7 @@ if st.session_state["state_model_definition_sheets"] == "" and \
     standard_page()
     #st.write(os.path.exists(os.path.join(set_result_path(),'Upscaling_Tool')))
     if not os.path.exists(os.path.join(set_result_path(), 'Upscaling_Tool')):
-        st.warning("Upscaling_Tool folder not found.")
+        st.warning(i18n.t("udu_folder_not_found"))
 
 # running preprocessing page if tool ran
 elif st.session_state["state_model_definition_sheets"] != "" and \

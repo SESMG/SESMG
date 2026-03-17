@@ -17,6 +17,7 @@ sys.path.append(str(os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__))))))
 
 import program_files.GUI_st.GUI_st_global_functions as GUI_functions
+import program_files.GUI_st.i18n as i18n
 from program_files.preprocessing.pareto_optimization import run_pareto
 
 # settings the initial streamlit page settings
@@ -33,10 +34,6 @@ path_to_cache_json = os.path.join(internal_directory_path,
 settings_cache_dict_reload = \
     GUI_functions.import_GUI_input_values_json(
         json_file_path=path_to_cache_json)
-
-# Import GUI help comments from the comment json and save as a dict
-GUI_helper = GUI_functions.import_GUI_input_values_json(
-    os.path.dirname(__file__) + "/GUI_st_help_comments.json")
 
 
 def initial_config() -> None:
@@ -147,24 +144,24 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
 
         # Submit button to start optimization.
         st.form_submit_button(
-            label="Start Optimization",
+            label=i18n.t("start_optimization"),
             on_click=change_state_submitted_optimization,
-            help=GUI_helper["main_fs_start_optimization"])
+            help=i18n.t("main_fs_start_optimization"))
 
         # Functions to upload the model definition sheet file.
         # Header
-        st.title("Upload Model Definition")
+        st.title(i18n.t("upload_model_def"))
 
         # fileuploader for the model definition
         model_definition_input = st.file_uploader(
-            label="Upload your model definition sheet.",
-            help=GUI_helper["main_fu_model_definition"])
+            label=i18n.t("upload_sheet_label"),
+            help=i18n.t("main_fu_model_definition"))
 
         # Header
-        st.title("Input Parameters")
+        st.title(i18n.t("input_params"))
 
         # creating three tabs inside the sidebar
-        tab_bar = st.tabs(["Preprocessing", "Processing", "Postprocessing"])
+        tab_bar = st.tabs([i18n.t("preprocessing"), i18n.t("processing"), i18n.t("postprocessing")])
 
         # create tab 2 for Preprocessing
         with tab_bar[0]:
@@ -210,49 +207,49 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                                             12: 2}
 
             # Timeseries preparation input inside an expander.
-            with st.expander(label="Timeseries Simplification"):
+            with st.expander(label=i18n.t("timeseries_simplification")):
                 # Choosing timeseries parameters - algorithm
                 GUI_main_dict["input_timeseries_algorithm"] = \
                     st.selectbox(
-                        label="Algorithm",
+                        label=i18n.t("algorithm"),
                         options=timeseries_algorithm_dict.keys(),
                         index=settings_cache_dict_reload[
                             "input_timeseries_algorithm_index"],
-                        help=GUI_helper["main_dd_timeser_algorithm"])
+                        help=i18n.t("main_dd_timeser_algorithm"))
 
                 # Choosing timeseries parameters - index
                 GUI_main_dict["input_timeseries_cluster_index"] = \
                     st.selectbox(
-                        label="Index",
+                        label=i18n.t("index"),
                         options=timeseries_index_range_list,
                         index=settings_cache_dict_reload[
                             "input_timeseries_cluster_index_index"],
-                        help=GUI_helper["main_dd_timeser_cluster_index"])
+                        help=i18n.t("main_dd_timeser_cluster_index"))
                 # Choosing timeseries parameters - cluster criterion
                 GUI_main_dict["input_timeseries_criterion"] = \
                     st.selectbox(
-                        label="Cluster Criterion",
+                        label=i18n.t("cluster_criterion"),
                         options=timeseries_cluster_criteria_dict.keys(),
                         index=settings_cache_dict_reload[
                             "input_timeseries_criterion_index"],
-                        help=GUI_helper[
-                            "main_dd_timeser_cluster_criterion"])
+                        help=i18n.t(
+                            "main_dd_timeser_cluster_criterion"))
                 # Choosing timeseries parameters - period
                 GUI_main_dict["input_timeseries_period"] = \
                     st.selectbox(
-                        label="Period",
+                        label=i18n.t("period"),
                         options=input_timeseries_period_dict.keys(),
                         index=settings_cache_dict_reload[
                             "input_timeseries_period_index"],
-                        help=GUI_helper["main_dd_timeser_period"])
+                        help=i18n.t("main_dd_timeser_period"))
                 # Choosing timeseries parameters - season
                 GUI_main_dict["input_timeseries_season"] = \
                     st.selectbox(
-                        label="Season",
+                        label=i18n.t("season"),
                         options=input_timeseries_season_dict.keys(),
                         index=settings_cache_dict_reload[
                             "input_timeseries_season_index"],
-                        help=GUI_helper["main_dd_timeser_season"])
+                        help=i18n.t("main_dd_timeser_season"))
 
             # transform input values of Timeseries Simplification to an index
             # which will be saved in the GUI cache to be able to reload
@@ -286,76 +283,76 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
 
             # Pre-Model setting and pre-model timeseries preparation input
             # inside an expander.
-            with st.expander("Pre-Modeling Settings"):
+            with st.expander(i18n.t("premodeling_settings")):
 
                 # Checkbox to activate the pre-modeling
                 GUI_main_dict["input_activate_premodeling"] = \
                     st.checkbox(
-                        label="Activate Pre-Modeling",
+                        label=i18n.t("activate_premodeling"),
                         value=settings_cache_dict_reload[
                             "input_activate_premodeling"],
-                        help=GUI_helper["main_cb_prem_active"])
+                        help=i18n.t("main_cb_prem_active"))
 
                 # Activate functions to reduce the maximum design capacity
                 GUI_main_dict["input_premodeling_invest_boundaries"] = \
                     st.checkbox(
-                        label="Investment Boundaries Tightening",
+                        label=i18n.t("invest_boundaries_tightening"),
                         value=settings_cache_dict_reload[
                             "input_premodeling_invest_boundaries"],
-                        help=GUI_helper["main_cb_thightening_active"])
+                        help=i18n.t("main_cb_thightening_active"))
                 # Slider to set the tightening factor for maximum design
                 # capacity
                 GUI_main_dict["input_premodeling_tightening_factor"] = \
                     st.slider(
-                        label="Investment Tightening Factor",
+                        label=i18n.t("invest_tightening_factor"),
                         min_value=1,
                         max_value=100,
                         value=settings_cache_dict_reload[
                             "input_premodeling_tightening_factor"],
-                        help=GUI_helper["main_sl_tightening_factor"])
+                        help=i18n.t("main_sl_tightening_factor"))
 
                 # Choosing pre-model timeseries parameters - algorithm
                 GUI_main_dict["input_premodeling_timeseries_algorithm"] = \
                     st.selectbox(
-                        label="Algorithm (Pre-Model)",
+                        label=i18n.t("algorithm_pre"),
                         options=timeseries_algorithm_dict.keys(),
                         index=settings_cache_dict_reload[
                             "input_premodeling_timeseries_algorithm_index"],
-                        help=GUI_helper["main_dd_prem_timeser_algorithm"])
+                        help=i18n.t("main_dd_prem_timeser_algorithm"))
                 # Choosing pre-model timeseries parameters - index
                 GUI_main_dict["input_premodeling_timeseries_cluster_index"] = \
                     st.selectbox(
-                        label="Index (Pre-Model)",
+                        label=i18n.t("index_pre"),
                         options=timeseries_index_range_list,
                         index=settings_cache_dict_reload[
                             "input_premodeling_timeseries_cluster_index_index"],
-                        help=GUI_helper[
-                            "main_dd_prem_timeser_cluster_index"])
+                        help=i18n.t(
+                            "main_dd_prem_timeser_cluster_index"))
                 # Choosing pre-model timeseries parameters - cluster criterion
                 GUI_main_dict["input_premodeling_timeseries_criterion"] = \
                     st.selectbox(
-                        label="Cluster Criterion (Pre-Model)",
+                        label=i18n.t("cluster_criterion_pre"),
                         options=timeseries_cluster_criteria_dict.keys(),
                         index=settings_cache_dict_reload[
                             "input_premodeling_timeseries_criterion_index"],
-                        help=GUI_helper[
-                            "main_dd_prem_timeser_cluster_criterion"])
+                        help=i18n.t(
+                            "main_dd_prem_timeser_cluster_criterion"))
                 # Choosing pre-model timeseries parameters - period
                 GUI_main_dict["input_premodeling_timeseries_period"] = \
                     st.selectbox(
-                        label="Period (Pre-Model)",
+                        label=i18n.t("period_pre"),
                         options=input_timeseries_period_dict.keys(),
                         index=settings_cache_dict_reload[
                             "input_premodeling_timeseries_period_index"],
-                        help=GUI_helper["main_dd_prem_timeser_period"])
+                        help=i18n.t("main_dd_prem_timeser_period"))
                 # Choosing pre-model timeseries parameters - season
                 GUI_main_dict["input_premodeling_timeseries_season"] = \
                     st.selectbox(
-                        label="Season (Pre-Model)",
+                        label=i18n.t("season_pre"),
                         options=input_timeseries_season_dict.keys(),
                         index=settings_cache_dict_reload[
                             "input_premodeling_timeseries_season_index"],
-                        help=GUI_helper["main_dd_prem_timeser_season"])
+                        help=i18n.t("main_dd_prem_timeser_season"))
 
             # transform input values of Timeseries Simplification to an
             # index which will be saved in the GUI cache to be able to
@@ -388,14 +385,14 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                 input_value_index="input_premodeling_timeseries_cluster_index_index")
 
             # Elements to set the pareto points.
-            with st.expander("Multi-Objective Optimization"):
+            with st.expander(i18n.t("multi_objective_opt")):
                 # Multiselect element
                 input_pareto_points = st.multiselect(
-                    label="Pareto Points",
+                    label=i18n.t("pareto_points"),
                     options=list(range(1, 100)),
                     default=settings_cache_dict_reload[
                         "input_pareto_points"],
-                    help=GUI_helper["main_ms_pareto_points"])
+                    help=i18n.t("main_ms_pareto_points"))
                 # sort pareto points as required to run sesmg
                 if input_pareto_points is not None:
                     input_pareto_points.sort(reverse=True)
@@ -404,21 +401,21 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
 
             # Function to upload the distrct heating precalulation inside an \
             # expander.
-            with st.expander("Advanced District Heating Precalculation"):
+            with st.expander(i18n.t("adv_dh_precalc")):
                 # Checkboxes modeling when using district heating clustering.
                 GUI_main_dict["input_cluster_dh"] = \
                     st.checkbox(
-                        label="Clustering District Heating Network",
+                        label=i18n.t("cluster_dh"),
                         value=settings_cache_dict_reload[
                             "input_cluster_dh"],
-                        help=GUI_helper["main_cb_cluster_dh"])
+                        help=i18n.t("main_cb_cluster_dh"))
 
                 # Checkboxes to activate dh precalc.
                 GUI_main_dict["input_activate_dh_precalc"] = st.checkbox(
-                        label="Activate District Heating Precalculations",
+                        label=i18n.t("activate_dh_precalc"),
                         value=settings_cache_dict_reload[
                             "input_activate_dh_precalc"],
-                        help=GUI_helper["main_cb_activate_dh_precalc"])
+                        help=i18n.t("main_cb_activate_dh_precalc"))
 
                 # read sub folders in the result folder directory un wich \
                 # the preresults are stored
@@ -430,9 +427,9 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                     # create select box with the folder names which are in \
                     # the results folder
                     existing_result_folder = st.selectbox(
-                        label="Choose a district heating precalculation folder",
+                        label=i18n.t("choose_dh_folder"),
                         options=existing_result_foldernames_list,
-                        help=GUI_helper["main_dd_result_folder"],
+                        help=i18n.t("main_dd_result_folder"),
                         index=settings_cache_dict_reload[
                             "input_dh_folder_index"])
 
@@ -446,9 +443,9 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                     # the results folder without index. The index has to be \
                     # excluded when the list is empty.
                     existing_result_folder = st.selectbox(
-                        label="Choose a district heating precalculation folder",
+                        label=i18n.t("choose_dh_folder"),
                         options=existing_result_foldernames_list,
-                        help=GUI_helper["main_dd_result_folder"])
+                        help=i18n.t("main_dd_result_folder"))
                     # set variable to zero to save in cache
                     GUI_main_dict["input_dh_folder_index"] = 0
 
@@ -465,18 +462,18 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
             # create criterion switch
             GUI_main_dict["input_criterion_switch"] = \
                 st.checkbox(
-                    label="Switch Criteria",
+                    label=i18n.t("switch_criteria"),
                     value=settings_cache_dict_reload["input_criterion_switch"],
-                    help=GUI_helper["main_cb_criterion_switch"])
+                    help=i18n.t("main_cb_criterion_switch"))
 
         # create tab 2 for processing
         with tab_bar[1]:
             # Slider number of threads
             GUI_main_dict["input_num_threads"] = st.slider(
-                label="Number of threads",
+                label=i18n.t("num_threads"),
                 min_value=1,
                 max_value=35,
-                help=GUI_helper["main_sl_number_threats"],
+                help=i18n.t("main_sl_number_threats"),
                 value=settings_cache_dict_reload["input_num_threads"])
 
             # indexing the chosen solver of the cache session as an inputvalue
@@ -487,10 +484,10 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
                                  "gurobi": 1}
             # chosing the solver in an select box
             GUI_main_dict["input_solver"] = st.selectbox(
-                label="Optimization Solver",
+                label=i18n.t("opt_solver"),
                 options=input_solver_dict.keys(),
                 index=settings_cache_dict_reload["input_solver_index"],
-                help=GUI_helper["main_sb_solver"])
+                help=i18n.t("main_sb_solver"))
 
             # preparing input_timeseries_season for GUI cache as an streamlit \
             # input index
@@ -505,9 +502,9 @@ def main_input_sidebar() -> st.runtime.uploaded_file_manager.UploadedFile:
             # Input result processing parameters
             GUI_main_dict["input_xlsx_results"] = \
                 st.checkbox(
-                    label="Create xlsx-files",
+                    label=i18n.t("create_xlsx"),
                     value=settings_cache_dict_reload["input_xlsx_results"],
-                    help=GUI_helper["main_cb_xlsx_results"])
+                    help=i18n.t("main_cb_xlsx_results"))
 
             # GUI_main_dict["input_console_results"] = \
             #     st.checkbox(
@@ -526,7 +523,7 @@ def main_error_definition() -> None:
         without an uploaded model definition
     """
     # raise an error advice
-    st.error(body=GUI_helper["main_error_defintion"], icon="🚨")
+    st.error(body=i18n.t("main_error_defintion"), icon="🚨")
 
     # reset session state
     st.session_state["state_submitted_optimization"] = "not done"
@@ -545,9 +542,9 @@ def main_clear_cache_sidebar() -> None:
 
         # create submit button
         st.form_submit_button(
-            label="Clear all GUI Settings",
+            label=i18n.t("clear_gui_settings"),
             on_click=change_state_submitted_clear_cache,
-            help=GUI_helper["main_fs_clear_cache"])
+            help=i18n.t("main_fs_clear_cache"))
 
     # Clear all GUI settings if clear latest result paths clicked
     if st.session_state["state_submitted_clear_cache"] == "done":
@@ -660,7 +657,7 @@ if st.session_state["state_submitted_optimization"] == "done":
             json_file_path=path_to_cache_json)
 
         # create spinner info text
-        st.info(GUI_helper["main_info_spinner"], icon="ℹ️")
+        st.info(i18n.t("modeling_success_info"), icon="ℹ️")
 
         # Starting the model run
         if len(GUI_main_dict["input_pareto_points"]) == 0:
