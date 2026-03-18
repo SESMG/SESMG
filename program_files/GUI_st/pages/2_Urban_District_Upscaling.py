@@ -213,7 +213,7 @@ def standard_page() -> None:
 
     # import of text and graphic
     reduced_readme = read_markdown_document(
-        document_path="docs/GUI_texts/us_tool.md",
+        document_path="docs/GUI_texts/"+ i18n.t("GUI_texts_file_us_tool"),
         folder_path=f'{"docs/images/manual/UpscalingTool/*"}')
 
     # Display any remaining lines in the buffer list using the st.markdown() \

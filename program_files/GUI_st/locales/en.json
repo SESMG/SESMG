@@ -165,5 +165,9 @@
     "input_dcts": "Decentralized thermal storage balances local heating and cooling demands.",
     "input_chp": "Combined Heat and Power (CHP) units generate both electricity and useful heat.",
     "solver_select": "Choose the optimization solver. CBC is open-source; Gurobi is faster and suited for academic or licensed use.",
-    "input_optimization": "Select whether to optimize for lowest total system cost or lowest greenhouse gas emissions."
+    "input_optimization": "Select whether to optimize for lowest total system cost or lowest greenhouse gas emissions.",
+    "GUI_texts_file_demo_tool_tables": "demo_tool_tables_en.md",
+    "GUI_texts_file_demo_tool_text": "demo_tool_text_en.md",
+    "GUI_texts_file_results": "results_en.md",
+    "GUI_texts_file_us_tool": "us_tool_en.md"
 }

@@ -785,7 +785,7 @@ def demo_start_page() -> None:
 
     # import markdown text from GUI files
     imported_markdown = read_markdown_document(
-        document_path="docs/GUI_texts/demo_tool_text.md",
+        document_path="docs/GUI_texts/"+ i18n.t("GUI_texts_file_demo_tool_text"),
         folder_path=f'{"docs/images/manual/DemoTool/*"}',
         fixed_image_width=500)
     # show markdown text
@@ -800,7 +800,7 @@ def demo_start_page() -> None:
 
     # import markdown tables from GUI files
     imported_markdown_dttab = read_markdown_document(
-        document_path="docs/GUI_texts/demo_tool_tables.md",
+        document_path="docs/GUI_texts/"+ i18n.t("GUI_texts_file_demo_tool_tables"),
         folder_path=f'{"docs/images/manual/DemoTool/*"}')
     # show markdown text
     st.markdown(''.join(imported_markdown_dttab), unsafe_allow_html=True)

@@ -379,7 +379,7 @@ result_processing_sidebar()
 # show introduction page if no result paths are not set
 if st.session_state["state_result_path"] == "not set":
     doc = read_markdown_document(
-        document_path="docs/GUI_texts/results.md",
+        document_path="docs/GUI_texts/"+ i18n.t("GUI_texts_file_results"),
         folder_path=f'{"docs/images/manual/Results/*"}')
     
     st.markdown(''.join(doc), unsafe_allow_html=True)

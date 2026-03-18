@@ -165,5 +165,9 @@
     "input_dcts": "Dezentrale thermische Speicher gleichen den lokalen Heiz- und Kühlbedarf aus.",
     "input_chp": "Blockheizkraftwerke (BHKW) erzeugen gleichzeitig Strom und nutzbare Wärme.",
     "solver_select": "Wählen Sie den Optimierungs-Solver. CBC ist Open Source; Gurobi ist faster und für akademische oder lizenzierte Nutzung geeignet.",
-    "input_optimization": "Wählen Sie aus, ob auf die niedrigsten Gesamtsystemkosten oder die geringsten Treibhausgasemissionen optimiert werden soll."
+    "input_optimization": "Wählen Sie aus, ob auf die niedrigsten Gesamtsystemkosten oder die geringsten Treibhausgasemissionen optimiert werden soll.",
+    "GUI_texts_file_demo_tool_tables": "demo_tool_tables_de.md",
+    "GUI_texts_file_demo_tool_text": "demo_tool_text_de.md",
+    "GUI_texts_file_results": "results_de.md",
+    "GUI_texts_file_us_tool": "us_tool_de.md"
 }
