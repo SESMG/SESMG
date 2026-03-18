@@ -29,6 +29,12 @@ Conference Proceedings
 
 Theses
 ------
+- Recker, Luis Paul (2025): "**Clusterbasierte Näherung in der Energiesystemmodellierung**" (Master Thesis), Münster University of Applied Sciences.  `Mail <mailto:luis.recker@fh-muenster.de>`_.
+
+- Steinort, Tim Mikku (2025): "**Energiesystemmodellierung auf Basis energetischer Stadtraumtypen**" (Bachelor Thesis), Münster University of Applied Sciences. `https://doi.org/10.25974/fhms-18709 <https://doi.org/10.25974/fhms-18709>`_. `Mail <mailto:tim.steinort@fh-muenster.de>`_.
+
+- Zurhold, Roman (2025): "**Leitfaden zur Energiesystemoptimierung von Abfalldeponien - Anwendung am Beispiel der Deponie Altenberge**" (Master Thesis), Münster University of Applied Sciences. `https://doi.org/10.37307/j.1863-9763.2025.12.05 <https://doi.org/10.37307/j.1863-9763.2025.12.05>`_. `Mail <mailto:roman@zurhold.me>`_.
+
 - Koert, Franziska (2024): "**Coupling Energy System Modeling with Life Cycle Assessment**" (Bachelor Thesis), Münster University of Applied Sciences. `https://doi.org/10.25974/fhms-17880 <https://doi.org/10.25974/fhms-17880>`_. `Mail <mailto:franziska.koert@fh-muenster.de>`_.
 
 - Blankenstein, Benjamin (2024): "**Energiesystemmodellierung von Kasernen**" (Bachelor Thesis), Münster University of Applied Sciences. `https://doi.org/10.25974/fhms-17814 <https://doi.org/10.25974/fhms-17814>`_. `Mail <mailto:benjamin.blankenstein@fh-muenster.de>`_.
