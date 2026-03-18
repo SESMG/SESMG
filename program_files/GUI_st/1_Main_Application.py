@@ -9,6 +9,7 @@ from datetime import datetime
 from streamlit.components.v1 import html
 import streamlit as st
 import logging
+import traceback
 
 # Setting new system path to be able to refer to parent directories
 parent = os.path.abspath('..')
@@ -624,97 +625,153 @@ def change_state_submitted_clear_cache() -> None:
     st.session_state["state_submitted_optimization"] = "not done"
 
 
-# configurate global logger
-initial_config()
+def log_error_to_file(logging_path: str, exception_obj: Exception) -> None:
+    """
+        Function to create a crash report file in the result directory.
 
-# staring sidebar elements as standing elements
-model_definition_input_file = main_input_sidebar()
-main_clear_cache_sidebar()
+        :param logging_path: path to the current logging/result directory
+        :type logging_path: str
+        :param exception_obj: the exception caught in the try-except block
+        :type exception_obj: Exception
+    """
+    try:
+        # check if path is valid and exists on the drive
+        if logging_path and os.path.exists(logging_path):
+            file_path = os.path.join(logging_path, "crash_report.txt")
 
-# load the start page if modell run is not submitted
-if st.session_state["state_submitted_optimization"] == "not done":
-    main_start_page()
+            # writing the error details and traceback to the file
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write("--- CRASH REPORT ---\n")
+                f.write(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write(f"Exception Type: {type(exception_obj).__name__}\n")
+                f.write(f"Message: {str(exception_obj)}\n")
+                f.write("-" * 20 + "\n")
+                f.write(traceback.format_exc())
 
-# starting process is modell run is  submitted
-if st.session_state["state_submitted_optimization"] == "done":
+    except Exception as secondary_error:
+        # print error to console if writing the file fails
+        print(f"Failed to write crash report: {secondary_error}")
 
-    # raise error if run is started without uploading a model definition
-    if not model_definition_input_file:
 
-        # load error messsage
-        main_error_definition()
+try:
+    # configurate global logger
+    initial_config()
 
-    elif model_definition_input_file != "":
+    # staring sidebar elements as standing elements
+    model_definition_input_file = main_input_sidebar()
+    main_clear_cache_sidebar()
 
-        # check rather the dependencies to be installed by the user are
-        # installed
-        GUI_functions.check_for_dependencies(
-                solver=GUI_main_dict["input_solver"])
+    # load the start page if modell run is not submitted
+    if st.session_state["state_submitted_optimization"] == "not done":
+        main_start_page()
 
-        # save the GUI_main_dict as a chache for the next session
-        GUI_functions.save_GUI_cache_dict(
-            input_values_dict=GUI_main_dict,
-            json_file_path=path_to_cache_json)
+    # starting process is modell run is  submitted
+    if st.session_state["state_submitted_optimization"] == "done":
 
-        # create spinner info text
-        st.info(i18n.t("modeling_success_info"), icon="ℹ️")
+        # raise error if run is started without uploading a model definition
+        if not model_definition_input_file:
 
-        # Starting the model run
-        if len(GUI_main_dict["input_pareto_points"]) == 0:
+            # load error messsage
+            main_error_definition()
 
-            # function to create the result paths and store session state
-            logging_path = create_result_paths()
+        elif model_definition_input_file != "":
 
-            # configurate logger
-            configure_logger(logging_path)
+            # check rather the dependencies to be installed by the user are
+            # installed
+            GUI_functions.check_for_dependencies(
+                    solver=GUI_main_dict["input_solver"])
 
-            # Ensure logging is working by logging a test message
-            logging.info("\t Logging has been set up successfully.")
+            # save the GUI_main_dict as a chache for the next session
+            GUI_functions.save_GUI_cache_dict(
+                input_values_dict=GUI_main_dict,
+                json_file_path=path_to_cache_json)
 
-            with st.spinner("Modeling in Progress..."):
+            # create spinner info text
+            st.info(i18n.t("modeling_success_info"), icon="ℹ️")
 
-                # start model run
-                GUI_functions.run_SESMG(
-                    GUI_main_dict=GUI_main_dict,
-                    model_definition=model_definition_input_file,
-                    save_path=GUI_main_dict["res_path"])
+            # Starting the model run
+            if len(GUI_main_dict["input_pareto_points"]) == 0:
 
-                # save GUI settings in result folder and reset session state
-                save_run_settings()
-
-            # switch page after the model run completed
-            nav_page(page_name="Result_Processing", timeout_secs=3)
-
-        # Starting a pareto model run
-        elif len(GUI_main_dict["input_pareto_points"]) != 0:
-
-            with st.spinner("Modeling in Progress..."):
-
-                # create one directory to collect all runs
-                result_path = GUI_functions.set_result_path()
-                logging_path = (result_path + "/"
-                             + datetime.now().strftime("%Y-%m-%d--%H-%M-%S"))
-                os.mkdir(logging_path)
+                # function to create the result paths and store session state
+                logging_path = create_result_paths()
 
                 # configurate logger
                 configure_logger(logging_path)
 
-                # run_pareto returns res path
-                GUI_main_dict["res_path"] = \
-                    run_pareto(
-                        limits=[int(i) / 100 for i in
-                                GUI_main_dict["input_pareto_points"]],
-                        model_definition=model_definition_input_file,
+                # Ensure logging is working by logging a test message
+                logging.info("\t Logging has been set up successfully.")
+
+                with st.spinner(i18n.t("modeling_in_progress")):
+
+                    # start model run
+                    GUI_functions.run_SESMG(
                         GUI_main_dict=GUI_main_dict,
-                        result_path=GUI_functions.set_result_path())
+                        model_definition=model_definition_input_file,
+                        save_path=GUI_main_dict["res_path"])
 
-                # save path as session state for the result processing page
-                st.session_state["state_result_path"] = \
-                    GUI_main_dict["res_path"]
+                    # save GUI settings in result folder and reset session state
+                    save_run_settings()
 
-                # save GUI settings in result folder and reset session state
-                save_run_settings()
+                # switch page after the model run completed
+                nav_page(page_name="Result_Processing", timeout_secs=3)
 
-            # switch page after the model run completed
-            nav_page(page_name="Result_Processing", timeout_secs=3)
+            # Starting a pareto model run
+            elif len(GUI_main_dict["input_pareto_points"]) != 0:
 
+                with st.spinner(i18n.t("modeling_in_progress")):
+
+                    # create one directory to collect all runs
+                    result_path = GUI_functions.set_result_path()
+                    logging_path = (result_path + "/"
+                                 + datetime.now().strftime("%Y-%m-%d--%H-%M-%S"))
+                    os.mkdir(logging_path)
+
+                    # store result path in session state immediately to ensure
+                    # correct error handling if the simulation crashes
+                    st.session_state["state_result_path"] = logging_path
+
+                    # configurate logger
+                    configure_logger(logging_path)
+
+                    # run_pareto returns res path
+                    GUI_main_dict["res_path"] = \
+                        run_pareto(
+                            limits=[int(i) / 100 for i in
+                                    GUI_main_dict["input_pareto_points"]],
+                            model_definition=model_definition_input_file,
+                            GUI_main_dict=GUI_main_dict,
+                            result_path=GUI_functions.set_result_path())
+
+                    # save path as session state for the result processing page
+                    st.session_state["state_result_path"] = \
+                        GUI_main_dict["res_path"]
+
+                    # save GUI settings in result folder and reset session state
+                    save_run_settings()
+
+                # switch page after the model run completed
+                nav_page(page_name="Result_Processing", timeout_secs=3)
+
+# catch exceptions during the model run and display error information
+except Exception as e:
+    # log the error to the global logger/console
+    logging.error("Error during execution!", exc_info=True)
+
+    # check if logging_path was already initialized before the crash
+    if 'logging_path' in locals():
+        # call the function to save the error report in the result folder
+        log_error_to_file(
+            logging_path=logging_path,
+            exception_obj=e)
+
+    # show a message with a link to the troubleshooting documentation
+    GUI_functions.show_error_with_link()
+
+    # visualize the energy system graph to help identify the crash reason
+    # show graph only if the result path was already initialized
+    if "state_result_path" in st.session_state:
+        # simply pass the result directory; the function finds the image itself
+        GUI_functions.show_error_graph(base_path=st.session_state["state_result_path"])
+
+    # display the technical exception and traceback for debugging
+    st.exception(e)

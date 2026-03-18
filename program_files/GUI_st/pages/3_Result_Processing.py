@@ -10,11 +10,11 @@ import pandas as pd
 from st_aggrid import AgGrid, GridUpdateMode
 import plotly.express as px
 from PIL import Image
+import program_files.GUI_st.i18n as i18n
 
 from program_files.GUI_st.GUI_st_global_functions import \
     import_GUI_input_values_json, st_settings_global, read_markdown_document, \
-    load_result_folder_list, set_result_path
-import program_files.GUI_st.i18n as i18n
+    load_result_folder_list, set_result_path, show_error_with_link, show_error_graph
 
 
 def result_processing_sidebar() -> None:
@@ -49,37 +49,48 @@ def result_processing_sidebar() -> None:
                 os.path.join(set_result_path(),
                              existing_result_folder)
 
-        if st.session_state["state_result_path"] != "not set" and \
-                os.path.join(st.session_state["state_result_path"],
-                             "components.csv") \
-                not in glob.glob(st.session_state["state_result_path"] + "/*"):
-            # header
-            st.header(i18n.t("res_pareto_results"))
+            # check if the result path is set
+            if st.session_state["state_result_path"] != "not set":
 
-            # read out sub folders of pareto list
-            existing_result_foldernames_list = next(
-                os.walk(st.session_state["state_result_path"]))[1]
-            # split folder names and save pareto point positions in a list
-            pareto_points_list = [directory.split(
-                "_")[-2] for directory in existing_result_foldernames_list]
+                # paths for checking the run type
+                components_csv = os.path.join(st.session_state["state_result_path"], "components.csv")
+                pareto_csv = os.path.join(st.session_state["state_result_path"], "pareto.csv")
 
-            # create dict with pareto point positions and folder names
-            pareto_folder_dict = dict(
-                zip(pareto_points_list, existing_result_foldernames_list))
-            # sort pareto point list
-            pareto_points_list.sort()
-            # create select box to choose the pareto point you want to see
-            # show results for
-            pareto_point_chosen = st.selectbox(
-                label=i18n.t("res_choose_pareto"),
-                options=pareto_points_list,
-                help=i18n.t("res_dd_pareto_point"))
+                # 1. CASE: Standard Run (components.csv exists)
+                if os.path.exists(components_csv):
+                    # Standard display - no extra sidebar selection needed
+                    pass
 
-            # create session_state to initialize the pareto result overviews
-            st.session_state["state_pareto_point_chosen"] = pareto_point_chosen
-            st.session_state["state_pareto_result_path"] = \
-                os.path.join(st.session_state["state_result_path"],
-                             pareto_folder_dict[pareto_point_chosen])
+                    # 2. CASE: Pareto Run (pareto.csv exists)
+                elif os.path.exists(pareto_csv):
+
+                    # header
+                    st.header(i18n.t("res_pareto_results"))
+
+                    # read out sub folders of pareto list
+                    existing_result_foldernames_list = next(
+                        os.walk(st.session_state["state_result_path"]))[1]
+                    # split folder names and save pareto point positions in a list
+                    pareto_points_list = [directory.split(
+                        "_")[-2] for directory in existing_result_foldernames_list]
+
+                    # create dict with pareto point positions and folder names
+                    pareto_folder_dict = dict(
+                        zip(pareto_points_list, existing_result_foldernames_list))
+                    # sort pareto point list
+                    pareto_points_list.sort()
+                    # create select box to choose the pareto point you want to see
+                    # show results for
+                    pareto_point_chosen = st.selectbox(
+                        label=i18n.t("res_choose_pareto"),
+                        options=pareto_points_list,
+                        help=i18n.t("res_dd_pareto_point"))
+
+                    # create session_state to initialize the pareto result overviews
+                    st.session_state["state_pareto_point_chosen"] = pareto_point_chosen
+                    st.session_state["state_pareto_result_path"] = \
+                        os.path.join(st.session_state["state_result_path"],
+                                     pareto_folder_dict[pareto_point_chosen])
 
 
 def short_result_summary_time(result_path_summary) -> None:
@@ -365,124 +376,172 @@ def short_result_graph(result_path_graph: str) -> None:
         st.image(es_graph)
 
 
-# starting page functions
-# initialize global page settings
-st_settings_global()
+try:
+    # starting page functions
+    # initialize global page settings
+    st_settings_global()
 
-# initialize session state  if no result paths are defined on main page
-if "state_result_path" not in st.session_state:
-    st.session_state["state_result_path"] = "not set"
+    # initialize session state  if no result paths are defined on main page
+    if "state_result_path" not in st.session_state:
+        st.session_state["state_result_path"] = "not set"
 
-# start sidebar functions
-result_processing_sidebar()
+    # start sidebar functions
+    result_processing_sidebar()
 
-# show introduction page if no result paths are not set
-if st.session_state["state_result_path"] == "not set":
-    doc = read_markdown_document(
-        document_path="docs/GUI_texts/"+ i18n.t("GUI_texts_file_results"),
-        folder_path=f'{"docs/images/manual/Results/*"}')
-    
-    st.markdown(''.join(doc), unsafe_allow_html=True)
+    # check for crash report in the result folder
+    if st.session_state["state_result_path"] != "not set":
+        # define path to the potential crash report file
+        crash_report_path = os.path.join(
+            st.session_state["state_result_path"], "crash_report.txt")
 
-# check if components.csv is in the result folder. Loading result page \
-# elements for a non-pareto run if so.
-elif os.path.join(st.session_state["state_result_path"], "components.csv") \
-        in glob.glob(st.session_state["state_result_path"] + "/*"):
+        # display error information if a crash report exists
+        if os.path.exists(crash_report_path):
+            # show a message with a link to the troubleshooting documentation
+            show_error_with_link()
 
-    # show short result summaries time series information
-    short_result_summary_time(
-        result_path_summary=st.session_state["state_result_path"]
-        + "/summary.csv")
+            # header for the error message
+            st.error("### Error detected during Simulation")
 
-    # check if GUI settings dict is in result folder
-    if os.path.join(st.session_state["state_result_path"],
-                    "GUI_st_run_settings.json") \
+            # visualize the energy system graph to help identify the crash reason
+            show_error_graph(base_path=st.session_state["state_result_path"])
+
+            # display the technical exception and traceback from the file
+            with st.expander("View Detailed Crash Report / Traceback",
+                             expanded=True):
+                with open(crash_report_path, "r", encoding="utf-8") as f:
+                    crash_content = f.read()
+                st.code(crash_content, language="text")
+
+            # stop the script execution to prevent further loading errors
+            st.stop()
+
+    # show introduction page if no result paths are not set
+    if st.session_state["state_result_path"] == "not set":
+        doc = read_markdown_document(
+            document_path="docs/GUI_texts/"+ i18n.t("GUI_texts_file_results"),
+            folder_path=f'{"docs/images/manual/Results/*"}')
+
+        st.markdown(''.join(doc), unsafe_allow_html=True)
+
+    # check if components.csv is in the result folder. Loading result page \
+    # elements for a non-pareto run if so.
+    elif os.path.join(st.session_state["state_result_path"], "components.csv") \
             in glob.glob(st.session_state["state_result_path"] + "/*"):
-        # import json as in a dict
-        GUI_run_settings_dict = import_GUI_input_values_json(
-            json_file_path=st.session_state["state_result_path"]
-            + "/GUI_st_run_settings.json")
-        # display some GUI settings if pre-modelling was active
-        if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
-            # show time series simplification settings
-            short_result_simplifications(
-                result_GUI_settings_dict=GUI_run_settings_dict,
-                result_path_summary=st.session_state["state_result_path"]+ "/summary.csv")
-        if GUI_run_settings_dict["input_activate_premodeling"]:
-            # show time series simplification settings
-            short_result_premodelling(
-                result_GUI_settings_dict=GUI_run_settings_dict)
-    # show short result summaries key values
-    short_result_summary_system(
-        result_path_summary=st.session_state["state_result_path"]
-        + "/summary.csv")
 
-    # show energy system graph
-    short_result_graph(
-        result_path_graph=st.session_state["state_result_path"]
-        + "/graph.gv.png")
-    # show components table
-    short_result_table(
-        result_path_components=st.session_state["state_result_path"]
-        + "/components.csv")
-    # show interactive result diagram
-    short_result_interactive_dia(
-        result_path_results=st.session_state["state_result_path"]
-        + "/results.csv")
+        # show short result summaries time series information
+        short_result_summary_time(
+            result_path_summary=st.session_state["state_result_path"]
+            + "/summary.csv")
 
-# check if components.csv is in the result folder. Loading result page \
-# elements for a pareto run if not.
-elif os.path.join(st.session_state["state_result_path"], "components.csv") \
-        not in glob.glob(st.session_state["state_result_path"] + "/*"):
-    # show building specific results
-    show_pareto(
-        result_path_pareto=os.path.join(st.session_state["state_result_path"],
-                                        "pareto.csv"))
-    # show heat amount diagram
-    show_energy_amounts(
-        result_path_heat_amounts=st.session_state["state_result_path"]
-        + "/heat_amounts.csv",
-        result_path_elec_amounts=st.session_state["state_result_path"]
-        + "/elec_amounts.csv")
+        # check if GUI settings dict is in result folder
+        if os.path.join(st.session_state["state_result_path"],
+                        "GUI_st_run_settings.json") \
+                in glob.glob(st.session_state["state_result_path"] + "/*"):
+            # import json as in a dict
+            GUI_run_settings_dict = import_GUI_input_values_json(
+                json_file_path=st.session_state["state_result_path"]
+                + "/GUI_st_run_settings.json")
+            # display some GUI settings if pre-modelling was active
+            if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
+                # show time series simplification settings
+                short_result_simplifications(
+                    result_GUI_settings_dict=GUI_run_settings_dict,
+                    result_path_summary=st.session_state["state_result_path"]+ "/summary.csv")
+            if GUI_run_settings_dict["input_activate_premodeling"]:
+                # show time series simplification settings
+                short_result_premodelling(
+                    result_GUI_settings_dict=GUI_run_settings_dict)
+        # show short result summaries key values
+        short_result_summary_system(
+            result_path_summary=st.session_state["state_result_path"]
+            + "/summary.csv")
 
-    # open short results for the chosen pareto point incl. header
-    st.subheader(i18n.t("res_short_results_pareto", point=st.session_state["state_pareto_point_chosen"]))
-    # show short result summaries time series informations
-    short_result_summary_time(
-        result_path_summary=st.session_state["state_pareto_result_path"]
-        + "/summary.csv")
-    # check if GUI settings dict is in result folder
-    if os.path.join(st.session_state["state_result_path"],
-                    "GUI_st_run_settings.json") \
-            in glob.glob(st.session_state["state_result_path"] + "/*"):
-        # import json as in a dict
-        GUI_run_settings_dict = import_GUI_input_values_json(
-            json_file_path=os.path.join(
-                st.session_state["state_result_path"],
-                "GUI_st_run_settings.json"))
-        # display some GUI settings if pre-modelling was active
-        if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
-            # show time series simplification settings
-            short_result_simplifications(
-                result_GUI_settings_dict=GUI_run_settings_dict,
-                result_path_summary=st.session_state["state_pareto_result_path"]+ "/summary.csv")
-        if GUI_run_settings_dict["input_activate_premodeling"]:
-            # show time series simplification settings
-            short_result_premodelling(
-                result_GUI_settings_dict=GUI_run_settings_dict)
-    # show short result summaries key values
-    short_result_summary_system(
-        result_path_summary=st.session_state["state_pareto_result_path"]
-        + "/summary.csv")
-    # show components table
-    short_result_table(
-        result_path_components=st.session_state["state_pareto_result_path"]
-        + "/components.csv")
-    # show interactive result diagram
-    short_result_interactive_dia(
-        result_path_results=st.session_state["state_pareto_result_path"]
-        + "/results.csv")
-    # show energy system graph
-    short_result_graph(
-        result_path_graph=st.session_state["state_pareto_result_path"]
-        + "/graph.gv.png")
+        # show energy system graph
+        short_result_graph(
+            result_path_graph=st.session_state["state_result_path"]
+            + "/graph.gv.png")
+        # show components table
+        short_result_table(
+            result_path_components=st.session_state["state_result_path"]
+            + "/components.csv")
+        # show interactive result diagram
+        short_result_interactive_dia(
+            result_path_results=st.session_state["state_result_path"]
+            + "/results.csv")
+
+    # check if components.csv is in the result folder. Loading result page \
+    # elements for a pareto run if not.
+    elif os.path.join(st.session_state["state_result_path"], "components.csv") \
+            not in glob.glob(st.session_state["state_result_path"] + "/*"):
+        # show building specific results
+        show_pareto(
+            result_path_pareto=os.path.join(st.session_state["state_result_path"],
+                                            "pareto.csv"))
+        # show heat amount diagram
+        show_energy_amounts(
+            result_path_heat_amounts=st.session_state["state_result_path"]
+            + "/heat_amounts.csv",
+            result_path_elec_amounts=st.session_state["state_result_path"]
+            + "/elec_amounts.csv")
+
+        # open short results for the chosen pareto point incl. header
+        st.subheader(i18n.t("res_short_results_pareto", point=st.session_state["state_pareto_point_chosen"]))
+        
+        # show short result summaries time series informations
+        short_result_summary_time(
+            result_path_summary=st.session_state["state_pareto_result_path"]
+            + "/summary.csv")
+        # check if GUI settings dict is in result folder
+        if os.path.join(st.session_state["state_result_path"],
+                        "GUI_st_run_settings.json") \
+                in glob.glob(st.session_state["state_result_path"] + "/*"):
+            # import json as in a dict
+            GUI_run_settings_dict = import_GUI_input_values_json(
+                json_file_path=os.path.join(
+                    st.session_state["state_result_path"],
+                    "GUI_st_run_settings.json"))
+            # display some GUI settings if pre-modelling was active
+            if GUI_run_settings_dict["input_timeseries_algorithm"] != "None":
+                # show time series simplification settings
+                short_result_simplifications(
+                    result_GUI_settings_dict=GUI_run_settings_dict,
+                    result_path_summary=st.session_state["state_pareto_result_path"]+ "/summary.csv")
+            if GUI_run_settings_dict["input_activate_premodeling"]:
+                # show time series simplification settings
+                short_result_premodelling(
+                    result_GUI_settings_dict=GUI_run_settings_dict)
+        # show short result summaries key values
+        short_result_summary_system(
+            result_path_summary=st.session_state["state_pareto_result_path"]
+            + "/summary.csv")
+        # show components table
+        short_result_table(
+            result_path_components=st.session_state["state_pareto_result_path"]
+            + "/components.csv")
+        # show interactive result diagram
+        short_result_interactive_dia(
+            result_path_results=st.session_state["state_pareto_result_path"]
+            + "/results.csv")
+        # show energy system graph
+        short_result_graph(
+            result_path_graph=st.session_state["state_pareto_result_path"]
+            + "/graph.gv.png")
+
+# catch exceptions during result processing and display help information
+except Exception as e:
+    # show a message with a link to the troubleshooting documentation
+    show_error_with_link()
+
+    # check the status of the result path to provide specific feedback
+    if st.session_state.get("state_result_path") is None or \
+            st.session_state.get("state_result_path") == "not set":
+        # error message if the path was not initialized
+        st.error("The result path was not initialized. The simulation "
+                 "likely crashed at a very early stage.")
+
+    else:
+        # visualize the graph if the path is available
+        show_error_graph(base_path=st.session_state["state_result_path"])
+
+    # display the technical exception and traceback for debugging
+    st.exception(e)

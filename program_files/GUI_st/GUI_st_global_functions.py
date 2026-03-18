@@ -646,3 +646,59 @@ def create_result_directory(tail="") -> None:
     if os.path.exists(result_directory_path) is False:
         # Create the results directory if it doesn't exist
         os.makedirs(result_directory_path)
+
+
+def show_error_with_link() -> None:
+    """
+    Show an error message with additional information and a link to the
+    troubleshooting website.
+
+    This function generates a markdown-formatted error message in the Streamlit
+    interface, providing the user with a direct link to the official SESMG
+    troubleshooting documentation.
+
+    :returns: None
+    """
+    # define the base message and the target URL
+    error_message = r"Check out Troubleshooting, maybe you can find an answer there: "
+    link = r"https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/03.00.00_trouble_shooting.html"
+    # format the link as a markdown hyperlink
+    link_text = "Troubleshooting Guide"
+    error_message_with_link = f"{error_message}[{link_text}]({link})"
+    # display the formatted message in the Streamlit UI
+    st.markdown(error_message_with_link)
+
+
+def show_error_graph(base_path: str) -> None:
+    """
+    Search for and display the energy system structure graph in the
+    Streamlit interface.
+
+    This function performs a recursive search starting from the base path to
+    find a 'graph.gv.png' file. It is designed to work for both standard
+    runs and Pareto optimizations by navigating through potential
+    subdirectories.
+
+    :param base_path: Path to the result directory where the search starts
+    :type base_path: str
+
+    :returns: None
+    """
+    # initialize the path variable for the found graph
+    result_path_graph = None
+
+    # search for the graph file in the result directory and its subdirectories
+    for root, dirs, files in os.walk(base_path):
+        if "graph.gv.png" in files:
+            # construct the absolute path to the found image
+            result_path_graph = os.path.join(root, "graph.gv.png")
+            # stop searching after the first match is found
+            break
+
+    # if a graph was found, open and display it
+    if result_path_graph:
+        # open the image file in read mode
+        error_graph = Image.open(result_path_graph, "r")
+
+        # render the graph image in the Streamlit application
+        st.image(error_graph)
