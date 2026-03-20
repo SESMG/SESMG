@@ -415,11 +415,23 @@ try:
             # visualize the energy system graph to help identify the crash reason
             show_error_graph(base_path=st.session_state["state_result_path"])
 
-            # display the technical exception and traceback from the file
-            with st.expander("View Detailed Crash Report / Traceback",
-                             expanded=True):
-                with open(crash_report_path, "r", encoding="utf-8") as f:
-                    crash_content = f.read()
+            # read the full crash report content
+            with open(crash_report_path, "r", encoding="utf-8") as f:
+                crash_content = f.read()
+
+            # extract only the last traceback block to show the most recent error
+            # chained exceptions are separated by a specific python string
+            error_blocks = crash_content.split(
+                "During handling of the above exception, another exception occurred:")
+            last_error_block = error_blocks[-1].strip()
+
+            # display the latest technical traceback in a code block
+            st.markdown("#### 🛠️ Technical Traceback (Latest Error):")
+            st.code(last_error_block, language="text")
+
+            # provide an expander to view the full error history if needed
+            with st.expander("View Full Crash Report / Detailed History",
+                             expanded=False):
                 st.code(crash_content, language="text")
 
             # stop the script execution to prevent further loading errors
