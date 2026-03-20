@@ -10,6 +10,8 @@ from streamlit.components.v1 import html
 import streamlit as st
 import logging
 import traceback
+import psutil
+import time
 
 # Setting new system path to be able to refer to parent directories
 parent = os.path.abspath('..')
@@ -656,6 +658,56 @@ def log_error_to_file(logging_path: str, exception_obj: Exception) -> None:
         print(f"Failed to write crash report: {secondary_error}")
 
 
+def smart_kill_solver() -> bool:
+    """
+        Function to search for active solver processes and terminate them.
+        It uses a two-stage approach: first a gentle terminate(),
+        then a hard kill() if the process does not respond within 2 seconds.
+
+        :return: True if at least one process was terminated, False otherwise.
+        :rtype: bool
+    """
+    # Define a list of exact solver executable names to search for
+    solver_names = [
+        "cbc", "cbc.exe",  # CBC (Windows & Unix)
+        "gurobi_cl", "gurobi_cl.exe",  # Gurobi Command Line Interface
+        "gurobi", "gurobi.exe",  # Gurobi Interactive/Standard
+        "grbgetkey", "grbgetkey.exe",  # Gurobi License Tool (optional)
+    ]
+
+    killed_any = False
+
+    # Iterate through all currently running system processes
+    for proc in psutil.process_iter(['pid', 'name']):
+        try:
+            # Normalize the process name to lowercase for cross-platform matching
+            current_proc_name = proc.info['name'].lower()
+
+            # Perform an exact match against the defined solver list
+            if current_proc_name in [s.lower() for s in solver_names]:
+                logging.info(f"Terminating solver process: {current_proc_name} "
+                             f"(PID: {proc.pid})")
+
+                # STAGE 1: Attempt a gentle termination (SIGTERM)
+                proc.terminate()
+
+                try:
+                    # Wait up to 2 seconds for the process to exit gracefully
+                    proc.wait(timeout=2)
+                    killed_any = True
+                except psutil.TimeoutExpired:
+                    # STAGE 2: Force termination if still active (SIGKILL)
+                    proc.kill()
+                    proc.wait(timeout=1)  # Brief confirmation wait
+                    killed_any = True
+
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            # Ignore processes that vanish or are restricted during iteration
+            continue
+
+    return killed_any
+
+
 try:
     # configurate global logger
     initial_config()
@@ -678,6 +730,36 @@ try:
             main_error_definition()
 
         elif model_definition_input_file != "":
+
+            # Create a popover element to provide a safe, two-step termination process
+            with st.popover("Stop 🛑",
+                            help="Click to abort the running optimization"):
+                st.error("Abort Calculation?")
+                st.write("The solver will be terminated immediately. "
+                         "Unsaved progress will be lost.")
+
+                # Primary button for confirmation
+                if st.button("Confirm Abort",
+                             type="primary",
+                             use_container_width=True):
+
+                    # Attempt to kill active solver processes
+                    termination_success = smart_kill_solver()
+
+                    if termination_success:
+                        # CASE 1: Solver found and terminated -> Reset state
+                        st.session_state["state_submitted_optimization"] = "not done"
+                        st.success("Solver stopped. Returning to start...")
+                        time.sleep(2)
+                        st.rerun()
+                    else:
+                        # CASE 2: No solver found (Pre-modelling still active)
+                        # Register the interrupt flag and stop script execution
+                        st.session_state["state_submitted_optimization_interrupted"] = True
+                        st.warning("The solver has not started yet (pre-modelling in progress). "
+                                   "To terminate the process, please wait a few seconds and "
+                                   "click 'Confirm Abort' again once the solver is active.")
+                        st.stop()
 
             # check rather the dependencies to be installed by the user are
             # installed
