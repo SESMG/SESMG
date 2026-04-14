@@ -10,6 +10,7 @@ from oemof.solph.flows import Flow
 from oemof.solph import Investment
 import logging
 import pandas
+import pvlib
 
 
 class Sources:
@@ -262,6 +263,69 @@ class Sources:
         # returns logging info
         logging.info("\t Source created: " + source["label"])
 
+    def infer_cec_params(self, source: pandas.Series) -> pandas.Series:
+        """
+        Berechnet CEC-6-Parameter aus Datenblattangaben via
+        pvlib.ivtools.sdm.fit_cec_sam() (Dobos 2012, Industriestandard).
+
+        Benötigt NREL-PySAM: pip install NREL-PySAM
+        PySAM ist ein aktiv gepflegtes NREL-Paket, per pip auf allen
+        Plattformen installierbar – für diesen Anwendungsfall die
+        robusteste und genaueste Methode.
+
+        Gibt ein dict zurück das direkt als module_parameters für
+        PVSystem / ModelChain(dc_model='cec') verwendet werden kann.
+        """
+
+        celltype = str(source["celltype"])
+        v_mp = float(source["v_mp"])
+        i_mp = float(source["i_mp"])
+        v_oc = float(source["v_oc"])
+        i_sc = float(source["i_sc"])
+        alpha_sc = float(source["alpha_sc"])  # A/°C absolut
+        beta_voc = float(source["beta_voc"])  # V/°C absolut, negativ
+        gamma_pmp = float(source["gamma_pmp"])  # %/°C, z. B. -0.35
+        n_cells = int(source["cells_in_series"])
+
+        # Einheiten Hinweis:
+        #   alpha_sc: Datenblatt gibt oft %/°C → umrechnen: alpha_sc_%/100 * i_sc
+        #   beta_voc: Datenblatt gibt oft %/°C → umrechnen: beta_voc_%/100 * v_oc
+        #   gamma_pmp: bleibt als %/°C (z. B. -0.35), KEINE Umrechnung nötig
+
+        (I_L_ref, I_o_ref, R_s,
+         R_sh_ref, a_ref, Adjust) = pvlib.ivtools.sdm.fit_cec_sam(
+            celltype=celltype,
+            v_mp=v_mp,
+            i_mp=i_mp,
+            v_oc=v_oc,
+            i_sc=i_sc,
+            alpha_sc=alpha_sc,
+            beta_voc=beta_voc,
+            gamma_pmp=gamma_pmp,
+            cells_in_series=n_cells,
+        )
+
+        p_stc = float(source["STC"])
+
+        results = {
+            "celltype": celltype,
+            "alpha_sc": alpha_sc,
+            "beta_voc": beta_voc,  # ← für calcparams_cec
+            "a_ref": a_ref,
+            "I_L_ref": I_L_ref,
+            "I_o_ref": I_o_ref,
+            "R_s": R_s,
+            "R_sh_ref": R_sh_ref,
+            "Adjust": Adjust,
+            # PVWatts-Parameter (für dc_model = 'pvwatts')
+            "STC": p_stc,
+            "gamma_pdc": gamma_pmp / 100,
+            # für dc_model = 'cec')
+            "gamma_r": gamma_pmp,  # ← in %/°C, NICHT /°C !
+        }
+
+        return pandas.Series(results)
+
     def pv_source(self, source: pandas.Series) -> None:
         """
             Creates an oemof photovoltaic source object.
@@ -286,39 +350,75 @@ class Sources:
                     
             :type source: pandas.Series
         """
-        # reads pv system parameters from parameter dictionary
-        # nodes_data
-        parameter_set = {
-            "azimuth": source["azimuth"],
-            "tilt": source["surface tilt"],
-            "module_name": source["modul model"],
-            "inverter_name": source["inverter model"],
-            "albedo": source["albedo"],
-            "module_type": "glass_glass",
-            "racking_model": "open_rack",
-        }
-
-        # sets pv system parameters for pv_module
-        pv_module = powerplants.Photovoltaic(**parameter_set)
+        from pvlib.location import Location
+        from pvlib.pvsystem import PVSystem
+        from pvlib.modelchain import ModelChain
 
         # changes names of data columns,
-        # so it fits the needs of the feedinlib
+        # so it fits the needs of the pvlib
         name_dc = {"temperature": "temp_air", "windspeed": "v_wind"}
-        self.weather_data.rename(columns=name_dc)
+        self.weather_data.rename(columns=name_dc, inplace=True)
 
-        # calculates time series normed on 1 kW pv peak performance
-        feedin = pv_module.feedin(
-            weather=self.weather_data,
-            location=(source["latitude"], source["longitude"]),
-            scaling="peak_power",
+        if source["technology"] == "photovoltaic":
+            # Datenbanken laden
+            modules = pvlib.pvsystem.retrieve_sam('CECMod')
+            # Spezifisches Modul und Wechselrichter auswählen
+            # Falls der Name in der Excel nicht exakt stimmt, gibt es einen Fehler.
+            module_parameters = modules[source["modul model"]]
+
+        elif source["technology"] == "photovoltaic_datasheet":
+
+            module_parameters = self.infer_cec_params(source)
+
+        # Standort und System-Setup
+        location = Location(
+            latitude=source["latitude"],
+            longitude=source["longitude"],
+            altitude=source["altitude"],
         )
 
-        # Replace 'nan' value with 0
-        feedin = feedin.fillna(0)
-        # Set negative values to zero (requirement for solving the model)
-        feedin[feedin < 0] = 0
-        # Set values greater 1 to 1 (requirement for solving the model)
-        feedin[feedin > 1] = 1
+        inverter_parameters = pandas.Series({
+            "pdc0": source["inverter_power"],
+            "eta_inv_nom": source["inverter_eta"],
+        })
+
+        system = PVSystem(
+            surface_tilt                    = source["surface tilt"],
+            surface_azimuth                 = source["azimuth"],
+            albedo                          = source["albedo"],
+            module_parameters               = module_parameters,
+            inverter_parameters             = inverter_parameters,
+            temperature_model_parameters    = pvlib.temperature.TEMPERATURE_MODEL_PARAMETERS['sapm']['open_rack_glass_polymer']
+        )
+
+        mc = ModelChain(
+            system                  = system,
+            location                = location,
+            aoi_model               = "no_loss",
+            spectral_model          = "no_loss",
+            ac_model                = "pvwatts",
+            dc_model                = 'cec',
+            clearsky_model          = 'ineichen',
+            transposition_model     = 'haydavies',
+            solar_position_method   = 'nrel_numpy',
+            airmass_model           = 'kastenyoung1989',
+            temperature_model       = None,
+            dc_ohmic_model          = 'no_loss',
+            losses_model            = 'no_loss'
+        )
+
+        mc.run_model(self.weather_data)
+
+        p_stc = module_parameters['STC']
+
+        ac_power = mc.results.ac
+        if isinstance(ac_power, pandas.DataFrame):
+            # falls es p_mp heißt
+            ac_power = ac_power['p_mp'] if 'p_mp' in ac_power.columns else ac_power.iloc[:, 0]
+
+        feedin = ac_power / p_stc
+
+        feedin = feedin.fillna(0).clip(lower=0)
 
         self.create_feedin_source(feedin=feedin, source=source)
 
@@ -478,7 +578,7 @@ class Sources:
         else:
             raise ValueError("Technology chosen not accepted!")
         collectors_heat = precalc_res.eta_c
-        
+
         self.create_feedin_source(feedin=collectors_heat,
                                   source=source,
                                   output=col_bus,
@@ -533,6 +633,7 @@ class Sources:
         switch_dict = {
             "other": self.commodity_source,
             "photovoltaic": self.pv_source,
+            "photovoltaic_datasheet": self.pv_source,
             "windpower": self.windpower_source,
             "timeseries": self.timeseries_source,
             "solar_thermal_flat_plate": self.solar_heat_source,
