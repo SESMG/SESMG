@@ -265,33 +265,51 @@ class Sources:
 
     def infer_cec_params(self, source: pandas.Series) -> pandas.Series:
         """
-        Berechnet CEC-6-Parameter aus Datenblattangaben via
-        pvlib.ivtools.sdm.fit_cec_sam() (Dobos 2012, Industriestandard).
+            Calculates CEC 6-parameter set from datasheet specifications.
 
-        Benötigt NREL-PySAM: pip install NREL-PySAM
-        PySAM ist ein aktiv gepflegtes NREL-Paket, per pip auf allen
-        Plattformen installierbar – für diesen Anwendungsfall die
-        robusteste und genaueste Methode.
+            Uses pvlib.ivtools.sdm.fit_cec_sam() (Dobos 2012) to estimate
+            parameters for the single diode model. Requires NREL-PySAM
+            to be installed.
 
-        Gibt ein dict zurück das direkt als module_parameters für
-        PVSystem / ModelChain(dc_model='cec') verwendet werden kann.
+            Note on Units:
+                - alpha_sc: Must be [A/°C]. If datasheet gives [%/°C],
+                  convert via: alpha_sc_% / 100 * i_sc
+                - beta_voc: Must be [V/°C]. If datasheet gives [%/°C],
+                  convert via: beta_voc_% / 100 * v_oc
+                - gamma_pmp: Remains [%/°C] (e.g. -0.35), no conversion needed.
+
+            :param source: Series containing datasheet values:
+                - celltype: e.g., 'monoSi'
+                - v_mp: Voltage at maximum power point [V]
+                - i_mp: Current at maximum power point [A]
+                - v_oc: Open circuit voltage [V]
+                - i_sc: Short circuit current [A]
+                - alpha_sc: Temp. coefficient of i_sc [A/°C]
+                - beta_voc: Temp. coefficient of v_oc [V/°C]
+                - gamma_pmp: Temp. coefficient of p_mp [%/°C]
+                - cells_in_series: Number of cells in series
+                - STC: Nominal power at STC [W]
+
+            :type source: pandas.Series
+
+            :return: Series with parameters for PVSystem/ModelChain
+            :rtype: pandas.Series
         """
 
+        # Read parameters from source series
         celltype = str(source["celltype"])
         v_mp = float(source["v_mp"])
         i_mp = float(source["i_mp"])
         v_oc = float(source["v_oc"])
         i_sc = float(source["i_sc"])
-        alpha_sc = float(source["alpha_sc"])  # A/°C absolut
-        beta_voc = float(source["beta_voc"])  # V/°C absolut, negativ
-        gamma_pmp = float(source["gamma_pmp"])  # %/°C, z. B. -0.35
+        # Ensure correct units for temperature coefficients
+        # alpha_sc: [A/°C], beta_voc: [V/°C], gamma_pmp: [%/°C]
+        alpha_sc = float(source["alpha_sc"])
+        beta_voc = float(source["beta_voc"])
+        gamma_pmp = float(source["gamma_pmp"])
         n_cells = int(source["cells_in_series"])
 
-        # Einheiten Hinweis:
-        #   alpha_sc: Datenblatt gibt oft %/°C → umrechnen: alpha_sc_%/100 * i_sc
-        #   beta_voc: Datenblatt gibt oft %/°C → umrechnen: beta_voc_%/100 * v_oc
-        #   gamma_pmp: bleibt als %/°C (z. B. -0.35), KEINE Umrechnung nötig
-
+        # Estimate the CEC parameters using the SAM fitting tool
         (I_L_ref, I_o_ref, R_s,
          R_sh_ref, a_ref, Adjust) = pvlib.ivtools.sdm.fit_cec_sam(
             celltype=celltype,
@@ -310,18 +328,16 @@ class Sources:
         results = {
             "celltype": celltype,
             "alpha_sc": alpha_sc,
-            "beta_voc": beta_voc,  # ← für calcparams_cec
+            "beta_voc": beta_voc,
             "a_ref": a_ref,
             "I_L_ref": I_L_ref,
             "I_o_ref": I_o_ref,
             "R_s": R_s,
             "R_sh_ref": R_sh_ref,
             "Adjust": Adjust,
-            # PVWatts-Parameter (für dc_model = 'pvwatts')
             "STC": p_stc,
             "gamma_pdc": gamma_pmp / 100,
-            # für dc_model = 'cec')
-            "gamma_r": gamma_pmp,  # ← in %/°C, NICHT /°C !
+            "gamma_r": gamma_pmp,
         }
 
         return pandas.Series(results)
@@ -329,24 +345,28 @@ class Sources:
     def pv_source(self, source: pandas.Series) -> None:
         """
             Creates an oemof photovoltaic source object.
-    
-            Simulates the yield of a photovoltaic system using feedinlib
+
+            Simulates the yield of a photovoltaic system using pvlib
             and creates a source object with the yield as time series
-            and the use of the create_source method.
-    
+            and the use of the create_source method. Supports both
+            database-lookup and datasheet-inference for module parameters.
+
             :param source: Series containing all information for \
                 the creation of an oemof source. At least the \
                 following key-value-pairs have to be included:
-    
+
                     - label
                     - fixed
-                    - Azimuth
-                    - Surface Tilt
-                    - Modul Model
-                    - Inverter Model
-                    - Albedo
-                    - Latitude
-                    - Longitude
+                    - technology: 'photovoltaic' or 'photovoltaic_datasheet'
+                    - azimuth
+                    - surface tilt
+                    - modul model
+                    - albedo
+                    - latitude
+                    - longitude
+                    - altitude
+                    - inverter_power
+                    - inverter_eta
                     
             :type source: pandas.Series
         """
@@ -354,34 +374,34 @@ class Sources:
         from pvlib.pvsystem import PVSystem
         from pvlib.modelchain import ModelChain
 
-        # changes names of data columns,
-        # so it fits the needs of the pvlib
+        # Adjust weather data column names to fit pvlib requirements
         name_dc = {"temperature": "temp_air", "windspeed": "v_wind"}
         self.weather_data.rename(columns=name_dc, inplace=True)
 
+        # Handle different ways of defining module parameters
         if source["technology"] == "photovoltaic":
-            # Datenbanken laden
+            # Load module parameters from CEC database
             modules = pvlib.pvsystem.retrieve_sam('CECMod')
-            # Spezifisches Modul und Wechselrichter auswählen
-            # Falls der Name in der Excel nicht exakt stimmt, gibt es einen Fehler.
             module_parameters = modules[source["modul model"]]
 
         elif source["technology"] == "photovoltaic_datasheet":
-
+            # Infer CEC parameters from datasheet values provided in the series
             module_parameters = self.infer_cec_params(source)
 
-        # Standort und System-Setup
+        # Define site location based on geographical coordinates
         location = Location(
             latitude=source["latitude"],
             longitude=source["longitude"],
             altitude=source["altitude"],
         )
 
+        # Define simplified inverter parameters
         inverter_parameters = pandas.Series({
             "pdc0": source["inverter_power"],
             "eta_inv_nom": source["inverter_eta"],
         })
 
+        # Set up PVSystem with module and inverter configuration
         system = PVSystem(
             surface_tilt                    = source["surface tilt"],
             surface_azimuth                 = source["azimuth"],
@@ -391,6 +411,7 @@ class Sources:
             temperature_model_parameters    = pvlib.temperature.TEMPERATURE_MODEL_PARAMETERS['sapm']['open_rack_glass_polymer']
         )
 
+        # Configure the ModelChain for simulation
         mc = ModelChain(
             system                  = system,
             location                = location,
@@ -407,19 +428,21 @@ class Sources:
             losses_model            = 'no_loss'
         )
 
+        # Run the simulation based on provided weather data
         mc.run_model(self.weather_data)
 
+        # Extract AC power results and handle potential dataframe structures
         p_stc = module_parameters['STC']
-
         ac_power = mc.results.ac
         if isinstance(ac_power, pandas.DataFrame):
             # falls es p_mp heißt
             ac_power = ac_power['p_mp'] if 'p_mp' in ac_power.columns else ac_power.iloc[:, 0]
 
+        # Calculate relative feed-in (normalized to STC power)
         feedin = ac_power / p_stc
-
         feedin = feedin.fillna(0).clip(lower=0)
 
+        # Finalize the oemof source creation
         self.create_feedin_source(feedin=feedin, source=source)
 
     def windpower_source(self, source: pandas.Series) -> None:
@@ -577,7 +600,12 @@ class Sources:
             irradiance = precalc_res.collector_irradiance / 1000
         else:
             raise ValueError("Technology chosen not accepted!")
-        collectors_heat = precalc_res.eta_c
+
+        # set collectors_heat from W/sqm to kW/sqm
+        collectors_heat = precalc_res.collectors_heat / 1000
+        # multiply collectors_heat with conversion factor so that it has no dimension
+        # and can be used to create oemof source
+        collectors_heat = collectors_heat * source["conversion factor"]
 
         self.create_feedin_source(feedin=collectors_heat,
                                   source=source,
