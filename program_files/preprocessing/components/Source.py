@@ -376,7 +376,7 @@ class Sources:
 
         # Adjust weather data column names to fit pvlib requirements
         name_dc = {"temperature": "temp_air", "windspeed": "v_wind"}
-        self.weather_data.rename(columns=name_dc, inplace=True)
+        self.weather_data.rename(columns=name_dc)
 
         # Handle different ways of defining module parameters
         if source["technology"] == "photovoltaic":
