@@ -342,6 +342,45 @@ class Sources:
 
         return pandas.Series(results)
 
+    def change_inverter_limits(self, inv_params: pandas.Series, p_stc: float, dc_ac_ratio: float):
+        """
+            Changes inverter simulation limits to focus solely on conversion efficiency.
+
+            Scales the inverter's capacity based on the DC system size and DC/AC ratio,
+            and removes lower operational thresholds to prevent artificial clipping or shutdowns.
+
+            This normalization is critical to allow arbitrary inverter models to be paired
+            with any DC system size (e.g., simulating a single 400W module). Without removing
+            thresholds like Pso, large commercial inverters would never start operating in a
+            small-scale or single-module simulation because their physical startup thresholds
+            often require several kilowatts.
+
+            :param inv_params: Series containing inverter parameters.
+            :param p_stc: DC power at STC (Standard Test Conditions) in Watts.
+            :param dc_ac_ratio: Scaling factor for AC/DC power ratio.
+            :type inv_params: pandas.Series
+            :type p_stc: float
+            :type dc_ac_ratio: float
+            :return: Modified inverter parameters.
+            :rtype: pandas.Series
+        """
+
+        # Define AC power limit based on DC size and desired ratio
+        p_limit = p_stc / dc_ac_ratio
+
+        # Set all lower operational and startup thresholds to 0 to ensure continuous operation.
+        # Without this, a large commercial inverter would never start up in a small-scale
+        # simulation (e.g., a single 400W module could never cross a multi-kW 'Pso' threshold).
+        zero_keys = ['Mppt_low', 'MPPTLow', 'Vmin', 'Pso']
+        inv_params.loc[inv_params.index.intersection(zero_keys)] = 0
+
+        # Scale rated capacity parameters to p_limit to prevent artificial clipping
+        limit_keys = ['Paco', 'Pdco', 'Pacmax', 'Pnom', 'pdc0']
+        inv_params.loc[inv_params.index.intersection(limit_keys)] = p_limit
+
+        return inv_params
+
+
     def pv_source(self, source: pandas.Series) -> None:
         """
             Creates an oemof photovoltaic source object.
@@ -380,6 +419,7 @@ class Sources:
 
         # Handle different ways of defining module parameters
         pv_module_name = source["modul model"]
+        dc_ac_ratio = max(source["dc ac ratio"], 1.0)
 
         # Map module database names to their corresponding DC model types
         module_dbs = {
@@ -445,6 +485,8 @@ class Sources:
             })
             ac_model = 'pvwatts'
 
+        # change capacity and operational limits to prevent unintended simulation clipping
+        inverter_parameters = self.change_inverter_limits(inverter_parameters, p_stc, dc_ac_ratio)
 
         # Set up PVSystem with module and inverter configuration
         system = PVSystem(
