@@ -518,17 +518,17 @@ class Sources:
         # Run the simulation based on provided weather data
         mc.run_model(self.weather_data)
 
-        # Extract AC power results and handle potential dataframe structures
-        p_stc = module_parameters['STC']
+        # Extract AC and DC power results and handle potential dataframe structures
         ac_power = mc.results.ac
+        dc_power = mc.results.dc
+
         if isinstance(ac_power, pandas.DataFrame):
-            # falls es p_mp heißt
-            ac_power = ac_power['p_mp'] if 'p_mp' in ac_power.columns else ac_power.iloc[:, 0]
+            ac_power = ac_power.get('p_mp', ac_power.iloc[:, 0])
+        if isinstance(dc_power, pandas.DataFrame):
+            dc_power = dc_power.get('p_mp', dc_power.iloc[:, 0])
 
         # Calculate relative feed-in (normalized to STC power)
-        feedin = ac_power / p_stc
-        feedin = feedin.fillna(0).clip(lower=0)
-
+        feedin = (ac_power.clip(upper=dc_power) / p_stc).fillna(0).clip(lower=0)
         # Finalize the oemof source creation
         self.create_feedin_source(feedin=feedin, source=source)
 
