@@ -379,14 +379,35 @@ class Sources:
         self.weather_data.rename(columns=name_dc)
 
         # Handle different ways of defining module parameters
-        if source["technology"] == "photovoltaic":
-            # Load module parameters from CEC database
-            modules = pvlib.pvsystem.retrieve_sam('CECMod')
-            module_parameters = modules[source["modul model"]]
+        pv_module_name = source["modul model"]
 
-        elif source["technology"] == "photovoltaic_datasheet":
-            # Infer CEC parameters from datasheet values provided in the series
+        # Map module database names to their corresponding DC model types
+        module_dbs = {
+            'CECMod': 'cec',
+            'SandiaMod': 'sapm'
+        }
+
+        module_parameters = None
+        dc_model = None
+
+        # Search for the module model across available SAM databases
+        for db_name, model_type in module_dbs.items():
+            pv_db = pvlib.pvsystem.retrieve_sam(db_name)
+            if pv_module_name in pv_db.columns:
+                module_parameters = pv_db[pv_module_name]
+                dc_model = model_type
+                break
+
+        # Extract or calculate STC power based on the selected database/model
+        if dc_model == 'cec':
+            p_stc = module_parameters["STC"]
+        elif dc_model == 'sapm':
+            p_stc = module_parameters['Impo'] * module_parameters['Vmpo']
+        else:
+            # Fallback: Infer CEC parameters from custom datasheet values
             module_parameters = self.infer_cec_params(source)
+            p_stc = module_parameters["STC"]
+            dc_model = 'cec'
 
         # Define site location based on geographical coordinates
         location = Location(
@@ -395,11 +416,35 @@ class Sources:
             altitude=source["altitude"],
         )
 
-        # Define simplified inverter parameters
-        inverter_parameters = pandas.Series({
-            "pdc0": source["inverter_power"],
-            "eta_inv_nom": source["inverter_eta"],
-        })
+        # Handle inverter parameter definition
+        inverter_model_name = source["inverter model"]
+
+        # Map database names to their corresponding AC model types
+        inverter_dbs = {
+            'CECInverter': 'sandia',
+            'SandiaInverter': 'sandia',
+            'ADRInverter': 'adr'
+        }
+
+        inverter_parameters = None
+        ac_model = None
+
+        # Search for the inverter model across available databases
+        for db_name, model_type in inverter_dbs.items():
+            inv_db = pvlib.pvsystem.retrieve_sam(db_name)
+            if inverter_model_name in inv_db.columns:
+                inverter_parameters = inv_db[inverter_model_name]
+                ac_model = model_type
+                break
+
+        # Fallback: Create simplified inverter parameters if not found in any database
+        if inverter_parameters is None:
+            inverter_parameters = pandas.Series({
+                "pdc0": p_stc,
+                "eta_inv_nom": source["inverter_eta"],
+            })
+            ac_model = 'pvwatts'
+
 
         # Set up PVSystem with module and inverter configuration
         system = PVSystem(
@@ -415,10 +460,10 @@ class Sources:
         mc = ModelChain(
             system                  = system,
             location                = location,
-            aoi_model               = "no_loss",
+            aoi_model               = 'physical',
             spectral_model          = "no_loss",
-            ac_model                = "pvwatts",
-            dc_model                = 'cec',
+            ac_model                = ac_model,
+            dc_model                = dc_model,
             clearsky_model          = 'ineichen',
             transposition_model     = 'haydavies',
             solar_position_method   = 'nrel_numpy',
