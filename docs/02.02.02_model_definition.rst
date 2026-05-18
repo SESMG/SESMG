@@ -316,7 +316,7 @@ The following parameters need to be set for concentrated solar power sources.
 - **C2** in (W/m\ :sup:`2` K\ :sup:`2`): Collector specific thermal loss parameter. Only required for concentrated solar power source, use fill
   character "0" for other technologies.
 - **Temperature Inlet** in (°C): Inlet temperature of the solar heat collector module. Use fill character "0" for other technologies.
-- **Temperature Difference** in (°C): Temperature Difference between in- and outlet temperature of the solar heat collector module. Use
+- **Temperature Difference** in (°C): Temperature Difference between mean and inlet temperature of the solar heat collector module. Use
   fill character "0" for other technologies.
 - **Cleanliness**: Cleanliness of a parabolic through collector. Only required for Concentrated Solar Power source, use fill character "0"
   for other technologies.
@@ -344,7 +344,7 @@ The following parameters need to be set for solar thermal flat plate sources.
 - **A1** in (1/°): Collector specific linear heat loss coefficient. Use fill character "0" for other technologies.
 - **A2** in (1/°)\ :sup:`2`: Collector specific quadratic heat loss coefficient. Use fill character "0" for other technologies.
 - **Temperature Inlet** in (°C): Inlet temperature of the solar heat collector module. Use fill character "0" for other technologies.
-- **Temperature Difference** in (°C): Temperature Difference between in- and outlet temperature of the solar heat collector module. Use fill
+- **Temperature Difference** in (°C): Temperature Difference between mean and inlet temperature of the solar heat collector module. Use fill
   character "0" for other technologies.
 - **Electric Consumption**: Electric consumption of the collector system. Example: If value is set to "0,05", the electric consumption is 5 % of
   the energy output. Use fill character "0" for other technologies.
