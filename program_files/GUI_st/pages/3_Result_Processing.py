@@ -53,48 +53,50 @@ def result_processing_sidebar() -> None:
                 os.path.join(set_result_path(),
                              existing_result_folder)
 
-            # check if the result path is set
-            if st.session_state["state_result_path"] != "not set":
 
-                # paths for checking the run type
-                components_csv = os.path.join(st.session_state["state_result_path"], "components.csv")
-                pareto_csv = os.path.join(st.session_state["state_result_path"], "pareto.csv")
+        # check if the result path is set
+        if st.session_state["state_result_path"] != "not set":
 
-                # 1. CASE: Standard Run (components.csv exists)
-                if os.path.exists(components_csv):
-                    # Standard display - no extra sidebar selection needed
-                    pass
+            # paths for checking the run type
+            components_csv = os.path.join(st.session_state["state_result_path"], "components.csv")
+            pareto_csv = os.path.join(st.session_state["state_result_path"], "pareto.csv")
 
-                    # 2. CASE: Pareto Run (pareto.csv exists)
-                elif os.path.exists(pareto_csv):
+            # 1. CASE: Standard Run (components.csv exists)
+            if os.path.exists(components_csv):
+                # Standard display - no extra sidebar selection needed
+                pass
 
-                    # header
-                    st.header("Pareto Results")
+                # 2. CASE: Pareto Run (pareto.csv exists)
+            elif os.path.exists(pareto_csv):
 
-                    # read out sub folders of pareto list
-                    existing_result_foldernames_list = next(
-                        os.walk(st.session_state["state_result_path"]))[1]
-                    # split folder names and save pareto point positions in a list
-                    pareto_points_list = [directory.split(
-                        "_")[-2] for directory in existing_result_foldernames_list]
+                # header
+                st.header("Pareto Results")
 
-                    # create dict with pareto point positions and folder names
-                    pareto_folder_dict = dict(
-                        zip(pareto_points_list, existing_result_foldernames_list))
-                    # sort pareto point list
-                    pareto_points_list.sort()
-                    # create select box to choose the pareto point you want to see
-                    # show results for
-                    pareto_point_chosen = st.selectbox(
-                        label="Choose the pareto point",
-                        options=pareto_points_list,
-                        help=GUI_helper["res_dd_pareto_point"])
+                # read out sub folders of pareto list
+                existing_result_foldernames_list = next(
+                    os.walk(st.session_state["state_result_path"]))[1]
+                # split folder names and save pareto point positions in a list
+                pareto_points_list = [directory.split(
+                    "_")[-2] for directory in existing_result_foldernames_list]
 
-                    # create session_state to initialize the pareto result overviews
-                    st.session_state["state_pareto_point_chosen"] = pareto_point_chosen
-                    st.session_state["state_pareto_result_path"] = \
-                        os.path.join(st.session_state["state_result_path"],
-                                     pareto_folder_dict[pareto_point_chosen])
+                # create dict with pareto point positions and folder names
+                pareto_folder_dict = dict(
+                    zip(pareto_points_list, existing_result_foldernames_list))
+                # sort pareto point list
+                pareto_points_list.sort()
+                # create select box to choose the pareto point you want to see
+                # show results for
+                pareto_point_chosen = st.selectbox(
+                    label="Choose the pareto point",
+                    options=pareto_points_list,
+                    help=GUI_helper["res_dd_pareto_point"])
+
+                # create session_state to initialize the pareto result overviews
+
+                st.session_state["state_pareto_point_chosen"] = pareto_point_chosen
+                st.session_state["state_pareto_result_path"] = \
+                    os.path.join(st.session_state["state_result_path"],
+                                 pareto_folder_dict[pareto_point_chosen])
 
 
 def short_result_summary_time(result_path_summary) -> None:
@@ -387,6 +389,8 @@ def short_result_graph(result_path_graph: str) -> None:
 
 
 try:
+    print("start try results")
+
     # starting page functions
     # initialize global page settings
     st_settings_global()
