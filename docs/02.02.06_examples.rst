@@ -206,7 +206,7 @@ Optimization task:
 
 .. note::
 
-	- You can find the normalised time series `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.2.x-Examples/Task_2_vehicle_fleet_normalised_load_response.xlsx>`_. Insert it into the worksheet "timeseries". The column must have the same name as your sink with the addition .fix
+	- You can find the normalised time series `here <https://github.com/SESMG/SESMG-Examples/blob/main/SESMG-v1.3.x-Examples/Task_2_vehicle_fleet_normalised_load_response.xlsx>`_. Insert it into the worksheet "timeseries". The column must have the same name as your sink with the addition .fix
 	- Since this is a normalized time series, the "nominal value" of the sink must be determined on the basis of the maximum possible charging capacity of the vehicle fleet. To achieve this, create a single sink with a nominal value of 160 kW
 
 
