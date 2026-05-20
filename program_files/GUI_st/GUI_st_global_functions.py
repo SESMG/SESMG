@@ -660,7 +660,7 @@ def show_error_with_link() -> None:
     :returns: None
     """
     # define the base message and the target URL
-    error_message = r"Check out Troubleshooting, maybe you can find an answer there: "
+    error_message = r"Look in the Result Processing to see the full Crash Report. Or check out Troubleshooting, maybe you can find an answer there: "
     link = r"https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/03.00.00_trouble_shooting.html"
     # format the link as a markdown hyperlink
     link_text = "Troubleshooting Guide"
