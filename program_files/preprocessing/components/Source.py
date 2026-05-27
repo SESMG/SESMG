@@ -298,16 +298,16 @@ class Sources:
 
         # Read parameters from source series
         celltype = str(source["celltype"])
-        v_mp = float(source["v_mp"])
-        i_mp = float(source["i_mp"])
-        v_oc = float(source["v_oc"])
-        i_sc = float(source["i_sc"])
+        v_mp = float(source["v mp"])
+        i_mp = float(source["i mp"])
+        v_oc = float(source["v oc"])
+        i_sc = float(source["i sc"])
         # Ensure correct units for temperature coefficients
         # alpha_sc: [A/°C], beta_voc: [V/°C], gamma_pmp: [%/°C]
-        alpha_sc = float(source["alpha_sc"])
-        beta_voc = float(source["beta_voc"])
-        gamma_pmp = float(source["gamma_pmp"])
-        n_cells = int(source["cells_in_series"])
+        alpha_sc = float(source["alpha sc"])
+        beta_voc = float(source["beta voc"])
+        gamma_pmp = float(source["gamma pmp"])
+        n_cells = int(source["cells in series"])
 
         # Estimate the CEC parameters using the SAM fitting tool
         (I_L_ref, I_o_ref, R_s,
@@ -323,7 +323,7 @@ class Sources:
             cells_in_series=n_cells,
         )
 
-        p_stc = float(source["STC"])
+        p_stc = float(source["power stc"])
 
         results = {
             "celltype": celltype,
@@ -481,7 +481,7 @@ class Sources:
         if inverter_parameters is None:
             inverter_parameters = pandas.Series({
                 "pdc0": p_stc,
-                "eta_inv_nom": source["inverter_eta"],
+                "eta_inv_nom": source["inverter eta"],
             })
             ac_model = 'pvwatts'
 
