@@ -705,8 +705,6 @@ class Sources:
                 inputs={
                     self.busd[label + "_bus"]: Flow(
                         custom_attributes={"emission_factor": 0}),
-                    self.busd[source["input"]]: Flow(
-                        custom_attributes={"emission_factor": 0}),
                 },
                 outputs={self.busd[source["output"]]: Flow(
                     variable_costs=source["variable costs"],
@@ -714,8 +712,6 @@ class Sources:
                                        source["variable constraint costs"]})},
                 conversion_factors={
                     self.busd[label + "_bus"]: 1,
-                    self.busd[source["input"]]: source["electric consumption"]
-                    * (1 - source["peripheral losses"]),
                     self.busd[source["output"]]:
                         1 - source["peripheral losses"],
                 },
