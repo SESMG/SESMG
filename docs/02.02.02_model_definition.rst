@@ -237,7 +237,7 @@ respective technology is selected otherwise use "0". The following parameters ha
 - **active**: Specifies whether the source shall be included to the model. "0" = inactive, "1" = active.
 - **fixed**: Indicates whether it is a fixed source or not. "0" = not fixed; "1" = fixed.
 - **output**: Specifies which bus the output of the source is connected to.
-- **input**: Specifies which bus the input of the source is connected to (only needed for solar heat).
+- **input**: Specifies which bus the input of the source is connected to (currently not required for any technology).
 - **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "other", "solar_thermal_flat_plate",
   "concentrated_solar_power". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected,
   a time series must be provided in the `Time series sheet`_.
@@ -297,7 +297,7 @@ General PV Parameters
   fill character "0" for other technologies.
 - **Longitude**: Geographic longitude (decimal number in WGS84) of the photovoltaic module. Only required for photovoltaic sources, use
   fill character "0" for other technologies.
-- **dc_ac_ratio**: Defines the ratio of the DC module capacity to the inverter's AC rated capacity ($P_{DC} / P_{AC}$). 
+- **DC AC ratio**: Defines the ratio of the DC module capacity to the inverter's AC rated capacity ($P_{DC} / P_{AC}$). 
   This value is mandatory for all PV configurations to correctly scale the inverter limits. Example: A value of 1.2 means the DC plant capacity
   is 20% larger than the inverter's maximum AC output. If you want no undersizing/clipping at all, use 1.0. Only required for photovoltaic sources,
   use fill character "0" for other technologies.
@@ -316,22 +316,22 @@ Option A: Database lookup
 
 Option B: Manual datasheet
 
-- **STC**: Power at Standard Test Conditions (STC) in Watt (e.g. 235). Use fill character "0" for other technologies.
+- **Power STC**: Power at Standard Test Conditions (STC) in Watt (e.g. 235). Use fill character "0" for other technologies.
 - **Celltype**: Type of the solar cell. Possible entries: "monoSi", "multiSi", "polySi", "cis", "cigs", "cdte", "amorphous". 
   Use fill character "0" for other technologies.
-- **V_mp**: Voltage at maximum power point in Volt (e.g. 43). Use fill character "0" for other technologies.
-- **I_mp**: Current at maximum power point in Ampere (e.g. 5,48). Use fill character "0" for other technologies.
-- **V_oc**: Open-circuit voltage in Volt (e.g. 51,8). Use fill character "0" for other technologies.
-- **I_sc**: Short-circuit current in Ampere (e.g. 5,84). Use fill character "0" for other technologies.
-- **Alpha_sc**: Temperature coefficient of the short-circuit current in A/°C (e.g. 0,00175). Data sheets often specify this in %/°C; 
+- **V mp**: Voltage at maximum power point in Volt (e.g. 43). Use fill character "0" for other technologies.
+- **I mp**: Current at maximum power point in Ampere (e.g. 5,48). Use fill character "0" for other technologies.
+- **V oc**: Open-circuit voltage in Volt (e.g. 51,8). Use fill character "0" for other technologies.
+- **I sc**: Short-circuit current in Ampere (e.g. 5,84). Use fill character "0" for other technologies.
+- **Alpha sc**: Temperature coefficient of the short-circuit current in A/°C (e.g. 0,00175). Data sheets often specify this in %/°C; 
   it must be converted to an absolute value by dividing the percentage by 100 and multiplying the result by the short-circuit current (i_sc).
   Use fill character "0" for other technologies.
-- **Beta_voc**: Temperature coefficient of the open-circuit voltage in V/°C (e.g. -0,124). Data sheets often specify this in %/°C;
+- **Beta voc**: Temperature coefficient of the open-circuit voltage in V/°C (e.g. -0,124). Data sheets often specify this in %/°C;
   it must be converted to an absolute value by dividing the percentage by 100 and multiplying the result by the open-circuit voltage (v_oc).
   Use fill character "0" for other technologies.
-- **Gamma_pmp**: Temperature coefficient of the maximum power point power in %/°C (e.g., "-0.3"). This value is entered directly as a percentage.
+- **Gamma pmp**: Temperature coefficient of the maximum power point power in %/°C (e.g., "-0.3"). This value is entered directly as a percentage.
   Use fill character "0" for other technologies.
-- **Cells_in_series**: Number of solar cells connected in series within one module (e.g. 72). Use fill character "0" for other technologies.
+- **Cells in series**: Number of solar cells connected in series within one module (e.g. 72). Use fill character "0" for other technologies.
 
 Inverter Definition
 
@@ -348,7 +348,7 @@ Option A: Database lookup
 
 Option B: Constant efficiency fallback
 
-- **Inverter_eta**: Nominal inverter efficiency as a decimal fraction (e.g., 0.96 for 96% efficiency). This parameter acts as a fallback and is only
+- **Inverter eta**: Nominal inverter efficiency as a decimal fraction (e.g., 0.96 for 96% efficiency). This parameter acts as a fallback and is only
   evaluated if the specified "Inverter Model" is not found in any database. If used, the system falls back to a simplified PVWatts inverter model.
   Use fill character "0" for other technologies.
 
@@ -371,8 +371,6 @@ The following parameters need to be set for concentrated solar power sources.
   fill character "0" for other technologies.
 - **Cleanliness**: Cleanliness of a parabolic through collector. Only required for Concentrated Solar Power source, use fill character "0"
   for other technologies.
-- **Electric Consumption**: Electric consumption of the collector system. Example: If value is set to "0,05", the electric consumption is 5 %
-  of the energy output. Use fill character "0" for other technologies.
 - **Peripheral Losses**: Heat loss coefficient for losses in the collector's peripheral system. Use fill character "0" for other technologies.
 
 **Exemplary values for concentrated_solar_power technology**:
@@ -397,8 +395,6 @@ The following parameters need to be set for solar thermal flat plate sources.
 - **Temperature Inlet** in (°C): Inlet temperature of the solar heat collector module. Use fill character "0" for other technologies.
 - **Temperature Difference** in (°C): Temperature Difference between mean and inlet temperature of the solar heat collector module. Use fill
   character "0" for other technologies.
-- **Electric Consumption**: Electric consumption of the collector system. Example: If value is set to "0,05", the electric consumption is 5 % of
-  the energy output. Use fill character "0" for other technologies.
 - **Peripheral Losses**: Heat loss coefficient for losses in the collector's peripheral system. Use fill character "0" for other technologies.
 - **Conversion Factor** in (m\ :sup:`2` /kW): The factor is explained
   `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#sources>`_.
@@ -415,13 +411,13 @@ part of the energy system. The solver can thus design a completely linear source
 and use it to cover the demand when required.
 
 .. csv-table:: Exemplary input for the sources sheet
-   :header: label,comment,active,fixed,technology,output,input,existing capacity,min. investment capacity,max. investment capapcity,non-convex investment,fix investment costs,variable costs,periodical costs,variable constraint costs,periodical constraint costs,Turbine Model,Hub Height,Modul Model,Inverter Model,DC AC Ratio,Inverter Eta,Albedo,Altitude,Azimuth,Surface Tilt,Latitude,Longitude,ETA 0,A1,A2,C1,C2,Temperature Inlet,Temperature Difference,Conversion Factor,Peripheral Losses,Electric Consumption,Cleanliness,STC,celltype,v_mp,i_mp,v_oc,i_sc,alpha_sc,beta_voc,gamma_pmp,cells_in_series,sector
+   :header: label,comment,active,fixed,technology,output,input,existing capacity,min. investment capacity,max. investment capapcity,non-convex investment,fix investment costs,variable costs,periodical costs,variable constraint costs,periodical constraint costs,Turbine Model,Hub Height,Modul Model,Inverter Model,DC AC Ratio,Inverter Eta,Albedo,Altitude,Azimuth,Surface Tilt,Latitude,Longitude,ETA 0,A1,A2,C1,C2,Temperature Inlet,Temperature Difference,Conversion Factor,Peripheral Losses,Cleanliness,power stc,celltype,v mp,i mp,v oc,i sc,alpha sc,beta voc,gamma pmp,cells in series,sector
 
    ,,,,,,solar heat,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/(kW a)),windpower,windpower,PV,PV,PV,PV,PV,(m)\  | PV,(°),(°),(°),(°),solar heat,(1/°) | solar heat,(1/°)\ :sup:`2` | solar heat,(W/m\ :sup:`2` K) | solar heat,(W/m\ :sup:`2` K\ :sup:`2`) | solar heat,(°C) | solar heat,(°C) | solar heat,(m\ :sup:`2`\ /kW) | solar heat,solar heat,solar heat,solar heat,(W)\  | PV,PV,(V)\  | PV,(A)\  | PV, (V)\  | PV,(A)\  | PV,(A/°C)\  | PV,(V/°C)\  | PV,(%/°C)\  | PV,PV,
-   ID_photovoltaic_electricity_source,,1,1,photovoltaic,ID_pv_bus,None,0,0,20,0,0,0,90,56,0,0,0,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,1,0,0.18,60,180,35,52.13,7.36,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,electricity
-   ID_solar_thermal_source,,1,1,solar_thermal_flat_plate,ID_heat_bus,ID_electricity_bus,0,0,20,0,0,0,40,25,0,0,0,0,0,0,0,0,0,20,10,52.13,7.36,0.719,1.063,0.005,0,0,40,15,1.79,0.05,0.06,0,0,0,0,0,0,0,0,0,0,0,heat
-   wind_turbine,,0,1,windpower,electricity_bus,None,0,0,30,0,0,0,100,9,0,E-126/4200,135,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,electricity
-   ID_photovoltaic_electricity_source,,1,1,photovoltaic_datasheet,ID_pv_bus,None,0,0,20,0,0,0,90,56,0,0,0,0,0,1,0.97,0.18,60,180,35,52.13,7.36,0,0,0,0,0,0,0,0,0,0,0,235,monoSi,43,5.48,51.8,5.84,0.00175,-0.124,-0.3,72,electricity
+   ID_photovoltaic_electricity_source,,1,1,photovoltaic,ID_pv_bus,None,0,0,20,0,0,0,90,56,0,0,0,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,1,0,0.18,60,180,35,52.13,7.36,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,electricity
+   ID_solar_thermal_source,,1,1,solar_thermal_flat_plate,ID_heat_bus,ID_electricity_bus,0,0,20,0,0,0,40,25,0,0,0,0,0,0,0,0,0,20,10,52.13,7.36,0.719,1.063,0.005,0,0,40,15,1.79,0.05,0,0,0,0,0,0,0,0,0,0,0,heat
+   wind_turbine,,0,1,windpower,electricity_bus,None,0,0,30,0,0,0,100,9,0,E-126/4200,135,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,electricity
+   ID_photovoltaic_electricity_source,,1,1,photovoltaic_datasheet,ID_pv_bus,None,0,0,20,0,0,0,90,56,0,0,0,0,0,1,0.97,0.18,60,180,35,52.13,7.36,0,0,0,0,0,0,0,0,0,0,235,monoSi,43,5.48,51.8,5.84,0.00175,-0.124,-0.3,72,electricity
 
 
 .. figure:: ../docs/images/manual/ScenarioSpreadsheet/BSP_Graph_source.png
