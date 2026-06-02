@@ -582,9 +582,9 @@ The following parameters have to be entered:
 - **input**: Specifies the input of the storage. If the storage has only one connection, the same bus can be provided for input and output.
 - **output**: Specifies the output of the storage. If the storage has only one connection, the same bus can be provided for input and output.
 - **input/capacity ratio** (invest): Indicates the performance with which the storage can be charged
-  (see also  `here <https://oemof-solph.readthedocs.io/en/latest/usage.html#using-an-investment-object-with-the-genericstorage-component>`_).
+  (see also  `here <https://oemof-solph.readthedocs.io/en/latest/>`_).
 - **output/capacity ratio** (invest): Indicates the performance with which the storage can be discharged
-  (see also  `here <https://oemof-solph.readthedocs.io/en/latest/usage.html#using-an-investment-object-with-the-genericstorage-component>`_).
+  (see also  `here <https://oemof-solph.readthedocs.io/en/latest/>`_).
 - **efficiency inflow**: Specifies the charging efficiency.
 - **efficiency outflow**: Specifies the discharging efficiency.
 - **initial capacity**: Specifies how far the storage is loaded at time 0 of the simulation. Value must be between "0" and "1". The initial
