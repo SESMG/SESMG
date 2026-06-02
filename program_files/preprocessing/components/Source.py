@@ -64,7 +64,6 @@ class Sources:
                 - Temperature Difference
                 - Conversion Factor
                 - Peripheral Losses
-                - Electric Consumption
                 - Cleanliness
                 
         :type nodes_data: dict
@@ -608,8 +607,6 @@ class Sources:
                     - Temperature Difference
                     - Conversion Factor
                     - Peripheral Losses
-                    - Electric Consumption
-
         """
 
         # import oemof.thermal in order to calculate collector heat output
