@@ -505,7 +505,7 @@ The following parameters are only required, if "transformer type" is set to "Com
 - **temperature high** in (°C): Temperature of the high temperature heat reservoir. Only required if "mode" is set to "heat_pump".
 - **temperature low** in (°C): Cooling temperature needed for cooling demand. Only required if "mode" is set to "chiller".
 - **quality grade**: To determine the COP of a real machine a scale-down factor (the quality grade) is applied on the Carnot efficiency
-  (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
+  (see `oemof.thermal <https://oemof-thermal.readthedocs.io/en/latest/>`_).
 - **area** in (m\ :sup:`2`): Open spaces for ground-coupled compression heat transformers (GCHP).
 - **length of the geoth. probe** in (m): Length of the vertical heat exchanger, only for GCHP.
 - **heat extraction** in (kW/(m a)): Heat extraction for the heat exchanger referring to the location, only for GCHP.
