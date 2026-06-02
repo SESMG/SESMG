@@ -804,7 +804,15 @@ try:
             elif len(GUI_main_dict["input_pareto_points"]) != 0:
 
                 with st.spinner("Modeling in Progress..."):
+                    # TODO: Remove the logic to create_result_paths
+                    # set the result path based on the gui_st_settings.json
+                    res_folder_path = GUI_functions.set_result_path()
 
+                    # Check if the results folder path exists
+                    if os.path.exists(res_folder_path) is False:
+                        # If not, create the result directory using a separate function
+                        GUI_functions.create_result_directory()
+        
                     # create one directory to collect all runs
                     result_path = GUI_functions.set_result_path()
                     logging_path = (result_path + "/"
