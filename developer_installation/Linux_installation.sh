@@ -42,9 +42,11 @@ else
 	exit 1 
 fi
 
+pypath=$(which python${PYVERSION}})
+
 cd "$(pwd)"
 cd ..
-virtualenv -p /usr/bin/python$PYVERSION venv
+virtualenv -p "$pypath" venv
 . venv/bin/activate
 
 echo ---------------------------------------------
