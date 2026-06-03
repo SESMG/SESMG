@@ -9,6 +9,9 @@ from datetime import datetime
 from streamlit.components.v1 import html
 import streamlit as st
 import logging
+import traceback
+import psutil
+import time
 
 # Setting new system path to be able to refer to parent directories
 parent = os.path.abspath('..')
@@ -627,97 +630,241 @@ def change_state_submitted_clear_cache() -> None:
     st.session_state["state_submitted_optimization"] = "not done"
 
 
-# configurate global logger
-initial_config()
+def log_error_to_file(logging_path: str, exception_obj: Exception) -> None:
+    """
+        Function to create a crash report file in the result directory.
 
-# staring sidebar elements as standing elements
-model_definition_input_file = main_input_sidebar()
-main_clear_cache_sidebar()
+        :param logging_path: path to the current logging/result directory
+        :type logging_path: str
+        :param exception_obj: the exception caught in the try-except block
+        :type exception_obj: Exception
+    """
+    try:
+        # check if path is valid and exists on the drive
+        if logging_path and os.path.exists(logging_path):
+            file_path = os.path.join(logging_path, "crash_report.txt")
 
-# load the start page if modell run is not submitted
-if st.session_state["state_submitted_optimization"] == "not done":
-    main_start_page()
+            # writing the error details and traceback to the file
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write("--- CRASH REPORT ---\n")
+                f.write(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write(f"Exception Type: {type(exception_obj).__name__}\n")
+                f.write(f"Message: {str(exception_obj)}\n")
+                f.write("-" * 20 + "\n")
+                f.write(traceback.format_exc())
 
-# starting process is modell run is  submitted
-if st.session_state["state_submitted_optimization"] == "done":
+    except Exception as secondary_error:
+        # print error to console if writing the file fails
+        print(f"Failed to write crash report: {secondary_error}")
 
-    # raise error if run is started without uploading a model definition
-    if not model_definition_input_file:
 
-        # load error messsage
-        main_error_definition()
+def smart_kill_solver() -> bool:
+    """
+        Function to search for active solver processes and terminate them.
+        It uses a two-stage approach: first a gentle terminate(),
+        then a hard kill() if the process does not respond within 2 seconds.
 
-    elif model_definition_input_file != "":
+        :return: True if at least one process was terminated, False otherwise.
+        :rtype: bool
+    """
+    # Define a list of exact solver executable names to search for
+    solver_names = [
+        "cbc", "cbc.exe",  # CBC (Windows & Unix)
+        "gurobi_cl", "gurobi_cl.exe",  # Gurobi Command Line Interface
+        "gurobi", "gurobi.exe",  # Gurobi Interactive/Standard
+        "grbgetkey", "grbgetkey.exe",  # Gurobi License Tool (optional)
+    ]
 
-        # check rather the dependencies to be installed by the user are
-        # installed
-        GUI_functions.check_for_dependencies(
-                solver=GUI_main_dict["input_solver"])
+    killed_any = False
 
-        # save the GUI_main_dict as a chache for the next session
-        GUI_functions.save_GUI_cache_dict(
-            input_values_dict=GUI_main_dict,
-            json_file_path=path_to_cache_json)
+    # Iterate through all currently running system processes
+    for proc in psutil.process_iter(['pid', 'name']):
+        try:
+            # Normalize the process name to lowercase for cross-platform matching
+            current_proc_name = proc.info['name'].lower()
 
-        # create spinner info text
-        st.info(GUI_helper["main_info_spinner"], icon="ℹ️")
+            # Perform an exact match against the defined solver list
+            if current_proc_name in [s.lower() for s in solver_names]:
+                logging.info(f"Terminating solver process: {current_proc_name} "
+                             f"(PID: {proc.pid})")
 
-        # Starting the model run
-        if len(GUI_main_dict["input_pareto_points"]) == 0:
+                # STAGE 1: Attempt a gentle termination (SIGTERM)
+                proc.terminate()
 
-            # function to create the result paths and store session state
-            logging_path = create_result_paths()
+                try:
+                    # Wait up to 2 seconds for the process to exit gracefully
+                    proc.wait(timeout=2)
+                    killed_any = True
+                except psutil.TimeoutExpired:
+                    # STAGE 2: Force termination if still active (SIGKILL)
+                    proc.kill()
+                    proc.wait(timeout=1)  # Brief confirmation wait
+                    killed_any = True
 
-            # configurate logger
-            configure_logger(logging_path)
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            # Ignore processes that vanish or are restricted during iteration
+            continue
 
-            # Ensure logging is working by logging a test message
-            logging.info("\t Logging has been set up successfully.")
+    return killed_any
 
-            with st.spinner("Modeling in Progress..."):
 
-                # start model run
-                GUI_functions.run_SESMG(
-                    GUI_main_dict=GUI_main_dict,
-                    model_definition=model_definition_input_file,
-                    save_path=GUI_main_dict["res_path"])
+try:
+    # configurate global logger
+    initial_config()
 
-                # save GUI settings in result folder and reset session state
-                save_run_settings()
+    # staring sidebar elements as standing elements
+    model_definition_input_file = main_input_sidebar()
+    main_clear_cache_sidebar()
 
-            # switch page after the model run completed
-            nav_page(page_name="Result_Processing", timeout_secs=3)
+    # load the start page if modell run is not submitted
+    if st.session_state["state_submitted_optimization"] == "not done":
+        main_start_page()
 
-        # Starting a pareto model run
-        elif len(GUI_main_dict["input_pareto_points"]) != 0:
+    # starting process is modell run is  submitted
+    if st.session_state["state_submitted_optimization"] == "done":
 
-            with st.spinner("Modeling in Progress..."):
+        # raise error if run is started without uploading a model definition
+        if not model_definition_input_file:
 
-                # create one directory to collect all runs
-                result_path = GUI_functions.set_result_path()
-                logging_path = (result_path + "/"
-                             + datetime.now().strftime("%Y-%m-%d--%H-%M-%S"))
-                os.mkdir(logging_path)
+            # load error messsage
+            main_error_definition()
+
+        elif model_definition_input_file != "":
+
+            # Create a popover element to provide a safe, two-step termination process
+            with st.popover("Stop 🛑",
+                            help="Click to abort the running optimization"):
+                st.error("Abort Calculation?")
+                st.write("The solver will be terminated immediately. "
+                         "Unsaved progress will be lost.")
+
+                # Primary button for confirmation
+                if st.button("Confirm Abort",
+                             type="primary",
+                             use_container_width=True):
+
+                    # Attempt to kill active solver processes
+                    termination_success = smart_kill_solver()
+
+                    if termination_success:
+                        # CASE 1: Solver found and terminated -> Reset state
+                        st.session_state["state_submitted_optimization"] = "not done"
+                        st.success("Solver stopped. Returning to start...")
+                        time.sleep(2)
+                        st.rerun()
+                    else:
+                        # CASE 2: No solver found (Pre-modelling still active)
+                        # Register the interrupt flag and stop script execution
+                        st.session_state["state_submitted_optimization_interrupted"] = True
+                        st.warning("The solver has not started yet (pre-modelling in progress). "
+                                   "To terminate the process, please wait a few seconds and "
+                                   "click 'Confirm Abort' again once the solver is active.")
+                        st.stop()
+
+            # check rather the dependencies to be installed by the user are
+            # installed
+            GUI_functions.check_for_dependencies(
+                    solver=GUI_main_dict["input_solver"])
+
+            # save the GUI_main_dict as a chache for the next session
+            GUI_functions.save_GUI_cache_dict(
+                input_values_dict=GUI_main_dict,
+                json_file_path=path_to_cache_json)
+
+            # create spinner info text
+            st.info(GUI_helper["main_info_spinner"], icon="ℹ️")
+
+            # Starting the model run
+            if len(GUI_main_dict["input_pareto_points"]) == 0:
+
+                # function to create the result paths and store session state
+                logging_path = create_result_paths()
 
                 # configurate logger
                 configure_logger(logging_path)
 
-                # run_pareto returns res path
-                GUI_main_dict["res_path"] = \
-                    run_pareto(
-                        limits=[int(i) / 100 for i in
-                                GUI_main_dict["input_pareto_points"]],
-                        model_definition=model_definition_input_file,
+                # Ensure logging is working by logging a test message
+                logging.info("\t Logging has been set up successfully.")
+
+                with st.spinner("Modeling in Progress..."):
+
+                    # start model run
+                    GUI_functions.run_SESMG(
                         GUI_main_dict=GUI_main_dict,
-                        result_path=GUI_functions.set_result_path())
+                        model_definition=model_definition_input_file,
+                        save_path=GUI_main_dict["res_path"])
 
-                # save path as session state for the result processing page
-                st.session_state["state_result_path"] = \
-                    GUI_main_dict["res_path"]
+                    # save GUI settings in result folder and reset session state
+                    save_run_settings()
 
-                # save GUI settings in result folder and reset session state
-                save_run_settings()
+                # switch page after the model run completed
+                nav_page(page_name="Result_Processing", timeout_secs=3)
 
-            # switch page after the model run completed
-            nav_page(page_name="Result_Processing", timeout_secs=3)
+            # Starting a pareto model run
+            elif len(GUI_main_dict["input_pareto_points"]) != 0:
 
+                with st.spinner("Modeling in Progress..."):
+                    # TODO: Remove the logic to create_result_paths
+                    # set the result path based on the gui_st_settings.json
+                    res_folder_path = GUI_functions.set_result_path()
+
+                    # Check if the results folder path exists
+                    if os.path.exists(res_folder_path) is False:
+                        # If not, create the result directory using a separate function
+                        GUI_functions.create_result_directory()
+        
+                    # create one directory to collect all runs
+                    result_path = GUI_functions.set_result_path()
+                    logging_path = (result_path + "/"
+                                 + datetime.now().strftime("%Y-%m-%d--%H-%M-%S"))
+                    os.mkdir(logging_path)
+
+                    # store result path in session state immediately to ensure
+                    # correct error handling if the simulation crashes
+                    st.session_state["state_result_path"] = logging_path
+
+                    # configurate logger
+                    configure_logger(logging_path)
+
+                    # run_pareto returns res path
+                    GUI_main_dict["res_path"] = \
+                        run_pareto(
+                            limits=[int(i) / 100 for i in
+                                    GUI_main_dict["input_pareto_points"]],
+                            model_definition=model_definition_input_file,
+                            GUI_main_dict=GUI_main_dict,
+                            result_path=GUI_functions.set_result_path())
+
+                    # save path as session state for the result processing page
+                    st.session_state["state_result_path"] = \
+                        GUI_main_dict["res_path"]
+
+                    # save GUI settings in result folder and reset session state
+                    save_run_settings()
+
+                # switch page after the model run completed
+                nav_page(page_name="Result_Processing", timeout_secs=3)
+
+# catch exceptions during the model run and display error information
+except Exception as e:
+    # log the error to the global logger/console
+    logging.error("Error during execution!", exc_info=True)
+
+    # check if logging_path was already initialized before the crash
+    if 'logging_path' in locals():
+        # call the function to save the error report in the result folder
+        log_error_to_file(
+            logging_path=logging_path,
+            exception_obj=e)
+
+    # show a message with a link to the troubleshooting documentation
+    GUI_functions.show_error_with_link()
+
+    # visualize the energy system graph to help identify the crash reason
+    # show graph only if the result path was already initialized
+    if "state_result_path" in st.session_state:
+        # simply pass the result directory; the function finds the image itself
+        GUI_functions.show_error_graph(base_path=st.session_state["state_result_path"])
+
+    # display the technical exception and traceback for debugging
+    st.exception(e)

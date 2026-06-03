@@ -1,6 +1,10 @@
 Urban District Upscaling
 ************************
 
+**Attention**: The current version of the US-Tool does create model definitions that can not be used
+without adaptions in the SESMG. However, the structure can still be copied the structure of the example_model_defintion.xlsx.
+We are working on updating the US-tool to match the SESMG inputs again.
+
 The Urban District Upscaling Tool (US-Tool) is suitable to efficiently model large
 neighborhoods. With the help of the tool, the upscaling sheet (us-sheet) and the
 standard parameter sheet (sp-sheet) are merged into the *model_definition.xlsx*.

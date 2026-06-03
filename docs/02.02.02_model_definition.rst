@@ -237,7 +237,7 @@ respective technology is selected otherwise use "0". The following parameters ha
 - **active**: Specifies whether the source shall be included to the model. "0" = inactive, "1" = active.
 - **fixed**: Indicates whether it is a fixed source or not. "0" = not fixed; "1" = fixed.
 - **output**: Specifies which bus the output of the source is connected to.
-- **input**: Specifies which bus the input of the source is connected to (only needed for solar heat).
+- **input**: Specifies which bus the input of the source is connected to (currently not required for any technology).
 - **technology**: Technology type of source. Input options: "photovoltaic", "windpower", "timeseries", "other", "solar_thermal_flat_plate",
   "concentrated_solar_power". Time series are automatically generated for photovoltaic systems and wind turbines. If "timeseries" is selected,
   a time series must be provided in the `Time series sheet`_.
@@ -282,13 +282,10 @@ model an energy timeseries will then be calculated.
 
 PV
 ^^
-The following parameters need to be set for PV sources.
+The parameters for PV sources depend on the selected technology.
 
-- **Modul Model**: Module name, according to the database used (see
-  `PVLIB database <https://github.com/pvlib/pvlib-python/blob/main/pvlib/data/sam-library-sandia-modules-2015-6-30.csv>`_).
-  Possible Modul Models are presented `here <https://github.com/SESMG/SESMG/tree/master/docs/csv>`_.
-- **Inverter Model**: Inverter name, according to the database used. Possible Inverter Models are presented
-  `here <https://github.com/SESMG/SESMG/tree/master/docs/csv>`_.
+General PV Parameters
+
 - **Azimuth**: Specifies the orientation of the PV module in degrees. Values between "0" and "360" are permissible ("0" = north, "90" = east,
   "180" = south, "270" = west). Use fill character "0" for other technologies.
 - **Surface Tilt**: Specifies the inclination of the module in degrees ("0" = flat). Use fill character "0" for other technologies.
@@ -300,6 +297,60 @@ The following parameters need to be set for PV sources.
   fill character "0" for other technologies.
 - **Longitude**: Geographic longitude (decimal number in WGS84) of the photovoltaic module. Only required for photovoltaic sources, use
   fill character "0" for other technologies.
+- **DC AC ratio**: Defines the ratio of the DC module capacity to the inverter's AC rated capacity ($P_{DC} / P_{AC}$). 
+  This value is mandatory for all PV configurations to correctly scale the inverter limits. Example: A value of 1.2 means the DC plant capacity
+  is 20% larger than the inverter's maximum AC output. If you want no undersizing/clipping at all, use 1.0. Only required for photovoltaic sources,
+  use fill character "0" for other technologies.
+
+Module Definition
+
+Depending on your technology choice, define the module via database OR manual datasheet entry:
+
+Option A: Database lookup
+
+- **Modul Model**: Module name, according to the database used (see
+  `PVLIB database Sandia <https://github.com/pvlib/pvlib-python/blob/main/pvlib/data/sam-library-sandia-modules-2015-6-30.csv>`_ or 
+  `PVLIB database CEC <https://github.com/pvlib/pvlib-python/blob/main/pvlib/data/sam-library-cec-modules-2019-03-05.csv>`_ ).
+  Possible Modul Models are presented `here <https://github.com/SESMG/SESMG/tree/master/docs/csv>`_.
+  Use fill character "0" for other technologies.
+
+Option B: Manual datasheet
+
+- **Power STC**: Power at Standard Test Conditions (STC) in Watt (e.g. 235). Use fill character "0" for other technologies.
+- **Celltype**: Type of the solar cell. Possible entries: "monoSi", "multiSi", "polySi", "cis", "cigs", "cdte", "amorphous". 
+  Use fill character "0" for other technologies.
+- **V mp**: Voltage at maximum power point in Volt (e.g. 43). Use fill character "0" for other technologies.
+- **I mp**: Current at maximum power point in Ampere (e.g. 5,48). Use fill character "0" for other technologies.
+- **V oc**: Open-circuit voltage in Volt (e.g. 51,8). Use fill character "0" for other technologies.
+- **I sc**: Short-circuit current in Ampere (e.g. 5,84). Use fill character "0" for other technologies.
+- **Alpha sc**: Temperature coefficient of the short-circuit current in A/°C (e.g. 0,00175). Data sheets often specify this in %/°C; 
+  it must be converted to an absolute value by dividing the percentage by 100 and multiplying the result by the short-circuit current (i_sc).
+  Use fill character "0" for other technologies.
+- **Beta voc**: Temperature coefficient of the open-circuit voltage in V/°C (e.g. -0,124). Data sheets often specify this in %/°C;
+  it must be converted to an absolute value by dividing the percentage by 100 and multiplying the result by the open-circuit voltage (v_oc).
+  Use fill character "0" for other technologies.
+- **Gamma pmp**: Temperature coefficient of the maximum power point power in %/°C (e.g., "-0.3"). This value is entered directly as a percentage.
+  Use fill character "0" for other technologies.
+- **Cells in series**: Number of solar cells connected in series within one module (e.g. 72). Use fill character "0" for other technologies.
+
+Inverter Definition
+
+Define how the inverter is modeled. This works independently of the chosen module technology:
+
+Option A: Database lookup
+
+- **Inverter Model**: Inverter name, according to the database used. Possible Inverter Models are presented
+  `here <https://github.com/SESMG/SESMG/tree/master/docs/csv>`_.
+  If found in the database, only the efficiency characteristics (the efficiency curve) of the inverter are used for the simulation.
+  To prevent artificial clipping or unintended shutdowns in single-module simulations,  all lower operational thresholds, such as the startup power threshold ($P_{so}$)
+  or minimum MPPT voltage, are programmatically disabled (set to 0). Meanwhile, the inverter's capacity limits are programmatically normalized and
+  scaled using the mandatory dc_ac_ratio to match the DC system size. Use fill character "0" for other technologies or if you want to use a constant efficiency instead.
+
+Option B: Constant efficiency fallback
+
+- **Inverter eta**: Nominal inverter efficiency as a decimal fraction (e.g., 0.96 for 96% efficiency). This parameter acts as a fallback and is only
+  evaluated if the specified "Inverter Model" is not found in any database. If used, the system falls back to a simplified PVWatts inverter model.
+  Use fill character "0" for other technologies.
 
 Concentrated Solar Power
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -316,12 +367,10 @@ The following parameters need to be set for concentrated solar power sources.
 - **C2** in (W/m\ :sup:`2` K\ :sup:`2`): Collector specific thermal loss parameter. Only required for concentrated solar power source, use fill
   character "0" for other technologies.
 - **Temperature Inlet** in (°C): Inlet temperature of the solar heat collector module. Use fill character "0" for other technologies.
-- **Temperature Difference** in (°C): Temperature Difference between in- and outlet temperature of the solar heat collector module. Use
+- **Temperature Difference** in (°C): Temperature Difference between mean and inlet temperature of the solar heat collector module. Use
   fill character "0" for other technologies.
 - **Cleanliness**: Cleanliness of a parabolic through collector. Only required for Concentrated Solar Power source, use fill character "0"
   for other technologies.
-- **Electric Consumption**: Electric consumption of the collector system. Example: If value is set to "0,05", the electric consumption is 5 %
-  of the energy output. Use fill character "0" for other technologies.
 - **Peripheral Losses**: Heat loss coefficient for losses in the collector's peripheral system. Use fill character "0" for other technologies.
 
 **Exemplary values for concentrated_solar_power technology**:
@@ -344,10 +393,8 @@ The following parameters need to be set for solar thermal flat plate sources.
 - **A1** in (1/°): Collector specific linear heat loss coefficient. Use fill character "0" for other technologies.
 - **A2** in (1/°)\ :sup:`2`: Collector specific quadratic heat loss coefficient. Use fill character "0" for other technologies.
 - **Temperature Inlet** in (°C): Inlet temperature of the solar heat collector module. Use fill character "0" for other technologies.
-- **Temperature Difference** in (°C): Temperature Difference between in- and outlet temperature of the solar heat collector module. Use fill
+- **Temperature Difference** in (°C): Temperature Difference between mean and inlet temperature of the solar heat collector module. Use fill
   character "0" for other technologies.
-- **Electric Consumption**: Electric consumption of the collector system. Example: If value is set to "0,05", the electric consumption is 5 % of
-  the energy output. Use fill character "0" for other technologies.
 - **Peripheral Losses**: Heat loss coefficient for losses in the collector's peripheral system. Use fill character "0" for other technologies.
 - **Conversion Factor** in (m\ :sup:`2` /kW): The factor is explained
   `here <https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/structure_of_energy_system/structure.html#sources>`_.
@@ -364,12 +411,13 @@ part of the energy system. The solver can thus design a completely linear source
 and use it to cover the demand when required.
 
 .. csv-table:: Exemplary input for the sources sheet
-   :header: label,comment,active,fixed,technology,output,input,existing capacity,min. investment capacity,max. investment capapcity,non-convex investment,fix investment costs,variable costs,periodical costs,variable constraint costs,periodical constraint costs,Turbine Model,Hub Height,Modul Model,Inverter Model,Albedo,Altitude,Azimuth,Surface Tilt,Latitude,Longitude,ETA 0,A1,A2,C1,C2,Temperature Inlet,Temperature Difference,Conversion Factor,Peripheral Losses,Electric Consumption,Cleanliness,sector
+   :header: label,comment,active,fixed,technology,output,input,existing capacity,min. investment capacity,max. investment capapcity,non-convex investment,fix investment costs,variable costs,periodical costs,variable constraint costs,periodical constraint costs,Turbine Model,Hub Height,Modul Model,Inverter Model,DC AC Ratio,Inverter Eta,Albedo,Altitude,Azimuth,Surface Tilt,Latitude,Longitude,ETA 0,A1,A2,C1,C2,Temperature Inlet,Temperature Difference,Conversion Factor,Peripheral Losses,Cleanliness,power stc,celltype,v mp,i mp,v oc,i sc,alpha sc,beta voc,gamma pmp,cells in series,sector
 
-   ,,,,,,solar heat,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/(kW a)),windpower,windpower,PV,PV,PV,(m)\  | PV,(°),(°),(°),(°),solar heat,(1/°) | solar heat,(1/°)\ :sup:`2` | solar heat,(W/m\ :sup:`2` K) | solar heat,(W/m\ :sup:`2` K\ :sup:`2`) | solar heat,(°C) | solar heat,(°C) | solar heat,(m\ :sup:`2`\ /kW) | solar heat,solar heat,solar heat,solar heat,
-   ID_photovoltaic_electricity_source,,1,1,photovoltaic,ID_pv_bus,None,0,0,20,0,0,0,90,56,0,0,0,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,0.18,60,180,35,52.13,7.36,0,0,0,0,0,0,0,0,0,0,0,electricity
-   ID_solar_thermal_source,,1,1,solar_thermal_flat_plate,ID_heat_bus,ID_electricity_bus,0,0,20,0,0,0,40,25,0,0,0,0,0,0,0,20,10,52.13,7.36,0.719,1.063,0.005,0,0,40,15,1.79,0.05,0.06,0,heat
-   wind_turbine,,0,1,windpower,electricity_bus,None,0,0,30,0,0,0,100,9,0,E-126/4200,135,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,electricity
+   ,,,,,,solar heat,(kW),(kW),(kW),,(CU/a),(CU/kWh),(CU/(kW a)),(CU/kWh),(CU/(kW a)),windpower,windpower,PV,PV,PV,PV,PV,(m)\  | PV,(°),(°),(°),(°),solar heat,(1/°) | solar heat,(1/°)\ :sup:`2` | solar heat,(W/m\ :sup:`2` K) | solar heat,(W/m\ :sup:`2` K\ :sup:`2`) | solar heat,(°C) | solar heat,(°C) | solar heat,(m\ :sup:`2`\ /kW) | solar heat,solar heat,solar heat,solar heat,(W)\  | PV,PV,(V)\  | PV,(A)\  | PV, (V)\  | PV,(A)\  | PV,(A/°C)\  | PV,(V/°C)\  | PV,(%/°C)\  | PV,PV,
+   ID_photovoltaic_electricity_source,,1,1,photovoltaic,ID_pv_bus,None,0,0,20,0,0,0,90,56,0,0,0,Panasonic_VBHN235SA06B__2013_,ABB__MICRO_0_25_I_OUTD_US_240__240V_,1,0,0.18,60,180,35,52.13,7.36,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,electricity
+   ID_solar_thermal_source,,1,1,solar_thermal_flat_plate,ID_heat_bus,ID_electricity_bus,0,0,20,0,0,0,40,25,0,0,0,0,0,0,0,0,0,20,10,52.13,7.36,0.719,1.063,0.005,0,0,40,15,1.79,0.05,0,0,0,0,0,0,0,0,0,0,0,heat
+   wind_turbine,,0,1,windpower,electricity_bus,None,0,0,30,0,0,0,100,9,0,E-126/4200,135,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,electricity
+   ID_photovoltaic_electricity_source,,1,1,photovoltaic_datasheet,ID_pv_bus,None,0,0,20,0,0,0,90,56,0,0,0,0,0,1,0.97,0.18,60,180,35,52.13,7.36,0,0,0,0,0,0,0,0,0,0,235,monoSi,43,5.48,51.8,5.84,0.00175,-0.124,-0.3,72,electricity
 
 
 .. figure:: ../docs/images/manual/ScenarioSpreadsheet/BSP_Graph_source.png
@@ -457,7 +505,7 @@ The following parameters are only required, if "transformer type" is set to "Com
 - **temperature high** in (°C): Temperature of the high temperature heat reservoir. Only required if "mode" is set to "heat_pump".
 - **temperature low** in (°C): Cooling temperature needed for cooling demand. Only required if "mode" is set to "chiller".
 - **quality grade**: To determine the COP of a real machine a scale-down factor (the quality grade) is applied on the Carnot efficiency
-  (see `oemof.thermal <https://github.com/wind-python/windpowerlib/blob/dev/windpowerlib/oedb/turbine_data.csv>`_).
+  (see `oemof.thermal <https://oemof-thermal.readthedocs.io/en/latest/>`_).
 - **area** in (m\ :sup:`2`): Open spaces for ground-coupled compression heat transformers (GCHP).
 - **length of the geoth. probe** in (m): Length of the vertical heat exchanger, only for GCHP.
 - **heat extraction** in (kW/(m a)): Heat extraction for the heat exchanger referring to the location, only for GCHP.
@@ -534,9 +582,9 @@ The following parameters have to be entered:
 - **input**: Specifies the input of the storage. If the storage has only one connection, the same bus can be provided for input and output.
 - **output**: Specifies the output of the storage. If the storage has only one connection, the same bus can be provided for input and output.
 - **input/capacity ratio** (invest): Indicates the performance with which the storage can be charged
-  (see also  `here <https://oemof-solph.readthedocs.io/en/latest/usage.html#using-an-investment-object-with-the-genericstorage-component>`_).
+  (see also  `here <https://oemof-solph.readthedocs.io/en/latest/>`_).
 - **output/capacity ratio** (invest): Indicates the performance with which the storage can be discharged
-  (see also  `here <https://oemof-solph.readthedocs.io/en/latest/usage.html#using-an-investment-object-with-the-genericstorage-component>`_).
+  (see also  `here <https://oemof-solph.readthedocs.io/en/latest/>`_).
 - **efficiency inflow**: Specifies the charging efficiency.
 - **efficiency outflow**: Specifies the discharging efficiency.
 - **initial capacity**: Specifies how far the storage is loaded at time 0 of the simulation. Value must be between "0" and "1". The initial

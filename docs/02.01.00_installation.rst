@@ -329,6 +329,9 @@ the gurobi-solver is described in detail `here <https://www.gurobi.com/documenta
 Execute the "Linux_installation.sh" file. By first navigating to the path of
 the SESMG directory and then running the following:
 
+``$ ./Linux_installation.sh``
+
+Alternatively try:
 ``$ sudo sh Linux_installation.sh``
 
 Enter your Python version.

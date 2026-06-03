@@ -10,6 +10,7 @@ from oemof.solph.flows import Flow
 from oemof.solph import Investment
 import logging
 import pandas
+import pvlib
 
 
 class Sources:
@@ -63,7 +64,6 @@ class Sources:
                 - Temperature Difference
                 - Conversion Factor
                 - Peripheral Losses
-                - Electric Consumption
                 - Cleanliness
                 
         :type nodes_data: dict
@@ -262,64 +262,273 @@ class Sources:
         # returns logging info
         logging.info("\t Source created: " + source["label"])
 
+    def infer_cec_params(self, source: pandas.Series) -> pandas.Series:
+        """
+            Calculates CEC 6-parameter set from datasheet specifications.
+
+            Uses pvlib.ivtools.sdm.fit_cec_sam() (Dobos 2012) to estimate
+            parameters for the single diode model. Requires NREL-PySAM
+            to be installed.
+
+            Note on Units:
+                - alpha_sc: Must be [A/°C]. If datasheet gives [%/°C],
+                  convert via: alpha_sc_% / 100 * i_sc
+                - beta_voc: Must be [V/°C]. If datasheet gives [%/°C],
+                  convert via: beta_voc_% / 100 * v_oc
+                - gamma_pmp: Remains [%/°C] (e.g. -0.35), no conversion needed.
+
+            :param source: Series containing datasheet values:
+                - celltype: e.g., 'monoSi'
+                - v_mp: Voltage at maximum power point [V]
+                - i_mp: Current at maximum power point [A]
+                - v_oc: Open circuit voltage [V]
+                - i_sc: Short circuit current [A]
+                - alpha_sc: Temp. coefficient of i_sc [A/°C]
+                - beta_voc: Temp. coefficient of v_oc [V/°C]
+                - gamma_pmp: Temp. coefficient of p_mp [%/°C]
+                - cells_in_series: Number of cells in series
+                - STC: Nominal power at STC [W]
+
+            :type source: pandas.Series
+
+            :return: Series with parameters for PVSystem/ModelChain
+            :rtype: pandas.Series
+        """
+
+        # Read parameters from source series
+        celltype = str(source["celltype"])
+        v_mp = float(source["v mp"])
+        i_mp = float(source["i mp"])
+        v_oc = float(source["v oc"])
+        i_sc = float(source["i sc"])
+        # Ensure correct units for temperature coefficients
+        # alpha_sc: [A/°C], beta_voc: [V/°C], gamma_pmp: [%/°C]
+        alpha_sc = float(source["alpha sc"])
+        beta_voc = float(source["beta voc"])
+        gamma_pmp = float(source["gamma pmp"])
+        n_cells = int(source["cells in series"])
+
+        # Estimate the CEC parameters using the SAM fitting tool
+        (I_L_ref, I_o_ref, R_s,
+         R_sh_ref, a_ref, Adjust) = pvlib.ivtools.sdm.fit_cec_sam(
+            celltype=celltype,
+            v_mp=v_mp,
+            i_mp=i_mp,
+            v_oc=v_oc,
+            i_sc=i_sc,
+            alpha_sc=alpha_sc,
+            beta_voc=beta_voc,
+            gamma_pmp=gamma_pmp,
+            cells_in_series=n_cells,
+        )
+
+        p_stc = float(source["power stc"])
+
+        results = {
+            "celltype": celltype,
+            "alpha_sc": alpha_sc,
+            "beta_voc": beta_voc,
+            "a_ref": a_ref,
+            "I_L_ref": I_L_ref,
+            "I_o_ref": I_o_ref,
+            "R_s": R_s,
+            "R_sh_ref": R_sh_ref,
+            "Adjust": Adjust,
+            "STC": p_stc,
+            "gamma_pdc": gamma_pmp / 100,
+            "gamma_r": gamma_pmp,
+        }
+
+        return pandas.Series(results)
+
+    def change_inverter_limits(self, inv_params: pandas.Series, p_stc: float, dc_ac_ratio: float):
+        """
+            Changes inverter simulation limits to focus solely on conversion efficiency.
+
+            Scales the inverter's capacity based on the DC system size and DC/AC ratio,
+            and removes lower operational thresholds to prevent artificial clipping or shutdowns.
+
+            This normalization is critical to allow arbitrary inverter models to be paired
+            with any DC system size (e.g., simulating a single 400W module). Without removing
+            thresholds like Pso, large commercial inverters would never start operating in a
+            small-scale or single-module simulation because their physical startup thresholds
+            often require several kilowatts.
+
+            :param inv_params: Series containing inverter parameters.
+            :param p_stc: DC power at STC (Standard Test Conditions) in Watts.
+            :param dc_ac_ratio: Scaling factor for AC/DC power ratio.
+            :type inv_params: pandas.Series
+            :type p_stc: float
+            :type dc_ac_ratio: float
+            :return: Modified inverter parameters.
+            :rtype: pandas.Series
+        """
+
+        # Define AC power limit based on DC size and desired ratio
+        p_limit = p_stc / dc_ac_ratio
+
+        # Set all lower operational and startup thresholds to 0 to ensure continuous operation.
+        # Without this, a large commercial inverter would never start up in a small-scale
+        # simulation (e.g., a single 400W module could never cross a multi-kW 'Pso' threshold).
+        zero_keys = ['Mppt_low', 'MPPTLow', 'Vmin', 'Pso']
+        inv_params.loc[inv_params.index.intersection(zero_keys)] = 0
+
+        # Scale rated capacity parameters to p_limit to prevent artificial clipping
+        limit_keys = ['Paco', 'Pdco', 'Pacmax', 'Pnom', 'pdc0']
+        inv_params.loc[inv_params.index.intersection(limit_keys)] = p_limit
+
+        return inv_params
+
+
     def pv_source(self, source: pandas.Series) -> None:
         """
             Creates an oemof photovoltaic source object.
-    
-            Simulates the yield of a photovoltaic system using feedinlib
+
+            Simulates the yield of a photovoltaic system using pvlib
             and creates a source object with the yield as time series
-            and the use of the create_source method.
-    
+            and the use of the create_source method. Supports both
+            database-lookup and datasheet-inference for module parameters.
+
             :param source: Series containing all information for \
                 the creation of an oemof source. At least the \
                 following key-value-pairs have to be included:
-    
+
                     - label
                     - fixed
-                    - Azimuth
-                    - Surface Tilt
-                    - Modul Model
-                    - Inverter Model
-                    - Albedo
-                    - Latitude
-                    - Longitude
+                    - technology: 'photovoltaic' or 'photovoltaic_datasheet'
+                    - azimuth
+                    - surface tilt
+                    - modul model
+                    - albedo
+                    - latitude
+                    - longitude
+                    - altitude
+                    - inverter_power
+                    - inverter_eta
                     
             :type source: pandas.Series
         """
-        # reads pv system parameters from parameter dictionary
-        # nodes_data
-        parameter_set = {
-            "azimuth": source["azimuth"],
-            "tilt": source["surface tilt"],
-            "module_name": source["modul model"],
-            "inverter_name": source["inverter model"],
-            "albedo": source["albedo"],
-            "module_type": "glass_glass",
-            "racking_model": "open_rack",
-        }
+        from pvlib.location import Location
+        from pvlib.pvsystem import PVSystem
+        from pvlib.modelchain import ModelChain
 
-        # sets pv system parameters for pv_module
-        pv_module = powerplants.Photovoltaic(**parameter_set)
-
-        # changes names of data columns,
-        # so it fits the needs of the feedinlib
+        # Adjust weather data column names to fit pvlib requirements
         name_dc = {"temperature": "temp_air", "windspeed": "v_wind"}
         self.weather_data.rename(columns=name_dc)
 
-        # calculates time series normed on 1 kW pv peak performance
-        feedin = pv_module.feedin(
-            weather=self.weather_data,
-            location=(source["latitude"], source["longitude"]),
-            scaling="peak_power",
+        # Handle different ways of defining module parameters
+        pv_module_name = source["modul model"]
+        dc_ac_ratio = max(source["dc ac ratio"], 1.0)
+
+        # Map module database names to their corresponding DC model types
+        module_dbs = {
+            'CECMod': 'cec',
+            'SandiaMod': 'sapm'
+        }
+
+        module_parameters = None
+        dc_model = None
+
+        # Search for the module model across available SAM databases
+        for db_name, model_type in module_dbs.items():
+            pv_db = pvlib.pvsystem.retrieve_sam(db_name)
+            if pv_module_name in pv_db.columns:
+                module_parameters = pv_db[pv_module_name]
+                dc_model = model_type
+                break
+
+        # Extract or calculate STC power based on the selected database/model
+        if dc_model == 'cec':
+            p_stc = module_parameters["STC"]
+        elif dc_model == 'sapm':
+            p_stc = module_parameters['Impo'] * module_parameters['Vmpo']
+        else:
+            # Fallback: Infer CEC parameters from custom datasheet values
+            module_parameters = self.infer_cec_params(source)
+            p_stc = module_parameters["STC"]
+            dc_model = 'cec'
+
+        # Define site location based on geographical coordinates
+        location = Location(
+            latitude=source["latitude"],
+            longitude=source["longitude"],
+            altitude=source["altitude"],
         )
 
-        # Replace 'nan' value with 0
-        feedin = feedin.fillna(0)
-        # Set negative values to zero (requirement for solving the model)
-        feedin[feedin < 0] = 0
-        # Set values greater 1 to 1 (requirement for solving the model)
-        feedin[feedin > 1] = 1
+        # Handle inverter parameter definition
+        inverter_model_name = source["inverter model"]
 
+        # Map database names to their corresponding AC model types
+        inverter_dbs = {
+            'CECInverter': 'sandia',
+            'SandiaInverter': 'sandia',
+            'ADRInverter': 'adr'
+        }
+
+        inverter_parameters = None
+        ac_model = None
+
+        # Search for the inverter model across available databases
+        for db_name, model_type in inverter_dbs.items():
+            inv_db = pvlib.pvsystem.retrieve_sam(db_name)
+            if inverter_model_name in inv_db.columns:
+                inverter_parameters = inv_db[inverter_model_name]
+                ac_model = model_type
+                break
+
+        # Fallback: Create simplified inverter parameters if not found in any database
+        if inverter_parameters is None:
+            inverter_parameters = pandas.Series({
+                "pdc0": p_stc,
+                "eta_inv_nom": source["inverter eta"],
+            })
+            ac_model = 'pvwatts'
+
+        # change capacity and operational limits to prevent unintended simulation clipping
+        inverter_parameters = self.change_inverter_limits(inverter_parameters, p_stc, dc_ac_ratio)
+
+        # Set up PVSystem with module and inverter configuration
+        system = PVSystem(
+            surface_tilt                    = source["surface tilt"],
+            surface_azimuth                 = source["azimuth"],
+            albedo                          = source["albedo"],
+            module_parameters               = module_parameters,
+            inverter_parameters             = inverter_parameters,
+            temperature_model_parameters    = pvlib.temperature.TEMPERATURE_MODEL_PARAMETERS['sapm']['open_rack_glass_polymer']
+        )
+
+        # Configure the ModelChain for simulation
+        mc = ModelChain(
+            system                  = system,
+            location                = location,
+            aoi_model               = 'physical',
+            spectral_model          = "no_loss",
+            ac_model                = ac_model,
+            dc_model                = dc_model,
+            clearsky_model          = 'ineichen',
+            transposition_model     = 'haydavies',
+            solar_position_method   = 'nrel_numpy',
+            airmass_model           = 'kastenyoung1989',
+            temperature_model       = None,
+            dc_ohmic_model          = 'no_loss',
+            losses_model            = 'no_loss'
+        )
+
+        # Run the simulation based on provided weather data
+        mc.run_model(self.weather_data)
+
+        # Extract AC and DC power results and handle potential dataframe structures
+        ac_power = mc.results.ac
+        dc_power = mc.results.dc
+
+        if isinstance(ac_power, pandas.DataFrame):
+            ac_power = ac_power.get('p_mp', ac_power.iloc[:, 0])
+        if isinstance(dc_power, pandas.DataFrame):
+            dc_power = dc_power.get('p_mp', dc_power.iloc[:, 0])
+
+        # Calculate relative feed-in (normalized to STC power)
+        feedin = (ac_power.clip(upper=dc_power) / p_stc).fillna(0).clip(lower=0)
+        # Finalize the oemof source creation
         self.create_feedin_source(feedin=feedin, source=source)
 
     def windpower_source(self, source: pandas.Series) -> None:
@@ -398,8 +607,6 @@ class Sources:
                     - Temperature Difference
                     - Conversion Factor
                     - Peripheral Losses
-                    - Electric Consumption
-
         """
 
         # import oemof.thermal in order to calculate collector heat output
@@ -477,8 +684,13 @@ class Sources:
             irradiance = precalc_res.collector_irradiance / 1000
         else:
             raise ValueError("Technology chosen not accepted!")
-        collectors_heat = precalc_res.eta_c
-        
+
+        # set collectors_heat from W/sqm to kW/sqm
+        collectors_heat = precalc_res.collectors_heat / 1000
+        # multiply collectors_heat with conversion factor so that it has no dimension
+        # and can be used to create oemof source
+        collectors_heat = collectors_heat * source["conversion factor"]
+
         self.create_feedin_source(feedin=collectors_heat,
                                   source=source,
                                   output=col_bus,
@@ -490,8 +702,6 @@ class Sources:
                 inputs={
                     self.busd[label + "_bus"]: Flow(
                         custom_attributes={"emission_factor": 0}),
-                    self.busd[source["input"]]: Flow(
-                        custom_attributes={"emission_factor": 0}),
                 },
                 outputs={self.busd[source["output"]]: Flow(
                     variable_costs=source["variable costs"],
@@ -499,8 +709,6 @@ class Sources:
                                        source["variable constraint costs"]})},
                 conversion_factors={
                     self.busd[label + "_bus"]: 1,
-                    self.busd[source["input"]]: source["electric consumption"]
-                    * (1 - source["peripheral losses"]),
                     self.busd[source["output"]]:
                         1 - source["peripheral losses"],
                 },
@@ -533,6 +741,7 @@ class Sources:
         switch_dict = {
             "other": self.commodity_source,
             "photovoltaic": self.pv_source,
+            "photovoltaic_datasheet": self.pv_source,
             "windpower": self.windpower_source,
             "timeseries": self.timeseries_source,
             "solar_thermal_flat_plate": self.solar_heat_source,

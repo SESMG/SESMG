@@ -23,8 +23,8 @@ source_suffix = ".rst"
 master_doc = "index"
 project = "SESMG"
 year = "2021"
-author = "Christian Klemm"
-version = release = "0.1.1"
+author = "SESMG Developer Group"
+version = release = "1.X"
 
 pygments_style = "trac"
 templates_path = ["."]
