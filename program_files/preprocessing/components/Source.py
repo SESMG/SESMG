@@ -534,44 +534,65 @@ class Sources:
     def windpower_source(self, source: pandas.Series) -> None:
         """
             Creates an oemof windpower source object.
-    
-            Simulates the yield of a windturbine using feedinlib and
+
+            Simulates the yield of a windturbine using windpowerlib and
             creates a source object with the yield as time series and
             the use of the create_source method.
-    
+
             :param source: Series containing all information for \
                 the creation of an oemof source. At least the \
                 following key-value-pairs have to be included:
-    
+
                     - label
                     - fixed
                     - Turbine Model (Windpower ONLY)
                     - Hub Height (Windpower ONLY)
-                    
+
             :type source: pandas.Series
         """
+        from windpowerlib import WindTurbine, ModelChain
 
-        # set up wind turbine using the wind turbine library.
-        # The turbine name must correspond to an entry in the turbine
-        # data-base of the feedinlib. Unit of the hub height is m.
+        # Get turbine specifications from the source data
         turbine_data = {
             "turbine_type": source["turbine model"],
-            "hub_height": float(source["hub height"]),
+            "hub_height": float(source["hub height"])
         }
-        # create windturbine
-        wind_turbine = WindPowerPlant(**turbine_data)
+        turbine_name = turbine_data["turbine_type"]
 
+        wind_turbine = WindTurbine(**turbine_data)
+
+        # Get nominal power automatically from the database (returned in Watts)
+        nominal_power = wind_turbine.nominal_power
+
+        # check if the turbine exists in the database by verifying nominal_power
+        if nominal_power is None:
+            raise ValueError(
+                f"The turbine '{turbine_name}' was not found in the windpowerlib database!"
+            )
+
+        # Prepare weather data and set up MultiIndex columns for windpowerlib requirements
         weather_df = self.weather_data[["windspeed", "temperature",
                                         "z0", "pressure"]]
         # second row is height of data acquisition in m
         weather_df.columns = [
             ["wind_speed", "temperature", "roughness_length", "pressure"],
             [10, 2, 0, 0]]
-        
-        # calculate scaled feed-in
-        feedin = wind_turbine.feedin(weather=weather_df,
-                                     scaling="nominal_power")
-        
+
+        # Calculate power output using the windpowerlib ModelChain approach
+        mc = ModelChain(wind_turbine, power_output_model="power_curve")
+        mc.run_model(weather_df)
+
+        power_output = mc.power_output
+
+        # Scale feed-in time series to a normalized value between 0 and 1
+        if nominal_power and nominal_power > 0:
+            feedin = power_output / nominal_power
+        else:
+            raise ValueError(
+                f"Nominal power for '{turbine_name}' is unknown or 0. Scaling failed."
+            )
+
+        # Create the oemof source component with the scaled time series
         self.create_feedin_source(feedin, source)
 
     def solar_heat_source(self, source: pandas.Series) -> None:
