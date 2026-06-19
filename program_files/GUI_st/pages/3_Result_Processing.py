@@ -389,7 +389,6 @@ def short_result_graph(result_path_graph: str) -> None:
 
 
 try:
-    print("start try results")
 
     # starting page functions
     # initialize global page settings
