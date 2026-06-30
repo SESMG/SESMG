@@ -49,7 +49,7 @@ def create_transformer(label: str, transformer_type: str, sheets: dict,
                        standard_parameters: pandas.ExcelFile,
                        de_centralized: str, flow_temp: str, category="",
                        building_type=None, area="0",
-                       fuel_type="None", output="None", min_invest="0",
+                       fuel_type="None", fuel_type2="None", output="None", min_invest="0",
                        length_geoth_probe="0", heat_extraction="0") -> dict:
     """
         Sets the specific parameters for a transformer component,
@@ -111,7 +111,13 @@ def create_transformer(label: str, transformer_type: str, sheets: dict,
                                           de_centralized=de_centralized,
                                           transformer_type=transformer_type,
                                           category=category)
-    input_bus = technology_dict.get(transformer_type)[1] + "bus"
+    if fuel_type2 != "None":
+        fuel_type = fuel_type.replace(" ", "_")
+        input_bus = label + "_" + fuel_type + "_bus"
+        input2_bus = label + "_" + fuel_type2 + "_bus"
+    else:
+        input2_bus = "None"
+        input_bus = technology_dict.get(transformer_type)[1] + "bus"
     
     # differentiate the building type due to different shortage costs
     if building_type is not None:
@@ -153,19 +159,27 @@ def create_transformer(label: str, transformer_type: str, sheets: dict,
             input_bus = str(label) + input_bus_list[0]
         except ValueError:
             pass
-        
-    if not technology_dict.get(transformer_type)[2] == output:
-        output1 = technology_dict.get(transformer_type)[2] + "_bus"
+
+    if fuel_type2 != "None":
+        output1 = label + "_electricity_bus"
+        output2 = output
+        label1 = label + "_chp"
     else:
-        output1 = output
+        label1 = technology_dict.get(transformer_type)[0]
+        output2 = technology_dict.get(transformer_type)[3]
+        if not technology_dict.get(transformer_type)[2] == output:
+            output1 = technology_dict.get(transformer_type)[2] + "_bus"
+        else:
+            output1 = output
 
     return create_standard_parameter_comp(
         specific_param={
-            "label": technology_dict.get(transformer_type)[0]
+            "label": label1
             + "_transformer",
             "input": input_bus,
+            "input2": input2_bus,
             "output": output1,
-            "output2": technology_dict.get(transformer_type)[3],
+            "output2": output2,
             "area": float(area),
             "temperature high": flow_temp,
             "min. investment capacity": float(min_invest),
