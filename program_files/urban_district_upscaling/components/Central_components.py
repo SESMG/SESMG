@@ -48,16 +48,17 @@ def create_central_heat_component(
 
     # CHPs
     if comp_type in ["natural gas_chp", "biogas_chp",
-                     "pellet_chp", "woodchips_chp"]:
+                     "pellet_chp", "woodchips_chp", "natural gas_hydrogen_chp"]:
         # check rather a central exchange of fuel type is possible
-        if comp_type.split("_")[0] in exchange_buses:
+        if len(comp_type.split("_")) < 3 and comp_type.split("_")[0] in exchange_buses:
             central_bus = exchange_buses[comp_type.split("_")[0] + "_exchange"]
         else:
             central_bus = False
+        fuel_type = comp_type.replace("_chp", "")
         # create the central chp plant
         sheets = create_central_chp(
             label=label,
-            fuel_type=comp_type.split("_")[0],
+            fuel_type=fuel_type,
             output=bus,
             central_electricity_bus=exchange_buses["electricity_exchange"],
             central_fuel_bus=central_bus,
@@ -778,18 +779,26 @@ def create_central_chp(
     """
     from program_files import Bus, Transformer, Link
 
-    fuel_type_wo_gaps = fuel_type.replace(" ", "_")
-    
-    if (len(sheets["buses"]) == 0 or
-            ("central_" + label + "_" + fuel_type_wo_gaps + "_bus"
-             not in list(sheets["buses"]["label"]))):
-        # create the CHP fuel bus
-        sheets = Bus.create_standard_parameter_bus(
-            label="central_" + label + "_" + fuel_type_wo_gaps + "_bus",
-            bus_type=fuel_type + " bus combined heat and power central",
-            sheets=sheets,
-            standard_parameters=standard_parameters
-        )
+    individual_fuels = fuel_type.split("_")
+    fuel_type1 = individual_fuels[0]
+    fuel_type2 = individual_fuels[1] if len(individual_fuels) > 1 else "None"
+    if fuel_type2 != "None":
+        fuel_type = f"{fuel_type1} {fuel_type2}"
+    else:
+        fuel_type = fuel_type1
+
+    for fuel in individual_fuels:
+        fuel_type_wo_gaps = fuel.replace(" ", "_")
+        if (len(sheets["buses"]) == 0 or
+                ("central_" + label + "_" + fuel_type_wo_gaps + "_bus"
+                 not in list(sheets["buses"]["label"]))):
+            # create the CHP fuel bus
+            sheets = Bus.create_standard_parameter_bus(
+                label="central_" + label + "_" + fuel_type_wo_gaps + "_bus",
+                bus_type=fuel + " bus combined heat and power central",
+                sheets=sheets,
+                standard_parameters=standard_parameters
+            )
 
     # create the CHP electricity output bus
     sheets = Bus.create_standard_parameter_bus(
@@ -824,13 +833,15 @@ def create_central_chp(
             sheets=sheets,
             standard_parameters=standard_parameters
         )
-    
+
     fuel_type += " "
+    fuel_type1 += " "
     # create the CHP and return the sheets dict
     return Transformer.create_transformer(
         transformer_type="combined heat and power " + fuel_type,
         label="central_" + label,
-        fuel_type=fuel_type,
+        fuel_type=fuel_type1,
+        fuel_type2 = fuel_type2,
         output=output,
         sheets=sheets,
         de_centralized="central",
