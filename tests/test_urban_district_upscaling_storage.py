@@ -20,7 +20,8 @@ def test_storage_decentralized_thermal_storage_entry():
                 left=pandas.DataFrame.from_dict({
                     "label": ["test_building_thermal_storage"],
                     "storage type": ["thermal storage decentral"],
-                    "bus": ["test_building" + "_heat_bus"],
+                    "input": ["test_building" + "_heat_bus"],
+                    "output": ["test_building" + "_heat_bus"],
                     "min. investment capacity": [float(0)]}),
                 right=import_standard_parameter_data(label="5_storages"),
                 on="storage type").drop(columns=["storage type"])}
@@ -38,7 +39,13 @@ def test_create_storage(test_storage_decentralized_battery_entry):
         de_centralized="decentral",
         sheets={"storages": pandas.DataFrame()},
         standard_parameters=get_standard_parameter_data())
-    
+
+
+    print("Actual columns")
+    print(sheets["storages"].columns.tolist())
+
+    print("Expected columns:", test_storage_decentralized_battery_entry["storages"].columns.tolist())
+
     pandas.testing.assert_frame_equal(
         sheets["storages"].sort_index(axis=1),
         test_storage_decentralized_battery_entry["storages"].sort_index(axis=1)

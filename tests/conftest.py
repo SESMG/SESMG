@@ -16,7 +16,8 @@ def test_storage_decentralized_battery_entry():
             left=pandas.DataFrame.from_dict({
                 "label": ["test_building_battery_storage"],
                 "storage type": ["battery storage decentral"],
-                "bus": ["test_building_electricity_bus"],
+                "input": ["test_building_electricity_bus"],
+                "output": ["test_building_electricity_bus"],
                 "min. investment capacity": [float(0)]}),
             right=storage,
             left_on="storage type",
