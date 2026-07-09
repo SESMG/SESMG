@@ -75,7 +75,8 @@ def test_create_building_insulation(test_insulation_entries):
         "label": "test",
         "area windows": "10",
         "area outer wall": "10",
-        "area roof": "10"
+        "area roof": "10",
+        "insulation": "yes",
     }
     # start method to be tested
     sheets = Insulation.create_building_insulation(
