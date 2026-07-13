@@ -112,7 +112,7 @@ def create_transformer(label: str, transformer_type: str, sheets: dict,
                                           transformer_type=transformer_type,
                                           category=category)
     if fuel_type2 != "None":
-        fuel_type = fuel_type.replace(" ", "_")
+        fuel_type = fuel_type.strip().replace(" ", "_")
         input_bus = label + "_" + fuel_type + "_bus"
         input2_bus = label + "_" + fuel_type2 + "_bus"
     else:
