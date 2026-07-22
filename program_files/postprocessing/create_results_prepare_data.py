@@ -25,7 +25,7 @@ copt = [
 
 def add_component_to_loc(label: str, comp_dict: list,
                          df_list_of_components: pandas.DataFrame, variable_cost_factor: float,
-                         maxinvest="---") -> pandas.DataFrame:
+                         time_increment: float, maxinvest="---") -> pandas.DataFrame:
     """
         adds the given component with it's parameters to list of
         components (loc)
@@ -42,6 +42,10 @@ def add_component_to_loc(label: str, comp_dict: list,
         :param variable_cost_factor: factor that considers the data_preparation_algorithms,
             can be used to scale the results up for a year
         :type variable_cost_factor: float
+        :param time_increment: temporal resolution of the EnergySystem \
+            in hours, used to convert power-based flow values into \
+            energy when summing over time
+        :type time_increment: float
         :param maxinvest: str holding the maximum possible investment
         :type maxinvest: str
         
@@ -62,10 +66,10 @@ def add_component_to_loc(label: str, comp_dict: list,
                     [
                         label,
                         comp_dict[10],
-                        round(sum(comp_dict[0]) * variable_cost_factor, 2),
-                        round(sum(comp_dict[1]) * variable_cost_factor, 2),
-                        round(sum(comp_dict[2]) * variable_cost_factor, 2),
-                        round(sum(comp_dict[3]) * variable_cost_factor, 2),
+                        round(sum(comp_dict[0]) * variable_cost_factor * time_increment, 2),
+                        round(sum(comp_dict[1]) * variable_cost_factor * time_increment, 2),
+                        round(sum(comp_dict[2]) * variable_cost_factor * time_increment, 2),
+                        round(sum(comp_dict[3]) * variable_cost_factor * time_increment, 2),
                         round(capacity, 2),
                         round(comp_dict[8], 2),
                         round(comp_dict[6], 2),
@@ -177,7 +181,7 @@ def create_flow_info_dict(comp_dict: list) -> pandas.DataFrame:
 
 
 def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
-                df_list_of_components: pandas.DataFrame, variable_cost_factor: float,
+                df_list_of_components: pandas.DataFrame, variable_cost_factor: float, time_increment: float,
                 ) -> Tuple[pandas.DataFrame, float, float, float, pandas.DataFrame]:
     """
         In this method, on the one hand, the components as well as
@@ -200,6 +204,10 @@ def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
         :param variable_cost_factor: factor that considers the data_preparation_algorithms,
             can be used to scale the results up for a year
         :type variable_cost_factor: float
+        :param time_increment: temporal resolution of the EnergySystem \
+            in hours, used to convert power-based flow values into \
+            energy when summing over time
+        :type time_increment: float
         
         :return: - **df_list_of_components** (pandas.DataFrame) - \
                     DataFrame containing the list of components which \
@@ -231,6 +239,7 @@ def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
             label=label,
             comp_dict=comp_dict[label],
             variable_cost_factor=variable_cost_factor,
+            time_increment=time_increment,
             df_list_of_components=df_list_of_components,
             maxinvest=comp_dict[label][7],
         )
@@ -247,7 +256,7 @@ def prepare_loc(comp_dict: dict, df_result_table: pandas.DataFrame,
     )
 
 
-def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict, variable_cost_factor: float,
+def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict, variable_cost_factor: float, time_increment: float,
                  ) -> Tuple[pandas.DataFrame, float, float, float, pandas.DataFrame, float]:
     """
         This method is the main method of data preparation for
@@ -266,6 +275,10 @@ def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict, variabl
         :param variable_cost_factor: factor that considers the data_preparation_algorithms,
             can be used to scale the results up for a year
         :type variable_cost_factor: float
+        :param time_increment: temporal resolution of the EnergySystem \
+            in hours, used to convert power-based flow values into \
+            energy when summing over time
+        :type time_increment: float
         
         :return: - **df_list_of_components** (pandas.DataFrame) - \
                     DataFrame containing the list of components which \
@@ -291,7 +304,7 @@ def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict, variabl
         # reduce the energy system's final energy demand by the flow of
         # the insulation measures source components
         if "insulation" in label:
-            total_demand -= sum(comp_dict[label][2])
+            total_demand -= sum(comp_dict[label][2]) * time_increment
             comp_dict[label][-1] = "insulation"
         # get rid of non investable components like the ambient sources
         # of heat pumps
@@ -317,7 +330,8 @@ def prepare_data(comp_dict: dict, total_demand: float, nodes_data: dict, variabl
     ) = prepare_loc(comp_dict=comp_dict,
                     df_result_table=df_result_table,
                     df_list_of_components=df_list_of_components,
-                    variable_cost_factor=variable_cost_factor)
+                    variable_cost_factor=variable_cost_factor,
+                    time_increment=time_increment)
 
     # create additional dict with information about the input and output flows
     flow_info_df = create_flow_info_dict(comp_dict=comp_dict)
