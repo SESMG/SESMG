@@ -103,6 +103,49 @@ def charts(nodes_data: dict, optimization_model: solph.Model,
     esys.dump(dpath=None, filename=None)
 
 
+def get_time_increment_from_index(energy_system: solph.EnergySystem) -> float:
+    """
+        Returns the temporal resolution of the given EnergySystem in hours.
+
+        The time increment is derived from the EnergySystem.timeindex,
+        assuming an equidistant index. It is used to convert power values
+        defined per time step (e.g. kW) into energy values (e.g. kWh)
+        by multiplication with the time increment.
+
+        :param energy_system: original (unoptimized) energy system
+        :type energy_system: oemof.solph.EnergySystem
+
+        :return: - **time_increment** (float) - length of one time step
+                  in hours as derived from the EnergySystem.timeindex
+    """
+    timeindex = energy_system.timeindex
+
+    # default
+    time_increment = 1
+
+    if len(timeindex) < 2:
+        raise ValueError(
+            "EnergySystem.timeindex must contain at least two entries "
+            "to derive a time increment."
+        )
+
+    # Handle datetime indices
+    if isinstance(timeindex, pd.DatetimeIndex):
+        # calculates difference between two timeindexes
+        diffs = timeindex.to_series().diff().iloc[1:]
+        # Ensure that the timeindex is equidistant
+        if not (diffs == diffs.iloc[0]).all():
+            raise ValueError(
+                "Non-equidistant timeindex detected. "
+                "get_time_increment_from_index requires an "
+                "equidistant timeindex."
+            )
+        delta = diffs.iloc[0]
+        time_increment = delta.total_seconds() / 3600.0
+
+    return time_increment
+
+
 class Results:
     """
         Returns a list of all defined components with the following
@@ -187,6 +230,11 @@ class Results:
         self.esys = energy_system
         self.results = solph.processing.results(optimization_model)
 
+        # Derive the length of one time step in hours from the EnergySystem
+        # timeindex. This value is used to convert power-based flow values
+        # into energy when summing over time.
+        time_increment = get_time_increment_from_index(self.esys)
+
         # collect the energy system results which have to be extracted
         # from the component specific result object
         comp_dict, total_demand, total_usage = collect_data(
@@ -194,7 +242,8 @@ class Results:
             results=self.results,
             esys=self.esys,
             result_path=result_path,
-            variable_cost_factor=variable_cost_factor
+            variable_cost_factor=variable_cost_factor,
+            time_increment=time_increment
         )
 
         (
@@ -208,7 +257,8 @@ class Results:
         ) = prepare_data(comp_dict=comp_dict,
                          total_demand=total_demand,
                          nodes_data=nodes_data,
-                         variable_cost_factor=variable_cost_factor)
+                         variable_cost_factor=variable_cost_factor,
+                         time_increment =  time_increment)
         
         # SUMMARY
         meta_results = solph.processing.meta_results(optimization_model)
