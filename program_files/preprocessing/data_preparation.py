@@ -334,8 +334,55 @@ def timeseries_adaption(nodes_data: dict, clusters: int,
     nodes_data['timeseries'] = prep_timeseries
 
 
+def get_time_increment_from_dataframe(weather_df: pandas.DataFrame) -> float:
+    """
+    Calculates the temporal resolution of the given timeseries DataFrame in hours.
+
+    The time increment is derived from the 'timestamp' column or DatetimeIndex.
+    It verifies that the time series is equidistant and converts the delta
+    between consecutive time steps into hours.
+
+    :param weather_df: DataFrame containing the weather data (must contain
+        a 'timestamp' column or a DatetimeIndex)
+    :type weather_df: pandas.DataFrame
+
+    :return: - **time_increment** (float) - length of one time step in hours
+    """
+    # Extract time series from 'timestamp' column or DatetimeIndex
+    if 'timestamp' in weather_df.columns:
+        time_series = pandas.to_datetime(weather_df['timestamp'])
+    elif isinstance(weather_df.index, pandas.DatetimeIndex):
+        time_series = weather_df.index.to_series()
+    else:
+        raise ValueError(
+            "DataFrame must contain a 'timestamp' column or a DatetimeIndex "
+            "to derive a time increment."
+        )
+
+    if len(time_series) < 2:
+        raise ValueError(
+            "Timeseries DataFrame must contain at least two entries "
+            "to derive a time increment."
+        )
+
+    # Calculate differences between consecutive time steps
+    diffs = time_series.diff().iloc[1:]
+
+    # Ensure that the time series is equidistant
+    if not (diffs == diffs.iloc[0]).all():
+        raise ValueError(
+            "Non-equidistant time series detected. "
+            "get_time_increment_from_dataframe requires an equidistant time series."
+        )
+
+    delta = diffs.iloc[0]
+    time_increment = delta.total_seconds() / 3600.0
+
+    return time_increment
+
+
 def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
-                           result_path: str) -> float:
+                           result_path: str) -> tuple:
     """
         Evaluates the passed parameters for timeseries preparation and
         starts the corresponding simplification/clustering algorithm.
@@ -353,6 +400,7 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
 
         :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
+                 - **time_increment** (float) - length of one time step in hours
     """
     from program_files.preprocessing.data_preparation_algorithms \
         import slicing, downsampling, averaging, heuristic_selection, \
@@ -364,6 +412,8 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
     cluster_criterion = timeseries_prep_param[2]
     cluster_period = timeseries_prep_param[3]
     cluster_seasons = int(timeseries_prep_param[4])
+
+    time_increment = get_time_increment_from_dataframe(weather_df=nodes_data['weather data'].copy())
 
     if data_prep != 'none':
         # Adapting Standard Load Profile-Sinks
@@ -398,18 +448,21 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
     elif data_prep == 'slicing A':
         variable_cost_factor = slicing.timeseries_slicing(n_days=int(days_per_cluster),
                                    nodes_data=nodes_data,
-                                   period=cluster_period)
+                                   period=cluster_period,
+                                   time_increment=time_increment)
     # delete every n-th period
     elif data_prep == 'slicing B':
         variable_cost_factor = slicing.timeseries_slicing2(n_days=int(days_per_cluster),
                                     nodes_data=nodes_data,
-                                    period=cluster_period)
+                                    period=cluster_period,
+                                    time_increment=time_increment)
 
     # DOWNSAMPLING ALGORITHM
     # use every n-th period
     elif data_prep == 'downsampling A':
-        variable_cost_factor = downsampling.timeseries_downsampling(nodes_data=nodes_data,
-                                             n_timesteps=int(n_timesteps))
+        variable_cost_factor, time_increment = downsampling.timeseries_downsampling(nodes_data=nodes_data,
+                                             n_timesteps=int(n_timesteps),
+                                             time_increment=time_increment)
     # delete every n-th period
     elif data_prep == 'downsampling B':
         variable_cost_factor = downsampling.timeseries_downsampling2(nodes_data=nodes_data,
@@ -438,7 +491,7 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
         nodes_data['buses'].to_excel(writer, sheet_name='buses')
         writer.close()
 
-    return variable_cost_factor
+    return variable_cost_factor, time_increment
 
 
 
