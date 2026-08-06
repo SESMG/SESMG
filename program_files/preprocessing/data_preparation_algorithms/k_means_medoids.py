@@ -194,8 +194,8 @@ def k_means_algorithm(cluster_period: int, days_per_cluster: int,
     nodes_data['weather data'] = prep_weather_data
     
     # Adapts Other Parameters (despite weather data) of the energy system
-    variable_cost_factor = variable_costs_date_adaption(nodes_data, clusters, period)
     timeseries_adaption(nodes_data, clusters, cluster_labels, period)
+    variable_cost_factor = variable_costs_date_adaption(nodes_data, clusters, period)
 
     return variable_cost_factor
     
@@ -262,9 +262,8 @@ def k_medoids_algorithm(cluster_period: int, days_per_cluster: int,
     nodes_data['timeseries'] = weather_data
 
     # Adapts Other Parameters (despite weather data) of the energy system
-    variable_cost_factor = variable_costs_date_adaption(nodes_data, clusters, period)
-
     k_medoids_timeseries_adaption(nodes_data, clusters,
                                   cluster_labels, period)
+    variable_cost_factor = variable_costs_date_adaption(nodes_data, clusters, period)
 
     return variable_cost_factor

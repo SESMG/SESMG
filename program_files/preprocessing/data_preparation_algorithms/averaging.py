@@ -42,14 +42,14 @@ def mean_adapt_timeseries_weatherdata(
     nodes_data['weather data'] = prep_weather_data
 
     # Adapts Other Parameters (despite weather data) of the energy system
-    variable_cost_factor = variable_costs_date_adaption(nodes_data=nodes_data,
-                                 clusters=clusters,
-                                 period=period)
-
     timeseries_adaption(nodes_data=nodes_data,
                         clusters=clusters,
                         cluster_labels=cluster_labels,
                         period=period)
+
+    variable_cost_factor = variable_costs_date_adaption(nodes_data=nodes_data,
+                                 clusters=clusters,
+                                 period=period)
 
     return variable_cost_factor
 
