@@ -9,10 +9,12 @@ from program_files.preprocessing.data_preparation \
 
 def adaption_energy_system_parameter(prep_weather_data: pandas.DataFrame,
                                      nodes_data: dict, period: str,
-                                     weather_data: pandas.DataFrame) -> float:
+                                     weather_data: pandas.DataFrame,
+                                     time_increment: float) -> float:
     """
-        Within this method the adaption clusters are calculated and the
-        energy system parameters are adapted afterwards.
+        Updates the weather dataset in nodes_data and triggers the adaptation
+        of energy system parameters and variable cost factors based on the
+        temporal resolution.
         
         :param prep_weather_data: dataframe containing the sliced \
             weather data data frame
@@ -25,9 +27,9 @@ def adaption_energy_system_parameter(prep_weather_data: pandas.DataFrame,
         :type period: str
         :param weather_data: unsliced weather data DataFrame
         :type weather_data: pandas.DataFrame
-    
-        :raise: - **ValueError** - Error raised if the chosen period \
-            is not supported
+        :param time_increment: temporal resolution of the data in hours \
+            (e.g., 0.25 for 15-minute intervals, 1.0 for hourly)
+        :type time_increment: float
 
         :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
@@ -38,20 +40,13 @@ def adaption_energy_system_parameter(prep_weather_data: pandas.DataFrame,
 
     # Replaces the weather data set in nodes_data by the new one
     nodes_data['weather data'] = prep_weather_data
-
-    if period == 'days':
-        adaption_clusters = len(prep_weather_data) / 24
-    elif period == 'weeks':
-        adaption_clusters = len(prep_weather_data) / (24 * 7)
-    elif period == 'hours':
-        adaption_clusters = len(prep_weather_data)
-    else:
-        raise ValueError("Non supported period")
     
     # Adapts Other Parameters (despite weather data) of the energy system
     variable_cost_factor = variable_costs_date_adaption(nodes_data=nodes_data,
-                                 clusters=adaption_clusters,
-                                 period=period)
+                                 clusters=0,
+                                 period=period,
+                                 time_increment_orig=time_increment,
+                                 time_increment_new=time_increment)
 
     return variable_cost_factor
 
