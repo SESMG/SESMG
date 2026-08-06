@@ -149,8 +149,9 @@ def append_timeseries_to_weatherdata_sheet(nodes_data: dict
     return nodes_data['timeseries']
 
 
-def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str
-                                 ) -> float:
+def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str,
+                                 time_increment_orig: float = 1.0,
+                                 time_increment_new: float = 1.0) -> float:
     """
         To be able to work with the adapted weather data set some
         parameters from nodes_data must be changed.
@@ -162,16 +163,26 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str
         :type clusters: int
         :param period: defines rather hours, days or weeks were selected
         :type period: str
+        :param time_increment_orig: Original temporal resolution in hours, defaults to 1.0
+        :type time_increment_orig: float, optional
+        :param time_increment_new: New temporal after timeseries simplification resolution in hours, defaults to 1.0
+        :type time_increment_new: float, optional
 
         :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
     """
-    factor_dict = {"hours": 1, "days": 24, "weeks": 168}
-    timesteps = factor_dict.get(period)
-    variable_cost_factor = \
-        (int(nodes_data['energysystem']['periods'].iloc[0])
-         / (timesteps * clusters))
-    # log the calculated variable cost factor
+    # Calculate total simulated hours of the original dataset
+    original_periods = int(nodes_data['energysystem']['periods'].iloc[0])
+    original_hours = original_periods * time_increment_orig
+
+    # Calculate total simulated hours of the reduced dataset
+    simulated_steps = len(nodes_data['weather data'])
+    simulated_hours = simulated_steps * time_increment_new
+
+    # Calculate universal scaling factor
+    variable_cost_factor = original_hours / simulated_hours
+
+    # Log the calculated variable cost factor
     logging.info('\t VARIABLE COST FACTOR')
     logging.info("\t " + str(variable_cost_factor))
     
@@ -202,12 +213,12 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str
     # multiply with variable cost factor
     nodes_data['timeseries'][cols_to_scale] *= variable_cost_factor
 
-
-    timedelta = str(clusters * timesteps - 1) + ' hours'
-    nodes_data['energysystem']['end date'] = \
-        nodes_data['energysystem']['start date'] \
-        + pandas.Timedelta(timedelta)
-    nodes_data['energysystem']['periods'] = (timesteps * clusters)
+    # Update energy system metadata
+    duration_hours = (simulated_steps - 1) * time_increment_new
+    nodes_data['energysystem']['end date'] = (
+            nodes_data['energysystem']['start date'] + pandas.Timedelta(hours=duration_hours)
+    )
+    nodes_data['energysystem']['periods'] = simulated_steps
 
     return variable_cost_factor
 
