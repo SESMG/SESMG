@@ -94,6 +94,7 @@ that the gurobi-solver is not open-source and a license is required. However,
 the gurobi-solver may be faster for certain types of optimization problems, especially
 for those containing binary decisions. The installation procedure of the
 gurobi-solver is described in detail `here <https://www.gurobi.com/documentation/quickstart.html>`_.
+(The SESMG is not compatible with the latest version of Gurobi 13.0, due to a change in this version's installation process. You will need to install an older version of Gurobi, e.g. version 12.0.)
 
 5. Installing the SESMG
 Execute the windows_installation.cmd and add your Python version (this may take
