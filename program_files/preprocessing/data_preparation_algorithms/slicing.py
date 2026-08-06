@@ -56,8 +56,8 @@ def adaption_energy_system_parameter(prep_weather_data: pandas.DataFrame,
     return variable_cost_factor
 
 
-def data_set_slicing(n_days: int, data_set: pandas.DataFrame, period: str
-                     ) -> pandas.DataFrame:
+def data_set_slicing(n_days: int, data_set: pandas.DataFrame, period: str,
+                     time_increment: float) -> pandas.DataFrame:
     """
         uses every n-th period of the given data_set and cuts the rest
         out of the data_set
@@ -68,6 +68,9 @@ def data_set_slicing(n_days: int, data_set: pandas.DataFrame, period: str
         :type data_set: pandas.core.frame.Dataframe
         :param period: defines rather hours, days or weeks were selected
         :type period: str
+        :param time_increment: temporal resolution of the data in hours \
+            (e.g., 0.25 for 15-minute intervals, 1.0 for hourly)
+        :type time_increment: float
         
         :return: - **prep_data_set** (pandas.DataFrame) - return the \
             sliced pandas.DataFrame
@@ -84,7 +87,8 @@ def data_set_slicing(n_days: int, data_set: pandas.DataFrame, period: str
         # data column
         data_set_column = extract_single_periods(data_set=data_set,
                                                  column_name=column_names[i],
-                                                 period=period)
+                                                 period=period,
+                                                 time_increment=time_increment)
         
         # If the data set is not divisible by the corresponding number
         # of periods, the data set is shortened accordingly
@@ -155,7 +159,7 @@ def data_set_slicing2(n_days: int, data_set: pandas.DataFrame, period: str
     return prep_data_set
 
 
-def timeseries_slicing(n_days: int, nodes_data: dict, period: str) -> float:
+def timeseries_slicing(n_days: int, nodes_data: dict, period: str, time_increment: float) -> float:
     """
         uses every n-th period of the given data_set and cuts the rest
         out of the data_set
@@ -166,26 +170,36 @@ def timeseries_slicing(n_days: int, nodes_data: dict, period: str) -> float:
         :type nodes_data: dict
         :param period: defines rather hours, days or weeks were selected
         :type period: str
+        :param time_increment: temporal resolution of the data in hours
+            (e.g., 0.25 for 15-minute intervals, 1.0 for hourly)
+        :type time_increment: float
 
         :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
     """
-    
+    # Store references to the original weather data
     weather_data = nodes_data['weather data']
     data_set = nodes_data['weather data']
-    
+
+    # Slice the weather data according to the selected n-th period and resolution
     prep_weather_data = data_set_slicing(n_days,
                                          data_set=data_set,
-                                         period=period)
+                                         period=period,
+                                         time_increment=time_increment)
 
+    # Adapt energy system parameters and calculate the variable cost factor
     variable_cost_factor = adaption_energy_system_parameter(prep_weather_data=prep_weather_data,
                                      nodes_data=nodes_data,
                                      period=period,
-                                     weather_data=weather_data)
-    
+                                     weather_data=weather_data,
+                                     time_increment=time_increment)
+
+    # Slice the timeseries data accordingly
     prep_timeseries = data_set_slicing(n_days,
                                        data_set=nodes_data['timeseries'],
-                                       period=period)
+                                       period=period,
+                                       time_increment=time_increment)
+    # Align timestamps to the length of the newly sliced weather data
     prep_timeseries['timestamp'] = \
         nodes_data['timeseries']['timestamp'][:len(prep_weather_data)]
     nodes_data['timeseries'] = prep_timeseries
@@ -193,7 +207,7 @@ def timeseries_slicing(n_days: int, nodes_data: dict, period: str) -> float:
     return variable_cost_factor
 
 
-def timeseries_slicing2(n_days: int, nodes_data: dict, period: str) -> float:
+def timeseries_slicing2(n_days: int, nodes_data: dict, period: str, time_increment: float) -> float:
     """
         cuts out every nth period from the given data_set and leaves the
         remaining periods for further consideration
@@ -204,6 +218,9 @@ def timeseries_slicing2(n_days: int, nodes_data: dict, period: str) -> float:
         :type nodes_data: dict
         :param period: defines rather hours, days or weeks were selected
         :type period: str
+        :param time_increment: temporal resolution of the data in hours
+            (e.g., 0.25 for 15-minute intervals, 1.0 for hourly)
+        :type time_increment: float
 
         :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
@@ -218,7 +235,8 @@ def timeseries_slicing2(n_days: int, nodes_data: dict, period: str) -> float:
     variable_cost_factor = adaption_energy_system_parameter(prep_weather_data=prep_weather_data,
                                      nodes_data=nodes_data,
                                      period=period,
-                                     weather_data=weather_data)
+                                     weather_data=weather_data,
+                                     time_increment=time_increment)
     
     prep_timeseries = data_set_slicing2(n_days,
                                         data_set=nodes_data['timeseries'],
