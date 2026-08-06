@@ -9,11 +9,11 @@ import logging
 
 
 def extract_single_periods(data_set: pandas.DataFrame, column_name: str,
-                           period: str) -> list:
+                           period: str, time_increment: float = 1.0) -> list:
     """
         Extracts individual periods of a certain column of a weather data
-        set as lists. Caution: weather data set must be available in
-        hourly resolution!
+        set as lists. The length of the extracted periods dynamically adapts
+        to the temporal resolution (time_increment) of the data set.
 
         :param data_set: weather data set to be extracted
         :type data_set: pandas.DataFrame
@@ -23,19 +23,30 @@ def extract_single_periods(data_set: pandas.DataFrame, column_name: str,
         :param period: indicates what kind of periods shall be \
             extracted. Possible arguments: "days", "weeks", "hours".
         :type period: str
+        :param time_increment: temporal resolution of the data in hours \
+            (e.g., 0.25 for 15-minute intervals, 1.0 for hourly). Default is 1.0.
+        :type time_increment: float
 
         :return: - **cluster_vectors** (list) - list, containing a \
             list/vector for every single day
     """
-    # dictionary holding the factor which the clusters are divided by
-    factor_dict = {"hours": 1, "days": 24, "weeks": 168}
+    steps_per_hour = 1.0 / time_increment
+
+    # dictionary holding the amount of timesteps per chosen period
+    factor_dict = {
+        "hours": int(1 * steps_per_hour),
+        "days": int(24 * steps_per_hour),
+        "weeks": int(168 * steps_per_hour)
+    }
 
     # extract data_set of cluster_criterion
     cluster_df = data_set[column_name]
+
     # extract single periods as lists and add them to a list
     cluster_vectors = []
     timesteps = factor_dict.get(str(period))
-    # iterate threw the length of the timeseries after shortening
+
+    # iterate through the length of the timeseries after shortening
     for i in range(0, int(len(cluster_df) / timesteps)):
         cluster_vector = []
         for j in range(timesteps):
