@@ -124,25 +124,33 @@ def align_timeseries_to_perfect_grid(nodes_data: dict) -> dict:
         if "timestamp" in df.columns:
             df.set_index("timestamp", inplace=True)
 
+        # ensure index is parsed as datetime objects
         df.index = pandas.to_datetime(df.index)
 
-        # Average duplicate timestamps upfront (e.g. DST fallback in autumn)
-        df = df.groupby(df.index).mean()
+        # Localize naive local timestamps to the specified target timezone:
+        # ambiguous: Handles autumn DST overlap (duplicate hours). Tries 'infer' first;
+        # falls back to 'NaT' if duplicate sequences are incomplete.
+        try:
+            df.index = df.index.tz_localize(timezone, ambiguous="infer")
+        except Exception:
+            df.index = df.index.tz_localize(timezone, ambiguous="NaT")
 
-        # Localize to timezone:
-        # ambiguous="NaT" handles Autumn (turns unresolvable overlap hours to NaT)
-        # nonexistent="NaT" handles Spring (turns nonexistent gap hours to NaT)
-        df.index = df.index.tz_localize(timezone, ambiguous="NaT", nonexistent="NaT")
-
-        # temporarily drop ambiguous or nonexistent timestamps
+        # Drop invalid or unresolvable timestamps (NaT) created during localization
         df = df[df.index.notna()]
 
         # convert the clean local times to UTC
         df.index = df.index.tz_convert("UTC")
 
+        # Average duplicate timestamps upfront (e.g. DST fallback in autumn or raw data duplicates)
+        df = df.groupby(df.index).mean()
+
         # Align to the perfect UTC grid
         # creates empty (NaN) rows for the hours dropped or that were missing in the raw data
         df = df.reindex(perfect_utc_index)
+
+        # Coerce all data columns to float/int, converting invalid strings to NaN
+        for col in df.columns:
+            df[col] = pandas.to_numeric(df[col], errors="coerce")
 
         # Interpolate gaps (e.g. DST spring forward), then backfill/forwardfill edge cases
         df = df.interpolate(method='linear').bfill().ffill()
