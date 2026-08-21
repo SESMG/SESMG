@@ -133,7 +133,7 @@ def align_timeseries_to_perfect_grid(nodes_data: dict) -> dict:
         try:
             df.index = df.index.tz_localize(timezone, ambiguous="infer")
         except Exception:
-            df.index = df.index.tz_localize(timezone, ambiguous="NaT")
+            df.index = df.index.tz_localize(timezone, ambiguous="NaT", nonexistent="NaT")
 
         # Drop invalid or unresolvable timestamps (NaT) created during localization
         df = df[df.index.notna()]
