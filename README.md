@@ -27,7 +27,7 @@ Furthermore, the **SESMG** comes with important modeling methods, enabling holis
 ## Quick Start 
 [![Generic badge](https://img.shields.io/badge/content-how-green.svg)](https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/#)
 
-A detailed description of the installation process for Windows, MacOS and Linux can be found in the [documentation (chapter installation)](
+A detailed description of the installation process for Windows and Linux (and MacOS for older versions) can be found in the [documentation (chapter installation)](
 https://spreadsheet-energy-system-model-generator.readthedocs.io/en/latest/02.01.00_installation.html). 
 
 ## SESMG Features & Releases 
@@ -41,7 +41,7 @@ Examples are stored in a separate GIT-Repository [here](https://github.com/SESMG
 ✓ Modeling and Optimization of holistic energy systems <br />
 ✓ Automated modeling of urban energy systems <br /> 
 ✓ Several result plotting oportunities <br />
-✓ Usable on Windows, MacOS and Linux <br />
+✓ Usable on Windows and Linux <br />
 
 ✘ More time to code other things ... wait ✓!  
 
