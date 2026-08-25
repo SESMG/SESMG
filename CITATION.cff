@@ -16,9 +16,9 @@ authors:
   given-names: Peter
   orcid: "https://orcid.org/0000-0002-0767-5014"
 contact:
-- family-names: Klemm
-  given-names: Christian
-  orcid: "https://orcid.org/0000-0003-0801-4178"
+- family-names: Vennemann
+  given-names: Peter
+  orcid: "https://orcid.org/0000-0002-0767-5014"
 doi: 10.5281/zenodo.8344791
 message: If you use this software, please cite our article in the
   Journal of Open Source Software.
