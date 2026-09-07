@@ -118,6 +118,7 @@ Category 3
    electricity_exchange,,1,electricity_exchange,,,,,,,,, 
    battery_storage,,1,battery,,,,,,,,, 
    ng_chp,,0,naturalgas_chp,,,,heat_input,,,,, 
+   ngh_chp,,0,naturalgas_hydrogen_chp,,,,heat_input,,,,, 
    bg_chp,,0,biogas_chp,,,,heat_input,,,,, 
    pe_chp,,0,pellet_chp,,,,heat_input,,,,, 
    wc_chp,,1,woodchips_chp,,,,heat_input,,,,, 
@@ -153,7 +154,8 @@ Category 3
 
    electricity_exchange, local energy market
    battery, battery storage
-   naturalgas_chp, natrual gas combined heat and power (CHP)
+   naturalgas_chp, natural gas combined heat and power (CHP)
+   naturalgas_hydrogen_chp, natural gas and hydrogen chp (two inputs)
    biogas_chp, biogas CHP
    pellet_chp, pellet CHP
    woodchips_chp, woodchip CHP
