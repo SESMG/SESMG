@@ -28,7 +28,7 @@ def test_calc_variable_costs_scalar():
         np.array([20.0, 0.0])        # only output2 active
     ]
 
-    result = calc_variable_costs(node, comp_dict, "variable_costs")
+    result = calc_variable_costs(node, comp_dict, "variable_costs", time_increment=1)
     expected = 10.0 * 0.1 + 20.0 * 0.2 # = 1.0 + 4.0 = 5.0
 
     assert isinstance(result, float)
@@ -62,7 +62,7 @@ def test_calc_variable_costs_timeseries():
         np.array([2.0] * 23),   # only output2 active
          ]
 
-    result = calc_variable_costs(node, comp_dict, "variable_costs")
+    result = calc_variable_costs(node, comp_dict, "variable_costs", time_increment=1)
     expected = (
                        np.sum(cost_series_input1.iloc[:-1] * 1.0) +
                        np.sum(cost_series_output2.iloc[:-1] * 2.0)
@@ -94,7 +94,7 @@ def test_calc_variable_costs_timeseries_is_one_year_with_factor():
         np.array([0.0] * (len(date_range) - 1)),
     ]
 
-    result = calc_variable_costs(node, comp_dict, "variable_costs")
+    result = calc_variable_costs(node, comp_dict, "variable_costs", time_increment=1)
 
     # expected hours = result divided by costs
     single_step_cost = attr_value

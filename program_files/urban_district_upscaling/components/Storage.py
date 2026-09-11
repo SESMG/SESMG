@@ -59,7 +59,8 @@ def create_storage(
     return create_standard_parameter_comp(
         specific_param={
             "label": str(building_id) + storage_dict.get(storage_type)[0],
-            "bus": str(building_id) + storage_dict.get(storage_type)[1],
+            "input": str(building_id) + storage_dict.get(storage_type)[1],
+            "output": str(building_id) + storage_dict.get(storage_type)[1],
             "min. investment capacity": float(min_invest)
         },
         standard_parameter_info=[

@@ -63,7 +63,8 @@ def test_create_standard_parameter_comp(
     # create a standard parameter building battery storage
     sheets = create_standard_parameter_comp(
         specific_param={"label": "test_building_battery_storage",
-                        "bus": "test_building_electricity_bus"},
+                        "input": "test_building_electricity_bus",
+                        "output": "test_building_electricity_bus"},
         standard_parameter_info=[
             "battery storage decentral", "5_storages", "storage type"
         ],

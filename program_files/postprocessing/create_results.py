@@ -176,6 +176,7 @@ class Results:
         variable_cost_factor: float,
         console_log: bool,
         cluster_dh: bool,
+        time_increment: float = 1.0,
     ):
         """
             Inits the Results class.
@@ -187,6 +188,11 @@ class Results:
         self.esys = energy_system
         self.results = solph.processing.results(optimization_model)
 
+        # Derive the length of one time step in hours from the EnergySystem
+        # timeindex. This value is used to convert power-based flow values
+        # into energy when summing over time.
+        time_increment = time_increment
+
         # collect the energy system results which have to be extracted
         # from the component specific result object
         comp_dict, total_demand, total_usage = collect_data(
@@ -194,7 +200,8 @@ class Results:
             results=self.results,
             esys=self.esys,
             result_path=result_path,
-            variable_cost_factor=variable_cost_factor
+            variable_cost_factor=variable_cost_factor,
+            time_increment=time_increment
         )
 
         (
@@ -208,7 +215,8 @@ class Results:
         ) = prepare_data(comp_dict=comp_dict,
                          total_demand=total_demand,
                          nodes_data=nodes_data,
-                         variable_cost_factor=variable_cost_factor)
+                         variable_cost_factor=variable_cost_factor,
+                         time_increment =  time_increment)
         
         # SUMMARY
         meta_results = solph.processing.meta_results(optimization_model)

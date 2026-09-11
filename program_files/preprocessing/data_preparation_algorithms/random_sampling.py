@@ -110,18 +110,6 @@ def random_sampling(nodes_data: dict, period: str, number_of_samples: int
     # Replaces the weather data set in nodes_data by the new one
     nodes_data['weather data'] = prep_weather_data.copy()
 
-    # Adapts Other Parameters (despite weather data) of the energy system
-    period_dict = {"days": 24, "weeks": 168}
-    try:
-        adaption_clusters = int(len(prep_weather_data)
-                                / period_dict.get(period))
-    except TypeError:
-        raise ValueError("Non supported period")
-
-    # adapt costs and energy system date range
-    variable_cost_factor = variable_costs_date_adaption(nodes_data=nodes_data,
-                                 clusters=int(adaption_clusters),
-                                 period=period)
 
     data_set = nodes_data['timeseries']
     
@@ -134,5 +122,18 @@ def random_sampling(nodes_data: dict, period: str, number_of_samples: int
     prep_timeseries['timestamp'] = \
         nodes_data['timeseries']['timestamp'][:len(prep_weather_data)]
     nodes_data['timeseries'] = prep_timeseries.copy()
+
+    # Adapts Other Parameters (despite weather data) of the energy system
+    period_dict = {"days": 24, "weeks": 168}
+    try:
+        adaption_clusters = int(len(prep_weather_data)
+                                / period_dict.get(period))
+    except TypeError:
+        raise ValueError("Non supported period")
+
+    # adapt costs and energy system date range
+    variable_cost_factor = variable_costs_date_adaption(nodes_data=nodes_data,
+                                 clusters=int(adaption_clusters),
+                                 period=period)
 
     return variable_cost_factor

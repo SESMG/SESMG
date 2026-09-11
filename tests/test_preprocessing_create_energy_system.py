@@ -41,9 +41,10 @@ def test_define_energy_system(test_nodes_data_entry):
         correctly.
     """
     from program_files.preprocessing.create_energy_system \
-        import define_energy_system
-    
-    esys, nodes_data = define_energy_system(test_nodes_data_entry)
+        import define_energy_system, align_timeseries_to_perfect_grid
+
+    aligned_nodes_data = align_timeseries_to_perfect_grid(test_nodes_data_entry)
+    esys, nodes_data = define_energy_system(aligned_nodes_data)
 
     start_local = pandas.to_datetime(test_nodes_data_entry["energysystem"].loc[0, "start date"])
     end_local = pandas.to_datetime(test_nodes_data_entry["energysystem"].loc[0, "end date"])

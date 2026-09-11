@@ -233,7 +233,7 @@ def calc_periodical_costs(node, investment: float, comp_type: str,
         return investment * ep_costs + offset
 
 
-def calc_variable_costs(node, comp_dict: list, attr: str) -> float:
+def calc_variable_costs(node, comp_dict: list, attr: str, time_increment: float) -> float:
     """
         method to calculate the component's variable costs for the
         first optimization criterion (attr = variable costs) or the
@@ -247,6 +247,11 @@ def calc_variable_costs(node, comp_dict: list, attr: str) -> float:
         :param attr: str defining the cost factor's name to get the \
             attribute from the component's data
         :type attr: str
+        :param time_increment: temporal resolution of the EnergySystem \
+            in hours, used to convert power-based flow values into \
+            energy when summing over time while calculating variable \
+            costs or emissions
+        :type time_increment: float
         
         :return: - **costs** (float) - float holding the calculated \
                     variable costs or emissions
@@ -278,14 +283,19 @@ def calc_variable_costs(node, comp_dict: list, attr: str) -> float:
                     # Remove last value of the attribute values, as the results contain one value less
                     attribute_value = attribute_value.iloc[:-1]
 
-                    # Multiply each element and sum them up
+                    # Multiply each element and sum them up. The sum is then
+                    # multiplied by the time increment to convert power-based
+                    # values into energy-based costs.
                     multiplied_series = type_dict[flow_type][i + 1] * attribute_value
-                    costs_timeseries += multiplied_series.sum()
+                    costs_timeseries += multiplied_series.sum() * time_increment
 
                 else:
-                    # If the 'attribute_value' is a single value sum it up directly
+                    # If the 'attribute_value' is a single value, sum up the
+                    # flow multiplied by the scalar cost factor and the time
+                    # increment to obtain energy-based costs.
                      costs_scalar += sum(
                         type_dict[flow_type][i + 1]
+                        * time_increment
                         * getattr(
                             type_dict[flow_type][0][
                                 list(type_dict[flow_type][0].keys())[i]
@@ -438,7 +448,7 @@ def change_heatpipelines_label(comp_label: str, result_path: str) -> str:
 
 
 def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
-                 result_path: str, variable_cost_factor: float) -> Tuple[dict, float, float]:
+                 result_path: str, variable_cost_factor: float, time_increment: float) -> Tuple[dict, float, float]:
     """
         main method of the algorithm used to collect the data which is
         necessary to create the results presentation
@@ -459,6 +469,10 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
         :param variable_cost_factor: factor that considers the data_preparation_algorithms,
             can be used to scale the results up for a year
         :type variable_cost_factor: float
+        :param time_increment: temporal resolution of the EnergySystem \
+            in hours, used to convert power-based flow values into \
+            energy when summing total demand and total usage
+        :type time_increment: float
         
         :return: - **comp_dict** (dict) - dictionary containing the \
                     result parameters of all of the energy system's \
@@ -528,13 +542,13 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
                 # criterion
                 variable_costs = calc_variable_costs(
                     node=node, comp_dict=comp_dict[loc_label],
-                    attr="variable_costs")
+                    attr="variable_costs", time_increment=time_increment)
                 comp_dict[loc_label].append(variable_costs)
                 # calculate the variable costs of the second optimization
                 # criterion
                 constraint_costs = calc_variable_costs(
                     node=node, comp_dict=comp_dict[loc_label],
-                    attr="emission_factor")
+                    attr="emission_factor", time_increment=time_increment)
                 # if there is an investment in the node under investigation
                 # calculate the periodical costs of the second optimization
                 # criterion
@@ -548,16 +562,16 @@ def collect_data(nodes_data: dict, results: dict, esys: solph.EnergySystem,
                 comp_dict[loc_label].append(constraint_costs)
             else:
                 comp_dict[loc_label] += [0, 0]
-                # consider var_cost_factor for the total demand
-                total_demand += sum(flows[0]) * variable_cost_factor
+                # consider var_cost_factor and time_increment for the total demand
+                total_demand += sum(flows[0]) * variable_cost_factor * time_increment
             if isinstance(node, Source):
                 if (node.label in list(nodes_data["sources"]["label"]) or
                         "shortage" in node.label):
-                    # consider var_cost_factor for the total usage
-                    total_usage += sum(flows[2]) * variable_cost_factor
+                    # consider var_cost_factor and time_increment for the total usage
+                    total_usage += sum(flows[2]) * variable_cost_factor * time_increment
             if isinstance(node, Sink) and "excess" in node.label:
-                # consider var_cost_factor for the total usage
-                total_usage -= sum(flows[0]) * variable_cost_factor
+                # consider var_cost_factor and time_increment  for the total usage
+                total_usage -= sum(flows[0]) * variable_cost_factor * time_increment
             # get the component's type for the loc
             comp_dict[loc_label].append(get_comp_type(node=node))
 

@@ -9,11 +9,11 @@ import logging
 
 
 def extract_single_periods(data_set: pandas.DataFrame, column_name: str,
-                           period: str) -> list:
+                           period: str, time_increment: float = 1.0) -> list:
     """
         Extracts individual periods of a certain column of a weather data
-        set as lists. Caution: weather data set must be available in
-        hourly resolution!
+        set as lists. The length of the extracted periods dynamically adapts
+        to the temporal resolution (time_increment) of the data set.
 
         :param data_set: weather data set to be extracted
         :type data_set: pandas.DataFrame
@@ -23,19 +23,30 @@ def extract_single_periods(data_set: pandas.DataFrame, column_name: str,
         :param period: indicates what kind of periods shall be \
             extracted. Possible arguments: "days", "weeks", "hours".
         :type period: str
+        :param time_increment: temporal resolution of the data in hours \
+            (e.g., 0.25 for 15-minute intervals, 1.0 for hourly). Default is 1.0.
+        :type time_increment: float
 
         :return: - **cluster_vectors** (list) - list, containing a \
             list/vector for every single day
     """
-    # dictionary holding the factor which the clusters are divided by
-    factor_dict = {"hours": 1, "days": 24, "weeks": 168}
+    steps_per_hour = 1.0 / time_increment
+
+    # dictionary holding the amount of timesteps per chosen period
+    factor_dict = {
+        "hours": int(1 * steps_per_hour),
+        "days": int(24 * steps_per_hour),
+        "weeks": int(168 * steps_per_hour)
+    }
 
     # extract data_set of cluster_criterion
     cluster_df = data_set[column_name]
+
     # extract single periods as lists and add them to a list
     cluster_vectors = []
     timesteps = factor_dict.get(str(period))
-    # iterate threw the length of the timeseries after shortening
+
+    # iterate through the length of the timeseries after shortening
     for i in range(0, int(len(cluster_df) / timesteps)):
         cluster_vector = []
         for j in range(timesteps):
@@ -138,8 +149,9 @@ def append_timeseries_to_weatherdata_sheet(nodes_data: dict
     return nodes_data['timeseries']
 
 
-def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str
-                                 ) -> float:
+def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str,
+                                 time_increment_orig: float = 1.0,
+                                 time_increment_new: float = 1.0) -> float:
     """
         To be able to work with the adapted weather data set some
         parameters from nodes_data must be changed.
@@ -151,16 +163,26 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str
         :type clusters: int
         :param period: defines rather hours, days or weeks were selected
         :type period: str
+        :param time_increment_orig: Original temporal resolution in hours, defaults to 1.0
+        :type time_increment_orig: float, optional
+        :param time_increment_new: New temporal after timeseries simplification resolution in hours, defaults to 1.0
+        :type time_increment_new: float, optional
 
         :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
     """
-    factor_dict = {"hours": 1, "days": 24, "weeks": 168}
-    timesteps = factor_dict.get(period)
-    variable_cost_factor = \
-        (int(nodes_data['energysystem']['periods'].iloc[0])
-         / (timesteps * clusters))
-    # log the calculated variable cost factor
+    # Calculate total simulated hours of the original dataset
+    original_periods = int(nodes_data['energysystem']['periods'].iloc[0])
+    original_hours = original_periods * time_increment_orig
+
+    # Calculate total simulated hours of the reduced dataset
+    simulated_steps = len(nodes_data['weather data'])
+    simulated_hours = simulated_steps * time_increment_new
+
+    # Calculate universal scaling factor
+    variable_cost_factor = original_hours / simulated_hours
+
+    # Log the calculated variable cost factor
     logging.info('\t VARIABLE COST FACTOR')
     logging.info("\t " + str(variable_cost_factor))
     
@@ -191,12 +213,12 @@ def variable_costs_date_adaption(nodes_data: dict, clusters: int, period: str
     # multiply with variable cost factor
     nodes_data['timeseries'][cols_to_scale] *= variable_cost_factor
 
-
-    timedelta = str(clusters * timesteps - 1) + ' hours'
-    nodes_data['energysystem']['end date'] = \
-        nodes_data['energysystem']['start date'] \
-        + pandas.Timedelta(timedelta)
-    nodes_data['energysystem']['periods'] = (timesteps * clusters)
+    # Update energy system metadata
+    duration_hours = (simulated_steps - 1) * time_increment_new
+    nodes_data['energysystem']['end date'] = (
+            nodes_data['energysystem']['start date'] + pandas.Timedelta(hours=duration_hours)
+    )
+    nodes_data['energysystem']['periods'] = simulated_steps
 
     return variable_cost_factor
 
@@ -334,8 +356,55 @@ def timeseries_adaption(nodes_data: dict, clusters: int,
     nodes_data['timeseries'] = prep_timeseries
 
 
+def get_time_increment_from_dataframe(weather_df: pandas.DataFrame) -> float:
+    """
+    Calculates the temporal resolution of the given timeseries DataFrame in hours.
+
+    The time increment is derived from the 'timestamp' column or DatetimeIndex.
+    It verifies that the time series is equidistant and converts the delta
+    between consecutive time steps into hours.
+
+    :param weather_df: DataFrame containing the weather data (must contain
+        a 'timestamp' column or a DatetimeIndex)
+    :type weather_df: pandas.DataFrame
+
+    :return: - **time_increment** (float) - length of one time step in hours
+    """
+    # Extract time series from 'timestamp' column or DatetimeIndex
+    if 'timestamp' in weather_df.columns:
+        time_series = pandas.to_datetime(weather_df['timestamp'])
+    elif isinstance(weather_df.index, pandas.DatetimeIndex):
+        time_series = weather_df.index.to_series()
+    else:
+        raise ValueError(
+            "DataFrame must contain a 'timestamp' column or a DatetimeIndex "
+            "to derive a time increment."
+        )
+
+    if len(time_series) < 2:
+        raise ValueError(
+            "Timeseries DataFrame must contain at least two entries "
+            "to derive a time increment."
+        )
+
+    # Calculate differences between consecutive time steps
+    diffs = time_series.diff().iloc[1:]
+
+    # Ensure that the time series is equidistant
+    if not (diffs == diffs.iloc[0]).all():
+        raise ValueError(
+            "Non-equidistant time series detected. "
+            "get_time_increment_from_dataframe requires an equidistant time series."
+        )
+
+    delta = diffs.iloc[0]
+    time_increment = delta.total_seconds() / 3600.0
+
+    return time_increment
+
+
 def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
-                           result_path: str) -> float:
+                           result_path: str) -> tuple:
     """
         Evaluates the passed parameters for timeseries preparation and
         starts the corresponding simplification/clustering algorithm.
@@ -353,6 +422,7 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
 
         :return: - **variable_cost_factor** (float) - factor that considers the data_preparation_algorithms,
                      can be used to scale the results up for a year
+                 - **time_increment** (float) - length of one time step in hours
     """
     from program_files.preprocessing.data_preparation_algorithms \
         import slicing, downsampling, averaging, heuristic_selection, \
@@ -364,6 +434,8 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
     cluster_criterion = timeseries_prep_param[2]
     cluster_period = timeseries_prep_param[3]
     cluster_seasons = int(timeseries_prep_param[4])
+
+    time_increment = get_time_increment_from_dataframe(weather_df=nodes_data['weather data'].copy())
 
     if data_prep != 'none':
         # Adapting Standard Load Profile-Sinks
@@ -398,18 +470,21 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
     elif data_prep == 'slicing A':
         variable_cost_factor = slicing.timeseries_slicing(n_days=int(days_per_cluster),
                                    nodes_data=nodes_data,
-                                   period=cluster_period)
+                                   period=cluster_period,
+                                   time_increment=time_increment)
     # delete every n-th period
     elif data_prep == 'slicing B':
         variable_cost_factor = slicing.timeseries_slicing2(n_days=int(days_per_cluster),
                                     nodes_data=nodes_data,
-                                    period=cluster_period)
+                                    period=cluster_period,
+                                    time_increment=time_increment)
 
     # DOWNSAMPLING ALGORITHM
     # use every n-th period
     elif data_prep == 'downsampling A':
-        variable_cost_factor = downsampling.timeseries_downsampling(nodes_data=nodes_data,
-                                             n_timesteps=int(n_timesteps))
+        variable_cost_factor, time_increment = downsampling.timeseries_downsampling(nodes_data=nodes_data,
+                                             n_timesteps=int(n_timesteps),
+                                             time_increment=time_increment)
     # delete every n-th period
     elif data_prep == 'downsampling B':
         variable_cost_factor = downsampling.timeseries_downsampling2(nodes_data=nodes_data,
@@ -438,7 +513,7 @@ def timeseries_preparation(timeseries_prep_param: list, nodes_data: dict,
         nodes_data['buses'].to_excel(writer, sheet_name='buses')
         writer.close()
 
-    return variable_cost_factor
+    return variable_cost_factor, time_increment
 
 
 

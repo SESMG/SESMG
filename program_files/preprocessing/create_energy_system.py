@@ -84,6 +84,91 @@ def import_model_definition(filepath: str, delete_units=True) -> dict:
     return nodes_data
 
 
+def align_timeseries_to_perfect_grid(nodes_data: dict) -> dict:
+    """
+        Takes raw data from dictionary (with potential Daylight Saving Time gaps
+        or duplicate winter time entries), aligns them to a mathematically
+        perfect UTC time grid, and fills missing values.
+
+        :param nodes_data: dictionary containing data from nodes_data
+        :type nodes_data: dict
+
+        :return: - **nodes_data** (dict) - dictionary containing data \
+            from nodes_data with aligned timeseries \
+            and weather data
+    """
+    logging.info("\t Aligning timeseries and weather data to perfect UTC grid...")
+
+    # Read parameters from the energysystem sheet
+    row = next(nodes_data["energysystem"].iterrows())[1]
+    temp_resolution = row["temporal resolution"]
+    timezone = row["timezone"]
+
+    # Calculate the mathematically perfect UTC time grid
+    start_date_naive = pandas.to_datetime(row["start date"])
+    end_date_naive = pandas.to_datetime(row["end date"])
+
+    start_utc = start_date_naive.tz_localize(timezone).tz_convert("UTC")
+    end_utc = end_date_naive.tz_localize(timezone).tz_convert("UTC")
+
+    perfect_utc_index = pandas.date_range(start=start_utc, end=end_utc, freq=temp_resolution)
+
+    # Repair all relevant sheets
+    for sheet in ["timeseries", "weather data"]:
+        if sheet not in nodes_data or nodes_data[sheet].empty:
+            continue
+
+        df = nodes_data[sheet].copy()
+
+        # Set 'timestamp' column as index, if not done already
+        if "timestamp" in df.columns:
+            df.set_index("timestamp", inplace=True)
+
+        # ensure index is parsed as datetime objects
+        df.index = pandas.to_datetime(df.index)
+
+        # Localize naive local timestamps to the specified target timezone:
+        # ambiguous: Handles autumn DST overlap (duplicate hours). Tries 'infer' first;
+        # falls back to 'NaT' if duplicate sequences are incomplete.
+        try:
+            df.index = df.index.tz_localize(timezone, ambiguous="infer")
+        except Exception:
+            df.index = df.index.tz_localize(timezone, ambiguous="NaT", nonexistent="NaT")
+
+        # Drop invalid or unresolvable timestamps (NaT) created during localization
+        df = df[df.index.notna()]
+
+        # convert the clean local times to UTC
+        df.index = df.index.tz_convert("UTC")
+
+        # Average duplicate timestamps upfront (e.g. DST fallback in autumn or raw data duplicates)
+        df = df.groupby(df.index).mean()
+
+        # Align to the perfect UTC grid
+        # creates empty (NaN) rows for the hours dropped or that were missing in the raw data
+        df = df.reindex(perfect_utc_index)
+
+        # Coerce all data columns to float/int, converting invalid strings to NaN
+        for col in df.columns:
+            df[col] = pandas.to_numeric(df[col], errors="coerce")
+
+        # Interpolate gaps (e.g. DST spring forward), then backfill/forwardfill edge cases
+        df = df.interpolate(method='linear').bfill().ffill()
+
+        # Convert the index back to a 'timestamp' column so the rest of the code
+        # (e.g. timeseries_preparation) works as expected
+        df.index.name = "timestamp"
+        df.reset_index(inplace=True)
+
+        # Remove timezone metadata so Excel exports won't crash
+        # Times remain mathematically on UTC level, but are now "tz-naive".
+        df["timestamp"] = df["timestamp"].dt.tz_localize(None)
+
+        nodes_data[sheet] = df
+
+    return nodes_data
+
+
 def define_energy_system(nodes_data: dict) -> (EnergySystem, dict):
     """
         Creates an energy system with the parameters defined in the
@@ -140,10 +225,8 @@ def define_energy_system(nodes_data: dict) -> (EnergySystem, dict):
     for sheet in ["timeseries", "weather data"]:
         # defines a time series
         nodes_data[sheet].set_index("timestamp", inplace=True)
-        # convert timezones to utc time
-        nodes_data[sheet].index = pandas.to_datetime(nodes_data[sheet].index)
-        nodes_data[sheet].index = nodes_data[sheet].index.tz_localize(timezone, ambiguous="infer")
-        nodes_data[sheet].index = nodes_data[sheet].index.tz_convert("utc")
+        # ensures the index consists of proper datetime objects and re-adds UTC for oemof
+        nodes_data[sheet].index = pandas.to_datetime(nodes_data[sheet].index).tz_localize("UTC")
     # returns logging info
     logging.info(
             "Date time index successfully defined:\n start date:          "
