@@ -80,6 +80,9 @@ def create_transformer(label: str, transformer_type: str, sheets: dict,
         :param fuel_type: with the help of the fuel_type attribute the \
             transformer's fuel type is chosen
         :type fuel_type: str
+        :param fuel_type2: with the help of the fuel_type2 attribute the \
+            transformer's possible second fuel type is chosen
+        :type fuel_type2: str
         :param output: within the output attribute a transformer \
             individual output bus label can be set. This attribute \
             does not have to be filled for each transformer type which \
@@ -89,9 +92,9 @@ def create_transformer(label: str, transformer_type: str, sheets: dict,
             existing transformer it's capacity is the min investment \
             value of the transformer to be created
         :type min_invest: str
-        :param len_geoth_probe: length of the vertical heat exchanger \
+        :param length_geoth_probe: length of the vertical heat exchanger \
             relevant for GCHPs
-        :type len_geoth_probe: str
+        :type length_geoth_probe: str
         :param heat_extraction: heat extraction for the heat exchanger \
             referring to the location
         :type heat_extraction: str
